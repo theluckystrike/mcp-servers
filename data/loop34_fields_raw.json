@@ -1,0 +1,413 @@
+{
+  "measured_at": "2026-09-11T18:07:36.873Z",
+  "control": {
+    "query": "modelcontextprotocol",
+    "total_count": 1249,
+    "first": "modelcontextprotocol/modelcontextprotocol"
+  },
+  "rows": [
+    {
+      "candidate": "mileage-log",
+      "query": "mcp mileage",
+      "total_count": 4,
+      "top3": [
+        {
+          "name": "theluckystrike/mcp-expense-tracker",
+          "stars": 0,
+          "name_coverage": 0.5
+        },
+        {
+          "name": "OxygenBubbles/freeagent-mcp-server",
+          "stars": 0,
+          "name_coverage": 0.5
+        },
+        {
+          "name": "fsioni/my-garage-map",
+          "stars": 1,
+          "name_coverage": 0
+        }
+      ]
+    },
+    {
+      "candidate": "credit-note",
+      "query": "mcp credit note",
+      "total_count": 3,
+      "top3": [
+        {
+          "name": "theluckystrike/mcp-billing-docs",
+          "stars": 0,
+          "name_coverage": 0.33
+        },
+        {
+          "name": "mcp-dir/getnet-mcp",
+          "stars": 0,
+          "name_coverage": 0.33
+        },
+        {
+          "name": "api-evangelist/zenskar",
+          "stars": 0,
+          "name_coverage": 0
+        }
+      ]
+    },
+    {
+      "candidate": "purchase-order",
+      "query": "mcp purchase order",
+      "total_count": 16,
+      "top3": [
+        {
+          "name": "alphaparkinc/genpark-commerce-order-history-agent-skill",
+          "stars": 9,
+          "name_coverage": 0.33
+        },
+        {
+          "name": "iabhiroop/MCP_PurchaseOrderFlow",
+          "stars": 2,
+          "name_coverage": 1
+        },
+        {
+          "name": "alphaparkinc/genpark-post-purchase-customer-care-inquiry-resolver-skill",
+          "stars": 8,
+          "name_coverage": 0.33
+        }
+      ]
+    },
+    {
+      "candidate": "proposal",
+      "query": "mcp proposal",
+      "total_count": 204,
+      "top3": [
+        {
+          "name": "jasonjmcghee/WebMCP",
+          "stars": 826,
+          "name_coverage": 0.5
+        },
+        {
+          "name": "vanooo/upwork-mcp",
+          "stars": 64,
+          "name_coverage": 0.5
+        },
+        {
+          "name": "zcrossoverz/upwork-mcp",
+          "stars": 12,
+          "name_coverage": 0.5
+        }
+      ]
+    },
+    {
+      "candidate": "contract-builder",
+      "query": "mcp contract",
+      "total_count": 1344,
+      "top3": [
+        {
+          "name": "heizaheiza/Charles-mcp",
+          "stars": 312,
+          "name_coverage": 0.5
+        },
+        {
+          "name": "marchev/claudit",
+          "stars": 158,
+          "name_coverage": 0
+        },
+        {
+          "name": "trailofbits/slither-mcp",
+          "stars": 96,
+          "name_coverage": 0.5
+        }
+      ]
+    },
+    {
+      "candidate": "timesheet",
+      "query": "mcp timesheet",
+      "total_count": 78,
+      "top3": [
+        {
+          "name": "glazperle/kimai_mcp",
+          "stars": 38,
+          "name_coverage": 0.5
+        },
+        {
+          "name": "culstrup/unanet-mcp-server",
+          "stars": 3,
+          "name_coverage": 0.5
+        },
+        {
+          "name": "feamster/paymo-mcp",
+          "stars": 6,
+          "name_coverage": 0.5
+        }
+      ]
+    },
+    {
+      "candidate": "receipt-book",
+      "query": "mcp receipt",
+      "total_count": 236,
+      "top3": [
+        {
+          "name": "juyterman1000/entroly",
+          "stars": 443,
+          "name_coverage": 0
+        },
+        {
+          "name": "fjgbue/claude-delegator-deepseek-mcp",
+          "stars": 58,
+          "name_coverage": 0.5
+        },
+        {
+          "name": "snchimata/tokenfold",
+          "stars": 130,
+          "name_coverage": 0
+        }
+      ]
+    },
+    {
+      "candidate": "bill-of-sale",
+      "query": "mcp bill of sale",
+      "total_count": 0,
+      "top3": []
+    },
+    {
+      "candidate": "service-agreement",
+      "query": "mcp service agreement",
+      "total_count": 4,
+      "top3": [
+        {
+          "name": "Flagler-County-BoCC/mcp-connectwise-manage",
+          "stars": 2,
+          "name_coverage": 0.33
+        },
+        {
+          "name": "jaybuidl/shodai-playground",
+          "stars": 0,
+          "name_coverage": 0
+        },
+        {
+          "name": "api-evangelist/common-paper",
+          "stars": 0,
+          "name_coverage": 0
+        }
+      ]
+    },
+    {
+      "candidate": "inventory-list",
+      "query": "mcp inventory",
+      "total_count": 719,
+      "top3": [
+        {
+          "name": "Cesarjoquin/shopify-mcp",
+          "stars": 140,
+          "name_coverage": 0.5
+        },
+        {
+          "name": "Sentinel-One/purple-mcp",
+          "stars": 97,
+          "name_coverage": 0.5
+        },
+        {
+          "name": "hmmhmmhm/daiso-mcp",
+          "stars": 327,
+          "name_coverage": 0.5
+        }
+      ]
+    },
+    {
+      "candidate": "meeting-minutes",
+      "query": "mcp meeting minutes",
+      "total_count": 14,
+      "top3": [
+        {
+          "name": "silverstein/minutes",
+          "stars": 1472,
+          "name_coverage": 0.33
+        },
+        {
+          "name": "manor-os/minutes",
+          "stars": 11,
+          "name_coverage": 0.33
+        },
+        {
+          "name": "Aedelon/claude-meeting-mcp",
+          "stars": 1,
+          "name_coverage": 0.67
+        }
+      ]
+    },
+    {
+      "candidate": "agenda",
+      "query": "mcp agenda",
+      "total_count": 67,
+      "top3": [
+        {
+          "name": "sosoj92/jarvis-assistant-vocal",
+          "stars": 253,
+          "name_coverage": 0
+        },
+        {
+          "name": "alexgoller/mcp-server-agenda",
+          "stars": 5,
+          "name_coverage": 1
+        },
+        {
+          "name": "tecnomanu/nerdearla-agenda-mcp",
+          "stars": 12,
+          "name_coverage": 1
+        }
+      ]
+    },
+    {
+      "candidate": "dunning-letters",
+      "query": "mcp dunning",
+      "total_count": 7,
+      "top3": [
+        {
+          "name": "alphaparkinc/genpark-commerce-subscription-billing-skill",
+          "stars": 9,
+          "name_coverage": 0
+        },
+        {
+          "name": "PrimeEcto/stripe-founder-mcp",
+          "stars": 1,
+          "name_coverage": 0.5
+        },
+        {
+          "name": "teddy13643/bebetter",
+          "stars": 2,
+          "name_coverage": 0
+        }
+      ]
+    },
+    {
+      "candidate": "rate-card",
+      "query": "mcp rate card",
+      "total_count": 10,
+      "top3": [
+        {
+          "name": "alphaparkinc/genpark-creator-rate-card-cpm-valuation-estimator-skill",
+          "stars": 8,
+          "name_coverage": 0.67
+        },
+        {
+          "name": "CardNavi/card-navi-mcp",
+          "stars": 0,
+          "name_coverage": 0.67
+        },
+        {
+          "name": "theluckystrike/mcp-catalogue",
+          "stars": 0,
+          "name_coverage": 0.33
+        }
+      ]
+    },
+    {
+      "candidate": "sitemap-of-clients",
+      "query": "mcp client directory",
+      "total_count": 41,
+      "top3": [
+        {
+          "name": "sing1ee/a2a-directory",
+          "stars": 239,
+          "name_coverage": 0.33
+        },
+        {
+          "name": "Go-To-Sea/mcp-directory",
+          "stars": 2,
+          "name_coverage": 0.67
+        },
+        {
+          "name": "NeuralRays/awesome-mcp-hub",
+          "stars": 1,
+          "name_coverage": 0.33
+        }
+      ]
+    },
+    {
+      "candidate": "supplier-list",
+      "query": "mcp supplier list",
+      "total_count": 0,
+      "top3": []
+    },
+    {
+      "candidate": "warranty-tracker",
+      "query": "mcp warranty",
+      "total_count": 14,
+      "top3": [
+        {
+          "name": "alphaparkinc/genpark-warranty-claim-processor-skill",
+          "stars": 9,
+          "name_coverage": 0.5
+        },
+        {
+          "name": "alphaparkinc/genpark-refurbished-electronics-grading-warranty-escrow-skill",
+          "stars": 8,
+          "name_coverage": 0.5
+        },
+        {
+          "name": "zavora-ai/mcp-warranty",
+          "stars": 0,
+          "name_coverage": 1
+        }
+      ]
+    },
+    {
+      "candidate": "maintenance-log",
+      "query": "mcp maintenance log",
+      "total_count": 4,
+      "top3": [
+        {
+          "name": "CSOAI-ORG/flight-logger-mcp",
+          "stars": 0,
+          "name_coverage": 0.67
+        },
+        {
+          "name": "Surferdude-AF/CatalogMCP",
+          "stars": 0,
+          "name_coverage": 0.67
+        },
+        {
+          "name": "mahirick/carbot-oss",
+          "stars": 0,
+          "name_coverage": 0
+        }
+      ]
+    },
+    {
+      "candidate": "job-card",
+      "query": "mcp job card",
+      "total_count": 2,
+      "top3": [
+        {
+          "name": "mrocker/cardzero-mcp",
+          "stars": 0,
+          "name_coverage": 0.67
+        },
+        {
+          "name": "api-evangelist/worklittle",
+          "stars": 0,
+          "name_coverage": 0
+        }
+      ]
+    },
+    {
+      "candidate": "estimate",
+      "query": "mcp estimate",
+      "total_count": 204,
+      "top3": [
+        {
+          "name": "aws-samples/sample-aws-pricing-calculator-mcp",
+          "stars": 141,
+          "name_coverage": 0.5
+        },
+        {
+          "name": "HduSy/tokenscope",
+          "stars": 248,
+          "name_coverage": 0
+        },
+        {
+          "name": "msftnadavbh/AzurePricingMCP",
+          "stars": 55,
+          "name_coverage": 0.5
+        }
+      ]
+    }
+  ]
+}

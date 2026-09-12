@@ -1,0 +1,94 @@
+{
+  "updated_at": "2026-09-12",
+  "round": "DISTRIBUTION_R3",
+  "owner_doc": "docs/DISTRIBUTION_R3.md",
+  "scope": "The four surfaces docs/DISTRIBUTION_R2.md marked free and agent-submittable: Chat2AnyLLM/awesome-mcp-servers, zencoderai/zenagents-library, jaw9c/awesome-remote-mcp-servers, Appnova-EU-OU/awesome-remote-mcp-servers.",
+  "headline": {
+    "surfaces_attempted": 4,
+    "pull_requests_opened": 4,
+    "pull_requests_verified_open": 4,
+    "skipped": 0,
+    "entries_per_pr": 8,
+    "servers_submitted": ["invoice", "pdf", "time-tracker", "expense-tracker", "spreadsheet", "currency", "quotes", "bank-statement"],
+    "paid_surfaces_used": 0,
+    "accounts_created": 0,
+    "logins_performed": 0,
+    "repos_starred": 0
+  },
+  "rows": [
+    {
+      "surface": "Chat2AnyLLM awesome-mcp-servers",
+      "repo": "Chat2AnyLLM/awesome-mcp-servers",
+      "pr_url": "https://github.com/Chat2AnyLLM/awesome-mcp-servers/pull/22",
+      "state": "OPEN",
+      "state_verified_by": "gh pr view https://github.com/Chat2AnyLLM/awesome-mcp-servers/pull/22 --json state,title,files",
+      "state_verified_at": "2026-09-12",
+      "entries_submitted": 8,
+      "files_in_pr": 13,
+      "entry_format": "servers/<slug>.yaml per CONTRIBUTING.md, shape matched to merged servers/process-street-mcp.yaml (2026-09-03): slug, title, description, url, tags, category, author, license, plus installations.remote {type: http, url: /mcp/<server>/t/<token>}",
+      "validation_evidence": [
+        "python scripts/validate.py -> 'All valid: 402 server(s), 2 source(s).'",
+        "python -m unittest discover -s tests -v -> 'Ran 3 tests in 0.002s' 'OK'",
+        "python scripts/build.py -> dist/servers.json '396 servers'; grep -c '\"slug\": \"<slug>\"' dist/servers.json == 1 for all 8",
+        "python scripts/update_readme.py -> README stats 388 to 396 only",
+        "environment caveat disclosed in PR: make ci test step fails under system Python 3.9.6 (scripts/build.py uses dict | None, needs 3.10+); passing run used /opt/homebrew/bin/python3.13 venv"
+      ],
+      "notable_finding": "scripts/build.py normalize_server silently drops CONTRIBUTING-format entries with no installations/npm/docker field; merged servers/bulkpublish.yaml is absent from dist/servers.json (grep -c returns 0 on upstream main)",
+      "skipped_reason": null
+    },
+    {
+      "surface": "Zencoder zenagents-library",
+      "repo": "zencoderai/zenagents-library",
+      "pr_url": "https://github.com/zencoderai/zenagents-library/pull/31",
+      "state": "OPEN",
+      "state_verified_by": "gh pr view https://github.com/zencoderai/zenagents-library/pull/31 --json state,title,files",
+      "state_verified_at": "2026-09-12",
+      "entries_submitted": 8,
+      "files_in_pr": 1,
+      "entry_format": "mcp-library.json dict entries keyed by lowercase name; fields name, description, link, icon (64x64 base64 PNG), author, configs; 104 added lines, 0 deletions; 99 to 107 entries",
+      "validation_evidence": [
+        "no validation command exists in the repo; check run was python3 -c 'import json; json.load(open(\"mcp-library.json\"))' post-edit (parses, 107 entries)",
+        "assertion script .scratch-distribution/insert_zenagents.py verified count 99 -> 107 and each new entry's name/author/link/configs fields",
+        "icons: assets/<server>-logo.png resized with sips -z 64 64 to match the 64x64 norm",
+        "npm view mcp-remote version -> 0.13.5 (bridge package exists)"
+      ],
+      "notable_finding": "all 99 existing configs are stdio command/args/env; no url-based remote precedent, so entries bridge via npx mcp-remote with /t/<token> URL; submission precedent is PR #17, a cross-repository fork PR merged 2025-07-04",
+      "skipped_reason": null
+    },
+    {
+      "surface": "jaw9c awesome-remote-mcp-servers",
+      "repo": "jaw9c/awesome-remote-mcp-servers",
+      "pr_url": "https://github.com/jaw9c/awesome-remote-mcp-servers/pull/769",
+      "state": "OPEN",
+      "state_verified_by": "gh pr view https://github.com/jaw9c/awesome-remote-mcp-servers/pull/769 --json state,title,files",
+      "state_verified_at": "2026-09-12",
+      "entries_submitted": 8,
+      "files_in_pr": 1,
+      "entry_format": "markdown table rows '| Name | Category | URL | Authentication | Maintainer |', Authentication = API Key per the README authentication section; 8 rows appended after the Wolfram row (line 176)",
+      "validation_evidence": [
+        "curl -X POST https://mcp.zovo.one/mcp/<server> -H 'Content-Type: application/json' -H 'Accept: application/json, text/event-stream' -d initialize payload -> HTTP 200 with protocolVersion 2025-03-26 and tools capability, 8 of 8"
+      ],
+      "notable_finding": "repo idle since 2026-06-23 (gh repo view --json pushedAt) with 1,113 stars and a PR queue in the hundreds; PR number 769 includes issues; merge probability low",
+      "skipped_reason": null
+    },
+    {
+      "surface": "Appnova-EU-OU awesome-remote-mcp-servers",
+      "repo": "Appnova-EU-OU/awesome-remote-mcp-servers",
+      "pr_url": "https://github.com/Appnova-EU-OU/awesome-remote-mcp-servers/pull/614",
+      "state": "OPEN",
+      "state_verified_by": "gh pr view https://github.com/Appnova-EU-OU/awesome-remote-mcp-servers/pull/614 --json state,title,files",
+      "state_verified_at": "2026-09-12",
+      "entries_submitted": 8,
+      "files_in_pr": 8,
+      "entry_format": "servers/productivity/theluckystrike-mcp-<slug>.json per schemas/server.schema.json (draft-07, additionalProperties false); shape copied from servers/productivity/ejwhite7-brandkit-mcp.json; homepage carries https://mcp.zovo.one/s/<server>",
+      "validation_evidence": [
+        "check-jsonschema --schemafile schemas/server.schema.json servers/productivity/theluckystrike-*.json -> 'ok -- validation done', 8 of 8 (replicates .github/workflows/validate-pr.yml)",
+        "curl -s -o /dev/null -w '%{http_code}' -I -L --max-time 15 <git_url> -> HTTP 200, 8 of 8",
+        "duplicate scan: 0 duplicate (git_url, name) pairs among 39 entries (31 existing + 8 new)",
+        "PR template checklist: all 7 items ticked, each backed by a command above or by reading CONTRIBUTING.md"
+      ],
+      "notable_finding": "schema has no remote-endpoint field; the hosted URL is carried in each description text",
+      "skipped_reason": null
+    }
+  ]
+}

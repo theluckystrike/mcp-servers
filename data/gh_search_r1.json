@@ -70,7 +70,7 @@
               "forks": 0,
               "pushed_at": "2026-09-04T12:40:01Z",
               "created_at": "2026-04-13T11:07:36Z",
-              "description": "\ud83d\udd0c Lets an MCP client generate, validate, and manage professional invoices with tax calculations.",
+              "description": "🔌 Lets an MCP client generate, validate, and manage professional invoices with tax calculations.",
               "topics": [
                 "agentic-ai",
                 "ai-agents",
@@ -93,7 +93,7 @@
               "forks": 0,
               "pushed_at": "2025-12-07T19:50:51Z",
               "created_at": "2025-12-07T19:50:43Z",
-              "description": "bachai-invoices-generator - \u7531 MCP\u5de5\u5382\u81ea\u52a8\u521b\u5efa",
+              "description": "bachai-invoices-generator - 由 MCP工厂自动创建",
               "topics": [],
               "has_homepage": false,
               "open_issues": 0
@@ -148,7 +148,7 @@
               "forks": 0,
               "pushed_at": "2026-06-12T08:45:19Z",
               "created_at": "2026-05-21T15:30:12Z",
-              "description": "Scribo MCP server \u2014 generate EN 16931-compliant e-invoices (ZUGFeRD, XRechnung, US plain PDF; Factur-X, Facturae, Peppol coming soon) from Claude, Cursor, Cline, ChatGPT & any MCP client. Free, hosted, no signup. Registry metadata, schemas & examples.",
+              "description": "Scribo MCP server — generate EN 16931-compliant e-invoices (ZUGFeRD, XRechnung, US plain PDF; Factur-X, Facturae, Peppol coming soon) from Claude, Cursor, Cline, ChatGPT & any MCP client. Free, hosted, no signup. Registry metadata, schemas & examples.",
               "topics": [
                 "ai-agent",
                 "anthropic",
@@ -220,7 +220,7 @@
               "forks": 0,
               "pushed_at": "2026-09-08T05:40:01Z",
               "created_at": "2026-05-01T18:47:03Z",
-              "description": "MCP server exposing the Indy.fr accounting API as tools for LLM agents. List transactions, attach invoices, query VAT configuration and bank accounts \u2014 all from Claude or any MCP-compatible client. Unofficial, not affiliated with Indy.fr SAS.",
+              "description": "MCP server exposing the Indy.fr accounting API as tools for LLM agents. List transactions, attach invoices, query VAT configuration and bank accounts — all from Claude or any MCP-compatible client. Unofficial, not affiliated with Indy.fr SAS.",
               "topics": [],
               "has_homepage": false,
               "open_issues": 1
@@ -292,7 +292,7 @@
               "forks": 0,
               "pushed_at": "2026-09-03T18:33:53Z",
               "created_at": "2026-08-31T17:27:56Z",
-              "description": "Remote MCP server (Claude connector) for the inv.bg invoicing API \u2014 clients, invoices, recurring-billing detection, turnover/aging/VAT reports and cash-flow analytics on Cloudflare Workers",
+              "description": "Remote MCP server (Claude connector) for the inv.bg invoicing API — clients, invoices, recurring-billing detection, turnover/aging/VAT reports and cash-flow analytics on Cloudflare Workers",
               "topics": [
                 "claude",
                 "cloudflare-workers",
@@ -424,7 +424,7 @@
               "forks": 207,
               "pushed_at": "2026-09-07T06:18:40Z",
               "created_at": "2025-06-08T07:29:11Z",
-              "description": "Edit DOCX/XLSX/PPTX in your browser \u2014 client-side, no server, works offline (OnlyOffice + WebAssembly)",
+              "description": "Edit DOCX/XLSX/PPTX in your browser — client-side, no server, works offline (OnlyOffice + WebAssembly)",
               "topics": [
                 "client-side",
                 "document",
@@ -456,7 +456,7 @@
               "forks": 40,
               "pushed_at": "2026-05-29T08:11:14Z",
               "created_at": "2026-02-12T14:41:00Z",
-              "description": "The only MCP server that edits Word documents while they're open \u2014 114 tools, live editing, tracked changes, per-action undo",
+              "description": "The only MCP server that edits Word documents while they're open — 114 tools, live editing, tracked changes, per-action undo",
               "topics": [
                 "ai",
                 "claude",
@@ -524,7 +524,7 @@
               "forks": 23,
               "pushed_at": "2025-03-15T17:46:37Z",
               "created_at": "2025-03-15T16:31:31Z",
-              "description": "A powerful Word document processing service based on FastMCP, enabling AI assistants to create, edit, and manage docx files with full formatting support. Preserves original styles when editing content.  \u57fa\u4e8eFastMCP\u7684\u5f3a\u5927Word\u6587\u6863\u5904\u7406\u670d\u52a1\uff0c\u4f7fAI\u52a9\u624b\u80fd\u591f\u521b\u5efa\u3001\u7f16\u8f91\u548c\u7ba1\u7406docx\u6587\u4ef6\uff0c\u652f\u6301\u5b8c\u6574\u7684\u683c\u5f0f\u8bbe\u7f6e\u529f\u80fd\u3002\u5728\u7f16\u8f91\u5185\u5bb9\u65f6\u80fd\u591f\u4fdd\u7559\u539f\u59cb\u6837\u5f0f\u548c\u683c\u5f0f\uff0c\u5b9e\u73b0\u7cbe\u786e\u7684\u6587\u6863\u64cd\u4f5c\u3002",
+              "description": "A powerful Word document processing service based on FastMCP, enabling AI assistants to create, edit, and manage docx files with full formatting support. Preserves original styles when editing content.  基于FastMCP的强大Word文档处理服务，使AI助手能够创建、编辑和管理docx文件，支持完整的格式设置功能。在编辑内容时能够保留原始样式和格式，实现精确的文档操作。",
               "topics": [],
               "has_homepage": false,
               "open_issues": 3
@@ -545,7 +545,7 @@
               "forks": 1945,
               "pushed_at": "2026-09-10T07:11:08Z",
               "created_at": "2016-08-29T12:32:12Z",
-              "description": "Go language library for reading and writing Microsoft Excel\u2122 (XLAM / XLSM / XLSX / XLTM / XLTX) spreadsheets",
+              "description": "Go language library for reading and writing Microsoft Excel™ (XLAM / XLSM / XLSX / XLTM / XLTX) spreadsheets",
               "topics": [
                 "agent",
                 "ai",
@@ -651,7 +651,7 @@
               "forks": 12,
               "pushed_at": "2026-08-26T09:12:08Z",
               "created_at": "2026-08-18T07:15:17Z",
-              "description": "The spreadsheet framework built for agents \u2014 write the model as React, export a live .xlsx. The third medium, after open-slide and open-doc.",
+              "description": "The spreadsheet framework built for agents — write the model as React, export a live .xlsx. The third medium, after open-slide and open-doc.",
               "topics": [
                 "ai-agents",
                 "claude-code",
@@ -685,7 +685,7 @@
               "forks": 20,
               "pushed_at": "2026-09-01T14:31:04Z",
               "created_at": "2026-03-25T19:33:14Z",
-              "description": "Token-efficient MCP server for tabular data retrieval. Index CSV/Excel files, query rows, aggregate \u2014 99%+ token savings vs raw file reads.",
+              "description": "Token-efficient MCP server for tabular data retrieval. Index CSV/Excel files, query rows, aggregate — 99%+ token savings vs raw file reads.",
               "topics": [
                 "claude",
                 "claude-code",
@@ -849,7 +849,7 @@
               "forks": 0,
               "pushed_at": "2026-05-31T05:06:17Z",
               "created_at": "2026-05-25T04:25:29Z",
-              "description": "Smart scheduling skill for AI agents \u2014 free time, meetings, events, and timezone coordination via mcp-calendar",
+              "description": "Smart scheduling skill for AI agents — free time, meetings, events, and timezone coordination via mcp-calendar",
               "topics": [
                 "adk-rust",
                 "agent-skills",
@@ -953,7 +953,7 @@
               "forks": 2,
               "pushed_at": "2026-03-31T18:15:20Z",
               "created_at": "2026-03-29T11:07:33Z",
-              "description": "MCP server for European Central Bank data \u2014 exchange rates, interest rates, yield curves, inflation, money supply, and 100+ datasets via the ECB SDMX API. No API key required.",
+              "description": "MCP server for European Central Bank data — exchange rates, interest rates, yield curves, inflation, money supply, and 100+ datasets via the ECB SDMX API. No API key required.",
               "topics": [],
               "has_homepage": false,
               "open_issues": 1
@@ -964,7 +964,7 @@
               "forks": 0,
               "pushed_at": "2026-05-19T10:28:23Z",
               "created_at": "2026-05-19T10:25:15Z",
-              "description": "Live currency exchange rates MCP server \u2014 x402 native, ECB data",
+              "description": "Live currency exchange rates MCP server — x402 native, ECB data",
               "topics": [
                 "cloudflare-workers",
                 "currency-api",
@@ -1090,7 +1090,7 @@
               "forks": 0,
               "pushed_at": "2025-12-05T13:28:44Z",
               "created_at": "2025-10-14T05:16:04Z",
-              "description": "\ud83e\udd16 Python MCP server for AI-powered expense tracking. Built with fastmcp & uv. Chat with Claude to manage finances naturally.",
+              "description": "🤖 Python MCP server for AI-powered expense tracking. Built with fastmcp & uv. Chat with Claude to manage finances naturally.",
               "topics": [
                 "ai-assistant",
                 "budget-tracker",
@@ -1142,7 +1142,7 @@
               "forks": 1,
               "pushed_at": "2025-12-07T14:33:25Z",
               "created_at": "2025-12-06T05:21:12Z",
-              "description": "\ud83e\udd16 AI-Powered Expense Tracker MCP Server | Manage your finances through natural language conversations with Claude, Cursor & other MCP clients | Track expenses, analyze spending patterns & get financial insights | Built with Python & Model Context Protocol",
+              "description": "🤖 AI-Powered Expense Tracker MCP Server | Manage your finances through natural language conversations with Claude, Cursor & other MCP clients | Track expenses, analyze spending patterns & get financial insights | Built with Python & Model Context Protocol",
               "topics": [
                 "budget-tracker",
                 "conversational-ai",
@@ -1406,7 +1406,7 @@
               "forks": 0,
               "pushed_at": "2026-09-10T04:01:22Z",
               "created_at": "2026-02-18T01:02:18Z",
-              "description": "\ud83d\udcf7 MCP server for scanning and generating barcodes and QR codes",
+              "description": "📷 MCP server for scanning and generating barcodes and QR codes",
               "topics": [],
               "has_homepage": false,
               "open_issues": 0
@@ -1470,7 +1470,7 @@
               "forks": 0,
               "pushed_at": "2026-09-06T01:33:54Z",
               "created_at": "2026-05-28T13:28:35Z",
-              "description": "GroupDocs.Signature for .NET MCP server \u2014 sign, verify, and search QR codes, barcodes, text, image, and digital signatures in PDF, Word, Excel, and PowerPoint documents via AI agents.",
+              "description": "GroupDocs.Signature for .NET MCP server — sign, verify, and search QR codes, barcodes, text, image, and digital signatures in PDF, Word, Excel, and PowerPoint documents via AI agents.",
               "topics": [
                 "ai-agents",
                 "claude",
@@ -1555,7 +1555,7 @@
               "forks": 0,
               "pushed_at": "2026-09-07T18:15:45Z",
               "created_at": "2026-09-02T18:50:40Z",
-              "description": "MCP server on the zipnative ZIP engine \u2014 13 tools for AI agents: inspect, list and verify without extracting, extract with zip-slip / zip-bomb / symlink guards, create deterministic reproducible archives, modify without recompression. MCP 2026-07-28 + legacy, stdio & HTTP, sandboxed, no network path, ISO/IEC 21320-1 validated in CI. Node \u226522.",
+              "description": "MCP server on the zipnative ZIP engine — 13 tools for AI agents: inspect, list and verify without extracting, extract with zip-slip / zip-bomb / symlink guards, create deterministic reproducible archives, modify without recompression. MCP 2026-07-28 + legacy, stdio & HTTP, sandboxed, no network path, ISO/IEC 21320-1 validated in CI. Node ≥22.",
               "topics": [
                 "ai-agents",
                 "archive",
@@ -1587,7 +1587,7 @@
               "forks": 0,
               "pushed_at": "2026-09-09T15:03:38Z",
               "created_at": "2026-06-15T08:52:29Z",
-              "description": "Free, fast, cross-platform archiver \u2014 extracts ZIP/RAR/7z/tar, creates ZIP/7z/tar. Desktop app + CLI + MCP.",
+              "description": "Free, fast, cross-platform archiver — extracts ZIP/RAR/7z/tar, creates ZIP/7z/tar. Desktop app + CLI + MCP.",
               "topics": [
                 "7z",
                 "aes-256",
@@ -1663,7 +1663,7 @@
               "forks": 33,
               "pushed_at": "2026-09-06T08:44:10Z",
               "created_at": "2026-02-21T12:32:11Z",
-              "description": "A fully functional web workspace for Claude Code CLI\u2014chat, Kanban task board, task scheduling, multi-agent orchestration, MCP servers, skills, remote access (Web, SSH, Telegram), projects, and real-time data streaming.",
+              "description": "A fully functional web workspace for Claude Code CLI—chat, Kanban task board, task scheduling, multi-agent orchestration, MCP servers, skills, remote access (Web, SSH, Telegram), projects, and real-time data streaming.",
               "topics": [
                 "ai",
                 "ai-agents",
@@ -1713,7 +1713,7 @@
               "forks": 22,
               "pushed_at": "2026-09-07T08:55:34Z",
               "created_at": "2026-06-07T19:12:11Z",
-              "description": "Your personal project manager: kanban tasks, client requests, a public client board, and a built-in MCP server \u2014 open source and self-hosted on Cloudflare Workers.",
+              "description": "Your personal project manager: kanban tasks, client requests, a public client board, and a built-in MCP server — open source and self-hosted on Cloudflare Workers.",
               "topics": [
                 "project-development",
                 "project-management",
@@ -1769,7 +1769,7 @@
               "forks": 5,
               "pushed_at": "2026-07-29T16:43:59Z",
               "created_at": "2025-08-08T04:25:16Z",
-              "description": "  MCP server for YNAB. Reconcile bank statements, itemize receipts, manage transactions \u2014 all through natural language.",
+              "description": "  MCP server for YNAB. Reconcile bank statements, itemize receipts, manage transactions — all through natural language.",
               "topics": [
                 "budgeting",
                 "mcpb",
@@ -1805,7 +1805,7 @@
               "forks": 0,
               "pushed_at": "2026-09-08T22:52:47Z",
               "created_at": "2026-06-17T14:09:15Z",
-              "description": "Parse & reconcile ISO 20022 camt.053 bank-to-customer statements from Claude Desktop, Cursor & other MCP clients \u2014 19 tools, CBPR+/HVPS+ readiness, SLSA-L3 provenance. Part of the ISO 20022 MCP Suite.",
+              "description": "Parse & reconcile ISO 20022 camt.053 bank-to-customer statements from Claude Desktop, Cursor & other MCP clients — 19 tools, CBPR+/HVPS+ readiness, SLSA-L3 provenance. Part of the ISO 20022 MCP Suite.",
               "topics": [
                 "ai-agents",
                 "bank-statement",
@@ -1847,7 +1847,7 @@
               "forks": 0,
               "pushed_at": "2026-02-27T09:28:35Z",
               "created_at": "2026-02-27T06:00:43Z",
-              "description": "Personal Finance MCP Server \u2014 double-entry bookkeeping with 18 tools, PostgreSQL, FastMCP",
+              "description": "Personal Finance MCP Server — double-entry bookkeeping with 18 tools, PostgreSQL, FastMCP",
               "topics": [],
               "has_homepage": false,
               "open_issues": 0
@@ -1875,7 +1875,7 @@
               "forks": 0,
               "pushed_at": "2026-09-02T21:18:28Z",
               "created_at": "2026-09-02T21:18:24Z",
-              "description": "Double-entry bookkeeping MCP server on the Internet Computer \u2014 balance enforced in the canister, entries reversed not deleted, cash accounts reconciled against the live ICRC ledger",
+              "description": "Double-entry bookkeeping MCP server on the Internet Computer — balance enforced in the canister, entries reversed not deleted, cash accounts reconciled against the live ICRC ledger",
               "topics": [],
               "has_homepage": false,
               "open_issues": 0
@@ -2013,7 +2013,7 @@
               "forks": 0,
               "pushed_at": "2026-08-11T01:31:20Z",
               "created_at": "2026-08-11T01:04:59Z",
-              "description": "MCP server that exposes weekly grocery-store circulars for any US ZIP code \u2014 search deals across local stores, build shopping plans, track price history",
+              "description": "MCP server that exposes weekly grocery-store circulars for any US ZIP code — search deals across local stores, build shopping plans, track price history",
               "topics": [],
               "has_homepage": false,
               "open_issues": 0
@@ -2024,7 +2024,7 @@
               "forks": 0,
               "pushed_at": "2026-08-29T23:02:58Z",
               "created_at": "2026-08-17T00:30:32Z",
-              "description": "Shopping in Korea MCP \u2014 AI agents compare Korean marketplace prices and generate tracked affiliate links (Toss Sharelink, ~10% commission). Agent-native commerce layer.",
+              "description": "Shopping in Korea MCP — AI agents compare Korean marketplace prices and generate tracked affiliate links (Toss Sharelink, ~10% commission). Agent-native commerce layer.",
               "topics": [
                 "affiliate",
                 "ai-agent",
@@ -2075,7 +2075,7 @@
               "forks": 0,
               "pushed_at": "2026-08-10T21:09:39Z",
               "created_at": "2026-06-28T05:53:21Z",
-              "description": "Programmatic invoicing for autonomous agents \u2014 create, send, track, and reconcile invoices. Rate cards, subscriptions, recurring billing. MCP server.",
+              "description": "Programmatic invoicing for autonomous agents — create, send, track, and reconcile invoices. Rate cards, subscriptions, recurring billing. MCP server.",
               "topics": [
                 "agent-commerce",
                 "agent-economy",
@@ -2107,7 +2107,7 @@
               "forks": 0,
               "pushed_at": "2026-08-21T09:46:44Z",
               "created_at": "2026-08-19T16:19:43Z",
-              "description": "An MCP server that tracks recurring subscriptions and bills \u2014 add, list, and cancel subscriptions, see what's renewing soon, and get spend normalized across weekly/monthly/yearly billing cycles. Built with FastMCP + async SQLite, deployable to Prefect Horizon.",
+              "description": "An MCP server that tracks recurring subscriptions and bills — add, list, and cancel subscriptions, see what's renewing soon, and get spend normalized across weekly/monthly/yearly billing cycles. Built with FastMCP + async SQLite, deployable to Prefect Horizon.",
               "topics": [],
               "has_homepage": false,
               "open_issues": 0
@@ -2351,7 +2351,7 @@
               "forks": 0,
               "pushed_at": "2026-09-04T12:40:01Z",
               "created_at": "2026-04-13T11:07:36Z",
-              "description": "\ud83d\udd0c Lets an MCP client generate, validate, and manage professional invoices with tax calculations.",
+              "description": "🔌 Lets an MCP client generate, validate, and manage professional invoices with tax calculations.",
               "topics": [
                 "agentic-ai",
                 "ai-agents",
@@ -2374,7 +2374,7 @@
               "forks": 0,
               "pushed_at": "2025-12-07T19:50:51Z",
               "created_at": "2025-12-07T19:50:43Z",
-              "description": "bachai-invoices-generator - \u7531 MCP\u5de5\u5382\u81ea\u52a8\u521b\u5efa",
+              "description": "bachai-invoices-generator - 由 MCP工厂自动创建",
               "topics": [],
               "has_homepage": false,
               "open_issues": 0
@@ -2429,7 +2429,7 @@
               "forks": 0,
               "pushed_at": "2026-06-12T08:45:19Z",
               "created_at": "2026-05-21T15:30:12Z",
-              "description": "Scribo MCP server \u2014 generate EN 16931-compliant e-invoices (ZUGFeRD, XRechnung, US plain PDF; Factur-X, Facturae, Peppol coming soon) from Claude, Cursor, Cline, ChatGPT & any MCP client. Free, hosted, no signup. Registry metadata, schemas & examples.",
+              "description": "Scribo MCP server — generate EN 16931-compliant e-invoices (ZUGFeRD, XRechnung, US plain PDF; Factur-X, Facturae, Peppol coming soon) from Claude, Cursor, Cline, ChatGPT & any MCP client. Free, hosted, no signup. Registry metadata, schemas & examples.",
               "topics": [
                 "ai-agent",
                 "anthropic",
@@ -2501,7 +2501,7 @@
               "forks": 0,
               "pushed_at": "2026-09-08T05:40:01Z",
               "created_at": "2026-05-01T18:47:03Z",
-              "description": "MCP server exposing the Indy.fr accounting API as tools for LLM agents. List transactions, attach invoices, query VAT configuration and bank accounts \u2014 all from Claude or any MCP-compatible client. Unofficial, not affiliated with Indy.fr SAS.",
+              "description": "MCP server exposing the Indy.fr accounting API as tools for LLM agents. List transactions, attach invoices, query VAT configuration and bank accounts — all from Claude or any MCP-compatible client. Unofficial, not affiliated with Indy.fr SAS.",
               "topics": [],
               "has_homepage": false,
               "open_issues": 1
@@ -2561,7 +2561,7 @@
               "forks": 0,
               "pushed_at": "2026-09-03T18:33:53Z",
               "created_at": "2026-08-31T17:27:56Z",
-              "description": "Remote MCP server (Claude connector) for the inv.bg invoicing API \u2014 clients, invoices, recurring-billing detection, turnover/aging/VAT reports and cash-flow analytics on Cloudflare Workers",
+              "description": "Remote MCP server (Claude connector) for the inv.bg invoicing API — clients, invoices, recurring-billing detection, turnover/aging/VAT reports and cash-flow analytics on Cloudflare Workers",
               "topics": [
                 "claude",
                 "cloudflare-workers",
@@ -2578,7 +2578,7 @@
               "forks": 0,
               "pushed_at": "2026-04-09T08:45:15Z",
               "created_at": "2026-03-23T10:17:15Z",
-              "description": "MCP server for Faktuj (faktuj.pl) \u2014 generate Polish VAT invoices from Claude, Cursor, and any MCP-compatible AI assistant",
+              "description": "MCP server for Faktuj (faktuj.pl) — generate Polish VAT invoices from Claude, Cursor, and any MCP-compatible AI assistant",
               "topics": [
                 "ai",
                 "claude",
@@ -2722,7 +2722,7 @@
               "forks": 207,
               "pushed_at": "2026-09-07T06:18:40Z",
               "created_at": "2025-06-08T07:29:11Z",
-              "description": "Edit DOCX/XLSX/PPTX in your browser \u2014 client-side, no server, works offline (OnlyOffice + WebAssembly)",
+              "description": "Edit DOCX/XLSX/PPTX in your browser — client-side, no server, works offline (OnlyOffice + WebAssembly)",
               "topics": [
                 "client-side",
                 "document",
@@ -2754,7 +2754,7 @@
               "forks": 40,
               "pushed_at": "2026-05-29T08:11:14Z",
               "created_at": "2026-02-12T14:41:00Z",
-              "description": "The only MCP server that edits Word documents while they're open \u2014 114 tools, live editing, tracked changes, per-action undo",
+              "description": "The only MCP server that edits Word documents while they're open — 114 tools, live editing, tracked changes, per-action undo",
               "topics": [
                 "ai",
                 "claude",
@@ -2822,7 +2822,7 @@
               "forks": 23,
               "pushed_at": "2025-03-15T17:46:37Z",
               "created_at": "2025-03-15T16:31:31Z",
-              "description": "A powerful Word document processing service based on FastMCP, enabling AI assistants to create, edit, and manage docx files with full formatting support. Preserves original styles when editing content.  \u57fa\u4e8eFastMCP\u7684\u5f3a\u5927Word\u6587\u6863\u5904\u7406\u670d\u52a1\uff0c\u4f7fAI\u52a9\u624b\u80fd\u591f\u521b\u5efa\u3001\u7f16\u8f91\u548c\u7ba1\u7406docx\u6587\u4ef6\uff0c\u652f\u6301\u5b8c\u6574\u7684\u683c\u5f0f\u8bbe\u7f6e\u529f\u80fd\u3002\u5728\u7f16\u8f91\u5185\u5bb9\u65f6\u80fd\u591f\u4fdd\u7559\u539f\u59cb\u6837\u5f0f\u548c\u683c\u5f0f\uff0c\u5b9e\u73b0\u7cbe\u786e\u7684\u6587\u6863\u64cd\u4f5c\u3002",
+              "description": "A powerful Word document processing service based on FastMCP, enabling AI assistants to create, edit, and manage docx files with full formatting support. Preserves original styles when editing content.  基于FastMCP的强大Word文档处理服务，使AI助手能够创建、编辑和管理docx文件，支持完整的格式设置功能。在编辑内容时能够保留原始样式和格式，实现精确的文档操作。",
               "topics": [],
               "has_homepage": false,
               "open_issues": 3
@@ -2843,7 +2843,7 @@
               "forks": 1945,
               "pushed_at": "2026-09-10T07:11:08Z",
               "created_at": "2016-08-29T12:32:12Z",
-              "description": "Go language library for reading and writing Microsoft Excel\u2122 (XLAM / XLSM / XLSX / XLTM / XLTX) spreadsheets",
+              "description": "Go language library for reading and writing Microsoft Excel™ (XLAM / XLSM / XLSX / XLTM / XLTX) spreadsheets",
               "topics": [
                 "agent",
                 "ai",
@@ -2949,7 +2949,7 @@
               "forks": 12,
               "pushed_at": "2026-08-26T09:12:08Z",
               "created_at": "2026-08-18T07:15:17Z",
-              "description": "The spreadsheet framework built for agents \u2014 write the model as React, export a live .xlsx. The third medium, after open-slide and open-doc.",
+              "description": "The spreadsheet framework built for agents — write the model as React, export a live .xlsx. The third medium, after open-slide and open-doc.",
               "topics": [
                 "ai-agents",
                 "claude-code",
@@ -2983,7 +2983,7 @@
               "forks": 20,
               "pushed_at": "2026-09-01T14:31:04Z",
               "created_at": "2026-03-25T19:33:14Z",
-              "description": "Token-efficient MCP server for tabular data retrieval. Index CSV/Excel files, query rows, aggregate \u2014 99%+ token savings vs raw file reads.",
+              "description": "Token-efficient MCP server for tabular data retrieval. Index CSV/Excel files, query rows, aggregate — 99%+ token savings vs raw file reads.",
               "topics": [
                 "claude",
                 "claude-code",
@@ -3155,7 +3155,7 @@
               "forks": 0,
               "pushed_at": "2026-05-31T05:06:17Z",
               "created_at": "2026-05-25T04:25:29Z",
-              "description": "Smart scheduling skill for AI agents \u2014 free time, meetings, events, and timezone coordination via mcp-calendar",
+              "description": "Smart scheduling skill for AI agents — free time, meetings, events, and timezone coordination via mcp-calendar",
               "topics": [
                 "adk-rust",
                 "agent-skills",
@@ -3259,7 +3259,7 @@
               "forks": 2,
               "pushed_at": "2026-03-31T18:15:20Z",
               "created_at": "2026-03-29T11:07:33Z",
-              "description": "MCP server for European Central Bank data \u2014 exchange rates, interest rates, yield curves, inflation, money supply, and 100+ datasets via the ECB SDMX API. No API key required.",
+              "description": "MCP server for European Central Bank data — exchange rates, interest rates, yield curves, inflation, money supply, and 100+ datasets via the ECB SDMX API. No API key required.",
               "topics": [],
               "has_homepage": false,
               "open_issues": 1
@@ -3270,7 +3270,7 @@
               "forks": 0,
               "pushed_at": "2026-05-19T10:28:23Z",
               "created_at": "2026-05-19T10:25:15Z",
-              "description": "Live currency exchange rates MCP server \u2014 x402 native, ECB data",
+              "description": "Live currency exchange rates MCP server — x402 native, ECB data",
               "topics": [
                 "cloudflare-workers",
                 "currency-api",
@@ -3396,7 +3396,7 @@
               "forks": 0,
               "pushed_at": "2025-12-05T13:28:44Z",
               "created_at": "2025-10-14T05:16:04Z",
-              "description": "\ud83e\udd16 Python MCP server for AI-powered expense tracking. Built with fastmcp & uv. Chat with Claude to manage finances naturally.",
+              "description": "🤖 Python MCP server for AI-powered expense tracking. Built with fastmcp & uv. Chat with Claude to manage finances naturally.",
               "topics": [
                 "ai-assistant",
                 "budget-tracker",
@@ -3448,7 +3448,7 @@
               "forks": 1,
               "pushed_at": "2025-12-07T14:33:25Z",
               "created_at": "2025-12-06T05:21:12Z",
-              "description": "\ud83e\udd16 AI-Powered Expense Tracker MCP Server | Manage your finances through natural language conversations with Claude, Cursor & other MCP clients | Track expenses, analyze spending patterns & get financial insights | Built with Python & Model Context Protocol",
+              "description": "🤖 AI-Powered Expense Tracker MCP Server | Manage your finances through natural language conversations with Claude, Cursor & other MCP clients | Track expenses, analyze spending patterns & get financial insights | Built with Python & Model Context Protocol",
               "topics": [
                 "budget-tracker",
                 "conversational-ai",
@@ -3781,7 +3781,7 @@
               "forks": 0,
               "pushed_at": "2026-09-10T04:01:22Z",
               "created_at": "2026-02-18T01:02:18Z",
-              "description": "\ud83d\udcf7 MCP server for scanning and generating barcodes and QR codes",
+              "description": "📷 MCP server for scanning and generating barcodes and QR codes",
               "topics": [],
               "has_homepage": false,
               "open_issues": 0
@@ -3825,7 +3825,7 @@
               "forks": 0,
               "pushed_at": "2026-09-06T01:33:54Z",
               "created_at": "2026-05-28T13:28:35Z",
-              "description": "GroupDocs.Signature for .NET MCP server \u2014 sign, verify, and search QR codes, barcodes, text, image, and digital signatures in PDF, Word, Excel, and PowerPoint documents via AI agents.",
+              "description": "GroupDocs.Signature for .NET MCP server — sign, verify, and search QR codes, barcodes, text, image, and digital signatures in PDF, Word, Excel, and PowerPoint documents via AI agents.",
               "topics": [
                 "ai-agents",
                 "claude",
@@ -3923,7 +3923,7 @@
               "forks": 0,
               "pushed_at": "2026-09-07T18:15:45Z",
               "created_at": "2026-09-02T18:50:40Z",
-              "description": "MCP server on the zipnative ZIP engine \u2014 13 tools for AI agents: inspect, list and verify without extracting, extract with zip-slip / zip-bomb / symlink guards, create deterministic reproducible archives, modify without recompression. MCP 2026-07-28 + legacy, stdio & HTTP, sandboxed, no network path, ISO/IEC 21320-1 validated in CI. Node \u226522.",
+              "description": "MCP server on the zipnative ZIP engine — 13 tools for AI agents: inspect, list and verify without extracting, extract with zip-slip / zip-bomb / symlink guards, create deterministic reproducible archives, modify without recompression. MCP 2026-07-28 + legacy, stdio & HTTP, sandboxed, no network path, ISO/IEC 21320-1 validated in CI. Node ≥22.",
               "topics": [
                 "ai-agents",
                 "archive",
@@ -3955,7 +3955,7 @@
               "forks": 0,
               "pushed_at": "2026-09-09T15:03:38Z",
               "created_at": "2026-06-15T08:52:29Z",
-              "description": "Free, fast, cross-platform archiver \u2014 extracts ZIP/RAR/7z/tar, creates ZIP/7z/tar. Desktop app + CLI + MCP.",
+              "description": "Free, fast, cross-platform archiver — extracts ZIP/RAR/7z/tar, creates ZIP/7z/tar. Desktop app + CLI + MCP.",
               "topics": [
                 "7z",
                 "aes-256",
@@ -4031,7 +4031,7 @@
               "forks": 33,
               "pushed_at": "2026-09-06T08:44:10Z",
               "created_at": "2026-02-21T12:32:11Z",
-              "description": "A fully functional web workspace for Claude Code CLI\u2014chat, Kanban task board, task scheduling, multi-agent orchestration, MCP servers, skills, remote access (Web, SSH, Telegram), projects, and real-time data streaming.",
+              "description": "A fully functional web workspace for Claude Code CLI—chat, Kanban task board, task scheduling, multi-agent orchestration, MCP servers, skills, remote access (Web, SSH, Telegram), projects, and real-time data streaming.",
               "topics": [
                 "ai",
                 "ai-agents",
@@ -4081,7 +4081,7 @@
               "forks": 22,
               "pushed_at": "2026-09-07T08:55:34Z",
               "created_at": "2026-06-07T19:12:11Z",
-              "description": "Your personal project manager: kanban tasks, client requests, a public client board, and a built-in MCP server \u2014 open source and self-hosted on Cloudflare Workers.",
+              "description": "Your personal project manager: kanban tasks, client requests, a public client board, and a built-in MCP server — open source and self-hosted on Cloudflare Workers.",
               "topics": [
                 "project-development",
                 "project-management",
@@ -4144,7 +4144,7 @@
               "forks": 5,
               "pushed_at": "2026-07-29T16:43:59Z",
               "created_at": "2025-08-08T04:25:16Z",
-              "description": "  MCP server for YNAB. Reconcile bank statements, itemize receipts, manage transactions \u2014 all through natural language.",
+              "description": "  MCP server for YNAB. Reconcile bank statements, itemize receipts, manage transactions — all through natural language.",
               "topics": [
                 "budgeting",
                 "mcpb",
@@ -4187,7 +4187,7 @@
               "forks": 0,
               "pushed_at": "2026-09-08T22:52:47Z",
               "created_at": "2026-06-17T14:09:15Z",
-              "description": "Parse & reconcile ISO 20022 camt.053 bank-to-customer statements from Claude Desktop, Cursor & other MCP clients \u2014 19 tools, CBPR+/HVPS+ readiness, SLSA-L3 provenance. Part of the ISO 20022 MCP Suite.",
+              "description": "Parse & reconcile ISO 20022 camt.053 bank-to-customer statements from Claude Desktop, Cursor & other MCP clients — 19 tools, CBPR+/HVPS+ readiness, SLSA-L3 provenance. Part of the ISO 20022 MCP Suite.",
               "topics": [
                 "ai-agents",
                 "bank-statement",
@@ -4229,7 +4229,7 @@
               "forks": 0,
               "pushed_at": "2026-02-27T09:28:35Z",
               "created_at": "2026-02-27T06:00:43Z",
-              "description": "Personal Finance MCP Server \u2014 double-entry bookkeeping with 18 tools, PostgreSQL, FastMCP",
+              "description": "Personal Finance MCP Server — double-entry bookkeeping with 18 tools, PostgreSQL, FastMCP",
               "topics": [],
               "has_homepage": false,
               "open_issues": 0
@@ -4257,7 +4257,7 @@
               "forks": 0,
               "pushed_at": "2026-09-02T21:18:28Z",
               "created_at": "2026-09-02T21:18:24Z",
-              "description": "Double-entry bookkeeping MCP server on the Internet Computer \u2014 balance enforced in the canister, entries reversed not deleted, cash accounts reconciled against the live ICRC ledger",
+              "description": "Double-entry bookkeeping MCP server on the Internet Computer — balance enforced in the canister, entries reversed not deleted, cash accounts reconciled against the live ICRC ledger",
               "topics": [],
               "has_homepage": false,
               "open_issues": 0
@@ -4419,7 +4419,7 @@
               "forks": 0,
               "pushed_at": "2026-08-11T01:31:20Z",
               "created_at": "2026-08-11T01:04:59Z",
-              "description": "MCP server that exposes weekly grocery-store circulars for any US ZIP code \u2014 search deals across local stores, build shopping plans, track price history",
+              "description": "MCP server that exposes weekly grocery-store circulars for any US ZIP code — search deals across local stores, build shopping plans, track price history",
               "topics": [],
               "has_homepage": false,
               "open_issues": 0
@@ -4430,7 +4430,7 @@
               "forks": 0,
               "pushed_at": "2026-08-29T23:02:58Z",
               "created_at": "2026-08-17T00:30:32Z",
-              "description": "Shopping in Korea MCP \u2014 AI agents compare Korean marketplace prices and generate tracked affiliate links (Toss Sharelink, ~10% commission). Agent-native commerce layer.",
+              "description": "Shopping in Korea MCP — AI agents compare Korean marketplace prices and generate tracked affiliate links (Toss Sharelink, ~10% commission). Agent-native commerce layer.",
               "topics": [
                 "affiliate",
                 "ai-agent",
@@ -4508,7 +4508,7 @@
               "forks": 0,
               "pushed_at": "2026-08-10T21:09:39Z",
               "created_at": "2026-06-28T05:53:21Z",
-              "description": "Programmatic invoicing for autonomous agents \u2014 create, send, track, and reconcile invoices. Rate cards, subscriptions, recurring billing. MCP server.",
+              "description": "Programmatic invoicing for autonomous agents — create, send, track, and reconcile invoices. Rate cards, subscriptions, recurring billing. MCP server.",
               "topics": [
                 "agent-commerce",
                 "agent-economy",
@@ -4540,7 +4540,7 @@
               "forks": 0,
               "pushed_at": "2026-08-21T09:46:44Z",
               "created_at": "2026-08-19T16:19:43Z",
-              "description": "An MCP server that tracks recurring subscriptions and bills \u2014 add, list, and cancel subscriptions, see what's renewing soon, and get spend normalized across weekly/monthly/yearly billing cycles. Built with FastMCP + async SQLite, deployable to Prefect Horizon.",
+              "description": "An MCP server that tracks recurring subscriptions and bills — add, list, and cancel subscriptions, see what's renewing soon, and get spend normalized across weekly/monthly/yearly billing cycles. Built with FastMCP + async SQLite, deployable to Prefect Horizon.",
               "topics": [],
               "has_homepage": false,
               "open_issues": 0
@@ -4863,7 +4863,7 @@
               "forks": 0,
               "pushed_at": "2026-09-04T12:40:01Z",
               "created_at": "2026-04-13T11:07:36Z",
-              "description": "\ud83d\udd0c Lets an MCP client generate, validate, and manage professional invoices with tax calculations.",
+              "description": "🔌 Lets an MCP client generate, validate, and manage professional invoices with tax calculations.",
               "topics": [
                 "agentic-ai",
                 "ai-agents",
@@ -4886,7 +4886,7 @@
               "forks": 0,
               "pushed_at": "2025-12-07T19:50:51Z",
               "created_at": "2025-12-07T19:50:43Z",
-              "description": "bachai-invoices-generator - \u7531 MCP\u5de5\u5382\u81ea\u52a8\u521b\u5efa",
+              "description": "bachai-invoices-generator - 由 MCP工厂自动创建",
               "topics": [],
               "has_homepage": false,
               "open_issues": 0
@@ -4941,7 +4941,7 @@
               "forks": 0,
               "pushed_at": "2026-06-12T08:45:19Z",
               "created_at": "2026-05-21T15:30:12Z",
-              "description": "Scribo MCP server \u2014 generate EN 16931-compliant e-invoices (ZUGFeRD, XRechnung, US plain PDF; Factur-X, Facturae, Peppol coming soon) from Claude, Cursor, Cline, ChatGPT & any MCP client. Free, hosted, no signup. Registry metadata, schemas & examples.",
+              "description": "Scribo MCP server — generate EN 16931-compliant e-invoices (ZUGFeRD, XRechnung, US plain PDF; Factur-X, Facturae, Peppol coming soon) from Claude, Cursor, Cline, ChatGPT & any MCP client. Free, hosted, no signup. Registry metadata, schemas & examples.",
               "topics": [
                 "ai-agent",
                 "anthropic",
@@ -5013,7 +5013,7 @@
               "forks": 0,
               "pushed_at": "2026-09-08T05:40:01Z",
               "created_at": "2026-05-01T18:47:03Z",
-              "description": "MCP server exposing the Indy.fr accounting API as tools for LLM agents. List transactions, attach invoices, query VAT configuration and bank accounts \u2014 all from Claude or any MCP-compatible client. Unofficial, not affiliated with Indy.fr SAS.",
+              "description": "MCP server exposing the Indy.fr accounting API as tools for LLM agents. List transactions, attach invoices, query VAT configuration and bank accounts — all from Claude or any MCP-compatible client. Unofficial, not affiliated with Indy.fr SAS.",
               "topics": [],
               "has_homepage": false,
               "open_issues": 1
@@ -5073,7 +5073,7 @@
               "forks": 0,
               "pushed_at": "2026-09-03T18:33:53Z",
               "created_at": "2026-08-31T17:27:56Z",
-              "description": "Remote MCP server (Claude connector) for the inv.bg invoicing API \u2014 clients, invoices, recurring-billing detection, turnover/aging/VAT reports and cash-flow analytics on Cloudflare Workers",
+              "description": "Remote MCP server (Claude connector) for the inv.bg invoicing API — clients, invoices, recurring-billing detection, turnover/aging/VAT reports and cash-flow analytics on Cloudflare Workers",
               "topics": [
                 "claude",
                 "cloudflare-workers",
@@ -5090,7 +5090,7 @@
               "forks": 0,
               "pushed_at": "2026-04-09T08:45:15Z",
               "created_at": "2026-03-23T10:17:15Z",
-              "description": "MCP server for Faktuj (faktuj.pl) \u2014 generate Polish VAT invoices from Claude, Cursor, and any MCP-compatible AI assistant",
+              "description": "MCP server for Faktuj (faktuj.pl) — generate Polish VAT invoices from Claude, Cursor, and any MCP-compatible AI assistant",
               "topics": [
                 "ai",
                 "claude",
@@ -5234,7 +5234,7 @@
               "forks": 207,
               "pushed_at": "2026-09-07T06:18:40Z",
               "created_at": "2025-06-08T07:29:11Z",
-              "description": "Edit DOCX/XLSX/PPTX in your browser \u2014 client-side, no server, works offline (OnlyOffice + WebAssembly)",
+              "description": "Edit DOCX/XLSX/PPTX in your browser — client-side, no server, works offline (OnlyOffice + WebAssembly)",
               "topics": [
                 "client-side",
                 "document",
@@ -5266,7 +5266,7 @@
               "forks": 40,
               "pushed_at": "2026-05-29T08:11:14Z",
               "created_at": "2026-02-12T14:41:00Z",
-              "description": "The only MCP server that edits Word documents while they're open \u2014 114 tools, live editing, tracked changes, per-action undo",
+              "description": "The only MCP server that edits Word documents while they're open — 114 tools, live editing, tracked changes, per-action undo",
               "topics": [
                 "ai",
                 "claude",
@@ -5334,7 +5334,7 @@
               "forks": 23,
               "pushed_at": "2025-03-15T17:46:37Z",
               "created_at": "2025-03-15T16:31:31Z",
-              "description": "A powerful Word document processing service based on FastMCP, enabling AI assistants to create, edit, and manage docx files with full formatting support. Preserves original styles when editing content.  \u57fa\u4e8eFastMCP\u7684\u5f3a\u5927Word\u6587\u6863\u5904\u7406\u670d\u52a1\uff0c\u4f7fAI\u52a9\u624b\u80fd\u591f\u521b\u5efa\u3001\u7f16\u8f91\u548c\u7ba1\u7406docx\u6587\u4ef6\uff0c\u652f\u6301\u5b8c\u6574\u7684\u683c\u5f0f\u8bbe\u7f6e\u529f\u80fd\u3002\u5728\u7f16\u8f91\u5185\u5bb9\u65f6\u80fd\u591f\u4fdd\u7559\u539f\u59cb\u6837\u5f0f\u548c\u683c\u5f0f\uff0c\u5b9e\u73b0\u7cbe\u786e\u7684\u6587\u6863\u64cd\u4f5c\u3002",
+              "description": "A powerful Word document processing service based on FastMCP, enabling AI assistants to create, edit, and manage docx files with full formatting support. Preserves original styles when editing content.  基于FastMCP的强大Word文档处理服务，使AI助手能够创建、编辑和管理docx文件，支持完整的格式设置功能。在编辑内容时能够保留原始样式和格式，实现精确的文档操作。",
               "topics": [],
               "has_homepage": false,
               "open_issues": 3
@@ -5355,7 +5355,7 @@
               "forks": 1945,
               "pushed_at": "2026-09-10T07:11:08Z",
               "created_at": "2016-08-29T12:32:12Z",
-              "description": "Go language library for reading and writing Microsoft Excel\u2122 (XLAM / XLSM / XLSX / XLTM / XLTX) spreadsheets",
+              "description": "Go language library for reading and writing Microsoft Excel™ (XLAM / XLSM / XLSX / XLTM / XLTX) spreadsheets",
               "topics": [
                 "agent",
                 "ai",
@@ -5461,7 +5461,7 @@
               "forks": 12,
               "pushed_at": "2026-08-26T09:12:08Z",
               "created_at": "2026-08-18T07:15:17Z",
-              "description": "The spreadsheet framework built for agents \u2014 write the model as React, export a live .xlsx. The third medium, after open-slide and open-doc.",
+              "description": "The spreadsheet framework built for agents — write the model as React, export a live .xlsx. The third medium, after open-slide and open-doc.",
               "topics": [
                 "ai-agents",
                 "claude-code",
@@ -5495,7 +5495,7 @@
               "forks": 20,
               "pushed_at": "2026-09-01T14:31:04Z",
               "created_at": "2026-03-25T19:33:14Z",
-              "description": "Token-efficient MCP server for tabular data retrieval. Index CSV/Excel files, query rows, aggregate \u2014 99%+ token savings vs raw file reads.",
+              "description": "Token-efficient MCP server for tabular data retrieval. Index CSV/Excel files, query rows, aggregate — 99%+ token savings vs raw file reads.",
               "topics": [
                 "claude",
                 "claude-code",
@@ -5667,7 +5667,7 @@
               "forks": 0,
               "pushed_at": "2026-05-31T05:06:17Z",
               "created_at": "2026-05-25T04:25:29Z",
-              "description": "Smart scheduling skill for AI agents \u2014 free time, meetings, events, and timezone coordination via mcp-calendar",
+              "description": "Smart scheduling skill for AI agents — free time, meetings, events, and timezone coordination via mcp-calendar",
               "topics": [
                 "adk-rust",
                 "agent-skills",
@@ -5771,7 +5771,7 @@
               "forks": 2,
               "pushed_at": "2026-03-31T18:15:20Z",
               "created_at": "2026-03-29T11:07:33Z",
-              "description": "MCP server for European Central Bank data \u2014 exchange rates, interest rates, yield curves, inflation, money supply, and 100+ datasets via the ECB SDMX API. No API key required.",
+              "description": "MCP server for European Central Bank data — exchange rates, interest rates, yield curves, inflation, money supply, and 100+ datasets via the ECB SDMX API. No API key required.",
               "topics": [],
               "has_homepage": false,
               "open_issues": 1
@@ -5782,7 +5782,7 @@
               "forks": 0,
               "pushed_at": "2026-05-19T10:28:23Z",
               "created_at": "2026-05-19T10:25:15Z",
-              "description": "Live currency exchange rates MCP server \u2014 x402 native, ECB data",
+              "description": "Live currency exchange rates MCP server — x402 native, ECB data",
               "topics": [
                 "cloudflare-workers",
                 "currency-api",
@@ -5908,7 +5908,7 @@
               "forks": 0,
               "pushed_at": "2025-12-05T13:28:44Z",
               "created_at": "2025-10-14T05:16:04Z",
-              "description": "\ud83e\udd16 Python MCP server for AI-powered expense tracking. Built with fastmcp & uv. Chat with Claude to manage finances naturally.",
+              "description": "🤖 Python MCP server for AI-powered expense tracking. Built with fastmcp & uv. Chat with Claude to manage finances naturally.",
               "topics": [
                 "ai-assistant",
                 "budget-tracker",
@@ -5960,7 +5960,7 @@
               "forks": 1,
               "pushed_at": "2025-12-07T14:33:25Z",
               "created_at": "2025-12-06T05:21:12Z",
-              "description": "\ud83e\udd16 AI-Powered Expense Tracker MCP Server | Manage your finances through natural language conversations with Claude, Cursor & other MCP clients | Track expenses, analyze spending patterns & get financial insights | Built with Python & Model Context Protocol",
+              "description": "🤖 AI-Powered Expense Tracker MCP Server | Manage your finances through natural language conversations with Claude, Cursor & other MCP clients | Track expenses, analyze spending patterns & get financial insights | Built with Python & Model Context Protocol",
               "topics": [
                 "budget-tracker",
                 "conversational-ai",
@@ -6309,7 +6309,7 @@
               "forks": 0,
               "pushed_at": "2026-09-10T04:01:22Z",
               "created_at": "2026-02-18T01:02:18Z",
-              "description": "\ud83d\udcf7 MCP server for scanning and generating barcodes and QR codes",
+              "description": "📷 MCP server for scanning and generating barcodes and QR codes",
               "topics": [],
               "has_homepage": false,
               "open_issues": 0
@@ -6353,7 +6353,7 @@
               "forks": 0,
               "pushed_at": "2026-09-06T01:33:54Z",
               "created_at": "2026-05-28T13:28:35Z",
-              "description": "GroupDocs.Signature for .NET MCP server \u2014 sign, verify, and search QR codes, barcodes, text, image, and digital signatures in PDF, Word, Excel, and PowerPoint documents via AI agents.",
+              "description": "GroupDocs.Signature for .NET MCP server — sign, verify, and search QR codes, barcodes, text, image, and digital signatures in PDF, Word, Excel, and PowerPoint documents via AI agents.",
               "topics": [
                 "ai-agents",
                 "claude",
@@ -6451,7 +6451,7 @@
               "forks": 0,
               "pushed_at": "2026-09-07T18:15:45Z",
               "created_at": "2026-09-02T18:50:40Z",
-              "description": "MCP server on the zipnative ZIP engine \u2014 13 tools for AI agents: inspect, list and verify without extracting, extract with zip-slip / zip-bomb / symlink guards, create deterministic reproducible archives, modify without recompression. MCP 2026-07-28 + legacy, stdio & HTTP, sandboxed, no network path, ISO/IEC 21320-1 validated in CI. Node \u226522.",
+              "description": "MCP server on the zipnative ZIP engine — 13 tools for AI agents: inspect, list and verify without extracting, extract with zip-slip / zip-bomb / symlink guards, create deterministic reproducible archives, modify without recompression. MCP 2026-07-28 + legacy, stdio & HTTP, sandboxed, no network path, ISO/IEC 21320-1 validated in CI. Node ≥22.",
               "topics": [
                 "ai-agents",
                 "archive",
@@ -6483,7 +6483,7 @@
               "forks": 0,
               "pushed_at": "2026-09-09T15:03:38Z",
               "created_at": "2026-06-15T08:52:29Z",
-              "description": "Free, fast, cross-platform archiver \u2014 extracts ZIP/RAR/7z/tar, creates ZIP/7z/tar. Desktop app + CLI + MCP.",
+              "description": "Free, fast, cross-platform archiver — extracts ZIP/RAR/7z/tar, creates ZIP/7z/tar. Desktop app + CLI + MCP.",
               "topics": [
                 "7z",
                 "aes-256",
@@ -6559,7 +6559,7 @@
               "forks": 33,
               "pushed_at": "2026-09-06T08:44:10Z",
               "created_at": "2026-02-21T12:32:11Z",
-              "description": "A fully functional web workspace for Claude Code CLI\u2014chat, Kanban task board, task scheduling, multi-agent orchestration, MCP servers, skills, remote access (Web, SSH, Telegram), projects, and real-time data streaming.",
+              "description": "A fully functional web workspace for Claude Code CLI—chat, Kanban task board, task scheduling, multi-agent orchestration, MCP servers, skills, remote access (Web, SSH, Telegram), projects, and real-time data streaming.",
               "topics": [
                 "ai",
                 "ai-agents",
@@ -6609,7 +6609,7 @@
               "forks": 22,
               "pushed_at": "2026-09-07T08:55:34Z",
               "created_at": "2026-06-07T19:12:11Z",
-              "description": "Your personal project manager: kanban tasks, client requests, a public client board, and a built-in MCP server \u2014 open source and self-hosted on Cloudflare Workers.",
+              "description": "Your personal project manager: kanban tasks, client requests, a public client board, and a built-in MCP server — open source and self-hosted on Cloudflare Workers.",
               "topics": [
                 "project-development",
                 "project-management",
@@ -6672,7 +6672,7 @@
               "forks": 5,
               "pushed_at": "2026-07-29T16:43:59Z",
               "created_at": "2025-08-08T04:25:16Z",
-              "description": "  MCP server for YNAB. Reconcile bank statements, itemize receipts, manage transactions \u2014 all through natural language.",
+              "description": "  MCP server for YNAB. Reconcile bank statements, itemize receipts, manage transactions — all through natural language.",
               "topics": [
                 "budgeting",
                 "mcpb",
@@ -6715,7 +6715,7 @@
               "forks": 0,
               "pushed_at": "2026-09-08T22:52:47Z",
               "created_at": "2026-06-17T14:09:15Z",
-              "description": "Parse & reconcile ISO 20022 camt.053 bank-to-customer statements from Claude Desktop, Cursor & other MCP clients \u2014 19 tools, CBPR+/HVPS+ readiness, SLSA-L3 provenance. Part of the ISO 20022 MCP Suite.",
+              "description": "Parse & reconcile ISO 20022 camt.053 bank-to-customer statements from Claude Desktop, Cursor & other MCP clients — 19 tools, CBPR+/HVPS+ readiness, SLSA-L3 provenance. Part of the ISO 20022 MCP Suite.",
               "topics": [
                 "ai-agents",
                 "bank-statement",
@@ -6757,7 +6757,7 @@
               "forks": 0,
               "pushed_at": "2026-02-27T09:28:35Z",
               "created_at": "2026-02-27T06:00:43Z",
-              "description": "Personal Finance MCP Server \u2014 double-entry bookkeeping with 18 tools, PostgreSQL, FastMCP",
+              "description": "Personal Finance MCP Server — double-entry bookkeeping with 18 tools, PostgreSQL, FastMCP",
               "topics": [],
               "has_homepage": false,
               "open_issues": 0
@@ -6785,7 +6785,7 @@
               "forks": 0,
               "pushed_at": "2026-09-02T21:18:28Z",
               "created_at": "2026-09-02T21:18:24Z",
-              "description": "Double-entry bookkeeping MCP server on the Internet Computer \u2014 balance enforced in the canister, entries reversed not deleted, cash accounts reconciled against the live ICRC ledger",
+              "description": "Double-entry bookkeeping MCP server on the Internet Computer — balance enforced in the canister, entries reversed not deleted, cash accounts reconciled against the live ICRC ledger",
               "topics": [],
               "has_homepage": false,
               "open_issues": 0
@@ -6947,7 +6947,7 @@
               "forks": 0,
               "pushed_at": "2026-08-11T01:31:20Z",
               "created_at": "2026-08-11T01:04:59Z",
-              "description": "MCP server that exposes weekly grocery-store circulars for any US ZIP code \u2014 search deals across local stores, build shopping plans, track price history",
+              "description": "MCP server that exposes weekly grocery-store circulars for any US ZIP code — search deals across local stores, build shopping plans, track price history",
               "topics": [],
               "has_homepage": false,
               "open_issues": 0
@@ -6958,7 +6958,7 @@
               "forks": 0,
               "pushed_at": "2026-08-29T23:02:58Z",
               "created_at": "2026-08-17T00:30:32Z",
-              "description": "Shopping in Korea MCP \u2014 AI agents compare Korean marketplace prices and generate tracked affiliate links (Toss Sharelink, ~10% commission). Agent-native commerce layer.",
+              "description": "Shopping in Korea MCP — AI agents compare Korean marketplace prices and generate tracked affiliate links (Toss Sharelink, ~10% commission). Agent-native commerce layer.",
               "topics": [
                 "affiliate",
                 "ai-agent",
@@ -7036,7 +7036,7 @@
               "forks": 0,
               "pushed_at": "2026-08-10T21:09:39Z",
               "created_at": "2026-06-28T05:53:21Z",
-              "description": "Programmatic invoicing for autonomous agents \u2014 create, send, track, and reconcile invoices. Rate cards, subscriptions, recurring billing. MCP server.",
+              "description": "Programmatic invoicing for autonomous agents — create, send, track, and reconcile invoices. Rate cards, subscriptions, recurring billing. MCP server.",
               "topics": [
                 "agent-commerce",
                 "agent-economy",
@@ -7068,7 +7068,7 @@
               "forks": 0,
               "pushed_at": "2026-08-21T09:46:44Z",
               "created_at": "2026-08-19T16:19:43Z",
-              "description": "An MCP server that tracks recurring subscriptions and bills \u2014 add, list, and cancel subscriptions, see what's renewing soon, and get spend normalized across weekly/monthly/yearly billing cycles. Built with FastMCP + async SQLite, deployable to Prefect Horizon.",
+              "description": "An MCP server that tracks recurring subscriptions and bills — add, list, and cancel subscriptions, see what's renewing soon, and get spend normalized across weekly/monthly/yearly billing cycles. Built with FastMCP + async SQLite, deployable to Prefect Horizon.",
               "topics": [],
               "has_homepage": false,
               "open_issues": 0
@@ -7320,6 +7320,2581 @@
           ]
         }
       ]
+    },
+    {
+      "label": "loop34-baseline",
+      "measured_at": "2026-09-11T18:21:53.315Z",
+      "control": {
+        "query": "modelcontextprotocol",
+        "total_count": 1249,
+        "first": "modelcontextprotocol/modelcontextprotocol"
+      },
+      "top_n": 30,
+      "rows": [
+        {
+          "query": "mcp invoice generator",
+          "server": "invoice",
+          "total_count": 11,
+          "returned": 11,
+          "our_rank": 6,
+          "our_repo": "theluckystrike/mcp-invoice",
+          "competitors": [
+            {
+              "full_name": "alphaparkinc/genpark-commerce-invoice-pdf-generator-skill",
+              "stars": 9,
+              "forks": 0,
+              "pushed_at": "2026-07-10T05:54:48Z",
+              "created_at": "2026-06-29T09:06:17Z",
+              "description": "Volumetric invoice compiler and regional US tax rate estimator skill.",
+              "topics": [
+                "agent-skills",
+                "ai-agents",
+                "automation",
+                "claude",
+                "cursor",
+                "llm-tools",
+                "mcp",
+                "mcp-server",
+                "model-context-protocol",
+                "python",
+                "skills",
+                "zero-dependency"
+              ],
+              "has_homepage": false,
+              "open_issues": 0
+            },
+            {
+              "full_name": "Qoxiz20/Invoice-MCP-generator",
+              "stars": 0,
+              "forks": 0,
+              "pushed_at": "2026-09-09T00:22:06Z",
+              "created_at": "2026-09-07T23:14:18Z",
+              "description": null,
+              "topics": [],
+              "has_homepage": true,
+              "open_issues": 0
+            },
+            {
+              "full_name": "n0119566/mcp-invoice-generator",
+              "stars": 0,
+              "forks": 0,
+              "pushed_at": "2025-03-31T14:58:18Z",
+              "created_at": "2025-03-31T14:12:52Z",
+              "description": null,
+              "topics": [],
+              "has_homepage": false,
+              "open_issues": 0
+            },
+            {
+              "full_name": "CSOAI-ORG/invoice-generator-ai-mcp",
+              "stars": 0,
+              "forks": 0,
+              "pushed_at": "2026-09-04T12:40:01Z",
+              "created_at": "2026-04-13T11:07:36Z",
+              "description": "🔌 Lets an MCP client generate, validate, and manage professional invoices with tax calculations.",
+              "topics": [
+                "agentic-ai",
+                "ai-agents",
+                "ai-governance",
+                "claude",
+                "compliance",
+                "csoai",
+                "mcp",
+                "mcp-server",
+                "meok",
+                "meok-ai-labs",
+                "model-context-protocol"
+              ],
+              "has_homepage": true,
+              "open_issues": 0
+            },
+            {
+              "full_name": "BACH-AI-Tools/bachai-invoices-generator",
+              "stars": 0,
+              "forks": 0,
+              "pushed_at": "2025-12-07T19:50:51Z",
+              "created_at": "2025-12-07T19:50:43Z",
+              "description": "bachai-invoices-generator - 由 MCP工厂自动创建",
+              "topics": [],
+              "has_homepage": false,
+              "open_issues": 0
+            }
+          ]
+        },
+        {
+          "query": "mcp server invoice pdf",
+          "server": "invoice",
+          "total_count": 40,
+          "returned": 30,
+          "our_rank": 15,
+          "our_repo": "theluckystrike/mcp-invoice",
+          "competitors": [
+            {
+              "full_name": "markslorach/invoice-mcp",
+              "stars": 11,
+              "forks": 7,
+              "pushed_at": "2026-08-07T00:28:41Z",
+              "created_at": "2025-06-10T14:22:38Z",
+              "description": "Model Context Protocol server for creating professional PDF invoices using natural language.",
+              "topics": [
+                "ai",
+                "invoice",
+                "mcp-server",
+                "model-context-protocol",
+                "natural-language",
+                "node-js",
+                "pdf-generation",
+                "productivity",
+                "react-pdf",
+                "typescript",
+                "zod"
+              ],
+              "has_homepage": false,
+              "open_issues": 0
+            },
+            {
+              "full_name": "kmexnx/invoice-mcp-server",
+              "stars": 2,
+              "forks": 0,
+              "pushed_at": "2025-08-18T21:40:44Z",
+              "created_at": "2025-08-18T20:41:05Z",
+              "description": "MCP server for generating invoices as PDFs or sending via email",
+              "topics": [],
+              "has_homepage": false,
+              "open_issues": 0
+            },
+            {
+              "full_name": "causa-prima-ai/scribo-mcp",
+              "stars": 7,
+              "forks": 0,
+              "pushed_at": "2026-06-12T08:45:19Z",
+              "created_at": "2026-05-21T15:30:12Z",
+              "description": "Scribo MCP server — generate EN 16931-compliant e-invoices (ZUGFeRD, XRechnung, US plain PDF; Factur-X, Facturae, Peppol coming soon) from Claude, Cursor, Cline, ChatGPT & any MCP client. Free, hosted, no signup. Registry metadata, schemas & examples.",
+              "topics": [
+                "ai-agent",
+                "anthropic",
+                "claude",
+                "compliance",
+                "e-invoicing",
+                "einvoicing",
+                "en16931",
+                "factur-x",
+                "facturae",
+                "germany",
+                "invoice-generator",
+                "invoicing",
+                "llm-tools",
+                "mcp",
+                "mcp-server",
+                "model-context-protocol",
+                "peppol",
+                "scribo",
+                "xrechnung",
+                "zugferd"
+              ],
+              "has_homepage": true,
+              "open_issues": 1
+            },
+            {
+              "full_name": "aaqiltayyab/mcp_invoice_server",
+              "stars": 0,
+              "forks": 0,
+              "pushed_at": "2025-10-22T08:06:08Z",
+              "created_at": "2025-09-24T05:02:40Z",
+              "description": "FastAPI-based MCP server using ChatGPT 4.0 mini to extract client details and totals from uploaded PDF invoices.",
+              "topics": [],
+              "has_homepage": false,
+              "open_issues": 1
+            },
+            {
+              "full_name": "wesseltl/pdf-mcp",
+              "stars": 1,
+              "forks": 0,
+              "pushed_at": "2026-08-13T04:02:45Z",
+              "created_at": "2026-08-08T20:48:08Z",
+              "description": "MCP server that lets AI agents extract text and tables from PDFs: invoices, reports, statements.",
+              "topics": [
+                "ai-agents",
+                "data-extraction",
+                "mcp",
+                "model-context-protocol",
+                "pdf",
+                "python",
+                "table-extraction"
+              ],
+              "has_homepage": true,
+              "open_issues": 1
+            }
+          ]
+        },
+        {
+          "query": "claude mcp invoice vat",
+          "server": "invoice",
+          "total_count": 11,
+          "returned": 11,
+          "our_rank": 3,
+          "our_repo": "theluckystrike/mcp-invoice",
+          "competitors": [
+            {
+              "full_name": "stephaneberle9/mcp-server-indy-compta",
+              "stars": 6,
+              "forks": 0,
+              "pushed_at": "2026-09-08T05:40:01Z",
+              "created_at": "2026-05-01T18:47:03Z",
+              "description": "MCP server exposing the Indy.fr accounting API as tools for LLM agents. List transactions, attach invoices, query VAT configuration and bank accounts — all from Claude or any MCP-compatible client. Unofficial, not affiliated with Indy.fr SAS.",
+              "topics": [],
+              "has_homepage": false,
+              "open_issues": 1
+            },
+            {
+              "full_name": "mikko-lab/claude-code-invoice-guard",
+              "stars": 0,
+              "forks": 0,
+              "pushed_at": "2026-07-01T14:54:02Z",
+              "created_at": "2026-07-01T11:22:10Z",
+              "description": "Deterministic guardrail (refuse, don't guess) for an LLM agent on a VAT-critical invoice workflow: skill + subagent + MCP server + PreToolUse hook. Portfolio/demo plugin.",
+              "topics": [
+                "ai-agents",
+                "claude-code",
+                "claude-code-plugin",
+                "deterministic-systems",
+                "guardrails",
+                "llm-safety",
+                "mcp",
+                "mcp-server",
+                "python"
+              ],
+              "has_homepage": false,
+              "open_issues": 0
+            },
+            {
+              "full_name": "theluckystrike/mcp-invoice",
+              "stars": 0,
+              "forks": 0,
+              "pushed_at": "2026-09-10T14:22:28Z",
+              "created_at": "2026-09-02T23:40:15Z",
+              "description": "Model Context Protocol (MCP) server for invoice generation: an invoice generator that can generate a numbered PDF invoice with VAT for your clients. Numbered invoices with tax lines, rendered to a professional PDF. Works with Claude Desktop, Claude Code and Cursor.",
+              "topics": [
+                "ai",
+                "billing",
+                "claude",
+                "claude-code",
+                "claude-desktop",
+                "cursor",
+                "freelance",
+                "gemini-cli-extension",
+                "invoice",
+                "invoice-generator",
+                "llm",
+                "mcp",
+                "mcp-server",
+                "model-context-protocol",
+                "nodejs",
+                "typescript",
+                "vat"
+              ],
+              "has_homepage": true,
+              "open_issues": 0
+            },
+            {
+              "full_name": "unbelievable-digital/Inv.bg-MCP",
+              "stars": 1,
+              "forks": 0,
+              "pushed_at": "2026-09-03T18:33:53Z",
+              "created_at": "2026-08-31T17:27:56Z",
+              "description": "Remote MCP server (Claude connector) for the inv.bg invoicing API — clients, invoices, recurring-billing detection, turnover/aging/VAT reports and cash-flow analytics on Cloudflare Workers",
+              "topics": [
+                "claude",
+                "cloudflare-workers",
+                "invoicing",
+                "mcp",
+                "mcp-server"
+              ],
+              "has_homepage": false,
+              "open_issues": 0
+            },
+            {
+              "full_name": "softvoyagers/fakturka-api-mcp",
+              "stars": 1,
+              "forks": 0,
+              "pushed_at": "2026-04-09T08:45:15Z",
+              "created_at": "2026-03-23T10:17:15Z",
+              "description": "MCP server for Faktuj (faktuj.pl) — generate Polish VAT invoices from Claude, Cursor, and any MCP-compatible AI assistant",
+              "topics": [
+                "ai",
+                "claude",
+                "cursor",
+                "faktuj",
+                "free-api",
+                "invoice",
+                "mcp",
+                "mcp-server",
+                "model-context-protocol",
+                "softvoyagers"
+              ],
+              "has_homepage": false,
+              "open_issues": 0
+            }
+          ]
+        },
+        {
+          "query": "mcp server pdf merge",
+          "server": "pdf",
+          "total_count": 27,
+          "returned": 27,
+          "our_rank": 9,
+          "our_repo": "theluckystrike/mcp-pdf",
+          "competitors": [
+            {
+              "full_name": "Sohaib-2/pdf-mcp-server",
+              "stars": 15,
+              "forks": 5,
+              "pushed_at": "2025-07-05T12:40:35Z",
+              "created_at": "2025-07-05T12:21:37Z",
+              "description": "Comprehensive PDF manipulation toolkit. Merge, split, encrypt, optimize PDFs through natural language commands via MCP protocol.",
+              "topics": [],
+              "has_homepage": false,
+              "open_issues": 2
+            },
+            {
+              "full_name": "gufao/mcp-server-stirling-pdf",
+              "stars": 2,
+              "forks": 1,
+              "pushed_at": "2025-12-18T00:59:48Z",
+              "created_at": "2025-12-17T12:01:43Z",
+              "description": "MCP server for Stirling PDF - Comprehensive PDF manipulation via Claude Desktop with 10 powerful tools for merging, splitting, watermarking, OCR, and more",
+              "topics": [
+                "claude-desktop",
+                "docker",
+                "mcp",
+                "mcp-server",
+                "pdf",
+                "pdf-tools",
+                "stirling-pdf",
+                "typescript"
+              ],
+              "has_homepage": false,
+              "open_issues": 0
+            },
+            {
+              "full_name": "NikhilBelwate/pdf-merger-mcp-server",
+              "stars": 0,
+              "forks": 0,
+              "pushed_at": "2026-03-28T03:32:36Z",
+              "created_at": "2026-03-24T18:39:58Z",
+              "description": null,
+              "topics": [],
+              "has_homepage": true,
+              "open_issues": 0
+            },
+            {
+              "full_name": "ceeyang-ai/doc-mcp-server",
+              "stars": 1,
+              "forks": 0,
+              "pushed_at": "2026-06-18T19:20:45Z",
+              "created_at": "2026-06-18T18:48:24Z",
+              "description": "MCP server for document processing: PDF generation, markdown-to-PDF, text extraction, and merging",
+              "topics": [],
+              "has_homepage": false,
+              "open_issues": 0
+            },
+            {
+              "full_name": "gongminltz/pdf_mcp_server",
+              "stars": 0,
+              "forks": 0,
+              "pushed_at": "2026-01-29T02:04:50Z",
+              "created_at": "2025-09-02T06:29:46Z",
+              "description": "The MCP server used for operating PDFs, currently supports merging PDF files and exporting specified pages from designated PDF files.",
+              "topics": [],
+              "has_homepage": false,
+              "open_issues": 0
+            }
+          ]
+        },
+        {
+          "query": "mcp pdf split stamp",
+          "server": "pdf",
+          "total_count": 1,
+          "returned": 1,
+          "our_rank": 1,
+          "our_repo": "theluckystrike/mcp-pdf",
+          "competitors": [
+            {
+              "full_name": "theluckystrike/mcp-pdf",
+              "stars": 0,
+              "forks": 0,
+              "pushed_at": "2026-09-10T14:22:51Z",
+              "created_at": "2026-09-03T17:24:05Z",
+              "description": "Model Context Protocol (MCP) server for PDF tools that merge, split, stamp and read PDF files; merges and splits pages on your own machine. Merge, split, stamp and read PDFs, pure JavaScript. Works with Claude Desktop, Claude Code and Cursor.",
+              "topics": [
+                "ai",
+                "claude",
+                "claude-code",
+                "claude-desktop",
+                "cursor",
+                "gemini-cli-extension",
+                "llm",
+                "mcp",
+                "mcp-server",
+                "merge",
+                "model-context-protocol",
+                "nodejs",
+                "pdf",
+                "pdf-tools",
+                "split",
+                "stamp",
+                "typescript"
+              ],
+              "has_homepage": true,
+              "open_issues": 0
+            }
+          ]
+        },
+        {
+          "query": "mcp docx word document",
+          "server": "docx",
+          "total_count": 44,
+          "returned": 30,
+          "our_rank": 12,
+          "our_repo": "theluckystrike/mcp-docx",
+          "competitors": [
+            {
+              "full_name": "ranuts/document",
+              "stars": 1932,
+              "forks": 207,
+              "pushed_at": "2026-09-07T06:18:40Z",
+              "created_at": "2025-06-08T07:29:11Z",
+              "description": "Edit DOCX/XLSX/PPTX in your browser — client-side, no server, works offline (OnlyOffice + WebAssembly)",
+              "topics": [
+                "client-side",
+                "document",
+                "docx",
+                "editor",
+                "excel",
+                "local-first",
+                "mcp",
+                "no-server",
+                "office",
+                "offline",
+                "onlyoffice",
+                "ppt",
+                "pptx",
+                "preview",
+                "privacy",
+                "pwa",
+                "wasm",
+                "webassembly",
+                "webmcp",
+                "word"
+              ],
+              "has_homepage": true,
+              "open_issues": 7
+            },
+            {
+              "full_name": "ykarapazar/word-mcp-live",
+              "stars": 209,
+              "forks": 40,
+              "pushed_at": "2026-05-29T08:11:14Z",
+              "created_at": "2026-02-12T14:41:00Z",
+              "description": "The only MCP server that edits Word documents while they're open — 114 tools, live editing, tracked changes, per-action undo",
+              "topics": [
+                "ai",
+                "claude",
+                "com-automation",
+                "cursor",
+                "document-editing",
+                "docx",
+                "llm",
+                "mcp",
+                "mcp-server",
+                "microsoft-word",
+                "python-docx",
+                "tracked-changes",
+                "word"
+              ],
+              "has_homepage": false,
+              "open_issues": 16
+            },
+            {
+              "full_name": "SecurityRonin/docx-mcp",
+              "stars": 48,
+              "forks": 16,
+              "pushed_at": "2026-08-05T19:16:07Z",
+              "created_at": "2026-03-22T04:46:28Z",
+              "description": "MCP server for reading and editing Word (.docx) documents with track changes, comments, footnotes, and structural validation",
+              "topics": [
+                "ai-tools",
+                "comments",
+                "document-editing",
+                "docx",
+                "footnotes",
+                "mcp",
+                "mcp-server",
+                "model-context-protocol",
+                "ooxml",
+                "track-changes",
+                "word"
+              ],
+              "has_homepage": false,
+              "open_issues": 11
+            },
+            {
+              "full_name": "ForLegalAI/mcp-ms-office-documents",
+              "stars": 38,
+              "forks": 28,
+              "pushed_at": "2026-09-11T17:40:06Z",
+              "created_at": "2025-01-11T22:48:26Z",
+              "description": "MCP server providing tools to create Ms Office documents like presentations, emails, spreadsheets and word docs (pptx, docx, eml, xlsx)",
+              "topics": [
+                "ai",
+                "docx",
+                "docx-generator",
+                "eml",
+                "mcp-server",
+                "outloook",
+                "pptx",
+                "presentation-slides"
+              ],
+              "has_homepage": false,
+              "open_issues": 8
+            },
+            {
+              "full_name": "MeterLong/MCP-Doc",
+              "stars": 191,
+              "forks": 23,
+              "pushed_at": "2025-03-15T17:46:37Z",
+              "created_at": "2025-03-15T16:31:31Z",
+              "description": "A powerful Word document processing service based on FastMCP, enabling AI assistants to create, edit, and manage docx files with full formatting support. Preserves original styles when editing content.  基于FastMCP的强大Word文档处理服务，使AI助手能够创建、编辑和管理docx文件，支持完整的格式设置功能。在编辑内容时能够保留原始样式和格式，实现精确的文档操作。",
+              "topics": [],
+              "has_homepage": false,
+              "open_issues": 3
+            }
+          ]
+        },
+        {
+          "query": "mcp spreadsheet xlsx",
+          "server": "spreadsheet",
+          "total_count": 32,
+          "returned": 30,
+          "our_rank": 13,
+          "our_repo": "theluckystrike/mcp-spreadsheet",
+          "competitors": [
+            {
+              "full_name": "qax-os/excelize",
+              "stars": 20899,
+              "forks": 1946,
+              "pushed_at": "2026-09-11T06:01:13Z",
+              "created_at": "2016-08-29T12:32:12Z",
+              "description": "Go language library for reading and writing Microsoft Excel™ (XLAM / XLSM / XLSX / XLTM / XLTX) spreadsheets",
+              "topics": [
+                "agent",
+                "ai",
+                "analytics",
+                "chart",
+                "ecma-376",
+                "excel",
+                "excelize",
+                "formula",
+                "go",
+                "mcp",
+                "microsoft",
+                "office",
+                "ooxml",
+                "spreadsheet",
+                "statistics",
+                "table",
+                "vba",
+                "visualization",
+                "xlsx",
+                "xml"
+              ],
+              "has_homepage": true,
+              "open_issues": 134
+            },
+            {
+              "full_name": "ForLegalAI/mcp-ms-office-documents",
+              "stars": 38,
+              "forks": 28,
+              "pushed_at": "2026-09-11T17:40:06Z",
+              "created_at": "2025-01-11T22:48:26Z",
+              "description": "MCP server providing tools to create Ms Office documents like presentations, emails, spreadsheets and word docs (pptx, docx, eml, xlsx)",
+              "topics": [
+                "ai",
+                "docx",
+                "docx-generator",
+                "eml",
+                "mcp-server",
+                "outloook",
+                "pptx",
+                "presentation-slides"
+              ],
+              "has_homepage": false,
+              "open_issues": 8
+            },
+            {
+              "full_name": "logisky/logisheets-mcp",
+              "stars": 40,
+              "forks": 20,
+              "pushed_at": "2026-09-06T03:08:57Z",
+              "created_at": "2026-08-19T02:19:24Z",
+              "description": "give your AI agent a spreadsheet it can actually think in: deterministic Excel-compatible math + structured memory (blocks), real .xlsx out. Open source, self-hostable.",
+              "topics": [
+                "agent",
+                "ai",
+                "awesome",
+                "excel",
+                "googlesheets",
+                "grid",
+                "mcp",
+                "mcp-server",
+                "spreadsheet",
+                "spreadsheets",
+                "wps"
+              ],
+              "has_homepage": false,
+              "open_issues": 0
+            },
+            {
+              "full_name": "jwadow/mcp-excel",
+              "stars": 46,
+              "forks": 10,
+              "pushed_at": "2026-02-28T06:11:44Z",
+              "created_at": "2026-02-13T18:58:35Z",
+              "description": "MCP server for AI agents to analyze Excel spreadsheets through atomic operations. Like SQL for Excel. Fast, accurate, and efficient. No context overflow.",
+              "topics": [
+                "aggregation",
+                "ai-agent",
+                "claude-code",
+                "data-analytics",
+                "data-validation",
+                "excel",
+                "filtering",
+                "mcp",
+                "mcp-server",
+                "mcp-tools",
+                "opencode",
+                "pandas",
+                "python",
+                "spreadsheet",
+                "spreadsheets",
+                "statistics",
+                "time-series",
+                "xls",
+                "xlsx"
+              ],
+              "has_homepage": false,
+              "open_issues": 3
+            },
+            {
+              "full_name": "lianghsun/open-sheet",
+              "stars": 123,
+              "forks": 15,
+              "pushed_at": "2026-08-26T09:12:08Z",
+              "created_at": "2026-08-18T07:15:17Z",
+              "description": "The spreadsheet framework built for agents — write the model as React, export a live .xlsx. The third medium, after open-slide and open-doc.",
+              "topics": [
+                "ai-agents",
+                "claude-code",
+                "code-generation",
+                "developer-tools",
+                "excel",
+                "financial-modeling",
+                "mcp",
+                "open-source",
+                "react",
+                "spreadsheet",
+                "typescript",
+                "xlsx"
+              ],
+              "has_homepage": true,
+              "open_issues": 1
+            }
+          ]
+        },
+        {
+          "query": "mcp csv query server",
+          "server": "spreadsheet",
+          "total_count": 39,
+          "returned": 30,
+          "our_rank": 27,
+          "our_repo": "theluckystrike/mcp-spreadsheet",
+          "competitors": [
+            {
+              "full_name": "jgravelle/jdatamunch-mcp",
+              "stars": 81,
+              "forks": 20,
+              "pushed_at": "2026-09-01T14:31:04Z",
+              "created_at": "2026-03-25T19:33:14Z",
+              "description": "Token-efficient MCP server for tabular data retrieval. Index CSV/Excel files, query rows, aggregate — 99%+ token savings vs raw file reads.",
+              "topics": [
+                "claude",
+                "claude-code",
+                "codex",
+                "copilot",
+                "csv",
+                "cursor",
+                "data-analysis",
+                "data-exploration",
+                "developer-tools",
+                "excel",
+                "gemini-cli",
+                "llm",
+                "mcp",
+                "mcp-server",
+                "model-context-protocol",
+                "spreadsheet",
+                "sql",
+                "tabular-data",
+                "token-optimization",
+                "windsurf"
+              ],
+              "has_homepage": false,
+              "open_issues": 0
+            },
+            {
+              "full_name": "splunk/splunk-mcp-server2",
+              "stars": 36,
+              "forks": 14,
+              "pushed_at": "2025-06-16T19:11:07Z",
+              "created_at": "2025-06-16T18:37:03Z",
+              "description": "Unofficial. Splunk MCP server. Implemented in Python and TypeScript/JS. Runs searches, queries Splunk, and outputs data as JSON, CSV, or Markdown for agentic LLM workflows. Includes guardrails for input SPL validation and output sanitization. SSE/stdio transport support. Deployment options: Stdio, local HTTP (SSE), or Docker.",
+              "topics": [],
+              "has_homepage": false,
+              "open_issues": 2
+            },
+            {
+              "full_name": "az-coder-123/excel-mcp",
+              "stars": 4,
+              "forks": 0,
+              "pushed_at": "2026-07-11T12:35:13Z",
+              "created_at": "2026-03-21T07:42:39Z",
+              "description": "Excel MCP Server: Connect AI agents to Excel/CSV files. Securely read, query, and analyze spreadsheet data for intelligent reporting.",
+              "topics": [
+                "ai-agent",
+                "excel",
+                "llm",
+                "mcp",
+                "model-context-protocol",
+                "reports",
+                "sheets"
+              ],
+              "has_homepage": false,
+              "open_issues": 0
+            },
+            {
+              "full_name": "AkshyaKC/MCP-Server-CSV-Query",
+              "stars": 0,
+              "forks": 0,
+              "pushed_at": "2025-04-17T11:08:51Z",
+              "created_at": "2025-04-17T10:57:47Z",
+              "description": "This is a simple project to build an MCP server that analyzes local CSV files. The server allows users to query and process CSV file stored locally.",
+              "topics": [],
+              "has_homepage": false,
+              "open_issues": 0
+            },
+            {
+              "full_name": "alcosta35/csv-query-mcp-server",
+              "stars": 0,
+              "forks": 1,
+              "pushed_at": "2025-09-19T03:07:39Z",
+              "created_at": "2025-06-11T04:47:01Z",
+              "description": null,
+              "topics": [],
+              "has_homepage": false,
+              "open_issues": 0
+            }
+          ]
+        },
+        {
+          "query": "mcp timezone meeting",
+          "server": "timezone",
+          "total_count": 7,
+          "returned": 7,
+          "our_rank": 2,
+          "our_repo": "theluckystrike/mcp-timezone",
+          "competitors": [
+            {
+              "full_name": "alivnavc/Microsoft-Teams-Meetings-MCP-Server",
+              "stars": 6,
+              "forks": 1,
+              "pushed_at": "2026-04-05T02:07:29Z",
+              "created_at": "2025-08-10T08:59:09Z",
+              "description": "Microsoft Teams MCP Server for scheduling, rescheduling, canceling, and managing Teams interviews & calendar events via Microsoft Graph API. Supports JSON-RPC tools, timezone-aware events, Docker & PyPI deployment, and OpenAI/LLM integration for automated meeting scheduling.",
+              "topics": [],
+              "has_homepage": false,
+              "open_issues": 0
+            },
+            {
+              "full_name": "theluckystrike/mcp-timezone",
+              "stars": 0,
+              "forks": 0,
+              "pushed_at": "2026-09-10T14:24:01Z",
+              "created_at": "2026-09-03T02:29:01Z",
+              "description": "Model Context Protocol (MCP) server for timezone conversion and meeting planning: schedule a meeting across time zones. Find meeting slots inside everyone's working hours. Works with Claude Desktop, Claude Code and Cursor.",
+              "topics": [
+                "ai",
+                "claude",
+                "claude-code",
+                "claude-desktop",
+                "cursor",
+                "gemini-cli-extension",
+                "ics",
+                "llm",
+                "mcp",
+                "mcp-server",
+                "meeting-planner",
+                "meeting-scheduler",
+                "model-context-protocol",
+                "nodejs",
+                "timezone",
+                "typescript",
+                "world-clock"
+              ],
+              "has_homepage": true,
+              "open_issues": 0
+            },
+            {
+              "full_name": "stock-vibes/meeting-mcp",
+              "stars": 1,
+              "forks": 0,
+              "pushed_at": "2026-05-19T16:27:34Z",
+              "created_at": "2026-05-19T13:36:37Z",
+              "description": null,
+              "topics": [
+                "calendar",
+                "cloudflare-workers",
+                "mcp-server",
+                "meeting",
+                "meeting-productivity",
+                "productivity",
+                "scheduling",
+                "timezone",
+                "x402"
+              ],
+              "has_homepage": false,
+              "open_issues": 0
+            },
+            {
+              "full_name": "marcusicaro/meridian-mcp",
+              "stars": 0,
+              "forks": 0,
+              "pushed_at": "2026-05-15T13:07:22Z",
+              "created_at": "2026-05-15T13:07:19Z",
+              "description": "MCP server for timezone conversion and meeting-slot finding across distributed teams. Built on the official Model Context Protocol SDK.",
+              "topics": [
+                "anthropic",
+                "claude",
+                "mcp",
+                "model-context-protocol",
+                "timezone",
+                "typescript"
+              ],
+              "has_homepage": false,
+              "open_issues": 0
+            },
+            {
+              "full_name": "zavora-ai/skill-calendar-scheduling",
+              "stars": 1,
+              "forks": 0,
+              "pushed_at": "2026-05-31T05:06:17Z",
+              "created_at": "2026-05-25T04:25:29Z",
+              "description": "Smart scheduling skill for AI agents — free time, meetings, events, and timezone coordination via mcp-calendar",
+              "topics": [
+                "adk-rust",
+                "agent-skills",
+                "calendar",
+                "claude-skills",
+                "enterprise",
+                "mcp",
+                "meetings",
+                "scheduling"
+              ],
+              "has_homepage": false,
+              "open_issues": 0
+            }
+          ]
+        },
+        {
+          "query": "mcp meeting planner timezone",
+          "server": "timezone",
+          "total_count": 0,
+          "returned": 0,
+          "our_rank": null,
+          "our_repo": null,
+          "competitors": []
+        },
+        {
+          "query": "mcp currency converter",
+          "server": "currency",
+          "total_count": 35,
+          "returned": 30,
+          "our_rank": null,
+          "our_repo": null,
+          "competitors": [
+            {
+              "full_name": "alphaparkinc/genpark-product-geoip-currency-tax-nexus-normalizer-skill",
+              "stars": 7,
+              "forks": 0,
+              "pushed_at": "2026-09-10T23:57:46Z",
+              "created_at": "2026-09-10T23:57:30Z",
+              "description": "Cross-border Geo-IP currency converter & dynamic VAT/tax nexus calculator (Stripe Tax)",
+              "topics": [
+                "agent-skills",
+                "agentic-workflow",
+                "ai-agent",
+                "autonomous-agents",
+                "mcp",
+                "mcp-server",
+                "model-context-protocol",
+                "python",
+                "skills",
+                "zero-dependency"
+              ],
+              "has_homepage": true,
+              "open_issues": 0
+            },
+            {
+              "full_name": "Alpha-Park/genpark-product-geoip-currency-tax-nexus-normalizer-skill",
+              "stars": 7,
+              "forks": 0,
+              "pushed_at": "2026-09-10T23:58:14Z",
+              "created_at": "2026-09-10T23:57:56Z",
+              "description": "Cross-border Geo-IP currency converter & dynamic VAT/tax nexus calculator (Stripe Tax)",
+              "topics": [
+                "agent-skills",
+                "agentic-workflow",
+                "ai-agent",
+                "autonomous-agents",
+                "mcp",
+                "mcp-server",
+                "model-context-protocol",
+                "python",
+                "skills",
+                "zero-dependency"
+              ],
+              "has_homepage": true,
+              "open_issues": 0
+            },
+            {
+              "full_name": "Amolshibe/Currency-converter-using-MCP",
+              "stars": 0,
+              "forks": 0,
+              "pushed_at": "2026-06-26T18:09:01Z",
+              "created_at": "2026-06-26T18:04:22Z",
+              "description": "Currency converter using MCP",
+              "topics": [],
+              "has_homepage": false,
+              "open_issues": 0
+            },
+            {
+              "full_name": "vishaldevx4/currency_mcp",
+              "stars": 0,
+              "forks": 0,
+              "pushed_at": "2026-03-02T10:44:54Z",
+              "created_at": "2026-03-02T10:44:04Z",
+              "description": "Currency converter MCP test tool",
+              "topics": [],
+              "has_homepage": false,
+              "open_issues": 0
+            },
+            {
+              "full_name": "AVIS10060/CurrencyConverter_MCP_Server",
+              "stars": 0,
+              "forks": 0,
+              "pushed_at": "2026-05-12T06:41:59Z",
+              "created_at": "2026-05-12T06:41:30Z",
+              "description": "Learned how to create a tool through the Mcp server and attached it to the Claude and claude uses this tool to convert currency ",
+              "topics": [],
+              "has_homepage": false,
+              "open_issues": 0
+            }
+          ]
+        },
+        {
+          "query": "mcp exchange rates ecb",
+          "server": "currency",
+          "total_count": 7,
+          "returned": 7,
+          "our_rank": 6,
+          "our_repo": "theluckystrike/mcp-currency",
+          "competitors": [
+            {
+              "full_name": "scka-de/ecb-mcp",
+              "stars": 3,
+              "forks": 2,
+              "pushed_at": "2026-03-31T18:15:20Z",
+              "created_at": "2026-03-29T11:07:33Z",
+              "description": "MCP server for European Central Bank data — exchange rates, interest rates, yield curves, inflation, money supply, and 100+ datasets via the ECB SDMX API. No API key required.",
+              "topics": [],
+              "has_homepage": false,
+              "open_issues": 1
+            },
+            {
+              "full_name": "stock-vibes/exchange-mcp",
+              "stars": 1,
+              "forks": 0,
+              "pushed_at": "2026-05-19T10:28:23Z",
+              "created_at": "2026-05-19T10:25:15Z",
+              "description": "Live currency exchange rates MCP server — x402 native, ECB data",
+              "topics": [
+                "cloudflare-workers",
+                "currency-api",
+                "ecb",
+                "exchange-rates",
+                "forex",
+                "live-data",
+                "mcp-server",
+                "x402"
+              ],
+              "has_homepage": false,
+              "open_issues": 0
+            },
+            {
+              "full_name": "cyanheads/exchange-rates-mcp-server",
+              "stars": 1,
+              "forks": 0,
+              "pushed_at": "2026-08-25T05:49:12Z",
+              "created_at": "2026-06-05T02:34:56Z",
+              "description": "Convert currencies, get FX rates, and query historical ECB exchange rate data via MCP. STDIO or Streamable HTTP.",
+              "topics": [
+                "ai-agents",
+                "ai-tools",
+                "currency",
+                "cyanheads",
+                "ecb",
+                "exchange-rates",
+                "forex",
+                "frankfurter",
+                "mcp",
+                "mcp-server",
+                "model-context-protocol",
+                "typescript"
+              ],
+              "has_homepage": true,
+              "open_issues": 8
+            },
+            {
+              "full_name": "lazy404/exchange_rates",
+              "stars": 0,
+              "forks": 0,
+              "pushed_at": "2026-04-05T13:03:12Z",
+              "created_at": "2026-02-27T20:36:20Z",
+              "description": "MCP that can convert between X and EUR using ECB api (might be useful for taxes)",
+              "topics": [
+                "claude",
+                "mcp-servers"
+              ],
+              "has_homepage": false,
+              "open_issues": 0
+            },
+            {
+              "full_name": "boy-373/exchange-rate-mcp",
+              "stars": 0,
+              "forks": 0,
+              "pushed_at": "2026-09-09T07:39:35Z",
+              "created_at": "2026-09-02T23:28:14Z",
+              "description": "MCP server for live currency exchange rates and amount conversion, ISO codes and Chinese currency names, ECB reference rates (Frankfurter) with fallback. Hosted Streamable HTTP endpoint included.",
+              "topics": [
+                "chinese",
+                "currency",
+                "ecb",
+                "exchange-rate",
+                "fastmcp",
+                "finance",
+                "forex",
+                "mcp",
+                "mcp-server",
+                "modelcontextprotocol",
+                "streamable-http"
+              ],
+              "has_homepage": false,
+              "open_issues": 0
+            }
+          ]
+        },
+        {
+          "query": "claude mcp expense tracker",
+          "server": "expense-tracker",
+          "total_count": 91,
+          "returned": 30,
+          "our_rank": 20,
+          "our_repo": "theluckystrike/mcp-expense-tracker",
+          "competitors": [
+            {
+              "full_name": "ArProvat/Expense_tracker_MCP",
+              "stars": 3,
+              "forks": 0,
+              "pushed_at": "2026-04-05T11:39:17Z",
+              "created_at": "2025-10-08T19:05:36Z",
+              "description": "The Model Context Protocol (MCP), allowing Claude AI to manage your personal finances ",
+              "topics": [],
+              "has_homepage": false,
+              "open_issues": 0
+            },
+            {
+              "full_name": "alphaparkinc/genpark-personal-finance-expense-categorizer-skill",
+              "stars": 9,
+              "forks": 0,
+              "pushed_at": "2026-07-28T04:47:55Z",
+              "created_at": "2026-07-28T04:47:40Z",
+              "description": "Personal finance transaction auto-categorizer & budget tracker",
+              "topics": [
+                "agent-skills",
+                "ai-agents",
+                "automation",
+                "claude",
+                "cursor",
+                "llm-tools",
+                "mcp",
+                "mcp-server",
+                "model-context-protocol",
+                "python",
+                "skills",
+                "zero-dependency"
+              ],
+              "has_homepage": true,
+              "open_issues": 0
+            },
+            {
+              "full_name": "Khushi-c-sharma/expense-tracker-mcp-server",
+              "stars": 2,
+              "forks": 0,
+              "pushed_at": "2025-12-05T13:28:44Z",
+              "created_at": "2025-10-14T05:16:04Z",
+              "description": "🤖 Python MCP server for AI-powered expense tracking. Built with fastmcp & uv. Chat with Claude to manage finances naturally.",
+              "topics": [
+                "ai-assistant",
+                "budget-tracker",
+                "claude-ai",
+                "conversational-ai",
+                "expense-tracker",
+                "fastmcp",
+                "mcp-server",
+                "model-context-protocol",
+                "personal-finance",
+                "python",
+                "sqlite3",
+                "uv"
+              ],
+              "has_homepage": false,
+              "open_issues": 0
+            },
+            {
+              "full_name": "satyam0singh/Expense_Tracker_MCP",
+              "stars": 2,
+              "forks": 0,
+              "pushed_at": "2026-07-30T06:18:17Z",
+              "created_at": "2026-07-19T07:20:04Z",
+              "description": "A production-ready Expense Tracker MCP Server built with FastMCP, SQLAlchemy, Alembic, and SQLite, enabling AI assistants to manage expenses through the Model Context Protocol.",
+              "topics": [
+                "ai-agents",
+                "alembic",
+                "api",
+                "automation",
+                "backend",
+                "claude",
+                "expense-management",
+                "expense-tracker",
+                "fastmcp",
+                "llm",
+                "mcp",
+                "model-context-protocol",
+                "personal-finance",
+                "python",
+                "sqlachemy",
+                "sqlite"
+              ],
+              "has_homepage": false,
+              "open_issues": 0
+            },
+            {
+              "full_name": "Fei2-Labs/Kompany",
+              "stars": 4,
+              "forks": 2,
+              "pushed_at": "2026-09-11T14:18:07Z",
+              "created_at": "2026-02-24T20:19:15Z",
+              "description": "Autonomous business operating system for solo founders — an AI C-suite that classifies directives, runs multi-agent debates, tracks every LLM call as a real expense, and executes work 24/7.",
+              "topics": [
+                "agpl",
+                "ai-agents",
+                "autonomous-agents",
+                "claude",
+                "founder",
+                "llm",
+                "mcp",
+                "multi-agent",
+                "python"
+              ],
+              "has_homepage": true,
+              "open_issues": 2
+            }
+          ]
+        },
+        {
+          "query": "mcp receipts mileage",
+          "server": "expense-tracker",
+          "total_count": 1,
+          "returned": 1,
+          "our_rank": 1,
+          "our_repo": "theluckystrike/mcp-expense-tracker",
+          "competitors": [
+            {
+              "full_name": "theluckystrike/mcp-expense-tracker",
+              "stars": 0,
+              "forks": 0,
+              "pushed_at": "2026-09-10T14:22:11Z",
+              "created_at": "2026-09-02T23:40:24Z",
+              "description": "Model Context Protocol (MCP) server for expense tracking: track business expenses, receipts and mileage with an expense tracker. Receipts, mileage and expenses that turn into invoice lines. Works with Claude Desktop, Claude Code and Cursor.",
+              "topics": [
+                "ai",
+                "claude",
+                "claude-code",
+                "claude-desktop",
+                "cursor",
+                "expense-tracker",
+                "expenses",
+                "gemini-cli-extension",
+                "llm",
+                "mcp",
+                "mcp-server",
+                "mileage",
+                "model-context-protocol",
+                "nodejs",
+                "receipts",
+                "typescript"
+              ],
+              "has_homepage": true,
+              "open_issues": 0
+            }
+          ]
+        },
+        {
+          "query": "mcp time tracking timesheet",
+          "server": "time-tracker",
+          "total_count": 15,
+          "returned": 15,
+          "our_rank": 6,
+          "our_repo": "theluckystrike/mcp-time-tracker",
+          "competitors": [
+            {
+              "full_name": "glazperle/kimai_mcp",
+              "stars": 38,
+              "forks": 8,
+              "pushed_at": "2026-09-09T17:45:42Z",
+              "created_at": "2025-07-27T16:14:46Z",
+              "description": "A comprehensive Model Context Protocol (MCP) server for Kimai time-tracking integration. Provides tools for timesheet management, project tracking, team collaboration, and reporting with smart user selection and Claude Desktop integration.",
+              "topics": [
+                "kimai",
+                "mcp"
+              ],
+              "has_homepage": false,
+              "open_issues": 0
+            },
+            {
+              "full_name": "feamster/paymo-mcp",
+              "stars": 6,
+              "forks": 0,
+              "pushed_at": "2026-09-01T14:16:58Z",
+              "created_at": "2025-12-10T20:35:38Z",
+              "description": "MCP server for Paymo time tracking and invoice management. Enables Claude Desktop to create entries, analyze unbilled time, and export invoice timesheets.",
+              "topics": [],
+              "has_homepage": false,
+              "open_issues": 0
+            },
+            {
+              "full_name": "Marcus-Boni/OptTime",
+              "stars": 2,
+              "forks": 0,
+              "pushed_at": "2026-09-05T19:01:35Z",
+              "created_at": "2026-02-25T02:37:56Z",
+              "description": "Full-stack time tracking for Azure DevOps, with timesheets, dashboards, an extension and MCP tooling.",
+              "topics": [
+                "azure-devops",
+                "drizzle-orm",
+                "mcp",
+                "nextjs",
+                "time-tracking",
+                "typescript"
+              ],
+              "has_homepage": true,
+              "open_issues": 0
+            },
+            {
+              "full_name": "TLmaK0/timesheet-ai",
+              "stars": 0,
+              "forks": 0,
+              "pushed_at": "2026-03-17T09:55:09Z",
+              "created_at": "2026-03-13T07:27:12Z",
+              "description": "MCP server for local time tracking",
+              "topics": [],
+              "has_homepage": false,
+              "open_issues": 0
+            },
+            {
+              "full_name": "timesheetIO/timesheet-mcp",
+              "stars": 1,
+              "forks": 1,
+              "pushed_at": "2026-09-06T13:34:29Z",
+              "created_at": "2025-06-14T22:16:33Z",
+              "description": "Official Model Context Protocol (MCP) server for Timesheet API. Control   your timer with natural language in Claude, Cursor, and other   MCP-compatible clients. Track time, manage projects, and log expenses  seamlessly.",
+              "topics": [
+                "claude",
+                "mcp",
+                "model-context-protocol",
+                "productivity",
+                "time-tracking",
+                "timer",
+                "timesheet"
+              ],
+              "has_homepage": true,
+              "open_issues": 1
+            }
+          ]
+        },
+        {
+          "query": "mcp billable hours freelance",
+          "server": "time-tracker",
+          "total_count": 1,
+          "returned": 1,
+          "our_rank": 1,
+          "our_repo": "theluckystrike/mcp-time-tracker",
+          "competitors": [
+            {
+              "full_name": "theluckystrike/mcp-time-tracker",
+              "stars": 0,
+              "forks": 0,
+              "pushed_at": "2026-09-10T14:23:54Z",
+              "created_at": "2026-09-02T23:39:45Z",
+              "description": "Model Context Protocol (MCP) server for time tracking: timesheets, a timesheet and a billable hours tracker. Track billable time without leaving the chat. Works with Claude Desktop, Claude Code and Cursor.",
+              "topics": [
+                "ai",
+                "billable-hours",
+                "claude",
+                "claude-code",
+                "claude-desktop",
+                "cursor",
+                "freelance",
+                "gemini-cli-extension",
+                "llm",
+                "mcp",
+                "mcp-server",
+                "model-context-protocol",
+                "nodejs",
+                "time-tracking",
+                "timesheet",
+                "typescript"
+              ],
+              "has_homepage": true,
+              "open_issues": 0
+            }
+          ]
+        },
+        {
+          "query": "mcp resume cover letter",
+          "server": "resume",
+          "total_count": 15,
+          "returned": 15,
+          "our_rank": 6,
+          "our_repo": "theluckystrike/mcp-resume",
+          "competitors": [
+            {
+              "full_name": "extrasmall0/dear-hiring-manager",
+              "stars": 108,
+              "forks": 8,
+              "pushed_at": "2026-07-15T00:50:35Z",
+              "created_at": "2026-07-14T07:55:13Z",
+              "description": "A Claude Code plugin that fills your job applications from your profile, drafts the cover letter, and leaves Submit to you. Locally.",
+              "topics": [
+                "ai-agent",
+                "ats",
+                "automation",
+                "career",
+                "claude-code",
+                "cover-letter",
+                "human-in-the-loop",
+                "job-application",
+                "job-search",
+                "jobs",
+                "mcp",
+                "open-source",
+                "resume",
+                "skills"
+              ],
+              "has_homepage": false,
+              "open_issues": 0
+            },
+            {
+              "full_name": "rotsl/resume-tailor",
+              "stars": 4,
+              "forks": 2,
+              "pushed_at": "2026-07-12T21:53:01Z",
+              "created_at": "2026-03-20T13:15:54Z",
+              "description": "An AI-powered resume and cover letter tailoring tool. Give it a job posting and your resume. It outputs a tailored resume and cover letter as downloadable PDFs",
+              "topics": [
+                "ats-optimization",
+                "career",
+                "cover-letter-generator",
+                "dev",
+                "jobseeker",
+                "mcp",
+                "notion-api",
+                "resume-builder",
+                "resume-tools",
+                "tools"
+              ],
+              "has_homepage": true,
+              "open_issues": 0
+            },
+            {
+              "full_name": "pwislowski/resume-coverletter-mcp",
+              "stars": 0,
+              "forks": 0,
+              "pushed_at": "2026-09-07T21:38:31Z",
+              "created_at": "2026-09-07T20:46:46Z",
+              "description": "OpenAI-compatible MCP Server for CV and Cover Letter Generation",
+              "topics": [],
+              "has_homepage": false,
+              "open_issues": 0
+            },
+            {
+              "full_name": "Monica20030707/Tex_OrangeLeaf-mcp",
+              "stars": 0,
+              "forks": 0,
+              "pushed_at": "2026-08-30T21:13:20Z",
+              "created_at": "2026-04-06T21:38:29Z",
+              "description": "Built from scratch mcp-powered pipeline for generating LaTeX resumes and cover letter.",
+              "topics": [],
+              "has_homepage": false,
+              "open_issues": 0
+            },
+            {
+              "full_name": "accelerated-ideas/useresume-mcp-server",
+              "stars": 0,
+              "forks": 0,
+              "pushed_at": "2026-05-23T22:19:06Z",
+              "created_at": "2026-02-03T10:52:43Z",
+              "description": "MCP server for AI-powered resume and cover letter generation via useresume.ai API",
+              "topics": [],
+              "has_homepage": true,
+              "open_issues": 0
+            }
+          ]
+        },
+        {
+          "query": "mcp quote estimate proposal",
+          "server": "quotes",
+          "total_count": 1,
+          "returned": 1,
+          "our_rank": 1,
+          "our_repo": "theluckystrike/mcp-quotes",
+          "competitors": [
+            {
+              "full_name": "theluckystrike/mcp-quotes",
+              "stars": 0,
+              "forks": 0,
+              "pushed_at": "2026-09-10T14:23:21Z",
+              "created_at": "2026-09-04T03:30:59Z",
+              "description": "Model Context Protocol (MCP) server for price quotes, estimates and proposals: create a quote or an estimate for a customer. Priced, VAT-correct quotes from chat, and the yes turns into an invoice. Works with Claude Desktop, Claude Code and Cursor.",
+              "topics": [
+                "ai",
+                "claude",
+                "claude-code",
+                "claude-desktop",
+                "cursor",
+                "estimate",
+                "freelance",
+                "gemini-cli-extension",
+                "llm",
+                "mcp",
+                "mcp-server",
+                "model-context-protocol",
+                "nodejs",
+                "proposal",
+                "quote",
+                "typescript"
+              ],
+              "has_homepage": true,
+              "open_issues": 0
+            }
+          ]
+        },
+        {
+          "query": "mcp qr code barcode",
+          "server": "barcode",
+          "total_count": 6,
+          "returned": 6,
+          "our_rank": 1,
+          "our_repo": "theluckystrike/mcp-barcode",
+          "competitors": [
+            {
+              "full_name": "theluckystrike/mcp-barcode",
+              "stars": 0,
+              "forks": 0,
+              "pushed_at": "2026-09-10T14:20:57Z",
+              "created_at": "2026-09-04T05:13:06Z",
+              "description": "Model Context Protocol (MCP) server for QR code and barcode generation: generates barcodes and QR codes. QR codes and barcodes drawn on your machine, with no upload and no network call. Works with Claude Desktop, Claude Code and Cursor.",
+              "topics": [
+                "ai",
+                "barcode",
+                "claude",
+                "claude-code",
+                "claude-desktop",
+                "cursor",
+                "ean13",
+                "gemini-cli-extension",
+                "llm",
+                "mcp",
+                "mcp-server",
+                "model-context-protocol",
+                "nodejs",
+                "qr-code",
+                "qrcode",
+                "typescript"
+              ],
+              "has_homepage": true,
+              "open_issues": 0
+            },
+            {
+              "full_name": "domdomegg/barcode-scanner-mcp",
+              "stars": 1,
+              "forks": 0,
+              "pushed_at": "2026-09-10T04:01:22Z",
+              "created_at": "2026-02-18T01:02:18Z",
+              "description": "📷 MCP server for scanning and generating barcodes and QR codes",
+              "topics": [],
+              "has_homepage": false,
+              "open_issues": 0
+            },
+            {
+              "full_name": "aspose-barcode-cloud/Aspose.BarCode-Cloud-MCP",
+              "stars": 0,
+              "forks": 0,
+              "pushed_at": "2026-07-01T05:34:07Z",
+              "created_at": "2026-03-24T07:32:02Z",
+              "description": "A MCP server for Aspose BarCode Cloud API. Supports 60+ barcode symbologies including QR, Code128, DataMatrix, EAN, PDF417, Aztec, and more.",
+              "topics": [
+                "ai",
+                "aztec",
+                "barcode",
+                "code128",
+                "datamatrix",
+                "mcp",
+                "pdf417",
+                "pdf417reader",
+                "qr",
+                "qrcode"
+              ],
+              "has_homepage": true,
+              "open_issues": 0
+            },
+            {
+              "full_name": "TakanariShimbo/quickchart-mcp-server",
+              "stars": 2,
+              "forks": 0,
+              "pushed_at": "2025-08-01T02:37:00Z",
+              "created_at": "2025-06-24T08:55:42Z",
+              "description": "This Model Context Protocol (MCP) server provides powerful visualization tools using QuickChart.io APIs.   With this MCP, AI assistants can create charts, diagrams, barcodes, QR codes, word clouds, tables, and more.",
+              "topics": [],
+              "has_homepage": true,
+              "open_issues": 2
+            },
+            {
+              "full_name": "groupdocs-signature/GroupDocs.Signature.Mcp",
+              "stars": 0,
+              "forks": 0,
+              "pushed_at": "2026-09-06T01:33:54Z",
+              "created_at": "2026-05-28T13:28:35Z",
+              "description": "GroupDocs.Signature for .NET MCP server — sign, verify, and search QR codes, barcodes, text, image, and digital signatures in PDF, Word, Excel, and PowerPoint documents via AI agents.",
+              "topics": [
+                "ai-agents",
+                "claude",
+                "cursor",
+                "digital-signature",
+                "document-processing",
+                "dotnet",
+                "esignature",
+                "github-copilot",
+                "mcp",
+                "mcp-server",
+                "model-context-protocol",
+                "pdf"
+              ],
+              "has_homepage": false,
+              "open_issues": 0
+            }
+          ]
+        },
+        {
+          "query": "mcp image resize thumbnail",
+          "server": "image",
+          "total_count": 1,
+          "returned": 1,
+          "our_rank": 1,
+          "our_repo": "theluckystrike/mcp-image",
+          "competitors": [
+            {
+              "full_name": "theluckystrike/mcp-image",
+              "stars": 0,
+              "forks": 0,
+              "pushed_at": "2026-09-10T14:22:17Z",
+              "created_at": "2026-09-04T01:49:28Z",
+              "description": "Model Context Protocol (MCP) server for image resizing, conversion, compression and watermarking. Resize, convert, compress and watermark images, pure JavaScript. Works with Claude Desktop, Claude Code and Cursor.",
+              "topics": [
+                "ai",
+                "claude",
+                "claude-code",
+                "claude-desktop",
+                "cursor",
+                "gemini-cli-extension",
+                "image",
+                "image-processing",
+                "llm",
+                "mcp",
+                "mcp-server",
+                "model-context-protocol",
+                "nodejs",
+                "resize",
+                "thumbnail",
+                "typescript"
+              ],
+              "has_homepage": true,
+              "open_issues": 0
+            }
+          ]
+        },
+        {
+          "query": "mcp zip archive unzip",
+          "server": "zip",
+          "total_count": 3,
+          "returned": 3,
+          "our_rank": 1,
+          "our_repo": "theluckystrike/mcp-zip",
+          "competitors": [
+            {
+              "full_name": "theluckystrike/mcp-zip",
+              "stars": 0,
+              "forks": 0,
+              "pushed_at": "2026-09-10T14:24:14Z",
+              "created_at": "2026-09-04T07:14:45Z",
+              "description": "Model Context Protocol (MCP) server for zip archives: create, inspect and extract. Make a zip, look inside one, and unpack one, entirely on your machine. Works with Claude Desktop, Claude Code and Cursor.",
+              "topics": [
+                "ai",
+                "archive",
+                "claude",
+                "claude-code",
+                "claude-desktop",
+                "compression",
+                "cursor",
+                "gemini-cli-extension",
+                "llm",
+                "mcp",
+                "mcp-server",
+                "model-context-protocol",
+                "nodejs",
+                "typescript",
+                "unzip",
+                "zip"
+              ],
+              "has_homepage": true,
+              "open_issues": 0
+            },
+            {
+              "full_name": "Nizoka/zipnative-mcp",
+              "stars": 0,
+              "forks": 0,
+              "pushed_at": "2026-09-10T22:32:41Z",
+              "created_at": "2026-09-02T18:50:40Z",
+              "description": "MCP server on the zipnative ZIP engine — 13 tools for AI agents: inspect, list and verify without extracting, extract with zip-slip / zip-bomb / symlink guards, create deterministic reproducible archives, modify without recompression. MCP 2026-07-28 + legacy, stdio & HTTP, sandboxed, no network path, ISO/IEC 21320-1 validated in CI. Node ≥22.",
+              "topics": [
+                "ai-agents",
+                "archive",
+                "claude",
+                "compression",
+                "deterministic",
+                "llm-tools",
+                "mcp",
+                "mcp-server",
+                "model-context-protocol",
+                "nodejs",
+                "reproducible-builds",
+                "security-by-default",
+                "typescript",
+                "unzip",
+                "zero-dependency",
+                "zip",
+                "zip-bomb",
+                "zip-slip",
+                "zip64",
+                "zipnative"
+              ],
+              "has_homepage": true,
+              "open_issues": 9
+            },
+            {
+              "full_name": "zhitongblog/ziplark",
+              "stars": 1,
+              "forks": 0,
+              "pushed_at": "2026-09-09T15:03:38Z",
+              "created_at": "2026-06-15T08:52:29Z",
+              "description": "Free, fast, cross-platform archiver — extracts ZIP/RAR/7z/tar, creates ZIP/7z/tar. Desktop app + CLI + MCP.",
+              "topics": [
+                "7z",
+                "aes-256",
+                "archiver",
+                "cli",
+                "compression",
+                "cross-platform",
+                "desktop-app",
+                "file-archiver",
+                "linux",
+                "macos",
+                "mcp",
+                "rar",
+                "rust",
+                "tar",
+                "tauri",
+                "unzip",
+                "windows",
+                "zip",
+                "zstd"
+              ],
+              "has_homepage": true,
+              "open_issues": 0
+            }
+          ]
+        },
+        {
+          "query": "mcp kanban task board",
+          "server": "kanban",
+          "total_count": 43,
+          "returned": 30,
+          "our_rank": 15,
+          "our_repo": "theluckystrike/mcp-kanban",
+          "competitors": [
+            {
+              "full_name": "bradrisse/kanban-mcp",
+              "stars": 59,
+              "forks": 28,
+              "pushed_at": "2025-03-26T04:30:30Z",
+              "created_at": "2025-03-08T22:56:17Z",
+              "description": "MCP Kanban is a specialized middleware designed to facilitate interaction between Large Language Models (LLMs) and Planka, a Kanban board application. It serves as an intermediary layer that provides LLMs with a simplified and enhanced API to interact with Planka's task management system.",
+              "topics": [
+                "cursor",
+                "kanban",
+                "llm",
+                "mcp",
+                "mcp-server"
+              ],
+              "has_homepage": false,
+              "open_issues": 5
+            },
+            {
+              "full_name": "ustoppble/overclick",
+              "stars": 113,
+              "forks": 14,
+              "pushed_at": "2026-09-06T18:58:30Z",
+              "created_at": "2026-08-14T22:10:35Z",
+              "description": "The open source task board where AI agents do the work. Self-hosted, MCP-native, zero data collection.",
+              "topics": [
+                "agents",
+                "ai-agents",
+                "kanban",
+                "mcp",
+                "self-hosted",
+                "task-management"
+              ],
+              "has_homepage": false,
+              "open_issues": 4
+            },
+            {
+              "full_name": "Lexus2016/claude-code-studio",
+              "stars": 135,
+              "forks": 33,
+              "pushed_at": "2026-09-11T16:53:47Z",
+              "created_at": "2026-02-21T12:32:11Z",
+              "description": "A fully functional web workspace for Claude Code CLI—chat, Kanban task board, task scheduling, multi-agent orchestration, MCP servers, skills, remote access (Web, SSH, Telegram), projects, and real-time data streaming.",
+              "topics": [
+                "ai",
+                "ai-agents",
+                "claude",
+                "claude-code",
+                "kanban",
+                "mcp",
+                "multiagent-systems",
+                "orchestrator",
+                "scheduler",
+                "skills",
+                "studo",
+                "subagents",
+                "trello-like"
+              ],
+              "has_homepage": false,
+              "open_issues": 0
+            },
+            {
+              "full_name": "danielsyauqi/Seeder",
+              "stars": 86,
+              "forks": 22,
+              "pushed_at": "2026-09-07T08:55:34Z",
+              "created_at": "2026-06-07T19:12:11Z",
+              "description": "Your personal project manager: kanban tasks, client requests, a public client board, and a built-in MCP server — open source and self-hosted on Cloudflare Workers.",
+              "topics": [
+                "project-development",
+                "project-management",
+                "project-tracker",
+                "software-engineering"
+              ],
+              "has_homepage": true,
+              "open_issues": 1
+            },
+            {
+              "full_name": "quentintou/agent-board",
+              "stars": 27,
+              "forks": 8,
+              "pushed_at": "2026-02-05T09:40:19Z",
+              "created_at": "2026-02-04T19:56:16Z",
+              "description": "Open-source multi-agent task board for OpenClaw. Kanban + DAG dependencies + MCP server + auto-retry + audit trail. Built for autonomous AI agent teams.",
+              "topics": [
+                "agent-orchestration",
+                "ai-agents",
+                "ai-automation",
+                "anthropic",
+                "autonomous-agents",
+                "claude",
+                "dag-dependencies",
+                "kanban",
+                "mcp-server",
+                "model-context-protocol",
+                "multi-agent",
+                "openclaw",
+                "task-management"
+              ],
+              "has_homepage": true,
+              "open_issues": 3
+            }
+          ]
+        },
+        {
+          "query": "mcp calendar ics free busy",
+          "server": "calendar",
+          "total_count": 1,
+          "returned": 1,
+          "our_rank": 1,
+          "our_repo": "theluckystrike/mcp-calendar",
+          "competitors": [
+            {
+              "full_name": "theluckystrike/mcp-calendar",
+              "stars": 0,
+              "forks": 0,
+              "pushed_at": "2026-09-10T14:21:11Z",
+              "created_at": "2026-09-03T17:24:15Z",
+              "description": "Model Context Protocol (MCP) server for reading ics calendars, free busy time and scheduling conflicts. Read .ics calendars: events, free and busy, conflicts, exports. Works with Claude Desktop, Claude Code and Cursor.",
+              "topics": [
+                "ai",
+                "calendar",
+                "claude",
+                "claude-code",
+                "claude-desktop",
+                "cursor",
+                "free-busy",
+                "gemini-cli-extension",
+                "icalendar",
+                "ics",
+                "llm",
+                "mcp",
+                "mcp-server",
+                "model-context-protocol",
+                "nodejs",
+                "typescript"
+              ],
+              "has_homepage": true,
+              "open_issues": 0
+            }
+          ]
+        },
+        {
+          "query": "mcp bank statement reconcile",
+          "server": "bank-statement",
+          "total_count": 3,
+          "returned": 3,
+          "our_rank": 2,
+          "our_repo": "theluckystrike/mcp-bank-statement",
+          "competitors": [
+            {
+              "full_name": "dizzlkheinz/ynab-mcpb",
+              "stars": 9,
+              "forks": 5,
+              "pushed_at": "2026-07-29T16:43:59Z",
+              "created_at": "2025-08-08T04:25:16Z",
+              "description": "  MCP server for YNAB. Reconcile bank statements, itemize receipts, manage transactions — all through natural language.",
+              "topics": [
+                "budgeting",
+                "mcpb",
+                "mcpe-server",
+                "ynab"
+              ],
+              "has_homepage": false,
+              "open_issues": 0
+            },
+            {
+              "full_name": "theluckystrike/mcp-bank-statement",
+              "stars": 0,
+              "forks": 0,
+              "pushed_at": "2026-09-10T14:20:49Z",
+              "created_at": "2026-09-04T01:49:39Z",
+              "description": "Model Context Protocol (MCP) server for reading bank statement CSV exports to read, categorise and reconcile transactions. Bank CSV exports categorised, summarised and reconciled with expenses. Works with Claude Desktop, Claude Code and Cursor.",
+              "topics": [
+                "ai",
+                "bank-reconciliation",
+                "bank-statement",
+                "claude",
+                "claude-code",
+                "claude-desktop",
+                "cursor",
+                "gemini-cli-extension",
+                "llm",
+                "mcp",
+                "mcp-server",
+                "model-context-protocol",
+                "nodejs",
+                "reconcile",
+                "transactions",
+                "typescript"
+              ],
+              "has_homepage": true,
+              "open_issues": 0
+            },
+            {
+              "full_name": "sebastienrousseau/camt053-mcp",
+              "stars": 1,
+              "forks": 0,
+              "pushed_at": "2026-09-08T22:52:47Z",
+              "created_at": "2026-06-17T14:09:15Z",
+              "description": "Parse & reconcile ISO 20022 camt.053 bank-to-customer statements from Claude Desktop, Cursor & other MCP clients — 19 tools, CBPR+/HVPS+ readiness, SLSA-L3 provenance. Part of the ISO 20022 MCP Suite.",
+              "topics": [
+                "ai-agents",
+                "bank-statement",
+                "banking",
+                "camt053",
+                "cbpr-plus",
+                "claude",
+                "claude-desktop",
+                "financial-services",
+                "fintech",
+                "iso-20022",
+                "iso20022",
+                "llm",
+                "mcp",
+                "mcp-server",
+                "model-context-protocol",
+                "payments",
+                "python",
+                "reversing-entry",
+                "stdio",
+                "treasury"
+              ],
+              "has_homepage": true,
+              "open_issues": 4
+            }
+          ]
+        },
+        {
+          "query": "mcp bookkeeping double entry",
+          "server": "cash-book",
+          "total_count": 14,
+          "returned": 14,
+          "our_rank": 7,
+          "our_repo": "theluckystrike/mcp-cash-book",
+          "competitors": [
+            {
+              "full_name": "youssefaltai/finance-mcp",
+              "stars": 0,
+              "forks": 0,
+              "pushed_at": "2026-02-27T09:28:35Z",
+              "created_at": "2026-02-27T06:00:43Z",
+              "description": "Personal Finance MCP Server — double-entry bookkeeping with 18 tools, PostgreSQL, FastMCP",
+              "topics": [],
+              "has_homepage": false,
+              "open_issues": 0
+            },
+            {
+              "full_name": "yuens1002/bookie",
+              "stars": 0,
+              "forks": 0,
+              "pushed_at": "2026-09-02T14:56:34Z",
+              "created_at": "2026-06-07T03:55:47Z",
+              "description": "Agent agnostic Stdio/HTTP MCP server for personal & business double-entry bookkeeping.",
+              "topics": [
+                "agentic-ai",
+                "bookkeeping-app",
+                "expense-tracker",
+                "finance-tracker",
+                "mcp-server"
+              ],
+              "has_homepage": false,
+              "open_issues": 0
+            },
+            {
+              "full_name": "gypsychick61/bookkeeping-ledger",
+              "stars": 0,
+              "forks": 0,
+              "pushed_at": "2026-09-02T21:18:28Z",
+              "created_at": "2026-09-02T21:18:24Z",
+              "description": "Double-entry bookkeeping MCP server on the Internet Computer — balance enforced in the canister, entries reversed not deleted, cash accounts reconciled against the live ICRC ledger",
+              "topics": [],
+              "has_homepage": false,
+              "open_issues": 0
+            },
+            {
+              "full_name": "cloviscomputing/clovis",
+              "stars": 1,
+              "forks": 1,
+              "pushed_at": "2026-09-10T04:29:32Z",
+              "created_at": "2026-06-09T15:56:23Z",
+              "description": "Local-first double-entry bookkeeping engine, CLI, and MCP server for SQLite ledgers.",
+              "topics": [
+                "accounting",
+                "bookkeeping",
+                "mcp",
+                "sqlite",
+                "typescript"
+              ],
+              "has_homepage": true,
+              "open_issues": 11
+            },
+            {
+              "full_name": "EDSTeam/hakan-accounting-mcp",
+              "stars": 1,
+              "forks": 0,
+              "pushed_at": "2025-09-23T07:38:10Z",
+              "created_at": "2025-10-08T00:21:33Z",
+              "description": "A comprehensive MCP (Model Context Protocol) Invoice Server with a unified accounting system featuring Swedish compliance, double-entry bookkeeping, and professional financial reporting.",
+              "topics": [],
+              "has_homepage": false,
+              "open_issues": 0
+            }
+          ]
+        },
+        {
+          "query": "mcp accounts receivable aging",
+          "server": "statement-of-account",
+          "total_count": 2,
+          "returned": 2,
+          "our_rank": 2,
+          "our_repo": "theluckystrike/mcp-statement-of-account",
+          "competitors": [
+            {
+              "full_name": "Denymbird/accounts-receivable-skills",
+              "stars": 2,
+              "forks": 0,
+              "pushed_at": "2026-08-13T13:34:52Z",
+              "created_at": "2026-08-13T13:22:35Z",
+              "description": "Open-source agent skills for accounts receivable in Xero and QuickBooks. Aged receivables, DSO, late fee schedules, customer statements, and chase email briefs. Every figure is computed by a tested script, never by the model. Works with Claude, Claude Code, Codex and Cursor.",
+              "topics": [
+                "accounting",
+                "accounting-software",
+                "accounts-receivable",
+                "agent-skills",
+                "bookkeeping",
+                "claude-skills",
+                "credit-control",
+                "debtor-management",
+                "dunning",
+                "invoicing",
+                "mcp",
+                "quickbooks",
+                "xero"
+              ],
+              "has_homepage": false,
+              "open_issues": 0
+            },
+            {
+              "full_name": "theluckystrike/mcp-statement-of-account",
+              "stars": 0,
+              "forks": 0,
+              "pushed_at": "2026-09-10T14:23:48Z",
+              "created_at": "2026-09-05T17:10:18Z",
+              "description": "Model Context Protocol (MCP) server for customer statements of account, accounts receivable and invoice aging. The one document that answers what a client actually owes you, aged as at any date, with the chaser drafted. Works with Claude Desktop, Claude Code and Cursor.",
+              "topics": [
+                "accounts-receivable",
+                "aging",
+                "ai",
+                "claude",
+                "claude-code",
+                "claude-desktop",
+                "cursor",
+                "dunning",
+                "gemini-cli-extension",
+                "invoicing",
+                "llm",
+                "mcp",
+                "mcp-server",
+                "model-context-protocol",
+                "nodejs",
+                "typescript"
+              ],
+              "has_homepage": true,
+              "open_issues": 0
+            }
+          ]
+        },
+        {
+          "query": "mcp price tracker shopping",
+          "server": "price-tracker",
+          "total_count": 7,
+          "returned": 7,
+          "our_rank": 2,
+          "our_repo": "theluckystrike/mcp-price-tracker",
+          "competitors": [
+            {
+              "full_name": "alphaparkinc/genpark-shopping-graph-realtime-price-drop-radar-skill",
+              "stars": 8,
+              "forks": 0,
+              "pushed_at": "2026-09-03T08:31:18Z",
+              "created_at": "2026-09-03T08:30:57Z",
+              "description": "Google Shopping Graph real-time price drop radar & historic deal tracker",
+              "topics": [
+                "agent-commerce",
+                "agent-skills",
+                "ai-agents",
+                "ai-shopping",
+                "claude",
+                "google-shopping",
+                "mcp",
+                "mcp-server",
+                "openai-operator",
+                "python",
+                "skills",
+                "zero-dependency"
+              ],
+              "has_homepage": true,
+              "open_issues": 0
+            },
+            {
+              "full_name": "theluckystrike/mcp-price-tracker",
+              "stars": 0,
+              "forks": 0,
+              "pushed_at": "2026-09-10T14:23:12Z",
+              "created_at": "2026-09-02T23:39:56Z",
+              "description": "Model Context Protocol (MCP) server for price tracking, a price tracker and price drop watcher for shop pages. Check and watch product prices on ordinary shop pages. Works with Claude Desktop, Claude Code and Cursor.",
+              "topics": [
+                "ai",
+                "claude",
+                "claude-code",
+                "claude-desktop",
+                "cursor",
+                "gemini-cli-extension",
+                "llm",
+                "mcp",
+                "mcp-server",
+                "model-context-protocol",
+                "nodejs",
+                "price-drop",
+                "price-monitoring",
+                "price-tracking",
+                "shopping",
+                "typescript"
+              ],
+              "has_homepage": true,
+              "open_issues": 0
+            },
+            {
+              "full_name": "tx-smitht/grocery-deals-mcp",
+              "stars": 0,
+              "forks": 0,
+              "pushed_at": "2026-08-11T01:31:20Z",
+              "created_at": "2026-08-11T01:04:59Z",
+              "description": "MCP server that exposes weekly grocery-store circulars for any US ZIP code — search deals across local stores, build shopping plans, track price history",
+              "topics": [],
+              "has_homepage": false,
+              "open_issues": 1
+            },
+            {
+              "full_name": "jinsw96/shopping-in-korea",
+              "stars": 0,
+              "forks": 0,
+              "pushed_at": "2026-08-29T23:02:58Z",
+              "created_at": "2026-08-17T00:30:32Z",
+              "description": "Shopping in Korea MCP — AI agents compare Korean marketplace prices and generate tracked affiliate links (Toss Sharelink, ~10% commission). Agent-native commerce layer.",
+              "topics": [
+                "affiliate",
+                "ai-agent",
+                "korea",
+                "mcp",
+                "shopping"
+              ],
+              "has_homepage": false,
+              "open_issues": 0
+            },
+            {
+              "full_name": "pricewatcha/pricewatcha-api",
+              "stars": 1,
+              "forks": 0,
+              "pushed_at": "2026-09-10T01:45:04Z",
+              "created_at": "2026-05-17T17:59:44Z",
+              "description": "Historical price tracking and structured product price intelligence API for apps and AI agents.",
+              "topics": [
+                "ai-agents",
+                "async-api",
+                "developer-tools",
+                "ecommerce",
+                "mcp",
+                "openapi",
+                "price-history",
+                "price-intelligence",
+                "price-tracking",
+                "product-intelligence",
+                "rest-api",
+                "shopping"
+              ],
+              "has_homepage": true,
+              "open_issues": 1
+            }
+          ]
+        },
+        {
+          "query": "mcp recurring billing subscription",
+          "server": "recurring",
+          "total_count": 4,
+          "returned": 4,
+          "our_rank": 1,
+          "our_repo": "theluckystrike/mcp-recurring",
+          "competitors": [
+            {
+              "full_name": "theluckystrike/mcp-recurring",
+              "stars": 0,
+              "forks": 0,
+              "pushed_at": "2026-09-10T14:23:29Z",
+              "created_at": "2026-09-03T07:08:27Z",
+              "description": "Model Context Protocol (MCP) server for recurring invoices and subscription billing: handles scheduled invoice documents. Scheduled invoices, generated into your invoice book with PDFs. Works with Claude Desktop, Claude Code and Cursor.",
+              "topics": [
+                "ai",
+                "claude",
+                "claude-code",
+                "claude-desktop",
+                "cursor",
+                "forecast",
+                "gemini-cli-extension",
+                "invoicing",
+                "llm",
+                "mcp",
+                "mcp-server",
+                "model-context-protocol",
+                "nodejs",
+                "recurring-billing",
+                "subscription",
+                "typescript"
+              ],
+              "has_homepage": true,
+              "open_issues": 0
+            },
+            {
+              "full_name": "nyx-builds/agent-invoice",
+              "stars": 0,
+              "forks": 0,
+              "pushed_at": "2026-08-10T21:09:39Z",
+              "created_at": "2026-06-28T05:53:21Z",
+              "description": "Programmatic invoicing for autonomous agents — create, send, track, and reconcile invoices. Rate cards, subscriptions, recurring billing. MCP server.",
+              "topics": [
+                "agent-commerce",
+                "agent-economy",
+                "agent-finance",
+                "ai-agents",
+                "automated-billing",
+                "autonomous-agents",
+                "b2b",
+                "billing",
+                "billing-system",
+                "fintech",
+                "invoicing",
+                "invoicing-api",
+                "mcp",
+                "mcp-server",
+                "model-context-protocol",
+                "nyx-builds",
+                "payments",
+                "rate-cards",
+                "recurring-billing",
+                "subscriptions"
+              ],
+              "has_homepage": true,
+              "open_issues": 0
+            },
+            {
+              "full_name": "4hmad69/subtrack-mcp",
+              "stars": 0,
+              "forks": 0,
+              "pushed_at": "2026-08-21T09:46:44Z",
+              "created_at": "2026-08-19T16:19:43Z",
+              "description": "An MCP server that tracks recurring subscriptions and bills — add, list, and cancel subscriptions, see what's renewing soon, and get spend normalized across weekly/monthly/yearly billing cycles. Built with FastMCP + async SQLite, deployable to Prefect Horizon.",
+              "topics": [],
+              "has_homepage": false,
+              "open_issues": 0
+            },
+            {
+              "full_name": "NoBanks/recurly-mcp",
+              "stars": 0,
+              "forks": 0,
+              "pushed_at": "2026-05-31T16:27:09Z",
+              "created_at": "2026-05-31T16:27:06Z",
+              "description": "MCP server for the Recurly REST API v3 (subscription billing). 8 tools for AI agents, env-gated writes, MIT licensed.",
+              "topics": [],
+              "has_homepage": false,
+              "open_issues": 0
+            }
+          ]
+        },
+        {
+          "query": "mcp fixed asset depreciation",
+          "server": "asset-register",
+          "total_count": 1,
+          "returned": 1,
+          "our_rank": 1,
+          "our_repo": "theluckystrike/mcp-asset-register",
+          "competitors": [
+            {
+              "full_name": "theluckystrike/mcp-asset-register",
+              "stars": 0,
+              "forks": 0,
+              "pushed_at": "2026-09-10T14:20:42Z",
+              "created_at": "2026-09-05T14:44:11Z",
+              "description": "Model Context Protocol (MCP) server for a fixed asset register with depreciation schedules. A fixed asset register that depreciates on the rates the tax authorities actually publish, with the schedule, the journal and the gain on sale. Works with Claude Desktop, Claude Code and Cursor.",
+              "topics": [
+                "accounting",
+                "ai",
+                "capital-allowances",
+                "claude",
+                "claude-code",
+                "claude-desktop",
+                "cursor",
+                "depreciation",
+                "fixed-assets",
+                "gemini-cli-extension",
+                "llm",
+                "mcp",
+                "mcp-server",
+                "model-context-protocol",
+                "nodejs",
+                "typescript"
+              ],
+              "has_homepage": true,
+              "open_issues": 0
+            }
+          ]
+        },
+        {
+          "query": "mcp work order field service",
+          "server": "work-order",
+          "total_count": 3,
+          "returned": 3,
+          "our_rank": 1,
+          "our_repo": "theluckystrike/mcp-work-order",
+          "competitors": [
+            {
+              "full_name": "theluckystrike/mcp-work-order",
+              "stars": 0,
+              "forks": 0,
+              "pushed_at": "2026-09-10T14:24:07Z",
+              "created_at": "2026-09-06T04:23:57Z",
+              "description": "Model Context Protocol (MCP) server for work orders and job cards for trades and field service. Job orders for trades and field work, priced the way the invoice will be. Works with Claude Desktop, Claude Code and Cursor.",
+              "topics": [
+                "ai",
+                "claude",
+                "claude-code",
+                "claude-desktop",
+                "cursor",
+                "field-service",
+                "gemini-cli-extension",
+                "job-card",
+                "llm",
+                "mcp",
+                "mcp-server",
+                "model-context-protocol",
+                "nodejs",
+                "trades",
+                "typescript",
+                "work-order"
+              ],
+              "has_homepage": true,
+              "open_issues": 0
+            },
+            {
+              "full_name": "NoBanks/workwave-mcp",
+              "stars": 0,
+              "forks": 0,
+              "pushed_at": "2026-05-29T15:02:33Z",
+              "created_at": "2026-05-29T15:02:29Z",
+              "description": "MCP server for WorkWave RouteManager: 5 tools (list_territories, list_orders, create_order, list_approved_routes, fit_unassigned_orders) wrapping the enterprise route-based field service REST API for AI dispatchers, route planners, and fleet operators.",
+              "topics": [],
+              "has_homepage": false,
+              "open_issues": 0
+            },
+            {
+              "full_name": "zenschedmcp/zensched-property-preservation-kit",
+              "stars": 0,
+              "forks": 0,
+              "pushed_at": "2026-09-10T23:00:11Z",
+              "created_at": "2026-09-04T20:05:21Z",
+              "description": "ZenSched property-preservation reference kit: MCP inspector dispatch + GPS-verified vacant-property visits + photo inspection reports + local SQLite servicer/work-order/billing for 1-5 person mortgage field-service shops",
+              "topics": [],
+              "has_homepage": false,
+              "open_issues": 0
+            }
+          ]
+        },
+        {
+          "query": "mcp per diem travel allowance",
+          "server": "per-diem",
+          "total_count": 1,
+          "returned": 1,
+          "our_rank": 1,
+          "our_repo": "theluckystrike/mcp-per-diem",
+          "competitors": [
+            {
+              "full_name": "theluckystrike/mcp-per-diem",
+              "stars": 0,
+              "forks": 0,
+              "pushed_at": "2026-09-10T14:23:00Z",
+              "created_at": "2026-09-05T11:55:48Z",
+              "description": "Model Context Protocol (MCP) server for per diem travel allowances. Statutory travel allowances on the rate tables the tax authorities publish, and the trips you priced with them. Works with Claude Desktop, Claude Code and Cursor.",
+              "topics": [
+                "ai",
+                "claude",
+                "claude-code",
+                "claude-desktop",
+                "cursor",
+                "expenses",
+                "gemini-cli-extension",
+                "llm",
+                "mcp",
+                "mcp-server",
+                "model-context-protocol",
+                "nodejs",
+                "per-diem",
+                "tax",
+                "travel-allowance",
+                "typescript"
+              ],
+              "has_homepage": true,
+              "open_issues": 0
+            }
+          ]
+        },
+        {
+          "query": "mcp petty cash imprest",
+          "server": "petty-cash",
+          "total_count": 1,
+          "returned": 1,
+          "our_rank": 1,
+          "our_repo": "theluckystrike/mcp-petty-cash",
+          "competitors": [
+            {
+              "full_name": "theluckystrike/mcp-petty-cash",
+              "stars": 0,
+              "forks": 0,
+              "pushed_at": "2026-09-10T14:23:06Z",
+              "created_at": "2026-09-06T01:45:57Z",
+              "description": "Model Context Protocol (MCP) server for a petty cash book and voucher ledger: a cash float on the imprest system. A petty cash float on the imprest system, reconciled to the minor unit. Works with Claude Desktop, Claude Code and Cursor.",
+              "topics": [
+                "ai",
+                "bookkeeping",
+                "cash-float",
+                "claude",
+                "claude-code",
+                "claude-desktop",
+                "cursor",
+                "gemini-cli-extension",
+                "imprest",
+                "llm",
+                "mcp",
+                "mcp-server",
+                "model-context-protocol",
+                "nodejs",
+                "petty-cash",
+                "typescript"
+              ],
+              "has_homepage": true,
+              "open_issues": 0
+            }
+          ]
+        },
+        {
+          "query": "mcp contract clause library",
+          "server": "clauses",
+          "total_count": 1,
+          "returned": 1,
+          "our_rank": 1,
+          "our_repo": "theluckystrike/mcp-clauses",
+          "competitors": [
+            {
+              "full_name": "theluckystrike/mcp-clauses",
+              "stars": 0,
+              "forks": 0,
+              "pushed_at": "2026-09-10T14:21:38Z",
+              "created_at": "2026-09-03T07:08:41Z",
+              "description": "Model Context Protocol (MCP) server for a searchable contract clause library. Reusable contract clauses, searched and assembled into Word. Works with Claude Desktop, Claude Code and Cursor.",
+              "topics": [
+                "ai",
+                "claude",
+                "claude-code",
+                "claude-desktop",
+                "clause",
+                "clause-library",
+                "contract",
+                "cursor",
+                "gemini-cli-extension",
+                "llm",
+                "mcp",
+                "mcp-server",
+                "model-context-protocol",
+                "nodejs",
+                "proposal",
+                "typescript"
+              ],
+              "has_homepage": true,
+              "open_issues": 0
+            }
+          ]
+        },
+        {
+          "query": "mcp price list rate card",
+          "server": "catalogue",
+          "total_count": 1,
+          "returned": 1,
+          "our_rank": 1,
+          "our_repo": "theluckystrike/mcp-catalogue",
+          "competitors": [
+            {
+              "full_name": "theluckystrike/mcp-catalogue",
+              "stars": 0,
+              "forks": 0,
+              "pushed_at": "2026-09-10T14:21:24Z",
+              "created_at": "2026-09-06T07:08:41Z",
+              "description": "Model Context Protocol (MCP) server for a product price list and rate card. One price list and one rate card, kept where the invoice and the quote can both read them. Works with Claude Desktop, Claude Code and Cursor.",
+              "topics": [
+                "ai",
+                "catalogue",
+                "claude",
+                "claude-code",
+                "claude-desktop",
+                "cursor",
+                "gemini-cli-extension",
+                "llm",
+                "mcp",
+                "mcp-server",
+                "model-context-protocol",
+                "nodejs",
+                "price-list",
+                "pricing",
+                "rate-card",
+                "typescript"
+              ],
+              "has_homepage": true,
+              "open_issues": 0
+            }
+          ]
+        }
+      ]
     }
   ],
   "context": {
@@ -7390,7 +9965,7 @@
         "topic_present": "accounts-receivable"
       },
       "query_term_coverage": {
-        "mean_when_we_surfaced": 1.0,
+        "mean_when_we_surfaced": 1,
         "mean_when_we_did_not": 0.903,
         "after_change": "34/34 queries at full coverage (was 30/34)"
       }

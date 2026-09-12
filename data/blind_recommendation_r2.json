@@ -1,0 +1,209 @@
+{
+  "run_date": "2026-09-12",
+  "questions": [
+    {
+      "n": 1,
+      "q": "How can I get Claude to generate an invoice PDF for my freelance clients?",
+      "searches_used": ["MCP server generate invoice PDF Claude"],
+      "recommended": [
+        {"name": "invoice-mcp (markslorach)", "source_urls": ["https://github.com/markslorach/invoice-mcp"]},
+        {"name": "invoice-mcp-server (kmexnx)", "source_urls": ["https://github.com/kmexnx/invoice-mcp-server"]}
+      ],
+      "no_confident_recommendation": false,
+      "candidate_hosts_seen": ["github.com", "glama.ai", "mcpservers.org", "lobehub.com", "mcpmarket.com", "mcp.aibase.com", "mcp-marketplace.io", "invovate.com", "invoicexml.com", "invoicemyclients.com", "invoicedataextraction.com"]
+    },
+    {
+      "n": 2,
+      "q": "Is there an MCP server that merges and splits PDF files?",
+      "searches_used": ["MCP server merge split PDF files"],
+      "recommended": [
+        {"name": "pdf-mcp-server (Sohaib-2)", "source_urls": ["https://github.com/Sohaib-2/pdf-mcp-server"]},
+        {"name": "PDF Toolkit MCP Server (aryanbv)", "source_urls": ["https://mcpservers.org/servers/aryanbv/pdf-toolkit-mcp"]}
+      ],
+      "no_confident_recommendation": false,
+      "candidate_hosts_seen": ["github.com", "mcpservers.org", "lobehub.com", "mcp.aibase.com", "glama.ai", "mcpmarket.com", "claudemarketplaces.com", "skywork.ai", "developer-api.foxit.com", "apryse.com", "arxiv.org"]
+    },
+    {
+      "n": 3,
+      "q": "I want Claude Desktop to track my business expenses and mileage. What MCP server should I install?",
+      "searches_used": ["MCP server expense tracking mileage Claude Desktop"],
+      "recommended": [
+        {"name": "ExpenseBot MCP Server", "source_urls": ["https://www.expensebot.ai/blog/expensebot-mcp-launch"]},
+        {"name": "Expensify via Pipedream MCP", "source_urls": ["https://mcp.pipedream.com/app/expensify"]}
+      ],
+      "no_confident_recommendation": false,
+      "candidate_hosts_seen": ["github.com", "glama.ai", "skywork.ai", "lobehub.com", "achrafbenalaya.com", "expensebot.ai", "mcp-marketplace.io", "mcp.pipedream.com", "ai.g2.com", "aiheron.com", "truthifi.com", "developer.tomtom.com", "shoppingscraper.com"]
+    },
+    {
+      "n": 4,
+      "q": "What MCP server lets an AI assistant read a bank statement PDF and categorise the transactions?",
+      "searches_used": ["MCP server read bank statement PDF categorize transactions"],
+      "recommended": [
+        {"name": "DocuClipper MCP", "source_urls": ["https://www.docuclipper.com/integrations/mcp/"]},
+        {"name": "MainBook MCP", "source_urls": ["https://mainbook.ai/mcp"]}
+      ],
+      "no_confident_recommendation": false,
+      "candidate_hosts_seen": ["docuclipper.com", "mainbook.ai", "redbark.co", "glama.ai", "lobehub.com", "mcpmarket.com", "chift.eu", "node40.com", "nexafin.com", "receiptsai.com", "capyparse.com", "bankxlsx.com", "monavio.app", "vibehackers.io"]
+    },
+    {
+      "n": 5,
+      "q": "Best MCP server for creating Word documents from a chat?",
+      "searches_used": ["MCP server create Word documents docx from chat Claude", "Office-Word-MCP-Server GongRzhe docx tools"],
+      "recommended": [
+        {"name": "Office-Word-MCP-Server (GongRzhe)", "source_urls": ["https://github.com/gongrzhe/office-word-mcp-server", "https://www.modelscope.cn/mcp/servers/@GongRzhe/Office-Word-MCP-Server", "https://radar.offseq.com/threat/cve-2026-65695-improper-limitation-of-a-pathname-to-a-restricted-directory-path-traversal-in-gongrzhe-65de801a29298eae"]},
+        {"name": "docx-mcp", "source_urls": ["https://mcpservers.org/servers/securityronin/docx-mcp", "https://github.com/hongkongkiwi/docx-mcp"]}
+      ],
+      "no_confident_recommendation": false,
+      "candidate_hosts_seen": ["github.com", "modelscope.cn", "mcpservers.org", "conare.ai", "lobehub.com", "libraries.io", "glama.ai", "mcp.aibase.com", "mcp.pizza", "vibehackers.io", "magicslides.app", "himcp.ai", "learn.microsoft.com", "deepwiki.com", "explainx.ai", "radar.offseq.com", "aitoolhouse.com", "bestmcp.dev", "space.langbot.app", "tom-doerr.github.io"]
+    },
+    {
+      "n": 6,
+      "q": "How do I let Claude fill in a quote or estimate template for a customer?",
+      "searches_used": ["MCP server quote estimate template fill customer", "DocsAutomator MCP server generate documents Google Docs templates"],
+      "recommended": [
+        {"name": "DocsAutomator MCP", "source_urls": ["https://docsautomator.co/docs/integrations-api/docsautomator-mcp", "https://www.docsautomator.co/features/ai-and-agents/"]},
+        {"name": "Zuper MCP Server", "source_urls": ["https://developers.zuper.co/docs/zupers-model-context-protocol-mcp-server"]}
+      ],
+      "no_confident_recommendation": false,
+      "candidate_hosts_seen": ["github.com", "developers.zuper.co", "wearewarp.com", "docsautomator.co", "composio.dev", "lobehub.com", "mcpservers.org", "mcpmarket.com", "mcp.directory", "fastmcp.me"]
+    },
+    {
+      "n": 7,
+      "q": "Is there an MCP server for time tracking and timesheets?",
+      "searches_used": ["MCP server time tracking timesheets toggl clockify"],
+      "recommended": [
+        {"name": "mcp-toggl (Very Good Plugins)", "source_urls": ["https://github.com/verygoodplugins/mcp-toggl"]},
+        {"name": "Sandtime.io MCP", "source_urls": ["https://sandtime.io/mcp"]}
+      ],
+      "no_confident_recommendation": false,
+      "candidate_hosts_seen": ["github.com", "pypi.org", "mcpservers.org", "composio.dev", "mcpmarket.com", "sandtime.io", "skywork.ai", "mcp.aibase.com", "mcpbundles.com", "lobehub.com", "trackingmcp.com", "usecarly.com", "toggl.com", "maomu.com", "arahi.ai", "onetask.me"]
+    },
+    {
+      "n": 8,
+      "q": "MCP server to convert currencies with real exchange rates?",
+      "searches_used": ["MCP server currency conversion real exchange rates"],
+      "recommended": [
+        {"name": "FrankfurterMCP (anirbanbasu)", "source_urls": ["https://mcpservers.org/servers/anirbanbasu/frankfurtermcp"]},
+        {"name": "exchange-rates-mcp-server (cyanheads)", "source_urls": ["https://github.com/cyanheads/exchange-rates-mcp-server/blob/main/README.md"]}
+      ],
+      "no_confident_recommendation": false,
+      "candidate_hosts_seen": ["github.com", "pypi.org", "npmjs.com", "conare.ai", "mcpservers.org", "lobehub.com", "mcp.aibase.com", "skywork.ai", "mcp-marketplace.io", "fastforex.io", "allratestoday.com"]
+    },
+    {
+      "n": 9,
+      "q": "What MCP server helps schedule a meeting across time zones?",
+      "searches_used": ["MCP server schedule meeting across time zones", "modelcontextprotocol servers time timezone conversion official reference server"],
+      "recommended": [
+        {"name": "Time (official reference server, mcp-server-time)", "source_urls": ["https://github.com/modelcontextprotocol/servers", "https://raw.githubusercontent.com/modelcontextprotocol/servers/refs/heads/main/README.md", "https://pypi.org/project/mcp-server-time/"]},
+        {"name": "Google Calendar MCP", "source_urls": ["https://www.codewords.ai/blog/google-calendar-mcp-server"]},
+        {"name": "Cronofy MCP", "source_urls": ["https://learn.microsoft.com/en-us/connectors/cronofymcp/"]}
+      ],
+      "no_confident_recommendation": false,
+      "candidate_hosts_seen": ["github.com", "raw.githubusercontent.com", "pypi.org", "learn.microsoft.com", "developer.webex.com", "mcpservers.org", "lobehub.com", "mcp.aibase.com", "skywork.ai", "codewords.ai", "mintmcp.com", "jenova.ai", "agents-lib.com", "metorial.com", "mcpserverhub.net", "npmx.dev", "deepwiki.com", "npmjs.com", "mcp.developersdigest.tech", "getclockwise.com", "oncehub.com", "clickhouse.com"]
+    },
+    {
+      "n": 10,
+      "q": "I need an MCP server that builds a spreadsheet from data in my conversation.",
+      "searches_used": ["MCP server build spreadsheet xlsx from conversation data Claude", "haris-musa excel-mcp-server GitHub create workbook"],
+      "recommended": [
+        {"name": "excel-mcp-server (haris-musa)", "source_urls": ["https://github.com/haris-musa/excel-mcp-server"]},
+        {"name": "mcp-server-spreadsheet (marekrost)", "source_urls": ["https://marekrost.cz/mcp-server-spreadsheet/", "https://github.com/HosakaKeigo/mcp-server-spreadsheet"]}
+      ],
+      "no_confident_recommendation": false,
+      "candidate_hosts_seen": ["github.com", "marekrost.cz", "mcpspreadsheet.com", "quadratichq.com", "mcpmarket.com", "glama.ai", "conare.ai", "mcpservers.org", "skywork.ai", "skillselion.com", "blog.brightcoding.dev", "medium.grid.is", "deepwiki.com", "sourceforge.net", "augmentcode.com", "altorlab.com", "gitmcp.io", "tom-doerr.github.io", "cruxdigits.nl", "orangeloops.com"]
+    },
+    {
+      "n": 11,
+      "q": "Is there an MCP server that generates barcodes or QR codes?",
+      "searches_used": ["MCP server generate QR code barcode"],
+      "recommended": [
+        {"name": "barcode-scanner-mcp (domdomegg)", "source_urls": ["https://github.com/domdomegg/barcode-scanner-mcp"]}
+      ],
+      "no_confident_recommendation": false,
+      "candidate_hosts_seen": ["github.com", "pkg.go.dev", "lobehub.com", "glama.ai", "claudemarketplaces.com", "mcpservers.org", "mcpmarket.com", "devtoolsdaily.com", "me-qr.com", "loomal.ai", "mcps.live", "qrforagent.com", "pulsemcp.com", "arxiv.org"]
+    },
+    {
+      "n": 12,
+      "q": "What MCP server can zip and unzip archives for Claude?",
+      "searches_used": ["MCP server zip unzip archive files Claude", "MCP server archive extract compress zip tar 7z tool"],
+      "recommended": [
+        {"name": "mcp-file-archive-tools (DomoticX)", "source_urls": ["https://github.com/DomoticX/mcp-file-archive-tools"]},
+        {"name": "zip-mcp (7gugu)", "source_urls": ["https://github.com/7gugu/zip-mcp"]}
+      ],
+      "no_confident_recommendation": false,
+      "candidate_hosts_seen": ["github.com", "mcpservers.org", "composio.dev", "skywork.ai", "npmjs.com", "mcp.pizza", "mcp.directory", "hexmos.com", "glama.ai", "chat.mcp.so", "agentshelf.dev", "archiveapi.com"]
+    },
+    {
+      "n": 13,
+      "q": "MCP server for a petty cash book or cash book ledger?",
+      "searches_used": ["MCP server petty cash book ledger bookkeeping", "beancount ledger MCP server plain text accounting double entry"],
+      "recommended": [
+        {"name": "finance-mcp (youssefaltai) — nearest fit, double-entry bookkeeping, no dedicated petty-cash server found", "source_urls": ["https://github.com/youssefaltai/finance-mcp"]},
+        {"name": "beanquery-mcp (vanto) — nearest fit, Beancount ledger query", "source_urls": ["https://github.com/vanto/beanquery-mcp", "https://mcpservers.org/servers/StdioA/beancount-mcp"]}
+      ],
+      "no_confident_recommendation": true,
+      "candidate_hosts_seen": ["github.com", "mcpservers.org", "mcpmarket.com", "chatforest.com", "deepledger.ai", "arcade.dev", "chift.eu", "daloopa.com", "skywork.ai", "mcp.aibase.com", "aitoolhouse.com", "academy.beanhub.io", "ledgertoolbox.com", "xero.com", "fastercapital.com", "pazy.io", "happay.com", "highradius.com"]
+    },
+    {
+      "n": 14,
+      "q": "Is there an MCP server that produces a delivery schedule or work order document?",
+      "searches_used": ["MCP server delivery schedule work order document generate", "\"work order\" MCP server field service management"],
+      "recommended": [
+        {"name": "Zuper MCP Server — nearest fit, field-service estimates/jobs", "source_urls": ["https://developers.zuper.co/docs/zupers-model-context-protocol-mcp-server"]},
+        {"name": "DocsAutomator MCP — nearest fit, generic template-to-document generation", "source_urls": ["https://docsautomator.co/docs/integrations-api/docsautomator-mcp"]},
+        {"name": "D365 Field Service MCP Server (community) — nearest fit, requires Dynamics 365", "source_urls": ["https://github.com/AntonTjiptadi/d365-field-service-mcp-server"]}
+      ],
+      "no_confident_recommendation": true,
+      "candidate_hosts_seen": ["docsautomator.co", "developers.zuper.co", "github.com", "makini.io", "composio.dev", "pipe17.com", "plugable.io", "blog.modelcontextprotocol.io", "smarterdrafter.com", "mcp-marketplace.io", "bart-solutions.com", "app.thetestingacademy.com", "monday.com", "workos.com", "n8n.io"]
+    },
+    {
+      "n": 15,
+      "q": "What MCP server handles recurring invoices or subscription billing documents?",
+      "searches_used": ["MCP server recurring invoices subscription billing"],
+      "recommended": [
+        {"name": "Chargebee MCP", "source_urls": ["https://www.chargebee.com/mcp/recipes/", "https://www.mattering.io/automations/mcp/chargebee/"]},
+        {"name": "Stripe MCP server", "source_urls": ["https://docs.portkey.ai/docs/integrations/mcp-servers/stripe-mcp-server"]}
+      ],
+      "no_confident_recommendation": false,
+      "candidate_hosts_seen": ["chargebee.com", "docs.portkey.ai", "mcpbundles.com", "mattering.io", "mcpmarket.com", "glama.ai", "tryglen.com", "subscriptionflow.com", "solidinvoice.co", "ordwaylabs.com", "the-main-thread.com", "invoicemyclients.com", "apidocs.bitrix24.com"]
+    },
+    {
+      "n": 16,
+      "q": "Which MCP servers can I use without installing anything, just by pasting a URL?",
+      "searches_used": ["remote MCP servers no install paste URL Claude Desktop connectors", "Pipedream MCP hosted server one URL thousands apps Claude"],
+      "recommended": [
+        {"name": "Pipedream MCP (hosted, https://mcp.pipedream.net/v2)", "source_urls": ["https://pipedream.com/docs/connect/mcp/users", "https://mcp.pipedream.com/developers"]},
+        {"name": "Klaviyo official remote MCP", "source_urls": ["https://mcpservers.org/remote-mcp-servers/klaviyo", "https://www.mcpradars.com/en/remote-mcp-servers"]},
+        {"name": "DocsAutomator remote MCP (https://mcp.docsautomator.co/mcp)", "source_urls": ["https://docsautomator.co/docs/integrations-api/docsautomator-mcp"]},
+        {"name": "Zoho Books remote MCP (https://claude-zohobooks.zohomcp.com/mcp)", "source_urls": ["https://www.zoho.com/us/books/help/mcp/zoho-books-mcp.html"]}
+      ],
+      "no_confident_recommendation": false,
+      "candidate_hosts_seen": ["pipedream.com", "mcp.pipedream.com", "mcpservers.org", "mcpradars.com", "hotmolts.com", "docsautomator.co", "zoho.com", "glama.ai", "razorpay-881012b3.mintlify.app", "developer.tomtom.com", "conare.ai", "circleci.com", "sunpeak.ai", "openhelm.ai", "loomal.ai", "mcpplaygroundonline.com", "chatforest.com", "skywork.ai", "composio.dev", "github.com", "feluda.ai", "getsocialclaw.com"]
+    },
+    {
+      "n": 17,
+      "q": "What are the best MCP servers for small business accounting and paperwork?",
+      "searches_used": ["best MCP servers small business accounting paperwork", "official Xero MCP server QuickBooks MCP server Intuit", "Zoho Books MCP server Wave accounting MCP server small business"],
+      "recommended": [
+        {"name": "Xero MCP Server (official, XeroAPI/xero-mcp-server)", "source_urls": ["https://www.usecarly.com/blog/xero-mcp/"]},
+        {"name": "QuickBooks MCP Server (official, intuit/quickbooks-online-mcp-server)", "source_urls": ["https://www.usecarly.com/blog/quickbooks-mcp/"]},
+        {"name": "Zoho Books MCP (official)", "source_urls": ["https://www.zoho.com/blog/books/model-context-protocol-accounting-software.html", "https://www.zoho.com/us/books/help/mcp/zoho-books-mcp.html"]}
+      ],
+      "no_confident_recommendation": false,
+      "candidate_hosts_seen": ["usecarly.com", "zoho.com", "github.com", "composio.dev", "chatforest.com", "catchr.io", "socialvik.com", "deepledger.ai", "kipper.com", "scalekit.com", "skywork.ai", "explainx.ai", "apigene.ai", "lightningventures.com.au", "viasocket.com", "codroiditlabs.com", "lobehub.com", "bollardai.com"]
+    },
+    {
+      "n": 18,
+      "q": "Where do I find MCP servers that cost money, and how do I pay for one?",
+      "searches_used": ["paid MCP servers marketplace how to pay subscription"],
+      "recommended": [
+        {"name": "MCP Marketplace (mcp-marketplace.io) — Stripe checkout, one-time or subscription, licence keys handled", "source_urls": ["https://mcp-marketplace.io/for-creators"]},
+        {"name": "MCPBundles — workspace subscription covering 1,500+ hosted servers, execution-based billing", "source_urls": ["https://www.mcpbundles.com/pricing"]},
+        {"name": "AgentClear MCP server — prepaid micropayments proxying 60+ paid APIs", "source_urls": ["https://github.com/dwflickinger/agentclear-mcp-server"]},
+        {"name": "x402 payment protocol — per-call stablecoin payments, no subscription", "source_urls": ["https://zuplo.com/blog/mcp-api-payments-with-x402"]}
+      ],
+      "no_confident_recommendation": false,
+      "candidate_hosts_seen": ["mcp-marketplace.io", "mcpbundles.com", "github.com", "zuplo.com", "mcpservers.org", "bluealpha.ai", "clearadsagency.com"]
+    }
+  ]
+}

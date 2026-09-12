@@ -1,0 +1,211 @@
+{
+  "round": "3B",
+  "at": "2026-09-12",
+  "agent_rules": {
+    "no_emoji": true,
+    "grep": "/usr/bin/grep only",
+    "no_push_to_theluckystrike_repos": true,
+    "no_account_creation": true,
+    "no_starring": true
+  },
+  "task1_loop33_pr_status": {
+    "command_template": "gh pr view <n> -R <repo> --json state,mergedAt,closedAt,reviews,comments",
+    "prs": [
+      {
+        "repo": "Kilo-Org/kilo-marketplace",
+        "number": 269,
+        "url": "https://github.com/Kilo-Org/kilo-marketplace/pull/269",
+        "title": "Add Zovo Back Office MCP",
+        "state": "OPEN",
+        "mergedAt": null,
+        "closedAt": null,
+        "reviews": 0,
+        "comments": 0,
+        "maintainer_requested_changes": false
+      },
+      {
+        "repo": "Sagargupta16/awesome-mcp-servers",
+        "number": 88,
+        "url": "https://github.com/Sagargupta16/awesome-mcp-servers/pull/88",
+        "title": "Add Invoice MCP to Finance",
+        "state": "MERGED",
+        "mergedAt": "2026-09-10T14:29:08Z",
+        "closedAt": "2026-09-10T14:29:08Z",
+        "reviews": 0,
+        "comments": 1,
+        "comment_authors": ["sonarqubecloud (bot, authorAssociation NONE, Quality Gate passed)"],
+        "maintainer_requested_changes": false
+      },
+      {
+        "repo": "BlockRunAI/awesome-finance-mcp",
+        "number": 69,
+        "url": "https://github.com/BlockRunAI/awesome-finance-mcp/pull/69",
+        "title": "Add Bank Statement MCP",
+        "state": "OPEN",
+        "mergedAt": null,
+        "closedAt": null,
+        "reviews": 0,
+        "comments": 0,
+        "maintainer_requested_changes": false
+      },
+      {
+        "repo": "wundercorp/awesome-mcp",
+        "number": 60,
+        "url": "https://github.com/wundercorp/awesome-mcp/pull/60",
+        "title": "Add Zovo Spreadsheet to files",
+        "state": "OPEN",
+        "mergedAt": null,
+        "closedAt": null,
+        "reviews": 0,
+        "comments": 0,
+        "maintainer_requested_changes": false
+      }
+    ],
+    "summary": "1 merged (Sagargupta16#88 at 2026-09-10T14:29:08Z), 3 open with zero reviews and zero maintainer comments. No maintainer requested changes on any PR."
+  },
+  "task2_claude_code_plugin_marketplaces": {
+    "repo_name_verification": {
+      "command_1": "gh search repos \"agents\" --owner wshobson --json fullName,description,stargazersCount --limit 5",
+      "result_1": "wshobson/agents, 39570 stars",
+      "command_2": "gh search repos \"awesome-claude-plugins\" --json fullName,description,stargazersCount --limit 10",
+      "result_2": "composio-community/awesome-claude-plugins, 1957 stars",
+      "command_3": "gh repo view composiohq/awesome-claude-plugins --json nameWithOwner",
+      "result_3": "resolves to composio-community/awesome-claude-plugins"
+    },
+    "wshobson_agents": {
+      "verdict": "SKIPPED",
+      "reason": "artefact mismatch plus explicit policy bar on the estate's commercial model",
+      "evidence": [
+        {
+          "command": "find plugins -name '.mcp.json' (scratch clone of wshobson/agents)",
+          "result": "0 files across 92 plugins"
+        },
+        {
+          "command": "/usr/bin/grep -rn '\"mcpServers\"' plugins/",
+          "result": "1 hit, an example block in plugins/meigen-ai-design/README.md:11; no plugin carries an MCP server manifest"
+        },
+        {
+          "command": "head -80 CONTRIBUTING.md",
+          "result": "External and vendor plugins section: 'No metered or paid API on the default path. A free tier with a daily quota and a paid tier behind it is a funnel, disclosed or not.' Estate model per curl -s https://mcp.zovo.one/llms.txt: free 600 calls/hour, Pro 6000, $19/server or $39 all, one-time."
+        },
+        {
+          "command": "gh pr view 648 -R wshobson/agents --json state,body,comments",
+          "result": "attester-verify declined; maintainer: 'I'm still going to decline, and the reason is policy rather than craft.'"
+        }
+      ],
+      "pr_opened": null
+    },
+    "composio_community_awesome_claude_plugins": {
+      "verdict": "FIT REAL, PR OPENED",
+      "evidence": [
+        {
+          "command": "/usr/bin/grep -n -i 'mcp' README.md",
+          "result": "list carries MCP-server entries: codebase-graph 'Code intelligence MCP server', backlog '24 MCP tools', taisly-agent-kit 'plugin, skill, SDK, CLI, and MCP server'"
+        },
+        {
+          "command": "gh pr list -R composio-community/awesome-claude-plugins --state merged --limit 20 --json number,title,mergedAt",
+          "result": "15 merged PRs; external-link rows merged: #2 MyVibe, #7 kaggle-skill, #10 aws-cost-saver, #14 nano-banana, #18 Manifest, #19 context-mode, #121 codebase-graph+agntk, #129 backlog, #133 maestro, #304 taisly, #306 asqav"
+        },
+        {
+          "command": "/usr/bin/grep -c 'codebase-graph\\|backlog\\|taisly\\|myvibe' marketplace.json .claude-plugin/marketplace.json",
+          "result": "0 and 0; external entries exist only as README rows"
+        },
+        {
+          "command": "README Contributing section",
+          "result": "requirements: real use case, no duplication, template structure, tested; no anti-commercial rule; commercial entries merged (MyVibe, Manifest, Taisly, connect-apps)"
+        }
+      ],
+      "pr_opened": {
+        "url": "https://github.com/composio-community/awesome-claude-plugins/pull/465",
+        "state_at_open": "OPEN",
+        "changedFiles": 1,
+        "additions": 38,
+        "deletions": 0,
+        "author": "theluckystrike",
+        "verify_command": "gh pr view 465 -R composio-community/awesome-claude-plugins --json state,additions,deletions,changedFiles,author",
+        "content": "new 'Business & Finance' README section, 34 alphabetical rows, one per public mcp-* mirror (gh repo list theluckystrike --limit 100 --json name,description,isPrivate, filtered isPrivate==false), plus TOC line",
+        "disclosure": "PR body discloses authorship of all 34 servers, states free tier plus one-time Pro model, cites external-row precedent, offers trim to mcp-office-suite or any named subset"
+      }
+    }
+  },
+  "task3_toolhive_catalog_preflight": {
+    "verdict": "NOT COMPLIANT",
+    "pr_opened": null,
+    "criterion": {
+      "source": "stacklok/toolhive-catalog docs/server-criteria.md line 25 (scratch clone)",
+      "verbatim": "Required -- Pinned dependencies and GitHub Actions pinned to SHAs.",
+      "scoring_table_line_106": "Pinned dependencies / Actions pinned to SHAs | Required"
+    },
+    "evidence": [
+      {
+        "check": "GitHub Actions SHA pinning, monorepo",
+        "command": "/usr/bin/grep -rn 'uses:' /Users/mike/mcp-servers/.github/workflows/",
+        "result": "2 matches in npm-publish-oidc.yml: actions/checkout@v4, actions/setup-node@v4 (tags, not SHAs)",
+        "compliant": false
+      },
+      {
+        "check": "GitHub Actions SHA pinning, mirror sample",
+        "command": "curl -s https://raw.githubusercontent.com/theluckystrike/mcp-invoice/main/.github/workflows/ci.yml | /usr/bin/grep 'uses:'",
+        "result": "actions/checkout@v5, actions/setup-node@v5 (tags, not SHAs)",
+        "compliant": false
+      },
+      {
+        "check": "dependency pinning, sample servers",
+        "command": "python3 json read of servers/invoice, servers/time-tracker, servers/kanban package.json",
+        "result": "caret ranges throughout, e.g. invoice deps {\"@modelcontextprotocol/sdk\": \"^1.30.0\", \"@theluckystrike/mcp-license\": \"^0.21.0\", \"pdfkit\": \"^0.15.0\", \"zod\": \"^3.25.0\"}; root package-lock.json exists but manifests declare ranges",
+        "compliant": false
+      },
+      {
+        "check": "license",
+        "command": "head -5 /Users/mike/mcp-servers/LICENSE",
+        "result": "MIT License",
+        "compliant": true
+      }
+    ],
+    "exact_gap": "(a) pin every dependency to an exact version in all 34 servers/*/package.json and in the mirror templates regenerated by scripts/sync-mirrors.sh; (b) pin every workflow uses: to a full commit SHA in the monorepo and all 34 mirrors. Both are writes to theluckystrike's own repos, outside this round's permissions; recorded, not fixed."
+  },
+  "task4_glama_server_page_census": {
+    "surface": "https://glama.ai/mcp/servers/theluckystrike/<repo>",
+    "command_template": "curl -s -o <file> -w '%{http_code}' -A 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36' https://glama.ai/mcp/servers/theluckystrike/<repo>",
+    "body_verdict_rule": "a 200 is not evidence; real pages are ~240-294KB HTML with the repo name and a tools section; observed bodies were 52B JSON not_found or 0B",
+    "rows": [
+      {"repo": "mcp-invoice", "pass1": 404, "pass2": "404 (52B)", "pass3": "200 (0B)", "real_page": false, "shows_tools": false},
+      {"repo": "mcp-pdf", "pass1": 404, "pass2": "404 (52B)", "pass3": "404 (52B)", "real_page": false, "shows_tools": false},
+      {"repo": "mcp-time-tracker", "pass1": 200, "pass2": "404 (52B)", "pass3": "200 (0B)", "real_page": false, "shows_tools": false},
+      {"repo": "mcp-expense-tracker", "pass1": 200, "pass2": "404 (52B)", "pass3": "404 (52B)", "real_page": false, "shows_tools": false},
+      {"repo": "mcp-spreadsheet", "pass1": 404, "pass2": "404 (52B)", "pass3": "404 (52B)", "real_page": false, "shows_tools": false},
+      {"repo": "mcp-currency", "pass1": 404, "pass2": "404 (52B)", "pass3": "404 (52B)", "real_page": false, "shows_tools": false},
+      {"repo": "mcp-quotes", "pass1": 404, "pass2": "404 (52B)", "pass3": "200 (0B)", "real_page": false, "shows_tools": false},
+      {"repo": "mcp-kanban", "pass1": 404, "pass2": "404 (52B)", "pass3": "404 (52B)", "real_page": false, "shows_tools": false}
+    ],
+    "not_found_body": "{\"error\":{\"code\":\"not_found\",\"message\":\"Not Found\"}} (52 bytes)",
+    "positive_controls": [
+      {
+        "url": "https://glama.ai/mcp/servers/integrations/xero",
+        "status": 200,
+        "bytes": 240685,
+        "title": "Xero | Glama",
+        "tools_markers": [">Tools< heading", "toolCount"]
+      },
+      {
+        "url": "https://glama.ai/mcp/servers/theluckystrike/mcp-statement-of-account",
+        "status": 200,
+        "bytes": 294161,
+        "title": "mcp-statement-of-account by theluckystrike | Glama",
+        "tools": ["statement_aging", "statement_build", "statement_pdf", "statement_text"],
+        "tools_command": "/usr/bin/grep -o 'statement_[a-z_]*' /tmp/glama-soa.html | sort -u"
+      }
+    ],
+    "sample_result": "0 of 8 sample mirrors have a Glama server page; none shows a tools list",
+    "estate_wide": "1 of 34 mirrors known to have a /mcp/servers page: mcp-statement-of-account (unchanged since data/glama_r2.json, 2026-09-09)",
+    "ingestion_mechanism": {
+      "source": "https://glama.ai/mcp/methodology via WebFetch, 2026-09-12",
+      "section_1_1": "Before a server is listed, the submitting maintainer authenticates through GitHub OAuth. Glama verifies that the submitter has write or admin access to the repository they are listing. Servers cannot be submitted on behalf of someone who does not control the source.",
+      "section_1_2": "no discovery crawler; listing requires maintainer submission, then Glama clones and continuously syncs the complete Git history from GitHub",
+      "section_3": "Glama ingests and re-publishes everything in the official registry (the path that produced the estate's 25 /mcp/connectors listings, a different surface)",
+      "api": "https://glama.ai/mcp/reference is read-only; only POST is unauthenticated telemetry (report-mcp-tool-usage)",
+      "add_server_button": "JS-driven on /mcp/servers, behind sign-in; no static href",
+      "exact_mechanism": "maintainer GitHub OAuth submission at https://glama.ai/mcp/servers ('Add Server') with verified write/admin access; browser sign-in flow, human-gated under standing rules; recorded, not performed"
+    }
+  }
+}

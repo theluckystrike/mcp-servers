@@ -1,0 +1,42 @@
+{
+  "date": "2026-09-12",
+  "status": "DONE: feature pre-existed (commits 0bbf381, 96727c5), verified against primary sources and live mirrors, no generator code changed",
+  "schema_source_urls": [
+    "https://raw.githubusercontent.com/google-gemini/gemini-cli/main/docs/extensions/reference.md",
+    "https://raw.githubusercontent.com/google-gemini/gemini-cli/main/docs/extensions/releasing.md",
+    "https://raw.githubusercontent.com/google-gemini/gemini-cli/main/docs/tools/mcp-server.md",
+    "https://github.com/google-gemini/gemini-cli/blob/main/packages/cli/src/config/extension-manager.ts",
+    "https://github.com/google-gemini/gemini-cli/blob/main/packages/cli/src/utils/envVarResolver.ts",
+    "https://github.com/google-gemini/gemini-cli/blob/main/packages/cli/src/config/extensions/variables.ts"
+  ],
+  "repos_sampled": [
+    "wonderwhy-er/DesktopCommanderMCP",
+    "pascalorg/editor",
+    "googleworkspace/cli"
+  ],
+  "topic_repo_count": {
+    "value": 711,
+    "command": "gh api -X GET search/repositories -f q='topic:gemini-cli-extension' --jq '.total_count'"
+  },
+  "files_changed": [
+    "docs/GEMINI_EXT_R1.md",
+    "data/gemini_ext_r1.json"
+  ],
+  "generator_files_unchanged": [
+    "scripts/mirror-seo.py",
+    "scripts/sync-mirrors.sh"
+  ],
+  "launch_command_decision": "httpUrl + Bearer ${ZOVO_MCP_TOKEN} via settings prompt; stdio rejected: npx 404s (npm unpublished, control-verified), dist/ not committed so node ${extensionPath}/dist/index.js cannot exist at install, .mcpb is Claude-Desktop-only",
+  "verification_passed": true,
+  "verification": {
+    "json_valid": "node -e JSON.parse on generated and live files: OK",
+    "generated_equals_live": true,
+    "dry_run": "DRY_RUN=1 scripts/sync-mirrors.sh invoice: mirror built, not pushed, manifest valid in tree",
+    "self_checks": "python3 scripts/mirror-seo.py check -> 34/34 described; node scripts/build-readme.mjs --check -> README is current",
+    "topic_census": "34/34 mirrors in expected state (30 hosted with topic, 4 non-hosted without)",
+    "file_census": "30/30 hosted mirrors carry root gemini-extension.json",
+    "launch_live": "tools/call license_status via declared httpUrl + minted Bearer token -> 200; without token -> 401"
+  },
+  "ship_command": "cd /Users/mike/mcp-servers && npm_config_cache=/Users/mike/.npm-cache-local scripts/sync-mirrors.sh",
+  "ship_needed": false
+}
