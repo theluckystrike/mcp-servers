@@ -141,8 +141,14 @@ test("the success and cancel URLs are unchanged and on our own host", () => {
   assert.match(INDEX, /cancel_url: `https:\/\/\$\{host\}\/`/);
 });
 
-test("metadata is unchanged: product, the probe tag and the hosted tenant", () => {
+test("metadata includes the portfolio attribution contract, probe tag and hosted tenant", () => {
   assert.match(INDEX, /"metadata\[product\]": productId/);
+  assert.match(INDEX, /"metadata\[product_name\]": p\.name/);
+  assert.match(INDEX, /"metadata\[site\]": host/);
+  assert.match(INDEX, /"metadata\[source\]": source/);
+  assert.match(INDEX, /"metadata\[campaign\]": "mcp_lifetime_checkout"/);
+  assert.match(INDEX, /"payment_intent_data\[metadata\]\[product_name\]": p\.name/);
+  assert.match(INDEX, /createCheckout\(env, host, id, probeTag, tenant, asked, src\)/);
   assert.match(INDEX, /"metadata\[probe\]": "1"/);
   assert.match(INDEX, /"metadata\[tenant\]": tenant/);
 });

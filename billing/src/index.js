@@ -675,7 +675,7 @@ export function firstSentences(text, max) {
   return (space > 60 ? body.slice(0, space) : body).replace(/[\s,;:]+$/, "") + "...";
 }
 
-async function createCheckout(env, host, productId, probeTag = "", tenant = "", askedId = productId) {
+async function createCheckout(env, host, productId, probeTag = "", tenant = "", askedId = productId, source = "direct") {
   const p = PRODUCTS[productId];
   const ct = checkoutCustomText(productId, askedId);
   const s = await stripe(env, "checkout/sessions", {
@@ -693,11 +693,19 @@ async function createCheckout(env, host, productId, probeTag = "", tenant = "", 
     "custom_text[submit][message]": ct.submit,
     "custom_text[after_submit][message]": ct.after_submit,
     "metadata[product]": productId,
+    "metadata[product_name]": p.name,
+    "metadata[site]": host,
+    "metadata[source]": source,
+    "metadata[campaign]": "mcp_lifetime_checkout",
       ...(askedId !== productId ? { "metadata[asked]": askedId } : {}),
       ...(probeTag ? { "metadata[probe]": "1" } : {}),
       ...(tenant ? { client_reference_id: tenant, "metadata[tenant]": tenant } : {}),
     "payment_intent_data[statement_descriptor_suffix]": "MCP PRO",
     "payment_intent_data[metadata][product]": productId,
+    "payment_intent_data[metadata][product_name]": p.name,
+    "payment_intent_data[metadata][site]": host,
+    "payment_intent_data[metadata][source]": source,
+    "payment_intent_data[metadata][campaign]": "mcp_lifetime_checkout",
     // Expanded on create so the caller can assert what Stripe actually stored - the item
     // name and the amount - instead of asserting the request it just sent. A 303 to
     // checkout.stripe.com is not evidence that the right product is on the page.
@@ -1497,7 +1505,7 @@ contract. Where it and the source disagree, the source is right and this page is
             return new Response(null, { status: 303, headers: { Location: c.url, "cache-control": "no-store", "x-mcp-buy": "probe-session-reused", ...c.headers } });
           }
         }
-        const session = await createCheckout(env, host, id, probeTag, tenant, asked);
+        const session = await createCheckout(env, host, id, probeTag, tenant, asked, src);
         const headers = { Location: session.url, "cache-control": "no-store", ...(probeTag ? probeHeaders(session) : {}) };
         if (probeKey) ctx.waitUntil(env.REMOTE_DATA.put(probeKey, JSON.stringify({ url: session.url, headers: probeHeaders(session) }), { expirationTtl: PROBE_SESSION_TTL }));
         return new Response(null, { status: 303, headers });
