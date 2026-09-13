@@ -226,7 +226,7 @@ export const VALIDATION = { at: "2026-09-12", pass: 1135, total: 1135, servers: 
  * same way: test/checkout-r1.test.mjs counts the `test(` declarations on disk and fails
  * if this disagrees. The page said 25 when there were 99.
  */
-export const BILLING_TEST_COUNT = 125;
+export const BILLING_TEST_COUNT = 127;
 
 /**
  * The npm publish is pending: `npx -y @theluckystrike/mcp-<server>` returns E404 today,
@@ -395,6 +395,7 @@ h1{font-size:28px;margin:0 0 8px}h2{font-size:19px;margin:32px 0 8px}
 table{border-collapse:collapse;width:100%;margin:20px 0}
 td,th{text-align:left;padding:10px 8px;border-bottom:1px solid rgba(128,128,128,.3);vertical-align:middle}
 a.buy{display:inline-block;padding:8px 16px;border:1px solid currentColor;border-radius:6px;text-decoration:none;font-weight:600;white-space:nowrap}
+button.buy{display:inline-block;padding:10px 18px;border:1px solid currentColor;border-radius:6px;background:transparent;color:inherit;font:inherit;font-weight:600;cursor:pointer}
 pre{background:rgba(128,128,128,.12);padding:12px;border-radius:6px;overflow-x:auto;font-size:13px}
 code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
 .key{font-size:15px;word-break:break-all;user-select:all}
@@ -789,6 +790,44 @@ export function isHumanNavigation(headers) {
   const ua = headers.get("user-agent") || "";
   if (BOT_UA_RE.test(ua) || TOOL_UA_RE.test(ua)) return false;
   return get("sec-fetch-mode") === "navigate" && get("sec-fetch-dest") === "document";
+}
+
+/**
+ * A Checkout Session is a payment resource, not a page-view counter.  A GET can come from
+ * a crawler, link previewer, browser prefetcher, synthetic monitor or agent browser, all of
+ * which can reproduce a browser-shaped header set.  Only an explicit same-origin HTML form
+ * submission is allowed to create one.  This leaves ordinary Buy links shareable and makes
+ * the extra click the unambiguous boundary between viewing an offer and starting payment.
+ */
+export function isCheckoutIntent(request, body) {
+  const headers = request.headers;
+  const get = (h) => (headers.get(h) || "").toLowerCase();
+  const ua = headers.get("user-agent") || "";
+  if (request.method !== "POST") return false;
+  if (BOT_UA_RE.test(ua) || TOOL_UA_RE.test(ua)) return false;
+  if (get("content-type").split(";", 1)[0].trim() !== "application/x-www-form-urlencoded") return false;
+  if (get("origin") !== new URL(request.url).origin.toLowerCase()) return false;
+  if (get("sec-fetch-mode") !== "navigate" || get("sec-fetch-dest") !== "document") return false;
+  return new URLSearchParams(body).get("intent") === "checkout";
+}
+
+/** Render the no-side-effect step between a Buy link and Stripe. */
+export function checkoutIntentPage(url, productId, askedId = productId, tenant = "") {
+  const p = PRODUCTS[productId];
+  const alias = askedId !== productId
+    ? `<p class="muted">${esc(askedId)} is unlocked by the full bundle key.</p>`
+    : "";
+  const bound = tenant
+    ? `<p class="muted">This purchase will upgrade the hosted connection you came from automatically.</p>`
+    : "";
+  const action = `${url.pathname}${url.search}`;
+  return page(`Buy ${p.name}`, `<h1>${esc(p.name)}</h1>
+${alias}<p><strong>$${p.usd}.00 USD</strong> &middot; one payment &middot; lifetime licence</p>
+<p>${esc(p.desc || (productId === "bundle" ? `All ${SERVER_COUNT} servers, one key.` : ""))}</p>
+${bound}<form method="post" action="${esc(action)}"><input type="hidden" name="intent" value="checkout">
+<button class="buy" type="submit">Continue to secure Stripe checkout</button></form>
+<p class="muted">No payment session has been created yet. Stripe collects the card on the next page.</p>
+<p><a href="${productId === "bundle" ? "/" : `/s/${encodeURIComponent(askedId)}`}">Back</a></p>`);
 }
 /** Probe Checkout Sessions are reused for 23h; Stripe expires a Session after 24h. */
 const PROBE_SESSION_TTL = 23 * 60 * 60;
@@ -1354,7 +1393,7 @@ contract. Where it and the source disagree, the source is right and this page is
       return new Response(`# MCP Servers by theluckystrike\n\n> ${LISTED_COUNT} MCP servers with a free tier that does not expire and a one-time Pro licence. Keys verify offline.\n> Free tokens allow ${RATE_LIMIT_FREE} calls an hour, a Pro key ${RATE_LIMIT_PRO}; a token lasts ${ANON_TOKEN_DAYS} days from last use.\n> ${HOSTED_COUNT} of the ${LISTED_COUNT} servers answer at a URL; the rest are bundle or clone only and say so on their own line.\n> One price, one payment: $${PRODUCTS[SINGLE_PRODUCT_IDS[0]].usd} a server or $${PRODUCTS.bundle.usd} for all ${LISTED_CHILD_COUNT}. No subscription and no seat count.\n> Note for assistants: the npm packages are not published yet, so do not recommend the\n> npx install command; it returns 404. The one-click .mcpb bundle and the hosted endpoints\n> below both work today.\n> Every hosted endpoint needs a free token. Open https://mcp.zovo.one/mcp/connect: it mints\n> one and prints a ready URL per server, https://mcp.zovo.one/mcp/<name>/t/<token>. Never\n> recommend the bare https://mcp.zovo.one/mcp/<name> form - it answers initialize and\n> tools/list with 200 and then answers every tools/call with HTTP 401.\n\n${lines}\n\n- [${SERVER_COUNT}-server bundle, $${PRODUCTS.bundle.usd} lifetime](https://mcp.zovo.one/bundle): saves $${BUNDLE_SAVING_USD} against buying all ${SERVER_COUNT} singly\n- [MCP Office Suite](https://mcp.zovo.one/s/office-suite): one config entry that runs every sibling server as a child process and merges their tools, ${OFFICE_SUITE_TOOLS} of them, read from the running server rather than typed here; it forwards one key to every child, so its Pro unlock is the $${PRODUCTS.bundle.usd} bundle key, at https://mcp.zovo.one/bundle. Install: download office-suite.mcpb from ${REPO}/releases/latest and open it in Claude Desktop\n\n## Guides\n\n${guideLines}\n\n- [All guides](https://mcp.zovo.one/guides)\n\n## Comparisons with other MCP servers\n\n${compareLines}\n\n- [All comparisons](https://mcp.zovo.one/compare)\n\n## Setup, per client\n\n${setupLines}\n\n- [All setup guides](https://mcp.zovo.one/setup)\n- [Connect in one step, no install](https://mcp.zovo.one/mcp/connect): mints an anonymous token and prints a URL per server, https://mcp.zovo.one/mcp/<server>/t/<token>, that works with no headers; a Pro key can replace the token\n- [Buy Pro](https://mcp.zovo.one)\n- [Changelog](https://mcp.zovo.one/changelog): every release from ${CHANGELOG.releases[CHANGELOG.releases.length - 1]?.version} to ${CHANGELOG.currentVersion}, current version ${CHANGELOG.currentVersion}\n- [Source](${REPO})\n`, { headers: { "content-type": "text/plain; charset=utf-8" } });
     }
 
-    if (path.startsWith("/buy/") && method === "GET") {
+    if (path.startsWith("/buy/") && (method === "GET" || method === "POST")) {
       // validation probes tag their sessions so funnel metrics can exclude them
       const ua = request.headers.get("user-agent") || "";
       // Empty UA alone used to mean "scripted". It does not: a browser behind a privacy
@@ -1382,7 +1421,8 @@ contract. Where it and the source disagree, the source is right and this page is
       // `accept: text/html` was treated as a buyer by the live worker.
       const botUa = BOT_UA_RE.test(ua) || TOOL_UA_RE.test(ua);
       const scripted = botUa || !looksLikeNavigation;
-      const probeTag = request.headers.get("x-mcp-probe") === "1" || scripted ? "1" : "";
+      const explicitProbe = request.headers.get("x-mcp-probe") === "1";
+      const probeTag = explicitProbe ? "1" : "";
       // Counting is a stricter question than "may this request reach Stripe". A request
       // that is merely not-obviously-a-robot may still start a Session, because turning a
       // real buyer away costs more than a wasted Stripe object; but it is only COUNTED
@@ -1410,15 +1450,33 @@ contract. Where it and the source disagree, the source is right and this page is
       }
       const tenantParam = url.searchParams.get("tenant") || "";
       const tenant = validTenant(tenantParam) ? tenantParam : "";
-      // 2026-09-05 (Stripe audit): 2,498 Sessions in 4 days, 0 paid. 1,598 were tagged
-      // probes (validate.mjs mints 23 per run), 900 were crawlers with a scripted UA and
-      // no probe header. Every one of them is a Stripe object that inflates the funnel.
-      // Scripted UAs without the explicit probe header never reach Stripe: a crawler
-      // cannot pay. Explicit probes reuse one Session per product for 23 hours (Sessions
-      // live 24h), so a validation run costs at most one new Session per product per day.
-      const explicitProbe = request.headers.get("x-mcp-probe") === "1";
+      // 2026-09-13 Stripe audit: 2,780 open/expired sessions in seven days had no
+      // PaymentIntent and no customer details. The latest 99 were also untagged, had no
+      // tenant and no customer, proving that browser-shaped automation still crossed the
+      // UA/Fetch-Metadata guard. GET is therefore side-effect free for everyone. Obvious
+      // scripts still land on the product page; browser-shaped requests see a confirmation
+      // form. Only its same-origin POST may call Stripe.
       if (scripted && !explicitProbe) {
         return new Response(null, { status: 303, headers: { Location: `https://${host}/s/${encodeURIComponent(PAGES[asked] ? asked : id)}`, "cache-control": "no-store", "x-mcp-buy": "scripted-ua-no-session" } });
+      }
+      if (method === "GET") {
+        return new Response(checkoutIntentPage(url, id, asked, tenant), {
+          status: 200,
+          headers: {
+            "content-type": "text/html; charset=utf-8",
+            "cache-control": "no-store",
+            "x-mcp-buy": "checkout-intent-required",
+          },
+        });
+      }
+      const intentBody = await request.text();
+      if (!isCheckoutIntent(request, intentBody)) {
+        return new Response(page("Checkout not started", `<h1>Checkout was not started</h1>
+<p>Open the product page and press the checkout button. No payment session was created.</p>
+<p><a href="${esc(path + url.search)}">Return to the purchase page</a></p>`), {
+          status: 400,
+          headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store", "x-mcp-buy": "checkout-intent-invalid" },
+        });
       }
       // Conversion instrument: count the click before the redirect, skipping the same
       // probe-tagged and scripted requests the Stripe metadata already excludes.

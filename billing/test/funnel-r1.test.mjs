@@ -46,7 +46,11 @@ const HUMAN = {
   "sec-fetch-site": "same-origin",
   "sec-fetch-user": "?1",
 };
-const req = (path, headers) => new Request(`https://mcp.zovo.one${path}`, { headers });
+const req = (path, headers, method = "GET") => new Request(`https://mcp.zovo.one${path}`, {
+  method,
+  headers,
+  ...(method === "POST" ? { body: "intent=checkout" } : {}),
+});
 
 async function withStripeStub(fn) {
   const calls = [];
@@ -61,7 +65,8 @@ async function withStripeStub(fn) {
 /** Drive one /buy request to completion, returning the response and the Stripe calls. */
 async function buyOnce(kv, path, headers) {
   const run = [];
-  const { result, calls } = await withStripeStub(() => worker.fetch(req(path, headers), env(kv), { waitUntil: (p) => run.push(p) }));
+  const formHeaders = { ...headers, "content-type": "application/x-www-form-urlencoded", origin: "https://mcp.zovo.one" };
+  const { result, calls } = await withStripeStub(() => worker.fetch(req(path, formHeaders, "POST"), env(kv), { waitUntil: (p) => run.push(p) }));
   await Promise.all(run);
   return { res: result, calls };
 }

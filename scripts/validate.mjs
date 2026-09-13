@@ -3062,7 +3062,9 @@ async function remote() {
     const uref2 = await rpc("image", { jsonrpc: "2.0", id: 64, method: "tools/call", params: { name: "image_upload", arguments: { name: "urlbad2", url: `${RAWFX}/sample-doc.pdf` } } });
     ok("url upload refusals: the metadata address is not fetched, and a PDF is not stored as an image", /not a public address/.test(JSON.stringify(uref)) && /magic bytes of a PNG/.test(JSON.stringify(uref2)), JSON.stringify(uref).slice(0, 110));
     const bound = await fetch("https://mcp.zovo.one/bound?tenant=anon_00000000000000000000000000000000").then((r) => r.json()); ok("bound endpoint answers for an unknown tenant", bound.bound === false, JSON.stringify(bound).slice(0, 80));
-    const buyT = await fetch("https://mcp.zovo.one/buy/invoice?tenant=anon_00000000000000000000000000000000", { redirect: "manual", headers: { "x-mcp-probe": "1" } }); ok("buy with tenant still 303 to Stripe", buyT.status === 303, buyT.status);
+    const buyT = await fetch("https://mcp.zovo.one/buy/invoice?tenant=anon_00000000000000000000000000000000", { redirect: "manual", headers: { "x-mcp-probe": "1" } });
+    const buyTHtml = await buyT.text();
+    ok("buy with tenant reaches the explicit checkout-intent page without creating a Stripe session", buyT.status === 200 && /<form method="post"/.test(buyTHtml) && /upgrade the hosted connection/.test(buyTHtml), buyT.status);
     const batch = await fetch("https://mcp.zovo.one/mcp/invoice", { method: "POST", headers: { "content-type": "application/json", accept: "application/json, text/event-stream", authorization: `Bearer ${tok.token}` }, body: "[{}]" }); ok("JSON-RPC batch rejected 400", batch.status === 400, batch.status);
     const big = await fetch("https://mcp.zovo.one/mcp/invoice", { method: "POST", headers: { "content-type": "application/json", authorization: `Bearer ${tok.token}` }, body: "x".repeat(300 * 1024) }); ok("oversize body 413", big.status === 413, big.status);
     const ssrf = await rpc("price-tracker", { jsonrpc: "2.0", id: 7, method: "tools/call", params: { name: "price_check", arguments: { url: "http://169.254.169.254/latest/meta-data/" } } }); ok("SSRF target refused", /refus|block|not allowed|private|denied|not a public address/i.test(JSON.stringify(ssrf)), JSON.stringify(ssrf).slice(0, 100));
@@ -3079,7 +3081,7 @@ async function billing() {
   const t0 = Date.now();
   try {
     const h = await fetch("https://mcp.zovo.one/health").then((r) => r.json()); ok("health ok, live mode, signer ok", h.ok && h.stripe_mode === "live" && h.signer === "ok", JSON.stringify(h).slice(0, 120));
-    for (const p of ["time-tracker", "price-tracker", "spreadsheet", "invoice", "expense-tracker", "currency", "docx", "timezone", "resume", "recurring", "clauses", "pdf", "calendar", "kanban", "image", "bank-statement", "quotes", "barcode", "zip", "billing-docs", "deposits", "per-diem", "asset-register", "statement-of-account", "cash-book", "amortization", "petty-cash", "bundle"]) { const r = await fetch(`https://mcp.zovo.one/buy/${p}`, { redirect: "manual", headers: { "x-mcp-probe": "1" } }); ok(`buy/${p} -> 303 to Stripe`, r.status === 303 && /checkout\.stripe\.com/.test(r.headers.get("location") || ""), `${r.status} ${(r.headers.get("location") || "").slice(0, 50)}`); }
+    for (const p of ["time-tracker", "price-tracker", "spreadsheet", "invoice", "expense-tracker", "currency", "docx", "timezone", "resume", "recurring", "clauses", "pdf", "calendar", "kanban", "image", "bank-statement", "quotes", "barcode", "zip", "billing-docs", "deposits", "per-diem", "asset-register", "statement-of-account", "cash-book", "amortization", "petty-cash", "bundle"]) { const r = await fetch(`https://mcp.zovo.one/buy/${p}`, { redirect: "manual", headers: { "x-mcp-probe": "1" } }); const html = await r.text(); ok(`buy/${p} -> explicit checkout-intent page, no Stripe session`, r.status === 200 && r.headers.get("x-mcp-buy") === "checkout-intent-required" && /<form method="post"/.test(html), `${r.status} ${r.headers.get("x-mcp-buy") || ""}`); }
     // work-order is the one server in the list that must NOT answer 303. Its PRODUCTS entry
     // 2026-09-07: these three were held at 503 because the Stripe key had lost
     // product_write and no price id could be minted. That gate is gone. Checkout Sessions
@@ -3087,15 +3089,15 @@ async function billing() {
     // with usd and name is priced at session time with no human step. These assertions now
     // check the opposite of what they used to: a real Stripe redirect. They fail the day
     // one of these products silently loses its checkout again.
-    { const r = await fetch("https://mcp.zovo.one/buy/work-order", { redirect: "manual", headers: { "x-mcp-probe": "1" } }); const loc = r.headers.get("location") || ""; ok("buy/work-order -> 303 to a live Stripe checkout, priced inline with no price id", r.status === 303 && /^https:\/\/checkout\.stripe\.com\//.test(loc), `${r.status} ${loc.slice(0, 42)}`); }
+    { const r = await fetch("https://mcp.zovo.one/buy/work-order", { redirect: "manual", headers: { "x-mcp-probe": "1" } }); const html = await r.text(); ok("buy/work-order -> explicit checkout-intent page with its inline price", r.status === 200 && /\$19\.00 USD/.test(html) && /MCP Work Order Pro/.test(html), r.status); }
     // catalogue is the second such server, for the same reason and on the same date: the
     // key still lacks product_write, so PRODUCTS["catalogue"].price is the literal
     // "PENDING_HUMAN" too. Same assertion, same reason to keep it out of the 303 loop.
-    { const r = await fetch("https://mcp.zovo.one/buy/catalogue", { redirect: "manual", headers: { "x-mcp-probe": "1" } }); const loc = r.headers.get("location") || ""; ok("buy/catalogue -> 303 to a live Stripe checkout, priced inline with no price id", r.status === 303 && /^https:\/\/checkout\.stripe\.com\//.test(loc), `${r.status} ${loc.slice(0, 42)}`); }
+    { const r = await fetch("https://mcp.zovo.one/buy/catalogue", { redirect: "manual", headers: { "x-mcp-probe": "1" } }); const html = await r.text(); ok("buy/catalogue -> explicit checkout-intent page with its inline price", r.status === 200 && /\$19\.00 USD/.test(html) && /MCP Catalogue Pro/.test(html), r.status); }
     // change-order is the third, same reason, same date: PRODUCTS["change-order"].price is
     // the literal "PENDING_HUMAN" until a human mints the Stripe product. Same assertion,
     // same reason to keep it out of the 303 loop.
-    { const r = await fetch("https://mcp.zovo.one/buy/change-order", { redirect: "manual", headers: { "x-mcp-probe": "1" } }); const loc = r.headers.get("location") || ""; ok("buy/change-order -> 303 to a live Stripe checkout, priced inline with no price id", r.status === 303 && /^https:\/\/checkout\.stripe\.com\//.test(loc), `${r.status} ${loc.slice(0, 42)}`); }
+    { const r = await fetch("https://mcp.zovo.one/buy/change-order", { redirect: "manual", headers: { "x-mcp-probe": "1" } }); const html = await r.text(); ok("buy/change-order -> explicit checkout-intent page with its inline price", r.status === 200 && /\$19\.00 USD/.test(html) && /MCP Change Order Pro/.test(html), r.status); }
     const key = sign("invoice"); const v = await fetch(`https://mcp.zovo.one/verify?key=${encodeURIComponent(key)}`).then((r) => r.json()); ok("verify accepts a locally signed key (same keypair as worker)", v.ok && v.product === "invoice", JSON.stringify(v));
     const bad = await fetch(`https://mcp.zovo.one/verify?key=MCPL1.abc.def`).then((r) => r.json()); ok("verify rejects garbage", bad.ok === false, JSON.stringify(bad));
     const w = await fetch("https://mcp.zovo.one/webhook", { method: "POST", body: "{}" }); ok("webhook rejects unsigned POST", w.status === 400, w.status);

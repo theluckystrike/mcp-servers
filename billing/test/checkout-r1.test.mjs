@@ -38,14 +38,18 @@ const STUB_URL = "https://checkout.stripe.com/c/pay/cs_test_stub";
  */
 const buy = (path, headers = {}) =>
   new Request(`https://mcp.zovo.one${path}`, {
+    method: "POST",
     headers: {
       "user-agent": BROWSER_UA,
       accept: "text/html,application/xhtml+xml",
+      "content-type": "application/x-www-form-urlencoded",
+      origin: "https://mcp.zovo.one",
       "sec-fetch-mode": "navigate",
       "sec-fetch-dest": "document",
       "sec-fetch-site": "same-origin",
       ...headers,
     },
+    body: "intent=checkout",
   });
 
 /** env + ctx enough for the /buy route: KV that answers nothing, waitUntil that runs nothing. */
@@ -167,6 +171,42 @@ test("office-suite sells the bundle, because only the bundle key can activate it
   assert.ok(!checkoutCustomText("bundle").submit.startsWith("You clicked"));
 });
 
+test("opening a Buy link is side-effect free and renders the explicit checkout step", async () => {
+  const get = new Request("https://mcp.zovo.one/buy/invoice?src=store.home.table.invoice", {
+    headers: {
+      "user-agent": BROWSER_UA,
+      accept: "text/html,application/xhtml+xml",
+      "sec-fetch-mode": "navigate",
+      "sec-fetch-dest": "document",
+      "sec-fetch-site": "same-origin",
+    },
+  });
+  const { result: res, calls } = await withStripeStub(() => worker.fetch(get, testEnv(), ctx));
+  assert.equal(res.status, 200);
+  assert.equal(res.headers.get("x-mcp-buy"), "checkout-intent-required");
+  assert.equal(calls.length, 0, "viewing the offer created a Stripe Checkout Session");
+  const html = await res.text();
+  assert.match(html, /<form method="post"/);
+  assert.match(html, /name="intent" value="checkout"/);
+  assert.match(html, /\$19\.00 USD/);
+  assert.match(html, /No payment session has been created yet/);
+});
+
+test("a forged or incomplete POST creates no Stripe Checkout Session", async () => {
+  const validHeaders = Object.fromEntries(buy("/buy/invoice").headers);
+  const cases = [
+    new Request("https://mcp.zovo.one/buy/invoice", { method: "POST", headers: { ...validHeaders, origin: "" }, body: "intent=checkout" }),
+    new Request("https://mcp.zovo.one/buy/invoice", { method: "POST", headers: { ...validHeaders, origin: "https://example.com" }, body: "intent=checkout" }),
+    new Request("https://mcp.zovo.one/buy/invoice", { method: "POST", headers: validHeaders, body: "intent=preview" }),
+  ];
+  for (const req of cases) {
+    const { result: res, calls } = await withStripeStub(() => worker.fetch(req, testEnv(), ctx));
+    assert.equal(res.status, 400);
+    assert.equal(res.headers.get("x-mcp-buy"), "checkout-intent-invalid");
+    assert.equal(calls.length, 0, "an invalid checkout intent reached Stripe");
+  }
+});
+
 test("/buy/office-suite reaches a Stripe checkout for the bundle, priced at $39", async () => {
   const { result: res, calls } = await withStripeStub(() =>
     worker.fetch(buy("/buy/office-suite?src=store.office-suite"), testEnv(), ctx));
@@ -226,7 +266,9 @@ test("a browser that sends no User-Agent still reaches checkout", async () => {
   // A UA-stripping extension or proxy used to be classed as a script and bounced to the
   // product page, whose Buy link led straight back here: a loop no buyer could break.
   const req = new Request("https://mcp.zovo.one/buy/invoice?src=store.home.table.invoice", {
-    headers: { accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8", "sec-fetch-mode": "navigate" },
+    method: "POST",
+    headers: { accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8", "content-type": "application/x-www-form-urlencoded", origin: "https://mcp.zovo.one", "sec-fetch-mode": "navigate", "sec-fetch-dest": "document" },
+    body: "intent=checkout",
   });
   const { result: res } = await withStripeStub(() => worker.fetch(req, testEnv(), ctx));
   assert.equal(res.status, 303);
