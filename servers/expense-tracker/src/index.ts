@@ -682,7 +682,23 @@ server.registerTool("expense_export", {
       return gated(`xlsx export is a Pro format. Nothing was written. Export as csv instead, which the free tier supports up to ${FREE_EXPORT_ROWS} rows.\n\n` + gate.upgradeText("xlsx export", "expense_export"));
     }
     const w = windowNote(a.from, a.to);
-    const rows = select(load(), { from: w.from, to: a.to, project: a.project, category: a.category, billable: a.billable });
+    const db = load();
+    const rows = select(db, { from: w.from, to: a.to, project: a.project, category: a.category, billable: a.billable });
+    // D-R41: a filtered export that says only "Wrote N" reads as the whole period, so a
+    // line the filter dropped (an unprojected mileage line under expense_export
+    // {project: "..."}) leaves the total short without a word. Count what the filters
+    // excluded and name the active filter, the way report names the billed rows it hid.
+    const activeFilters = [
+      a.project ? `project "${a.project}"` : "",
+      a.category ? `category "${a.category}"` : "",
+      typeof a.billable === "boolean" ? `billable: ${a.billable}` : "",
+    ].filter(Boolean);
+    const excluded = activeFilters.length
+      ? select(db, { from: w.from, to: a.to }).length - rows.length
+      : 0;
+    const filterNote = excluded > 0
+      ? `\n\n${excluded} more expense${excluded === 1 ? "" : "s"} in this period ${excluded === 1 ? "was" : "were"} left out by the ${activeFilters.join(" and ")} filter${activeFilters.length > 1 ? "s" : ""} - export the same period with no filter to include ${excluded === 1 ? "it" : "them"}.`
+      : "";
     if (!pro && rows.length > FREE_EXPORT_ROWS) {
       // Refuse before opening the file: a truncated export looks complete and is worse than none.
       return gated(`That range holds ${rows.length} expenses and the free tier exports ${FREE_EXPORT_ROWS} rows. No file was written. Narrow the range or filter by project or category to get under ${FREE_EXPORT_ROWS}.\n\n` + gate.upgradeText(`exports over ${FREE_EXPORT_ROWS} rows`, "expense_export"));
@@ -712,7 +728,7 @@ server.registerTool("expense_export", {
       throw err;
     }
     const bankLine = bankLedgerLine(w.from, a.to, "statement_export");
-    return ok(`Wrote ${data.length} expenses to ${target} (${a.format}).` + (w.note ? `\n\n${w.note}` : "") + (bankLine ? `\n\n${bankLine}` : ""));
+    return ok(`Wrote ${data.length} expenses to ${target} (${a.format}).` + (w.note ? `\n\n${w.note}` : "") + (bankLine ? `\n\n${bankLine}` : "") + filterNote);
   } catch (e) { return fail(String((e as Error).message ?? e)); }
 });
 

@@ -1,6 +1,6 @@
 {
   "name": "@theluckystrike/mcp-bill-of-sale",
-  "version": "0.21.0",
+  "version": "0.22.0",
   "description": "Bills of sale for equipment, vehicles and stock: draft, finalize, print with signature lines.",
   "type": "module",
   "bin": {
@@ -41,7 +41,7 @@
   "homepage": "https://github.com/theluckystrike/mcp-servers/tree/main/servers/bill-of-sale",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.30.0",
-    "@theluckystrike/mcp-license": "^0.21.0",
+    "@theluckystrike/mcp-license": "^0.22.0",
     "zod": "^3.25.0"
   },
   "devDependencies": {

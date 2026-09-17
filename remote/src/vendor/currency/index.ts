@@ -218,7 +218,7 @@ server.registerTool("convert", {
 
 server.registerTool("convert_many", {
   title: "Convert one amount into several currencies",
-  description: "Convert one amount into many currencies off the SAME ECB rate date, each rounded to its own minor units. A target the ECB does not quote is listed as unknown rather than failing the call.",
+  description: "Convert one amount into many currencies off the SAME ECB rate date, each rounded to its own minor units. For several lines at once (mixed-currency invoice lines), call it once per line: every line then shares one rate date. Unknown targets are listed, never failed.",
   inputSchema: {
     amount: AMOUNT,
     from: code("from"),

@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/bill-of-sale-generator",
   "description": "Record a vehicle, equipment or stock sale and print a bill of sale with signature lines.",
-  "version": "0.21.0",
+  "version": "0.22.0",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
@@ -12,8 +12,8 @@
   "packages": [
     {
       "registryType": "mcpb",
-      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.21.0/bill-of-sale.mcpb",
-      "version": "0.21.0",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.22.0/bill-of-sale.mcpb",
+      "version": "0.22.0",
       "transport": {
         "type": "stdio"
       },
@@ -26,6 +26,20 @@
         }
       ],
       "fileSha256": "e31c3b024a8e61f2c203b11fed048b2da87880c9385f7efa4e89f7d65b40384a"
+    }
+  ],
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.zovo.one/mcp/bill-of-sale",
+      "headers": [
+        {
+          "name": "Authorization",
+          "description": "Bearer <Pro license key or anonymous token from GET https://mcp.zovo.one/mcp/token>",
+          "isRequired": true,
+          "isSecret": true
+        }
+      ]
     }
   ]
 }

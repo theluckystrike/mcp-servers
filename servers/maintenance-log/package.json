@@ -1,0 +1,57 @@
+{
+  "name": "@theluckystrike/mcp-maintenance-log",
+  "version": "0.22.0",
+  "description": "Equipment maintenance log: assets, service entries with costs, and a due report from stored dates.",
+  "type": "module",
+  "bin": {
+    "mcp-maintenance-log": "dist/index.js"
+  },
+  "main": "dist/index.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "server.json"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json --declaration && node -e \"import('node:fs').then(f=>f.chmodSync('dist/index.js',0o755))\"",
+    "test": "node --test test/*.test.mjs"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "maintenance-log",
+    "equipment-maintenance",
+    "asset-tracking",
+    "service-log",
+    "preventive-maintenance",
+    "fleet"
+  ],
+  "license": "MIT",
+  "author": "theluckystrike",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/theluckystrike/mcp-servers",
+    "directory": "servers/maintenance-log"
+  },
+  "homepage": "https://github.com/theluckystrike/mcp-servers/tree/main/servers/maintenance-log",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.30.0",
+    "@theluckystrike/mcp-license": "^0.22.0",
+    "zod": "^3.25.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.0",
+    "@types/node": "^22.0.0"
+  }
+}

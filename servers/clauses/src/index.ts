@@ -359,7 +359,7 @@ server.registerTool("clause_search", {
       query: a.query, count: hits.length,
       jurisdiction: a.jurisdiction,
       free_tier_note: tagsGated
-        ? `Free tier filters by query, category and jurisdiction; the tag filter (${a.tags!.join(", ")}) was not applied. ${gate.upgradeText("tag filters in search", "clause_search")}`
+        ? `Free tier filters by query, category and jurisdiction; the tag filter (${a.tags!.join(", ")}) was not applied. clause_list is free and returns every clause's tags, so the tagged matches are one free call away. ${gate.upgradeText("tag filters in search", "clause_search")}`
         : undefined,
       results: hits.slice(0, 25).map((h) => ({ score: h.score, ...summary(h.clause) })),
     });

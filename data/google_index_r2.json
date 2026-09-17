@@ -1,0 +1,95 @@
+{
+  "generated_at": "2026-09-12T13:10:00Z",
+  "agent": "google-index loop 35 R2",
+  "status": "MEASURED",
+  "question": "Why does mcp.zovo.one get 0 Google impressions across 99+ days, with Googlebot covering 2/171 sitemap URLs in 7d while ClaudeBot covers 140/171?",
+  "positive_controls": {
+    "gsc_host_probe": "data/gsc.json fresh_probe.positive_control_zovo_one: same API call, same window (2026-08-30..2026-09-09, dataState all): zovo.one 10/10 days with impressions, 1,818 impressions, 17 clicks; mcp.zovo.one 10 rows, 0 days with impressions, 0 clicks, 0 impressions",
+    "gsc_28d": "data/gsc.json host_probe, window 2026-08-09..2026-09-06, filter page contains //mcp.zovo.one/: 29 daily rows, 0 days_with_impressions, 0 clicks",
+    "crawl_evidence": "data/indexation.json crawl_evidence (2026-09-02..2026-09-09): Googlebot urls_fetched 2, requests 8, pct_of_sitemap 1.4; ClaudeBot 140 urls / 99.3%; Amazonbot 127; bingbot 35",
+    "indexation_census": "data/indexation.json google (2026-09-09, urlInspection API, 141 URLs, 0 api_errors): in_google_index 1, ever_crawled_by_google 1 (the homepage, 2026-09-08T17:20:24Z), by_coverage_state {Discovered-not-indexed 51, unknown-to-Google 89, Submitted-and-indexed 1}; loop-33 R1 census on 154 URLs (2026-09-10): 115 discovered, 38 unknown, 1 indexed"
+  },
+  "live_probes_2026_09_12": {
+    "robots_txt": {
+      "command": "curl -sS -i https://mcp.zovo.one/robots.txt",
+      "status": 200,
+      "content_length": 154,
+      "body": "User-agent: * / Allow: / / Disallow: /buy/ /success /recover /verify /bound / Sitemap: https://mcp.zovo.one/sitemap.xml",
+      "verdict": "clean: full allow, disallows are transactional paths only, sitemap line present"
+    },
+    "sitemap_xml": {
+      "command": "curl -sS https://mcp.zovo.one/sitemap.xml | /usr/bin/grep -o '<loc>' | wc -l",
+      "status": 200,
+      "bytes": 12507,
+      "url_count": 171,
+      "lastmod_count_before_fix": 0,
+      "composition": "100 guides-section, 38 /s/, 20 compare-section, 8 setup, 5 singletons (/, /mcp/connect, /bundle, /changelog, /privacy)",
+      "full_status_sweep": "all 171 URLs fetched once each: 171 x HTTP 200, 0 non-200 (/tmp/gi35/status_sweep.txt; awk status histogram)",
+      "url_hygiene": "all https, same host, zero query parameters",
+      "verdict": "valid and fully resolvable; missing lastmod was the only defect"
+    },
+    "page_probes": [
+      {"url": "/", "status": 200, "x_robots_tag": null, "meta_robots": null, "canonical": "self https", "title": "MCP servers for Claude: invoices, time tracking and freelance tools", "visible_words": 7485, "ld_json_types": ["SoftwareApplication", "ItemList"]},
+      {"url": "/s/invoice", "status": 200, "x_robots_tag": null, "meta_robots": null, "canonical": "self https", "title": "MCP Invoice for Claude, Cursor and any MCP client", "visible_words": 3893, "ld_json_types": ["SoftwareApplication"]},
+      {"url": "/setup/claude-desktop", "status": 200, "x_robots_tag": null, "meta_robots": null, "canonical": "self https", "title": "MCP servers for Claude Desktop: install guides", "visible_words": 1055, "ld_json_types": ["TechArticle"]},
+      {"url": "/guides/free-mcp-servers-for-freelancers", "status": 200, "x_robots_tag": null, "meta_robots": null, "canonical": "self https", "title": "What these MCP servers actually do on the free tier", "visible_words": 922, "ld_json_types": ["TechArticle", "FAQPage"]},
+      {"url": "/buy/invoice", "status": 303, "location": "https://mcp.zovo.one/s/invoice", "note": "robots-disallowed and absent from sitemap; redirect is by design"}
+    ],
+    "noindex_scope": "noindex,follow fires only on 3-segment /setup/<client>/<server> pages (billing/src/index.js:1183), and the sitemap filter at :1199 excludes exactly those; verified /setup/claude-desktop carries no robots meta",
+    "title_uniqueness": "6 of 6 probed pages carry distinct titles",
+    "googlebot_vs_chrome": {
+      "command": "curl -sS -A 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)' https://mcp.zovo.one/s/invoice vs Chrome UA",
+      "result": "both 200, both 40,136 bytes; only differing bytes are the Cloudflare challenge ray-id and timestamp",
+      "verdict": "no cloaking, no bot-specific bytes"
+    },
+    "redirect_chains": {
+      "http_root": "curl -sS -o /dev/null -w '%{http_code} %{url_effective}' -L http://mcp.zovo.one/ -> single 301 -> https://mcp.zovo.one/ (200)",
+      "www_subdomain": "curl https://www.mcp.zovo.one/ -> curl: (6) Could not resolve host (NXDOMAIN); no duplicate-host surface exists",
+      "trailing_slash_before_fix": "/s/invoice/ served 200 with the identical 40,136-byte body and a canonical to /s/invoice; positive control https://zovo.one/free-tools/html-entity-encoder/ returns 301 to the bare form"
+    },
+    "positive_control_markup_diff": {
+      "zovo_one_sitemap": "sitemap index of 6 children; sitemap-01-main.xml: 407 <loc>, 407 <lastmod>, plus changefreq and priority on every entry",
+      "mcp_sitemap_before_fix": "171 <loc>, 0 <lastmod>",
+      "zovo_deep_page_head": "explicit <meta name=robots content='index, follow'> (redundant), 6 og: tags, 3 twitter: tags, ld+json incl BreadcrumbList",
+      "mcp_page_head": "no og:/twitter: tags (social-only, no indexation role), no BreadcrumbList; canonical, description and SoftwareApplication ld+json present",
+      "indexation_relevant_diffs": ["lastmod 407/407 vs 0/171", "trailing-slash 301 vs 200-duplicate"]
+    }
+  },
+  "prime_hypothesis_verdict": {
+    "hypothesis": "37 near-identical product/setup pages trigger thin/duplicate content suppression",
+    "verdict": "REFUTED as the operative cause, on two independent grounds",
+    "ground_1_never_fetched": "Googlebot has fetched 2 of 171 sitemap URLs in 7d (indexation.json crawl_evidence) and the urlInspection census shows 1 of 141 URLs ever crawled; a crawler that has never fetched a page cannot have declined it on content",
+    "ground_2_not_actually_thin": "8 sampled /s/ pages: mean pairwise difflib similarity on stripped visible text 0.443 (n=28 pairs, min 0.379, max 0.508); visible words per page 2,707-4,049; unique words 987-1,452. Doorway-grade duplication is >0.9; these share template chrome and carry substantive unique bodies",
+    "note": "the genuinely repetitive surface (216 client x product setup permutations at 73.6-77.5% similarity) is already noindex,follow and out of the sitemap since loop 29"
+  },
+  "root_causes_ranked": [
+    {"rank": 1, "cause": "host-level crawl starvation behind a degenerate inbound link graph: every external link to the subdomain resolves to /, Googlebot spends the new-host allowance there (2 URLs in 7d), and 170 URLs sit in a Discovered queue that has not drained since sitemap submission 2026-09-04", "evidence": "docs/GOOGLE_INDEX_R1.md census; indexation.json crawl_evidence; gsc.json fresh_probe", "owner": "off-site link lever (R1, staged in extension-insiders) + time"},
+    {"rank": 2, "cause": "sitemap shipped 0/171 lastmod, removing the only crawl-scheduling hint the protocol offers; crawled sibling zovo.one ships 407/407", "evidence": "grep -o '<lastmod>' counts on both sitemaps", "owner": "FIXED IN SOURCE billing/src/index.js (wave C deploys)"},
+    {"rank": 3, "cause": "trailing-slash variants served 200-duplicates of every page, doubling the URL space a starved crawler must dedupe; control property 301s them", "evidence": "/s/invoice/ 200 identical body vs zovo.one 301", "owner": "FIXED IN SOURCE billing/src/index.js (wave C deploys)"}
+  ],
+  "source_changes": {
+    "file": "/Users/mike/mcp-servers/billing/src/index.js",
+    "deployed": false,
+    "deploy_owner": "wave C orchestrator (no wrangler deploy by this agent, per LOOP35_BRIEF rule 6)",
+    "edits": [
+      {"what": "sitemap: emit <lastmod> on every URL, sourced from the newest CHANGELOG.releases entry with a valid ISO date (currently 2026-09-07, v0.21.0); omitted rather than fabricated if no dated release exists", "where": "sitemap.xml handler, ~line 1189-1210"},
+      {"what": "trailing-slash canonicalization: GET/HEAD to any slash-terminated path now 301s to the bare form with query preserved, cacheable 1d; POST and other methods fall through unchanged (routing already stripped slashes, so the target always resolves)", "where": "top of fetch handler, ~line 1016-1024"}
+    ],
+    "verification": [
+      "node --check billing/src/index.js -> SYNTAX_OK",
+      "offline harness (import worker, call fetch with stub env): sitemap 200 with 171 <loc> and 171 <lastmod>, all 2026-09-07",
+      "GET /s/invoice/ -> 301 https://mcp.zovo.one/s/invoice; HEAD same; GET /s/invoice -> 200 (39,198 bytes, canonical intact); GET / -> 200; POST /verify/ -> no redirect, unchanged fall-through",
+      "grep build-vendor.mjs: 0 references to billing/src (hard rule 9 not triggered)"
+    ]
+  },
+  "human_gated": [
+    {"item": "Search Console owner upgrade so the Indexing API stops 403ing: sc-domain:zovo.one -> Settings -> Users and permissions -> Add user zovo-gsc-cleanup@zovo-extensions.iam.gserviceaccount.com as Owner", "url": "https://search.google.com/search-console", "cost": "free, ~30 seconds", "carried_from": "docs/GOOGLE_INDEX_R1.md"},
+    {"item": "after wave C deploys, resubmit the sitemap once to force a re-download with lastmod", "url": "https://search.google.com/search-console/sitemaps?resource_id=sc-domain:zovo.one", "cost": "free, one click"},
+    {"item": "deploy of the two source fixes is wave-C orchestrator work, not this agent's", "url": null}
+  ],
+  "content_recommendations_for_operator_pack": [
+    "optional polish only: og:/twitter: meta absent on mcp.zovo.one (zero indexation impact; social-share cards)",
+    "optional: BreadcrumbList ld+json on /s/ and /guides/ pages, matching zovo.one deep pages",
+    "the operative lever is unchanged from R1: more distinct deep inbound links from already-indexed pages; R1 staged 5 in extension-insiders/api/render.ts awaiting deploy; judge on ever_crawled_by_google at the next census"
+  ]
+}

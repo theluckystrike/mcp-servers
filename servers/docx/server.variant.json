@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/documents",
   "description": "Generate real Word documents from your AI chat: proposals, quotes, contracts, SOWs.",
-  "version": "0.21.0",
+  "version": "0.22.0",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
@@ -12,8 +12,8 @@
   "packages": [
     {
       "registryType": "mcpb",
-      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.21.0/docx.mcpb",
-      "version": "0.21.0",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.22.0/docx.mcpb",
+      "version": "0.22.0",
       "transport": {
         "type": "stdio"
       },
@@ -26,6 +26,20 @@
         }
       ],
       "fileSha256": "e262dd6161bae677b33015fd94f0f9fae5f314c94f5963059ff87ed26a15df4f"
+    }
+  ],
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.zovo.one/mcp/docx",
+      "headers": [
+        {
+          "name": "Authorization",
+          "description": "Bearer <Pro license key or anonymous token from GET https://mcp.zovo.one/mcp/token>",
+          "isRequired": true,
+          "isSecret": true
+        }
+      ]
     }
   ]
 }

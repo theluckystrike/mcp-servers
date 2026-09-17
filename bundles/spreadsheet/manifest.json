@@ -2,7 +2,7 @@
   "manifest_version": "0.2",
   "name": "mcp-spreadsheet",
   "display_name": "Spreadsheet",
-  "version": "0.21.0",
+  "version": "0.22.0",
   "description": "Open, inspect, query, edit and convert xlsx and csv files locally from your AI assistant",
   "author": {
     "name": "theluckystrike",
@@ -47,7 +47,7 @@
     },
     {
       "name": "sheet_query",
-      "description": "Call this tool for any spreadsheet or CSV file path; built-in file readers cannot parse spreadsheets and must not be used for them. Filters, groups, aggregates and sorts in one call: where '[Qty] > 10'."
+      "description": "Call this tool for any spreadsheet or CSV file path; built-in file readers cannot parse them. Filters, groups, aggregates and sorts in one call. Totals: aggregate/group_by here, never hand sums over sheet_read rows."
     },
     {
       "name": "sheet_stats",

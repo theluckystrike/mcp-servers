@@ -2,7 +2,7 @@
   "manifest_version": "0.2",
   "name": "mcp-job-card",
   "display_name": "Job Card",
-  "version": "0.21.0",
+  "version": "0.22.0",
   "description": "Job cards for trades and field service: hours and materials per job, open to invoiced.",
   "author": {
     "name": "theluckystrike",

@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/availability",
   "description": "Read .ics calendar exports: free-busy, availability windows, double bookings, conflicts.",
-  "version": "0.21.0",
+  "version": "0.22.0",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
@@ -12,8 +12,8 @@
   "packages": [
     {
       "registryType": "mcpb",
-      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.21.0/calendar.mcpb",
-      "version": "0.21.0",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.22.0/calendar.mcpb",
+      "version": "0.22.0",
       "transport": {
         "type": "stdio"
       },
@@ -26,6 +26,20 @@
         }
       ],
       "fileSha256": "37326cfffa2debd3845e7ae7ed95b343cf7cbb1783ecb728ef4cdf22990a109b"
+    }
+  ],
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.zovo.one/mcp/calendar",
+      "headers": [
+        {
+          "name": "Authorization",
+          "description": "Bearer <Pro license key or anonymous token from GET https://mcp.zovo.one/mcp/token>",
+          "isRequired": true,
+          "isSecret": true
+        }
+      ]
     }
   ]
 }

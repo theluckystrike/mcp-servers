@@ -2,7 +2,7 @@
   "manifest_version": "0.2",
   "name": "mcp-credit-note",
   "display_name": "Credit Note",
-  "version": "0.21.0",
+  "version": "0.22.0",
   "description": "Credit notes against an invoice or standalone: drafts, finalization, rendering, totals.",
   "author": {
     "name": "theluckystrike",

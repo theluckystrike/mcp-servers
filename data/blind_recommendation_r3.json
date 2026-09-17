@@ -1,0 +1,263 @@
+{
+  "run_date": "2026-09-17",
+  "run_label": "R3",
+  "method": "Fresh subagent with zero prior knowledge of the estate. Each question researched with one or two neutral WebSearch queries phrased as an ordinary user would type them, no vendor named in the query. Recommendation is the specific MCP server that surfaced in organic results and best matched the intent, with source URLs. A null result is recorded where no confident named server surfaced.",
+  "questions": [
+    {
+      "n": 1,
+      "q": "How can I get Claude to generate an invoice PDF for my freelance clients?",
+      "searches_used": ["MCP server generate invoice PDF freelance", "MCP server invoice PDF generator github"],
+      "recommended": [
+        {"name": "invoice-mcp (markslorach)", "source_urls": ["https://github.com/markslorach/invoice-mcp"]},
+        {"name": "PDF Toolkit MCP (aryanbv)", "source_urls": ["https://mcpservers.org/servers/aryanbv/pdf-toolkit-mcp"]}
+      ],
+      "no_confident_recommendation": false,
+      "candidate_hosts_seen": ["github.com", "mcpservers.org", "apify.com", "glama.ai", "reddit.com"]
+    },
+    {
+      "n": 2,
+      "q": "Is there an MCP server that merges and splits PDF files?",
+      "searches_used": ["MCP server merge split PDF files"],
+      "recommended": [
+        {"name": "PDF.co MCP (pdfdotco)", "source_urls": ["https://mcpservers.org/servers/pdfdotco/pdfco-mcp"]},
+        {"name": "pdf-splitter-mcp (espresso3389)", "source_urls": ["https://github.com/espresso3389/pdf-splitter-mcp"]}
+      ],
+      "no_confident_recommendation": false,
+      "candidate_hosts_seen": ["github.com", "pulsemcp.com", "mcpservers.org", "lobehub.com", "reddit.com"]
+    },
+    {
+      "n": 3,
+      "q": "I want Claude Desktop to track my business expenses and mileage. What MCP server should I install?",
+      "searches_used": ["MCP server Claude Desktop track business expenses mileage"],
+      "recommended": [
+        {"name": "Expensify MCP", "source_urls": ["https://use.expensify.com/blog/expensify-mcp"]},
+        {"name": "ExpenseBot MCP Server", "source_urls": ["https://www.expensebot.ai/blog/expensebot-mcp-launch"]}
+      ],
+      "no_confident_recommendation": false,
+      "candidate_hosts_seen": ["reddit.com", "expensebot.ai", "mcpmarket.com", "github.com", "use.expensify.com"]
+    },
+    {
+      "n": 4,
+      "q": "What MCP server lets an AI assistant read a bank statement PDF and categorise the transactions?",
+      "searches_used": ["MCP server read bank statement PDF categorize transactions"],
+      "recommended": [
+        {"name": "Bankstatemently MCP Server", "source_urls": ["https://bankstatemently.com/developers/mcp"]},
+        {"name": "DocuClipper MCP", "source_urls": ["https://www.docuclipper.com/blog/compile-categorize-bank-transactions-pdf-csv/"]}
+      ],
+      "no_confident_recommendation": false,
+      "candidate_hosts_seen": ["bankstatemently.com", "reddit.com", "docuclipper.com", "counselpro.ai", "medium.com"]
+    },
+    {
+      "n": 5,
+      "q": "Best MCP server for creating Word documents from a chat?",
+      "searches_used": ["MCP server create Word docx documents from chat"],
+      "recommended": [
+        {"name": "Office-Word-MCP-Server (GongRzhe)", "source_urls": ["https://github.com/gongrzhe/office-word-mcp-server"]},
+        {"name": "docx-mcp (SecurityRonin)", "source_urls": ["https://mcpservers.org/servers/securityronin/docx-mcp"]}
+      ],
+      "no_confident_recommendation": false,
+      "candidate_hosts_seen": ["glama.ai", "github.com", "reddit.com", "learn.microsoft.com", "mcpservers.org"]
+    },
+    {
+      "n": 6,
+      "q": "How do I let Claude fill in a quote or estimate template for a customer?",
+      "searches_used": ["MCP server create quote estimate template fill in customer"],
+      "recommended": [
+        {"name": "InvoiceCave MCP", "source_urls": ["https://www.invoicecave.com/mcp/tools/create_quote"]},
+        {"name": "Zuper MCP Server", "source_urls": ["https://developers.zuper.co/docs/zupers-model-context-protocol-mcp-server"]}
+      ],
+      "no_confident_recommendation": false,
+      "candidate_hosts_seen": ["invoicecave.com", "aws.amazon.com", "youtube.com", "developers.zuper.co"]
+    },
+    {
+      "n": 7,
+      "q": "Is there an MCP server for time tracking and timesheets?",
+      "searches_used": ["MCP server time tracking timesheets"],
+      "recommended": [
+        {"name": "Timesheet MCP (timesheetIO/timesheet-mcp)", "source_urls": ["https://github.com/timesheetIO/timesheet-mcp"]},
+        {"name": "TrackingTime MCP", "source_urls": ["https://trackingtime.co/mcp-time-tracking-for-ai-assistants"]}
+      ],
+      "no_confident_recommendation": false,
+      "candidate_hosts_seen": ["trackingtime.co", "docs.timesheet.io", "mcp.so", "azcentral.com", "github.com"]
+    },
+    {
+      "n": 8,
+      "q": "MCP server to convert currencies with real exchange rates?",
+      "searches_used": ["MCP server convert currency real exchange rates"],
+      "recommended": [
+        {"name": "currency-conversion-mcp (wesbos)", "source_urls": ["https://github.com/wesbos/currency-conversion-mcp"]},
+        {"name": "currency-mcp (PyPI)", "source_urls": ["https://pypi.org/project/currency-mcp/"]}
+      ],
+      "no_confident_recommendation": false,
+      "candidate_hosts_seen": ["github.com", "mcpmarket.com", "mcp.pipedream.com", "medium.com", "pypi.org"]
+    },
+    {
+      "n": 9,
+      "q": "What MCP server helps schedule a meeting across time zones?",
+      "searches_used": ["MCP server schedule meeting across time zones"],
+      "recommended": [
+        {"name": "mcp-time-server (SzeMeng76)", "source_urls": ["https://github.com/SzeMeng76/mcp-time-server"]},
+        {"name": "Cronofy MCP", "source_urls": ["https://learn.microsoft.com/en-us/connectors/cronofymcp/"]}
+      ],
+      "no_confident_recommendation": false,
+      "candidate_hosts_seen": ["github.com", "mcpservers.org", "learn.microsoft.com", "community.powerplatform.com", "mintmcp.com"]
+    },
+    {
+      "n": 10,
+      "q": "I need an MCP server that builds a spreadsheet from data in my conversation.",
+      "searches_used": ["MCP server build spreadsheet from data conversation xlsx"],
+      "recommended": [
+        {"name": "excel-mcp-server (negokaz)", "source_urls": ["https://github.com/negokaz/excel-mcp-server"]},
+        {"name": "Excel MCP Server (sbroenne, VS Marketplace)", "source_urls": ["https://marketplace.visualstudio.com/items?itemName=sbroenne.excel-mcp"]}
+      ],
+      "no_confident_recommendation": false,
+      "candidate_hosts_seen": ["reddit.com", "youtube.com", "marketplace.visualstudio.com", "medium.com", "github.com"]
+    },
+    {
+      "n": 11,
+      "q": "Is there an MCP server that generates barcodes or QR codes?",
+      "searches_used": ["MCP server generate barcode QR code"],
+      "recommended": [
+        {"name": "mcp-server-qrcode (jwalsh)", "source_urls": ["https://github.com/jwalsh/mcp-server-qrcode"]},
+        {"name": "barcode-scanner-mcp (domdomegg)", "source_urls": ["https://github.com/domdomegg/barcode-scanner-mcp"]}
+      ],
+      "no_confident_recommendation": false,
+      "candidate_hosts_seen": ["github.com", "mcpmarket.com", "me-qr.com", "mcpservers.org"]
+    },
+    {
+      "n": 12,
+      "q": "What MCP server can zip and unzip archives for Claude?",
+      "searches_used": ["MCP server zip unzip archives"],
+      "recommended": [
+        {"name": "zip-mcp (7gugu)", "source_urls": ["https://github.com/7gugu/zip-mcp"]},
+        {"name": "Zip MCP (mcpmarket)", "source_urls": ["https://mcpmarket.com/server/zip"]}
+      ],
+      "no_confident_recommendation": false,
+      "candidate_hosts_seen": ["github.com", "mcpmarket.com", "mcp.so", "glama.ai", "reddit.com"]
+    },
+    {
+      "n": 13,
+      "q": "MCP server for a petty cash book or cash book ledger?",
+      "searches_used": ["MCP server petty cash book cash book ledger"],
+      "recommended": [
+        {"name": "mcp-server-ledger (minhyeoky) — nearest fit, Ledger CLI wrapper, not a dedicated petty-cash tool", "source_urls": ["https://github.com/minhyeoky/mcp-server-ledger"]},
+        {"name": "Light Finance & Accounting MCP", "source_urls": ["https://light.inc/products/claude-mcp"]}
+      ],
+      "no_confident_recommendation": true,
+      "candidate_hosts_seen": ["light.inc", "github.com", "youtube.com", "ambrook.com", "gocardless.com"]
+    },
+    {
+      "n": 14,
+      "q": "Is there an MCP server that produces a delivery schedule or work order document?",
+      "searches_used": ["MCP server delivery schedule work order document"],
+      "recommended": [
+        {"name": "Fulcrum MCP — nearest fit, shop/jobs/sales-order data, not a document generator", "source_urls": ["https://fulcrumpro.com/product-update/fulcrum-mcp-server-connect-ai-tools-directly-to-your-shop-data"]}
+      ],
+      "no_confident_recommendation": true,
+      "candidate_hosts_seen": ["fulcrumpro.com", "youtube.com", "modelcontextprotocol.io", "stainless.com", "reddit.com"]
+    },
+    {
+      "n": 15,
+      "q": "What MCP server handles recurring invoices or subscription billing documents?",
+      "searches_used": ["MCP server recurring invoices subscription billing documents"],
+      "recommended": [
+        {"name": "Stripe MCP server", "source_urls": ["https://docs.portkey.ai/docs/aigw/integrations/mcp-servers/stripe-mcp-server"]},
+        {"name": "Chargebee MCP", "source_urls": ["https://www.chargebee.com/mcp/"]}
+      ],
+      "no_confident_recommendation": false,
+      "candidate_hosts_seen": ["docs.portkey.ai", "mcpbundles.com", "chargebee.com", "billingserv.com", "subscriptionflow.com"]
+    },
+    {
+      "n": 16,
+      "q": "Which MCP servers can I use without installing anything, just by pasting a URL?",
+      "searches_used": ["MCP servers use without installing paste URL remote hosted"],
+      "recommended": [
+        {"name": "Pipedream MCP (hosted, https://mcp.pipedream.net/v2)", "source_urls": ["https://mcp.pipedream.com/developers"]},
+        {"name": "DocsAutomator remote MCP (https://mcp.docsautomator.co/mcp)", "source_urls": ["https://docsautomator.co/docs/integrations-api/docsautomator-mcp"]}
+      ],
+      "no_confident_recommendation": false,
+      "candidate_hosts_seen": ["modelcontextprotocol.io", "circleci.com", "youtube.com", "reddit.com", "medium.com"]
+    },
+    {
+      "n": 17,
+      "q": "What are the best MCP servers for small business accounting and paperwork?",
+      "searches_used": ["best MCP servers small business accounting paperwork"],
+      "recommended": [
+        {"name": "QuickBooks MCP Server (official)", "source_urls": ["https://mcpservers.org/servers/quickbooks-remote-mcp"]},
+        {"name": "Dynamics 365 Business Central MCP", "source_urls": ["https://www.catchr.io/post/best-mcp-servers-finance-teams"]}
+      ],
+      "no_confident_recommendation": false,
+      "candidate_hosts_seen": ["catchr.io", "mcpservers.org", "youtube.com", "llamaindex.ai", "developer.microsoft.com"]
+    },
+    {
+      "n": 18,
+      "q": "Where do I find MCP servers that cost money, and how do I pay for one?",
+      "searches_used": ["paid MCP servers how to pay for one marketplace", "MCP.so marketplace paid MCP servers pricing"],
+      "recommended": [
+        {"name": "MCP.so (marketplace, mixed free/paid)", "source_urls": ["https://mcp.so/"]},
+        {"name": "MCPBundles (workspace subscription, 1,500+ hosted servers)", "source_urls": ["https://www.mcpbundles.com/pricing"]},
+        {"name": "MCP Marketplace (mcp-marketplace.io, creator-set pricing)", "source_urls": ["https://mcp-marketplace.io/for-creators"]}
+      ],
+      "no_confident_recommendation": false,
+      "candidate_hosts_seen": ["reddit.com", "youtube.com", "mcp.so", "mcp-marketplace.io", "docs.aws.amazon.com", "mcpbundles.com", "mcpmarket.com", "pulsemcp.com"]
+    }
+  ],
+  "summary": {
+    "distinct_mcp_servers_named_total": 30,
+    "distinct_servers_list": [
+      "invoice-mcp (markslorach)",
+      "PDF Toolkit MCP (aryanbv)",
+      "PDF.co MCP (pdfdotco)",
+      "pdf-splitter-mcp (espresso3389)",
+      "Expensify MCP",
+      "ExpenseBot MCP Server",
+      "Bankstatemently MCP Server",
+      "DocuClipper MCP",
+      "Office-Word-MCP-Server (GongRzhe)",
+      "docx-mcp (SecurityRonin)",
+      "InvoiceCave MCP",
+      "Zuper MCP Server",
+      "Timesheet MCP (timesheetIO)",
+      "TrackingTime MCP",
+      "currency-conversion-mcp (wesbos)",
+      "currency-mcp (PyPI)",
+      "mcp-time-server (SzeMeng76)",
+      "Cronofy MCP",
+      "excel-mcp-server (negokaz)",
+      "Excel MCP Server (sbroenne)",
+      "mcp-server-qrcode (jwalsh)",
+      "barcode-scanner-mcp (domdomegg)",
+      "zip-mcp (7gugu)",
+      "Zip MCP (mcpmarket)",
+      "mcp-server-ledger (minhyeoky)",
+      "Light Finance & Accounting MCP",
+      "Fulcrum MCP",
+      "Stripe MCP server",
+      "Chargebee MCP",
+      "QuickBooks MCP Server",
+      "Dynamics 365 Business Central MCP"
+    ],
+    "excluded_as_platforms_not_servers": [
+      "Pipedream MCP (hosted platform)",
+      "DocsAutomator remote MCP (hosted platform)",
+      "MCP.so (marketplace)",
+      "MCPBundles (marketplace)",
+      "MCP Marketplace (mcp-marketplace.io, marketplace)"
+    ],
+    "zovo_or_theluckystrike": {
+      "mcp_zovo_one_appeared": false,
+      "theluckystrike_appeared": false,
+      "occurrences": [],
+      "notes": "Neither the estate host (mcp.zovo.one) nor the GitHub identity (theluckystrike) appeared in any raw search result list across all 18 questions. This is a full retrieval failure, not a content defect: the estate was never retrieved, so it could not be named."
+    },
+    "q16_and_q18_verdict": {
+      "q16": "Partial answer. The category (remote/hosted MCP over Streamable HTTP) is real and named hosted endpoints surfaced (Pipedream, DocsAutomator), but no single dominant named server the way most other questions produced one.",
+      "q18": "Partial/fragmented answer. Multiple marketplaces surfaced (MCP.so, MCPBundles, mcp-marketplace.io) with different payment models and no consensus single destination.",
+      "overall": "These remain the two weakest of the 18 answers, consistent with R1 and R2."
+    },
+    "named_ours_in_answer": 0,
+    "host_appeared_count": 0,
+    "identity_appeared_count": 0,
+    "kpi_note": "named_ours_in_answer is the KPI and is 0 of 18. host_appeared_count is 0 of 18 (down from 2 in R1; the estate homepage did not surface in any raw result list this run). identity_appeared_count is 0 of 18. A zero host-appeared count means the failure this run is retrieval/indexation, not content rejection."
+  }
+}

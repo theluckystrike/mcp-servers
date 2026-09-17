@@ -428,6 +428,24 @@ check("contract", "contract test", (s) =>
 // waiver never re-checks itself, and a competitor showing up next month would sit
 // unnoticed forever. See the `compare` check above.
 const WAIVERS = [
+  // 2026-09-17: the wave-C hosted-row waiver for supplier-list, service-agreement,
+  // maintenance-log and mileage-log was deleted — the worker was deployed and the
+  // distribution.json rows reconciled to "published https://mcp.zovo.one/mcp/<server>".
+  {
+    check: "gif",
+    servers: ["supplier-list", "service-agreement", "maintenance-log", "mileage-log"],
+    why: "2026-09-17: the four newest servers have no demo GIF yet; a GIF needs a scripted UI session per server. Queue for the next content round.",
+  },
+  {
+    check: "logo",
+    servers: ["supplier-list", "service-agreement", "maintenance-log", "mileage-log"],
+    why: "2026-09-17: no logo PNG generated for the four newest servers; same content round as the GIFs.",
+  },
+  {
+    check: "spec",
+    servers: ["supplier-list", "service-agreement", "maintenance-log", "mileage-log"],
+    why: "2026-09-17: SPEC.md not yet written for the four newest servers; content round task, not wiring.",
+  },
 ];
 const waived = new Map(); // "server:check" -> why
 for (const w of WAIVERS) for (const s of w.servers) waived.set(`${s}:${w.check}`, w.why);
@@ -454,7 +472,7 @@ global_("PRODUCTS.bundle names the right count and saving", () => {
   const saving = n * PRODUCTS[SERVERS[0]].usd - b.usd;
   const words = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten",
     "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen",
-    "twenty", "twenty-one", "twenty-two", "twenty-three", "twenty-four", "twenty-five", "twenty-six", "twenty-seven", "twenty-eight", "twenty-nine", "thirty", "thirty-one", "thirty-two", "thirty-three", "thirty-four", "thirty-five", "thirty-six", "thirty-seven", "thirty-eight", "thirty-nine", "forty"];
+    "twenty", "twenty-one", "twenty-two", "twenty-three", "twenty-four", "twenty-five", "twenty-six", "twenty-seven", "twenty-eight", "twenty-nine", "thirty", "thirty-one", "thirty-two", "thirty-three", "thirty-four", "thirty-five", "thirty-six", "thirty-seven", "thirty-eight", "thirty-nine", "forty", "forty-one", "forty-two"];
   const bad = [];
   const prices = new Set(SERVERS.map((s) => PRODUCTS[s]?.usd));
   if (prices.size !== 1) bad.push(`per-server prices are not uniform: ${[...prices].join(", ")}`);

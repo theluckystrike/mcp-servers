@@ -1,45 +1,45 @@
 {
-  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
-  "name": "io.github.theluckystrike/per-diem",
-  "description": "Daily travel allowances from bundled public rate tables: Poland, HMRC and GSA CONUS.",
-  "version": "0.21.0",
-  "repository": {
-    "url": "https://github.com/theluckystrike/mcp-servers",
-    "source": "github",
-    "subfolder": "servers/per-diem"
-  },
-  "websiteUrl": "https://mcp.zovo.one/s/per-diem",
-  "packages": [
+ "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+ "name": "io.github.theluckystrike/per-diem",
+ "description": "Daily travel allowances from bundled public rate tables: Poland, HMRC and GSA CONUS.",
+ "version": "0.22.0",
+ "repository": {
+  "url": "https://github.com/theluckystrike/mcp-servers",
+  "source": "github",
+  "subfolder": "servers/per-diem"
+ },
+ "websiteUrl": "https://mcp.zovo.one/s/per-diem",
+ "packages": [
+  {
+   "registryType": "mcpb",
+   "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.22.0/per-diem.mcpb",
+   "version": "0.22.0",
+   "transport": {
+    "type": "stdio"
+   },
+   "environmentVariables": [
     {
-      "registryType": "mcpb",
-      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.21.0/per-diem.mcpb",
-      "version": "0.21.0",
-      "transport": {
-        "type": "stdio"
-      },
-      "environmentVariables": [
-        {
-          "name": "MCP_LICENSE_KEY",
-          "description": "Optional Pro license key (MCPL1....). Verified offline.",
-          "isRequired": false,
-          "isSecret": true
-        }
-      ],
-      "fileSha256": "4fcc49827c093862b0d9182aac4ac166081cbbdb8da65b0917dbcff6ad27cd1d"
+     "name": "MCP_LICENSE_KEY",
+     "description": "Optional Pro license key (MCPL1....). Verified offline.",
+     "isRequired": false,
+     "isSecret": true
     }
-  ],
-  "remotes": [
+   ],
+   "fileSha256": "da86ae11e25ef0498140df6d4264495195d4b8ec6b815ebb4083feb97b8f6e77"
+  }
+ ],
+ "remotes": [
+  {
+   "type": "streamable-http",
+   "url": "https://mcp.zovo.one/mcp/per-diem",
+   "headers": [
     {
-      "type": "streamable-http",
-      "url": "https://mcp.zovo.one/mcp/per-diem",
-      "headers": [
-        {
-          "name": "Authorization",
-          "description": "Bearer <Pro license key or anonymous token from GET https://mcp.zovo.one/mcp/token>",
-          "isRequired": true,
-          "isSecret": true
-        }
-      ]
+     "name": "Authorization",
+     "description": "Bearer <Pro license key or anonymous token from GET https://mcp.zovo.one/mcp/token>",
+     "isRequired": true,
+     "isSecret": true
     }
-  ]
+   ]
+  }
+ ]
 }

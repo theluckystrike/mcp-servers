@@ -2,7 +2,7 @@
   "manifest_version": "0.2",
   "name": "mcp-bill-of-sale",
   "display_name": "Bill of Sale",
-  "version": "0.21.0",
+  "version": "0.22.0",
   "description": "Bills of sale for equipment, vehicles and stock: draft, finalize, print with signature lines.",
   "author": {
     "name": "theluckystrike",

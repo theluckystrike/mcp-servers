@@ -56,8 +56,11 @@ test("the catalogue counts agree with each other", () => {
   assert.ok(HOSTED_COUNT <= LISTED_COUNT, "more hosted endpoints than listed servers");
   assert.ok(SERVER_DIR_COUNT >= LISTED_COUNT,
     "a listed server has no source directory, which cannot happen");
-  assert.equal(VALIDATION.servers, LISTED_COUNT,
-    `the home page claims ${VALIDATION.pass} of ${VALIDATION.total} checks across ${VALIDATION.servers} servers while the site lists ${LISTED_COUNT}. Re-run validation, then update VALIDATION in billing/src/index.js.`);
+  // VALIDATION measures every server directory except office-suite (stdio-only, not hosted),
+  // so its server count is the hosted set: 41. LISTED_COUNT (42) additionally counts
+  // office-suite, which the store lists but the hosted validation cannot spawn.
+  assert.equal(VALIDATION.servers, HOSTED_COUNT,
+    `the home page claims ${VALIDATION.pass} of ${VALIDATION.total} checks across ${VALIDATION.servers} servers while the site lists ${HOSTED_COUNT}. Re-run validation, then update VALIDATION in billing/src/index.js.`);
 });
 
 test("no count of servers on the home page is typed, spelled out, or wrong", async () => {
@@ -118,9 +121,11 @@ const haystack = SOURCES.map(read).join("\n").replace(/,(?=\d)/g, "");
  * the reason. Keep this list short and keep the reason on the line.
  */
 const EXPLAINED = new Map([
-  // VERSION is "0.21.0" in figures.js. Splitting a three-part version yields "0.21", which
-  // the (?!\.\d) lookahead then refuses against its own source.
-  ["0.21", `VERSION is ${VERSION} in billing/src/figures.js`],
+  // VERSION is "0.22.0" in figures.js. Splitting a three-part version yields "0.22", which
+  // the (?!\.\d) lookahead then refuses against its own source. Same defect shape as the
+  // old "0.21" entry below the rename.
+  ["0.22", `VERSION is ${VERSION} in billing/src/figures.js`],
+  ["0.21", `VERSION was 0.21.0; historical entry kept for older guide text`],
 ]);
 
 function figures(text) {

@@ -29,6 +29,7 @@ const SERVERS = [
   "resume", "spreadsheet", "statement-of-account", "time-tracker", "timezone", "work-order",
   "packing-list", "checklist",
   "bill-of-sale", "credit-note", "job-card", "dunning-letters",
+  "supplier-list", "service-agreement", "maintenance-log", "mileage-log",
 ].sort();
 
 const COMMON_INVARIANTS = [
@@ -161,7 +162,7 @@ const CURATED = {
       "A PACKED LINE WITH NO ORDERED LINE IS REPORTED, NEVER DROPPED. The shortfall has four states and `not_on_order` is one of them. Dropping it is how a wrong item ships: the report reads clean, the box is heavier than the order, and nobody looks again until the consignee calls. Lines are matched on SKU where there is one and on the normalised description where there is not, so eight shelves in one carton and four in another are ONE row of twelve, with both carton ids on it.",
       "A SHIPPED LIST IS FROZEN ON EVERY EDITING TOOL AND READABLE ON EVERY READING ONE. The goods have gone; a packing slip that changed after the van did is a document nobody can reconcile against what arrived. It cannot be reopened, edited or deleted, and the slip stays reproducible afterwards. Shipping while anything is short, over-packed or unordered is refused unless `force` is passed, and either way the exceptions come back and are recorded as `shipped_with_exceptions`.",
       "NO SIBLING STORE IS OPENED. The order is a name, and what it says should ship is DECLARED here with `packing_expect`. The quotes, work-order and invoice `dataDir()` functions create a directory on read, and a packing list that refused to exist until its order could be found on this machine would refuse every order raised on another one.",
-      "THIS SERVER IS STDIO AND .MCPB ONLY. It has no hosted endpoint, so there is no `remotes.json` and no manifest carries a `remotes` block. The registry binds one endpoint URL to exactly one server name, so advertising a URL that does not answer would burn the name; the contract suite asserts the absence rather than trusting it.",
+      "Hosted since loop 35 at /mcp/packing-list: the mcpb manifest carries remotes.json, and the contract suite asserts the two stay equal by value. The registry binds one endpoint URL to exactly one server name, so the hosted URL appears only on the primary manifest and never on the stdio-only variant names.",
     ],
   },
   "checklist": {
@@ -188,7 +189,7 @@ const CURATED = {
       "A SIGNED-OFF RUN IS IMMUTABLE ON EVERY EDITING TOOL AND READABLE ON EVERY READING ONE, and it cannot be deleted, because it is the record of what somebody put their name to. An ABANDONED run is closed but is not a signature: it prints the blank signature block and it CAN be deleted.",
       "NO SIBLING STORE IS OPENED. The job a run is against is a name and nothing more, so a run raised against a work order created on another machine still exists here.",
       "THERE IS NO MONEY ANYWHERE. A checklist has no amounts: `@theluckystrike/mcp-invoice` is not a dependency, no money function name appears in non-comment source, and no currency symbol appears in src. The contract suite asserts all three.",
-      "THIS SERVER IS STDIO AND .MCPB ONLY, and it ships THREE registry names on one bundle: `checklist`, `snag-list-defect-handover-signoff` and `onboarding-checklist-inspection-runs`. Registry search matches a substring of the full name and never the description, so more names is the only way to be findable on more tokens; the measured landing ranks are 7, 2, 3 and 7 on checklist, snag, handover and onboarding (docs/TOKEN_DEMAND_R1.md). A contract test asserts the tokens are actually present in the names, because a name that lost its token in an edit is a server that silently stops being findable.",
+      "Hosted since loop 35 at /mcp/checklist (remotes.json merged into the mcpb manifest; the contract suite asserts they stay equal by value), and it ships THREE registry names on one bundle: `checklist`, `snag-list-defect-handover-signoff` and `onboarding-checklist-inspection-runs`. Registry search matches a substring of the full name and never the description, so more names is the only way to be findable on more tokens; the measured landing ranks are 7, 2, 3 and 7 on checklist, snag, handover and onboarding (docs/TOKEN_DEMAND_R1.md). A contract test asserts the tokens are actually present in the names, because a name that lost its token in an edit is a server that silently stops being findable.",
     ],
   },
   "bill-of-sale": {
@@ -211,7 +212,7 @@ const CURATED = {
       "A BYTE-IDENTICAL REPEAT SALE IS REFUSED BEFORE THE FREE CAP IS CONSULTED and names the id already stored; `duplicate_ok: true` is the way through for a genuine second sale of the same item.",
       "CURRENCIES ARE NEVER ADDED TOGETHER. `sale_summary` reports total value per currency, because this server holds no exchange rate and one figure over a EUR sale and a USD one would be invented.",
       "THE SELLER DEFAULTS TO THE SHARED BUSINESS PROFILE'S NAME, read-only and best-effort; the profile file is never written from here.",
-      "THIS SERVER IS STDIO AND .MCPB ONLY: no manifest advertises a remote, because no hosted endpoint exists for it.",
+      "Hosted since loop 35 at /mcp/bill-of-sale: the mcpb manifest carries remotes.json, and the contract suite asserts the two stay equal by value.",
     ],
   },
   "credit-note": {
@@ -232,7 +233,7 @@ const CURATED = {
       "THE LINE MATH IS DOCUMENTED SO THE PRINTED DOCUMENT REPRODUCES ON A CALCULATOR: the unit price enters as integer minor units, the line gross is quantity times unit price rounded half-up ONCE, tax is per line rounded half-up per line on its own base, and the note totals are plain integer sums of the already-rounded line values. A total can never drift from the printed lines by more than the rounding already visible on those lines.",
       "A DRAFT RENDERS WITH A DRAFT BANNER, and free-tier renders carry a one-line footer that Pro removes; the document text itself is never metered.",
       "NO SIBLING STORE IS OPENED. A credit against an invoice names the invoice by its reference and nothing more, so a credit against an invoice raised on another machine still records here.",
-      "THIS SERVER IS STDIO AND .MCPB ONLY: no manifest advertises a remote, because no hosted endpoint exists for it.",
+      "Hosted since loop 35 at /mcp/credit-note: the mcpb manifest carries remotes.json, and the contract suite asserts the two stay equal by value.",
     ],
   },
   "job-card": {
@@ -252,7 +253,7 @@ const CURATED = {
       "THE STATUS MACHINE MOVES ONE STEP AT A TIME and every step carries its own date and note in the card's history, so a skipped step is refused rather than stamped over.",
       "A CARD HOLDING LABOR OR MATERIALS CANNOT BE DELETED, because that card is the record of work done; it is archived instead. Only a card entered by mistake, holding nothing, deletable.",
       "CURRENCIES ARE NEVER ADDED TOGETHER. The daily and weekly summaries report value per currency, because this server holds no exchange rate.",
-      "THIS SERVER IS STDIO AND .MCPB ONLY: no manifest advertises a remote, because no hosted endpoint exists for it.",
+      "Hosted since loop 35 at /mcp/job-card: the mcpb manifest carries remotes.json, and the contract suite asserts the two stay equal by value.",
     ],
   },
   "dunning-letters": {
@@ -274,7 +275,93 @@ const CURATED = {
       "A PART PAYMENT IS A FACT, NOT A WRITE-OFF: covering the balance closes the ladder, and the invoice stays readable with every letter and every payment on it.",
       "NOTHING IS SENT. The letters are rendered to text for the user to send; the server holds no mail credentials and wants none, so no chaser goes out because a model decided it should.",
       "THE SENDER BLOCK ON THE LETTERS comes from the shared business profile, read-only and best-effort; the profile file is never written from here.",
-      "THIS SERVER IS STDIO AND .MCPB ONLY: no manifest advertises a remote, because no hosted endpoint exists for it.",
+      "Hosted since loop 35 at /mcp/dunning-letters: the mcpb manifest carries remotes.json, and the contract suite asserts the two stay equal by value.",
+    ],
+  },
+  "supplier-list": {
+    summary: "A supplier directory that does not rot: who you buy from, what they supply, who to contact and how, the payment terms, the lead time in days, and notes, each record carrying the date it was last reviewed. Adding a supplier returns a SUP-YYYY-NNNN id; listing reads the directory A to Z by name with category and free-text filters; the due-review report answers which records have gone stale, most overdue first, where a record never reviewed is always due; the export hands the directory over as CSV or a Markdown table. No count is stored beyond the id series: the review ages are derived from the stamps on every call.",
+    storageFiles: [
+      ["suppliers.json", "the supplier records, each carrying its contact fields, terms, lead time, notes and its review stamp, and nothing derived from them"],
+      ["counter.json", "the SUP number series, per year"],
+    ],
+    primaryFile: "suppliers.json",
+    caps: [
+      "`FREE_SUPPLIERS` = 10 suppliers in the directory on free. Reading, updating, searching, review stamps and CSV export are free and unlimited on every tier, and removing a supplier frees its slot, because a free tier that withholds the directory is a demo.",
+      "`supplier_due_review` and Markdown export are Pro. The refusal is an answer, not a protocol error, and nothing is written.",
+      "`MAX_NAME` = 200 characters per name field; `MAX_TEXT` = 2,000 per text field; `MAX_LEAD_TIME_DAYS` per the model; a review stamped with a future date is refused.",
+    ],
+    extra: [
+      "A SECOND RECORD CARRYING A NAME ALREADY IN THE DIRECTORY IS REFUSED, because two records of one supplier cannot be told apart; supplier_update changes the record that exists. A partial name matching more than one supplier is refused with the candidate list rather than resolved to the first, so an update cannot land on the wrong supplier.",
+      "A RECORD NEVER REVIEWED IS ALWAYS DUE, whatever its age: the record has never been checked against reality at all. Ordering is most overdue first, and a never-reviewed record ages from the day it was added for that purpose.",
+      "THE SUP NUMBER IS NEVER REISSUED. The series is allocated from a per-year counter that only goes up, with the ids already in the store also scanned, so a restored or hand-edited store cannot reissue a number that is already in a purchase order somewhere. A gap in the series is the record that a row was removed.",
+      "NO SIBLING STORE IS OPENED and no profile is read: the directory is this server's own book.",
+      "Hosted since loop 35 at /mcp/supplier-list: the mcpb manifest carries remotes.json, and the contract suite asserts the two stay equal by value.",
+    ],
+  },
+  "service-agreement": {
+    summary: "Service agreements between a freelancer and a client, written before the work starts: the parties, the scope of services, the deliverables, the rate in integer cents with its unit (hour, day or project), the payment terms, start and end dates, a termination notice period, a liability cap and the governing jurisdiction. Creating stores the agreement and returns it rendered as clean Markdown with a signature block, numbered SA-YYYY-NNNN. The before-you-send-it checklist lists missing fields and flags one-sided gaps neutrally. The status machine moves draft to sent to signed to expired, one dated step at a time. A built-in clause library covers IP assignment, mutual confidentiality, late payment interest, kill fee and revision rounds, its bodies filled with the agreement's own variables. Every render carries a one-line note that it is a template, not legal advice.",
+    storageFiles: [
+      ["agreements.json", "the agreements, each carrying its terms, its clause ids and its dated status history, and nothing derived from them"],
+      ["counter.json", "the SA number series, per year of the creation date"],
+    ],
+    primaryFile: "agreements.json",
+    caps: [
+      "`FREE_ACTIVE_AGREEMENTS` = 3 ACTIVE agreements on free, where active means not expired. Reading, listing, the checklist and Markdown rendering are free and unlimited on every tier, and expiring a finished engagement frees its slot without deleting anything.",
+      "The full clause texts (and attaching library clauses to an agreement) and print-ready HTML rendering are Pro; the free clause_library answer lists titles and summaries and says so. The refusal is an answer, not a protocol error, and nothing is written.",
+      "`MAX_NAME` = 200 characters per name field; `MAX_TEXT` = 4,000 per text field; `MAX_CENTS` and `MAX_DELIVERABLES` and `MAX_NOTICE_DAYS` per the model.",
+    ],
+    extra: [
+      "THE STATUS MACHINE MOVES ONE STEP AT A TIME: draft to sent to signed to expired. A skipped step is refused naming the one step that is next, a step dated before the step before it is refused so the history reads as a timeline, and expired is final: the record of a finished engagement is kept, and keeping it is what frees the slot honestly.",
+      "EVERY RENDER CARRIES THE DISCLAIMER. The document is a generic template, not legal advice, and it says so on its face on both formats, because a signature block on a document that reads as drafted-for-you is exactly where a silent liability lives.",
+      "AN END DATE BEFORE THE START DATE IS REFUSED, and a clause id the library does not carry is refused naming the library, both before anything is written.",
+      "NO SIBLING STORE IS OPENED and no profile is read: the freelancer and the client are stated on the agreement itself.",
+      "Hosted since loop 35 at /mcp/service-agreement: the mcpb manifest carries remotes.json, and the contract suite asserts the two stay equal by value.",
+    ],
+  },
+  "maintenance-log": {
+    summary: "One local register of the equipment you look after and the work done on it: an asset carries its name, serial or asset tag (unique across the register), location and currency, numbered AST-YYYY-NNNN; each service or repair is logged with the day, what was done, the cost in whole cents, who did it, and when the next service falls due, as a date or as an interval in days, never both. The due report answers what is overdue and by how many days and what falls due within the next N days, computed from the stored dates at the moment you ask, so it can never go stale. Per-asset history keeps the chronological log with its total spend and spend per technician; the export hands a date range over as CSV or a Markdown summary per asset.",
+    storageFiles: [
+      ["assets.json", "the assets, each carrying its tag, location, currency and every log entry, and nothing derived from them"],
+      ["counter.json", "the AST number series, per year"],
+    ],
+    primaryFile: "assets.json",
+    caps: [
+      "`FREE_ASSETS` = 3 assets on the register on free. Logging work on the assets you have, the per-asset history with its total spend and CSV export are free and unlimited on every tier, and removing an asset frees its slot, because a free tier that withholds the record is a demo.",
+      "`maintenance_due` and the Markdown summaries are Pro. The refusal is an answer, not a protocol error, and nothing is written.",
+      "`MAX_ENTRIES` per asset, `MAX_CENTS` = 1e14 per cost field and `MAX_INTERVAL_DAYS` per the model; a work date in the future is refused, and a next_due before the work date is refused.",
+    ],
+    extra: [
+      "OVERDUE IS A READING, NEVER STORED. Whether a service is late is computed from the stored next-due dates against today at call time; an interval is turned into a date exactly once, when the work is logged. A stored overdue flag is a fact about the afternoon somebody last asked and goes on being reported after the work lands.",
+      "A SERIAL OR ASSET TAG IDENTIFIES ONE MACHINE: adding a second asset with the same tag is refused by name, so the register never holds two records of one boiler.",
+      "NEXT_DUE AND INTERVAL_DAYS ARE NEVER BOTH TAKEN: one says when, the other says after how long, and taking both would be a guess about which was meant. A repair that sets no schedule takes neither, and the asset then reports itself as unscheduled rather than inventing a date.",
+      "AN ASSET CARRYING A LOG CANNOT BE REMOVED WITHOUT confirm: true, because removing it loses the record of work done. The AST number is never reissued, so a gap in the series is the record that an asset was removed.",
+      "EVERY COST IS AN INTEGER NUMBER OF CENTS in the asset's own currency, and a total spend is the sum of the stored entries, so it can never drift from the lines. Currencies are never added together: this server holds no exchange rate.",
+      "NO SIBLING STORE IS OPENED and no profile is read: the register is this server's own book.",
+      "Hosted since loop 35 at /mcp/maintenance-log: the mcpb manifest carries remotes.json, and the contract suite asserts the two stay equal by value.",
+    ],
+  },
+  "mileage-log": {
+    summary: "The mileage log freelancers need at tax time, kept the moment the drive happens: a trip carries the date, where from and to, the distance in miles or km, the purpose and the category (business, medical, moving, charitable, personal), numbered TR-YYYY-NNNN. Rates are set as an effective-dated series per jurisdiction and category, and each trip earns the rate in force on the day it was driven. The summary prices a date range per category with totals per currency, trips with no applicable rate listed with the reason rather than dropped; the export is the CSV for the accountant, refusing while any non-personal trip in the window is unpriced. No rate ships with the server and none of it is tax advice.",
+    storageFiles: [
+      ["trips.json", "the trips, each carrying its date, endpoints, distance, unit, purpose, category and jurisdiction pinned at log time, and nothing derived from them"],
+      ["rates.json", "the rate series, each row a jurisdiction, category, unit, rate, currency and effective-from date"],
+      ["counter.json", "the TR number series, per year of the trip date"],
+    ],
+    primaryFile: "trips.json",
+    caps: [
+      "`FREE_TRIPS_PER_MONTH` = 20 trips per calendar month on free, counted on the month of the TRIP DATE, so reconstructing last year's log at tax time does not consume this month's allowance. The list and the summary are never metered.",
+      "One rate per jurisdiction and category is free and overwriting it stays free; the effective-dated SERIES is Pro, and `mileage_export` is Pro. The refusal is an answer, not a protocol error, and nothing is written.",
+      "`MAX_TRIPS` and `MAX_RATES` bound the store; a distance outside 0 to 10000 units or a rate outside 0 to 100 currency units is refused at the schema, and a trip dated in the future is refused.",
+    ],
+    extra: [
+      "A TRIP'S AMOUNT IS ITS DISTANCE TIMES THE RATE IN FORCE ON THE DAY IT WAS DRIVEN, rounded half-up to the cent, and every total is the sum of those rounded per-trip amounts, so a total can never drift from its lines and the CSV export reconciles line by line with the summary.",
+      "DISTANCES IN MILES AND IN KM ARE KEPT APART AND NEVER ADDED TOGETHER, and amounts are kept per currency and never mixed. When a trip's unit differs from the rate's, the distance is converted first (1 mile = 1.609344 km exactly) and rounded half-up to the thousandth of the rate's unit.",
+      "THE PRICING JURISDICTION IS PINNED AT LOG TIME when exactly one covers the trip's category, so a rate added later under a second jurisdiction cannot silently reprice an old trip; when more than one covers it, the call is refused with the candidates until the caller says which.",
+      "A TRIP WITH NO APPLICABLE RATE IS LISTED WITH THE REASON, never silently dropped: personal trips sit apart because no jurisdiction prices them, and the export refuses while any non-personal trip in the window is unpriced, so an accountant never receives a log with silent gaps.",
+      "NO RATE SHIPS WITH THIS SERVER. The figures are the user's own to verify against the authority that publishes them, and every rate row is a label, not legal advice.",
+      "THE TR NUMBER IS NEVER REISSUED: a gap in the series is the record that a trip was removed, and removal is by exact id only.",
+      "NO SIBLING STORE IS OPENED and no profile is read: the log is this server's own book.",
+      "Hosted since loop 35 at /mcp/mileage-log: the mcpb manifest carries remotes.json, and the contract suite asserts the two stay equal by value.",
     ],
   },
   "change-order": {

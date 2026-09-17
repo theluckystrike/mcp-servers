@@ -1,8 +1,17 @@
 {
-  "at": "2026-09-12T03:28:35.978Z",
-  "published": [
-    "io.github.theluckystrike/overdue-invoice-reminder@0.21.0"
-  ],
+  "at": "2026-09-17T11:26:06.944Z",
+  "published": [],
   "duplicate": [],
-  "failed": []
+  "failed": [
+    {
+      "name": "io.github.theluckystrike/delivery-schedule",
+      "version": "0.22.1",
+      "error": "Publishing to https://registry.modelcontextprotocol.io...\nError: publish failed: server returned status 400: {\"title\":\"Bad Request\",\"status\":400,\"detail\":\"Failed to publish server\",\"errors\":[{\"message\":\"remote URL https://mcp.zovo.one/mcp/delivery-schedule is already used by server io.github.theluck"
+    },
+    {
+      "name": "io.github.theluckystrike/delivery-schedule",
+      "version": "0.22.0",
+      "error": "Publishing to https://registry.modelcontextprotocol.io...\nError: publish failed: server returned status 400: {\"title\":\"Bad Request\",\"status\":400,\"detail\":\"Failed to publish server\",\"errors\":[{\"message\":\"remote URL https://mcp.zovo.one/mcp/delivery-schedule is already used by server io.github.theluck"
+    }
+  ]
 }

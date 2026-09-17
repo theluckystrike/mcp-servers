@@ -1,0 +1,31 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.theluckystrike/freelance-invoice",
+  "description": "Create PDF invoices from your AI chat: clients, numbering, VAT, overdue reports. All data is local.",
+  "version": "0.21.0",
+  "repository": {
+    "url": "https://github.com/theluckystrike/mcp-servers",
+    "source": "github",
+    "subfolder": "servers/invoice"
+  },
+  "websiteUrl": "https://mcp.zovo.one/s/invoice",
+  "packages": [
+    {
+      "registryType": "mcpb",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.21.0/invoice.mcpb",
+      "version": "0.21.0",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "MCP_LICENSE_KEY",
+          "description": "Optional Pro license key (MCPL1....). Verified offline.",
+          "isRequired": false,
+          "isSecret": true
+        }
+      ],
+      "fileSha256": "70a83cd255861f2a648ae13b1c79e5ba1e5116a6983583061ffeae4a1fb909ba"
+    }
+  ]
+}

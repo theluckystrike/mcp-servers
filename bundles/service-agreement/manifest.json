@@ -1,0 +1,86 @@
+{
+  "manifest_version": "0.2",
+  "name": "mcp-service-agreement",
+  "display_name": "Service Agreement",
+  "version": "0.22.0",
+  "description": "Service agreements for freelancers: scope, deliverables, rate, termination and liability caps.",
+  "author": {
+    "name": "theluckystrike",
+    "url": "https://github.com/theluckystrike"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/theluckystrike/mcp-servers"
+  },
+  "homepage": "https://mcp.zovo.one",
+  "license": "MIT",
+  "server": {
+    "type": "node",
+    "entry_point": "server/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": [
+        "${__dirname}/server/index.js"
+      ],
+      "env": {
+        "MCP_LICENSE_KEY": "${user_config.license_key}"
+      }
+    }
+  },
+  "user_config": {
+    "license_key": {
+      "type": "string",
+      "title": "License key",
+      "description": "Optional Pro license key (format MCPL1.xxx.yyy). Leave blank to use the free tier.",
+      "sensitive": true,
+      "required": false
+    }
+  },
+  "tools": [
+    {
+      "name": "agreement_create",
+      "description": "Write a service agreement between a freelancer and a client before the work starts: the parties, the scope of services, the deliverables, the rate and payment terms, start and end dates, a termination notice period, a liability cap and the governing jurisdiction. Stores the agreement and returns it rendered as clean Markdown with a signature block. Free tier: 3 active agreements; expiring a finished one frees its slot."
+    },
+    {
+      "name": "agreement_get",
+      "description": "Read one service agreement in full by SA number or client name: parties, scope, deliverables, rate and payment terms, dates, termination, liability cap, jurisdiction, the clauses it carries, its status and its status history. Reads only."
+    },
+    {
+      "name": "agreement_list",
+      "description": "List service agreements newest first: parties, status, rate, dates and the clauses each carries. Filter by status and by client. An agreement is active until it is expired; the free tier holds 3 active agreements."
+    },
+    {
+      "name": "agreement_update_status",
+      "description": "Move one agreement exactly one step: draft, sent, signed, expired, stamping the date and an optional note into its history. A skipped or backwards step is refused and nothing is written. Expiring a finished engagement frees a free-tier slot."
+    },
+    {
+      "name": "clause_library",
+      "description": "List the built-in clause library: intellectual property assignment, mutual confidentiality, late payment interest, kill fee and revision rounds. Each clause is a title plus a body text. Pass an agreement and, on Pro, every body comes back with that agreement's variables filled in. The free tier lists titles and summaries; the full texts are a Pro feature."
+    },
+    {
+      "name": "agreement_render",
+      "description": "Render a service agreement ready to send and sign: the parties, the services, the deliverables, the payment terms, the term, termination, liability, jurisdiction, any library clauses it carries, and a signature block for both parties. Markdown, or self-contained HTML with print CSS that needs nothing from the network. HTML is a Pro feature. Writes nothing."
+    },
+    {
+      "name": "agreement_checklist",
+      "description": "The before-you-send-it checklist for one agreement: every missing field is listed, and terms whose absence cuts one way are flagged neutrally -- as written, what the gap means for both parties -- such as no termination clause or an uncapped liability. Reads only."
+    },
+    {
+      "name": "license_status",
+      "description": "Report this server's licence state: product, tier free or pro, licence id, expiry, the key source and the upgrade URL. No arguments, no network. Explains a free-tier refusal; license_activate installs a key."
+    },
+    {
+      "name": "license_activate",
+      "description": "Activate a Pro key (MCPL1.xxx.yyy) from checkout: verified offline against a built-in public key, saved to your config file. A wrong, malformed or expired key is refused, unsaved. license_status reads it back."
+    }
+  ],
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "service-agreement",
+    "service-contract",
+    "freelance",
+    "contract",
+    "liability"
+  ]
+}

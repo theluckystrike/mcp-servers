@@ -1,6 +1,6 @@
 {
   "name": "@theluckystrike/mcp-credit-note",
-  "version": "0.21.0",
+  "version": "0.22.0",
   "description": "Credit notes against an invoice or standalone: drafts, finalization, rendering, totals.",
   "type": "module",
   "bin": {
@@ -50,7 +50,7 @@
   "homepage": "https://github.com/theluckystrike/mcp-servers/tree/main/servers/credit-note",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.30.0",
-    "@theluckystrike/mcp-license": "^0.21.0",
+    "@theluckystrike/mcp-license": "^0.22.0",
     "zod": "^3.25.0"
   },
   "devDependencies": {

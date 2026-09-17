@@ -1,0 +1,972 @@
+{
+ "updated_at": "2026-09-12",
+ "agent": "registry-variants, loop 35 wave A -> wave C handoff",
+ "why_no_worker_change_publish": "All 16 variants were published in wave A as stdio-only mcpb rows (data/organic_variant_probes.json). A hosted variant is NOT publishable without a worker edit for two independent reasons: (1) remote/src/index.ts routes /^\\/mcp\\/([a-z-]+)$/ through the SERVERS table keyed by exact name, so /mcp/<alias> 404s today (negative control run 2026-09-12: POST /mcp/invoice-generator initialize -> 404); (2) the registry rejects a second server row that reuses the parent's remote URL (400 'remote URL ... is already used', measured NAMING_R2, CLAUDE.md trap 9), so the variant cannot just point at /mcp/<parent>.",
+ "routing_patch": {
+  "file": "remote/src/index.ts",
+  "hunks": [
+   {
+    "where": "immediately after the closing `};` of `const SERVERS: Record<string, ServerCfg> = { ... }` (the literal ends near line 635 in the loop-35 baseline)",
+    "add": "/* Loop 35 phrase-variant registry aliases (docs/VARIANTS_LOOP35.md). The official\n * registry binds one hosted URL to exactly one server name, so every published variant\n * name needs its own /mcp/<alias> path. An alias resolves to its parent BEFORE `product`\n * is used anywhere, so license checks (verifyLicense is per-product), tenant documents,\n * buy links and free caps are byte-identical to the parent endpoint. The aliases are NOT\n * inserted into SERVERS, so ENDPOINT_URLS, SERVER_COUNT and the /mcp index are unchanged. */\nconst VARIANT_ALIASES: Record<string, string> = {\n  \"invoice-generator\": \"invoice\",\n  \"freelance-invoice\": \"invoice\",\n  \"merge-pdf\": \"pdf\",\n  \"split-pdf\": \"pdf\",\n  \"time-tracking\": \"time-tracker\",\n  \"timesheets\": \"time-tracker\",\n  \"business-expenses\": \"expense-tracker\",\n  \"mileage-tracker\": \"expense-tracker\",\n  \"spreadsheet-builder\": \"spreadsheet\",\n  \"spreadsheet-generator\": \"spreadsheet\",\n  \"currency-exchange\": \"currency\",\n  \"exchange-rates\": \"currency\",\n  \"quote-template\": \"quotes\",\n  \"estimate-template\": \"quotes\",\n  \"bank-statement-pdf\": \"bank-statement\",\n  \"categorize-transactions\": \"bank-statement\",\n};"
+   },
+   {
+    "where": "the endpoint lookup (near line 1959-1961 in the loop-35 baseline). The /t/<token> form is already stripped back to /mcp/<name> above this point (line ~1848), so this one change covers header, query and path token forms.",
+    "old": "    const m = path.match(/^\\/mcp\\/([a-z-]+)$/);\n    const product = m?.[1];\n    const cfg = product ? SERVERS[product] : undefined;",
+    "new": "    const m = path.match(/^\\/mcp\\/([a-z-]+)$/);\n    const product = m?.[1] ? (VARIANT_ALIASES[m[1]] ?? m[1]) : undefined;\n    const cfg = product ? SERVERS[product] : undefined;"
+   }
+  ],
+  "patch_notes": [
+   "Do NOT add the alias keys into SERVERS itself: ENDPOINT_URLS maps Object.keys(SERVERS) into the /mcp index 'endpoints' list and the hosted-endpoints KPI counts real servers; aliases would double-count.",
+   "Because product is canonicalized before authenticate(), an MCPL1 key signed for 'invoice' works on /mcp/invoice-generator (per-product license check would otherwise 401 it), and the tenant data document is the parent's, so data is shared rather than stranded.",
+   "No TOOLS entry is needed for aliases: TOOLS is only read by indexDoc's hardcoded server list, not per-request.",
+   "endpointPage/publicEndpointDoc will render the PARENT name on the alias URL for tokenless GET health checks - honest and deliberate."
+  ],
+  "post_deploy_verify": "for each slug: initialize POST -> 200; tools/call without token -> 401; /mcp/whoami unchanged; then `node scripts/validate.mjs` once no deploy is mid-flight (trap 8)."
+ },
+ "variants": [
+  {
+   "slug": "invoice-generator",
+   "parent": "invoice",
+   "registry_name": "io.github.theluckystrike/invoice-generator",
+   "stdio_only_version_now_live": "0.21.0",
+   "hosted_manifest": {
+    "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+    "name": "io.github.theluckystrike/invoice-generator",
+    "description": "Create PDF invoices from your AI chat: clients, numbering, VAT, overdue reports. All data is local.",
+    "version": "0.21.0",
+    "repository": {
+     "url": "https://github.com/theluckystrike/mcp-servers",
+     "source": "github",
+     "subfolder": "servers/invoice"
+    },
+    "websiteUrl": "https://mcp.zovo.one/s/invoice",
+    "packages": [
+     {
+      "registryType": "mcpb",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.21.0/invoice.mcpb",
+      "version": "0.21.0",
+      "transport": {
+       "type": "stdio"
+      },
+      "environmentVariables": [
+       {
+        "name": "MCP_LICENSE_KEY",
+        "description": "Optional Pro license key (MCPL1....). Verified offline.",
+        "isRequired": false,
+        "isSecret": true
+       }
+      ],
+      "fileSha256": "70a83cd255861f2a648ae13b1c79e5ba1e5116a6983583061ffeae4a1fb909ba"
+     }
+    ],
+    "remotes": [
+     {
+      "type": "streamable-http",
+      "url": "https://mcp.zovo.one/mcp/invoice-generator",
+      "headers": [
+       {
+        "name": "Authorization",
+        "description": "Bearer <Pro license key or anonymous token from GET https://mcp.zovo.one/mcp/token>",
+        "isRequired": true,
+        "isSecret": true
+       }
+      ]
+     }
+    ]
+   },
+   "manifest_version_rule": "(name, version) is immutable and io.github.theluckystrike/invoice-generator@0.21.0 is now live stdio-only, so the hosted row MUST be published at the NEXT estate version. At publish time copy version, packages[0].identifier, packages[0].version and packages[0].fileSha256 from servers/invoice/server.mcpb.json so the sha matches a real release asset; keep name and remotes exactly as in hosted_manifest.",
+   "hosted_url": "https://mcp.zovo.one/mcp/invoice-generator",
+   "publish_command": "mcp-publisher publish <path-to-hosted-manifest>.json  # AFTER the worker deploy, never before: the row would advertise a 404 endpoint",
+   "verify_commands": [
+    "curl -sS https://registry.modelcontextprotocol.io/v0.1/servers/io.github.theluckystrike%2Finvoice-generator/versions/latest  # 200, version > 0.21.0, remotes[0].url == hosted_url",
+    "curl -sS -X POST https://mcp.zovo.one/mcp/invoice-generator -H 'content-type: application/json' -H 'accept: application/json, text/event-stream' -d '{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"initialize\",\"params\":{\"protocolVersion\":\"2025-03-26\",\"capabilities\":{},\"clientInfo\":{\"name\":\"probe\",\"version\":\"0\"}}}' -o /dev/null -w '%{http_code}'  # 200",
+    "curl -sS -X POST https://mcp.zovo.one/mcp/invoice-generator -H 'content-type: application/json' -H 'accept: application/json, text/event-stream' -d '<tools/call without token>' -o /dev/null -w '%{http_code}'  # 401"
+   ]
+  },
+  {
+   "slug": "freelance-invoice",
+   "parent": "invoice",
+   "registry_name": "io.github.theluckystrike/freelance-invoice",
+   "stdio_only_version_now_live": "0.21.0",
+   "hosted_manifest": {
+    "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+    "name": "io.github.theluckystrike/freelance-invoice",
+    "description": "Create PDF invoices from your AI chat: clients, numbering, VAT, overdue reports. All data is local.",
+    "version": "0.21.0",
+    "repository": {
+     "url": "https://github.com/theluckystrike/mcp-servers",
+     "source": "github",
+     "subfolder": "servers/invoice"
+    },
+    "websiteUrl": "https://mcp.zovo.one/s/invoice",
+    "packages": [
+     {
+      "registryType": "mcpb",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.21.0/invoice.mcpb",
+      "version": "0.21.0",
+      "transport": {
+       "type": "stdio"
+      },
+      "environmentVariables": [
+       {
+        "name": "MCP_LICENSE_KEY",
+        "description": "Optional Pro license key (MCPL1....). Verified offline.",
+        "isRequired": false,
+        "isSecret": true
+       }
+      ],
+      "fileSha256": "70a83cd255861f2a648ae13b1c79e5ba1e5116a6983583061ffeae4a1fb909ba"
+     }
+    ],
+    "remotes": [
+     {
+      "type": "streamable-http",
+      "url": "https://mcp.zovo.one/mcp/freelance-invoice",
+      "headers": [
+       {
+        "name": "Authorization",
+        "description": "Bearer <Pro license key or anonymous token from GET https://mcp.zovo.one/mcp/token>",
+        "isRequired": true,
+        "isSecret": true
+       }
+      ]
+     }
+    ]
+   },
+   "manifest_version_rule": "(name, version) is immutable and io.github.theluckystrike/freelance-invoice@0.21.0 is now live stdio-only, so the hosted row MUST be published at the NEXT estate version. At publish time copy version, packages[0].identifier, packages[0].version and packages[0].fileSha256 from servers/invoice/server.mcpb.json so the sha matches a real release asset; keep name and remotes exactly as in hosted_manifest.",
+   "hosted_url": "https://mcp.zovo.one/mcp/freelance-invoice",
+   "publish_command": "mcp-publisher publish <path-to-hosted-manifest>.json  # AFTER the worker deploy, never before: the row would advertise a 404 endpoint",
+   "verify_commands": [
+    "curl -sS https://registry.modelcontextprotocol.io/v0.1/servers/io.github.theluckystrike%2Ffreelance-invoice/versions/latest  # 200, version > 0.21.0, remotes[0].url == hosted_url",
+    "curl -sS -X POST https://mcp.zovo.one/mcp/freelance-invoice -H 'content-type: application/json' -H 'accept: application/json, text/event-stream' -d '{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"initialize\",\"params\":{\"protocolVersion\":\"2025-03-26\",\"capabilities\":{},\"clientInfo\":{\"name\":\"probe\",\"version\":\"0\"}}}' -o /dev/null -w '%{http_code}'  # 200",
+    "curl -sS -X POST https://mcp.zovo.one/mcp/freelance-invoice -H 'content-type: application/json' -H 'accept: application/json, text/event-stream' -d '<tools/call without token>' -o /dev/null -w '%{http_code}'  # 401"
+   ]
+  },
+  {
+   "slug": "merge-pdf",
+   "parent": "pdf",
+   "registry_name": "io.github.theluckystrike/merge-pdf",
+   "stdio_only_version_now_live": "0.21.0",
+   "hosted_manifest": {
+    "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+    "name": "io.github.theluckystrike/merge-pdf",
+    "description": "Merge, split, extract, rotate, reorder and stamp PDF pages from your AI chat, all offline.",
+    "version": "0.21.0",
+    "repository": {
+     "url": "https://github.com/theluckystrike/mcp-servers",
+     "source": "github",
+     "subfolder": "servers/pdf"
+    },
+    "websiteUrl": "https://mcp.zovo.one/s/pdf",
+    "packages": [
+     {
+      "registryType": "mcpb",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.21.0/pdf.mcpb",
+      "version": "0.21.0",
+      "transport": {
+       "type": "stdio"
+      },
+      "environmentVariables": [
+       {
+        "name": "MCP_LICENSE_KEY",
+        "description": "Optional Pro license key (MCPL1....). Verified offline.",
+        "isRequired": false,
+        "isSecret": true
+       }
+      ],
+      "fileSha256": "6dba36f80f9bb152199ad8405783271cfc83ba4f7fed1defc7536a5a0d460345"
+     }
+    ],
+    "remotes": [
+     {
+      "type": "streamable-http",
+      "url": "https://mcp.zovo.one/mcp/merge-pdf",
+      "headers": [
+       {
+        "name": "Authorization",
+        "description": "Bearer <Pro license key or anonymous token from GET https://mcp.zovo.one/mcp/token>",
+        "isRequired": true,
+        "isSecret": true
+       }
+      ]
+     }
+    ]
+   },
+   "manifest_version_rule": "(name, version) is immutable and io.github.theluckystrike/merge-pdf@0.21.0 is now live stdio-only, so the hosted row MUST be published at the NEXT estate version. At publish time copy version, packages[0].identifier, packages[0].version and packages[0].fileSha256 from servers/pdf/server.mcpb.json so the sha matches a real release asset; keep name and remotes exactly as in hosted_manifest.",
+   "hosted_url": "https://mcp.zovo.one/mcp/merge-pdf",
+   "publish_command": "mcp-publisher publish <path-to-hosted-manifest>.json  # AFTER the worker deploy, never before: the row would advertise a 404 endpoint",
+   "verify_commands": [
+    "curl -sS https://registry.modelcontextprotocol.io/v0.1/servers/io.github.theluckystrike%2Fmerge-pdf/versions/latest  # 200, version > 0.21.0, remotes[0].url == hosted_url",
+    "curl -sS -X POST https://mcp.zovo.one/mcp/merge-pdf -H 'content-type: application/json' -H 'accept: application/json, text/event-stream' -d '{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"initialize\",\"params\":{\"protocolVersion\":\"2025-03-26\",\"capabilities\":{},\"clientInfo\":{\"name\":\"probe\",\"version\":\"0\"}}}' -o /dev/null -w '%{http_code}'  # 200",
+    "curl -sS -X POST https://mcp.zovo.one/mcp/merge-pdf -H 'content-type: application/json' -H 'accept: application/json, text/event-stream' -d '<tools/call without token>' -o /dev/null -w '%{http_code}'  # 401"
+   ]
+  },
+  {
+   "slug": "split-pdf",
+   "parent": "pdf",
+   "registry_name": "io.github.theluckystrike/split-pdf",
+   "stdio_only_version_now_live": "0.21.0",
+   "hosted_manifest": {
+    "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+    "name": "io.github.theluckystrike/split-pdf",
+    "description": "Merge, split, extract, rotate, reorder and stamp PDF pages from your AI chat, all offline.",
+    "version": "0.21.0",
+    "repository": {
+     "url": "https://github.com/theluckystrike/mcp-servers",
+     "source": "github",
+     "subfolder": "servers/pdf"
+    },
+    "websiteUrl": "https://mcp.zovo.one/s/pdf",
+    "packages": [
+     {
+      "registryType": "mcpb",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.21.0/pdf.mcpb",
+      "version": "0.21.0",
+      "transport": {
+       "type": "stdio"
+      },
+      "environmentVariables": [
+       {
+        "name": "MCP_LICENSE_KEY",
+        "description": "Optional Pro license key (MCPL1....). Verified offline.",
+        "isRequired": false,
+        "isSecret": true
+       }
+      ],
+      "fileSha256": "6dba36f80f9bb152199ad8405783271cfc83ba4f7fed1defc7536a5a0d460345"
+     }
+    ],
+    "remotes": [
+     {
+      "type": "streamable-http",
+      "url": "https://mcp.zovo.one/mcp/split-pdf",
+      "headers": [
+       {
+        "name": "Authorization",
+        "description": "Bearer <Pro license key or anonymous token from GET https://mcp.zovo.one/mcp/token>",
+        "isRequired": true,
+        "isSecret": true
+       }
+      ]
+     }
+    ]
+   },
+   "manifest_version_rule": "(name, version) is immutable and io.github.theluckystrike/split-pdf@0.21.0 is now live stdio-only, so the hosted row MUST be published at the NEXT estate version. At publish time copy version, packages[0].identifier, packages[0].version and packages[0].fileSha256 from servers/pdf/server.mcpb.json so the sha matches a real release asset; keep name and remotes exactly as in hosted_manifest.",
+   "hosted_url": "https://mcp.zovo.one/mcp/split-pdf",
+   "publish_command": "mcp-publisher publish <path-to-hosted-manifest>.json  # AFTER the worker deploy, never before: the row would advertise a 404 endpoint",
+   "verify_commands": [
+    "curl -sS https://registry.modelcontextprotocol.io/v0.1/servers/io.github.theluckystrike%2Fsplit-pdf/versions/latest  # 200, version > 0.21.0, remotes[0].url == hosted_url",
+    "curl -sS -X POST https://mcp.zovo.one/mcp/split-pdf -H 'content-type: application/json' -H 'accept: application/json, text/event-stream' -d '{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"initialize\",\"params\":{\"protocolVersion\":\"2025-03-26\",\"capabilities\":{},\"clientInfo\":{\"name\":\"probe\",\"version\":\"0\"}}}' -o /dev/null -w '%{http_code}'  # 200",
+    "curl -sS -X POST https://mcp.zovo.one/mcp/split-pdf -H 'content-type: application/json' -H 'accept: application/json, text/event-stream' -d '<tools/call without token>' -o /dev/null -w '%{http_code}'  # 401"
+   ]
+  },
+  {
+   "slug": "time-tracking",
+   "parent": "time-tracker",
+   "registry_name": "io.github.theluckystrike/time-tracking",
+   "stdio_only_version_now_live": "0.21.0",
+   "hosted_manifest": {
+    "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+    "name": "io.github.theluckystrike/time-tracking",
+    "description": "Track billable time from your AI chat: timers, entries, reports, CSV export. All data stays local.",
+    "version": "0.21.0",
+    "repository": {
+     "url": "https://github.com/theluckystrike/mcp-servers",
+     "source": "github",
+     "subfolder": "servers/time-tracker"
+    },
+    "websiteUrl": "https://mcp.zovo.one/s/time-tracker",
+    "packages": [
+     {
+      "registryType": "mcpb",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.21.0/time-tracker.mcpb",
+      "version": "0.21.0",
+      "transport": {
+       "type": "stdio"
+      },
+      "environmentVariables": [
+       {
+        "name": "MCP_LICENSE_KEY",
+        "description": "Optional Pro license key (MCPL1....). Verified offline.",
+        "isRequired": false,
+        "isSecret": true
+       }
+      ],
+      "fileSha256": "c59343d432c1550a8140c386cda28e96d05cfc706c67b44bdaa897e77db2daf0"
+     }
+    ],
+    "remotes": [
+     {
+      "type": "streamable-http",
+      "url": "https://mcp.zovo.one/mcp/time-tracking",
+      "headers": [
+       {
+        "name": "Authorization",
+        "description": "Bearer <Pro license key or anonymous token from GET https://mcp.zovo.one/mcp/token>",
+        "isRequired": true,
+        "isSecret": true
+       }
+      ]
+     }
+    ]
+   },
+   "manifest_version_rule": "(name, version) is immutable and io.github.theluckystrike/time-tracking@0.21.0 is now live stdio-only, so the hosted row MUST be published at the NEXT estate version. At publish time copy version, packages[0].identifier, packages[0].version and packages[0].fileSha256 from servers/time-tracker/server.mcpb.json so the sha matches a real release asset; keep name and remotes exactly as in hosted_manifest.",
+   "hosted_url": "https://mcp.zovo.one/mcp/time-tracking",
+   "publish_command": "mcp-publisher publish <path-to-hosted-manifest>.json  # AFTER the worker deploy, never before: the row would advertise a 404 endpoint",
+   "verify_commands": [
+    "curl -sS https://registry.modelcontextprotocol.io/v0.1/servers/io.github.theluckystrike%2Ftime-tracking/versions/latest  # 200, version > 0.21.0, remotes[0].url == hosted_url",
+    "curl -sS -X POST https://mcp.zovo.one/mcp/time-tracking -H 'content-type: application/json' -H 'accept: application/json, text/event-stream' -d '{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"initialize\",\"params\":{\"protocolVersion\":\"2025-03-26\",\"capabilities\":{},\"clientInfo\":{\"name\":\"probe\",\"version\":\"0\"}}}' -o /dev/null -w '%{http_code}'  # 200",
+    "curl -sS -X POST https://mcp.zovo.one/mcp/time-tracking -H 'content-type: application/json' -H 'accept: application/json, text/event-stream' -d '<tools/call without token>' -o /dev/null -w '%{http_code}'  # 401"
+   ]
+  },
+  {
+   "slug": "timesheets",
+   "parent": "time-tracker",
+   "registry_name": "io.github.theluckystrike/timesheets",
+   "stdio_only_version_now_live": "0.21.0",
+   "hosted_manifest": {
+    "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+    "name": "io.github.theluckystrike/timesheets",
+    "description": "Track billable time from your AI chat: timers, entries, reports, CSV export. All data stays local.",
+    "version": "0.21.0",
+    "repository": {
+     "url": "https://github.com/theluckystrike/mcp-servers",
+     "source": "github",
+     "subfolder": "servers/time-tracker"
+    },
+    "websiteUrl": "https://mcp.zovo.one/s/time-tracker",
+    "packages": [
+     {
+      "registryType": "mcpb",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.21.0/time-tracker.mcpb",
+      "version": "0.21.0",
+      "transport": {
+       "type": "stdio"
+      },
+      "environmentVariables": [
+       {
+        "name": "MCP_LICENSE_KEY",
+        "description": "Optional Pro license key (MCPL1....). Verified offline.",
+        "isRequired": false,
+        "isSecret": true
+       }
+      ],
+      "fileSha256": "c59343d432c1550a8140c386cda28e96d05cfc706c67b44bdaa897e77db2daf0"
+     }
+    ],
+    "remotes": [
+     {
+      "type": "streamable-http",
+      "url": "https://mcp.zovo.one/mcp/timesheets",
+      "headers": [
+       {
+        "name": "Authorization",
+        "description": "Bearer <Pro license key or anonymous token from GET https://mcp.zovo.one/mcp/token>",
+        "isRequired": true,
+        "isSecret": true
+       }
+      ]
+     }
+    ]
+   },
+   "manifest_version_rule": "(name, version) is immutable and io.github.theluckystrike/timesheets@0.21.0 is now live stdio-only, so the hosted row MUST be published at the NEXT estate version. At publish time copy version, packages[0].identifier, packages[0].version and packages[0].fileSha256 from servers/time-tracker/server.mcpb.json so the sha matches a real release asset; keep name and remotes exactly as in hosted_manifest.",
+   "hosted_url": "https://mcp.zovo.one/mcp/timesheets",
+   "publish_command": "mcp-publisher publish <path-to-hosted-manifest>.json  # AFTER the worker deploy, never before: the row would advertise a 404 endpoint",
+   "verify_commands": [
+    "curl -sS https://registry.modelcontextprotocol.io/v0.1/servers/io.github.theluckystrike%2Ftimesheets/versions/latest  # 200, version > 0.21.0, remotes[0].url == hosted_url",
+    "curl -sS -X POST https://mcp.zovo.one/mcp/timesheets -H 'content-type: application/json' -H 'accept: application/json, text/event-stream' -d '{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"initialize\",\"params\":{\"protocolVersion\":\"2025-03-26\",\"capabilities\":{},\"clientInfo\":{\"name\":\"probe\",\"version\":\"0\"}}}' -o /dev/null -w '%{http_code}'  # 200",
+    "curl -sS -X POST https://mcp.zovo.one/mcp/timesheets -H 'content-type: application/json' -H 'accept: application/json, text/event-stream' -d '<tools/call without token>' -o /dev/null -w '%{http_code}'  # 401"
+   ]
+  },
+  {
+   "slug": "business-expenses",
+   "parent": "expense-tracker",
+   "registry_name": "io.github.theluckystrike/business-expenses",
+   "stdio_only_version_now_live": "0.21.0",
+   "hosted_manifest": {
+    "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+    "name": "io.github.theluckystrike/business-expenses",
+    "description": "Log expenses, receipts and mileage from chat: auto-categorise, split VAT, summarise, export, rebill.",
+    "version": "0.21.0",
+    "repository": {
+     "url": "https://github.com/theluckystrike/mcp-servers",
+     "source": "github",
+     "subfolder": "servers/expense-tracker"
+    },
+    "websiteUrl": "https://mcp.zovo.one/s/expense-tracker",
+    "packages": [
+     {
+      "registryType": "mcpb",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.21.0/expense-tracker.mcpb",
+      "version": "0.21.0",
+      "transport": {
+       "type": "stdio"
+      },
+      "environmentVariables": [
+       {
+        "name": "MCP_LICENSE_KEY",
+        "description": "Optional Pro license key (MCPL1....). Verified offline.",
+        "isRequired": false,
+        "isSecret": true
+       }
+      ],
+      "fileSha256": "ac1e73efcd39fad676fa8165f559849433bb9464e00a264d9cd44db68c2de111"
+     }
+    ],
+    "remotes": [
+     {
+      "type": "streamable-http",
+      "url": "https://mcp.zovo.one/mcp/business-expenses",
+      "headers": [
+       {
+        "name": "Authorization",
+        "description": "Bearer <Pro license key or anonymous token from GET https://mcp.zovo.one/mcp/token>",
+        "isRequired": true,
+        "isSecret": true
+       }
+      ]
+     }
+    ]
+   },
+   "manifest_version_rule": "(name, version) is immutable and io.github.theluckystrike/business-expenses@0.21.0 is now live stdio-only, so the hosted row MUST be published at the NEXT estate version. At publish time copy version, packages[0].identifier, packages[0].version and packages[0].fileSha256 from servers/expense-tracker/server.mcpb.json so the sha matches a real release asset; keep name and remotes exactly as in hosted_manifest.",
+   "hosted_url": "https://mcp.zovo.one/mcp/business-expenses",
+   "publish_command": "mcp-publisher publish <path-to-hosted-manifest>.json  # AFTER the worker deploy, never before: the row would advertise a 404 endpoint",
+   "verify_commands": [
+    "curl -sS https://registry.modelcontextprotocol.io/v0.1/servers/io.github.theluckystrike%2Fbusiness-expenses/versions/latest  # 200, version > 0.21.0, remotes[0].url == hosted_url",
+    "curl -sS -X POST https://mcp.zovo.one/mcp/business-expenses -H 'content-type: application/json' -H 'accept: application/json, text/event-stream' -d '{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"initialize\",\"params\":{\"protocolVersion\":\"2025-03-26\",\"capabilities\":{},\"clientInfo\":{\"name\":\"probe\",\"version\":\"0\"}}}' -o /dev/null -w '%{http_code}'  # 200",
+    "curl -sS -X POST https://mcp.zovo.one/mcp/business-expenses -H 'content-type: application/json' -H 'accept: application/json, text/event-stream' -d '<tools/call without token>' -o /dev/null -w '%{http_code}'  # 401"
+   ]
+  },
+  {
+   "slug": "mileage-tracker",
+   "parent": "expense-tracker",
+   "registry_name": "io.github.theluckystrike/mileage-tracker",
+   "stdio_only_version_now_live": "0.21.0",
+   "hosted_manifest": {
+    "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+    "name": "io.github.theluckystrike/mileage-tracker",
+    "description": "Log expenses, receipts and mileage from chat: auto-categorise, split VAT, summarise, export, rebill.",
+    "version": "0.21.0",
+    "repository": {
+     "url": "https://github.com/theluckystrike/mcp-servers",
+     "source": "github",
+     "subfolder": "servers/expense-tracker"
+    },
+    "websiteUrl": "https://mcp.zovo.one/s/expense-tracker",
+    "packages": [
+     {
+      "registryType": "mcpb",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.21.0/expense-tracker.mcpb",
+      "version": "0.21.0",
+      "transport": {
+       "type": "stdio"
+      },
+      "environmentVariables": [
+       {
+        "name": "MCP_LICENSE_KEY",
+        "description": "Optional Pro license key (MCPL1....). Verified offline.",
+        "isRequired": false,
+        "isSecret": true
+       }
+      ],
+      "fileSha256": "ac1e73efcd39fad676fa8165f559849433bb9464e00a264d9cd44db68c2de111"
+     }
+    ],
+    "remotes": [
+     {
+      "type": "streamable-http",
+      "url": "https://mcp.zovo.one/mcp/mileage-tracker",
+      "headers": [
+       {
+        "name": "Authorization",
+        "description": "Bearer <Pro license key or anonymous token from GET https://mcp.zovo.one/mcp/token>",
+        "isRequired": true,
+        "isSecret": true
+       }
+      ]
+     }
+    ]
+   },
+   "manifest_version_rule": "(name, version) is immutable and io.github.theluckystrike/mileage-tracker@0.21.0 is now live stdio-only, so the hosted row MUST be published at the NEXT estate version. At publish time copy version, packages[0].identifier, packages[0].version and packages[0].fileSha256 from servers/expense-tracker/server.mcpb.json so the sha matches a real release asset; keep name and remotes exactly as in hosted_manifest.",
+   "hosted_url": "https://mcp.zovo.one/mcp/mileage-tracker",
+   "publish_command": "mcp-publisher publish <path-to-hosted-manifest>.json  # AFTER the worker deploy, never before: the row would advertise a 404 endpoint",
+   "verify_commands": [
+    "curl -sS https://registry.modelcontextprotocol.io/v0.1/servers/io.github.theluckystrike%2Fmileage-tracker/versions/latest  # 200, version > 0.21.0, remotes[0].url == hosted_url",
+    "curl -sS -X POST https://mcp.zovo.one/mcp/mileage-tracker -H 'content-type: application/json' -H 'accept: application/json, text/event-stream' -d '{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"initialize\",\"params\":{\"protocolVersion\":\"2025-03-26\",\"capabilities\":{},\"clientInfo\":{\"name\":\"probe\",\"version\":\"0\"}}}' -o /dev/null -w '%{http_code}'  # 200",
+    "curl -sS -X POST https://mcp.zovo.one/mcp/mileage-tracker -H 'content-type: application/json' -H 'accept: application/json, text/event-stream' -d '<tools/call without token>' -o /dev/null -w '%{http_code}'  # 401"
+   ]
+  },
+  {
+   "slug": "spreadsheet-builder",
+   "parent": "spreadsheet",
+   "registry_name": "io.github.theluckystrike/spreadsheet-builder",
+   "stdio_only_version_now_live": "0.21.0",
+   "hosted_manifest": {
+    "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+    "name": "io.github.theluckystrike/spreadsheet-builder",
+    "description": "Open, inspect, filter, edit and convert xlsx and csv files from your AI chat. Processing is local.",
+    "version": "0.21.0",
+    "repository": {
+     "url": "https://github.com/theluckystrike/mcp-servers",
+     "source": "github",
+     "subfolder": "servers/spreadsheet"
+    },
+    "websiteUrl": "https://mcp.zovo.one/s/spreadsheet",
+    "packages": [
+     {
+      "registryType": "mcpb",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.21.0/spreadsheet.mcpb",
+      "version": "0.21.0",
+      "transport": {
+       "type": "stdio"
+      },
+      "environmentVariables": [
+       {
+        "name": "MCP_LICENSE_KEY",
+        "description": "Optional Pro license key (MCPL1....). Verified offline.",
+        "isRequired": false,
+        "isSecret": true
+       }
+      ],
+      "fileSha256": "8b7dcf5a7ca1ff26eab151ddb043fe7e4046414c729083ed24789b8e34f9d401"
+     }
+    ],
+    "remotes": [
+     {
+      "type": "streamable-http",
+      "url": "https://mcp.zovo.one/mcp/spreadsheet-builder",
+      "headers": [
+       {
+        "name": "Authorization",
+        "description": "Bearer <Pro license key or anonymous token from GET https://mcp.zovo.one/mcp/token>",
+        "isRequired": true,
+        "isSecret": true
+       }
+      ]
+     }
+    ]
+   },
+   "manifest_version_rule": "(name, version) is immutable and io.github.theluckystrike/spreadsheet-builder@0.21.0 is now live stdio-only, so the hosted row MUST be published at the NEXT estate version. At publish time copy version, packages[0].identifier, packages[0].version and packages[0].fileSha256 from servers/spreadsheet/server.mcpb.json so the sha matches a real release asset; keep name and remotes exactly as in hosted_manifest.",
+   "hosted_url": "https://mcp.zovo.one/mcp/spreadsheet-builder",
+   "publish_command": "mcp-publisher publish <path-to-hosted-manifest>.json  # AFTER the worker deploy, never before: the row would advertise a 404 endpoint",
+   "verify_commands": [
+    "curl -sS https://registry.modelcontextprotocol.io/v0.1/servers/io.github.theluckystrike%2Fspreadsheet-builder/versions/latest  # 200, version > 0.21.0, remotes[0].url == hosted_url",
+    "curl -sS -X POST https://mcp.zovo.one/mcp/spreadsheet-builder -H 'content-type: application/json' -H 'accept: application/json, text/event-stream' -d '{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"initialize\",\"params\":{\"protocolVersion\":\"2025-03-26\",\"capabilities\":{},\"clientInfo\":{\"name\":\"probe\",\"version\":\"0\"}}}' -o /dev/null -w '%{http_code}'  # 200",
+    "curl -sS -X POST https://mcp.zovo.one/mcp/spreadsheet-builder -H 'content-type: application/json' -H 'accept: application/json, text/event-stream' -d '<tools/call without token>' -o /dev/null -w '%{http_code}'  # 401"
+   ]
+  },
+  {
+   "slug": "spreadsheet-generator",
+   "parent": "spreadsheet",
+   "registry_name": "io.github.theluckystrike/spreadsheet-generator",
+   "stdio_only_version_now_live": "0.21.0",
+   "hosted_manifest": {
+    "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+    "name": "io.github.theluckystrike/spreadsheet-generator",
+    "description": "Open, inspect, filter, edit and convert xlsx and csv files from your AI chat. Processing is local.",
+    "version": "0.21.0",
+    "repository": {
+     "url": "https://github.com/theluckystrike/mcp-servers",
+     "source": "github",
+     "subfolder": "servers/spreadsheet"
+    },
+    "websiteUrl": "https://mcp.zovo.one/s/spreadsheet",
+    "packages": [
+     {
+      "registryType": "mcpb",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.21.0/spreadsheet.mcpb",
+      "version": "0.21.0",
+      "transport": {
+       "type": "stdio"
+      },
+      "environmentVariables": [
+       {
+        "name": "MCP_LICENSE_KEY",
+        "description": "Optional Pro license key (MCPL1....). Verified offline.",
+        "isRequired": false,
+        "isSecret": true
+       }
+      ],
+      "fileSha256": "8b7dcf5a7ca1ff26eab151ddb043fe7e4046414c729083ed24789b8e34f9d401"
+     }
+    ],
+    "remotes": [
+     {
+      "type": "streamable-http",
+      "url": "https://mcp.zovo.one/mcp/spreadsheet-generator",
+      "headers": [
+       {
+        "name": "Authorization",
+        "description": "Bearer <Pro license key or anonymous token from GET https://mcp.zovo.one/mcp/token>",
+        "isRequired": true,
+        "isSecret": true
+       }
+      ]
+     }
+    ]
+   },
+   "manifest_version_rule": "(name, version) is immutable and io.github.theluckystrike/spreadsheet-generator@0.21.0 is now live stdio-only, so the hosted row MUST be published at the NEXT estate version. At publish time copy version, packages[0].identifier, packages[0].version and packages[0].fileSha256 from servers/spreadsheet/server.mcpb.json so the sha matches a real release asset; keep name and remotes exactly as in hosted_manifest.",
+   "hosted_url": "https://mcp.zovo.one/mcp/spreadsheet-generator",
+   "publish_command": "mcp-publisher publish <path-to-hosted-manifest>.json  # AFTER the worker deploy, never before: the row would advertise a 404 endpoint",
+   "verify_commands": [
+    "curl -sS https://registry.modelcontextprotocol.io/v0.1/servers/io.github.theluckystrike%2Fspreadsheet-generator/versions/latest  # 200, version > 0.21.0, remotes[0].url == hosted_url",
+    "curl -sS -X POST https://mcp.zovo.one/mcp/spreadsheet-generator -H 'content-type: application/json' -H 'accept: application/json, text/event-stream' -d '{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"initialize\",\"params\":{\"protocolVersion\":\"2025-03-26\",\"capabilities\":{},\"clientInfo\":{\"name\":\"probe\",\"version\":\"0\"}}}' -o /dev/null -w '%{http_code}'  # 200",
+    "curl -sS -X POST https://mcp.zovo.one/mcp/spreadsheet-generator -H 'content-type: application/json' -H 'accept: application/json, text/event-stream' -d '<tools/call without token>' -o /dev/null -w '%{http_code}'  # 401"
+   ]
+  },
+  {
+   "slug": "currency-exchange",
+   "parent": "currency",
+   "registry_name": "io.github.theluckystrike/currency-exchange",
+   "stdio_only_version_now_live": "0.21.0",
+   "hosted_manifest": {
+    "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+    "name": "io.github.theluckystrike/currency-exchange",
+    "description": "Convert currencies on the daily European Central Bank reference rates. No API key, no signup.",
+    "version": "0.21.0",
+    "repository": {
+     "url": "https://github.com/theluckystrike/mcp-servers",
+     "source": "github",
+     "subfolder": "servers/currency"
+    },
+    "websiteUrl": "https://mcp.zovo.one/s/currency",
+    "packages": [
+     {
+      "registryType": "mcpb",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.21.0/currency.mcpb",
+      "version": "0.21.0",
+      "transport": {
+       "type": "stdio"
+      },
+      "environmentVariables": [
+       {
+        "name": "MCP_LICENSE_KEY",
+        "description": "Optional Pro license key (MCPL1....). Verified offline.",
+        "isRequired": false,
+        "isSecret": true
+       }
+      ],
+      "fileSha256": "1829280dea358b7cb68945c46c7e7d77dd614f87a82c1ed284731dfa0ba8e87a"
+     }
+    ],
+    "remotes": [
+     {
+      "type": "streamable-http",
+      "url": "https://mcp.zovo.one/mcp/currency-exchange",
+      "headers": [
+       {
+        "name": "Authorization",
+        "description": "Bearer <Pro license key or anonymous token from GET https://mcp.zovo.one/mcp/token>",
+        "isRequired": true,
+        "isSecret": true
+       }
+      ]
+     }
+    ]
+   },
+   "manifest_version_rule": "(name, version) is immutable and io.github.theluckystrike/currency-exchange@0.21.0 is now live stdio-only, so the hosted row MUST be published at the NEXT estate version. At publish time copy version, packages[0].identifier, packages[0].version and packages[0].fileSha256 from servers/currency/server.mcpb.json so the sha matches a real release asset; keep name and remotes exactly as in hosted_manifest.",
+   "hosted_url": "https://mcp.zovo.one/mcp/currency-exchange",
+   "publish_command": "mcp-publisher publish <path-to-hosted-manifest>.json  # AFTER the worker deploy, never before: the row would advertise a 404 endpoint",
+   "verify_commands": [
+    "curl -sS https://registry.modelcontextprotocol.io/v0.1/servers/io.github.theluckystrike%2Fcurrency-exchange/versions/latest  # 200, version > 0.21.0, remotes[0].url == hosted_url",
+    "curl -sS -X POST https://mcp.zovo.one/mcp/currency-exchange -H 'content-type: application/json' -H 'accept: application/json, text/event-stream' -d '{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"initialize\",\"params\":{\"protocolVersion\":\"2025-03-26\",\"capabilities\":{},\"clientInfo\":{\"name\":\"probe\",\"version\":\"0\"}}}' -o /dev/null -w '%{http_code}'  # 200",
+    "curl -sS -X POST https://mcp.zovo.one/mcp/currency-exchange -H 'content-type: application/json' -H 'accept: application/json, text/event-stream' -d '<tools/call without token>' -o /dev/null -w '%{http_code}'  # 401"
+   ]
+  },
+  {
+   "slug": "exchange-rates",
+   "parent": "currency",
+   "registry_name": "io.github.theluckystrike/exchange-rates",
+   "stdio_only_version_now_live": "0.21.0",
+   "hosted_manifest": {
+    "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+    "name": "io.github.theluckystrike/exchange-rates",
+    "description": "Convert currencies on the daily European Central Bank reference rates. No API key, no signup.",
+    "version": "0.21.0",
+    "repository": {
+     "url": "https://github.com/theluckystrike/mcp-servers",
+     "source": "github",
+     "subfolder": "servers/currency"
+    },
+    "websiteUrl": "https://mcp.zovo.one/s/currency",
+    "packages": [
+     {
+      "registryType": "mcpb",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.21.0/currency.mcpb",
+      "version": "0.21.0",
+      "transport": {
+       "type": "stdio"
+      },
+      "environmentVariables": [
+       {
+        "name": "MCP_LICENSE_KEY",
+        "description": "Optional Pro license key (MCPL1....). Verified offline.",
+        "isRequired": false,
+        "isSecret": true
+       }
+      ],
+      "fileSha256": "1829280dea358b7cb68945c46c7e7d77dd614f87a82c1ed284731dfa0ba8e87a"
+     }
+    ],
+    "remotes": [
+     {
+      "type": "streamable-http",
+      "url": "https://mcp.zovo.one/mcp/exchange-rates",
+      "headers": [
+       {
+        "name": "Authorization",
+        "description": "Bearer <Pro license key or anonymous token from GET https://mcp.zovo.one/mcp/token>",
+        "isRequired": true,
+        "isSecret": true
+       }
+      ]
+     }
+    ]
+   },
+   "manifest_version_rule": "(name, version) is immutable and io.github.theluckystrike/exchange-rates@0.21.0 is now live stdio-only, so the hosted row MUST be published at the NEXT estate version. At publish time copy version, packages[0].identifier, packages[0].version and packages[0].fileSha256 from servers/currency/server.mcpb.json so the sha matches a real release asset; keep name and remotes exactly as in hosted_manifest.",
+   "hosted_url": "https://mcp.zovo.one/mcp/exchange-rates",
+   "publish_command": "mcp-publisher publish <path-to-hosted-manifest>.json  # AFTER the worker deploy, never before: the row would advertise a 404 endpoint",
+   "verify_commands": [
+    "curl -sS https://registry.modelcontextprotocol.io/v0.1/servers/io.github.theluckystrike%2Fexchange-rates/versions/latest  # 200, version > 0.21.0, remotes[0].url == hosted_url",
+    "curl -sS -X POST https://mcp.zovo.one/mcp/exchange-rates -H 'content-type: application/json' -H 'accept: application/json, text/event-stream' -d '{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"initialize\",\"params\":{\"protocolVersion\":\"2025-03-26\",\"capabilities\":{},\"clientInfo\":{\"name\":\"probe\",\"version\":\"0\"}}}' -o /dev/null -w '%{http_code}'  # 200",
+    "curl -sS -X POST https://mcp.zovo.one/mcp/exchange-rates -H 'content-type: application/json' -H 'accept: application/json, text/event-stream' -d '<tools/call without token>' -o /dev/null -w '%{http_code}'  # 401"
+   ]
+  },
+  {
+   "slug": "quote-template",
+   "parent": "quotes",
+   "registry_name": "io.github.theluckystrike/quote-template",
+   "stdio_only_version_now_live": "0.21.0",
+   "hosted_manifest": {
+    "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+    "name": "io.github.theluckystrike/quote-template",
+    "description": "Quotes and estimates: VAT line items, a validity date, an A4 PDF, accept makes an invoice.",
+    "version": "0.21.0",
+    "repository": {
+     "url": "https://github.com/theluckystrike/mcp-servers",
+     "source": "github",
+     "subfolder": "servers/quotes"
+    },
+    "websiteUrl": "https://mcp.zovo.one/s/quotes",
+    "packages": [
+     {
+      "registryType": "mcpb",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.21.0/quotes.mcpb",
+      "version": "0.21.0",
+      "transport": {
+       "type": "stdio"
+      },
+      "environmentVariables": [
+       {
+        "name": "MCP_LICENSE_KEY",
+        "description": "Optional Pro license key (MCPL1....). Verified offline.",
+        "isRequired": false,
+        "isSecret": true
+       }
+      ],
+      "fileSha256": "050b84d286f99600d9c6523b8968c163f488a4fba956dd0efdbf2a445a4c7f25"
+     }
+    ],
+    "remotes": [
+     {
+      "type": "streamable-http",
+      "url": "https://mcp.zovo.one/mcp/quote-template",
+      "headers": [
+       {
+        "name": "Authorization",
+        "description": "Bearer <Pro license key or anonymous token from GET https://mcp.zovo.one/mcp/token>",
+        "isRequired": true,
+        "isSecret": true
+       }
+      ]
+     }
+    ]
+   },
+   "manifest_version_rule": "(name, version) is immutable and io.github.theluckystrike/quote-template@0.21.0 is now live stdio-only, so the hosted row MUST be published at the NEXT estate version. At publish time copy version, packages[0].identifier, packages[0].version and packages[0].fileSha256 from servers/quotes/server.mcpb.json so the sha matches a real release asset; keep name and remotes exactly as in hosted_manifest.",
+   "hosted_url": "https://mcp.zovo.one/mcp/quote-template",
+   "publish_command": "mcp-publisher publish <path-to-hosted-manifest>.json  # AFTER the worker deploy, never before: the row would advertise a 404 endpoint",
+   "verify_commands": [
+    "curl -sS https://registry.modelcontextprotocol.io/v0.1/servers/io.github.theluckystrike%2Fquote-template/versions/latest  # 200, version > 0.21.0, remotes[0].url == hosted_url",
+    "curl -sS -X POST https://mcp.zovo.one/mcp/quote-template -H 'content-type: application/json' -H 'accept: application/json, text/event-stream' -d '{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"initialize\",\"params\":{\"protocolVersion\":\"2025-03-26\",\"capabilities\":{},\"clientInfo\":{\"name\":\"probe\",\"version\":\"0\"}}}' -o /dev/null -w '%{http_code}'  # 200",
+    "curl -sS -X POST https://mcp.zovo.one/mcp/quote-template -H 'content-type: application/json' -H 'accept: application/json, text/event-stream' -d '<tools/call without token>' -o /dev/null -w '%{http_code}'  # 401"
+   ]
+  },
+  {
+   "slug": "estimate-template",
+   "parent": "quotes",
+   "registry_name": "io.github.theluckystrike/estimate-template",
+   "stdio_only_version_now_live": "0.21.0",
+   "hosted_manifest": {
+    "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+    "name": "io.github.theluckystrike/estimate-template",
+    "description": "Quotes and estimates: VAT line items, a validity date, an A4 PDF, accept makes an invoice.",
+    "version": "0.21.0",
+    "repository": {
+     "url": "https://github.com/theluckystrike/mcp-servers",
+     "source": "github",
+     "subfolder": "servers/quotes"
+    },
+    "websiteUrl": "https://mcp.zovo.one/s/quotes",
+    "packages": [
+     {
+      "registryType": "mcpb",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.21.0/quotes.mcpb",
+      "version": "0.21.0",
+      "transport": {
+       "type": "stdio"
+      },
+      "environmentVariables": [
+       {
+        "name": "MCP_LICENSE_KEY",
+        "description": "Optional Pro license key (MCPL1....). Verified offline.",
+        "isRequired": false,
+        "isSecret": true
+       }
+      ],
+      "fileSha256": "050b84d286f99600d9c6523b8968c163f488a4fba956dd0efdbf2a445a4c7f25"
+     }
+    ],
+    "remotes": [
+     {
+      "type": "streamable-http",
+      "url": "https://mcp.zovo.one/mcp/estimate-template",
+      "headers": [
+       {
+        "name": "Authorization",
+        "description": "Bearer <Pro license key or anonymous token from GET https://mcp.zovo.one/mcp/token>",
+        "isRequired": true,
+        "isSecret": true
+       }
+      ]
+     }
+    ]
+   },
+   "manifest_version_rule": "(name, version) is immutable and io.github.theluckystrike/estimate-template@0.21.0 is now live stdio-only, so the hosted row MUST be published at the NEXT estate version. At publish time copy version, packages[0].identifier, packages[0].version and packages[0].fileSha256 from servers/quotes/server.mcpb.json so the sha matches a real release asset; keep name and remotes exactly as in hosted_manifest.",
+   "hosted_url": "https://mcp.zovo.one/mcp/estimate-template",
+   "publish_command": "mcp-publisher publish <path-to-hosted-manifest>.json  # AFTER the worker deploy, never before: the row would advertise a 404 endpoint",
+   "verify_commands": [
+    "curl -sS https://registry.modelcontextprotocol.io/v0.1/servers/io.github.theluckystrike%2Festimate-template/versions/latest  # 200, version > 0.21.0, remotes[0].url == hosted_url",
+    "curl -sS -X POST https://mcp.zovo.one/mcp/estimate-template -H 'content-type: application/json' -H 'accept: application/json, text/event-stream' -d '{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"initialize\",\"params\":{\"protocolVersion\":\"2025-03-26\",\"capabilities\":{},\"clientInfo\":{\"name\":\"probe\",\"version\":\"0\"}}}' -o /dev/null -w '%{http_code}'  # 200",
+    "curl -sS -X POST https://mcp.zovo.one/mcp/estimate-template -H 'content-type: application/json' -H 'accept: application/json, text/event-stream' -d '<tools/call without token>' -o /dev/null -w '%{http_code}'  # 401"
+   ]
+  },
+  {
+   "slug": "bank-statement-pdf",
+   "parent": "bank-statement",
+   "registry_name": "io.github.theluckystrike/bank-statement-pdf",
+   "stdio_only_version_now_live": "0.21.0",
+   "hosted_manifest": {
+    "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+    "name": "io.github.theluckystrike/bank-statement-pdf",
+    "description": "Import a bank CSV, categorise it, summarise it per currency and reconcile it against your expenses.",
+    "version": "0.21.0",
+    "repository": {
+     "url": "https://github.com/theluckystrike/mcp-servers",
+     "source": "github",
+     "subfolder": "servers/bank-statement"
+    },
+    "websiteUrl": "https://mcp.zovo.one/s/bank-statement",
+    "packages": [
+     {
+      "registryType": "mcpb",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.21.0/bank-statement.mcpb",
+      "version": "0.21.0",
+      "transport": {
+       "type": "stdio"
+      },
+      "environmentVariables": [
+       {
+        "name": "MCP_LICENSE_KEY",
+        "description": "Optional Pro license key (MCPL1....). Verified offline.",
+        "isRequired": false,
+        "isSecret": true
+       }
+      ],
+      "fileSha256": "15f85d0ff6c81042a417d8c1b33c80b0867f33fc7f32064c7fdd4bbdfd6b9105"
+     }
+    ],
+    "remotes": [
+     {
+      "type": "streamable-http",
+      "url": "https://mcp.zovo.one/mcp/bank-statement-pdf",
+      "headers": [
+       {
+        "name": "Authorization",
+        "description": "Bearer <Pro license key or anonymous token from GET https://mcp.zovo.one/mcp/token>",
+        "isRequired": true,
+        "isSecret": true
+       }
+      ]
+     }
+    ]
+   },
+   "manifest_version_rule": "(name, version) is immutable and io.github.theluckystrike/bank-statement-pdf@0.21.0 is now live stdio-only, so the hosted row MUST be published at the NEXT estate version. At publish time copy version, packages[0].identifier, packages[0].version and packages[0].fileSha256 from servers/bank-statement/server.mcpb.json so the sha matches a real release asset; keep name and remotes exactly as in hosted_manifest.",
+   "hosted_url": "https://mcp.zovo.one/mcp/bank-statement-pdf",
+   "publish_command": "mcp-publisher publish <path-to-hosted-manifest>.json  # AFTER the worker deploy, never before: the row would advertise a 404 endpoint",
+   "verify_commands": [
+    "curl -sS https://registry.modelcontextprotocol.io/v0.1/servers/io.github.theluckystrike%2Fbank-statement-pdf/versions/latest  # 200, version > 0.21.0, remotes[0].url == hosted_url",
+    "curl -sS -X POST https://mcp.zovo.one/mcp/bank-statement-pdf -H 'content-type: application/json' -H 'accept: application/json, text/event-stream' -d '{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"initialize\",\"params\":{\"protocolVersion\":\"2025-03-26\",\"capabilities\":{},\"clientInfo\":{\"name\":\"probe\",\"version\":\"0\"}}}' -o /dev/null -w '%{http_code}'  # 200",
+    "curl -sS -X POST https://mcp.zovo.one/mcp/bank-statement-pdf -H 'content-type: application/json' -H 'accept: application/json, text/event-stream' -d '<tools/call without token>' -o /dev/null -w '%{http_code}'  # 401"
+   ]
+  },
+  {
+   "slug": "categorize-transactions",
+   "parent": "bank-statement",
+   "registry_name": "io.github.theluckystrike/categorize-transactions",
+   "stdio_only_version_now_live": "0.21.0",
+   "hosted_manifest": {
+    "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+    "name": "io.github.theluckystrike/categorize-transactions",
+    "description": "Import a bank CSV, categorise it, summarise it per currency and reconcile it against your expenses.",
+    "version": "0.21.0",
+    "repository": {
+     "url": "https://github.com/theluckystrike/mcp-servers",
+     "source": "github",
+     "subfolder": "servers/bank-statement"
+    },
+    "websiteUrl": "https://mcp.zovo.one/s/bank-statement",
+    "packages": [
+     {
+      "registryType": "mcpb",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.21.0/bank-statement.mcpb",
+      "version": "0.21.0",
+      "transport": {
+       "type": "stdio"
+      },
+      "environmentVariables": [
+       {
+        "name": "MCP_LICENSE_KEY",
+        "description": "Optional Pro license key (MCPL1....). Verified offline.",
+        "isRequired": false,
+        "isSecret": true
+       }
+      ],
+      "fileSha256": "15f85d0ff6c81042a417d8c1b33c80b0867f33fc7f32064c7fdd4bbdfd6b9105"
+     }
+    ],
+    "remotes": [
+     {
+      "type": "streamable-http",
+      "url": "https://mcp.zovo.one/mcp/categorize-transactions",
+      "headers": [
+       {
+        "name": "Authorization",
+        "description": "Bearer <Pro license key or anonymous token from GET https://mcp.zovo.one/mcp/token>",
+        "isRequired": true,
+        "isSecret": true
+       }
+      ]
+     }
+    ]
+   },
+   "manifest_version_rule": "(name, version) is immutable and io.github.theluckystrike/categorize-transactions@0.21.0 is now live stdio-only, so the hosted row MUST be published at the NEXT estate version. At publish time copy version, packages[0].identifier, packages[0].version and packages[0].fileSha256 from servers/bank-statement/server.mcpb.json so the sha matches a real release asset; keep name and remotes exactly as in hosted_manifest.",
+   "hosted_url": "https://mcp.zovo.one/mcp/categorize-transactions",
+   "publish_command": "mcp-publisher publish <path-to-hosted-manifest>.json  # AFTER the worker deploy, never before: the row would advertise a 404 endpoint",
+   "verify_commands": [
+    "curl -sS https://registry.modelcontextprotocol.io/v0.1/servers/io.github.theluckystrike%2Fcategorize-transactions/versions/latest  # 200, version > 0.21.0, remotes[0].url == hosted_url",
+    "curl -sS -X POST https://mcp.zovo.one/mcp/categorize-transactions -H 'content-type: application/json' -H 'accept: application/json, text/event-stream' -d '{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"initialize\",\"params\":{\"protocolVersion\":\"2025-03-26\",\"capabilities\":{},\"clientInfo\":{\"name\":\"probe\",\"version\":\"0\"}}}' -o /dev/null -w '%{http_code}'  # 200",
+    "curl -sS -X POST https://mcp.zovo.one/mcp/categorize-transactions -H 'content-type: application/json' -H 'accept: application/json, text/event-stream' -d '<tools/call without token>' -o /dev/null -w '%{http_code}'  # 401"
+   ]
+  }
+ ]
+}

@@ -1,0 +1,340 @@
+{
+ "round": 6,
+ "loop": 31,
+ "date": "2026-09-17",
+ "agent": "directory",
+ "continues": "r5 (evidence: .hermes/cache/delegation/subagent-summary-0-20260917_133326_645467.txt)",
+ "note": "r5 hit its iteration cap before persisting data/distribution_r5.json and docs/DIST_R5_NOTES.md. This file covers r5 + r6 in the r26 {surface,url,status,evidence,at} shape.",
+ "headline": {
+  "prs_open_green": 7,
+  "glama_mirrors_indexed": 8,
+  "surfaces_0_to_1_this_round": 0,
+  "surfaces_fixed_this_round": 7,
+  "pr_defect_found_and_repaired": true
+ },
+ "surfaces": [
+  {
+   "surface": "punkpeye/awesome-mcp-servers PR #14559",
+   "url": "https://github.com/punkpeye/awesome-mcp-servers/pull/14559",
+   "server": "mcp-office-suite",
+   "section": "Other Tools and Integrations",
+   "status": "open-green",
+   "evidence": [
+    "gh pr view 14559 -R punkpeye/awesome-mcp-servers --json state,labels,mergeable,statusCheckRollup -> state=OPEN mergeable=MERGEABLE mss=CLEAN labels=has-emoji,valid-name,has-glama checks=check-submission=SUCCESS welcome=SKIPPED",
+    "diff re-read after force-push: +1 -0 (single appended line)"
+   ],
+   "at": "2026-09-17T14:05:00Z"
+  },
+  {
+   "surface": "punkpeye/awesome-mcp-servers PR #14560",
+   "url": "https://github.com/punkpeye/awesome-mcp-servers/pull/14560",
+   "server": "mcp-bill-of-sale",
+   "section": "Finance & Fintech",
+   "status": "open-green",
+   "evidence": [
+    "gh pr view 14560 ... -> state=OPEN mergeable=MERGEABLE mss=CLEAN labels=has-emoji,valid-name,has-glama check-submission=SUCCESS",
+    "PRE-FIX this branch had label missing-emoji; post-fix readback shows has-emoji. Root cause: previous insertion merged our bullet with the upstream neighbour line (henfrydls/actual-budget-mcp) into one line, eating the newline; the emoji checker saw an unrecognized merged blob.",
+    "verified on disk: entry now sits on its own line, prev line = intact '- [henfrydls/actual-budget-mcp]' bullet"
+   ],
+   "at": "2026-09-17T14:05:00Z"
+  },
+  {
+   "surface": "punkpeye/awesome-mcp-servers PR #14561",
+   "url": "https://github.com/punkpeye/awesome-mcp-servers/pull/14561",
+   "server": "mcp-credit-note",
+   "section": "Finance & Fintech",
+   "status": "open-green",
+   "evidence": [
+    "gh pr view 14561 ... -> state=OPEN mergeable=MERGEABLE mss=CLEAN labels=has-emoji,valid-name,has-glama check-submission=SUCCESS",
+    "PRE-FIX had missing-emoji (same merged-line root cause); post-fix readback green"
+   ],
+   "at": "2026-09-17T14:05:00Z"
+  },
+  {
+   "surface": "punkpeye/awesome-mcp-servers PR #14562",
+   "url": "https://github.com/punkpeye/awesome-mcp-servers/pull/14562",
+   "server": "mcp-dunning-letters",
+   "section": "Finance & Fintech",
+   "status": "open-green",
+   "evidence": [
+    "gh pr view 14562 ... -> state=OPEN mergeable=MERGEABLE mss=CLEAN labels=has-emoji,valid-name,has-glama check-submission=SUCCESS",
+    "PRE-FIX had missing-emoji (same merged-line root cause); post-fix readback green"
+   ],
+   "at": "2026-09-17T14:05:00Z"
+  },
+  {
+   "surface": "punkpeye/awesome-mcp-servers PR #14563",
+   "url": "https://github.com/punkpeye/awesome-mcp-servers/pull/14563",
+   "server": "mcp-job-card",
+   "section": "Other Tools and Integrations",
+   "status": "open-green",
+   "evidence": [
+    "gh pr view 14563 ... -> state=OPEN mergeable=MERGEABLE mss=CLEAN labels=has-emoji,valid-name,has-glama check-submission=SUCCESS"
+   ],
+   "at": "2026-09-17T14:05:00Z"
+  },
+  {
+   "surface": "punkpeye/awesome-mcp-servers PR #14564",
+   "url": "https://github.com/punkpeye/awesome-mcp-servers/pull/14564",
+   "server": "mcp-packing-list",
+   "section": "Other Tools and Integrations",
+   "status": "open-green",
+   "evidence": [
+    "gh pr view 14564 ... -> state=OPEN mergeable=MERGEABLE mss=CLEAN labels=has-emoji,valid-name,has-glama check-submission=SUCCESS"
+   ],
+   "at": "2026-09-17T14:05:00Z"
+  },
+  {
+   "surface": "punkpeye/awesome-mcp-servers PR #14565",
+   "url": "https://github.com/punkpeye/awesome-mcp-servers/pull/14565",
+   "server": "mcp-checklist",
+   "section": "Other Tools and Integrations",
+   "status": "open-green",
+   "evidence": [
+    "gh pr view 14565 ... -> state=OPEN mergeable=MERGEABLE mss=CLEAN labels=has-emoji,valid-name,has-glama check-submission=SUCCESS"
+   ],
+   "at": "2026-09-17T14:05:00Z"
+  },
+  {
+   "surface": "Glama server pages (theluckystrike) - 8 indexed mirrors",
+   "url": "https://glama.ai/mcp/servers/theluckystrike",
+   "status": "live",
+   "evidence": [
+    "badge SVG <title> per mirror = '... rated A/B on Glama' (real, not placeholder): mcp-bill-of-sale(A), mcp-checklist(A), mcp-credit-note(A), mcp-packing-list(A), mcp-statement-of-account(A), mcp-dunning-letters(B), mcp-job-card(B), mcp-office-suite(B)",
+    "positive control: same badge check on an unindexed mirror returns <title>This MCP server is not listed on Glama</title> at HTTP 200 -> the check discriminates",
+    "follow-up search query https://glama.ai/mcp/servers?query=theluckystrike -> 147 'theluckystrike' hits across exactly the 8 server slugs; CONTROL query ?query=zzzznotarealquery -> 0 hits, so this is a real index result, not query echo",
+    "server page bodies real: mcp-bill-of-sale 200/45 repo refs, mcp-office-suite 200/152, mcp-statement-of-account 200/43"
+   ],
+   "indexed_count": 8,
+   "mirror_repo_count": 42,
+   "indexed": [
+    "mcp-bill-of-sale",
+    "mcp-checklist",
+    "mcp-credit-note",
+    "mcp-dunning-letters",
+    "mcp-job-card",
+    "mcp-office-suite",
+    "mcp-packing-list",
+    "mcp-statement-of-account"
+   ],
+   "at": "2026-09-17T14:00:00Z"
+  },
+  {
+   "surface": "Glama badge target mcp-amortization",
+   "url": "https://glama.ai/mcp/servers/theluckystrike/mcp-amortization/badges/score.svg",
+   "status": "not-indexed",
+   "evidence": [
+    "HTTP 200, 2880 bytes, SVG <title>This MCP server is not listed on Glama</title> -> PLACEHOLDER, not a listing",
+    "r5 predicted this as the next organic flip; it did not flip. No badge PR opened for it (correctly)."
+   ],
+   "at": "2026-09-17T14:00:00Z"
+  },
+  {
+   "surface": "Glama badge target mcp-petty-cash",
+   "url": "https://glama.ai/mcp/servers/theluckystrike/mcp-petty-cash/badges/score.svg",
+   "status": "not-indexed",
+   "evidence": [
+    "HTTP 200, 2880 bytes, SVG <title>This MCP server is not listed on Glama</title> -> PLACEHOLDER, not a listing",
+    "r5 predicted this as the next organic flip; it did not flip."
+   ],
+   "at": "2026-09-17T14:00:00Z"
+  },
+  {
+   "surface": "api.mcp.github.com server search",
+   "url": "https://api.mcp.github.com/v0/servers?search=theluckystrike",
+   "status": "not-indexed",
+   "evidence": [
+    "HTTP 200, 2722654 bytes, 455 results returned, 0 contain 'theluckystrike' -> search param does not filter to us, still absent"
+   ],
+   "at": "2026-09-17T14:00:00Z"
+  },
+  {
+   "surface": "mcp.so",
+   "url": "https://mcp.so/search?q=theluckystrike",
+   "status": "not-indexed",
+   "evidence": [
+    "HTTP 200 but only 1 'theluckystrike' occurrence (the echoed query param itself); prior round: direct server URLs 404"
+   ],
+   "at": "2026-09-17T14:00:00Z"
+  },
+  {
+   "surface": "toolsdk-ai/toolsdk-mcp-registry PR #514",
+   "url": "https://github.com/toolsdk-ai/toolsdk-mcp-registry/pull/514",
+   "status": "open-unmerged",
+   "evidence": [
+    "gh pr view 514 -R toolsdk-ai/toolsdk-mcp-registry --json state,mergeStateStatus -> state=OPEN mss=UNKNOWN updated=2026-09-12T13:01:16Z (no movement in 5 days)"
+   ],
+   "at": "2026-09-17T14:00:00Z"
+  },
+  {
+   "surface": "mcpHQ/awesome-mcp-servers PR #61",
+   "url": "https://github.com/mcpHQ/awesome-mcp-servers/pull/61",
+   "status": "live",
+   "evidence": "gh pr view -> MERGED 2026-09-17T06:10:44Z; raw data/servers.json HEAD carries https://mcp.zovo.one/mcp/invoice (1 hit, verified)",
+   "at": "2026-09-17"
+  },
+  {
+   "surface": "MobinX/awesome-mcp-list PR #420",
+   "url": "https://github.com/MobinX/awesome-mcp-list/pull/420",
+   "status": "live",
+   "evidence": "MERGED 2026-09-14; live README line 539: Hosted option at mcp.zovo.one",
+   "at": "2026-09-17"
+  },
+  {
+   "surface": "abordage/awesome-mcp PR #106",
+   "url": "https://github.com/abordage/awesome-mcp/pull/106",
+   "status": "live",
+   "evidence": "MERGED 2026-09-14; repositories.yaml carries 6 zovo hits; rendered site unresolved",
+   "at": "2026-09-17"
+  },
+  {
+   "surface": "AIAnytime/Awesome-MCP-Server PR #83",
+   "url": "https://github.com/AIAnytime/Awesome-MCP-Server/pull/83",
+   "status": "live",
+   "evidence": "MERGED 2026-09-05; still live in README (1 zovo.one hit)",
+   "at": "2026-09-17"
+  },
+  {
+   "surface": "DhanushNehru/awesome-mcp-servers PR #85",
+   "url": "https://github.com/DhanushNehru/awesome-mcp-servers/pull/85",
+   "status": "open-unmerged",
+   "evidence": "one-line entry in Productivity & Collaboration, anchor-asserted",
+   "at": "2026-09-17"
+  },
+  {
+   "surface": "mcpHQ/awesome-mcp-servers PR #62 (Zovo Office Suite)",
+   "url": "https://github.com/mcpHQ/awesome-mcp-servers/pull/62",
+   "status": "open-unmerged",
+   "evidence": "data/servers.json entry with endpoint https://mcp.zovo.one/mcp/expense-tracker (200 verified); office-suite endpoint caught 404 and replaced before shipping",
+   "at": "2026-09-17"
+  },
+  {
+   "surface": "Albertchamberlain/Awesome-MCP",
+   "url": "https://github.com/Albertchamberlain/Awesome-MCP",
+   "status": "open",
+   "evidence": "viable (16 merges, data/catalog.yaml + validate CI); toolchain installed; entry+PR not yet written",
+   "at": "2026-09-17"
+  }
+ ],
+ "human_gated": [
+  {
+   "name": "npm",
+   "url": "https://www.npmjs.com/login",
+   "status": "human-gated",
+   "evidence": "probe http=403 without session; ENEEDAUTH proved earlier - a package must exist before trusted publishing can be enabled",
+   "at": "2026-09-17T14:00:00Z"
+  },
+  {
+   "name": "smithery",
+   "url": "https://smithery.ai/auth/cli",
+   "status": "human-gated",
+   "evidence": "auth/cli http=404; server pages 404 unverified (tried /servers/@theluckystrike/mcp-invoice -> 404)",
+   "at": "2026-09-17T14:00:00Z"
+  },
+  {
+   "name": "glama claiming",
+   "url": "https://glama.ai/mcp/servers",
+   "status": "human-gated",
+   "evidence": "claiming a listing requires sign-in; organic indexing is what we rely on instead",
+   "at": "2026-09-17T14:00:00Z"
+  },
+  {
+   "name": "cursor.directory",
+   "url": "https://cursor.directory/plugins/new",
+   "status": "human-gated",
+   "evidence": "http=429 rate-limited this round",
+   "at": "2026-09-17T14:00:00Z"
+  },
+  {
+   "name": "mcp.directory",
+   "url": "https://mcp.directory/submit",
+   "status": "human-gated",
+   "evidence": "http=200 form requires account/submission by operator",
+   "at": "2026-09-17T14:00:00Z"
+  },
+  {
+   "name": "allmcps.com",
+   "url": "https://allmcps.com/submit",
+   "status": "human-gated",
+   "evidence": "http=200 free form needs contact email + ownership claim after approval",
+   "at": "2026-09-17T14:00:00Z"
+  },
+  {
+   "name": "mcpserverfinder.com",
+   "url": "mailto:info@mcpserverfinder.com",
+   "status": "human-gated",
+   "evidence": "site http=200; only route is email, no programmatic path",
+   "at": "2026-09-17T14:00:00Z"
+  },
+  {
+   "name": "opentools.ai",
+   "url": "https://opentools.ai/signin",
+   "status": "human-gated",
+   "evidence": "search now requires sign-in (new gate since r4)",
+   "at": "2026-09-17T14:00:00Z"
+  },
+  {
+   "name": "mcp.so free route",
+   "url": "https://mcp.so/submit",
+   "status": "human-gated",
+   "evidence": "free submission requires account; not indexed anyway",
+   "at": "2026-09-17T14:00:00Z"
+  }
+ ],
+ "blocked_or_dead": [
+  {
+   "name": "mcpservers.org",
+   "url": "https://mcpservers.org/",
+   "status": "blocked",
+   "evidence": "http=403 Cloudflare",
+   "at": "2026-09-17T14:00:00Z"
+  },
+  {
+   "name": "mcpmarket.com",
+   "url": "https://mcpmarket.com/",
+   "status": "unverified",
+   "evidence": "http=200 this round (was 403); no submission route found, not indexed",
+   "at": "2026-09-17T14:00:00Z"
+  },
+  {
+   "name": "pulsemcp",
+   "url": "https://www.pulsemcp.com/servers",
+   "status": "blocked",
+   "evidence": "http=403",
+   "at": "2026-09-17T14:00:00Z"
+  }
+ ],
+ "fix_applied_this_round": {
+  "defect": "all 7 branches appended the new bullet to the SAME LINE as the upstream last bullet, deleting the newline separator and merging two entries into one line (which also corrupted the upstream entry's list-item marker).",
+  "detected_by": "gh pr diff showed the diff line ending with '- - [theluckystrike/...] ... [DROOdotFOO/raxol](...)' and '[henfrydls/actual-budget-mcp](...)' concatenated with no separator",
+  "root_cause": "insertion joined lines with '' instead of inserting a newline-delimited element into the line list",
+  "fix": "insert as its own list element after the last bullet of the target section, with asserts: anchor matches exactly one '^### .*<a name=\"...\">' header; target name absent from that section; next line starts with '- [' or '#'; prev line is an intact bullet; the previously-last bullet is still present verbatim",
+  "result": "all 7 branches rebuilt from origin/main @393b4e9, diff +1 -0, force-pushed; labels now has-emoji,valid-name,has-glama on all 7; check-submission=SUCCESS on all 7",
+  "commit_shas": {
+   "mcp-office-suite": "42b1e62",
+   "mcp-bill-of-sale": "3e186dc",
+   "mcp-credit-note": "8859317",
+   "mcp-dunning-letters": "085079c",
+   "mcp-job-card": "2ffa67f",
+   "mcp-packing-list": "494ceaf",
+   "mcp-checklist": "c95e7b3"
+  }
+ },
+ "census": {
+  "prs_opened_total_r5": 7,
+  "prs_open": 7,
+  "prs_green_all_three_labels": 7,
+  "prs_with_check_submission_success": 7,
+  "glama_indexed": 8,
+  "glama_placeholder": 34,
+  "glama_total_probed": 42,
+  "new_surfaces_this_round": 0,
+  "surfaces_fixed_this_round": 7
+ },
+ "rules_honored": {
+  "paid_listings": "none purchased, none attempted",
+  "account_creation_or_signin": "none; all such routes recorded human-gated",
+  "emoji": "none in these files; PR content follows the upstream list's own emoji convention",
+  "evidence_standard": "every live claim carries a follow-up query; a 200 alone was never accepted"
+ }
+}

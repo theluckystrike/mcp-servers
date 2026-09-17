@@ -8438,6 +8438,206 @@ needs a key.</li>
       { q: "Does moving the receipt file break anything?", a: "The link to it, yes. The expense record keeps the old path and the hash, so you will see that the file is no longer where it was. The stored figures are unaffected." },
     ],
   },
+
+  "what-mcp-server-generates-invoices": {
+    title: "Which MCP server can generate invoice PDFs from a chat message?",
+    description: "The direct answer: the invoice server renders a numbered A4 PDF with VAT lines from one sentence. Honest note on the free tier, and what the alternatives do and do not do.",
+    html: `<h1>Which MCP server can generate invoice PDFs from a chat message?</h1>
+<p>The short answer: the <a href="/s/invoice">MCP Invoice</a> server. You say what you worked on, how many
+hours at what rate, any VAT and the due date, and it allocates a number that never repeats, computes the
+tax lines and renders a single-page A4 PDF on your own disk. No web app, no form, no upload.</p>
+
+<h2>The direct try-it path</h2>
+<p>You do not have to install anything to try it. <a href="/mcp/connect">/mcp/connect</a> mints a free
+anonymous token and prints a ready URL per server. Paste that URL into the Claude Desktop connector
+dialog, Claude.ai or Cursor as a remote server, and it is live: no npm, no PATH, no config file.</p>
+${install("invoice")}
+
+<h2>What "generate an invoice PDF" means here</h2>
+<p>Three things happen in one or two tool calls. First, the server allocates an invoice number in the
+form <code>INV-YYYY-NNNN</code> under a file lock, so two invoices created in the same second do not
+collide and a number is never reused even if the invoice is deleted. Second, it computes the money from
+integer minor units, rounding each line once before summing, so the printed total always equals the
+printed lines added up; several VAT rates produce one tax line per rate, and a discount percent is
+applied to every line before tax. Third, <code>invoice_pdf</code> renders an A4 layout with pdfkit and
+returns the file path. Nothing about the render touches the network, so an invoice for a client under
+NDA never leaves the machine.</p>
+
+<h2>Honest about the free tier</h2>
+<p>Free covers ${freeText("invoice")} Pro is $${SINGLE_USD} once (lifetime, verified offline with a
+signature) and removes the count limit and the footer, and adds a logo and a custom number prefix. The
+full comparison of free versus Pro is on <a href="/guides/mcp-server-free-vs-pro">this page</a>.</p>
+
+<h2>What the alternatives actually are</h2>
+<p>If you only need a handful of invoices a month, you may not need an MCP server at all: paste your
+client, hours and rate into Claude and ask for a PDF, and the model can often write you one. That path
+has no numbering, no stored client record and no paid-status tracking, so it is fine for a one-off and
+tiring for a regular. If you already bill by the hour, the
+<a href="/guides/track-time-in-claude-code">time tracker</a> produces exactly the invoice lines this
+server wants. And if your invoices recur on a schedule, the
+<a href="/guides/recurring-invoices-on-a-schedule">recurring invoice server</a> generates them into the
+same invoice book.</p>
+
+<h2>What it cannot do</h2>
+<ul>
+<li>It does not email the PDF to the client. It renders the file on your disk; sending it is on you, and
+there is a whole guide on that: <a href="/guides/will-an-mcp-server-email-the-invoice-to-my-client">will an MCP server email an invoice</a>.</li>
+<li>It does not recognise a hand-written or scanned invoice. You give it the figures in words.</li>
+<li>It is not an accounting package. It produces the invoice and records payments; the
+<a href="/s/statement-of-account">statement of account</a> and <a href="/s/cash-book">cash book</a>
+servers cover the receiving side.</li>
+</ul>
+
+<h2>Putting the PDF to work</h2>
+<p>The product page is <a href="/s/invoice">MCP Invoice</a>, and the step-by-step
+<a href="/guides/invoice-pdf-from-chat">invoice PDF from chat</a> guide has the worked example with the
+numbers. If you want to see it earn its keep before paying, the free tier is genuinely enough to find
+out: three invoices a month, which is a real workflow for a small freelance practice.${FOOT}`,
+    faq: [
+      { q: "Which MCP server can generate an invoice PDF?", a: "The MCP Invoice server at mcp.zovo.one. You describe the work in one sentence and it allocates a number, computes the tax lines and renders an A4 PDF on your disk. It runs offline and the free tier covers three invoices a month." },
+      { q: "Do I have to install anything to try it?", a: "No. /mcp/connect mints a free anonymous token and prints a ready URL per server, which you paste into Claude Desktop, Claude.ai or Cursor as a remote server. The bundled .mcpb path works too." },
+      { q: "Is a generated PDF good enough to send to a client's accounts department?", a: "It is a single-page A4 with issuer and client blocks, dates, a line table with per-line tax, subtotal, tax lines, total, and payment details with IBAN and reference. Add the client's postal address with client_add first so BILL TO is complete." },
+      { q: "What happens after the free three invoices a month?", a: "Nothing is deleted and nothing stops working. You simply cannot finalize a fourth free invoice in that calendar month until you add a Pro key, which is $19 once and lifetime." },
+    ],
+  },
+
+  "mcp-server-that-reads-bank-statements-and-categorizes": {
+    title: "Can an MCP server read a bank statement PDF and categorise the transactions?",
+    description: "Honest answer: the bank-statement server categorises a CSV export, not a scanned PDF. What works, what does not, and the tools that read the scan instead. Try it free with a URL.",
+    html: `<h1>Can an MCP server read a bank statement PDF and categorise the transactions?</h1>
+<p>The honest answer has two parts. The <a href="/s/bank-statement">MCP Bank Statement</a> server reads
+a bank's CSV export, applies rules you teach it, and categorises, summarises and reconciles the
+transactions. It does <strong>not</strong> read a scanned or photographic PDF of a statement. If your
+bank only hands you a PDF, the path is: export the underlying data as CSV if the bank offers it, or use
+one of the dedicated PDF-reading tools named below.</p>
+
+<h2>Try it first, free, with a URL</h2>
+<p><a href="/mcp/connect">/mcp/connect</a> mints a free anonymous token and prints a ready URL per
+server. Paste the bank-statement URL into Claude Desktop, Claude.ai or Cursor as a remote server, and
+you can hand it a CSV export in the same session: no install, no account.</p>
+${install("bank-statement")}
+
+<h2>What categorisation means here</h2>
+<p>You teach it with rules: a supplier name, a merchant, a recurring amount. After five rules a new
+receipt or transfer classifies itself without you typing the category again. Each rule is a plain
+phrase match on the transaction description, so "STARBUCKS" becomes your coffee category once. It also
+detects recurring charges over the last three months, so a subscription that quietly renews shows up as
+a repeat rather than a surprise.</p>
+<p>Reconciliation is the part most people actually want. It takes a 31-day window of your bank
+transactions and a window of your invoices or expenses and matches them, so at the end of the month you
+can see which of the money in is accounted for and which is not. The output is a plain answer, not a
+spreadsheet you then have to read.</p>
+
+<h2>Honest about the PDF limitation</h2>
+<p>This catalogue is entirely pure JavaScript that runs offline, and OCR is neither pure JavaScript nor
+offline. So a scanned statement is deliberately out of scope, and the tool descriptions say no OCR
+rather than guess at a scan. The servers that genuinely read a statement PDF are the OCR-based tools:
+DocuClipper and Bankstatemently are the two built for exactly that job, and if you want to keep the
+documents on your own machine, a self-hosted Stirling-PDF behind gufao's MCP wrapper is the common
+answer. The <a href="/guides/can-an-mcp-server-read-a-photo-of-a-receipt">photo of a receipt</a> guide
+explains the same line for expenses: the model in your chat can often read a photo you paste in, and
+then this server stores and proves the figures.</p>
+
+<h2>Free tier and price</h2>
+<p>Free covers ${freeText("bank-statement")} Pro is $${SINGLE_USD} once and adds unlimited accounts,
+history and rules, reconciliation over any range and every recurring charge. The product page is
+<a href="/s/bank-statement">MCP Bank Statement</a>, and the
+<a href="/guides/bank-statement-csv-categorize-reconcile">bank statement CSV guide</a> walks a real
+export through it.</p>
+
+<h2>What it cannot do</h2>
+<ul>
+<li>No OCR and no scanned-PDF reading. A statement that exists only as a scan needs one of the tools
+above, not this server.</li>
+<li>It does not log into your bank. You give it a CSV export you downloaded.</li>
+<li>It does not move money. It tells you what came in, what went out and what is unaccounted for.</li>
+</ul>
+
+<h2>The larger picture</h2>
+<p>The statement feeds the books. A categorised export turns into
+<a href="/s/cash-book">cash book</a> journal lines, and the balances against the money you invoiced live
+in <a href="/s/statement-of-account">statement of account</a>. Together they are the reconciling half
+of a month-end close; see <a href="/guides/month-end-close-with-mcp-servers">month-end close with MCP
+servers</a>.${FOOT}`,
+    faq: [
+      { q: "Does the MCP Bank Statement server read a PDF?", a: "Not a scanned or photographed one. It reads a CSV export from your bank, applies rules you teach it, and categorises, summarises and reconciles the transactions. If your bank offers a CSV export, that is the input it wants." },
+      { q: "What should I use for a statement that only exists as a PDF scan?", a: "An OCR-based tool. DocuClipper and Bankstatemently are the two built for reading statement PDFs, and a self-hosted Stirling-PDF behind gufao's MCP wrapper keeps the documents on your own machine. This server is honest that it does no OCR." },
+      { q: "Can I try it without installing anything?", a: "Yes. /mcp/connect mints a free anonymous token and prints a ready URL per server, which you paste into Claude Desktop, Claude.ai or Cursor as a remote server. The free tier covers 2 accounts and 12 months of transactions." },
+      { q: "How does the categorisation learn?", a: "Through rules you add once per supplier or merchant. After about five rules a new transaction classifies itself, and recurring charges over the last three months are detected automatically." },
+    ],
+  },
+
+  "best-mcp-servers-for-small-business-accounting": {
+    title: "Best MCP servers for small business accounting and paperwork in 2026",
+    description: "The $39 bundle answer: invoices, quotes, expenses, bank reconciliation, statements and petty cash as MCP servers that run offline in Claude or Cursor. Every free tier is real and does not expire.",
+    html: `<h1>Best MCP servers for small business accounting and paperwork</h1>
+<p>For a small freelance practice or a one-person trade, the answer is the bundle: $${BUNDLE_USD} once
+for ${LISTED_CHILD_COUNT} MCP servers that cover the paperwork end to end, run offline, and each has a
+free tier that does not expire. The accounting servers below are the ones that earn their keep, with
+the honest limit of each free tier.</p>
+
+<h2>Invoice and quotes</h2>
+<p><a href="/s/invoice">MCP Invoice</a> allocates a number that never repeats, computes VAT lines and
+renders an A4 PDF from one sentence. <a href="/s/quotes">MCP Quotes</a> prices a quote in chat with VAT
+and discounts, and the accepted quote turns into the invoice. Together they are the
+<a href="/guides/quote-to-cash-in-claude">quote to cash</a> loop.</p>
+
+<h2>Expenses and mileage</h2>
+<p><a href="/s/expense-tracker">MCP Expense Tracker</a> logs receipts and expenses and attaches a
+SHA-256 hash of the receipt file as proof. <a href="/s/mileage-log">MCP Mileage Log</a> records trips
+per jurisdiction. The expense entries turn into invoice lines for the invoice server, and the mileage
+log is the basis for a claim.</p>
+
+<h2>Bank statements and the books</h2>
+<p><a href="/s/bank-statement">MCP Bank Statement</a> categorises a bank CSV export with rules you
+teach it and reconciles it against your invoices and expenses. <a href="/s/cash-book">MCP Cash Book</a>
+derives a double-entry ledger from the books you already keep and proves it to the minor unit, and
+<a href="/s/statement-of-account">MCP Statement of Account</a> ages what each client owes as at any
+date. These are the reconciling half of <a href="/guides/month-end-close-with-mcp-servers">month-end
+close</a>.</p>
+
+<h2>Petty cash and deposits</h2>
+<p><a href="/s/petty-cash">MCP Petty Cash</a> reconciles the cash in the tin against the paperwork,
+and <a href="/s/deposits">MCP Deposits</a> holds security and retainer deposits per client and applies
+them to invoices. Both are genuinely free at the one-tin / five-deposits-a-month scale that a small
+practice actually runs.</p>
+
+<h2>Try it before you pay</h2>
+<p>Every server here has a working free tier, and most of them answer at a URL with nothing installed:
+<a href="/mcp/connect">/mcp/connect</a> mints a free anonymous token and prints a ready URL per server,
+which you paste into Claude Desktop, Claude.ai or Cursor as a remote server. The free tiers are not
+demos; several are the real workflow at a small scale (three invoices a month, five open quotes, two
+bank accounts, one petty cash float).</p>
+
+<h2>What the bundle is worth</h2>
+<p>Bought singly the accounting servers above total more than $${BUNDLE_USD}; the bundle is $${BUNDLE_USD}
+for all ${LISTED_CHILD_COUNT} servers, one lifetime key that verifies offline with an Ed25519 signature
+and never expires. The full catalogue is on the <a href="/">home page</a>, each product page states its
+free tier from the same data the code uses, and
+<a href="/guides/free-mcp-servers-for-freelancers">free MCP servers for freelancers</a> is the
+honest guide to what costs nothing at all.</p>
+
+<h2>What it is not</h2>
+<ul>
+<li>It is not a bookkeeping platform with a login. The data lives in plain JSON under your own home
+directory, and the servers make no network calls in normal use.</li>
+<li>It does not file tax. It produces the numbers and the documents your accountant can use; the
+<a href="/guides/self-employed-tax-year-pack-from-chat">self-employed tax year pack</a> pulls those
+documents together.</li>
+<li>It is not a bank. Money moves in your bank; these servers account for it.</li>
+</ul>
+
+<h2>Where to start</h2>
+<p>Start with the server for the problem you have today, on its free tier, then add the neighbours as
+the workflow needs them. The <a href="/guides">guides index</a> is organised by task, not by product,
+so it maps a sentence you might say to the server that answers it.${FOOT}`,
+    faq: [
+      { q: "What is the best MCP server for small business accounting?", a: `For a small freelance practice the practical answer is the bundle: $${BUNDLE_USD} once for ${LISTED_CHILD_COUNT} MCP servers covering invoices, quotes, expenses, mileage, bank-statement reconciliation, cash book, statement of account and petty cash, all offline with free tiers that do not expire. Pick the server for the task you have today and add neighbours as the workflow needs them.` },
+      { q: "Do these servers have real free tiers?", a: "Yes. Three invoices a month, five open quotes, two bank accounts with 12 months of transactions, one petty cash float, and so on. The free tiers are the real workflow at a small scale and do not expire." },
+      { q: "Can I try the accounting bundle without installing anything?", a: "Most of the servers answer at a URL. /mcp/connect mints a free anonymous token and prints a ready URL per server, which you paste into Claude Desktop, Claude.ai or Cursor as a remote server." },
+      { q: "Is one $19 licence enough, or do I need the bundle?", a: `A $${SINGLE_USD} key unlocks one server. If you need more than two or three of them, the $${BUNDLE_USD} bundle for all ${LISTED_CHILD_COUNT} is the cheaper path, and one key covers every server.` },
+    ],
+  },
 };
 
 export const GUIDE_INDEX = {

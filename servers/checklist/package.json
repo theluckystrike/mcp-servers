@@ -1,6 +1,6 @@
 {
   "name": "@theluckystrike/mcp-checklist",
-  "version": "0.21.0",
+  "version": "0.22.0",
   "description": "Reusable checklists and the dated runs of them: pass, fail, not applicable, and a sign-off.",
   "type": "module",
   "bin": {
@@ -51,9 +51,9 @@
   "homepage": "https://github.com/theluckystrike/mcp-servers/tree/main/servers/checklist",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.30.0",
-    "@theluckystrike/mcp-license": "^0.21.0",
-    "@theluckystrike/mcp-quotes": "^0.21.0",
-    "@theluckystrike/mcp-timezone": "^0.21.0",
+    "@theluckystrike/mcp-license": "^0.22.0",
+    "@theluckystrike/mcp-quotes": "^0.22.0",
+    "@theluckystrike/mcp-timezone": "^0.22.0",
     "zod": "^3.25.0"
   },
   "devDependencies": {

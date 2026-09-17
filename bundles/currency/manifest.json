@@ -2,7 +2,7 @@
   "manifest_version": "0.2",
   "name": "mcp-currency",
   "display_name": "Currency Converter",
-  "version": "0.21.0",
+  "version": "0.22.0",
   "description": "Live and historical exchange rates from the European Central Bank, in your AI chat. Convert amounts, read rate history, and hand invoice tools the FX rates they need. No API key, cached locally, works offline.",
   "author": {
     "name": "theluckystrike",
@@ -47,7 +47,7 @@
     },
     {
       "name": "convert_many",
-      "description": "Convert one amount into many currencies off the SAME ECB rate date, each rounded to its own minor units. A target the ECB does not quote is listed as unknown rather than failing the call."
+      "description": "Convert one amount into many currencies off the SAME ECB rate date, each rounded to its own minor units. For several lines at once (mixed-currency invoice lines), call it once per line: every line then shares one rate date. Unknown targets are listed, never failed."
     },
     {
       "name": "fx_rates_for",

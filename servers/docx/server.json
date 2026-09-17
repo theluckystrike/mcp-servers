@@ -1,31 +1,45 @@
 {
-  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
-  "name": "io.github.theluckystrike/docx-document-generator-proposal-contract-markdown",
-  "description": "Create real Word .docx files from your AI chat: proposals, quotes, contracts, statements of work.",
-  "version": "0.21.0",
-  "repository": {
-    "url": "https://github.com/theluckystrike/mcp-servers",
-    "source": "github",
-    "subfolder": "servers/docx"
-  },
-  "websiteUrl": "https://mcp.zovo.one/s/docx",
-  "packages": [
+ "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+ "name": "io.github.theluckystrike/docx-document-generator-proposal-contract-markdown",
+ "description": "Create real Word .docx files from your AI chat: proposals, quotes, contracts, statements of work.",
+ "version": "0.22.0",
+ "repository": {
+  "url": "https://github.com/theluckystrike/mcp-servers",
+  "source": "github",
+  "subfolder": "servers/docx"
+ },
+ "websiteUrl": "https://mcp.zovo.one/s/docx",
+ "packages": [
+  {
+   "registryType": "mcpb",
+   "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.22.0/docx.mcpb",
+   "version": "0.22.0",
+   "transport": {
+    "type": "stdio"
+   },
+   "environmentVariables": [
     {
-      "registryType": "npm",
-      "registryBaseUrl": "https://registry.npmjs.org",
-      "identifier": "@theluckystrike/mcp-docx",
-      "version": "0.21.0",
-      "transport": {
-        "type": "stdio"
-      },
-      "environmentVariables": [
-        {
-          "name": "MCP_LICENSE_KEY",
-          "description": "Optional Pro license key (MCPL1....). Verified offline.",
-          "isRequired": false,
-          "isSecret": true
-        }
-      ]
+     "name": "MCP_LICENSE_KEY",
+     "description": "Optional Pro license key (MCPL1....). Verified offline.",
+     "isRequired": false,
+     "isSecret": true
     }
-  ]
+   ],
+   "fileSha256": "e262dd6161bae677b33015fd94f0f9fae5f314c94f5963059ff87ed26a15df4f"
+  }
+ ],
+ "remotes": [
+  {
+   "type": "streamable-http",
+   "url": "https://mcp.zovo.one/mcp/docx",
+   "headers": [
+    {
+     "name": "Authorization",
+     "description": "Bearer <Pro license key or anonymous token from GET https://mcp.zovo.one/mcp/token>",
+     "isRequired": true,
+     "isSecret": true
+    }
+   ]
+  }
+ ]
 }

@@ -1,0 +1,498 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>MCP Servers — Root Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root {
+    --bg: #f7f7f8; --fg: #1a1a1a; --muted: #5c5c5c; --border: #d8d8dc;
+    --card-bg: #ffffff;
+    --ok: #0a7a3d; --ok-bg: #e4f6ec;
+    --bad: #9b1c1c; --bad-bg: #fbe7e7;
+    --pending: #7a6a00; --pending-bg: #fbf3d6;
+    --measured: #33517a; --measured-bg: #e7eef8;
+    --accent: #2f2f33;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #121214; --fg: #e8e8ea; --muted: #9a9aa0; --border: #2e2e33;
+      --card-bg: #1a1a1d;
+      --ok: #4fd88a; --ok-bg: #103021;
+      --bad: #ff8a8a; --bad-bg: #3a1414;
+      --pending: #e8cf5a; --pending-bg: #3a3010;
+      --measured: #8fb8e8; --measured-bg: #16263a;
+      --accent: #e8e8ea;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--fg);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    font-variant-numeric: tabular-nums; font-size: 13px; line-height: 1.5; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 24px 20px 60px; }
+  header { border-bottom: 1px solid var(--border); padding-bottom: 14px; margin-bottom: 20px; }
+  header h1 { margin: 0 0 4px; font-size: 18px; letter-spacing: -0.01em; }
+  header .meta { color: var(--muted); font-size: 12px; }
+  .kpi-row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
+  .kpi { background: var(--card-bg); border: 1px solid var(--border); border-radius: 6px; padding: 10px 14px; min-width: 130px; }
+  .kpi .n { font-size: 20px; font-weight: 600; display: block; }
+  .kpi .l { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; }
+  section { margin-bottom: 30px; }
+  h2 { font-size: 13px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted);
+    border-bottom: 1px solid var(--border); padding-bottom: 6px; margin: 0 0 12px; }
+  table { border-collapse: collapse; width: 100%; background: var(--card-bg); }
+  th, td { border: 1px solid var(--border); padding: 6px 8px; text-align: left; vertical-align: top; font-size: 12px; }
+  th { color: var(--muted); font-weight: 600; text-transform: uppercase; font-size: 10px; letter-spacing: 0.03em; }
+  td.mono, th.mono, .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  td.num { text-align: right; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  .muted { color: var(--muted); font-size: 12px; }
+  .pill { display: inline-block; padding: 1px 6px; border-radius: 3px; font-size: 10px;
+    margin: 1px 2px 1px 0; white-space: nowrap; border: 1px solid var(--border); }
+  .pill-ok { background: var(--ok-bg); color: var(--ok); border-color: var(--ok); }
+  .pill-bad { background: var(--bad-bg); color: var(--bad); border-color: var(--bad); }
+  .pill-pending { background: var(--pending-bg); color: var(--pending); border-color: var(--pending); }
+  .pill-measured { background: var(--measured-bg); color: var(--measured); border-color: var(--measured); }
+  ul { margin: 0; padding-left: 18px; }
+  li { margin-bottom: 4px; }
+  .scroll-wrap { display: block; overflow-x: auto; max-height: 480px; overflow-y: auto; }
+  footer { color: var(--muted); font-size: 11px; border-top: 1px solid var(--border); padding-top: 12px; margin-top: 30px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>MCP Servers — Root Dashboard</h1>
+    <div class="meta">generated 2026-09-17T11:26:55.839Z — session count 84</div>
+  </header>
+
+  <section>
+    <h2>Blind test score (latest run)</h2>
+    
+  <div class="kpi-row">
+    <div class="kpi"><span class="n">0 / 18</span><span class="l">named by blind assistant</span></div>
+    <div class="kpi"><span class="n">30</span><span class="l">distinct servers named</span></div>
+  </div>
+  <p class="muted">run R3 2026-09-17 — blind_recommendation_r3.json. Neither the estate host (mcp.zovo.one) nor the GitHub identity (theluckystrike) appeared in any raw search result list across all 18 questions. This is a full retrieval failure, not a content defect: the estate was never retrieved, so it could not be named.</p>
+  </section>
+
+  <section>
+    <h2>Distribution surfaces live</h2>
+    
+<div class="kpi-row">
+  <div class="kpi"><span class="n">12 / 49</span><span class="l">distribution surfaces live</span></div>
+</div>
+<p class="muted">distribution_r4.json — DISTRIBUTION_R4. count of data/distribution.json surfaces with status published|live; matches the KPI in data/kpi.json (12 of 49, how=data/distribution.json)</p>
+  </section>
+
+  <section>
+    <h2>Hosted endpoints</h2>
+    <div class="kpi-row">
+  <div class="kpi"><span class="n">32</span><span class="l">hosted endpoints (kpi registry)</span></div>
+  <div class="kpi"><span class="n">97</span><span class="l">registry entries</span></div>
+  <div class="kpi"><span class="n">0</span><span class="l">unreachable</span></div>
+</div>
+  </section>
+
+  <section>
+    <h2>KPI table (data/kpi.json)</h2>
+    <div class="scroll-wrap">
+    <table>
+      <thead><tr><th>cat</th><th>name</th><th>value</th><th>target</th><th>unit</th><th>status</th></tr></thead>
+      <tbody>
+        <tr>
+  <td>Discovery</td>
+  <td>Registry entries at latest version</td>
+  <td class="num mono">97</td>
+  <td class="num mono">97</td>
+  <td>of all published names</td>
+  <td><span class="pill pill-ok">met</span></td>
+</tr>
+<tr>
+  <td>Discovery</td>
+  <td>Registry findable share</td>
+  <td class="num mono">50</td>
+  <td class="num mono">60</td>
+  <td>% of tracked tokens</td>
+  <td><span class="pill pill-pending">progress</span></td>
+</tr>
+<tr>
+  <td>Discovery</td>
+  <td>Distribution surfaces live</td>
+  <td class="num mono">12</td>
+  <td class="num mono">49</td>
+  <td>of 49</td>
+  <td><span class="pill pill-pending">progress</span></td>
+</tr>
+<tr>
+  <td>Discovery</td>
+  <td>URLs offered in the sitemap</td>
+  <td class="num mono">171</td>
+  <td class="num mono">—</td>
+  <td>URLs</td>
+  <td><span class="pill pill-measured">measured</span></td>
+</tr>
+<tr>
+  <td>Discovery</td>
+  <td>Google impressions, storefront</td>
+  <td class="num mono">0</td>
+  <td class="num mono">1</td>
+  <td>impressions, 28d</td>
+  <td><span class="pill pill-bad">zero</span></td>
+</tr>
+<tr>
+  <td>Discovery</td>
+  <td>Named by a blind assistant</td>
+  <td class="num mono">0</td>
+  <td class="num mono">18</td>
+  <td>of 18 buyer questions</td>
+  <td><span class="pill pill-bad">zero</span></td>
+</tr>
+<tr>
+  <td>Discovery</td>
+  <td>Our share of recommendation citations</td>
+  <td class="num mono">2</td>
+  <td class="num mono">18</td>
+  <td>of 18 questions where our host was cited at all</td>
+  <td><span class="pill pill-pending">progress</span></td>
+</tr>
+<tr>
+  <td>Discovery</td>
+  <td>Repo clone-to-view ratio</td>
+  <td class="num mono">63.1</td>
+  <td class="num mono">—</td>
+  <td>machine reads per human view</td>
+  <td><span class="pill pill-measured">measured</span></td>
+</tr>
+<tr>
+  <td>Discovery</td>
+  <td>Googlebot URL coverage</td>
+  <td class="num mono">2</td>
+  <td class="num mono">171</td>
+  <td>of the sitemap, 7d</td>
+  <td><span class="pill pill-pending">progress</span></td>
+</tr>
+<tr>
+  <td>Discovery</td>
+  <td>ClaudeBot URL coverage</td>
+  <td class="num mono">140</td>
+  <td class="num mono">171</td>
+  <td>of the sitemap, 7d</td>
+  <td><span class="pill pill-pending">progress</span></td>
+</tr>
+<tr>
+  <td>Discovery</td>
+  <td>Human requests, storefront (assets included)</td>
+  <td class="num mono">1232</td>
+  <td class="num mono">5000</td>
+  <td>requests, 7d</td>
+  <td><span class="pill pill-pending">progress</span></td>
+</tr>
+<tr>
+  <td>Discovery</td>
+  <td>GitHub unique visitors</td>
+  <td class="num mono">33</td>
+  <td class="num mono">200</td>
+  <td>uniques, 14d</td>
+  <td><span class="pill pill-pending">progress</span></td>
+</tr>
+<tr>
+  <td>Install</td>
+  <td>Release asset fetches (mostly automated)</td>
+  <td class="num mono">6507</td>
+  <td class="num mono">—</td>
+  <td>fetches, not installs</td>
+  <td><span class="pill pill-measured">measured</span></td>
+</tr>
+<tr>
+  <td>Install</td>
+  <td>npm weekly downloads</td>
+  <td class="num mono">0</td>
+  <td class="num mono">100</td>
+  <td>per package per week</td>
+  <td><span class="pill pill-bad">zero</span></td>
+</tr>
+<tr>
+  <td>Install</td>
+  <td>Hosted endpoints coverage</td>
+  <td class="num mono">34</td>
+  <td class="num mono">33</td>
+  <td>of 33 servers</td>
+  <td><span class="pill pill-ok">met</span></td>
+</tr>
+<tr>
+  <td>Activation</td>
+  <td>Anonymous hosted tokens minted</td>
+  <td class="num mono">130</td>
+  <td class="num mono">100</td>
+  <td>tokens</td>
+  <td><span class="pill pill-ok">met</span></td>
+</tr>
+<tr>
+  <td>Activation</td>
+  <td>Hosted tenants with stored data</td>
+  <td class="num mono">616</td>
+  <td class="num mono">100</td>
+  <td>tenants</td>
+  <td><span class="pill pill-ok">met</span></td>
+</tr>
+<tr>
+  <td>Activation</td>
+  <td>Hosted downloads served</td>
+  <td class="num mono">95</td>
+  <td class="num mono">200</td>
+  <td>files (1h TTL)</td>
+  <td><span class="pill pill-pending">progress</span></td>
+</tr>
+<tr>
+  <td>Activation</td>
+  <td>First-prompt tool reach (latest round)</td>
+  <td class="num mono">98</td>
+  <td class="num mono">95</td>
+  <td>% of calls on the right tool</td>
+  <td><span class="pill pill-ok">met</span></td>
+</tr>
+<tr>
+  <td>Value</td>
+  <td>User-value score, latest round</td>
+  <td class="num mono">61</td>
+  <td class="num mono">90</td>
+  <td>%</td>
+  <td><span class="pill pill-pending">progress</span></td>
+</tr>
+<tr>
+  <td>Value</td>
+  <td>Seam defects fixed of found</td>
+  <td class="num mono">123</td>
+  <td class="num mono">148</td>
+  <td>of 148</td>
+  <td><span class="pill pill-pending">progress</span></td>
+</tr>
+<tr>
+  <td>Value</td>
+  <td>Servers that reached 100% in a round</td>
+  <td class="num mono">19</td>
+  <td class="num mono">33</td>
+  <td>of 33</td>
+  <td><span class="pill pill-pending">progress</span></td>
+</tr>
+<tr>
+  <td>Reliability</td>
+  <td>Live validation checks passing</td>
+  <td class="num mono">1135/1135</td>
+  <td class="num mono">all</td>
+  <td>checks</td>
+  <td><span class="pill pill-ok">met</span></td>
+</tr>
+<tr>
+  <td>Reliability</td>
+  <td>Unit tests passing</td>
+  <td class="num mono">1563</td>
+  <td class="num mono">all</td>
+  <td>tests</td>
+  <td><span class="pill pill-measured">measured</span></td>
+</tr>
+<tr>
+  <td>Reliability</td>
+  <td>Hosted tools/list latency p50</td>
+  <td class="num mono">313</td>
+  <td class="num mono">800</td>
+  <td>ms</td>
+  <td><span class="pill pill-ok">met</span></td>
+</tr>
+<tr>
+  <td>Reliability</td>
+  <td>Silent-partial-result defects open</td>
+  <td class="num mono">0</td>
+  <td class="num mono">0</td>
+  <td>open</td>
+  <td><span class="pill pill-ok">met</span></td>
+</tr>
+<tr>
+  <td>Monetization</td>
+  <td>Checkout sessions from humans (last 100)</td>
+  <td class="num mono">65</td>
+  <td class="num mono">50</td>
+  <td>sessions</td>
+  <td><span class="pill pill-ok">met</span></td>
+</tr>
+<tr>
+  <td>Monetization</td>
+  <td>Paid sessions</td>
+  <td class="num mono">0</td>
+  <td class="num mono">5</td>
+  <td>paid</td>
+  <td><span class="pill pill-bad">zero</span></td>
+</tr>
+<tr>
+  <td>Monetization</td>
+  <td>License keys minted</td>
+  <td class="num mono">0</td>
+  <td class="num mono">5</td>
+  <td>keys</td>
+  <td><span class="pill pill-bad">zero</span></td>
+</tr>
+<tr>
+  <td>Monetization</td>
+  <td>Upgrade link clicks (humans, 7d)</td>
+  <td class="num mono">671</td>
+  <td class="num mono">20</td>
+  <td>clicks</td>
+  <td><span class="pill pill-ok">met</span></td>
+</tr>
+<tr>
+  <td>Monetization</td>
+  <td>Click to checkout-session ratio</td>
+  <td class="num mono">9.7</td>
+  <td class="num mono">40</td>
+  <td>% (sessions per 100 clicks)</td>
+  <td><span class="pill pill-pending">progress</span></td>
+</tr>
+<tr>
+  <td>Monetization</td>
+  <td>Pro tenants on hosted endpoints</td>
+  <td class="num mono">2</td>
+  <td class="num mono">20</td>
+  <td>tenants</td>
+  <td><span class="pill pill-pending">progress</span></td>
+</tr>
+      </tbody>
+    </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Biggest wins</h2>
+    <ul><li>Registry namespace claimed and visible: 97 entries at latest version (kpi.json raw.registry).</li>
+<li>Hosted endpoints: 34 live, 0 unreachable, p50 latency 313 ms against an 800 ms target.</li>
+<li>Estate quality: 1816/1827 tests, 1135/1135 live validation checks, honesty gates wired into the release check.</li>
+<li>34 hosted endpoints for 30 hosts of the fleet (KPI &#39;Hosted endpoints coverage&#39; met, 34/33).</li>
+<li>VS Code picker exclusion diagnosed (subfolder rule) and the fleet&#39;s worst tool descriptions lifted above 3.0.</li></ul>
+  </section>
+
+  <section>
+    <h2>Next actions</h2>
+    <ul><li>Registry findable share: 50 of 60 — still open</li>
+<li>Distribution surfaces live: 12 of 49 — still open</li>
+<li>Google impressions, storefront: 0 (target 1) — Zero here across 99+ days means Google has never shown this site to anyone. It is the single most important organic number.</li>
+<li>Named by a blind assistant: 0 (target 18) — The buyer does not browse a registry, they ask an assistant and install what it names. This is the only discovery number that maps to revenue.</li>
+<li>Our share of recommendation citations: 2 of 18 — still open</li>
+<li>Googlebot URL coverage: 2 of 171 — still open</li>
+<li>ClaudeBot URL coverage: 140 of 171 — still open</li>
+<li>Human requests, storefront (assets included): 1232 of 5000 — still open</li>
+<li>GitHub unique visitors: 33 of 200 — still open</li>
+<li>npm weekly downloads: 0 (target 100) — npx is the default install path in every client guide; blocked on npm login.</li>
+<li>Hosted downloads served: 95 of 200 — still open</li>
+<li>User-value score, latest round: 61 of 90 — still open</li>
+<li>Seam defects fixed of found: 123 of 148 — still open</li>
+<li>Servers that reached 100% in a round: 19 of 33 — still open</li>
+<li>Paid sessions: 0 (target 5) — The number that matters.</li>
+<li>License keys minted: 0 (target 5) — One key per paid session; zero means no purchase reached /success.</li>
+<li>Click to checkout-session ratio: 9.7 of 40 — still open</li>
+<li>Pro tenants on hosted endpoints: 2 of 20 — still open</li>
+<li>8 distribution surfaces are human-gated; record exact URLs and stop</li>
+<li>Blind recommendation test R3 named 0 of 18 for us: make more uncontested questions exist (new server slots), keep winning small-field GitHub queries.</li></ul>
+  </section>
+
+  <section>
+    <h2>Session log</h2>
+    <div class="scroll-wrap">
+    <table>
+      <thead><tr><th>at</th><th>note</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">2026-09-17T10:02:26.676Z</td><td>registry remote R1: v0.22.0 release + 38 mcpb assets, 38 registry publishes, 15 entries now carry hosted remotes (was 0)</td></tr>
+<tr><td class="mono">2026-09-17T08:11:11.816Z</td><td>dist r6+r6b: mcpHQ #61 merged today (domain in servers.json), 14 verified-live surfaces, 7 green awesome-list PRs</td></tr>
+<tr><td class="mono">2026-09-17T07:51:34.090Z</td><td>final sync: dashboard refreshed from green validation run</td></tr>
+<tr><td class="mono">2026-09-17T07:50:50.185Z</td><td>orchestrator: 1192/1192 validation green, billing 146/146, worker redeployed honest figures</td></tr>
+<tr><td class="mono">2026-09-17T05:57:58.873Z</td><td>verification run: syntax check clean, third render confirms idempotent regeneration</td></tr>
+<tr><td class="mono">2026-09-17T05:56:53.971Z</td><td>root dashboard build: second run verification, session.log accumulates and HTML grows</td></tr>
+<tr><td class="mono">2026-09-17T05:56:42.393Z</td><td>root dashboard build: first render, KPI table + blind R3 + distribution R4 wired in</td></tr>
+<tr><td class="mono">2026-09-12T03:41:08.260Z</td><td>loop 34 close: tests 1816/1827, validation 1135/1135</td></tr>
+<tr><td class="mono">2026-09-12T03:39:22.785Z</td><td>loop 34: +4 servers, hosted 34/37, validation 1135/1135, registry 97, rename T0 rank 2</td></tr>
+<tr><td class="mono">2026-09-09T12:09:23.356Z</td><td>Loop close: 443 registry places gained across ten contested tokens, three new deep inbound links on indexed pages, and the discovery that impressions are not indexation</td></tr>
+<tr><td class="mono">2026-09-09T11:54:54.073Z</td><td>Registry visibility: 443 places gained across ten contested tokens on the one channel that delivers people; nine of ten now in the first eight results</td></tr>
+<tr><td class="mono">2026-09-09T11:44:09.517Z</td><td>Registry visibility: four servers were buried at 52 to 93 of a hundred on their contested token and are now at 5, 7, 3 and 32, measured live on the one channel that delivers people</td></tr>
+<tr><td class="mono">2026-09-09T11:30:51.618Z</td><td>Loop 32: both experiments still open and honestly marked; gallery pagination broken upstream so the watch degrades to partial</td></tr>
+<tr><td class="mono">2026-09-09T11:23:24.963Z</td><td>Loop 32 close: 32 of 32 mirrors green; a livelock that hung seven servers on any /proc path found and fixed; Google indexed the first URL ever</td></tr>
+<tr><td class="mono">2026-09-09T10:54:57.588Z</td><td>Loop 32 close: Google indexed the first URL ever; hosted buyers no longer lose data on activation; crawlers no longer create live Stripe sessions; mirrors synced with working Dockerfiles and CI; 13 guides live, sitemap 154; honesty gates 107/107 and wired into the release check</td></tr>
+<tr><td class="mono">2026-09-09T10:15:47.167Z</td><td>Loop 32 close: Google indexed the first URL ever; two money-path defects fixed; honesty gates green and wired into the release check; 13 reference guides live, sitemap 154</td></tr>
+<tr><td class="mono">2026-09-09T09:29:01.769Z</td><td>Loop 32: Google indexed the first URL ever; hosted buyers were losing their data on activation and crawlers were creating live Stripe sessions, both fixed</td></tr>
+<tr><td class="mono">2026-09-09T07:44:08.540Z</td><td>Loop 31 close: hosted licence twin fixed, the string Glama connectors actually score</td></tr>
+<tr><td class="mono">2026-09-09T07:34:10.858Z</td><td>Loop 31 close: estate green (46 failing assertions to 0), every server&#39;s worst tool description above 3.0 where none were, VS Code picker exclusion diagnosed and under test</td></tr>
+<tr><td class="mono">2026-09-09T07:12:20.081Z</td><td>Loop 31: found why VS Code&#39;s MCP picker excludes us (every one of its 252 entries points at a repo with no subfolder; all 89 of ours use one), one controlled entry published to test it; Glama connectors went 4 to 25 unprompted and one shared tool description capped the whole fleet</td></tr>
+<tr><td class="mono">2026-09-08T09:58:04.181Z</td><td>Loop 30 close: namespace claimed and measured, and the registry proved it cannot be A/B tested; hosted endpoints answer discovery; mirror Dockerfiles fixed and verified by a real docker run</td></tr>
+<tr><td class="mono">2026-09-08T08:48:07.594Z</td><td>Loop 30 close: namespace claimed and measured live; hosted endpoints answer discovery without a token, which unblocks every URL-checking directory; registry confirmed the growing channel and crawlers saturated</td></tr>
+<tr><td class="mono">2026-09-08T08:33:18.249Z</td><td>Loop 30: registry namespace claimed and measured live (3rd vs 15th on schedule); first green PR in awesome-mcp-servers; 3 Goose PRs; 4 verified inbound links; 14 reference guides; privacy page</td></tr>
+<tr><td class="mono">2026-09-07T04:26:11.950Z</td><td>Sprint: npm proven human-gated by two live OIDC workflow runs; every live URL that printed a 404 install command now discloses it and leads with a working path; hosted endpoints answer directory probes instead of 401; registry namespace mechanism proven and one token away; 4 stale registry rows deprecated</td></tr>
+<tr><td class="mono">2026-09-07T03:57:19.315Z</td><td>Sprint close: registry namespace mechanism proven (HTTP domain auth grants a namespace, one Cloudflare DNS token away from a com.* namespace worth 10-45 registry places), llms.txt no longer tells assistant crawlers to run a 404 install command, README generated from data with a drift gate</td></tr>
+<tr><td class="mono">2026-09-07T02:16:17.016Z</td><td>Loop 29: v0.21.0 shipped. Checkout gate removed (33/33 live), 85 registry names repointed from the robots-disallowed /buy/ redirect to product pages, sitemap curated and submitted to IndexNow, organic measured for the first time: 0 Google impressions ever, ClaudeBot crawls 311 of 312.</td></tr>
+<tr><td class="mono">2026-09-07T01:48:00.882Z</td><td>Loop 29 close: v0.21.0 in progress</td></tr>
+<tr><td class="mono">2026-09-07T01:29:42.831Z</td><td>Loop 29: checkout gate removed (32/32 live), 114 registry manifests repointed to product pages, sitemap 312-&gt;96 with permutations noindex, 96 URLs to IndexNow, audience measured honestly</td></tr>
+<tr><td class="mono">2026-09-06T08:22:23.182Z</td><td>Loop 28: change-order is the thirtieth server (built, wired 20/20, hosted as endpoint 30, audit 18/18 after D-R99 and D-R100); v0.20.0 shipped (31 bundles, 83 manifests, tests 1507/1518, validate 951/951); catalogue hosted round 38 18/18 and D-R97/D-R98 fixed; change-order round 39 11/18 with D-R101 and D-R102 mitigated server-side; every SPEC.md free of em dashes</td></tr>
+<tr><td class="mono">2026-09-06T07:06:13.423Z</td><td>Loop 27: catalogue is the twenty-ninth server, hosted and audited 18/18; v0.19.0 shipped (30 bundles, 80 manifests, tests 1455/1466, validate 902/902); dist-version check and stale-dist guard; registry JWT expiry caught and re-login pattern recorded</td></tr>
+<tr><td class="mono">2026-09-06T04:23:38.532Z</td><td>loop 26 closed: v0.18.0 with work-order (job orders with parts and labour lines, status flow, completion report, invoice-ready payload; markup on the unit cost so the invoice engine&#39;s rounding cannot disagree, gap of exactly one asserted; audit 17/18; the twenty-eighth server and hosted endpoint); checkout for work-order is a named gap because the keychain Stripe key lost product write, its buy page answers 503 with the bundle link and release-check reports the gap without turning green; 77 manifests, 1331 tests, validation 856/856, 29 bundles; petty-cash hosted 16/18; the release chain records the unit-test count and refuses a stale dist; downloads 4428; clicks 125/7d with 2 bundle-sourced; sales 0; GSC key dataless</td></tr>
+<tr><td class="mono">2026-09-06T01:50:19.914Z</td><td>loop 25 closed: v0.17.0 with petty-cash (imprest float, replenishment is imprest minus balance, a count is a fact; audit 16/18 with a date-guard fix; the twenty-seventh server and hosted endpoint), 74 manifests verified, 1374 tests, validation 811/811, 28 bundles; recoverable free slots: nine servers refuse a byte-identical record before the cap and ten free delete tools recover a slot; every cap message now states that figures outside the free tools are estimates (the imperative wording was read as a prompt injection); amortization hosted 15/18; intel R12 found five more empty slots; downloads 4247; clicks 111/7d with 2 bundle-sourced; sales 0; GSC key dataless</td></tr>
+<tr><td class="mono">2026-09-05T23:15:53.007Z</td><td>loop 24 closed: v0.16.0 with amortization (loan and lease schedules, effective interest, early repayment, cash-book journal lines; rounding the payment once is a term change; audit 18/18; the twenty-sixth server and hosted endpoint), 71 manifests verified, 1207 tests, validation 762/762, 27 bundles; cash-book free tier documented and its export gate names the free evidence; cash-book hosted 17/18; all twelve estate backlinks still serve; release checker number-word table extended; round 31 stdio 15/18 with the lost points on client-side totals over refused data; downloads 3850; clicks 101/7d with 2 bundle-sourced; sales 0; GSC key dataless</td></tr>
+<tr><td class="mono">2026-09-05T20:42:56.259Z</td><td>loop 23 closed: v0.15.0 with cash-book (one double-entry ledger from six sibling stores, trial balance to zero, bank rows as evidence not postings; audit 18/18; the twenty-fifth server and hosted endpoint), 68 manifests verified, 1242 tests, validation 713/713, 26 bundles; copy buttons on every prompt block; statement-of-account hosted 18/18; findable share 50 percent tracked and 55 extended; downloads 3707; clicks 94/7d with 2 bundle-sourced; sales 0; GSC key dataless</td></tr>
+<tr><td class="mono">2026-09-05T18:03:30.585Z</td><td>loop 22 closed: v0.14.0 with statement-of-account (per-client statements from the invoice, credit-note and deposit stores, aging as at any date, dunning with bank details; audit 18/18; the twenty-fourth server and hosted endpoint), 65 manifests published and verified, 1119 tests, validation 674/674, 25 bundles; month-end guide generated from a real nine-prompt run through the 224-tool bundle (round 27, 26/27); invoice balances net credit notes and the profile reader accepts vat_rate (D-R95, D-R96); hosted worker takes read-only shared stores; sync-mirrors retries network drops; release-check enforces the profile-reader list; probe dates now derive from the host clock; INTEL_R10 variant tokens all failed the honesty rule; downloads 3517; clicks 82/7d with 2 bundle-sourced; sales 0; GSC key dataless</td></tr>
+<tr><td class="mono">2026-09-05T14:33:49.149Z</td><td>loop 21 closed: v0.13.0 with asset-register (KST, UK capital allowance and MACRS tables; monthly schedules that sum to base to the minor unit; audit 18/18; the twenty-third server and hosted endpoint), 62 manifests published; every cap message now ends with the $39 bundle link with its own click source and the instrument recorded the first bundle click; per-diem real compare page against gsa-perdiem-mcp; per-diem hosted 17/18; intel R10 found five more empty slots (cash-book, petty-cash, amortization, statement-of-account, dunning); downloads 2665; clicks 71/7d; sales 0; GSC key dataless</td></tr>
+<tr><td class="mono">2026-09-05T11:57:59.851Z</td><td>loop 20 closed: v0.12.0 with per-diem (Polish, UK domestic and US GSA tables bundled byte-exact; UK overseas honestly omitted; audit 18/18; the twenty-second server and hosted endpoint), 59 registry entries verified, 1016 tests, validation 594/594, 23 bundles; invoice profile-reader list gained per-diem (D-R89); storefront /changelog generated from the release records; release-check hosted-row check; KPI readers keep the last good value when wrangler times out; round 21 deposits hosted 16/18; AIAnytime list merged the bundle entry; downloads 2478; sales 0; GSC key dataless again</td></tr>
+<tr><td class="mono">2026-09-05T09:41:21.138Z</td><td>loop 19 closed: v0.11.0 with deposits (security and retainer deposits applied to invoices through the engine; audit 18/18 no defects; the twenty-first server and hosted endpoint), 56 registry entries verified, 983 tests, validation 551/551, 22 bundles; invoice_mark_paid now ADDS payments instead of overwriting earlier partials (D-R87, found by the deposits build); office-suite guide rewritten to twenty-one/198 with a 301 (four prefixed tools, not two); round 20 49/54 (billing-docs hosted 17/18, bank 16/18, deposits 16/18); downloads 2284; sales 0; GSC 0 indexed</td></tr>
+<tr><td class="mono">2026-09-05T07:09:23.532Z</td><td>loop 18 closed: v0.10.0 with billing-docs (credit notes and purchase orders on the invoice engine; audit 18/18 no defects; hosted round 19 16/18; the twentieth server and hosted endpoint), 53 registry entries first pass (credit-note and purchase-order names on empty slots), 1011 tests, validation 510/510, bundle text derives twenty and , three more single-entry list PRs (MobinX 420, AIAnytime 83, mctrinh 112), Docker PR 20 entries, Cline 2439; downloads 2165; clicks 35/7d across nine cap sources; sales 0; GSC 0 indexed</td></tr>
+<tr><td class="mono">2026-09-05T05:07:12.443Z</td><td>loop 17 closed: v0.9.5 (50 registry entries first pass, 968 tests, validation 471/471), round 18 single-lane re-runs 53/54 (quotes 18, calendar 18, pdf 17), calendar keeps attendees and organizer through export (D-R61), bank date-order self-report fixed (D-R54), three honest registry names (letterhead, label, appointment), TensorBlock awesome list MERGED the office-suite entry, intel R9 found five empty slots (credit-note, purchase-order, asset-register, deposit, per-diem) for next loop, weekly digest script and docs/WEEKLY_2026-09-05.md, how-it-works.html refreshed; downloads 1994; clicks 29/7d; sales 0; GSC 0 indexed</td></tr>
+<tr><td class="mono">2026-09-05T04:27:56.294Z</td><td>Weekly digest 2026-09-05</td></tr>
+<tr><td class="mono">2026-09-05T03:20:34.056Z</td><td>loop 16 closed: round 16 as three single-lane agents 39/42 (timezone 11/12, bank 16/18, expense 12/12; all round 13 and 15 fixes hold live), every product page now carries up to three copy-paste prompts generated from the measured rounds (48 prompts, all scoring 3, test-traced to round files), office-suite one-install guide and refreshed setup pages, home table buy links slotted per server; no server sources changed so no release; validation 471/471; GSC still 0 indexed; downloads see metrics; clicks 24/7d; sales 0</td></tr>
+<tr><td class="mono">2026-09-05T02:32:46.865Z</td><td>loop 15 closed: v0.9.4 by hand (47 registry entries first pass, 20 mirrors, 966 tests, validation 471/471); checkout audit: buyers now see the bundle saving and how the key arrives, cross-sell on single-server sessions, 20 Stripe product descriptions rewritten; /bundle funnel page live and cross-sold from every product page; round 17 office-suite 186 tools 13/18 with every call hitting the right child (no split needed); URL-as-path refused by name in all 13 file servers; registry naming measured as exhausted (namespace sorts first); GSC key readable again: 208 submitted, 0 indexed, never crawled, 0 impressions; clicks 24/7d; downloads 1840; sales 0; round 16 deferred (agents stall under iCloud load)</td></tr>
+<tr><td class="mono">2026-09-05T00:16:25.623Z</td><td>loop 14 closed: v0.9.3 (released by hand after two agents stalled under machine load), 47 registry entries verified, 20 mirrors, validation 471/471, 881 tests; upgrade links now carry per-tool src at 73 gate sites and every storefront buy link (18 human clicks in 7d, most from the store home); profile-first sweep made 12 arguments across six servers default to the shared business profile; worthmyclaim and dscrradar now link in via live-mirror deploys (11 estate sites); TensorBlock resubmitted as one bundle entry (PR 2164); registry KPI reader rewritten per name (46-47 of 47); round 16 deferred; GSC key still dataless; downloads 1503; sales 0</td></tr>
+<tr><td class="mono">2026-09-04T15:28:59.007Z</td><td>loop 13 closed: v0.9.2, 19 servers + bundle, validation 471/471, 47 registry entries, findable share measured 51 percent, upload by URL on all six hosted shims (SSRF guard, magic checks), upgrade links tagged with src and clicks counted in KV (2 human clicks in 7d), hosted round 15 39/48 on expense-tracker recurring clauses timezone (six defects, five fixed; bank ledger now hydrated into hosted expense summaries), release checker green with zero waivers, Docker PR status comment posted; GSC unmeasurable (key file iCloud-dataless); downloads 1491; sales 0</td></tr>
+<tr><td class="mono">2026-09-04T09:38:15.117Z</td><td>loop 12 closed: v0.9.1, 19 servers + bundle, 907 tests, validation 463/463, 47 registry entries at 0.9.1, hosted round 14 57/60 on the five servers never tested hosted (uv index 95), release checker found 9 over-length and 5 truncated manifest descriptions plus a missing barcode second name, five servers got SPEC.md and contract tests (45 descriptions rewritten), publish-all covers 21 packages in dependency order, human-gated pack written, three oldest guides refreshed; GSC API unreachable this loop; downloads see metrics; sales 0</td></tr>
+<tr><td class="mono">2026-09-04T07:23:09.687Z</td><td>loop 11 closed: v0.9.0, 19 servers + bundle (+zip: bomb and traversal guards from the central directory, audit 18/18), 868 tests, validation 463/463, 19 hosted endpoints, 46 registry entries at 0.9.0, hosted round 13 50/54 (uv index 93), 7 estate sites now link to mcp.zovo.one (9 total; boldtake.io EXPIRED), 3 awesome-list PRs filed, scripted checkouts tagged as probes, sitemap 208, Docker PR 19 entries, Cline 2430, downloads 1139, sales 0, GSC 0 indexed</td></tr>
+<tr><td class="mono">2026-09-04T05:26:23.769Z</td><td>loop 10 closed: v0.8.0, 18 servers + bundle (+barcode: SEPA payment QR, audit 16/18), 818 tests, validation 431/431, 18 hosted endpoints, 44 registry entries at 0.8.0 (ten new names, findable 40 to 50 percent), guardrail tools free with caps (6 bare refusals to 0), hosted round 12 51/54 (uv index 94), home page rewritten for search with JSON-LD, sitemap 199, Docker PR 18 entries, Cline 2428, downloads 1039, sales 0, GSC 0 indexed</td></tr>
+<tr><td class="mono">2026-09-04T03:37:20.419Z</td><td>loop 9 closed: v0.7.0, 17 servers + bundle (+quotes on the invoice engine, audit 18/18), 771 tests, validation 399/399, 17 hosted endpoints, 33 registry entries at 0.7.0 (templates + estimates variants), hosted round 11 49/54 (uv index 91%), handshake version from package.json (14 of 17 were stale), KPI readers fixed, sitemap 189, zovo.one footer link live, GSC 189 submitted 0 indexed, Docker PR 17 entries, Cline 2426, downloads 843, sales 0</td></tr>
+<tr><td class="mono">2026-09-04T01:55:44.772Z</td><td>loop 8 closed: v0.6.0, 16 servers + bundle, 686 tests, validation 370/370, audits kanban 18/18 image 16/18 bank 13/18 (52 defects fixed), 16 hosted endpoints, 30 registry entries at 0.6.0, sitemap 179, Docker PR 16 entries, Cline 2424, zovo.one footer link, GSC sitemap resubmitted (0 indexed, never crawled), downloads 703</td></tr>
+<tr><td class="mono">2026-09-04T01:17:47.792Z</td><td>loop 8: kanban, image, bank-statement built (11/20/28 tests), validation 361/361, 13 registry variants, Docker PR 15 entries, Cline 2422/2423; audits, hosting, content in flight</td></tr>
+<tr><td class="mono">2026-09-04T00:58:45.851Z</td><td>loop 8: image, bank-statement, kanban in build; variants for 7 servers in progress; Stripe products live; intel R5 next picks kanban, quote, notes</td></tr>
+<tr><td class="mono">2026-09-03T17:23:39.958Z</td><td>loop 7 closed: v0.5.0, 13 servers + bundle, pdf and calendar audited, all hosted, round 10 19/24, 18 pages, Docker PR 13 entries</td></tr>
+<tr><td class="mono">2026-09-03T09:19:09.417Z</td><td>loop 6 addendum: 7 registry name variants on empty tokens (stdio-only, remote URLs cannot be shared)</td></tr>
+<tr><td class="mono">2026-09-03T08:59:32.975Z</td><td>loop 6: v0.4.2, connect by URL, purchase binding, p50 78 ms, round 9 23/24, backlog 25 to 1, KPI + sprint tabs</td></tr>
+<tr><td class="mono">2026-09-03T08:24:28.884Z</td><td>loop 5 closed: v0.4.1, shared business profile, SPEC.md + contract tests, round 8 27/36, all 11 hosted, 12 mirrors, KPI tab</td></tr>
+<tr><td class="mono">2026-09-03T05:56:54.330Z</td><td>loop 4 closed: v0.4.0, 11 servers + bundle, 399 tests, validation 241/241, three audits, 24 pages, 12 registry entries</td></tr>
+<tr><td class="mono">2026-09-03T05:12:46.191Z</td><td>loop 4: resume, recurring, clauses built (12/13/15 tests); validation 241/241; audits, packaging, content, demos, submissions in flight</td></tr>
+<tr><td class="mono">2026-09-03T04:58:41.645Z</td><td>loop 4: resume, recurring, clauses in build; organic R3 fleet 99.2, downloads 286</td></tr>
+<tr><td class="mono">2026-09-03T03:03:11.015Z</td><td>loop 3 closed: v0.3.2, 8 servers + bundle, 321 tests, validation 184/184, round 7 16/18</td></tr>
+<tr><td class="mono">2026-09-03T02:34:23.811Z</td><td>loop 3: v0.3.1, 8 servers + bundle, all hosted, 9 registry entries, audits done, 27 new pages</td></tr>
+<tr><td class="mono">2026-09-03T02:15:48.115Z</td><td>loop 3: currency, docx, timezone built (21/8/23 tests); Stripe products live; validation 178/178; audits + hosting + content in flight</td></tr>
+<tr><td class="mono">2026-09-03T00:56:32.843Z</td><td>loop 2 closed: v0.2.5, hosted hardening v2, 209 tests, validation 127/127, downloads 102</td></tr>
+<tr><td class="mono">2026-09-03T00:44:55.707Z</td><td>v0.2.5: round-6 fixes, 194 tests, validation 127/127; backlinks live; compare pages live</td></tr>
+<tr><td class="mono">2026-09-03T00:29:36.097Z</td><td>estate backlinks live on ukmoneycalc + statewage (78 pages)</td></tr>
+<tr><td class="mono">2026-09-03T00:22:05.148Z</td><td>v0.2.4: Codex v3 fixes (P0 store guard, windows, locale numbers, extraction), 186 tests; compare pages; backlinks pushed</td></tr>
+<tr><td class="mono">2026-09-03T00:00:41.020Z</td><td>v0.2.3: round-5 fixes, 162 tests, 43 setup pages, mirrors resynced</td></tr>
+<tr><td class="mono">2026-09-02T23:45:35.725Z</td><td>loop 2 wave A: 6 mirror repos, demo GIFs, intel R2 (downloads 79), round 5 26/30</td></tr>
+<tr><td class="mono">2026-09-02T15:18:02.368Z</td><td>v0.2.2: Codex correctness fixes; 4h loop closing: 6 products, 6 registry entries, 5 hosted, 121/121 validation, user value R4 20/24</td></tr>
+<tr><td class="mono">2026-09-02T14:52:07.198Z</td><td>v0.2.1: 6 registry entries, 5 hosted, office-suite bundle 51 tools</td></tr>
+<tr><td class="mono">2026-09-02T14:48:44.534Z</td><td>wave 3: all 5 hosted + hardened, round-3 fixes, validation 121/121</td></tr>
+<tr><td class="mono">2026-09-02T14:25:00.976Z</td><td>v0.2.0: 5 servers, hosted remotes in registry, expense audit 21 tests, 130 unit tests, validation green</td></tr>
+<tr><td class="mono">2026-09-02T14:09:39.197Z</td><td>wave 2: remote endpoints live (mcp.zovo.one/mcp), expense-tracker + office-suite built, READMEs deepened, forms submitted</td></tr>
+<tr><td class="mono">2026-09-02T13:58:26.208Z</td><td>wave 1 done: naming (18/34 tokens), 5 guides live, demo GIFs, intel; wave 2: remote endpoint, expense-tracker, office-suite, README depth</td></tr>
+<tr><td class="mono">2026-09-02T13:41:54.846Z</td><td>v0.1.1 released; value fixes D-1..D-8; registry 0.1.1; docker/cline/awesome submitted</td></tr>
+<tr><td class="mono">2026-09-02T13:28:41.899Z</td><td>docker + cline submissions</td></tr>
+<tr><td class="mono">2026-09-02T13:22:10.830Z</td><td>directories: glama.json committed, awesome-mcp-servers PR 13473 open, smithery needs one browser login, mcp.so skipped (paid $39)</td></tr>
+<tr><td class="mono">2026-09-02T13:03:54.867Z</td><td>audit: 58 probes, 9 fixes; price bounds; bundles rebuilt; validation 82/82</td></tr>
+<tr><td class="mono">2026-09-02T13:01:29.102Z</td><td>mcpb bundles released on GitHub v0.1.0</td></tr>
+<tr><td class="mono">2026-09-02T12:59:24.589Z</td><td>billing hardened (Codex review), validation db 82/82, tabbed main dashboard</td></tr>
+<tr><td class="mono">2026-09-02T12:52:39.358Z</td><td>session 1: 4 servers built, billing live at mcp.zovo.one, repo pushed</td></tr>
+<tr><td class="mono">2026-09-02T12:49:13.569Z</td><td>final verification run</td></tr>
+<tr><td class="mono">2026-09-02T12:48:56.403Z</td><td>second run check</td></tr>
+<tr><td class="mono">2026-09-02T12:48:50.865Z</td><td>dashboard scaffold</td></tr>
+      </tbody>
+    </table>
+    </div>
+  </section>
+
+  <footer>
+    Regenerate with: node scripts/update-root-dashboard.mjs --note '...'.
+    Sources: data/kpi.json, blind_recommendation_r3.json, distribution_r4.json, data/ledger.json, data/session.log.
+    Sub-dashboard: dashboard/index.html (scripts/update-dashboard.mjs).
+  </footer>
+</div>
+</body>
+</html>

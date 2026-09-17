@@ -1,31 +1,45 @@
 {
-  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
-  "name": "io.github.theluckystrike/calendar-ics-reader-events-freebusy-conflicts",
-  "description": "Read the .ics your calendar exports: events in a window, free-busy, double bookings, export.",
-  "version": "0.21.0",
-  "repository": {
-    "url": "https://github.com/theluckystrike/mcp-servers",
-    "source": "github",
-    "subfolder": "servers/calendar"
-  },
-  "websiteUrl": "https://mcp.zovo.one/s/calendar",
-  "packages": [
+ "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+ "name": "io.github.theluckystrike/calendar-ics-reader-events-freebusy-conflicts",
+ "description": "Read the .ics your calendar exports: events in a window, free-busy, double bookings, export.",
+ "version": "0.22.0",
+ "repository": {
+  "url": "https://github.com/theluckystrike/mcp-servers",
+  "source": "github",
+  "subfolder": "servers/calendar"
+ },
+ "websiteUrl": "https://mcp.zovo.one/s/calendar",
+ "packages": [
+  {
+   "registryType": "mcpb",
+   "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.22.0/calendar.mcpb",
+   "version": "0.22.0",
+   "transport": {
+    "type": "stdio"
+   },
+   "environmentVariables": [
     {
-      "registryType": "npm",
-      "registryBaseUrl": "https://registry.npmjs.org",
-      "identifier": "@theluckystrike/mcp-calendar",
-      "version": "0.21.0",
-      "transport": {
-        "type": "stdio"
-      },
-      "environmentVariables": [
-        {
-          "name": "MCP_LICENSE_KEY",
-          "description": "Optional Pro license key (MCPL1....). Verified offline.",
-          "isRequired": false,
-          "isSecret": true
-        }
-      ]
+     "name": "MCP_LICENSE_KEY",
+     "description": "Optional Pro license key (MCPL1....). Verified offline.",
+     "isRequired": false,
+     "isSecret": true
     }
-  ]
+   ],
+   "fileSha256": "37326cfffa2debd3845e7ae7ed95b343cf7cbb1783ecb728ef4cdf22990a109b"
+  }
+ ],
+ "remotes": [
+  {
+   "type": "streamable-http",
+   "url": "https://mcp.zovo.one/mcp/calendar",
+   "headers": [
+    {
+     "name": "Authorization",
+     "description": "Bearer <Pro license key or anonymous token from GET https://mcp.zovo.one/mcp/token>",
+     "isRequired": true,
+     "isSecret": true
+    }
+   ]
+  }
+ ]
 }

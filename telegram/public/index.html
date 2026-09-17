@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>MCP Fleet Mini App - Free AI Paperwork Tools in Telegram</title>
+<style>
+  :root {
+    --bg: #0f1419; --card: #1a2129; --line: #2c3744;
+    --text: #e6edf3; --muted: #8b98a5; --accent: #2a9d8f; --buy: #e9c46a;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.5; }
+  header { padding: 24px 20px 16px; border-bottom: 1px solid var(--line); }
+  h1 { margin: 0 0 6px; font-size: 22px; }
+  p.sub { margin: 0; color: var(--muted); font-size: 14px; }
+  main { max-width: 760px; margin: 0 auto; padding: 20px; }
+  .plans { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px; margin-bottom: 24px; }
+  .plan { background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+    padding: 16px; }
+  .plan h2 { margin: 0 0 4px; font-size: 16px; }
+  .plan .price { font-size: 26px; font-weight: 700; margin: 6px 0; }
+  .plan .stars { color: var(--muted); font-size: 13px; margin-bottom: 10px; }
+  .buy { display: inline-block; background: var(--buy); color: #1a1a1a;
+    font-weight: 700; border: 0; border-radius: 8px; padding: 10px 16px;
+    text-decoration: none; cursor: pointer; font-size: 14px; }
+  .buy:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+  section h2 { font-size: 18px; margin: 28px 0 8px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 12px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+    padding: 14px; display: flex; flex-direction: column; gap: 8px; }
+  .card.hi { border-color: var(--accent); }
+  .card .name { font-weight: 700; }
+  .card .pitch { color: var(--muted); font-size: 13px; flex: 1; }
+  .card .links { display: flex; gap: 8px; flex-wrap: wrap; }
+  .try { display: inline-block; background: var(--accent); color: #06110f;
+    font-weight: 600; border-radius: 8px; padding: 7px 12px; text-decoration: none;
+    font-size: 13px; }
+  .try:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+  .rank { color: var(--muted); font-size: 12px; text-transform: uppercase;
+    letter-spacing: .04em; }
+  footer { color: var(--muted); font-size: 12px; padding: 20px; text-align: center; }
+  a { color: var(--accent); }
+</style>
+</head>
+<body>
+<header>
+  <h1>MCP Fleet - Free AI Paperwork Tools</h1>
+  <p class="sub">Freelance and small-business paperwork, as Telegram Mini Apps. Every tool is an MCP server; try it live or buy lifetime access with Stars.</p>
+</header>
+
+<main>
+  <section>
+    <h2>Lifetime access</h2>
+    <div class="plans">
+      <div class="plan">
+        <h2>One server</h2>
+        <div class="price">$19</div>
+        <div class="stars">1500 Stars</div>
+        <a class="buy" href="https://t.me/mcpfleetbot?start=buy" target="_blank" rel="noopener">Buy with Stars</a>
+      </div>
+      <div class="plan">
+        <h2>All servers (bundle)</h2>
+        <div class="price">$39</div>
+        <div class="stars">3000 Stars</div>
+        <a class="buy" href="https://t.me/mcpfleetbot?start=buy" target="_blank" rel="noopener">Buy with Stars</a>
+      </div>
+    </div>
+    <p class="sub">The Buy button opens the bot chat; the bot mints a Stars (XTR) invoice link for digital goods. Pricing: 1500 Stars for one server, 3000 Stars for the whole fleet, at the estate's $19 / $39 one-time price point.</p>
+  </section>
+
+  <section>
+    <h2 id="servers">Servers ranked by Mini App fit</h2>
+    <div class="grid" id="grid"></div>
+  </section>
+</main>
+
+<footer>
+  Built by theluckystrike. All data stays local. Hosted endpoints require a token minted at the web app; the Mini App here is the discovery and billing surface.
+</footer>
+
+<script>
+  // Inline catalog, ranked by Mini App fit (mirrors src/catalog.ts).
+  var CATALOG = [
+    { name:"invoice", product:"Invoice Maker", pitch:"Build a clean PDF invoice from amount, hours, tax and due date.", hi:true },
+    { name:"expense-tracker", product:"Expense Tracker", pitch:"Log a purchase or trip cost in seconds; keep a dated money log.", hi:true },
+    { name:"currency", product:"Currency Converter", pitch:"Convert between currencies with a dated, bank-style rate.", hi:true },
+    { name:"timezone", product:"Time Zone Planner", pitch:"See any city's current time and convert hours without arithmetic.", hi:true },
+    { name:"calendar", product:"Week Planner", pitch:"Turn free text into a dated plan and see where the week went.", hi:true },
+    { name:"per-diem", product:"Per Diem Calculator", pitch:"Work out a trip's daily travel allowance on official rate tables.", hi:true },
+    { name:"mileage-log", product:"Mileage Log", pitch:"Log a drive at tax time, per trip, kept the moment it happens.", hi:true },
+    { name:"time-tracker", product:"Time Tracker", pitch:"Start and stop a billable timer by name and total your hours.", hi:true },
+    { name:"quotes", product:"Quote Builder", pitch:"Turn hours, rate and VAT into a numbered, ready-to-send quote.", hi:true },
+    { name:"credit-note", product:"Credit Note", pitch:"Issue a credit memo on the same engine as your invoices.", hi:true },
+    { name:"billing-docs", product:"Purchase Order & Credit Note", pitch:"Raise purchase orders and credit notes from one billing engine.", hi:true },
+    { name:"petty-cash", product:"Petty Cash Tin", pitch:"Run an imprest float with a custodian and dated entries.", hi:true },
+    { name:"cash-book", product:"Cash Book", pitch:"One double-entry ledger over the invoices and receipts you keep.", hi:true },
+    { name:"checklist", product:"Checklist Runner", pitch:"Build a checklist once, run it many times, keep the dated record.", hi:true },
+    { name:"kanban", product:"Task Board", pitch:"Add a card to a project board and move it as work progresses.", hi:true },
+    { name:"price-tracker", product:"Price Watch", pitch:"Point at any product page and get today's price and history.", hi:true },
+    { name:"barcode", product:"QR / Barcode Maker", pitch:"Turn a URL or code into a QR image you can save or print.", hi:true },
+    { name:"bank-statement", product:"Statement Reader", pitch:"Point at a bank statement PDF and get the figures summarized.", hi:false },
+    { name:"recurring", product:"Recurring Billing", pitch:"Bill the same hours to the same client on a fixed schedule.", hi:false },
+    { name:"statement-of-account", product:"Statement of Account", pitch:"Send a client the one page that answers what they owe.", hi:false },
+    { name:"deposits", product:"Deposits Ledger", pitch:"Hold security and retainer deposits per client.", hi:false },
+    { name:"delivery-schedule", product:"Delivery Schedule", pitch:"Keep dated deliverables against a quote or work order.", hi:false },
+    { name:"asset-register", product:"Asset Register", pitch:"Track fixed assets and depreciate on published rates.", hi:false },
+    { name:"amortization", product:"Amortization Schedule", pitch:"Turn a loan's terms into a full payment schedule.", hi:false },
+    { name:"dunning-letters", product:"Payment Chaser", pitch:"Register an unpaid invoice and draft the chase letter.", hi:false },
+    { name:"work-order", product:"Work Order", pitch:"Raise a job order for field and trade work.", hi:false },
+    { name:"job-card", product:"Job Card", pitch:"One card per job with the client, site and logged hours.", hi:false },
+    { name:"change-order", product:"Change Order", pitch:"Log a variation against a quote or work order.", hi:false },
+    { name:"catalogue", product:"Price Catalogue", pitch:"One price list and rate card the quote and invoice both read.", hi:false },
+    { name:"supplier-list", product:"Supplier Directory", pitch:"A supplier directory that does not rot inside a client.", hi:false },
+    { name:"maintenance-log", product:"Maintenance Log", pitch:"One register of maintenance for workshop, flats or fleet.", hi:false },
+    { name:"bill-of-sale", product:"Bill of Sale", pitch:"Record a sale ready for a signed paper bill of sale.", hi:false },
+    { name:"service-agreement", product:"Service Agreement", pitch:"Draft a service agreement from a one-line brief.", hi:false },
+    { name:"clauses", product:"Contract Clauses", pitch:"Draft a service agreement with real terms from your clauses.", hi:false },
+    { name:"packing-list", product:"Packing List", pitch:"The packing slip for a shipment and its two key questions.", hi:false },
+    { name:"resume", product:"Resume & Cover Letter", pitch:"Tailor a CV to a posting and draft the cover letter.", hi:false },
+    { name:"spreadsheet", product:"Spreadsheet Assistant", pitch:"Hand a spreadsheet to the assistant and talk to it.", hi:false },
+    { name:"docx", product:"Document Writer", pitch:"Write a real .docx from a plain-language brief.", hi:false },
+    { name:"pdf", product:"PDF Toolkit", pitch:"Stamp, split, merge and edit pages in a scan.", hi:false },
+    { name:"office-suite", product:"Office Suite", pitch:"The full office document and spreadsheet suite.", hi:false, hosted:false },
+    { name:"image", product:"Image Toolbox", pitch:"Resize photos and strip GPS in a chat.", hi:false },
+    { name:"zip", product:"Zip Toolkit", pitch:"Pack, inspect and unpack a folder as a zip.", hi:false }
+  ];
+
+  var grid = document.getElementById("grid");
+  CATALOG.forEach(function (e, i) {
+    var card = document.createElement("article");
+    card.className = "card" + (e.hi ? " hi" : "");
+    var url = "https://mcp.zovo.one/mcp/" + e.name;
+    card.innerHTML =
+      '<span class="rank">#' + (i + 1) + "</span>" +
+      '<span class="name">' + e.product + "</span>" +
+      '<span class="pitch">' + e.pitch + "</span>" +
+      '<span class="links">' +
+        (e.hosted === false ? '<span class="pitch">Aggregate, not a standalone endpoint.</span>'
+        : '<a class="try" href="' + url + '" target="_blank" rel="noopener">Try ' + e.name + "</a>") +
+      "</span>";
+    grid.appendChild(card);
+  });
+</script>
+</body>
+</html>

@@ -1,31 +1,45 @@
 {
-  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
-  "name": "io.github.theluckystrike/kanban-todo-tasks-projects-board",
-  "description": "A local task board per project: columns, due dates, estimates, priorities, overdue, weekly review.",
-  "version": "0.21.0",
-  "repository": {
-    "url": "https://github.com/theluckystrike/mcp-servers",
-    "source": "github",
-    "subfolder": "servers/kanban"
-  },
-  "websiteUrl": "https://mcp.zovo.one/s/kanban",
-  "packages": [
+ "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+ "name": "io.github.theluckystrike/kanban-todo-tasks-projects-board",
+ "description": "A local task board per project: columns, due dates, estimates, priorities, overdue, weekly review.",
+ "version": "0.22.0",
+ "repository": {
+  "url": "https://github.com/theluckystrike/mcp-servers",
+  "source": "github",
+  "subfolder": "servers/kanban"
+ },
+ "websiteUrl": "https://mcp.zovo.one/s/kanban",
+ "packages": [
+  {
+   "registryType": "mcpb",
+   "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.22.0/kanban.mcpb",
+   "version": "0.22.0",
+   "transport": {
+    "type": "stdio"
+   },
+   "environmentVariables": [
     {
-      "registryType": "npm",
-      "registryBaseUrl": "https://registry.npmjs.org",
-      "identifier": "@theluckystrike/mcp-kanban",
-      "version": "0.21.0",
-      "transport": {
-        "type": "stdio"
-      },
-      "environmentVariables": [
-        {
-          "name": "MCP_LICENSE_KEY",
-          "description": "Optional Pro license key (MCPL1....). Verified offline.",
-          "isRequired": false,
-          "isSecret": true
-        }
-      ]
+     "name": "MCP_LICENSE_KEY",
+     "description": "Optional Pro license key (MCPL1....). Verified offline.",
+     "isRequired": false,
+     "isSecret": true
     }
-  ]
+   ],
+   "fileSha256": "8c7911db9172f4a3dfd393060744b43e65efd5ee314089c2bbc1cd69ef05fe9a"
+  }
+ ],
+ "remotes": [
+  {
+   "type": "streamable-http",
+   "url": "https://mcp.zovo.one/mcp/kanban",
+   "headers": [
+    {
+     "name": "Authorization",
+     "description": "Bearer <Pro license key or anonymous token from GET https://mcp.zovo.one/mcp/token>",
+     "isRequired": true,
+     "isSecret": true
+    }
+   ]
+  }
+ ]
 }

@@ -2,7 +2,7 @@
   "manifest_version": "0.2",
   "name": "mcp-dunning-letters",
   "display_name": "Dunning Letters",
-  "version": "0.21.0",
+  "version": "0.22.0",
   "description": "Chase overdue invoices: reminder 1, reminder 2, final notice, escalation dates, aging.",
   "author": {
     "name": "theluckystrike",

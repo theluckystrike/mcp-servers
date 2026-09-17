@@ -1,6 +1,6 @@
 {
   "name": "@theluckystrike/mcp-dunning-letters",
-  "version": "0.21.0",
+  "version": "0.22.0",
   "description": "Chase overdue invoices: reminder 1, reminder 2, final notice, escalation dates, aging.",
   "type": "module",
   "bin": {
@@ -53,9 +53,9 @@
   "homepage": "https://github.com/theluckystrike/mcp-servers/tree/main/servers/dunning-letters",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.30.0",
-    "@theluckystrike/mcp-asset-register": "^0.21.0",
-    "@theluckystrike/mcp-license": "^0.21.0",
-    "@theluckystrike/mcp-timezone": "^0.21.0",
+    "@theluckystrike/mcp-asset-register": "^0.22.0",
+    "@theluckystrike/mcp-license": "^0.22.0",
+    "@theluckystrike/mcp-timezone": "^0.22.0",
     "zod": "^3.25.0"
   },
   "devDependencies": {

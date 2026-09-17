@@ -1,0 +1,92 @@
+{
+  "loop": 35,
+  "agent": "hosted-coverage",
+  "date": "2026-09-12",
+  "headline": "Hosted endpoints 34 of 37 -> 37 of 37: checklist, packing-list and delivery-schedule vendored, routed, deployed and proven live with mutating tools/call plus no-token 401 controls.",
+  "missing_three": {
+    "names": ["checklist", "packing-list", "delivery-schedule"],
+    "why": "Older 0.21.0 servers named as pre-loop wiring gaps in docs/WIRING_LOOP34.md; loop 34 vendored only its own four new servers, and its shim SERVER_COUNT 33 -> 37 fix exposed the gap in the KPI. No build-vendor.mjs patch or worker route existed for any of the three.",
+    "enumeration_commands": [
+      "ls -d servers/*/ | xargs -n1 basename | sort  # 38 dirs; office-suite is the stdio proxy bundle, not sellable",
+      "/usr/bin/grep -l 'createLicenseGate' servers/*/src/index.ts | wc -l  # 37 sellable",
+      "/usr/bin/grep -oE '^  \"[a-z-]+\": \\{' remote/src/index.ts  # 34 real SERVERS keys pre-edit",
+      "/usr/bin/grep -n 'checklist\\|packing-list\\|delivery-schedule' remote/build-vendor.mjs  # empty pre-edit"
+    ],
+    "not_missing": "office-suite carries no createLicenseGate and proxies children over stdio; deliberately never hosted."
+  },
+  "build": {
+    "command": "node remote/build-vendor.mjs",
+    "exit": 0,
+    "patches_added": {
+      "checklist": "patchChecklistIndex, 8 substitutions: out_path -> bare name, /out/ target, download-link descriptions, contract resource dir fix",
+      "packing-list": "patchPackingListIndex, 8 substitutions, same shape for packing_slip",
+      "delivery-schedule": "patchDeliveryScheduleIndex, 4 substitutions + no-path assertion; no tool writes a file"
+    },
+    "extra_imports": { "checklist": ["node:buffer"], "packing-list": ["node:buffer"] },
+    "lib_resolutions": {
+      "checklist": ["quotes", "timezone"],
+      "packing-list": ["quotes", "timezone"],
+      "delivery-schedule": ["invoice", "quotes", "timezone"]
+    },
+    "new_shims": 0
+  },
+  "worker": {
+    "file": "remote/src/index.ts",
+    "imports": 3,
+    "servers_entries": 3,
+    "tools_entries": 3,
+    "indexdoc_endpoints": 3,
+    "sharedDocs": 0,
+    "publish_strip": ["checklist", "packing-list"],
+    "build_version": "2026-09-12.1 -> 2026-09-12.2"
+  },
+  "tests": {
+    "local_smoke": "/tmp/hosted-loop35-smoke.test.mjs 4/4 pass (not committed; remote/test/ outside ownership, wave C can port)",
+    "remote_npm_test": "64/64 pass, 0 fail (includes vendor-paths scan over the three new vendored trees)",
+    "dry_run": "Total Upload: 6825.51 KiB / gzip: 1548.67 KiB"
+  },
+  "deploy": {
+    "command": "cd remote && npx wrangler deploy",
+    "version_id": "1eb02999-50ee-4719-bcb4-6200daef3853",
+    "route": "mcp.zovo.one/mcp*",
+    "deploys_this_wave": 1
+  },
+  "validation": {
+    "command": "node scripts/validate.mjs (once, 30s after deploy landed)",
+    "before": "1135/1135",
+    "after": "1135/1135 (run 50)",
+    "why_unchanged": "the tools/list sweep at scripts/validate.mjs:2175 is a static list of 34 names; adding the three is wave C's edit"
+  },
+  "proof": {
+    "token_mints": 1,
+    "token": "anon_cd36a4abfd4da3d8161eff530e31908c",
+    "mint_command": "curl -s 'https://mcp.zovo.one/mcp/connect?mint=1'",
+    "endpoints": {
+      "checklist": {
+        "call": "checklist_create {name: Loop 35 hosted proof, category: proof}",
+        "artifact_id": "CL-0001",
+        "persistence": "checklist_list in a second request reads total: 1",
+        "no_token_control": 401
+      },
+      "packing-list": {
+        "call": "packing_list_create {reference: WO-2026-0044, consignee: Loop 35 Proof Co, date: 2026-09-12}",
+        "artifact_id": "PL-2026-0001",
+        "persistence": "packing_list_list in a second request reads total: 1",
+        "no_token_control": 401
+      },
+      "delivery-schedule": {
+        "call": "delivery_schedule_create {reference: WO-2026-0044, reference_date: 2026-09-01, client: Loop 35 Proof Co, title: Hosted endpoint proof, currency: EUR}",
+        "artifact_id": "DS-2026-0001",
+        "persistence": "delivery_schedule_list in a second request reads count: 1",
+        "no_token_control": 401
+      }
+    }
+  },
+  "left_for_wave_c": [
+    "servers/<x>/remotes.json for the three (invoice shape; mcpb remotes merge blocked until written) - servers/** was outside this agent's ownership",
+    "scripts/validate.mjs line-2175 tools/list sweep: add checklist, packing-list, delivery-schedule",
+    "data/distribution.json per_server.hosted rows for the three (post-deploy reconciliation)",
+    "storefront product/setup pages and llms.txt lines for the three endpoints",
+    "scripts/release-check.mjs hosted-row: no waiver covers these three; the row reconciles once distribution.json is updated"
+  ]
+}

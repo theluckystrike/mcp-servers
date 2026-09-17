@@ -1,0 +1,22 @@
+{
+  "name": "mcp-fleet-telegram",
+  "version": "1.0.0",
+  "description": "Telegram Mini App distribution wedge for the mcp-servers fleet. grammY bot with a server-picker menu and Stars (XTR) invoicing for the $19 single / $39 bundle pricing.",
+  "type": "module",
+  "private": true,
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/bot.js",
+    "test:offline": "tsc && node dist/offline-test.js"
+  },
+  "dependencies": {
+    "grammy": "^1.33.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.6.0"
+  }
+}

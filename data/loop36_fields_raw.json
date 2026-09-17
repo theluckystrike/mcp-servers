@@ -1,0 +1,264 @@
+{
+  "measured_at": "2026-09-12T12:51:32.444Z",
+  "control": {
+    "query": "modelcontextprotocol",
+    "total_count": 1249,
+    "first": "modelcontextprotocol/modelcontextprotocol"
+  },
+  "rows": [
+    {
+      "candidate": "delivery-note",
+      "query": "mcp delivery note",
+      "total_count": 4,
+      "top3": [
+        {
+          "name": "h2-papers/h2-papers-mcp-server",
+          "stars": 0,
+          "name_coverage": 0.33
+        },
+        {
+          "name": "insalata-fresca/sinapsi-design",
+          "stars": 0,
+          "name_coverage": 0
+        },
+        {
+          "name": "sidvelishala/salesforce-devops-field-guide",
+          "stars": 0,
+          "name_coverage": 0
+        }
+      ]
+    },
+    {
+      "candidate": "late-fee-calculator",
+      "query": "mcp late fee",
+      "total_count": 1,
+      "top3": [
+        {
+          "name": "Denymbird/accounts-receivable-skills",
+          "stars": 2,
+          "name_coverage": 0
+        }
+      ]
+    },
+    {
+      "candidate": "retainer-agreement",
+      "query": "mcp retainer agreement",
+      "total_count": 0,
+      "top3": []
+    },
+    {
+      "candidate": "incident-report",
+      "query": "mcp incident report",
+      "total_count": 45,
+      "top3": [
+        {
+          "name": "benmoggee/sre-agent",
+          "stars": 37,
+          "name_coverage": 0
+        },
+        {
+          "name": "alphaparkinc/genpark-ai-devops-incident-postmortem-root-cause-analyzer-skill",
+          "stars": 8,
+          "name_coverage": 0.33
+        },
+        {
+          "name": "CSOAI-ORG/ai-incident-reporting-mcp",
+          "stars": 0,
+          "name_coverage": 1
+        }
+      ]
+    },
+    {
+      "candidate": "risk-register",
+      "query": "mcp risk register",
+      "total_count": 18,
+      "top3": [
+        {
+          "name": "antnewman/pda-platform",
+          "stars": 2,
+          "name_coverage": 0
+        },
+        {
+          "name": "CSOAI-ORG/risk-assessment-ai-mcp",
+          "stars": 0,
+          "name_coverage": 0.67
+        },
+        {
+          "name": "CSOAI-ORG/nist-rmf-ai-mcp",
+          "stars": 0,
+          "name_coverage": 0.33
+        }
+      ]
+    },
+    {
+      "candidate": "staff-rota",
+      "query": "mcp staff rota",
+      "total_count": 0,
+      "top3": []
+    },
+    {
+      "candidate": "visitor-log",
+      "query": "mcp visitor log",
+      "total_count": 2,
+      "top3": [
+        {
+          "name": "logly-uk/logly-mcp",
+          "stars": 2,
+          "name_coverage": 0.67
+        },
+        {
+          "name": "kazi-can-thrive/statcounter-mcp",
+          "stars": 1,
+          "name_coverage": 0.33
+        }
+      ]
+    },
+    {
+      "candidate": "price-list",
+      "query": "mcp price list",
+      "total_count": 64,
+      "top3": [
+        {
+          "name": "jbwashington/ebay-mcp",
+          "stars": 14,
+          "name_coverage": 0.33
+        },
+        {
+          "name": "MikkoParkkola/trvl",
+          "stars": 75,
+          "name_coverage": 0
+        },
+        {
+          "name": "bintangtimurlangit/shopee-mcp",
+          "stars": 5,
+          "name_coverage": 0.33
+        }
+      ]
+    },
+    {
+      "candidate": "commission-calculator",
+      "query": "mcp commission calculator",
+      "total_count": 1,
+      "top3": [
+        {
+          "name": "kicky001/commission-calculator",
+          "stars": 0,
+          "name_coverage": 0.67
+        }
+      ]
+    },
+    {
+      "candidate": "purchase-requisition",
+      "query": "mcp purchase requisition",
+      "total_count": 2,
+      "top3": [
+        {
+          "name": "josephkamau32/erp-lite-mcp",
+          "stars": 9,
+          "name_coverage": 0.33
+        },
+        {
+          "name": "kosgeiz/agentic-bidding",
+          "stars": 0,
+          "name_coverage": 0
+        }
+      ]
+    },
+    {
+      "candidate": "goods-received-note",
+      "query": "mcp goods received note",
+      "total_count": 0,
+      "top3": []
+    },
+    {
+      "candidate": "handover-note",
+      "query": "mcp handover note",
+      "total_count": 0,
+      "top3": []
+    },
+    {
+      "candidate": "appointment-booking",
+      "query": "mcp appointment booking",
+      "total_count": 38,
+      "top3": [
+        {
+          "name": "shufflethis/mcp-scheduling-profile",
+          "stars": 3,
+          "name_coverage": 0.33
+        },
+        {
+          "name": "smartphonedesign/appointment-booking-mcp",
+          "stars": 0,
+          "name_coverage": 1
+        },
+        {
+          "name": "Pragaticda/mcp-appointment-booking",
+          "stars": 0,
+          "name_coverage": 1
+        }
+      ]
+    },
+    {
+      "candidate": "service-report",
+      "query": "mcp service report",
+      "total_count": 51,
+      "top3": [
+        {
+          "name": "CarbeneAI/Talon",
+          "stars": 58,
+          "name_coverage": 0
+        },
+        {
+          "name": "dotin-challenge/mcp-log-analysis-agent",
+          "stars": 2,
+          "name_coverage": 0.33
+        },
+        {
+          "name": "okapi-ca/ms-365-admin-mcp-server",
+          "stars": 12,
+          "name_coverage": 0.33
+        }
+      ]
+    },
+    {
+      "candidate": "equipment-checkout",
+      "query": "mcp equipment checkout",
+      "total_count": 0,
+      "top3": []
+    },
+    {
+      "candidate": "punch-list",
+      "query": "mcp punch list",
+      "total_count": 3,
+      "top3": [
+        {
+          "name": "vulkanr/lastbluetape-mcp",
+          "stars": 0,
+          "name_coverage": 0.33
+        },
+        {
+          "name": "codenameakshay/design-compare-mcp",
+          "stars": 1,
+          "name_coverage": 0.33
+        },
+        {
+          "name": "MukundaKatta/gemini-splunk-devx-agent",
+          "stars": 0,
+          "name_coverage": 0
+        }
+      ]
+    },
+    {
+      "candidate": "rent-invoice",
+      "query": "mcp rent invoice",
+      "total_count": 0,
+      "top3": []
+    },
+    {
+      "candidate": "subcontractor-agreement",
+      "query": "mcp subcontractor agreement",
+      "total_count": 0,
+      "top3": []
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-12T03:41:08.443Z",
+  "generated_at": "2026-09-17T11:26:55.839Z",
   "session": {
-    "count": 77,
+    "count": 84,
     "history": [
       {
         "at": "2026-09-02T12:48:50.865Z",
@@ -310,6 +310,34 @@
       {
         "at": "2026-09-12T03:41:08.260Z",
         "note": "loop 34 close: tests 1816/1827, validation 1135/1135"
+      },
+      {
+        "at": "2026-09-17T05:56:42.393Z",
+        "note": "root dashboard build: first render, KPI table + blind R3 + distribution R4 wired in"
+      },
+      {
+        "at": "2026-09-17T05:56:53.971Z",
+        "note": "root dashboard build: second run verification, session.log accumulates and HTML grows"
+      },
+      {
+        "at": "2026-09-17T05:57:58.873Z",
+        "note": "verification run: syntax check clean, third render confirms idempotent regeneration"
+      },
+      {
+        "at": "2026-09-17T07:50:50.185Z",
+        "note": "orchestrator: 1192/1192 validation green, billing 146/146, worker redeployed honest figures"
+      },
+      {
+        "at": "2026-09-17T07:51:34.090Z",
+        "note": "final sync: dashboard refreshed from green validation run"
+      },
+      {
+        "at": "2026-09-17T08:11:11.816Z",
+        "note": "dist r6+r6b: mcpHQ #61 merged today (domain in servers.json), 14 verified-live surfaces, 7 green awesome-list PRs"
+      },
+      {
+        "at": "2026-09-17T10:02:26.676Z",
+        "note": "registry remote R1: v0.22.0 release + 38 mcpb assets, 38 registry publishes, 15 entries now carry hosted remotes (was 0)"
       }
     ]
   },
@@ -317,7 +345,7 @@
     {
       "id": "amortization",
       "npm_name": "@theluckystrike/mcp-amortization",
-      "version": "0.21.0",
+      "version": "0.22.0",
       "dir": "servers/amortization",
       "tools": [
         "loan_create",
@@ -353,7 +381,7 @@
     {
       "id": "asset-register",
       "npm_name": "@theluckystrike/mcp-asset-register",
-      "version": "0.21.0",
+      "version": "0.22.0",
       "dir": "servers/asset-register",
       "tools": [
         "asset_add",
@@ -389,7 +417,7 @@
     {
       "id": "bank-statement",
       "npm_name": "@theluckystrike/mcp-bank-statement",
-      "version": "0.21.0",
+      "version": "0.22.0",
       "dir": "servers/bank-statement",
       "tools": [
         "statement_import",
@@ -428,7 +456,7 @@
     {
       "id": "barcode",
       "npm_name": "@theluckystrike/mcp-barcode",
-      "version": "0.21.0",
+      "version": "0.22.0",
       "dir": "servers/barcode",
       "tools": [
         "qr_create",
@@ -465,7 +493,7 @@
     {
       "id": "bill-of-sale",
       "npm_name": "@theluckystrike/mcp-bill-of-sale",
-      "version": "0.21.0",
+      "version": "0.22.0",
       "dir": "servers/bill-of-sale",
       "tools": [
         "sale_create",
@@ -502,7 +530,7 @@
     {
       "id": "billing-docs",
       "npm_name": "@theluckystrike/mcp-billing-docs",
-      "version": "0.21.0",
+      "version": "0.22.0",
       "dir": "servers/billing-docs",
       "tools": [
         "credit_note_create",
@@ -545,7 +573,7 @@
     {
       "id": "calendar",
       "npm_name": "@theluckystrike/mcp-calendar",
-      "version": "0.21.0",
+      "version": "0.22.0",
       "dir": "servers/calendar",
       "tools": [
         "ics_import",
@@ -584,7 +612,7 @@
     {
       "id": "cash-book",
       "npm_name": "@theluckystrike/mcp-cash-book",
-      "version": "0.21.0",
+      "version": "0.22.0",
       "dir": "servers/cash-book",
       "tools": [
         "ledger_build",
@@ -620,7 +648,7 @@
     {
       "id": "catalogue",
       "npm_name": "@theluckystrike/mcp-catalogue",
-      "version": "0.21.0",
+      "version": "0.22.0",
       "dir": "servers/catalogue",
       "tools": [
         "sku_set",
@@ -659,7 +687,7 @@
     {
       "id": "change-order",
       "npm_name": "@theluckystrike/mcp-change-order",
-      "version": "0.21.0",
+      "version": "0.22.0",
       "dir": "servers/change-order",
       "tools": [
         "change_order_create",
@@ -697,7 +725,7 @@
     {
       "id": "checklist",
       "npm_name": "@theluckystrike/mcp-checklist",
-      "version": "0.21.0",
+      "version": "0.22.0",
       "dir": "servers/checklist",
       "tools": [
         "checklist_create",
@@ -740,7 +768,7 @@
     {
       "id": "clauses",
       "npm_name": "@theluckystrike/mcp-clauses",
-      "version": "0.21.0",
+      "version": "0.22.0",
       "dir": "servers/clauses",
       "tools": [
         "clause_add",
@@ -779,7 +807,7 @@
     {
       "id": "credit-note",
       "npm_name": "@theluckystrike/mcp-credit-note",
-      "version": "0.21.0",
+      "version": "0.22.0",
       "dir": "servers/credit-note",
       "tools": [
         "credit_note_create",
@@ -816,7 +844,7 @@
     {
       "id": "currency",
       "npm_name": "@theluckystrike/mcp-currency",
-      "version": "0.21.0",
+      "version": "0.22.0",
       "dir": "servers/currency",
       "tools": [
         "rates_latest",
@@ -853,7 +881,7 @@
     {
       "id": "delivery-schedule",
       "npm_name": "@theluckystrike/mcp-delivery-schedule",
-      "version": "0.21.0",
+      "version": "0.22.0",
       "dir": "servers/delivery-schedule",
       "tools": [
         "delivery_schedule_create",
@@ -892,7 +920,7 @@
     {
       "id": "deposits",
       "npm_name": "@theluckystrike/mcp-deposits",
-      "version": "0.21.0",
+      "version": "0.22.0",
       "dir": "servers/deposits",
       "tools": [
         "deposit_record",
@@ -930,7 +958,7 @@
     {
       "id": "docx",
       "npm_name": "@theluckystrike/mcp-docx",
-      "version": "0.21.0",
+      "version": "0.22.0",
       "dir": "servers/docx",
       "tools": [
         "business_set",
@@ -968,7 +996,7 @@
     {
       "id": "dunning-letters",
       "npm_name": "@theluckystrike/mcp-dunning-letters",
-      "version": "0.21.0",
+      "version": "0.22.0",
       "dir": "servers/dunning-letters",
       "tools": [
         "invoice_register",
@@ -1006,7 +1034,7 @@
     {
       "id": "expense-tracker",
       "npm_name": "@theluckystrike/mcp-expense-tracker",
-      "version": "0.21.0",
+      "version": "0.22.0",
       "dir": "servers/expense-tracker",
       "tools": [
         "expense_add",
@@ -1028,7 +1056,7 @@
       "build_ok": true,
       "test_summary": "# pass 14 / # fail 0 / 1..21 / # pass 21 / # fail 0 / # duration_ms 818",
       "result_status": "DONE",
-      "loc": 1404,
+      "loc": 1420,
       "files_present": {
         "readme": true,
         "server_json": true,
@@ -1047,7 +1075,7 @@
     {
       "id": "image",
       "npm_name": "@theluckystrike/mcp-image",
-      "version": "0.21.0",
+      "version": "0.22.0",
       "dir": "servers/image",
       "tools": [
         "image_info",
@@ -1086,7 +1114,7 @@
     {
       "id": "invoice",
       "npm_name": "@theluckystrike/mcp-invoice",
-      "version": "0.21.0",
+      "version": "0.22.0",
       "dir": "servers/invoice",
       "tools": [
         "business_set",
@@ -1126,7 +1154,7 @@
     {
       "id": "job-card",
       "npm_name": "@theluckystrike/mcp-job-card",
-      "version": "0.21.0",
+      "version": "0.22.0",
       "dir": "servers/job-card",
       "tools": [
         "job_card_create",
@@ -1164,7 +1192,7 @@
     {
       "id": "kanban",
       "npm_name": "@theluckystrike/mcp-kanban",
-      "version": "0.21.0",
+      "version": "0.22.0",
       "dir": "servers/kanban",
       "tools": [
         "task_add",
@@ -1206,9 +1234,80 @@
       }
     },
     {
+      "id": "maintenance-log",
+      "npm_name": "@theluckystrike/mcp-maintenance-log",
+      "version": "0.22.0",
+      "dir": "servers/maintenance-log",
+      "tools": [
+        "asset_add",
+        "maintenance_log",
+        "maintenance_due",
+        "asset_history",
+        "maintenance_export",
+        "asset_remove"
+      ],
+      "tool_count": 6,
+      "free_limits": "pending",
+      "price_usd": 19,
+      "build_ok": true,
+      "test_summary": "# pass 7 / # fail 0",
+      "result_status": "DONE",
+      "loc": 635,
+      "files_present": {
+        "readme": true,
+        "server_json": true,
+        "smithery_yaml": true,
+        "dockerfile": true,
+        "license": true
+      },
+      "distribution": {
+        "npm": "unknown",
+        "registry": "unknown",
+        "github": "unknown",
+        "smithery": "unknown",
+        "glama": "unknown"
+      }
+    },
+    {
+      "id": "mileage-log",
+      "npm_name": "@theluckystrike/mcp-mileage-log",
+      "version": "0.22.0",
+      "dir": "servers/mileage-log",
+      "tools": [
+        "trip_add",
+        "trip_list",
+        "trip_remove",
+        "rate_set",
+        "rate_list",
+        "mileage_summary",
+        "mileage_export"
+      ],
+      "tool_count": 7,
+      "free_limits": "pending",
+      "price_usd": 19,
+      "build_ok": true,
+      "test_summary": "# pass 9 / # fail 0",
+      "result_status": "DONE",
+      "loc": 770,
+      "files_present": {
+        "readme": true,
+        "server_json": true,
+        "smithery_yaml": true,
+        "dockerfile": true,
+        "license": true
+      },
+      "distribution": {
+        "npm": "unknown",
+        "registry": "unknown",
+        "github": "unknown",
+        "smithery": "unknown",
+        "glama": "unknown"
+      }
+    },
+    {
       "id": "office-suite",
       "npm_name": "@theluckystrike/mcp-office-suite",
-      "version": "0.21.0",
+      "version": "0.22.0",
       "dir": "servers/office-suite",
       "tools": [],
       "tool_count": 0,
@@ -1217,7 +1316,7 @@
       "build_ok": true,
       "test_summary": "# pass 1 / # fail 0",
       "result_status": "DONE",
-      "loc": 441,
+      "loc": 445,
       "files_present": {
         "readme": true,
         "server_json": true,
@@ -1236,7 +1335,7 @@
     {
       "id": "packing-list",
       "npm_name": "@theluckystrike/mcp-packing-list",
-      "version": "0.21.0",
+      "version": "0.22.0",
       "dir": "servers/packing-list",
       "tools": [
         "packing_list_create",
@@ -1277,7 +1376,7 @@
     {
       "id": "pdf",
       "npm_name": "@theluckystrike/mcp-pdf",
-      "version": "0.21.0",
+      "version": "0.22.0",
       "dir": "servers/pdf",
       "tools": [
         "pdf_info",
@@ -1316,7 +1415,7 @@
     {
       "id": "per-diem",
       "npm_name": "@theluckystrike/mcp-per-diem",
-      "version": "0.21.0",
+      "version": "0.22.0",
       "dir": "servers/per-diem",
       "tools": [
         "perdiem_rates",
@@ -1352,7 +1451,7 @@
     {
       "id": "petty-cash",
       "npm_name": "@theluckystrike/mcp-petty-cash",
-      "version": "0.21.0",
+      "version": "0.22.0",
       "dir": "servers/petty-cash",
       "tools": [
         "float_open",
@@ -1388,7 +1487,7 @@
     {
       "id": "price-tracker",
       "npm_name": "@theluckystrike/mcp-price-tracker",
-      "version": "0.21.0",
+      "version": "0.22.0",
       "dir": "servers/price-tracker",
       "tools": [
         "price_check",
@@ -1425,7 +1524,7 @@
     {
       "id": "quotes",
       "npm_name": "@theluckystrike/mcp-quotes",
-      "version": "0.21.0",
+      "version": "0.22.0",
       "dir": "servers/quotes",
       "tools": [
         "quote_create",
@@ -1464,7 +1563,7 @@
     {
       "id": "recurring",
       "npm_name": "@theluckystrike/mcp-recurring",
-      "version": "0.21.0",
+      "version": "0.22.0",
       "dir": "servers/recurring",
       "tools": [
         "schedule_create",
@@ -1505,7 +1604,7 @@
     {
       "id": "resume",
       "npm_name": "@theluckystrike/mcp-resume",
-      "version": "0.21.0",
+      "version": "0.22.0",
       "dir": "servers/resume",
       "tools": [
         "profile_set",
@@ -1523,7 +1622,43 @@
       "build_ok": true,
       "test_summary": "# tests 22   # pass 22   # fail 0 / # tests 12   # pass 12   # fail 0",
       "result_status": "DONE",
-      "loc": 1577,
+      "loc": 1578,
+      "files_present": {
+        "readme": true,
+        "server_json": true,
+        "smithery_yaml": true,
+        "dockerfile": true,
+        "license": true
+      },
+      "distribution": {
+        "npm": "unknown",
+        "registry": "unknown",
+        "github": "unknown",
+        "smithery": "unknown",
+        "glama": "unknown"
+      }
+    },
+    {
+      "id": "service-agreement",
+      "npm_name": "@theluckystrike/mcp-service-agreement",
+      "version": "0.22.0",
+      "dir": "servers/service-agreement",
+      "tools": [
+        "agreement_create",
+        "agreement_get",
+        "agreement_list",
+        "agreement_update_status",
+        "clause_library",
+        "agreement_render",
+        "agreement_checklist"
+      ],
+      "tool_count": 7,
+      "free_limits": "pending",
+      "price_usd": 19,
+      "build_ok": true,
+      "test_summary": "# pass 6 / # fail 0 / ## failures",
+      "result_status": "DONE",
+      "loc": 909,
       "files_present": {
         "readme": true,
         "server_json": true,
@@ -1542,7 +1677,7 @@
     {
       "id": "spreadsheet",
       "npm_name": "@theluckystrike/mcp-spreadsheet",
-      "version": "0.21.0",
+      "version": "0.22.0",
       "dir": "servers/spreadsheet",
       "tools": [
         "sheet_info",
@@ -1579,7 +1714,7 @@
     {
       "id": "statement-of-account",
       "npm_name": "@theluckystrike/mcp-statement-of-account",
-      "version": "0.21.0",
+      "version": "0.22.0",
       "dir": "servers/statement-of-account",
       "tools": [
         "statement_build",
@@ -1612,9 +1747,46 @@
       }
     },
     {
+      "id": "supplier-list",
+      "npm_name": "@theluckystrike/mcp-supplier-list",
+      "version": "0.22.0",
+      "dir": "servers/supplier-list",
+      "tools": [
+        "supplier_add",
+        "supplier_list",
+        "supplier_get",
+        "supplier_update",
+        "supplier_remove",
+        "supplier_mark_reviewed",
+        "supplier_due_review",
+        "supplier_export"
+      ],
+      "tool_count": 8,
+      "free_limits": "pending",
+      "price_usd": 19,
+      "build_ok": true,
+      "test_summary": "# pass 7 / # fail 0 / ## failures",
+      "result_status": "DONE",
+      "loc": 593,
+      "files_present": {
+        "readme": true,
+        "server_json": true,
+        "smithery_yaml": true,
+        "dockerfile": true,
+        "license": true
+      },
+      "distribution": {
+        "npm": "unknown",
+        "registry": "unknown",
+        "github": "unknown",
+        "smithery": "unknown",
+        "glama": "unknown"
+      }
+    },
+    {
       "id": "time-tracker",
       "npm_name": "@theluckystrike/mcp-time-tracker",
-      "version": "0.21.0",
+      "version": "0.22.0",
       "dir": "servers/time-tracker",
       "tools": [
         "timer_start",
@@ -1636,7 +1808,7 @@
       "build_ok": true,
       "test_summary": "# pass 2 / # fail 0",
       "result_status": "DONE",
-      "loc": 1293,
+      "loc": 1314,
       "files_present": {
         "readme": true,
         "server_json": true,
@@ -1655,7 +1827,7 @@
     {
       "id": "timezone",
       "npm_name": "@theluckystrike/mcp-timezone",
-      "version": "0.21.0",
+      "version": "0.22.0",
       "dir": "servers/timezone",
       "tools": [
         "now",
@@ -1693,7 +1865,7 @@
     {
       "id": "work-order",
       "npm_name": "@theluckystrike/mcp-work-order",
-      "version": "0.21.0",
+      "version": "0.22.0",
       "dir": "servers/work-order",
       "tools": [
         "work_order_create",
@@ -1732,7 +1904,7 @@
     {
       "id": "zip",
       "npm_name": "@theluckystrike/mcp-zip",
-      "version": "0.21.0",
+      "version": "0.22.0",
       "dir": "servers/zip",
       "tools": [
         "zip_create",
@@ -1768,22 +1940,7 @@
   ],
   "billing": {
     "status": "DONE",
-    "urls": [
-      "https://mcp.zovo.one",
-      "https://mcp-billing.lipmichal.workers.dev",
-      "https://mcp.zovo.one/webhook,",
-      "https://mcp.zovo.one/health",
-      "https://mcp.zovo.one/buy/time-tracker",
-      "https://checkout.stripe.com/c/pay/cs_live_b1hy5398lsltSfoQR2MJjsQ14fw3i7OyLl6I83TODfLA7CGRYLgEHzwgFX#...",
-      "https://mcp.zovo.one/buy/nope",
-      "https://mcp.zovo.one/verify?key=$KEY",
-      "https://mcp.zovo.one/verify?key=$KEY&product=spreadsheet",
-      "https://mcp.zovo.one/webhook",
-      "https://mcp.zovo.one/success",
-      "https://mcp.zovo.one/success?session_id=cs_live_bogus",
-      "https://mcp.zovo.one/recover?session_id=cs_live_bogus",
-      "https://mcp.zovo.one/recover"
-    ],
+    "urls": [],
     "products": [
       {
         "id": "amortization",
@@ -1901,6 +2058,16 @@
         "url": "https://mcp.zovo.one/buy/kanban"
       },
       {
+        "id": "maintenance-log",
+        "price_usd": 19,
+        "url": "https://mcp.zovo.one/buy/maintenance-log"
+      },
+      {
+        "id": "mileage-log",
+        "price_usd": 19,
+        "url": "https://mcp.zovo.one/buy/mileage-log"
+      },
+      {
         "id": "office-suite",
         "price_usd": 19,
         "url": "https://mcp.zovo.one/buy/office-suite"
@@ -1946,6 +2113,11 @@
         "url": "https://mcp.zovo.one/buy/resume"
       },
       {
+        "id": "service-agreement",
+        "price_usd": 19,
+        "url": "https://mcp.zovo.one/buy/service-agreement"
+      },
+      {
         "id": "spreadsheet",
         "price_usd": 19,
         "url": "https://mcp.zovo.one/buy/spreadsheet"
@@ -1954,6 +2126,11 @@
         "id": "statement-of-account",
         "price_usd": 19,
         "url": "https://mcp.zovo.one/buy/statement-of-account"
+      },
+      {
+        "id": "supplier-list",
+        "price_usd": 19,
+        "url": "https://mcp.zovo.one/buy/supplier-list"
       },
       {
         "id": "time-tracker",
@@ -2267,6 +2444,10 @@
       "first_line": "Directories submission — RESULT"
     },
     {
+      "file": "docs/DISCOVERABILITY_R1.md",
+      "first_line": "Discoverability audit R1 — 2026-09-17"
+    },
+    {
       "file": "docs/DISTRIBUTION.md",
       "first_line": "Distribution runbook — 4 MCP servers (theluckystrike)"
     },
@@ -2281,6 +2462,10 @@
     {
       "file": "docs/DISTRIBUTION_R3B.md",
       "first_line": "Distribution round 3B: loop-33 readback, plugin marketplaces, ToolHive preflight, Glama census (2026-09-12)"
+    },
+    {
+      "file": "docs/DISTRIBUTION_R4.md",
+      "first_line": "DISTRIBUTION R4 (loop 35): 49-surface census, one new submission, Glama placeholder-badge trap (2026-09-12)"
     },
     {
       "file": "docs/DISTRIBUTION_RESULT.md",
@@ -2363,6 +2548,10 @@
       "first_line": "Distribution round 5: pdf, calendar onto Docker MCP catalog + Cline marketplace"
     },
     {
+      "file": "docs/DIST_R6_NOTES.md",
+      "first_line": "DIST_R6_NOTES — r5/r6 distribution round"
+    },
+    {
       "file": "docs/DIST_R6_RESULT.md",
       "first_line": "Distribution round 6: kanban, image onto Docker MCP catalog + Cline marketplace"
     },
@@ -2404,7 +2593,7 @@
     },
     {
       "file": "docs/FUNNEL_R1.md",
-      "first_line": "Funnel round 1: discovery to money, walked end to end (loop 33, 2026-09-10)"
+      "first_line": "Funnel R1 (loop 35): 65 checkout sessions, 0 paid — broken funnel or zero demand?"
     },
     {
       "file": "docs/GEMINI_EXT_R1.md",
@@ -2431,6 +2620,10 @@
       "first_line": "Why Google indexes zovo.one and will not touch mcp.zovo.one (loop 33, 2026-09-10)"
     },
     {
+      "file": "docs/GOOGLE_INDEX_R2.md",
+      "first_line": "Why Google still will not touch mcp.zovo.one - crawlability audit R2, 2026-09-12"
+    },
+    {
       "file": "docs/GSC_RESULT.md",
       "first_line": "status: DONE"
     },
@@ -2445,6 +2638,10 @@
     {
       "file": "docs/HOSTED_LOOP34.md",
       "first_line": "HOSTED_LOOP34 - hosted endpoints for bill-of-sale, credit-note, job-card, dunning-letters"
+    },
+    {
+      "file": "docs/HOSTED_LOOP35.md",
+      "first_line": "HOSTED_LOOP35 - hosted endpoints for checklist, packing-list, delivery-schedule"
     },
     {
       "file": "docs/HUMAN_GATED_PACK.md",
@@ -2569,6 +2766,14 @@
     {
       "file": "docs/LOOP34_RESULT.md",
       "first_line": "LOOP 34 RESULT — 2026-09-12"
+    },
+    {
+      "file": "docs/LOOP35_BRIEF.md",
+      "first_line": "LOOP 35 BRIEF — 2026-09-12 (orchestrated, 10 agents wave A+B)"
+    },
+    {
+      "file": "docs/LOOP36_FIELDS_R1.md",
+      "first_line": "Loop 36: candidate new-server fields, round 1"
     },
     {
       "file": "docs/MARKETPLACES_RESULT.md",
@@ -2775,6 +2980,10 @@
       "first_line": "Profile-first sweep: never ask for a fact the shared profile already holds"
     },
     {
+      "file": "docs/QUALITY_LOOP35.md",
+      "first_line": "QUALITY loop 35 - seam defects 123/148 -> 136/148 resolved in source"
+    },
+    {
       "file": "docs/QUOTES_AUDIT.md",
       "first_line": "mcp-quotes: Part 2 CLI run and the remaining Part 1 probes"
     },
@@ -2797,6 +3006,10 @@
     {
       "file": "docs/RECURRING_AUDIT.md",
       "first_line": "mcp-recurring: adversarial audit and user-value run"
+    },
+    {
+      "file": "docs/REGISTRY_REMOTE_R1.md",
+      "first_line": "Registry remote R1 — 2026-09-17"
     },
     {
       "file": "docs/REGISTRY_VISIBILITY_R1.md",
@@ -3113,6 +3326,10 @@
     {
       "file": "docs/USER_VALUE_R9.md",
       "first_line": "User value audit, round 9 — 2026-09-03"
+    },
+    {
+      "file": "docs/VARIANTS_LOOP35.md",
+      "first_line": "VARIANTS_LOOP35 - phrase-variant registry names for the 8 blind-question servers"
     },
     {
       "file": "docs/VSCODE_GALLERY_R1.md",

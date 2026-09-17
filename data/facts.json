@@ -262,8 +262,8 @@
   },
   "office-suite": {
    "title": "MCP Office Suite (bundle server)",
-   "tagline": "One install that exposes every tool of all 37 servers, 352 of them.",
-   "does": "A stdio proxy that starts every sibling server in this repository as a child process and exposes all their tools, resources and prompts under one server, with a single license_status and license_activate. Measured on the running v0.21.0 bundle on 2026-09-10: tools/list returns 318 distinct tools and the suite reports proxying 33 children, 316 of those tools coming from the children and 2 being its own licence pair. Four colliding child tool names are renamed and the renames are published in office://tools_map. Measured reason for existing: the most-used server in this category is an aggregator, so one install beats thirty-three.",
+   "tagline": "One install that exposes every tool of all 41 servers, 380 of them.",
+   "does": "A stdio proxy that starts every sibling server in this repository as a child process and exposes all their tools, resources and prompts under one server, with a single license_status and license_activate. Measured on the running v0.22.0 bundle on 2026-09-13: tools/list returns 380 distinct tools and the suite reports proxying 41 children, 378 of those tools coming from the children and 2 being its own licence pair. Six colliding child tool names are renamed (business_set, category_rules, asset_add, trip_list, rate_set pairs) and the renames are published in office://tools_map. Measured reason for existing: the most-used server in this category is an aggregator, so one install beats thirty-three.",
    "for": "Anyone who wants the whole back-office workflow in one config line instead of thirty-one.",
    "example": "\"Start a timer for Acme\" ... \"Invoice Acme for this week's hours plus the USB hub receipt.\"",
    "free": "Each child's free tier.",
@@ -589,6 +589,46 @@
    "free": "Three unpaid invoices chased at once, with all three letters in both formats, the aging summary, the day's chase list and payment recording free on every tier. An invoice that gets paid frees its slot, because the cap is on how many chases run at once, never on the letters or the aging.",
    "pro": "Unlimited concurrent chases.",
    "storage": "~/.local/share/mcp-servers/dunning-letters/"
+  },
+  "supplier-list": {
+   "title": "MCP Supplier List",
+   "tagline": "A supplier directory that does not rot: contacts, terms, lead times, and when each record was last reviewed.",
+   "does": "Adds each supplier once - the name, what they supply, the contact, the payment terms, the lead time in days and notes - returning a SUP-YYYY-NNNN id, and every record carries the date it was last reviewed. supplier_list reads the directory A to Z with a category filter and a free-text search across every field; supplier_update changes only the fields passed; supplier_mark_reviewed stamps the record as checked against reality, and a review dated in the future is refused. supplier_due_review answers which records have gone stale, most overdue first, and a record never reviewed is always due. A second record carrying a name already in the directory is refused, a partial name matching more than one supplier is refused with the candidates, and the SUP number is never reissued. supplier_export hands the directory over as CSV or a Markdown table, inline.",
+   "for": "Freelancers and small operators who buy from a handful of suppliers and need the record of who, on what terms and at what lead time to stay true instead of rotting in a spreadsheet.",
+   "example": "\"Add Shenzhen Box Co, packaging: Maria Chen, sales@shenzhenbox.example, Net 30, 21 days lead time.\" ... \"Which of my supplier records have gone stale?\" ... \"Export the directory as CSV.\"",
+   "free": "Ten suppliers, with adding, listing, reading, updating, removing, review stamps and CSV export free and unlimited on every tier. Removing a supplier you no longer use frees its slot, so the directory itself is never metered.",
+   "pro": "Unlimited suppliers, Markdown export, and the due-review report that keeps a bigger directory honest.",
+   "storage": "~/.local/share/mcp-servers/supplier-list/"
+  },
+  "service-agreement": {
+   "title": "MCP Service Agreement",
+   "tagline": "Service agreements for freelancers: scope, deliverables, rate, termination and liability, rendered for signing.",
+   "does": "Writes a service agreement before the work starts: the parties, the scope of services, the deliverables, the rate in whole cents with its unit, the payment terms, start and end dates, a termination notice period, a liability cap and the governing jurisdiction. agreement_create stores it and returns it rendered as clean Markdown with a signature block, numbered SA-YYYY-NNNN. agreement_checklist is the before-you-send-it pass, listing missing fields and flagging one-sided gaps neutrally. agreement_update_status moves the agreement exactly one step at a time - draft, sent, signed, expired - stamping date and note into its history, and a skipped step is refused. The built-in clause library covers IP assignment, mutual confidentiality, late payment interest, kill fee and revision rounds, filled with the agreement's own variables. Every render carries a one-line note that it is a template, not legal advice.",
+   "for": "Freelancers about to start client work who do not want to copy a rotting template off the internet again.",
+   "example": "\"Write an agreement between Anna Nowak and Brightleaf Studio: design and build of a five-page site, 85.00 EUR an hour, Net 14, 14 days notice, capped at 8,500 EUR, England and Wales.\" ... \"Run the checklist on it before I send it.\" ... \"Mark it sent today.\"",
+   "free": "Three active agreements, with reading, listing, the before-you-send checklist and Markdown rendering free and unlimited on every tier. An agreement stops counting the moment it expires, so expiring a finished engagement frees its slot.",
+   "pro": "Unlimited active agreements, the full clause texts with the agreement's variables filled in, and print-ready HTML rendering.",
+   "storage": "~/.local/share/mcp-servers/service-agreement/"
+  },
+  "maintenance-log": {
+   "title": "MCP Maintenance Log",
+   "tagline": "Equipment maintenance log: assets, service entries with costs, and a due report computed from stored dates.",
+   "does": "Keeps one register of the equipment you look after and the work done on it. asset_add records a machine with its name, serial or asset tag - unique across the register - location and currency, returning an AST-YYYY-NNNN id. maintenance_log records the work: the day, what was done, the cost in whole cents, who did it, and when the next service falls due, as next_due or interval_days, never both. maintenance_due answers what is overdue and by how many days, what falls due within the next N days and what has no schedule, computed from the stored dates at the moment you ask, so the register cannot go stale. asset_history reads one asset's whole log in chronological order with its total spend in integer cents and spend per technician, and maintenance_export hands a date range over as CSV or a Markdown summary per asset. An asset carrying a log cannot be removed without confirm: true, and the AST number is never reissued.",
+   "for": "The workshop, the rental flats, the van fleet or the studio: anyone whose equipment needs a service record that answers what is due without anyone remembering.",
+   "example": "\"Add the combi boiler, serial SN-88-4412, at 14 Nowa Street flat 3, EUR.\" ... \"Log the annual service on the 9th, 120.00 by Acme Heating, next due in 365 days.\" ... \"What is overdue or coming due this month?\"",
+   "free": "Three assets on the register, with logging, the per-asset history with total spend and CSV export free and unlimited on every tier. Removing an asset frees its slot.",
+   "pro": "Unlimited assets, the due report (overdue and due-within-N-days) and the Markdown summaries.",
+   "storage": "~/.local/share/mcp-servers/maintenance-log/"
+  },
+  "mileage-log": {
+   "title": "MCP Mileage Log",
+   "tagline": "Mileage log for deductible driving: trips, effective-dated rates, summaries and CSV export.",
+   "does": "Keeps the mileage log freelancers need at tax time, the moment the drive happens. trip_add logs one drive - the date, where from and to, the distance in miles or km, the purpose and the category (business, medical, moving, charitable, personal) - returning a TR-YYYY-NNNN id, with a future date refused. rate_set records what one mile or km is worth for one category in one jurisdiction from a date forward, an effective-dated series rather than one global number, and each trip earns the rate in force on the day it was driven, rounded half-up to the cent. Distances in miles and in km are kept apart and never added together; a trip whose unit differs from the rate's is converted first, 1 mile = 1.609344 km exactly. mileage_summary prices a date range per category with totals per currency, and trips with no applicable rate are listed with the reason, never silently dropped. mileage_export is the CSV for the accountant, refusing while any non-personal trip in the window is unpriced. No rate ships with the server and none of it is tax advice.",
+   "for": "Freelancers and small operators who drive for work and need the deductible log kept at the moment of the drive, not reconstructed from memory in April.",
+   "example": "\"Set the US federal business rate at 0.70 a mile from 2026-01-01.\" ... \"Log yesterday: home office to the client site, 12.5 miles, the Kowalski site visit.\" ... \"Summarize this year.\"",
+   "free": "Twenty trips per calendar month, counted on the month of the trip date, so reconstructing last year's log does not consume this month's allowance. The list and the summary are never metered, and one rate per jurisdiction and category is free, overwriting included.",
+   "pro": "Unlimited trips, the year-over-year rate series, and the CSV export for the accountant.",
+   "storage": "~/.local/share/mcp-servers/mileage-log/"
   }
  },
  "version": "0.1.1",
@@ -856,6 +896,51 @@
    "note": "Searched the official MCP registry search API for each token on 2026-09-12. Four of the five return 0 rows: delivery schedule, deliverables, milestones-as-tracking and due-dates. delivery-schedule returns 2 rows and both are this estate's own: io.github.theluckystrike/delivery-schedule and com.bestremotetools/delivery-schedule-milestones-late-report, the second pointing at this estate's repository, bundle sha and website, so it is the same server published under a second namespace rather than a competitor. milestones returns 1 row, that same second-namespace row. The control, service, returns 30 rows on the same API in the same minute. Nothing in the registry holds dated deliverables against a quote or work order with a late report as at a date the caller names. A comparison table would have to compare this against a spreadsheet column of dates, and the measured result of that comparison is the guide /guides/delivery-schedule-and-work-order-documents-from-mcp rather than a table. The note expires in 30 days so the gap is re-probed rather than excused forever.",
    "guide": "delivery-schedule-and-work-order-documents-from-mcp",
    "ttl_days": 30
+  },
+  "supplier-list": {
+   "date": "2026-09-17",
+   "probe": "npm registry search 'mcp <capability>' size=5 \u2014 no direct competitor found in results",
+   "tokens": [
+    "supplier",
+    "supplier-list",
+    "vendors",
+    "procurement",
+    "lead-times",
+    "supplier-directory"
+   ]
+  },
+  "service-agreement": {
+   "date": "2026-09-17",
+   "probe": "npm registry search 'mcp <capability>' size=5 \u2014 no direct competitor found in results",
+   "tokens": [
+    "service-agreement",
+    "service-contract",
+    "freelance contract",
+    "agreement",
+    "contract template"
+   ]
+  },
+  "maintenance-log": {
+   "date": "2026-09-17",
+   "probe": "npm registry search 'mcp <capability>' size=5 \u2014 no direct competitor found in results",
+   "tokens": [
+    "maintenance-log",
+    "maintenance-schedule",
+    "equipment log",
+    "service-log",
+    "maintenance"
+   ]
+  },
+  "mileage-log": {
+   "date": "2026-09-17",
+   "probe": "npm registry search 'mcp <capability>' size=5 \u2014 no direct competitor found in results",
+   "tokens": [
+    "mileage-log",
+    "mileage-logbook",
+    "mileage tracker",
+    "mileage",
+    "tax-deduction mileage"
+   ]
   }
  }
 }

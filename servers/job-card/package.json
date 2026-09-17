@@ -1,6 +1,6 @@
 {
   "name": "@theluckystrike/mcp-job-card",
-  "version": "0.21.0",
+  "version": "0.22.0",
   "description": "Job cards for trades and field service: hours and materials per job, open to invoiced.",
   "type": "module",
   "bin": {
@@ -47,7 +47,7 @@
   "homepage": "https://github.com/theluckystrike/mcp-servers/tree/main/servers/job-card",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.30.0",
-    "@theluckystrike/mcp-license": "^0.21.0",
+    "@theluckystrike/mcp-license": "^0.22.0",
     "zod": "^3.25.0"
   },
   "devDependencies": {

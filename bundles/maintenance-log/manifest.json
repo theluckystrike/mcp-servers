@@ -1,0 +1,81 @@
+{
+  "manifest_version": "0.2",
+  "name": "mcp-maintenance-log",
+  "display_name": "Maintenance Log",
+  "version": "0.22.0",
+  "description": "Equipment maintenance log: assets, service entries with costs, and a due report from stored dates.",
+  "author": {
+    "name": "theluckystrike",
+    "url": "https://github.com/theluckystrike"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/theluckystrike/mcp-servers"
+  },
+  "homepage": "https://mcp.zovo.one",
+  "license": "MIT",
+  "server": {
+    "type": "node",
+    "entry_point": "server/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": [
+        "${__dirname}/server/index.js"
+      ],
+      "env": {
+        "MCP_LICENSE_KEY": "${user_config.license_key}"
+      }
+    }
+  },
+  "user_config": {
+    "license_key": {
+      "type": "string",
+      "title": "License key",
+      "description": "Optional Pro license key (format MCPL1.xxx.yyy). Leave blank to use the free tier.",
+      "sensitive": true,
+      "required": false
+    }
+  },
+  "tools": [
+    {
+      "name": "asset_add",
+      "description": "Add one piece of equipment to the maintenance register: its name, its serial or asset tag, where it lives, and the currency its costs are in. Returns the AST-YYYY-NNNN id. Free tier: 3 assets; logging work on the assets you have is never metered."
+    },
+    {
+      "name": "maintenance_log",
+      "description": "Log work done on an asset: the day, what was done, the cost in whole cents, who did it, and when the next service falls due -- as a date (next_due) or as an interval in days (interval_days), never both. A repair that sets no schedule takes neither. A future work date is refused."
+    },
+    {
+      "name": "maintenance_due",
+      "description": "The due report across every asset: what is overdue and by how many days, what falls due within the next N days (default 30), what is scheduled later, and what has no schedule at all. Computed from the stored next-due dates against today, at call time. Pro feature."
+    },
+    {
+      "name": "asset_history",
+      "description": "Read one asset in full by id, tag or name: every log entry in chronological order, the total spend as integer cents with a formatted amount, the last service date, and the next-due date the asset currently lives under. Reads only."
+    },
+    {
+      "name": "maintenance_export",
+      "description": "Export maintenance entries dated inside a range. CSV (free): one row per entry, ready for a spreadsheet. Markdown (Pro): one section per asset with its entries, total spend and next due date, ready to paste into notes or a report. Writes nothing."
+    },
+    {
+      "name": "asset_remove",
+      "description": "Remove an asset entered by mistake or sold off. One that carries a maintenance log is refused unless confirm is true, naming what would be lost, because removing it loses the record of work done. The AST number is never reissued."
+    },
+    {
+      "name": "license_status",
+      "description": "Report this server's licence state: product, tier free or pro, licence id, expiry, the key source and the upgrade URL. No arguments, no network. Explains a free-tier refusal; license_activate installs a key."
+    },
+    {
+      "name": "license_activate",
+      "description": "Activate a Pro key (MCPL1.xxx.yyy) from checkout: verified offline against a built-in public key, saved to your config file. A wrong, malformed or expired key is refused, unsaved. license_status reads it back."
+    }
+  ],
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "maintenance-log",
+    "maintenance-schedule",
+    "equipment",
+    "service-log"
+  ]
+}

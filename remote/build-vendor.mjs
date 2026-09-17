@@ -239,6 +239,61 @@ const SERVERS = {
   // NO tool writes a file: letter_render returns the letter INLINE, and the register
   // (invoices.json, counter.json) is one document per token under the homedir shim.
   "dunning-letters": ["index.ts", "version.ts", "engine.ts", "letters.ts", "lib.ts", "store.ts"],
+  // Every source file. The one tool that writes a file is run_report, and only when the
+  // caller passes out_path (Pro): the vendored build reduces out_path to a bare document
+  // NAME and writes the report under /out/, where writeAtomic's tmp + rename lets the fs
+  // shim publish it as a one-hour download link - the bill-of-sale arrangement, down to
+  // the 1-64 character alphabet. Everything else answers in JSON. The store is
+  // templates.json, runs.json and counter.json, one document per token under the homedir
+  // shim, written tmp + rename; readJsonFile comes from the vendored timezone engine and
+  // today/isIsoDate from the vendored quotes engine, so LIB_RESOLUTIONS carries both.
+  // readSharedProfile travels the licence shim; NO SIBLING DOCUMENT is opened (the
+  // contract resource says so: opens_sibling_stores: false). lib.ts is vendored for the
+  // reason the last eleven servers' are: it is this engine as a public API.
+  "checklist": ["index.ts", "version.ts", "checklist.ts", "lib.ts", "store.ts"],
+  // Every source file. The checklist case again, with packing_slip as the one file-writing
+  // tool (Pro, out_path reduced to a name, written under /out/ and published on the tmp +
+  // rename). Nothing is read from the quotes, work order or invoice store - packing_expect
+  // says so in its own description - so there is no sharedDoc; the only sibling engines are
+  // today/isIsoDate from quotes (index.ts) and readJsonFile from timezone (store.ts), both
+  // in LIB_RESOLUTIONS. The slip carries NO PRICES by design. lib.ts vendored as the
+  // public API.
+  "packing-list": ["index.ts", "version.ts", "lib.ts", "packing.ts", "store.ts"],
+  // Every source file. NO tool writes a file: delivery_schedule_document returns the
+  // document INLINE and milestone_payload returns invoice_create/quote_create ARGUMENTS,
+  // so there is no out_path, no publish rule and no EXTRA_IMPORTS entry - the credit-note
+  // and job-card arrangement, asserted by the patch (an out_path appearing later fails
+  // this build rather than shipping a path). The engines borrowed are formatMoney from
+  // @theluckystrike/mcp-invoice/lib and today/isIsoDate from @theluckystrike/mcp-quotes/lib,
+  // both from index.ts, and readJsonFile from @theluckystrike/mcp-timezone/lib from
+  // store.ts; LIB_RESOLUTIONS carries all three. No sibling DOCUMENT is opened: the
+  // schedule references a quote, work order or change order by its id and never reads the
+  // store behind it. lib.ts vendored as the public API.
+  "delivery-schedule": ["index.ts", "version.ts", "lib.ts", "schedule.ts", "store.ts"],
+  // Every source file. The credit-note and job-card case for the fourth time: NO tool
+  // writes a file (supplier_export returns the CSV or Markdown INLINE), no out_path
+  // exists, and no sibling engine or document is read - the directory math is its own
+  // supplier.ts. The store is suppliers.json and counter.json under the homedir shim,
+  // tmp + rename, with its own corrupt-store quarantine inside store.ts.
+  "supplier-list": ["index.ts", "version.ts", "supplier.ts", "store.ts"],
+  // Every source file. NO tool writes a file: agreement_render returns the agreement
+  // INLINE as Markdown or HTML, so there is no out_path and no publish rule. No sibling
+  // engine or document is read either: the clause library, the status flow and the
+  // renderers are its own agreement.ts. The store is agreements.json and counter.json,
+  // one document per token under the homedir shim, with its own corrupt-store quarantine.
+  "service-agreement": ["index.ts", "version.ts", "agreement.ts", "store.ts"],
+  // Every source file. NO tool writes a file: maintenance_export returns the CSV or
+  // Markdown INLINE, so there is no out_path and no publish rule. No sibling engine or
+  // document is read: the schedule math is its own maintenance.ts. The store is
+  // assets.json and counter.json under the homedir shim, tmp + rename, with its own
+  // corrupt-store quarantine inside store.ts.
+  "maintenance-log": ["index.ts", "version.ts", "maintenance.ts", "store.ts"],
+  // Every source file. NO tool writes a file: mileage_export returns the CSV INLINE, so
+  // there is no out_path and no publish rule. No sibling engine or document is read: the
+  // effective-dated rate series and the miles/km conversion are its own log.ts. The store
+  // is trips.json, rates.json and counter.json under the homedir shim, tmp + rename, with
+  // its own corrupt-store quarantine inside store.ts.
+  "mileage-log": ["index.ts", "version.ts", "log.ts", "store.ts"],
 };
 
 /**
@@ -3028,6 +3083,194 @@ function patchDunningIndex(src) {
   return src;
 }
 
+/**
+ * checklist. The hosted endpoint has no disk, and exactly one tool writes one:
+ * run_report with out_path (Pro). What moves, the bill-of-sale rule down to the alphabet:
+ *   1. out_path collapses to a bare document NAME (1-64 of letters, digits, underscore,
+ *      dash; any .txt extension dropped). A URL fails the same regex, so the hosted
+ *      refusal is the name message and the URL_SCHEME_RE branch goes with the rest of the
+ *      stdio expandPath.
+ *   2. outputPath's default target was join(dataDir(), "documents", <id>) - a directory no
+ *      caller can open - and is /out/<name> here, made with the shim's mkdirSync. The
+ *      exclusive create on an explicit name and the -2, -3 dedupe on a derived one are
+ *      unchanged; the occupied-name error no longer quotes a virtual path.
+ *   3. writeAtomic's tmp + rename is kept byte-for-byte: the fs shim publishes the report
+ *      as a one-hour download link on the rename, and the worker substitutes the URL for
+ *      the virtual path in the response body.
+ *   4. The descriptions that promised a local file now say download link, and the
+ *      checklist://contract resource no longer reports dataDir() - the worker's virtual
+ *      homedir, a path no caller can open (the D-R60 species).
+ * The store needs no patch: templates.json, runs.json and counter.json are one document
+ * per token under the homedir shim, written tmp + rename, and readSharedProfile travels
+ * the licence shim. The fs import already carries mkdirSync (ensureDirBounded, kept and
+ * now unused on this transport), so no import patch is needed.
+ */
+function patchChecklistIndex(src) {
+  src = must(src,
+    "function expandPath(p: string): string {\n" +
+    "  if (URL_SCHEME_RE.test(p)) {\n" +
+    "    throw new Error(`\"${p}\" is a URL, not a file path; out_path writes a local file. Omit out_path to get the report back as text.`);\n" +
+    "  }\n" +
+    "  const s = p.startsWith(\"~\") ? join(homedir(), p.slice(1)) : p;\n" +
+    "  return isAbsolute(s) ? s : resolvePath(process.cwd(), s);\n" +
+    "}",
+    `function expandPath(p: string): string {
+  const raw = String(p ?? "").trim();
+  const base = (raw.replace(/^~\\/?/, "").split(/[\\\\/]/).pop() ?? "").replace(/\\.txt$/i, "");
+  const m = /^([A-Za-z0-9_-]{1,64})$/.exec(base);
+  if (!m) {
+    throw new Error(
+      \`\${JSON.stringify(p)} is not a usable document name. On this hosted endpoint out_path is not a \` +
+      \`path: it is only the stem the downloaded file is named with, 1-64 characters of letters, digits, \` +
+      \`underscore or dash, with any .txt extension dropped.\`);
+  }
+  return m[1];
+}`, "checklist expandPath");
+  src = must(src,
+    "function outputPath(out: string | undefined, fallbackName: string, ext: string, overwrite: boolean): string {\n" +
+    "  const p = expandPath(out ?? join(dataDir(), \"documents\", fallbackName));\n" +
+    "  const withExt = p.toLowerCase().endsWith(ext) ? p : `${p}${ext}`;\n" +
+    "  ensureDirBounded(dirname(withExt));",
+    "function outputPath(out: string | undefined, fallbackName: string, ext: string, overwrite: boolean): string {\n" +
+    "  const p = `/out/${expandPath(out ?? fallbackName)}`;\n" +
+    "  const withExt = p.toLowerCase().endsWith(ext) ? p : `${p}${ext}`;\n" +
+    "  mkdirSync(\"/out\", { recursive: true });",
+    "checklist outputPath target");
+  src = must(src,
+    "      throw new Error(`${withExt} already exists and nothing was written. Pass overwrite: true to replace it, or give a different out_path.`);",
+    "      throw new Error(`a file named ${withExt.slice(5)} was already produced in this request and nothing was written. Pass overwrite: true to replace it, or give a different out_path.`);",
+    "checklist outputPath occupied message");
+  src = must(src,
+    'description: "The run as plain text on every tier: every step with its mark, who answered it, the notes, the counts and a signature block or the recorded signature. Pro also writes it to out_path as a .txt file.",',
+    'description: "The run as plain text on every tier: every step with its mark, who answered it, the notes, the counts and a signature block or the recorded signature. Pro also gets it back as a .txt download link valid for one hour, named by out_path.",',
+    "checklist run_report description");
+  src = must(src,
+    'out_path: str("out_path", 1000).optional().describe("Where to write the .txt file. Pro only. Omit to get the report back as text, which every tier can do"),',
+    'out_path: str("out_path", 1000).optional().describe("Name for the downloaded .txt file, e.g. site-handover-run. Pro only. Omit to get the report back as text, which every tier can do; the file comes back as a download link valid for one hour"),',
+    "checklist out_path description");
+  src = must(src,
+    "pro_note: `Pass out_path to write this to a .txt file. ${gate.upgradeText(\"Writing the run report to a file\", \"run_report\")}`",
+    "pro_note: `Pass out_path to get this report back as a .txt download link valid for one hour. ${gate.upgradeText(\"Writing the run report to a file\", \"run_report\")}`",
+    "checklist run_report pro_note");
+  src = must(src,
+    '      writes: [{ store: "checklist", dir: dataDir(), files: ["templates.json", "runs.json", "counter.json"] }],',
+    '      writes: [{ store: "checklist", dir: "not a directory on this endpoint: the checklists and their runs are one document held " +\n' +
+    '        "per token, and a run report written with out_path is a download link rather than a file",\n' +
+    '        files: ["templates.json", "runs.json", "counter.json"] }],',
+    "checklist contract resource writes dir");
+  src = must(src,
+    'description: "Why a run copies its checklist, the four item states and what na means, the run status machine, what blocks a sign-off, the free-tier limits and the one directory this server writes.",',
+    'description: "Why a run copies its checklist, the four item states and what na means, the run status machine, what blocks a sign-off, the free-tier limits and the one document this server writes.",',
+    "checklist contract resource description");
+  return src;
+}
+
+/**
+ * packing-list. The checklist case again: packing_slip with out_path (Pro) is the one
+ * tool that writes a file, and it moves to a bare NAME under /out/ published on the tmp +
+ * rename; the descriptions that promised a local file say download link; and the
+ * packinglist://contract resource no longer reports dataDir(). The store (packing-lists.json
+ * and counter.json, one document per token under the homedir shim, tmp + rename) needs no
+ * patch, and no sibling store is ever opened - packing_expect declares what the order says
+ * rather than reading it, so there is no sharedDoc either.
+ */
+function patchPackingListIndex(src) {
+  src = must(src,
+    "function expandPath(p: string): string {\n" +
+    "  if (URL_SCHEME_RE.test(p)) {\n" +
+    "    throw new Error(`\"${p}\" is a URL, not a file path; out_path writes a local file. Omit out_path to get the slip back as text.`);\n" +
+    "  }\n" +
+    "  const s = p.startsWith(\"~\") ? join(homedir(), p.slice(1)) : p;\n" +
+    "  return isAbsolute(s) ? s : resolvePath(process.cwd(), s);\n" +
+    "}",
+    `function expandPath(p: string): string {
+  const raw = String(p ?? "").trim();
+  const base = (raw.replace(/^~\\/?/, "").split(/[\\\\/]/).pop() ?? "").replace(/\\.txt$/i, "");
+  const m = /^([A-Za-z0-9_-]{1,64})$/.exec(base);
+  if (!m) {
+    throw new Error(
+      \`\${JSON.stringify(p)} is not a usable document name. On this hosted endpoint out_path is not a \` +
+      \`path: it is only the stem the downloaded file is named with, 1-64 characters of letters, digits, \` +
+      \`underscore or dash, with any .txt extension dropped.\`);
+  }
+  return m[1];
+}`, "packing-list expandPath");
+  src = must(src,
+    "function outputPath(out: string | undefined, fallbackName: string, ext: string, overwrite: boolean): string {\n" +
+    "  const p = expandPath(out ?? join(dataDir(), \"documents\", fallbackName));\n" +
+    "  const withExt = p.toLowerCase().endsWith(ext) ? p : `${p}${ext}`;\n" +
+    "  ensureDirBounded(dirname(withExt));",
+    "function outputPath(out: string | undefined, fallbackName: string, ext: string, overwrite: boolean): string {\n" +
+    "  const p = `/out/${expandPath(out ?? fallbackName)}`;\n" +
+    "  const withExt = p.toLowerCase().endsWith(ext) ? p : `${p}${ext}`;\n" +
+    "  mkdirSync(\"/out\", { recursive: true });",
+    "packing-list outputPath target");
+  src = must(src,
+    "      throw new Error(`${withExt} already exists and nothing was written. Pass overwrite: true to replace it, or give a different out_path.`);",
+    "      throw new Error(`a file named ${withExt.slice(5)} was already produced in this request and nothing was written. Pass overwrite: true to replace it, or give a different out_path.`);",
+    "packing-list outputPath occupied message");
+  src = must(src,
+    'description: "The packing slip as plain text on every tier: cartons, contents, weights and a signature line, and no prices anywhere. Pro also writes it to out_path as a .txt file. Refuses a URL and refuses to overwrite unless told to.",',
+    'description: "The packing slip as plain text on every tier: cartons, contents, weights and a signature line, and no prices anywhere. Pro also gets it back as a .txt download link valid for one hour, named by out_path; an existing name is refused unless told to overwrite.",',
+    "packing-list packing_slip description");
+  src = must(src,
+    'out_path: str("out_path", 1000).optional().describe("Where to write the .txt file. Pro only. Omit to get the slip back as text, which every tier can do"),',
+    'out_path: str("out_path", 1000).optional().describe("Name for the downloaded .txt file, e.g. order-4471-slip. Pro only. Omit to get the slip back as text, which every tier can do; the file comes back as a download link valid for one hour"),',
+    "packing-list out_path description");
+  src = must(src,
+    "pro_note: `Pass out_path to write this to a .txt file. ${gate.upgradeText(\"Writing the packing slip to a file\", \"packing_slip\")}`",
+    "pro_note: `Pass out_path to get this slip back as a .txt download link valid for one hour. ${gate.upgradeText(\"Writing the packing slip to a file\", \"packing_slip\")}`",
+    "packing-list packing_slip pro_note");
+  src = must(src,
+    '      writes: [{ store: "packing-list", dir: dataDir(), files: ["packing-lists.json", "counter.json"] }],',
+    '      writes: [{ store: "packing-list", dir: "not a directory on this endpoint: the packing lists are one document held " +\n' +
+    '        "per token, and a slip written with out_path is a download link rather than a file",\n' +
+    '        files: ["packing-lists.json", "counter.json"] }],',
+    "packing-list contract resource writes dir");
+  src = must(src,
+    'description: "The four statuses and the legal moves, how a gross and a chargeable weight are built, what a shortfall state means, the free-tier limits and the one directory this server writes.",',
+    'description: "The four statuses and the legal moves, how a gross and a chargeable weight are built, what a shortfall state means, the free-tier limits and the one document this server writes.",',
+    "packing-list contract resource description");
+  return src;
+}
+
+/**
+ * delivery-schedule. No tool writes a file and no path argument exists:
+ * delivery_schedule_document returns the document INLINE and milestone_payload returns
+ * invoice_create/quote_create ARGUMENTS, so there is nothing to publish and nothing to
+ * reduce to a name - asserted rather than assumed, so a later stdio release that grows a
+ * path argument fails this build instead of shipping a path. What moves is the D-R60
+ * species (the deliveryschedule://contract resource reported dataDir(), the worker's
+ * virtual homedir) and two sender notes that named a local install rather than the
+ * caller's own /mcp/invoice endpoint. store.ts needs no patch: schedules.json and
+ * counter.json are one document per token under the homedir shim, written tmp + rename,
+ * and readJsonFile comes from the vendored timezone engine.
+ */
+function patchDeliveryScheduleIndex(src) {
+  if (/expandPath|out_path/.test(src)) {
+    throw new Error("delivery-schedule/src/index.ts now carries a path argument; patchDeliveryScheduleIndex must reduce it to a bare document name");
+  }
+  src = must(src,
+    '      writes: [{ store: "delivery-schedule", dir: dataDir(), files: ["schedules.json", "counter.json"] }],',
+    '      writes: [{ store: "delivery-schedule", dir: "not a directory on this endpoint: the schedules are one document held " +\n' +
+    '        "per token, and the schedule document comes back inline - delivery_schedule_document writes nothing",\n' +
+    '        files: ["schedules.json", "counter.json"] }],',
+    "delivery-schedule contract resource writes dir");
+  src = must(src,
+    'description: "The four stored statuses and the legal moves, how lateness is derived from as_of, the two payload scales, the free-tier limits and the one directory this server writes.",',
+    'description: "The four stored statuses and the legal moves, how lateness is derived from as_of, the two payload scales, the free-tier limits and the one document this server writes.",',
+    "delivery-schedule contract resource description");
+  src = must(src,
+    'Run business_set {name, address} in the invoice server once.',
+    'Run business_set {name, address} on your https://mcp.zovo.one/mcp/invoice endpoint once.',
+    "delivery-schedule document profile note");
+  src = must(src,
+    'Run business_set {default_tax_rate} in the invoice server, or pass tax_rate.',
+    'Run business_set {default_tax_rate} on your https://mcp.zovo.one/mcp/invoice endpoint, or pass tax_rate.',
+    "delivery-schedule milestone profile note");
+  return src;
+}
+
 const EXTRA_IMPORTS = {
   spreadsheet: ['import { registerSheetLoad } from "../../shims/sheet-load.js";'],
   timezone: ['import { publishFile } from "../../shims/fs.js";'],
@@ -3072,6 +3315,11 @@ const EXTRA_IMPORTS = {
   // Buffer.byteLength measures the renderings and is not imported anywhere in the stdio
   // source; the fs shim is what publishes the rendered documents, on the rename.
   "bill-of-sale": ['import { Buffer } from "node:buffer";'],
+  // Buffer.byteLength reports the report's byte count in run_report and the slip's in
+  // packing_slip; neither stdio source imports it. Publishing happens in the fs shim, on
+  // writeAtomic's rename, so no publishFile import is needed here.
+  "checklist": ['import { Buffer } from "node:buffer";'],
+  "packing-list": ['import { Buffer } from "node:buffer";'],
 };
 
 /* -------------------------------------------------------------------- build */
@@ -3143,6 +3391,9 @@ for (const [name, files] of Object.entries(SERVERS)) {
     if (name === "change-order") src = patchChangeOrderIndex(src);
     if (name === "bill-of-sale") src = patchBillOfSaleIndex(src);
     if (name === "dunning-letters") src = patchDunningIndex(src);
+    if (name === "checklist") src = patchChecklistIndex(src);
+    if (name === "packing-list") src = patchPackingListIndex(src);
+    if (name === "delivery-schedule") src = patchDeliveryScheduleIndex(src);
     // 1. hoist the imports
     const imports = [...(EXTRA_IMPORTS[name] ?? [])];
     src = src.replace(IMPORT_RE, (m) => {
@@ -3246,6 +3497,22 @@ const LIB_RESOLUTIONS = {
   // either the corrupt-store quarantine that keeps an unreadable register from reading as
   // an empty one or the money formatting on the letters themselves.
   "dunning-letters": ["asset-register", "timezone"],
+  // Two, and only ONE of them (quotes) is reachable from index.ts: store.ts imports the
+  // timezone engine's readJsonFile, so an index-only check would have passed a build that
+  // could not resolve the corrupt-store quarantine that keeps an unreadable board from
+  // reading as no checklists and no runs.
+  "checklist": ["quotes", "timezone"],
+  // Two, and only ONE of them (quotes) is reachable from index.ts: store.ts imports the
+  // timezone engine's readJsonFile, so an index-only check would have passed a build that
+  // could not resolve the corrupt-store quarantine that keeps an unreadable register from
+  // reading as no packing lists.
+  "packing-list": ["quotes", "timezone"],
+  // Three, and TWO of them (invoice and quotes) are reachable from index.ts: store.ts
+  // imports the timezone engine's readJsonFile, so an index-only check would have passed
+  // a build that could not resolve the corrupt-store quarantine that keeps an unreadable
+  // register from reporting no schedules - and every late_report on an empty register
+  // answering "nothing is late".
+  "delivery-schedule": ["invoice", "quotes", "timezone"],
 };
 for (const [name, deps] of Object.entries(LIB_RESOLUTIONS)) {
   const src = SERVERS[name].map((f) => readFileSync(join(OUT, name, f), "utf8")).join("\n");

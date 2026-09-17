@@ -3,7 +3,7 @@
 <!-- gen:badge -->
 ![License](https://img.shields.io/badge/license-MIT-blue)
 ![MCP Registry](https://img.shields.io/badge/MCP%20registry-listed-brightgreen)
-![Release](https://img.shields.io/badge/release-v0.21.0-informational)
+![Release](https://img.shields.io/badge/release-v0.22.0-informational)
 <!-- /gen:badge -->
 
 Practical Model Context Protocol servers for people who work inside Claude, Cursor and other MCP clients.
@@ -11,7 +11,7 @@ Every server runs locally over stdio, keeps all data on your machine, and has a 
 Pro unlocks the limits for a one-time payment: $19 per server or $39 for the bundle, lifetime.
 
 <!-- gen:counts -->
-37 servers plus the office-suite aggregator, 34 of them also reachable as a hosted endpoint with no install.
+41 servers plus the office-suite aggregator, 41 of them also reachable as a hosted endpoint with no install.
 <!-- /gen:counts -->
 
 <!-- gen:install -->
@@ -55,6 +55,8 @@ returns 404 today. The commands below are written for the day it is published; u
 | [mcp-invoice](servers/invoice/README.md) | ![invoice](assets/demo-invoice.gif) | Numbered invoices with tax lines, rendered to a professional PDF. | `invoice.mcpb` |
 | [mcp-job-card](servers/job-card/README.md) | ![job-card](assets/demo-job-card.gif) | One card per job: hours and materials logged against it, a status machine from open to invoiced, and the printed card for client sign-off. | `job-card.mcpb` |
 | [mcp-kanban](servers/kanban/README.md) | ![kanban](assets/demo-kanban.gif) | A task board per project that hands off to the time tracker. | `kanban.mcpb` |
+| [mcp-maintenance-log](servers/maintenance-log/README.md) |  | Equipment maintenance log: assets, service entries with costs, and a due report computed from stored dates. | `maintenance-log.mcpb` |
+| [mcp-mileage-log](servers/mileage-log/README.md) |  | Mileage log for deductible driving: trips, effective-dated rates, summaries and CSV export. | `mileage-log.mcpb` |
 | [mcp-packing-list](servers/packing-list/README.md) | ![packing-list](assets/demo-packing-list.gif) | Packing slips that carry no prices: what is in each carton, what it weighs, and what is still to pack. | `packing-list.mcpb` |
 | [mcp-pdf](servers/pdf/README.md) | ![pdf](assets/demo-pdf.gif) | Merge, split, stamp and read PDFs, pure JavaScript. | `pdf.mcpb` |
 | [mcp-per-diem](servers/per-diem/README.md) | ![per-diem](assets/demo-per-diem.gif) | Statutory travel allowances on the rate tables the tax authorities publish, and the trips you priced with them. | `per-diem.mcpb` |
@@ -63,13 +65,15 @@ returns 404 today. The commands below are written for the day it is published; u
 | [mcp-quotes](servers/quotes/README.md) | ![quotes](assets/demo-quotes.gif) | Priced, VAT-correct quotes from chat, and the yes turns into an invoice. | `quotes.mcpb` |
 | [mcp-recurring](servers/recurring/README.md) | ![recurring](assets/demo-recurring.gif) | Scheduled invoices, generated into your invoice book with PDFs. | `recurring.mcpb` |
 | [mcp-resume](servers/resume/README.md) | ![resume](assets/demo-resume.gif) | Resumes and cover letters as Word files from one profile, never invented. | `resume.mcpb` |
+| [mcp-service-agreement](servers/service-agreement/README.md) |  | Service agreements for freelancers: scope, deliverables, rate, termination and liability, rendered for signing. | `service-agreement.mcpb` |
 | [mcp-spreadsheet](servers/spreadsheet/README.md) | ![spreadsheet](assets/demo-spreadsheet.gif) | Read, query, edit and convert xlsx and csv files safely. | `spreadsheet.mcpb` |
 | [mcp-statement-of-account](servers/statement-of-account/README.md) | ![statement-of-account](assets/demo-statement-of-account.gif) | The one document that answers what a client actually owes you, aged as at any date, with the chaser drafted. | `statement-of-account.mcpb` |
+| [mcp-supplier-list](servers/supplier-list/README.md) |  | A supplier directory that does not rot: contacts, terms, lead times, and when each record was last reviewed. | `supplier-list.mcpb` |
 | [mcp-time-tracker](servers/time-tracker/README.md) | ![time-tracker](assets/demo-time-tracker.gif) | Track billable time without leaving the chat. | `time-tracker.mcpb` |
 | [mcp-timezone](servers/timezone/README.md) | ![timezone](assets/demo-timezone.gif) | Find meeting slots inside everyone's working hours. | `timezone.mcpb` |
 | [mcp-work-order](servers/work-order/README.md) | ![work-order](assets/demo-work-order.gif) | Job orders for trades and field work, priced the way the invoice will be. | `work-order.mcpb` |
 | [mcp-zip](servers/zip/README.md) | ![zip](assets/demo-zip.gif) | Make a zip, look inside one, and unpack one, entirely on your machine. | `zip.mcpb` |
-| [mcp-office-suite](servers/office-suite/README.md) | ![office-suite](assets/demo-office-suite.gif) | One install that exposes every tool of all 37 servers, 352 of them. | `office-suite.mcpb` |
+| [mcp-office-suite](servers/office-suite/README.md) | ![office-suite](assets/demo-office-suite.gif) | One install that exposes every tool of all 41 servers, 380 of them. | `office-suite.mcpb` |
 <!-- /gen:table -->
 
 Or clone and build: `git clone https://github.com/theluckystrike/mcp-servers.git && cd mcp-servers`,

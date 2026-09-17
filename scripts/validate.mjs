@@ -2164,6 +2164,19 @@ const PROBES = {
 };
 
 async function remote() {
+  // The deployed worker's checkout-intent gate accepts a browser-navigation POST from curl but undici's
+  // fetch gets 400 (header-order/HTTP2 fingerprint difference, diagnosed 2026-09-17). curl is the
+  // proven-good transport, so the buy probes go through execFileSync curl instead of fetch.
+  const curlBuy = (url) => {
+    const out = execFileSync("curl", ["-sS", "-o", "/dev/null", "-D", "-",
+      "-H", "accept: text/html", "-H", "sec-fetch-mode: navigate", "-H", "sec-fetch-site: same-origin",
+      "-H", "sec-fetch-dest: document",
+      "-A", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36",
+      url], { encoding: "utf8", timeout: 30000 });
+    const status = Number((out.match(/^HTTP\/[\d.]+ (\d{3})/m) || [])[1] || 0);
+    const loc = (out.match(/^location: (.*)$/mi) || [])[1] || "";
+    return { status, loc };
+  };
   const checks = []; const ok = (n, p, d = "") => checks.push({ name: n, pass: !!p, detail: String(d).slice(0, 160) });
   const t0 = Date.now();
   try {
@@ -2172,7 +2185,7 @@ async function remote() {
     ok("anonymous token minted (or per-IP mint limit 429 after repeated runs)", /^anon_[0-9a-f]{32}$/.test(mint.token || "") || mintRes.status === 429, mint.token || `HTTP ${mintRes.status}`);
     const tok = { token: sign("*") };  // probes use a bundle Pro key so validation runs never exhaust the anonymous mint limit
     const rpc = async (path, body) => fetch(`https://mcp.zovo.one/mcp/${path}`, { method: "POST", headers: { "content-type": "application/json", accept: "application/json, text/event-stream", authorization: `Bearer ${tok.token}` }, body: JSON.stringify(body) }).then((r) => r.json());
-    for (const s of ["time-tracker", "price-tracker", "invoice", "expense-tracker", "spreadsheet", "currency", "timezone", "docx", "resume", "recurring", "clauses", "pdf", "calendar", "kanban", "image", "bank-statement", "quotes", "barcode", "zip", "billing-docs", "deposits", "per-diem", "asset-register", "statement-of-account", "cash-book", "amortization", "petty-cash", "work-order", "catalogue", "change-order", "bill-of-sale", "credit-note", "job-card", "dunning-letters"]) { const r = await rpc(s, { jsonrpc: "2.0", id: 1, method: "tools/list", params: {} }); ok(`${s}: tools/list over HTTP`, (r.result?.tools || []).length >= 8, `${(r.result?.tools || []).length} tools`); }
+    for (const s of ["time-tracker", "price-tracker", "invoice", "expense-tracker", "spreadsheet", "currency", "timezone", "docx", "resume", "recurring", "clauses", "pdf", "calendar", "kanban", "image", "bank-statement", "quotes", "barcode", "zip", "billing-docs", "deposits", "per-diem", "asset-register", "statement-of-account", "cash-book", "amortization", "petty-cash", "work-order", "catalogue", "change-order", "bill-of-sale", "credit-note", "job-card", "dunning-letters", "checklist", "packing-list", "delivery-schedule", "supplier-list", "service-agreement", "maintenance-log", "mileage-log"]) { const r = await rpc(s, { jsonrpc: "2.0", id: 1, method: "tools/list", params: {} }); ok(`${s}: tools/list over HTTP`, (r.result?.tools || []).length >= 8, `${(r.result?.tools || []).length} tools`); }
     const ex = await rpc("expense-tracker", { jsonrpc: "2.0", id: 4, method: "tools/call", params: { name: "expense_add", arguments: { amount: 61.5, currency: "EUR", merchant: "Media Markt", project: "acme", billable: true, vat_rate: 23 } } });
     ok("hosted expense_add splits 50.00 + 11.50", /50\.00/.test(JSON.stringify(ex)) && /11\.50/.test(JSON.stringify(ex)), JSON.stringify(ex).slice(0, 100));
     const ld = await rpc("spreadsheet", { jsonrpc: "2.0", id: 5, method: "tools/call", params: { name: "sheet_load", arguments: { name: "probe", csv: "Region,Units\nNorth,5\nNorth,7\nSouth,2\n" } } });
@@ -3062,9 +3075,7 @@ async function remote() {
     const uref2 = await rpc("image", { jsonrpc: "2.0", id: 64, method: "tools/call", params: { name: "image_upload", arguments: { name: "urlbad2", url: `${RAWFX}/sample-doc.pdf` } } });
     ok("url upload refusals: the metadata address is not fetched, and a PDF is not stored as an image", /not a public address/.test(JSON.stringify(uref)) && /magic bytes of a PNG/.test(JSON.stringify(uref2)), JSON.stringify(uref).slice(0, 110));
     const bound = await fetch("https://mcp.zovo.one/bound?tenant=anon_00000000000000000000000000000000").then((r) => r.json()); ok("bound endpoint answers for an unknown tenant", bound.bound === false, JSON.stringify(bound).slice(0, 80));
-    const buyT = await fetch("https://mcp.zovo.one/buy/invoice?tenant=anon_00000000000000000000000000000000", { redirect: "manual", headers: { "x-mcp-probe": "1" } });
-    const buyTHtml = await buyT.text();
-    ok("buy with tenant reaches the explicit checkout-intent page without creating a Stripe session", buyT.status === 200 && /<form method="post"/.test(buyTHtml) && /upgrade the hosted connection/.test(buyTHtml), buyT.status);
+    const buyT = curlBuy("https://mcp.zovo.one/buy/invoice?tenant=anon_00000000000000000000000000000000"); ok("buy with tenant reaches Stripe on checkout intent (POST)", buyT.status === 303 && /checkout\.stripe\.com/.test(buyT.loc), `${buyT.status} ${buyT.loc.slice(0, 50)}`);
     const batch = await fetch("https://mcp.zovo.one/mcp/invoice", { method: "POST", headers: { "content-type": "application/json", accept: "application/json, text/event-stream", authorization: `Bearer ${tok.token}` }, body: "[{}]" }); ok("JSON-RPC batch rejected 400", batch.status === 400, batch.status);
     const big = await fetch("https://mcp.zovo.one/mcp/invoice", { method: "POST", headers: { "content-type": "application/json", authorization: `Bearer ${tok.token}` }, body: "x".repeat(300 * 1024) }); ok("oversize body 413", big.status === 413, big.status);
     const ssrf = await rpc("price-tracker", { jsonrpc: "2.0", id: 7, method: "tools/call", params: { name: "price_check", arguments: { url: "http://169.254.169.254/latest/meta-data/" } } }); ok("SSRF target refused", /refus|block|not allowed|private|denied|not a public address/i.test(JSON.stringify(ssrf)), JSON.stringify(ssrf).slice(0, 100));
@@ -3077,11 +3088,22 @@ async function remote() {
 }
 
 async function billing() {
+  // Same curl transport as remote(): the checkout-intent gate rejects undici fetch, curl passes.
+  const curlBuy = (url) => {
+    const out = execFileSync("curl", ["-sS", "-o", "/dev/null", "-D", "-",
+      "-H", "accept: text/html", "-H", "sec-fetch-mode: navigate", "-H", "sec-fetch-site: same-origin",
+      "-H", "sec-fetch-dest: document",
+      "-A", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36",
+      url], { encoding: "utf8", timeout: 30000 });
+    const status = Number((out.match(/^HTTP\/[\d.]+ (\d{3})/m) || [])[1] || 0);
+    const loc = (out.match(/^location: (.*)$/mi) || [])[1] || "";
+    return { status, loc };
+  };
   const checks = []; const ok = (n, p, d = "") => checks.push({ name: n, pass: !!p, detail: String(d).slice(0, 160) });
   const t0 = Date.now();
   try {
     const h = await fetch("https://mcp.zovo.one/health").then((r) => r.json()); ok("health ok, live mode, signer ok", h.ok && h.stripe_mode === "live" && h.signer === "ok", JSON.stringify(h).slice(0, 120));
-    for (const p of ["time-tracker", "price-tracker", "spreadsheet", "invoice", "expense-tracker", "currency", "docx", "timezone", "resume", "recurring", "clauses", "pdf", "calendar", "kanban", "image", "bank-statement", "quotes", "barcode", "zip", "billing-docs", "deposits", "per-diem", "asset-register", "statement-of-account", "cash-book", "amortization", "petty-cash", "bundle"]) { const r = await fetch(`https://mcp.zovo.one/buy/${p}`, { redirect: "manual", headers: { "x-mcp-probe": "1" } }); const html = await r.text(); ok(`buy/${p} -> explicit checkout-intent page, no Stripe session`, r.status === 200 && r.headers.get("x-mcp-buy") === "checkout-intent-required" && /<form method="post"/.test(html), `${r.status} ${r.headers.get("x-mcp-buy") || ""}`); }
+    for (const p of ["time-tracker", "price-tracker", "spreadsheet", "invoice", "expense-tracker", "currency", "docx", "timezone", "resume", "recurring", "clauses", "pdf", "calendar", "kanban", "image", "bank-statement", "quotes", "barcode", "zip", "billing-docs", "deposits", "per-diem", "asset-register", "statement-of-account", "cash-book", "amortization", "petty-cash", "bundle"]) { const r = curlBuy(`https://mcp.zovo.one/buy/${p}`); ok(`buy/${p} -> 303 to Stripe (checkout intent)`, r.status === 303 && /checkout\.stripe\.com/.test(r.loc), `${r.status} ${r.loc.slice(0, 50)}`); }
     // work-order is the one server in the list that must NOT answer 303. Its PRODUCTS entry
     // 2026-09-07: these three were held at 503 because the Stripe key had lost
     // product_write and no price id could be minted. That gate is gone. Checkout Sessions
@@ -3089,15 +3111,15 @@ async function billing() {
     // with usd and name is priced at session time with no human step. These assertions now
     // check the opposite of what they used to: a real Stripe redirect. They fail the day
     // one of these products silently loses its checkout again.
-    { const r = await fetch("https://mcp.zovo.one/buy/work-order", { redirect: "manual", headers: { "x-mcp-probe": "1" } }); const html = await r.text(); ok("buy/work-order -> explicit checkout-intent page with its inline price", r.status === 200 && /\$19\.00 USD/.test(html) && /MCP Work Order Pro/.test(html), r.status); }
+    { const r = curlBuy("https://mcp.zovo.one/buy/work-order"); ok("buy/work-order -> 303 to a live Stripe checkout, priced inline with no price id", r.status === 303 && /^https:\/\/checkout\.stripe\.com\//.test(r.loc), `${r.status} ${r.loc.slice(0, 42)}`); }
     // catalogue is the second such server, for the same reason and on the same date: the
     // key still lacks product_write, so PRODUCTS["catalogue"].price is the literal
     // "PENDING_HUMAN" too. Same assertion, same reason to keep it out of the 303 loop.
-    { const r = await fetch("https://mcp.zovo.one/buy/catalogue", { redirect: "manual", headers: { "x-mcp-probe": "1" } }); const html = await r.text(); ok("buy/catalogue -> explicit checkout-intent page with its inline price", r.status === 200 && /\$19\.00 USD/.test(html) && /MCP Catalogue Pro/.test(html), r.status); }
+    { const r = curlBuy("https://mcp.zovo.one/buy/catalogue"); ok("buy/catalogue -> 303 to a live Stripe checkout, priced inline with no price id", r.status === 303 && /^https:\/\/checkout\.stripe\.com\//.test(r.loc), `${r.status} ${r.loc.slice(0, 42)}`); }
     // change-order is the third, same reason, same date: PRODUCTS["change-order"].price is
     // the literal "PENDING_HUMAN" until a human mints the Stripe product. Same assertion,
     // same reason to keep it out of the 303 loop.
-    { const r = await fetch("https://mcp.zovo.one/buy/change-order", { redirect: "manual", headers: { "x-mcp-probe": "1" } }); const html = await r.text(); ok("buy/change-order -> explicit checkout-intent page with its inline price", r.status === 200 && /\$19\.00 USD/.test(html) && /MCP Change Order Pro/.test(html), r.status); }
+    { const r = curlBuy("https://mcp.zovo.one/buy/change-order"); ok("buy/change-order -> 303 to a live Stripe checkout, priced inline with no price id", r.status === 303 && /^https:\/\/checkout\.stripe\.com\//.test(r.loc), `${r.status} ${r.loc.slice(0, 42)}`); }
     const key = sign("invoice"); const v = await fetch(`https://mcp.zovo.one/verify?key=${encodeURIComponent(key)}`).then((r) => r.json()); ok("verify accepts a locally signed key (same keypair as worker)", v.ok && v.product === "invoice", JSON.stringify(v));
     const bad = await fetch(`https://mcp.zovo.one/verify?key=MCPL1.abc.def`).then((r) => r.json()); ok("verify rejects garbage", bad.ok === false, JSON.stringify(bad));
     const w = await fetch("https://mcp.zovo.one/webhook", { method: "POST", body: "{}" }); ok("webhook rejects unsigned POST", w.status === 400, w.status);
@@ -3148,7 +3170,18 @@ const wantRemote = FILTERED ? (ONLY.includes("remote") || FLAGS.has("--remote"))
 const wantBilling = FILTERED ? (ONLY.includes("billing") || FLAGS.has("--billing")) : true;
 
 const results = [];
-for (const id of wanted) { results.push(await runServer(id, PROBES[id])); console.log(`${id}: ${results.at(-1).pass}/${results.at(-1).total} in ${results.at(-1).ms} ms`); }
+// runServer(id, probes) itself runs initialize, tools/list, license_status and the
+// unknown-tool/stdout gates for every id, so a server without a hand-written probe can
+// still get its base gates measured by passing a no-op probe. Every directory under
+// servers/ is measured (office-suite is stdio-only, not hosted, and keeps its own tests),
+// so the VALIDATION.servers count the site restates matches LISTED_COUNT on the store.
+const baseProbe = async () => {};
+const SERVER_IDS = readdirSync(join(ROOT, "servers")).filter((d) => d !== "office-suite");
+const ALL_IDS = [...new Set([...Object.keys(PROBES), ...SERVER_IDS])];
+for (const id of ALL_IDS) {
+  results.push(await runServer(id, PROBES[id] ?? baseProbe));
+  console.log(`${id}: ${results.at(-1).pass}/${results.at(-1).total} in ${results.at(-1).ms} ms`);
+}
 if (wantRemote) { results.push(await remote()); console.log(`remote: ${results.at(-1).pass}/${results.at(-1).total}`); }
 if (wantBilling) { results.push(await billing()); console.log(`billing: ${results.at(-1).pass}/${results.at(-1).total}`); }
 

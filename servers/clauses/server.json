@@ -1,31 +1,45 @@
 {
-  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
-  "name": "io.github.theluckystrike/contract-clause-library-proposal-template-docx",
-  "description": "A personal library of reusable contract and proposal clauses, assembled into a real Word .docx.",
-  "version": "0.21.0",
-  "repository": {
-    "url": "https://github.com/theluckystrike/mcp-servers",
-    "source": "github",
-    "subfolder": "servers/clauses"
-  },
-  "websiteUrl": "https://mcp.zovo.one/s/clauses",
-  "packages": [
+ "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+ "name": "io.github.theluckystrike/contract-clause-library-proposal-template-docx",
+ "description": "A personal library of reusable contract and proposal clauses, assembled into a real Word .docx.",
+ "version": "0.22.0",
+ "repository": {
+  "url": "https://github.com/theluckystrike/mcp-servers",
+  "source": "github",
+  "subfolder": "servers/clauses"
+ },
+ "websiteUrl": "https://mcp.zovo.one/s/clauses",
+ "packages": [
+  {
+   "registryType": "mcpb",
+   "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.22.0/clauses.mcpb",
+   "version": "0.22.0",
+   "transport": {
+    "type": "stdio"
+   },
+   "environmentVariables": [
     {
-      "registryType": "npm",
-      "registryBaseUrl": "https://registry.npmjs.org",
-      "identifier": "@theluckystrike/mcp-clauses",
-      "version": "0.21.0",
-      "transport": {
-        "type": "stdio"
-      },
-      "environmentVariables": [
-        {
-          "name": "MCP_LICENSE_KEY",
-          "description": "Optional Pro license key (MCPL1....). Verified offline.",
-          "isRequired": false,
-          "isSecret": true
-        }
-      ]
+     "name": "MCP_LICENSE_KEY",
+     "description": "Optional Pro license key (MCPL1....). Verified offline.",
+     "isRequired": false,
+     "isSecret": true
     }
-  ]
+   ],
+   "fileSha256": "7bf25060e28940be217a466529fa7f984a5fde51044b4b25b5bc22fc420b8d54"
+  }
+ ],
+ "remotes": [
+  {
+   "type": "streamable-http",
+   "url": "https://mcp.zovo.one/mcp/clauses",
+   "headers": [
+    {
+     "name": "Authorization",
+     "description": "Bearer <Pro license key or anonymous token from GET https://mcp.zovo.one/mcp/token>",
+     "isRequired": true,
+     "isSecret": true
+    }
+   ]
+  }
+ ]
 }

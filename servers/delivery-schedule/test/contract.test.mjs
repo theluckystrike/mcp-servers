@@ -2,8 +2,8 @@
 //
 // Asserts the invariants of servers/delivery-schedule/SPEC.md that a test can check
 // without judgement: one version number across package.json, src/version.ts, serverInfo
-// and all four registry manifests; the remotes rule (this server is stdio only and must
-// advertise no remote until it is hosted); JSON-RPC-only stdout; tool-description hygiene;
+// and all four registry manifests; the remotes rule (the mcpb manifest carries
+// remotes.json now that the hosted route exists, the stdio-only names carry none); JSON-RPC-only stdout; tool-description hygiene;
 // the free/Pro tier switch; that nothing outside this server's own directory is written;
 // and that the invoice engine is imported rather than restated. It never asserts a number
 // a human chose; those live in test/unit.test.mjs.

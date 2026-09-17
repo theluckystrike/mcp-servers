@@ -1,0 +1,278 @@
+{
+ "updated_at": "2026-09-12T13:01:31Z",
+ "agent": "registry-variants, loop 35 wave A",
+ "api_base": "https://registry.modelcontextprotocol.io/v0.1",
+ "controls": {
+  "positive": {
+   "command": "curl -sS -o /dev/null -w '%{http_code}' https://registry.modelcontextprotocol.io/v0.1/servers/io.github.theluckystrike%2Finvoices-invoicing/versions/latest",
+   "result": "200 (pre-existing variant, proves 200 path works)"
+  },
+  "negative": {
+   "command": "curl -sS -o /dev/null -w '%{http_code}' https://registry.modelcontextprotocol.io/v0.1/servers/io.github.theluckystrike%2Fdefinitely-not-a-real-server-zzz35/versions/latest",
+   "result": "404 (proves 404 means free, not a broken probe)"
+  },
+  "search_control": {
+   "command": "curl -sS 'https://registry.modelcontextprotocol.io/v0.1/servers?search=service&limit=100' | python3 -c '...len(servers)'",
+   "result": "100 rows (search API live and paginating)"
+  }
+ },
+ "availability_probes_before_publish": {
+  "command": "curl -sS -o /dev/null -w '%{http_code}' https://registry.modelcontextprotocol.io/v0.1/servers/io.github.theluckystrike%2F<slug>/versions/latest",
+  "meaning": "404 = name free under our namespace",
+  "results": {
+   "invoice-generator": 404,
+   "freelance-invoice": 404,
+   "merge-pdf": 404,
+   "split-pdf": 404,
+   "time-tracking": 404,
+   "timesheets": 404,
+   "business-expenses": 404,
+   "mileage-tracker": 404,
+   "spreadsheet-builder": 404,
+   "spreadsheet-generator": 404,
+   "currency-exchange": 404,
+   "exchange-rates": 404,
+   "quote-template": 404,
+   "estimate-template": 404,
+   "bank-statement-pdf": 404,
+   "categorize-transactions": 404
+  }
+ },
+ "token_contest_before_publish": {
+  "command": "curl -sS 'https://registry.modelcontextprotocol.io/v0.1/servers?search=<token>&limit=100' | count rows",
+  "results_2026_09_12_pre_publish": {
+   "invoice-generator": {
+    "rows": 5,
+    "ours": 0,
+    "incumbents": [
+     "io.github.CSOAI-ORG/invoice-generator-ai-mcp",
+     "io.github.amehiny/invoice-generator"
+    ]
+   },
+   "freelance-invoice": {
+    "rows": 0,
+    "ours": 0
+   },
+   "merge-pdf": {
+    "rows": 0,
+    "ours": 0
+   },
+   "split-pdf": {
+    "rows": 0,
+    "ours": 0
+   },
+   "time-tracking": {
+    "rows": 1,
+    "ours": 0,
+    "incumbents": [
+     "ai.timix/time-tracking"
+    ]
+   },
+   "timesheets": {
+    "rows": 0,
+    "ours": 0
+   },
+   "business-expenses": {
+    "rows": 0,
+    "ours": 0
+   },
+   "mileage-tracker": {
+    "rows": 0,
+    "ours": 0
+   },
+   "spreadsheet-builder": {
+    "rows": 0,
+    "ours": 0
+   },
+   "spreadsheet-generator": {
+    "rows": 0,
+    "ours": 0
+   },
+   "currency-exchange": {
+    "rows": 1,
+    "ours": 0,
+    "incumbents": [
+     "com.datakoot/fx-currency-exchange-rates"
+    ]
+   },
+   "exchange-rates": {
+    "rows": 11,
+    "ours": 0,
+    "incumbents": [
+     "com.datakoot/fx-currency-exchange-rates",
+     "io.github.cyanheads/exchange-rates-mcp-server (10 version rows)",
+     "org.globalexchangerates/exchange-rates"
+    ]
+   },
+   "quote-template": {
+    "rows": 0,
+    "ours": 0
+   },
+   "estimate-template": {
+    "rows": 0,
+    "ours": 0
+   },
+   "bank-statement-pdf": {
+    "rows": 0,
+    "ours": 0
+   },
+   "categorize-transactions": {
+    "rows": 0,
+    "ours": 0
+   }
+  }
+ },
+ "publish": {
+  "command": "mcp-publisher login github --token \"$(gh auth token)\" && mcp-publisher publish data/variants_stage/<slug>.json",
+  "manifest_shape": "stdio-only mcpb package, version 0.21.0, NO remotes[] (the registry rejects a second row reusing the parent's remote URL: 400 'remote URL is already used', measured in NAMING_R2; trap 9 in CLAUDE.md)",
+  "results": {
+   "bank-statement-pdf": "OK",
+   "business-expenses": "OK",
+   "categorize-transactions": "OK",
+   "currency-exchange": "OK",
+   "estimate-template": "OK",
+   "exchange-rates": "OK",
+   "freelance-invoice": "OK",
+   "invoice-generator": "OK",
+   "merge-pdf": "OK",
+   "mileage-tracker": "OK",
+   "quote-template": "OK",
+   "split-pdf": "OK",
+   "spreadsheet-builder": "OK",
+   "spreadsheet-generator": "OK",
+   "time-tracking": "OK",
+   "timesheets": "OK"
+  }
+ },
+ "exact_get_verify_after_publish": {
+  "command": "curl -sS https://registry.modelcontextprotocol.io/v0.1/servers/io.github.theluckystrike%2F<slug>/versions/latest",
+  "results": {
+   "invoice-generator": "200 @ 0.21.0",
+   "freelance-invoice": "200 @ 0.21.0",
+   "merge-pdf": "200 @ 0.21.0",
+   "split-pdf": "200 @ 0.21.0",
+   "time-tracking": "200 @ 0.21.0",
+   "timesheets": "200 @ 0.21.0",
+   "business-expenses": "200 @ 0.21.0",
+   "mileage-tracker": "200 @ 0.21.0",
+   "spreadsheet-builder": "200 @ 0.21.0",
+   "spreadsheet-generator": "200 @ 0.21.0",
+   "currency-exchange": "200 @ 0.21.0",
+   "exchange-rates": "200 @ 0.21.0",
+   "quote-template": "200 @ 0.21.0",
+   "estimate-template": "200 @ 0.21.0",
+   "bank-statement-pdf": "200 @ 0.21.0",
+   "categorize-transactions": "200 @ 0.21.0"
+  }
+ },
+ "search_reprobe_after_publish_3min_lag": {
+  "command": "curl -sS 'https://registry.modelcontextprotocol.io/v0.1/servers?search=<token>&limit=100' | rank of io.github.theluckystrike/<token>",
+  "results": {
+   "invoice-generator": {
+    "rows": 6,
+    "rank": 6,
+    "p": 1.0
+   },
+   "freelance-invoice": {
+    "rows": 1,
+    "rank": 1,
+    "p": 1.0
+   },
+   "merge-pdf": {
+    "rows": 1,
+    "rank": 1,
+    "p": 1.0
+   },
+   "split-pdf": {
+    "rows": 1,
+    "rank": 1,
+    "p": 1.0
+   },
+   "time-tracking": {
+    "rows": 2,
+    "rank": 2,
+    "p": 1.0
+   },
+   "timesheets": {
+    "rows": 1,
+    "rank": 1,
+    "p": 1.0
+   },
+   "business-expenses": {
+    "rows": 1,
+    "rank": 1,
+    "p": 1.0
+   },
+   "mileage-tracker": {
+    "rows": 1,
+    "rank": 1,
+    "p": 1.0
+   },
+   "spreadsheet-builder": {
+    "rows": 1,
+    "rank": 1,
+    "p": 1.0
+   },
+   "spreadsheet-generator": {
+    "rows": 1,
+    "rank": 1,
+    "p": 1.0
+   },
+   "currency-exchange": {
+    "rows": 2,
+    "rank": 2,
+    "p": 1.0
+   },
+   "exchange-rates": {
+    "rows": 12,
+    "rank": 11,
+    "p": 0.909
+   },
+   "quote-template": {
+    "rows": 1,
+    "rank": 1,
+    "p": 1.0
+   },
+   "estimate-template": {
+    "rows": 1,
+    "rank": 1,
+    "p": 1.0
+   },
+   "bank-statement-pdf": {
+    "rows": 1,
+    "rank": 1,
+    "p": 1.0
+   },
+   "categorize-transactions": {
+    "rows": 1,
+    "rank": 1,
+    "p": 1.0
+   }
+  },
+  "p_formula": "min(1, 10/rank) per data/organic.json methodology"
+ },
+ "hosted_endpoint_verify": {
+  "note": "Published variants are stdio-only, so there is no variant hosted path to verify; the PARENT endpoints were verified instead (the infra wave C's hosted variants will alias onto).",
+  "commands": [
+   "curl -sS -X POST https://mcp.zovo.one/mcp/<parent> -H 'content-type: application/json' -H 'accept: application/json, text/event-stream' -d '<initialize>' -w '%{http_code}'",
+   "curl -sS -X POST https://mcp.zovo.one/mcp/invoice -d '<tools/call invoice_list, no token>' -w '%{http_code}'"
+  ],
+  "results": {
+   "initialize_200": [
+    "invoice",
+    "pdf",
+    "time-tracker",
+    "expense-tracker",
+    "spreadsheet",
+    "currency",
+    "quotes",
+    "bank-statement"
+   ],
+   "tools_call_no_token_401": [
+    "invoice"
+   ],
+   "alias_path_negative_control": "POST https://mcp.zovo.one/mcp/invoice-generator initialize -> 404 today (proves the wave-C worker route entry is genuinely required)"
+  }
+ },
+ "kpi_relevance": "16 tokens probed before/after: matched-to-us went 0/16 -> 16/16. The kpi.json 'Registry findable share' percentage itself is recomputed by the orchestrator (data/kpi.json is orchestrator-owned); on the 97-token NAMING_R4 set these 16 tokens are net-new, so adding them to the tracked set at these ranks (12 of 16 rank 1 of 1, worst 11 of 12) raises the mean."
+}

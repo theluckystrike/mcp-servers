@@ -49,6 +49,10 @@ export const PRODUCTS = {
   "credit-note": { desc: "Credit notes against an invoice or standalone: recipient, reason, line items with quantity, unit price and tax rate, and currency. Every note starts as a draft with a draft id no client sees; finalizing burns the final CN-YYYY-NNNN number in the issue date's year and freezes it, with the counter written before the record so a crash burns a number rather than reusing one, and the final series never has a gap. The line math is round half-up per line then sum, so the printed document reproduces on a calculator and a total can never drift from the printed lines. Renders are Markdown to paste into an email or a self-contained printable HTML page, and the summary totals what was credited per currency, reason and month.", free: "Free: 10 finalized credit notes, lifetime, with drafts, edits, deletion of drafts, listing, reading, rendering and the totals summary unlimited on every tier. Free renders carry a one-line footer.", pro: "Pro: unlimited finalized credit notes and renders without the footer line.", name: "MCP Credit Note Pro", usd: 19, pkg: "@theluckystrike/mcp-credit-note", bin: "mcp-credit-note", payload: "credit-note" },
   "job-card": { desc: "One card per job, the way the paper one on the dashboard works: client, site, what the job is, currency and scheduled date, then hours per worker at their rate and materials per item, each line rounded half-up to the cent once when it is logged so the running totals are sums of stored line values and can never drift. The status machine moves exactly one step at a time, open to in_progress to done to invoiced to archived, with every step dated in the card's history. Printing renders the card with a signature line for client sign-off, and the daily or weekly summary gives cards touched, hours per worker and value per currency, never mixed across currencies.", free: "Free: 10 active job cards, with entries, totals, printing and the summaries unlimited on every tier; a card stops counting the moment it is archived.", pro: "Pro: unlimited active job cards.", name: "MCP Job Card Pro", usd: 19, pkg: "@theluckystrike/mcp-job-card", bin: "mcp-job-card", payload: "job-card" },
   "dunning-letters": { desc: "Chase overdue invoices on an escalation ladder anchored to the due date: reminder 1, reminder 2 and the final notice at configurable gaps, so a letter sent late moves which stage is next and never moves the schedule. Letters go out strictly in order, the late fee is simple interest pro-rata on a 30-day month on what is outstanding the day the letter is written, and part payments lower the ask. letter_render produces Markdown or a self-contained printable HTML page, and nothing is emailed anywhere: the server writes the text and sending it is your act. The overdue list is worst first, the aging buckets the register, and chase_today answers what has to go out today.", free: "Free: 3 unpaid invoices chased at once, with all three letters in both formats, the aging, the chase list and payment recording on every tier; a paid invoice frees its slot.", pro: "Pro: unlimited concurrent chases.", name: "MCP Dunning Letters Pro", usd: 19, pkg: "@theluckystrike/mcp-dunning-letters", bin: "mcp-dunning-letters", payload: "dunning-letters" },
+  "supplier-list": { desc: "A supplier directory that does not rot: who you buy from, what they supply, who to contact and how, the payment terms, the lead time in days and notes, with the date each record was last reviewed on it. supplier_list reads the directory A to Z with a category filter and free-text search, supplier_update changes only the fields you pass, and supplier_due_review answers which records have gone stale, most overdue first, with a record never reviewed always due. A second record carrying a name already in the directory is refused, an ambiguous partial name is refused with the candidates, and the SUP number is never reissued. supplier_export hands the directory over as CSV or Markdown.", free: "Free: 10 suppliers, with adding, listing, reading, updating, removing, review stamps and CSV export unlimited on every tier; removing one frees its slot.", pro: "Pro: unlimited suppliers, Markdown export, and the due-review report.", name: "MCP Supplier List Pro", usd: 19, pkg: "@theluckystrike/mcp-supplier-list", bin: "mcp-supplier-list", payload: "supplier-list" },
+  "service-agreement": { desc: "Service agreements for freelancers, written before the work starts: the parties, the scope of services, the deliverables, the rate and payment terms, start and end dates, a termination notice period, a liability cap and the governing jurisdiction. agreement_create stores the agreement and returns it rendered as clean Markdown with a signature block, numbered SA-YYYY-NNNN. agreement_checklist lists the missing fields and flags one-sided gaps neutrally before you send it. The status machine moves draft to sent to signed to expired, one dated step at a time, and a built-in clause library covers IP assignment, confidentiality, late payment interest, kill fee and revision rounds. Every render carries the note that it is a template, not legal advice.", free: "Free: 3 active agreements, with reading, listing, the checklist and Markdown rendering unlimited on every tier; expiring a finished engagement frees its slot.", pro: "Pro: unlimited active agreements, the full clause texts with your variables filled in, and print-ready HTML rendering.", name: "MCP Service Agreement Pro", usd: 19, pkg: "@theluckystrike/mcp-service-agreement", bin: "mcp-service-agreement", payload: "service-agreement" },
+  "maintenance-log": { desc: "One register of the equipment you look after and the work done on it: asset_add records a machine with its serial or asset tag, location and currency, and maintenance_log records each service with the day, what was done, the cost in whole cents, the technician, and when the next service falls due as a date or an interval in days. maintenance_due answers what is overdue and by how many days and what falls due within the next N days, computed from the stored dates at the moment you ask, so it can never go stale. asset_history keeps the chronological log with total spend and spend per technician, and maintenance_export hands a date range over as CSV or a Markdown summary per asset.", free: "Free: 3 assets, with logging, the per-asset history and CSV export unlimited on every tier; removing an asset frees its slot.", pro: "Pro: unlimited assets, the due report, and the Markdown summaries.", name: "MCP Maintenance Log Pro", usd: 19, pkg: "@theluckystrike/mcp-maintenance-log", bin: "mcp-maintenance-log", payload: "maintenance-log" },
+  "mileage-log": { desc: "The mileage log freelancers need at tax time, kept the moment the drive happens: trip_add logs the date, from and to, the distance in miles or km, the purpose and the category, and rate_set records what one mile or km is worth per category and jurisdiction as an effective-dated series, so each trip earns the rate in force on the day it was driven, rounded half-up to the cent. mileage_summary prices a date range per category with totals per currency, trips with no applicable rate listed with the reason and never silently dropped, and mileage_export is the CSV for the accountant, refusing while any non-personal trip is unpriced. Miles and km are never added together, and no rate ships with the server: the figures are yours to verify, and none of it is tax advice.", free: "Free: 20 trips per calendar month, counted on the month of the trip date, so reconstructing last year's log costs nothing from this month; the list, the summary and one rate per jurisdiction and category included.", pro: "Pro: unlimited trips, the year-over-year rate series, and the CSV export.", name: "MCP Mileage Log Pro", usd: 19, pkg: "@theluckystrike/mcp-mileage-log", bin: "mcp-mileage-log", payload: "mileage-log" },
   bundle: { desc: "", free: "", pro: "", name: "MCP Servers Bundle (all servers, lifetime)", price: "price_1UBDU9JKCamubEm1dWgRjtoW", usd: 39, pkg: null, bin: null, payload: "*" },
 };
 
@@ -91,10 +95,12 @@ export const HOSTED_SERVERS = new Set([
   "cash-book",
   "catalogue",
   "change-order",
+  "checklist",
   "clauses",
   "credit-note",
   "currency",
   "deposits",
+  "delivery-schedule",
   "docx",
   "dunning-letters",
   "expense-tracker",
@@ -102,6 +108,9 @@ export const HOSTED_SERVERS = new Set([
   "invoice",
   "job-card",
   "kanban",
+  "maintenance-log",
+  "mileage-log",
+  "packing-list",
   "pdf",
   "per-diem",
   "petty-cash",
@@ -109,8 +118,10 @@ export const HOSTED_SERVERS = new Set([
   "quotes",
   "recurring",
   "resume",
+  "service-agreement",
   "spreadsheet",
   "statement-of-account",
+  "supplier-list",
   "time-tracker",
   "timezone",
   "work-order",
@@ -118,10 +129,11 @@ export const HOSTED_SERVERS = new Set([
 ]);
 
 /** Ed25519 public key for MCP registry domain verification (see /.well-known/mcp-registry-auth). */
-/** Tools office-suite exposes, read from the running v0.21.0 bundle over stdio on 2026-09-07
- * (tools/list returned 292 distinct names across 31 children). The README claimed four
- * children for weeks; this constant exists so the number has one home. */
-const OFFICE_SUITE_TOOLS = 292;
+/** Tools office-suite exposes, read from the running v0.22.0 bundle over stdio on 2026-09-13
+ * (tools/list returned 380 distinct names across 41 children; the asset_add, trip_list and
+ * rate_set pairs collided and are prefixed with their server ids by the proxy). The README
+ * claimed four children for weeks; this constant exists so the number has one home. */
+const OFFICE_SUITE_TOOLS = 380;
 
 const MCP_REGISTRY_AUTH = "v=MCPv1; k=ed25519; p=KY+O0ut45badUE3n6TtwlXj09gkKnTd+/pkY56Y0A9Q=";
 
@@ -219,14 +231,14 @@ const REPO = "https://github.com/theluckystrike/mcp-servers";
  * The home page previously claimed "399 of 399" against a real 951 of 951, and named
  * "Seventeen" servers when there were thirty.
  */
-export const VALIDATION = { at: "2026-09-12", pass: 1135, total: 1135, servers: 38, medianMs: 411 };
+export const VALIDATION = { at: "2026-09-17", pass: 1192, total: 1192, servers: 41, medianMs: 483 };
 
 /**
  * Unit tests in billing/test. Restated for the same reason as VALIDATION and pinned the
  * same way: test/checkout-r1.test.mjs counts the `test(` declarations on disk and fails
  * if this disagrees. The page said 25 when there were 99.
  */
-export const BILLING_TEST_COUNT = 127;
+export const BILLING_TEST_COUNT = 155;
 
 /**
  * The npm publish is pending: `npx -y @theluckystrike/mcp-<server>` returns E404 today,
@@ -1060,6 +1072,17 @@ export default {
     const path = url.pathname.replace(/\/+$/, "") || "/";
     const method = request.method === "HEAD" ? "GET" : request.method;
 
+    // Trailing-slash duplicates: the strip above made /s/invoice/ and /s/invoice serve the
+    // same 200 body, doubling every crawlable URL and leaving consolidation to the
+    // canonical tag alone. The sibling property whose pages DO get crawled and indexed
+    // 301s the slash form instead (measured 2026-09-12:
+    // https://zovo.one/free-tools/html-entity-encoder/ -> 301 to the bare form). Match
+    // that. GET/HEAD only, so POST flows (/verify, /bound, /buy) keep working exactly as
+    // before; the strip below already guarantees the redirect target resolves.
+    if (path !== "/" && url.pathname !== path && (request.method === "GET" || request.method === "HEAD")) {
+      return new Response(null, { status: 301, headers: { Location: `${url.origin}${path}${url.search}`, "cache-control": "public, max-age=86400" } });
+    }
+
     if (path === "/health") {
       // signer check: mint a throwaway key in-runtime and verify it. No secrets leak.
       let signer = "unavailable";
@@ -1243,7 +1266,18 @@ ${faqHtml}
       // left a 30-day junk tenant per fetch and could have returned 429 to everyone behind
       // a shared address. robots.txt needs no change: it names only the private per-buyer
       // paths, and this page is deliberately public.
-      const urls = ["/", "/mcp/connect", "/bundle", "/changelog", "/guides", "/compare", "/privacy", ...Object.keys(PAGES).map((k) => `/s/${k}`), ...Object.keys(GUIDES).map((k) => `/guides/${k}`), ...Object.keys(COMPARE).map((k) => `/compare/${k}`), ...setupUrls().filter((u) => u.split("/").filter(Boolean).length <= 2)].map((u) => `<url><loc>https://mcp.zovo.one${u}</loc></url>`).join("");
+      // lastmod is the one scheduling hint the sitemap protocol gives a crawler, and this
+      // host's problem is a Discovered queue that does not drain (docs/GOOGLE_INDEX_R1.md):
+      // the sibling property that does get crawled ships lastmod on 407 of 407 sitemap URLs
+      // (zovo.one/sitemap-01-main.xml, measured 2026-09-12); this host shipped it on 0 of
+      // 171. The date is the newest CHANGELOG release carrying a real ISO date: every
+      // release re-bundles and redeploys every page from this same source, and the catalog
+      // pages enumerate the fleet the release changed. Guides and compare entries carry no
+      // per-page date field, so the release date is the most recent honest site-wide value,
+      // and it moves on its own each release instead of going stale like a constant. If no
+      // release has a valid date, lastmod is omitted rather than fabricated.
+      const siteDate = ((CHANGELOG && CHANGELOG.releases) || []).map((r) => r && r.date).find((d) => /^\d{4}-\d{2}-\d{2}$/.test(d || ""));
+      const urls = ["/", "/mcp/connect", "/bundle", "/changelog", "/guides", "/compare", "/privacy", ...Object.keys(PAGES).map((k) => `/s/${k}`), ...Object.keys(GUIDES).map((k) => `/guides/${k}`), ...Object.keys(COMPARE).map((k) => `/compare/${k}`), ...setupUrls().filter((u) => u.split("/").filter(Boolean).length <= 2)].map((u) => `<url><loc>https://mcp.zovo.one${u}</loc>${siteDate ? `<lastmod>${siteDate}</lastmod>` : ""}</url>`).join("");
       return new Response(`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls}</urlset>`, { headers: { "content-type": "application/xml" } });
     }
     // MCP registry domain verification. The registry fetches

@@ -47,6 +47,13 @@ import { createServer as createBillOfSale } from "./vendor/bill-of-sale/index.js
 import { createServer as createCreditNote } from "./vendor/credit-note/index.js";
 import { createServer as createJobCard } from "./vendor/job-card/index.js";
 import { createServer as createDunningLetters } from "./vendor/dunning-letters/index.js";
+import { createServer as createChecklist } from "./vendor/checklist/index.js";
+import { createServer as createPackingList } from "./vendor/packing-list/index.js";
+import { createServer as createDeliverySchedule } from "./vendor/delivery-schedule/index.js";
+import { createServer as createSupplierList } from "./vendor/supplier-list/index.js";
+import { createServer as createServiceAgreement } from "./vendor/service-agreement/index.js";
+import { createServer as createMaintenanceLog } from "./vendor/maintenance-log/index.js";
+import { createServer as createMileageLog } from "./vendor/mileage-log/index.js";
 
 export interface Env { REMOTE_DATA: KVNamespace; SWEEP_SECRET?: string }
 
@@ -84,7 +91,7 @@ const TOKEN_MINTS_PER_IP = 10;                   // anonymous tokens per hour pe
  * the deploy, so the only thing the version has to guarantee is that two builds never
  * share a cache entry inside one isolate.
  */
-const BUILD_VERSION = "2026-09-12.1";
+const BUILD_VERSION = "2026-09-13.1";
 
 /** Where the one-click .mcpb bundles live. The install path that works today. */
 const RELEASES = "https://github.com/theluckystrike/mcp-servers/releases/latest";
@@ -632,6 +639,112 @@ const SERVERS: Record<string, ServerCfg> = {
     // payments on every call, so the 512 KB default holds a long chase list.
     factory: createDunningLetters as () => McpServer,
   },
+  "checklist": {
+    // NO sharedDoc: the checklists and their runs are this server's own book, the shared
+    // business profile behind readSharedProfile (the name at the top of a printed report)
+    // is hydrated for every endpoint and is never a sharedDoc, and run_start's reference
+    // NAMES the job or order - it does not open the store behind it ("Named only; no
+    // sibling store is opened" is the run_start schema's own words).
+    //
+    // run_report is the one tool that writes a file, and only with out_path (Pro): the
+    // vendored build reduces out_path to a bare document NAME and writes the report under
+    // /out/, where the tmp + rename of writeAtomic lets the fs shim publish it as a
+    // one-hour download link. publish() is the /out/ prefix and nothing else, so the
+    // download endpoint only ever serves a rendered report and NEVER the JSON store -
+    // templates.json, runs.json and counter.json stay under the homedir shim, the
+    // /mcp/expense-tracker rule. persistPublished stays off: a run report is a transient
+    // download, not tenant state. The default 512 KB cap: a run copies its checklist's
+    // items when it starts (the snapshot rule), NO progress figure is stored, and the
+    // counts and sign-off test are derived on every call.
+    factory: createChecklist as () => McpServer,
+    publish: (p) => p.startsWith("/out/"),
+    strip: ["/out/"],
+  },
+  "packing-list": {
+    // The checklist entry for the second time. NO sharedDoc, and the strongest statement
+    // of it: packing_expect's own description says "Nothing is read from the quotes, work
+    // order or invoice store; what the order says is stated here", so the reference a list
+    // ships against is a NAME, never a hydrated document. The consignee is stated on the
+    // call and the issuer comes from the SHARED business profile through readSharedProfile,
+    // which travels the licence shim exactly as on every other endpoint.
+    //
+    // packing_slip is the one tool that writes a file, and only with out_path (Pro): same
+    // /out/ arrangement as checklist's run_report, published on writeAtomic's rename.
+    // publish() is the /out/ prefix and nothing else, so the download endpoint never
+    // serves the store - packing-lists.json and counter.json stay under the homedir shim.
+    // persistPublished stays off and the cap is the default 512 KB: NO weight and NO
+    // shortfall is stored, and the net, gross, volumetric and chargeable figures are
+    // derived on every call from the cartons and lines.
+    factory: createPackingList as () => McpServer,
+    publish: (p) => p.startsWith("/out/"),
+    strip: ["/out/"],
+  },
+  "delivery-schedule": {
+    // The credit-note and job-card entry for the third time. NO sharedDoc: the schedule
+    // references a quote, work order or change order BY ITS ID and never opens the store
+    // behind it - milestone_payload returns invoice_create and quote_create ARGUMENTS and
+    // creates neither document, exactly the change-order arrangement. It borrows sibling
+    // ENGINES, not sibling books: formatMoney from @theluckystrike/mcp-invoice/lib (so the
+    // money on a hosted document is the same string the stdio document carries),
+    // today/isIsoDate from the quotes engine and readJsonFile with its corrupt-store
+    // quarantine from the timezone engine; borrowing CODE hydrates nothing. The currency,
+    // the VAT fallback and the issuer on the document come from the SHARED business
+    // profile through readSharedProfile.
+    //
+    // No publish() and no strip: NO TOOL WRITES A FILE. delivery_schedule_document returns
+    // the document INLINE as plain text, because the sign-off block is meant to be pasted
+    // or printed by the caller, and milestone_payload hands back payloads. The store is
+    // schedules.json and counter.json under the homedir shim, tmp + rename, and NO status,
+    // NO lateness and NO total is stored: all three are derived from the due dates and the
+    // dated status history on every call, so the 512 KB default holds a long book of jobs.
+    factory: createDeliverySchedule as () => McpServer,
+  },
+  "supplier-list": {
+    // The credit-note and job-card entry for the fourth time. NO sharedDoc and no borrowed
+    // engine: the directory arithmetic (dates, review ages, CSV cells) is this server's own
+    // supplier.ts, and no tool reads the shared business profile either. No publish() and
+    // no strip: NO TOOL WRITES A FILE - supplier_export returns the CSV or Markdown INLINE,
+    // so there is no out_path and no /out/ here. The store is suppliers.json and
+    // counter.json, one document per token under the homedir shim, written tmp + rename,
+    // with the corrupt-store quarantine in the vendored store.ts. The default 512 KB cap:
+    // a supplier row is a contact card and the directory derives nothing at read time.
+    factory: createSupplierList as () => McpServer,
+  },
+  "service-agreement": {
+    // NO sharedDoc and no borrowed engine: the clause library, the status flow and the
+    // renderers are this server's own agreement.ts, and the money formatting (minor units
+    // to a decimal string) is one pure function there. No publish() and no strip: NO TOOL
+    // WRITES A FILE - agreement_render returns the Markdown or HTML INLINE and its
+    // description says "Writes nothing", true on both transports. The store is
+    // agreements.json and counter.json, one document per token under the homedir shim,
+    // tmp + rename, with the corrupt-store quarantine in the vendored store.ts. The
+    // default 512 KB cap: an agreement holds its scope, deliverables and status history,
+    // and nothing derived is stored.
+    factory: createServiceAgreement as () => McpServer,
+  },
+  "maintenance-log": {
+    // NO sharedDoc and no borrowed engine: the schedule math (next-due dates, intervals)
+    // is this server's own maintenance.ts and no sibling store or profile is read. No
+    // publish() and no strip: NO TOOL WRITES A FILE - maintenance_export returns the CSV
+    // or Markdown INLINE, so there is no out_path and no /out/ here. The store is
+    // assets.json and counter.json, one document per token under the homedir shim, tmp +
+    // rename, with the corrupt-store quarantine in the vendored store.ts. The default
+    // 512 KB cap: an asset holds its log entries and nothing derived - the due report is
+    // computed from the stored dates at call time, so the document grows with the work
+    // logged and never with the questions asked.
+    factory: createMaintenanceLog as () => McpServer,
+  },
+  "mileage-log": {
+    // NO sharedDoc and no borrowed engine: the pricing (effective-dated rate series, the
+    // miles/km conversion, the round-half-up per trip) is this server's own log.ts, and
+    // no rate ships with it. No publish() and no strip: NO TOOL WRITES A FILE -
+    // mileage_export returns the CSV INLINE, so there is no out_path and no /out/ here.
+    // The store is trips.json, rates.json and counter.json, one document per token under
+    // the homedir shim, tmp + rename, with the corrupt-store quarantine in the vendored
+    // store.ts. The default 512 KB cap: a trip is one line, and every total is derived
+    // from the stored trips and rates on the call rather than stored.
+    factory: createMileageLog as () => McpServer,
+  },
 };
 
 const json = (body: unknown, status = 200, extra: Record<string, string> = {}) =>
@@ -1061,6 +1174,31 @@ async function flushEcb(env: Env, files: Map<string, string>, before: Map<string
 
 /* ----------------------------------------------------------------- index */
 
+/* Loop 35 phrase-variant registry aliases (docs/VARIANTS_LOOP35.md). The official
+ * registry binds one hosted URL to exactly one server name, so every published variant
+ * name needs its own /mcp/<alias> path. An alias resolves to its parent BEFORE `product`
+ * is used anywhere, so license checks (verifyLicense is per-product), tenant documents,
+ * buy links and free caps are byte-identical to the parent endpoint. The aliases are NOT
+ * inserted into SERVERS, so ENDPOINT_URLS, SERVER_COUNT and the /mcp index are unchanged. */
+const VARIANT_ALIASES: Record<string, string> = {
+  "invoice-generator": "invoice",
+  "freelance-invoice": "invoice",
+  "merge-pdf": "pdf",
+  "split-pdf": "pdf",
+  "time-tracking": "time-tracker",
+  "timesheets": "time-tracker",
+  "business-expenses": "expense-tracker",
+  "mileage-tracker": "expense-tracker",
+  "spreadsheet-builder": "spreadsheet",
+  "spreadsheet-generator": "spreadsheet",
+  "currency-exchange": "currency",
+  "exchange-rates": "currency",
+  "quote-template": "quotes",
+  "estimate-template": "quotes",
+  "bank-statement-pdf": "bank-statement",
+  "categorize-transactions": "bank-statement",
+};
+
 const TOOLS: Record<string, string[]> = {
   "time-tracker": ["timer_start", "timer_stop", "timer_status", "entry_add", "entry_list", "entry_delete", "entry_edit", "project_set_rate", "report", "invoice_summary", "export_csv", "license_status", "license_activate"],
   "price-tracker": ["price_check", "watch_add", "watch_list", "watch_remove", "watch_refresh", "price_history", "price_add_manual", "alerts_pending", "license_status", "license_activate"],
@@ -1096,6 +1234,13 @@ const TOOLS: Record<string, string[]> = {
   "credit-note": ["credit_note_create", "credit_note_update", "credit_note_finalize", "credit_note_list", "credit_note_get", "credit_note_delete", "credit_note_render", "credit_note_summary", "license_status", "license_activate"],
   "job-card": ["job_card_create", "job_card_log_labor", "job_card_log_material", "job_card_update_status", "job_card_list", "job_card_get", "job_card_print", "job_card_delete", "job_card_summary", "license_status", "license_activate"],
   "dunning-letters": ["invoice_register", "payment_record", "letter_render", "letter_sent", "overdue_list", "aging_summary", "chase_today", "invoice_status", "invoice_delete", "license_status", "license_activate"],
+  "checklist": ["checklist_create", "checklist_item_add", "checklist_item_remove", "checklist_show", "checklist_list", "checklist_delete", "run_start", "run_check", "run_show", "run_list", "run_sign_off", "run_status", "run_report", "run_delete", "license_status", "license_activate"],
+  "packing-list": ["packing_list_create", "packing_expect", "carton_add", "pack_item", "unpack_item", "packing_list_show", "packing_list_list", "carton_report", "packing_shortfall", "packing_list_status", "packing_slip", "packing_list_delete", "license_status", "license_activate"],
+  "delivery-schedule": ["delivery_schedule_create", "deliverable_add", "deliverable_status", "deliverable_delete", "delivery_schedule_get", "delivery_schedule_list", "delivery_schedule_delete", "late_report", "delivery_schedule_document", "milestone_payload", "license_status", "license_activate"],
+  "supplier-list": ["supplier_add", "supplier_list", "supplier_get", "supplier_update", "supplier_remove", "supplier_mark_reviewed", "supplier_due_review", "supplier_export", "license_status", "license_activate"],
+  "service-agreement": ["agreement_create", "agreement_get", "agreement_list", "agreement_update_status", "clause_library", "agreement_render", "agreement_checklist", "license_status", "license_activate"],
+  "maintenance-log": ["asset_add", "maintenance_log", "maintenance_due", "asset_history", "maintenance_export", "asset_remove", "license_status", "license_activate"],
+  "mileage-log": ["trip_add", "trip_list", "trip_remove", "rate_set", "rate_list", "mileage_summary", "mileage_export", "license_status", "license_activate"],
 };
 
 const ENDPOINT_URLS = (base: string) => Object.keys(SERVERS).map((n) => `${base}/mcp/${n}`);
@@ -1168,7 +1313,7 @@ function indexDoc(base: string) {
         how: "There is no disk here: doc_upload {name, docx_base64} stores an existing .docx under your token and every tool takes that name as its `path`; doc_read and doc_fill_template also accept docx_base64 directly, which stores the file under the same root (default name 'inline' / 'template'). doc_files lists what is uploaded, doc_delete_upload removes one.",
         outputs: "doc_create, doc_from_markdown, proposal_create, contract_create, doc_fill_template and doc_to_html return a download link valid for one hour; .docx comes back as the real binary file (application/vnd.openxmlformats-officedocument.wordprocessingml.document).",
         free_limits: "3 proposals or contracts per calendar month, templates up to 10 placeholders, footer line and default letterhead",
-        storage: `${DOCX_MAX_BYTES / 1048576} MB of uploaded documents per token, and at most 2 MB in one upload (the ${MAX_BODY_BYTES / 1024} KB request-body cap binds first)`,
+        storage: `${DOCX_MAX_BYTES / 1048576} MB of uploaded documents per token, and at most 2 MB in one upload. The practical ceiling on a base64 paste is far lower and is measured, not theoretical: the model retypes the payload into the call, and in the round-14 measurement 13 KB of base64 died at 16 minutes without emitting the call while 1.4 KB took 47 seconds (D-R74). Above about 10 KB, pass url instead of docx_base64 and the fetch happens here`,
       },
       {
         name: "resume", url: `${base}/mcp/resume`, tools: TOOLS["resume"],
@@ -1386,6 +1531,69 @@ function indexDoc(base: string) {
         free_limits: "3 active unpaid invoices chased at once; an invoice that gets paid frees its slot. The letters, the aging and the history are never metered: the cap is on how many chases run at once",
         storage: `${DEFAULT_MAX_BYTES / 1024} KB of chase register per token`,
         notes: "NO BALANCE IS STORED: what is still owed is derived from the invoice amount and the recorded payments on every call. The sender's name and email come from the shared business profile (business_set on /mcp/invoice); without one the letters are signed [Your name] and say so. A late fee is stated only when you register late_fee_percent_per_month, and then as simple interest, pro-rata on a 30-day month, rounded once to the minor unit - no letter invents a fee, an interest rate or a legal cost, and the final notice says plainly that what a before-action letter must contain varies by jurisdiction. The money formatting is /mcp/asset-register's own formatMoney, imported rather than copied. Currencies are never added together",
+      },
+      {
+        name: "checklist", url: `${base}/mcp/checklist`, tools: TOOLS["checklist"],
+        mode: "your own checklists, and the dated, signed runs of them",
+        how: "checklist_create builds a reusable checklist (a name, a category, an optional description) and returns its CL-NNNN id; checklist_item_add adds the steps, each with a section, a required flag and an optional note; run_start starts a dated run against a job - a title, an optional reference, an optional date - and returns its RUN-YYYY-NNNN id with the steps COPIED in; run_check answers one step pass, fail or na with who and when; run_show reads the whole run with what is outstanding; run_sign_off freezes a complete run with the signer's name; run_report produces the document; run_status reopens a complete run or abandons one; checklist_list, checklist_show and run_list read.",
+        outputs: "JSON, plus the run report: run_report returns it as plain text on every tier, and Pro passing out_path also gets it back as a .txt download link valid for one hour. out_path is a NAME here, not a path: it only decides what the downloaded file is called.",
+        free_limits: "3 checklists, and unlimited runs of them - what is metered is how many DIFFERENT checklists you keep, not how many jobs you check. Every read, every progress figure and the report TEXT are free on every tier. Writing the report to a file with out_path is Pro",
+        storage: `${DEFAULT_MAX_BYTES / 1024} KB of checklists and runs per token`,
+        notes: "A run COPIES its checklist's items when it starts, with the checklist version recorded: editing the checklist afterwards never changes a run already under way, because a list somebody ticked and signed has to be the list they actually saw. NO progress figure is stored: the counts, what is outstanding and whether a run can be signed off are derived on every call. na means the step did not apply - it counts as ANSWERED and never as passed. complete is a reading, never set by hand: a run becomes complete when its last step is answered and goes back to open when a step returns to pending. Sign-off is refused while a required step is unanswered or failed unless force is true, and either way the exceptions stay on the record and print on the report. A signed-off run cannot be edited, reopened or deleted - it is the record of what somebody put their name to - and the CL and RUN id series are never reissued. The name at the top of a printed report comes from the shared business profile (business_set on /mcp/invoice); no sibling store is ever opened",
+      },
+      {
+        name: "packing-list", url: `${base}/mcp/packing-list`, tools: TOOLS["packing-list"],
+        mode: "your own packing lists, each against the order it ships on",
+        how: "packing_list_create opens a list against an order reference - WO-, INV-, Q- or a plain order, inferred when omitted - with the consignee and an optional ship-to, and returns its PL-YYYY-NNNN number; packing_expect declares one line the order says should ship; carton_add adds a carton with its empty weight in WHOLE GRAMS and optionally all three dimensions in WHOLE CENTIMETRES; pack_item puts a quantity of one item into a named carton; packing_shortfall reads ordered against packed, line by line; carton_report weighs every carton and the shipment - net, gross, volumetric, chargeable; packing_list_status moves draft to packed to shipped, recording carrier and tracking; packing_slip produces the document; packing_list_show and packing_list_list read.",
+        outputs: "JSON, plus the packing slip: packing_slip returns it as plain text on every tier, and Pro passing out_path also gets it back as a .txt download link valid for one hour. out_path is a NAME here, not a path: it only decides what the downloaded file is called.",
+        free_limits: "3 OPEN packing lists at once, counted on the shipments in flight rather than on the calendar: marking one shipped or cancelling it frees its slot, and deleting a draft is free. The shortfall, the carton weights and the slip TEXT are free on every tier. Writing the slip to a file with out_path is Pro",
+        storage: `${DEFAULT_MAX_BYTES / 1024} KB of packing lists per token`,
+        notes: "the slip carries NO PRICES, and that is the point of it: it travels inside the box, and the consignee's warehouse is not the party that sees what the goods cost - the invoice against the same order is a different document, on /mcp/invoice. NO weight and NO shortfall is stored: the net, gross, volumetric and chargeable figures are derived on every call, mass in WHOLE GRAMS and dimensions in WHOLE CENTIMETRES throughout for the reason money is in minor units. A packed line with no unit_grams makes every net and gross figure a LOWER BOUND and says so; a carton with no dimensions makes the shipment's chargeable weight null, never a guess. Chargeable is the greater of gross and volumetric, volumetric at a divisor of 5000 (courier air), 6000 (IATA air) or 4000 (some road tariffs). A packed line with no ordered line is reported as not_on_order, never dropped. Shipping while lines are short needs force: true and the exceptions stay on the record; a shipped list cannot be edited, reopened or deleted - it is the record of what left the building. NOTHING is read from the quotes, work-order or invoice stores: what the order says is declared with packing_expect, so this endpoint opens no sibling document",
+      },
+      {
+        name: "delivery-schedule", url: `${base}/mcp/delivery-schedule`, tools: TOOLS["delivery-schedule"],
+        mode: "your own delivery schedules, each against a quote, work order or change order",
+        how: "delivery_schedule_create opens the schedule against a reference - WO-, CO- or a quote, inferred when omitted - with the reference document's own date, the client, a one-line title and the currency, and returns its DS-YYYY-NNNN number; deliverable_add adds one dated deliverable with an optional value in whole MINOR units net of VAT (90000 is EUR 900.00); deliverable_status walks each one planned to in_progress to delivered to accepted, every step dated; delivery_schedule_get and delivery_schedule_list read as at any as_of date; late_report says what has slipped as at a date, worst first, with value at risk per currency; delivery_schedule_document renders the sign-off document; milestone_payload hands back invoice_create and quote_create arguments for the delivered-and-accepted deliverables.",
+        outputs: "JSON, plus one document: delivery_schedule_document returns the schedule INLINE as plain text with counts as at a date and a sign-off block. NO tool writes a file, so there is nothing to download. milestone_payload returns invoice_create arguments in MAJOR units and quote_create arguments in MINOR units, and creates neither document.",
+        free_limits: "3 open schedules; a schedule stops counting once every deliverable on it is accepted, and deleting an empty one is free on every tier. late_report is free and unlimited, because what is late is the question this endpoint exists for. delivery_schedule_document and milestone_payload are Pro",
+        storage: `${DEFAULT_MAX_BYTES / 1024} KB of delivery schedules per token`,
+        notes: "NO status, NO lateness and NO total is stored: a deliverable holds its due date, its value and its dated status history, and the current status, the delivered and accepted dates, what is late and every total are derived on the call. Late is read against the as_of the caller passes, never the machine's clock: a deliverable is late once as_of is PAST its due date, and one due on as_of sits in due_today; a delivered deliverable is delivered_late or delivered_on_time by comparing dates, which no longer moves with as_of. One reference carries ONE schedule, because two would give two answers to what is late on it. No due date and no status move may fall before the reference document's own date, and a status history may not run backwards. The two payloads are in DIFFERENT SCALES on purpose: invoice_create takes unit_price in MAJOR units and quote_create takes unit_price_minor in MINOR units, and swapping them misprices the milestone by 100x; every unit price is a whole minor unit, so rounding_drift_minor is zero. A deliverable with no value_minor is not worth zero: it is counted apart and excluded BY NAME from the payload, never billed as zero. VAT falls back to the shared business profile's default_tax_rate (business_set on /mcp/invoice), the money formatting is /mcp/invoice's own formatMoney, imported rather than copied, and currencies are never added together. This endpoint opens no sibling store and creates NO invoice and NO quote",
+      },
+      {
+        name: "supplier-list", url: `${base}/mcp/supplier-list`, tools: TOOLS["supplier-list"],
+        mode: "your own supplier directory",
+        how: "supplier_add records who you buy from - the name, what they supply, the contact, the payment terms, the lead time in days and notes - and returns its SUP-YYYY-NNNN number; supplier_list reads the directory A to Z with a category filter and a free-text search across every field; supplier_update changes only the fields you pass; supplier_mark_reviewed stamps the record as checked against reality; supplier_due_review is the report of what has gone stale, most overdue first, where a record never reviewed is always due; supplier_export hands the directory over as CSV or a Markdown table.",
+        outputs: "JSON, plus the exports: supplier_export returns the CSV or Markdown table INLINE in the answer. NO tool writes a file, so there is nothing to download.",
+        free_limits: "10 suppliers, with reading, updating, searching, review stamps and CSV export free and unlimited on every tier; removing one you no longer use frees its slot. Markdown export and the due-review report are Pro",
+        storage: `${DEFAULT_MAX_BYTES / 1024} KB of supplier records per token`,
+        notes: "a second record carrying a name already in the directory is refused, because two records of one supplier cannot be told apart; supplier_update changes the record that exists. A partial name matching more than one supplier is refused with the candidates rather than resolved to the first. The SUP number is never reissued, so a gap in the series is the record that a row was removed. This endpoint opens no sibling store and reads no profile",
+      },
+      {
+        name: "service-agreement", url: `${base}/mcp/service-agreement`, tools: TOOLS["service-agreement"],
+        mode: "your own agreements book",
+        how: "agreement_create writes the agreement before the work starts - the two parties, the scope of services, the deliverables, the rate in whole cents (8500 is 85.00) with its unit (hour, day or project), the payment terms, start and end dates, a termination notice period, a liability cap and the governing jurisdiction - stores it, and returns it rendered as Markdown with a signature block, numbered SA-YYYY-NNNN; agreement_checklist is the before-you-send-it pass, listing missing fields and flagging one-sided gaps neutrally; agreement_update_status moves it draft to sent to signed to expired, one dated step at a time; clause_library lists the five built-in clauses (IP assignment, mutual confidentiality, late payment interest, kill fee, revision rounds); agreement_render produces the document for signing.",
+        outputs: "JSON and the inline document. NO tool writes a file, so there is nothing to download: agreement_render's answer IS the agreement, as Markdown or as self-contained printable HTML that references nothing external.",
+        free_limits: "3 active agreements, with reading, listing, the checklist and Markdown rendering free and unlimited on every tier; an agreement stops counting the moment it expires, so expiring a finished engagement frees its slot. The full clause texts and the print-ready HTML are Pro",
+        storage: `${DEFAULT_MAX_BYTES / 1024} KB of agreements per token`,
+        notes: "every render carries a one-line note that it is a template, not legal advice - a generic starting point whose terms a lawyer in the governing jurisdiction should read. The status machine moves one step at a time: a skipped step is refused naming the one step that is next, a step dated before the step before it is refused so the history reads as a timeline, and expired is final. An end date before the start date is refused, as is a clause id the library does not carry. The SA number is never reissued. This endpoint opens no sibling store",
+      },
+      {
+        name: "maintenance-log", url: `${base}/mcp/maintenance-log`, tools: TOOLS["maintenance-log"],
+        mode: "your own equipment register",
+        how: "asset_add puts one piece of equipment on the register - name, serial or asset tag (unique across the register), location, currency - and returns its AST-YYYY-NNNN number; maintenance_log records the work: the day, what was done, the cost in whole cents (12000 is 120.00), who did it, and when the next service falls due, as next_due (a date) or interval_days (a number of days), never both; maintenance_due is the report - what is overdue and by how many days, what falls due within the next N days, what has no schedule - computed from the stored dates at call time; asset_history reads one asset's whole log with its total spend and spend per technician; maintenance_export hands a date range over as CSV or a Markdown summary per asset.",
+        outputs: "JSON, plus the exports: maintenance_export returns the CSV or Markdown INLINE in the answer. NO tool writes a file, so there is nothing to download.",
+        free_limits: "3 assets on the register, with logging, the per-asset history and CSV export free and unlimited on every tier; removing an asset frees its slot. The due report and the Markdown summaries are Pro",
+        storage: `${DEFAULT_MAX_BYTES / 1024} KB of assets and log entries per token`,
+        notes: "overdue is computed against today at the moment you ask, never stored, so the register cannot go stale: an interval is turned into a date once, when the work is logged. Work dated in the future is refused, and a next_due before the work date is refused. Costs are integer cents in the asset's own currency and a total spend is the sum of the stored entries, so it can never drift from the lines. An asset carrying a log cannot be removed without confirm: true, because removing it loses the record of work done; the AST number is never reissued. Currencies are never added together. This endpoint opens no sibling store",
+      },
+      {
+        name: "mileage-log", url: `${base}/mcp/mileage-log`, tools: TOOLS["mileage-log"],
+        mode: "your own mileage log",
+        how: "trip_add logs one drive - the date, where from and to, the distance in miles or km, the purpose, the category (business, medical, moving, charitable, personal) - and returns its TR-YYYY-NNNN number; rate_set records what one mile or km is worth for one category in one jurisdiction from a date forward, an effective-dated series rather than one global number; mileage_summary prices a date range (default the current calendar year) per category: the rate each trip earned, the one in force on its day, and the deductible amount totalled per currency; mileage_export is the CSV for the accountant.",
+        outputs: "JSON, plus the export: mileage_export returns the CSV INLINE in the answer. NO tool writes a file, so there is nothing to download.",
+        free_limits: "20 trips per calendar month, counted on the month of the trip date, so reconstructing last year's log at tax time does not consume this month's allowance; the list and the summary are never metered, and one rate per jurisdiction and category is free (overwriting it stays free). The year-over-year rate series and the CSV export are Pro",
+        storage: `${DEFAULT_MAX_BYTES / 1024} KB of trips and rates per token`,
+        notes: "NO rate ships with this endpoint and none of it is tax advice: the rates you set are your own figures to verify. A trip's amount is its distance times the rate in force on the day it was driven, rounded half-up to the cent, and every total is the sum of those rounded per-trip amounts, so the CSV reconciles line by line with the summary. Distances in miles and in km are kept apart and never added together; a trip whose unit differs from the rate's is converted first (1 mile = 1.609344 km exactly). A trip with no applicable rate is listed with the reason, never silently dropped, and the export refuses while any non-personal trip in the window is unpriced, so an accountant never receives a log with silent gaps. A future-dated trip is refused: it cannot have been driven yet. The TR number is never reissued",
       },
     ],
     limits: {
@@ -1957,7 +2165,7 @@ export default {
     }
 
     const m = path.match(/^\/mcp\/([a-z-]+)$/);
-    const product = m?.[1];
+    const product = m?.[1] ? (VARIANT_ALIASES[m[1]] ?? m[1]) : undefined;
     const cfg = product ? SERVERS[product] : undefined;
     if (!product || !cfg) {
       return json({ error: "not_found", index: `${base}/mcp` }, 404);

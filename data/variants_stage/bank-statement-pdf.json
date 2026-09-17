@@ -1,0 +1,31 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.theluckystrike/bank-statement-pdf",
+  "description": "Import a bank CSV, categorise it, summarise it per currency and reconcile it against your expenses.",
+  "version": "0.21.0",
+  "repository": {
+    "url": "https://github.com/theluckystrike/mcp-servers",
+    "source": "github",
+    "subfolder": "servers/bank-statement"
+  },
+  "websiteUrl": "https://mcp.zovo.one/s/bank-statement",
+  "packages": [
+    {
+      "registryType": "mcpb",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.21.0/bank-statement.mcpb",
+      "version": "0.21.0",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "MCP_LICENSE_KEY",
+          "description": "Optional Pro license key (MCPL1....). Verified offline.",
+          "isRequired": false,
+          "isSecret": true
+        }
+      ],
+      "fileSha256": "15f85d0ff6c81042a417d8c1b33c80b0867f33fc7f32064c7fdd4bbdfd6b9105"
+    }
+  ]
+}

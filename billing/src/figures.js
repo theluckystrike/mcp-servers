@@ -33,6 +33,8 @@ export const SERVER_IDS = [
   "invoice",
   "job-card",
   "kanban",
+  "maintenance-log",
+  "mileage-log",
   "office-suite",
   "packing-list",
   "pdf",
@@ -42,8 +44,10 @@ export const SERVER_IDS = [
   "quotes",
   "recurring",
   "resume",
+  "service-agreement",
   "spreadsheet",
   "statement-of-account",
+  "supplier-list",
   "time-tracker",
   "timezone",
   "work-order",
@@ -75,6 +79,8 @@ export const CHILD_IDS = [
   "invoice",
   "job-card",
   "kanban",
+  "maintenance-log",
+  "mileage-log",
   "packing-list",
   "pdf",
   "per-diem",
@@ -83,8 +89,10 @@ export const CHILD_IDS = [
   "quotes",
   "recurring",
   "resume",
+  "service-agreement",
   "spreadsheet",
   "statement-of-account",
+  "supplier-list",
   "time-tracker",
   "timezone",
   "work-order",
@@ -126,7 +134,14 @@ export const HOSTED_IDS = [
   "bill-of-sale",
   "credit-note",
   "job-card",
-  "dunning-letters"
+  "dunning-letters",
+  "checklist",
+  "packing-list",
+  "delivery-schedule",
+  "supplier-list",
+  "service-agreement",
+  "maintenance-log",
+  "mileage-log"
 ];
 
 /** stdio tools each server registers, excluding the shared license pair. */
@@ -154,6 +169,8 @@ export const TOOLS = {
   "invoice": 11,
   "job-card": 9,
   "kanban": 15,
+  "maintenance-log": 6,
+  "mileage-log": 7,
   "office-suite": 0,
   "packing-list": 12,
   "pdf": 10,
@@ -163,8 +180,10 @@ export const TOOLS = {
   "quotes": 10,
   "recurring": 12,
   "resume": 8,
+  "service-agreement": 7,
   "spreadsheet": 8,
   "statement-of-account": 6,
+  "supplier-list": 8,
   "time-tracker": 12,
   "timezone": 9,
   "work-order": 10,
@@ -175,12 +194,12 @@ export const TOOLS = {
 export const LICENSE_TOOLS = 2;
 
 /** Sum of TOOLS over CHILD_IDS. */
-export const OWN_TOOLS_TOTAL = 350;
+export const OWN_TOOLS_TOTAL = 378;
 
 /** Distinct tool names office-suite exposes: every child's own tools, plus the shared
  * license pair once. Reconciles with the independently measured OFFICE_SUITE_TOOLS in
  * billing/src/index.js, taken over stdio from the running bundle on 2026-09-07. */
-export const OFFICE_SUITE_TOOLS = 352;
+export const OFFICE_SUITE_TOOLS = 380;
 
 /** Servers the site actually lists, i.e. those with a README that becomes a /s/ page. */
 export const LISTED_IDS = [
@@ -207,6 +226,8 @@ export const LISTED_IDS = [
   "invoice",
   "job-card",
   "kanban",
+  "maintenance-log",
+  "mileage-log",
   "office-suite",
   "packing-list",
   "pdf",
@@ -216,8 +237,10 @@ export const LISTED_IDS = [
   "quotes",
   "recurring",
   "resume",
+  "service-agreement",
   "spreadsheet",
   "statement-of-account",
+  "supplier-list",
   "time-tracker",
   "timezone",
   "work-order",
@@ -247,6 +270,8 @@ export const LISTED_CHILD_IDS = [
   "invoice",
   "job-card",
   "kanban",
+  "maintenance-log",
+  "mileage-log",
   "packing-list",
   "pdf",
   "per-diem",
@@ -255,8 +280,10 @@ export const LISTED_CHILD_IDS = [
   "quotes",
   "recurring",
   "resume",
+  "service-agreement",
   "spreadsheet",
   "statement-of-account",
+  "supplier-list",
   "time-tracker",
   "timezone",
   "work-order",
@@ -265,11 +292,11 @@ export const LISTED_CHILD_IDS = [
 
 /** Counts, computed so prose cannot go stale. LISTED_COUNT is the one a visitor should
  * ever see: SERVER_DIR_COUNT can be ahead of it while a new server is being built. */
-export const LISTED_COUNT = 38;
-export const LISTED_CHILD_COUNT = 37;
-export const SERVER_DIR_COUNT = 38;
-export const CHILD_COUNT = 37;
-export const HOSTED_COUNT = 34;
+export const LISTED_COUNT = 42;
+export const LISTED_CHILD_COUNT = 41;
+export const SERVER_DIR_COUNT = 42;
+export const CHILD_COUNT = 41;
+export const HOSTED_COUNT = 41;
 
 /** Hosted limits, read from remote/src/index.ts. */
 export const RATE_LIMIT_FREE = 600;
@@ -284,7 +311,7 @@ export const SINGLE_USD = 19;
 export const BUNDLE_USD = 39;
 
 /** Published version, read from servers/<id>/server.json. */
-export const VERSION = "0.21.0";
+export const VERSION = "0.22.0";
 
 /** The free-tier sentence for each server, verbatim from data/facts.json. */
 export const FREE = {
@@ -311,6 +338,8 @@ export const FREE = {
   "invoice": "3 invoices per calendar month; overdue report free; PDF carries a small footer line.",
   "job-card": "Ten active job cards, with labor and material entries unlimited per card and the running totals, list, get, the printable card and the daily and weekly summaries all free on every tier. A card stops counting the moment it is archived, so the record is never metered.",
   "kanban": "3 projects, 200 open tasks, default columns.",
+  "maintenance-log": "Three assets on the register, with logging, the per-asset history with total spend and CSV export free and unlimited on every tier. Removing an asset frees its slot.",
+  "mileage-log": "Twenty trips per calendar month, counted on the month of the trip date, so reconstructing last year's log does not consume this month's allowance. The list and the summary are never metered, and one rate per jurisdiction and category is free, overwriting included.",
   "office-suite": "Each child's free tier.",
   "packing-list": "Three OPEN packing lists, draft and packed, with unlimited cartons, packed lines and declared order lines on every tier. The cap counts shipments in flight rather than shipments ever made, so marking one shipped or cancelling it frees its slot, and deleting a draft is free on every tier, because a way back that only a Pro key can reach is not a way back. carton_report, packing_shortfall, packing_list_show and the packing slip TEXT are free on every tier: those are the questions this server exists to answer, and a free tier that withheld them would withhold the reason to install it.",
   "pdf": "Info, count, text, merge up to 5 files, edits on files up to 30 pages, PAID and DRAFT stamps.",
@@ -320,8 +349,10 @@ export const FREE = {
   "quotes": "5 open quotes at a time, unlimited pasteable text quotes, accept, decline, revise, VAT, discounts and multi-currency, pipeline and win-rate report for the current calendar year to date.",
   "recurring": "3 active schedules, 30-day upcoming view, generate due invoices.",
   "resume": "Profile, modern-style resume, markdown and HTML exports, 3 cover letters per calendar month, tailoring on job posts up to 2,000 characters.",
+  "service-agreement": "Three active agreements, with reading, listing, the before-you-send checklist and Markdown rendering free and unlimited on every tier. An agreement stops counting the moment it expires, so expiring a finished engagement frees its slot.",
   "spreadsheet": "Read, query (filters, group by, sum/avg/min/max), stats and find on files up to 5,000 rows; writes up to 500 rows, never a partial file above that.",
   "statement-of-account": "statement_aging is free and unlimited on every tier, for one client or for everyone: who owes me money is the question this server exists for, and a free tier that hides it is a demo. The meter is on the document that goes to a client, five distinct statements a calendar month, counted by client, period and currency, so rebuilding one already in the register is free forever. Plain-text statements and dunning at the friendly and firm levels are free.",
+  "supplier-list": "Ten suppliers, with adding, listing, reading, updating, removing, review stamps and CSV export free and unlimited on every tier. Removing a supplier you no longer use frees its slot, so the directory itself is never metered.",
   "time-tracker": "Unlimited timers and entries; reports, lists and CSV cover the last 7 days; 2 projects with rates. Currency per entry (EUR, USD, GBP, PLN).",
   "timezone": "Conversions, overlap, DST, business days, slots for up to 3 participants over 5 days, 5 contacts, 3 ics per month.",
   "work-order": "Five OPEN work orders, which is a one-van trade, and 200 lines each on every tier. The cap counts open jobs (draft, scheduled, in progress) rather than jobs ever raised, so finishing one frees its slot, and work_order_delete on a draft with no lines is free on every tier because a way back that only a Pro key can reach is not a way back. The text completion report is free: handing the customer what was done is the thing the job was for. A byte-identical work order is refused BEFORE the cap is consulted, so the refusal names the id already stored rather than selling an upgrade, and burns neither a slot nor a WO number.",
@@ -353,6 +384,8 @@ export const PRO = {
   "invoice": "Unlimited invoices, no branding, logo, custom prefix.",
   "job-card": "Unlimited active job cards.",
   "kanban": "Unlimited projects and tasks, custom columns, weekly review history, estimates versus actuals.",
+  "maintenance-log": "Unlimited assets, the due report (overdue and due-within-N-days) and the Markdown summaries.",
+  "mileage-log": "Unlimited trips, the year-over-year rate series, and the CSV export for the accountant.",
   "office-suite": "The $39 bundle key unlocks every child.",
   "packing-list": "Unlimited open packing lists, and packing_slip writing the slip to a .txt file at a path you name. The path goes through a bounded ancestor walk rather than mkdirSync with recursive, so a caller-supplied path under /proc, /sys or /dev fails in milliseconds instead of retrying forever; a URL is refused by name before any resolution, so the refusal never leaks the server's working directory; and an existing file is refused unless overwrite is passed.",
   "pdf": "Unlimited files and pages, custom stamp text and colours, business watermark, page reorder.",
@@ -362,8 +395,10 @@ export const PRO = {
   "quotes": "Unlimited open quotes, A4 PDF with your logo and no footer credit, pipeline and win-rate report over any date range.",
   "recurring": "Unlimited schedules, 12-month forecast, audit history, end-of-month and anchor-day rules.",
   "resume": "All styles, unlimited cover letters and tailoring, profile variants, letterhead colours.",
+  "service-agreement": "Unlimited active agreements, the full clause texts with the agreement's variables filled in, and print-ready HTML rendering.",
   "spreadsheet": "No limits.",
   "statement-of-account": "Unlimited statements, the A4 PDF on the same page layout as your invoices with your logo and no footer credit, the level 3 final demand, and statements_report: every client at once, totalled per currency, ranked by what is overdue rather than by what is large, with the oldest overdue invoice in the whole book named.",
+  "supplier-list": "Unlimited suppliers, Markdown export, and the due-review report that keeps a bigger directory honest.",
   "time-tracker": "Full history, invoice_summary, group by tag, unlimited rated projects.",
   "timezone": "Unlimited participants, days, contacts and ics files, recurring slot search.",
   "work-order": "Unlimited open work orders, the A4 completion report PDF with the sign-off block, work_order_invoice_payload with VAT at the shared profile rate and rounding_drift_minor asserted to zero, and work_orders_report: the whole board by status, hours logged this month, and unbilled value per currency.",

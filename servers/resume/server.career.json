@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/career",
   "description": "Tailor a career resume and cover letter as real Word docx files from stored facts.",
-  "version": "0.21.0",
+  "version": "0.22.0",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
@@ -12,8 +12,8 @@
   "packages": [
     {
       "registryType": "mcpb",
-      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.21.0/resume.mcpb",
-      "version": "0.21.0",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.22.0/resume.mcpb",
+      "version": "0.22.0",
       "transport": {
         "type": "stdio"
       },
@@ -26,6 +26,20 @@
         }
       ],
       "fileSha256": "38519bcf2230a67e344f515d917091816defac0854851037c50318807722d4d4"
+    }
+  ],
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.zovo.one/mcp/resume",
+      "headers": [
+        {
+          "name": "Authorization",
+          "description": "Bearer <Pro license key or anonymous token from GET https://mcp.zovo.one/mcp/token>",
+          "isRequired": true,
+          "isSecret": true
+        }
+      ]
     }
   ]
 }

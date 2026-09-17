@@ -2,7 +2,7 @@
   "manifest_version": "0.2",
   "name": "mcp-delivery-schedule",
   "display_name": "Delivery Schedule",
-  "version": "0.21.0",
+  "version": "0.22.0",
   "description": "Dated deliverables against a quote or work order: due dates, sign-off, what is late, milestones.",
   "author": {
     "name": "theluckystrike",

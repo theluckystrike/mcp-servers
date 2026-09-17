@@ -2,8 +2,8 @@
 //
 // Asserts the invariants of servers/packing-list/SPEC.md that a test can check without
 // judgement: one version number across package.json, src/version.ts, serverInfo and all
-// four registry manifests; the remotes rule (this server is stdio and .mcpb only, so NO
-// manifest may advertise a remote); JSON-RPC-only stdout; tool-description hygiene; the
+// four registry manifests; the remotes rule (the mcpb manifest carries remotes.json,
+// the stdio-only names carry none); JSON-RPC-only stdout; tool-description hygiene; the
 // free/Pro tier switch; that nothing outside this server's own directory is written; and
 // that no money arithmetic exists here at all. It never asserts a number a human chose;
 // those live in test/unit.test.mjs.
@@ -64,11 +64,13 @@ test("the version is one number: package.json, src/version.ts, serverInfo and ev
           `${file} fileSha256 is neither TBD nor a sha256: ${p.fileSha256}`);
       }
     }
-    // This server ships stdio and .mcpb only. It has no hosted endpoint, so NO manifest may
-    // advertise a remote: the registry binds one endpoint URL to exactly one server name,
-    // and a remote here would claim a URL that does not answer.
-    assert.equal(j.remotes, undefined, `${file} advertises a remote; this server is not hosted`);
-    assert.equal(existsSync(join(HERE, "remotes.json")), false, "remotes.json must not exist: this server is not hosted");
+    if (file === "server.mcpb.json") {
+      const remotes = JSON.parse(readFileSync(join(HERE, "remotes.json"), "utf8"));
+      assert.deepEqual(j.remotes, remotes, `${file} remotes must equal remotes.json (hosted at /mcp/packing-list)`);
+      assert.equal(remotes[0].url, "https://mcp.zovo.one/mcp/packing-list");
+    } else {
+      assert.equal(j.remotes, undefined, `${file} is a stdio-only name and must not advertise a remote`);
+    }
     assert.ok((j.description ?? "").length < 100, `${file} description is ${(j.description ?? "").length} chars; the registry 422s at 100`);
     assert.ok(!/[,.]\.$|,$/.test(j.description), `${file} description ends in a machine truncation`);
     assert.ok(!/\u2014/.test(JSON.stringify(j)), `${file} carries an em dash`);
@@ -90,6 +92,8 @@ test("every registry name carries a token this server can actually be found on",
   // Registry search matches a substring of the FULL name and nothing else; the description
   // is never searched (docs/NAMING_R5_RESULT.md). So the tokens this server is meant to be
   // findable on have to be IN the names, and this asserts they are rather than assuming it.
+  assert.ok(existsSync(join(HERE, "remotes.json")), "remotes.json is missing: this server has a hosted route in remote/src/index.ts");
+
   const names = MANIFESTS.filter((f) => f !== "server.mcpb.json")
     .map((f) => JSON.parse(readFileSync(join(HERE, f), "utf8")).name.toLowerCase());
   const joined = names.join(" ");
@@ -380,15 +384,19 @@ test("the estate lists this server everywhere a new server has to be registered"
   }
 });
 
-test("this server is NOT registered on any hosted surface, because it has none", () => {
-  // The inverse registration, and it matters as much as the positive one. The registry binds
-  // one hosted endpoint URL to exactly one server name, so a /mcp/packing-list row anywhere would
-  // claim a URL that has never answered and would burn the name for the day it is hosted.
-  // scripts/validate.mjs drives the LIVE endpoints in its remote() section; a name added
-  // there fails forever rather than once.
+test("the hosted registration is exactly the honest live state", () => {
+  // The hosted route exists in remote/src/index.ts and the loop-35 hosted wave DEPLOYED and
+  // proved it live (docs/HOSTED_LOOP35.md: a mutating tools/call through the advertised URL
+  // shape, plus the no-token 401 control). data/distribution.json must therefore carry the
+  // exact published URL - it is the ONLY string that means live, because scripts/kpi.mjs
+  // counts hosted servers by string match.
+  const dist = JSON.parse(readFileSync(join(REPO, "data", "distribution.json"), "utf8"));
+  const hosted = String(dist.per_server["packing-list"].hosted);
+  const published = "published https://mcp.zovo.one/mcp/packing-list";
+  assert.ok(hosted === published || hosted.startsWith("pending deploy:"),
+    `distribution.json per_server.packing-list.hosted is neither the exact published string nor a pending note: ${"$"}{hosted}`);
+  // And the live-validation remote sweep covers this server, added by the wiring loop.
   const validate = readFileSync(join(REPO, "scripts", "validate.mjs"), "utf8");
   const remoteBlock = validate.slice(validate.indexOf("async function remote()"));
-  assert.equal(remoteBlock.includes('"packing-list"'), false, "scripts/validate.mjs remote() probes packing-list over HTTP, but it has no hosted endpoint");
-  const dist = JSON.parse(readFileSync(join(REPO, "data", "distribution.json"), "utf8"));
-  assert.match(dist.per_server["packing-list"].hosted, /^none by design/, "distribution.json claims a hosted endpoint for packing-list");
+  assert.ok(remoteBlock.includes(`"packing-list"`), "scripts/validate.mjs remote() does not probe packing-list");
 });

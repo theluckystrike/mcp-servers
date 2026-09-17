@@ -1,0 +1,86 @@
+{
+  "manifest_version": "0.2",
+  "name": "mcp-mileage-log",
+  "display_name": "Mileage Log",
+  "version": "0.22.0",
+  "description": "Mileage log for deductible driving: trips, effective-dated rates, summaries and CSV export.",
+  "author": {
+    "name": "theluckystrike",
+    "url": "https://github.com/theluckystrike"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/theluckystrike/mcp-servers"
+  },
+  "homepage": "https://mcp.zovo.one",
+  "license": "MIT",
+  "server": {
+    "type": "node",
+    "entry_point": "server/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": [
+        "${__dirname}/server/index.js"
+      ],
+      "env": {
+        "MCP_LICENSE_KEY": "${user_config.license_key}"
+      }
+    }
+  },
+  "user_config": {
+    "license_key": {
+      "type": "string",
+      "title": "License key",
+      "description": "Optional Pro license key (format MCPL1.xxx.yyy). Leave blank to use the free tier.",
+      "sensitive": true,
+      "required": false
+    }
+  },
+  "tools": [
+    {
+      "name": "trip_add",
+      "description": "Log one drive in the mileage log: the date, where from and to, the distance in miles or km, the purpose, and the category (business, medical, moving, charitable, personal). Returns its TR-YYYY-NNNN id. Free tier: 20 trips per calendar month, counted on the month of the trip date."
+    },
+    {
+      "name": "trip_list",
+      "description": "List trips in the mileage log, oldest first: date, from, to, distance, category, and the amount each earns under the rate in force on its day (or the plain reason it is unpriced). Filter by date range and category. Reads only."
+    },
+    {
+      "name": "trip_remove",
+      "description": "Remove one trip from the mileage log by its exact TR-YYYY-NNNN id, for entries made by mistake. The id is not reissued: a gap in the TR series is the record that a trip was removed."
+    },
+    {
+      "name": "rate_set",
+      "description": "Set what one mile or km is worth for one category in one jurisdiction from a date forward: the jurisdiction label, the category, the rate per unit, the currency, and the date it takes effect. Rates form a series per jurisdiction and category, and each trip earns the rate in force on the day it was driven. No rate ships with this server; the figures are yours to verify. Free tier: one rate per jurisdiction and category; the year-over-year series is Pro."
+    },
+    {
+      "name": "rate_list",
+      "description": "List every mileage rate on file, grouped by jurisdiction and category with the effective-from dates in order: the series each trip is priced from. Reads only."
+    },
+    {
+      "name": "mileage_summary",
+      "description": "The deductible mileage for a date range, per category: trips, distance kept per unit, the rate each trip earned (the one in force on its day), and the deductible amount, totalled per currency. Trips with no applicable rate are listed with the reason, not silently dropped. Defaults to the current calendar year. Never metered."
+    },
+    {
+      "name": "mileage_export",
+      "description": "The mileage log as CSV, one row per trip, oldest first: date, from, to, distance, unit, category, the rate applied (the one in force on the trip's day), the currency and the amount, plus purpose, jurisdiction, effective_from and id. The amount column is a bare number a spreadsheet reads. Refuses while any non-personal trip in the window is unpriced, so an accountant never receives a log with silent gaps. Pro."
+    },
+    {
+      "name": "license_status",
+      "description": "Report this server's licence state: product, tier free or pro, licence id, expiry, the key source and the upgrade URL. No arguments, no network. Explains a free-tier refusal; license_activate installs a key."
+    },
+    {
+      "name": "license_activate",
+      "description": "Activate a Pro key (MCPL1.xxx.yyy) from checkout: verified offline against a built-in public key, saved to your config file. A wrong, malformed or expired key is refused, unsaved. license_status reads it back."
+    }
+  ],
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "mileage-log",
+    "mileage-logbook",
+    "mileage-tracker",
+    "tax-deduction",
+    "expenses"
+  ]
+}

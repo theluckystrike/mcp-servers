@@ -2,7 +2,7 @@
   "manifest_version": "0.2",
   "name": "mcp-packing-list",
   "display_name": "Packing List",
-  "version": "0.21.0",
+  "version": "0.22.0",
   "description": "Packing slips: cartons, contents, weights, chargeable weight and what is still to pack.",
   "author": {
     "name": "theluckystrike",

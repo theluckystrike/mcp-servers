@@ -1,0 +1,96 @@
+{
+ "at": "2026-09-17",
+ "axis1_github": {
+  "mirrors_audited": 38,
+  "descriptions_with_hosted_url": "38/38 (PATCHed this session; 5 retried after HTTP 422 char-cap)",
+  "topics": "38/38, avg 16.1 unique per capability, already healthy",
+  "homepage": "38/38 set to https://mcp.zovo.one/s/<server>, endpoints 200",
+  "social_preview": "0/38 custom; GitHub exposes no write API \u2014 human-gated (Settings upload per repo)"
+ },
+ "axis2_ranking": {
+  "invoice": {
+   "q": "topic:mcp-server invoice",
+   "total": 152,
+   "returned": 100,
+   "ours": [
+    {
+     "rank": 27,
+     "repo": "theluckystrike/mcp-invoice-generator",
+     "stars": 0,
+     "desc": "Model Context Protocol (MCP) server for invoice generation: an invoice generator that can generate a numbered "
+    },
+    {
+     "rank": 38,
+     "repo": "theluckystrike/mcp-recurring",
+     "stars": 0,
+     "desc": "Model Context Protocol (MCP) server for recurring invoices and subscription billing: handles scheduled invoice"
+    },
+    {
+     "rank": 98,
+     "repo": "theluckystrike/mcp-credit-note",
+     "stars": 0,
+     "desc": "Model Context Protocol (MCP) server for credit notes and credit memos against an invoice or standalone. Credit"
+    }
+   ]
+  },
+  "barcode": {
+   "q": "topic:mcp-server barcode",
+   "total": 20,
+   "returned": 20,
+   "ours": [
+    {
+     "rank": 4,
+     "repo": "theluckystrike/mcp-barcode",
+     "stars": 0,
+     "desc": "Model Context Protocol (MCP) server for QR code and barcode generation: generates barcodes and QR codes. QR co"
+    }
+   ]
+  },
+  "pdf": {
+   "q": "topic:mcp-server pdf generation",
+   "total": 19,
+   "returned": 19,
+   "ours": [
+    {
+     "rank": 17,
+     "repo": "theluckystrike/mcp-invoice-generator",
+     "stars": 0,
+     "desc": "Model Context Protocol (MCP) server for invoice generation: an invoice generator that can generate a numbered "
+    }
+   ]
+  },
+  "timesheet": {
+   "q": "topic:mcp-server timesheet",
+   "total": 8,
+   "returned": 8,
+   "ours": [
+    {
+     "rank": 3,
+     "repo": "theluckystrike/mcp-time-tracker",
+     "stars": 0,
+     "desc": "Model Context Protocol (MCP) server for time tracking: timesheets, a timesheet and a billable hours tracker. T"
+    }
+   ]
+  },
+  "amortization": {
+   "q": "topic:mcp-server amortization",
+   "total": 1,
+   "returned": 1,
+   "ours": [
+    {
+     "rank": 1,
+     "repo": "theluckystrike/mcp-amortization",
+     "stars": 0,
+     "desc": "Model Context Protocol (MCP) server for loan and lease amortization schedules. Loan and lease schedules from t"
+    }
+   ]
+  }
+ },
+ "axis3_channels": {
+  "reddit": "human-gated (all submit routes 403)",
+  "youtube": "human-gated (sign-in redirect)",
+  "medium": "human-gated (403)",
+  "mcpservers.org": "no-auth form exists but no API path; requires contact email; live search returns 0 zovo hits",
+  "mcpmarket.com": "403 WAF \u2014 human-gated"
+ }
+}

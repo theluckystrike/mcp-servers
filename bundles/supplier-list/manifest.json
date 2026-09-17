@@ -1,0 +1,90 @@
+{
+  "manifest_version": "0.2",
+  "name": "mcp-supplier-list",
+  "display_name": "Supplier List",
+  "version": "0.22.0",
+  "description": "A supplier directory that does not rot: contacts, terms, lead times, review dates.",
+  "author": {
+    "name": "theluckystrike",
+    "url": "https://github.com/theluckystrike"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/theluckystrike/mcp-servers"
+  },
+  "homepage": "https://mcp.zovo.one",
+  "license": "MIT",
+  "server": {
+    "type": "node",
+    "entry_point": "server/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": [
+        "${__dirname}/server/index.js"
+      ],
+      "env": {
+        "MCP_LICENSE_KEY": "${user_config.license_key}"
+      }
+    }
+  },
+  "user_config": {
+    "license_key": {
+      "type": "string",
+      "title": "License key",
+      "description": "Optional Pro license key (format MCPL1.xxx.yyy). Leave blank to use the free tier.",
+      "sensitive": true,
+      "required": false
+    }
+  },
+  "tools": [
+    {
+      "name": "supplier_add",
+      "description": "Add a supplier to the directory and return its SUP-YYYY-NNNN number: the name, what they supply, who to contact and how, the payment terms, the lead time in days, and notes. Free tier: 10 suppliers; removing one you no longer use frees its slot."
+    },
+    {
+      "name": "supplier_list",
+      "description": "List the supplier directory A to Z by name: contact, payment terms, lead time, when each record was last reviewed and how many days ago that was. Filter by category and by free text across every field. Reads only."
+    },
+    {
+      "name": "supplier_get",
+      "description": "Read one supplier record in full by SUP number or name: every contact field, the payment terms, the lead time, the notes, and when the record was last reviewed. Reads only."
+    },
+    {
+      "name": "supplier_update",
+      "description": "Change any of a supplier's fields by SUP number or name: name, category, the contact fields, payment terms, lead time, notes. Only the fields you pass change; pass at least one. The SUP number and the review stamp are not writable here -- supplier_mark_reviewed does the stamp."
+    },
+    {
+      "name": "supplier_remove",
+      "description": "Remove a supplier from the directory by SUP number or name, returning the record as it stood so nothing is lost silently. The SUP number is never reissued. On the free tier the slot is freed for another supplier."
+    },
+    {
+      "name": "supplier_mark_reviewed",
+      "description": "Stamp a supplier's record as reviewed on a date, today by default: you have checked the contact, the terms and the lead time are still true. This is the stamp supplier_due_review reads, so a reviewed record stops being flagged as stale."
+    },
+    {
+      "name": "supplier_due_review",
+      "description": "The due-review report: every supplier whose record has not been reviewed in the last N days -- 90 unless you say otherwise -- most overdue first. A record never reviewed is always due, whatever its age. This is the report that keeps the directory from rotting. Pro feature."
+    },
+    {
+      "name": "supplier_export",
+      "description": "Export the supplier directory as CSV or a Markdown table: every field, one row per supplier, A to Z by name. CSV opens in any spreadsheet; Markdown drops into a doc, a wiki or a README. Filter by category and free text first if you only want part of it. CSV is free; Markdown is Pro."
+    },
+    {
+      "name": "license_status",
+      "description": "Report this server's licence state: product, tier free or pro, licence id, expiry, the key source and the upgrade URL. No arguments, no network. Explains a free-tier refusal; license_activate installs a key."
+    },
+    {
+      "name": "license_activate",
+      "description": "Activate a Pro key (MCPL1.xxx.yyy) from checkout: verified offline against a built-in public key, saved to your config file. A wrong, malformed or expired key is refused, unsaved. license_status reads it back."
+    }
+  ],
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "supplier-list",
+    "supplier-directory",
+    "vendors",
+    "procurement",
+    "lead-times"
+  ]
+}

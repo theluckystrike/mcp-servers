@@ -1,0 +1,120 @@
+{
+  "generated_at": "2026-09-12T13:15:09.000Z",
+  "loop": 35,
+  "agent": "quality",
+  "ledger_source": "data/user_value_index.json (scripts/uv-index.mjs)",
+  "before": {
+    "fixed": 123,
+    "open": 25,
+    "total": 148
+  },
+  "after": {
+    "resolved_in_source": 136,
+    "fixed_this_loop": [
+      "D-R41",
+      "D-R68",
+      "D-R81",
+      "D-R75"
+    ],
+    "verified_already_fixed_ledger_stale": [
+      "D-K2",
+      "D-K4",
+      "D-K7",
+      "D-K9",
+      "D-K10",
+      "D-R46",
+      "D-R47",
+      "D-R48",
+      "D-R55"
+    ],
+    "deferred_wave_c": [
+      {
+        "id": "D-R50",
+        "reason": "whoami-as-tool is a packages/mcp-license + vendored-fleet change across 33 servers; orchestrator decision"
+      },
+      {
+        "id": "D-R74",
+        "reason": "fix is remote/ upload-note text stating the measured base64 retype-time ceiling; outside servers/ edit rights"
+      },
+      {
+        "id": "D-R41",
+        "half": "spreadsheet",
+        "reason": "sheet_query description edit; descriptions are build-vendor exact-string patch targets, reserved to wave C"
+      },
+      {
+        "id": "D-R75",
+        "half": "currency",
+        "reason": "convert_many description edit; same description rule"
+      }
+    ],
+    "not_server_defects": {
+      "client": [
+        "D-D2",
+        "D-R17",
+        "D-R49",
+        "D-R62",
+        "D-R63"
+      ],
+      "harness": [
+        "D-E4",
+        "D-R9",
+        "D-R10"
+      ],
+      "accepted": [
+        "D-R56"
+      ],
+      "superseded": [
+        "D-R11"
+      ]
+    },
+    "partial": {
+      "D-R75": "stopword half fixed (similar/record/reducing); company-name half (helio) is a proper-noun heuristic, recorded not attempted"
+    }
+  },
+  "fixes": [
+    {
+      "id": "D-R41",
+      "server": "expense-tracker",
+      "file": "servers/expense-tracker/src/index.ts",
+      "change": "expense_export counts rows excluded by the active project/category/billable filters and names them",
+      "before": "expense_export {project: \"Nova Labs\"} with one projected and one unprojected expense in the window -> \"Wrote 1 expenses to <path> (csv).\" and nothing else",
+      "after": "same call appends \"1 more expense in this period was left out by the project \\\"Nova Labs\\\" filter - export the same period with no filter to include it.\"",
+      "tests": "servers/expense-tracker/test/round35.test.mjs (3 tests); npm test: 61/61 pass"
+    },
+    {
+      "id": "D-R68",
+      "server": "time-tracker",
+      "file": "servers/time-tracker/src/index.ts",
+      "change": "windowFor carries unread (whole requested window older than the free 7-day floor); all six clamped callsites answer via windowTail() with a nothing-was-read note",
+      "before": "entry_list {from: \"2020-01-01\", to: \"2020-01-31\"} free tier -> \"No entries found for that filter. Note: the free tier shows the last 7 days.\" (identical to an empty month)",
+      "after": "-> \"Nothing was read: every day in the window you asked for is older than the free tier's last 7 days, so the period was never opened. An empty answer here means unread, not empty.\"",
+      "tests": "servers/time-tracker/test/round35.test.mjs (4 tests); npm test: 35 pass 0 fail 1 pre-existing skip; round35 alone 4/4"
+    },
+    {
+      "id": "D-R81",
+      "server": "clauses",
+      "file": "servers/clauses/src/index.ts",
+      "change": "free-tier tag-skip note in clause_search names clause_list as the free path",
+      "before": "\"...the tag filter (retainer) was not applied. <upgrade link>\"",
+      "after": "\"...was not applied. clause_list is free and returns every clause's tags, so the tagged matches are one free call away. <upgrade link>\"",
+      "tests": "servers/clauses/test/round35.test.mjs (2 tests); npm test: 40 pass 0 fail 1 pre-existing skip"
+    },
+    {
+      "id": "D-R75",
+      "server": "resume",
+      "file": "servers/resume/src/tailor.ts",
+      "change": "STOP list gains measured non-keywords similar, record, records, reduce, reduced, reducing",
+      "before": "extractKeywords on a posting with \"a strong track record of reducing latency... A similar role in fintech is a plus\" counted similar/record/reducing in the target set, deflating coverage",
+      "after": "all three absent from the keyword set; postgresql and kubernetes still extracted",
+      "tests": "servers/resume/test/round35.test.mjs (1 test); npm test: 38 pass 0 fail 1 pre-existing skip"
+    }
+  ],
+  "verification_commands": {
+    "ledger_count": "python3 filter over data/user_value_index.json ledger for status != \"fixed\" -> 25 entries",
+    "kanban_grep": "/usr/bin/grep -n \"MAX_ROW_LIMIT|capRows|timeTrackerProjects|project is blank|at least 2 named columns\" servers/kanban/src/{board,index}.ts -> all present",
+    "vendor_anchor": "/usr/bin/grep -cF 'return ok(`Wrote ${data.length} expenses to ${target} (${a.format}).`' servers/expense-tracker/src/index.ts -> 1",
+    "builds": "npm run build in servers/{time-tracker,expense-tracker,clauses,resume} -> tsc clean exit 0",
+    "tests": "npm test per server with npm_config_cache=/Users/mike/.npm-cache-local: time-tracker 35/36 (1 pre-existing skip), expense-tracker 61/61, clauses 40/41 (skip), resume 38/39 (skip), kanban 29/29, invoice 53/54 (skip), docx 33/34 (skip), bank-statement 53/53"
+  },
+  "not_run": "node remote/build-vendor.mjs (rule 6: a wave-A deploy may be mid-flight; anchors verified statically instead)"
+}

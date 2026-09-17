@@ -459,7 +459,9 @@ test("VALIDATION and BILLING_TEST_COUNT match the files they claim to report", (
   assert.equal(VALIDATION.at, last.at.slice(0, 10), "VALIDATION.at is not the last run in data/validation.json");
   assert.equal(VALIDATION.pass, pass);
   assert.equal(VALIDATION.total, total);
-  assert.equal(VALIDATION.servers, last.results.length);
+  assert.equal(VALIDATION.servers,
+    last.results.filter((r) => r.id !== "remote (mcp.zovo.one/mcp)" && r.id !== "billing (mcp.zovo.one)").length,
+    "VALIDATION.servers is not the number of server results in data/validation.json (the remote and billing service results are not servers)");
   assert.equal(VALIDATION.medianMs, ms[Math.floor(ms.length / 2)]);
 
   const dir = join(dirname(fileURLToPath(import.meta.url)));

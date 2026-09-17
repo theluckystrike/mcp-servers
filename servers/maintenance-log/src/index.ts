@@ -1,0 +1,386 @@
+#!/usr/bin/env node
+import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { createLicenseGate, withFileLock } from "@theluckystrike/mcp-license";
+import { z } from "zod";
+import { VERSION } from "./version.js";
+import {
+  MAX_CENTS, MAX_ENTRIES, MAX_INTERVAL_DAYS, addDays, currentSchedule, csvField, daysBetween,
+  isIsoDate, lastServiceDate, mdCell, money, today, totalSpentCents,
+  type Asset, type LogEntry,
+} from "./maintenance.js";
+import { dataDir, findAsset, getAssets, lockPath, nextId, resolveAsset, setAssets } from "./store.js";
+
+/**
+ * Free tier: THREE assets. Logging work on the assets you have, the per-asset history
+ * with its total spend, and the CSV export are never metered: the log is the record of
+ * what was done to the machine, and a free tier that withholds the record is a demo.
+ * What is metered is how many assets are on the register at once, the due report, and
+ * the Markdown summaries.
+ */
+const FREE_ASSETS = 3;
+const MAX_NAME = 200;
+const MAX_TEXT = 2000;
+const DEFAULT_WITHIN_DAYS = 30;
+const MAX_WITHIN_DAYS = 3650;
+
+const gate = createLicenseGate({ product: "maintenance-log" });
+
+const ok = (text: string) => ({ content: [{ type: "text" as const, text }] });
+const fail = (text: string) => ({ content: [{ type: "text" as const, text: `Error: ${text}` }], isError: true as const });
+const json = (v: unknown) => ok(JSON.stringify(v, null, 2));
+
+const str = (field: string, max: number) => z.string().max(max, `${field} must be ${max} characters or fewer`);
+
+/** Only this server's own store is written, so there is one lock and it is this one. */
+function locked<T>(fn: () => T | Promise<T>): Promise<T> {
+  return withFileLock(lockPath(), fn, { timeoutMs: 20000 });
+}
+
+function checkDate(value: string, field: string): string {
+  if (!isIsoDate(value)) throw new Error(`cannot read a date: ${field} "${value}" is not a real date in YYYY-MM-DD form. Nothing was written.`);
+  return value;
+}
+
+const DATES =
+  "Every date is stored as ISO 8601 (YYYY-MM-DD). Whether a service is overdue is computed from today's date at the moment you ask, never stored, " +
+  "so the register cannot go stale. An interval is turned into a date once, when the work is logged: the work date plus the interval, in whole days.";
+
+const MONEY =
+  "Every cost is an integer number of cents in the asset's own currency (1200 is 12.00), stored on the entry. A total spend is the sum of the stored entries, " +
+  "so it can never drift from the lines it is made of.";
+
+/* ------------------------------------------------------------- view helpers */
+
+function entryJson(e: LogEntry, currency: string) {
+  return {
+    date: e.date, work: e.work,
+    cost_cents: e.cost_cents, cost: money(e.cost_cents, currency),
+    technician: e.technician, next_due: e.next_due, interval_days: e.interval_days,
+    logged: e.logged,
+  };
+}
+
+function assetSummary(a: Asset) {
+  const schedule = currentSchedule(a);
+  return {
+    id: a.id, name: a.name, tag: a.tag, location: a.location, currency: a.currency,
+    entries: a.log.length,
+    total_spent_cents: totalSpentCents(a.log), total_spent: money(totalSpentCents(a.log), a.currency),
+    last_service: lastServiceDate(a),
+    next_due: schedule ? schedule.next_due : null,
+    updated: a.updated,
+  };
+}
+
+/** Chronological: by work date, then by when the entry was logged, so a backfilled entry lands in date order. */
+function sortedLog(a: Asset): LogEntry[] {
+  return [...a.log].sort((x, y) => (x.date === y.date ? (x.logged < y.logged ? -1 : x.logged === y.logged ? 0 : 1) : x.date < y.date ? -1 : 1));
+}
+
+function freeTierNote(): string | null {
+  if (gate.isPro()) return null;
+  return `Free tier: ${getAssets().length} of ${FREE_ASSETS} assets on the register.`;
+}
+
+/* ------------------------------------------------------------------- server */
+
+const server = new McpServer(
+  { name: "mcp-maintenance-log", version: VERSION },
+  { capabilities: { tools: {} } },
+);
+
+const assetArg = str("asset", MAX_NAME).describe("The asset id, e.g. AST-2026-0003, its serial or asset tag, or its name when only one asset has it");
+
+server.registerTool("asset_add", {
+  title: "Add an asset to the register",
+  description: "Add one piece of equipment to the maintenance register: its name, its serial or asset tag, where it lives, and the currency its costs are in. Returns the AST-YYYY-NNNN id. Free tier: 3 assets; logging work on the assets you have is never metered.",
+  inputSchema: {
+    name: str("name", MAX_NAME).describe("What the asset is called, e.g. Lathe, Combi boiler, Van 2, or Studio camera A"),
+    tag: str("tag", MAX_NAME).optional().describe("The serial number or asset tag, e.g. SN-88-4412. Unique across the register: a second asset with the same tag is refused"),
+    location: str("location", 400).optional().describe("Where the asset lives, e.g. Workshop bay 2, or 14 Nowa Street, flat 3"),
+    notes: str("notes", MAX_TEXT).optional().describe("Anything worth keeping with the asset, e.g. Model, warranty end, supplier"),
+    currency: z.string().regex(/^[A-Za-z]{3}$/, "currency must be a 3-letter ISO code such as USD").optional().describe("ISO code the costs are in. Default USD"),
+  },
+}, async (a) => {
+  try {
+    const rec = await locked(() => {
+      const list = getAssets();
+      if (!gate.isPro() && list.length >= FREE_ASSETS) {
+        throw new Error(
+          `the free tier holds ${FREE_ASSETS} assets and there are already ${list.length} (${list.map((x) => `${x.id} ${x.name}`).join(", ")}). ` +
+          `Logging on the assets you have stays free; removing one frees its slot. Nothing was written. ` +
+          gate.upgradeText("unlimited assets", "asset_add"),
+        );
+      }
+      const tag = a.tag?.trim() || null;
+      if (tag) {
+        const dupe = list.find((x) => x.tag !== null && x.tag.toLowerCase() === tag.toLowerCase());
+        if (dupe) {
+          throw new Error(`tag "${tag}" is already on ${dupe.id} (${dupe.name}). A serial identifies one machine; pass a different tag, or log against ${dupe.id}. Nothing was written.`);
+        }
+      }
+      const now = new Date().toISOString();
+      const id = nextId(now.slice(0, 4), list.map((x) => x.id));
+      const asset: Asset = {
+        id, name: a.name.trim(), tag,
+        location: a.location?.trim() || null,
+        notes: a.notes ?? null,
+        currency: (a.currency ?? "USD").toUpperCase(),
+        log: [], created: now, updated: now,
+      };
+      list.push(asset);
+      setAssets(list);
+      return asset;
+    });
+    const notes: string[] = [];
+    const free = freeTierNote();
+    if (free) notes.push(free);
+    return json({
+      created: assetSummary(rec),
+      notes: [...notes, `Log work against it with maintenance_log: the date, what was done, the cost in cents, and when the next service falls due, as a date or as an interval in days.`],
+      basis: `${DATES} ${MONEY}`,
+    });
+  } catch (e) { return fail((e as Error).message); }
+});
+
+server.registerTool("maintenance_log", {
+  title: "Log maintenance on an asset",
+  description: "Log work done on an asset: the day, what was done, the cost in whole cents, who did it, and when the next service falls due -- as a date (next_due) or as an interval in days (interval_days), never both. A repair that sets no schedule takes neither. A future work date is refused.",
+  inputSchema: {
+    asset: assetArg,
+    date: str("date", 10).describe("The day the work was done, YYYY-MM-DD. A future date is refused"),
+    work: str("work", MAX_TEXT).describe("What was done, e.g. Oil and filter change, or Annual boiler service"),
+    cost_cents: z.number().int().min(0).max(MAX_CENTS).optional().describe("What the work cost in whole cents. 12000 is 120.00. Default 0, for in-house work"),
+    technician: str("technician", MAX_NAME).optional().describe("Who did the work, e.g. Anna, or Acme Heating Ltd"),
+    next_due: str("next_due", 10).optional().describe("The date the next service falls due, YYYY-MM-DD. Pass either this or interval_days, not both"),
+    interval_days: z.number().int().min(1).max(MAX_INTERVAL_DAYS).optional().describe("Days after the work date the next service falls due, e.g. 90 for quarterly. Turned into a date once, at log time"),
+  },
+}, async (a) => {
+  try {
+    const date = checkDate(a.date, "date");
+    const now = today();
+    if (date > now) throw new Error(`the work is dated ${date}, which is after today (${now}). Work cannot have been done yet. Nothing was written.`);
+    if (a.next_due !== undefined && a.interval_days !== undefined) {
+      throw new Error(`pass either next_due (a date) or interval_days (a number of days), not both: one says when, the other says after how long, and taking both would be a guess about which you meant. Nothing was written.`);
+    }
+    let due: string | null = null;
+    if (a.next_due !== undefined) {
+      due = checkDate(a.next_due, "next_due");
+      if (due < date) throw new Error(`next_due ${due} is before the work date ${date}. The next service cannot fall due before the work that sets it. Nothing was written.`);
+    } else if (a.interval_days !== undefined) {
+      due = addDays(date, a.interval_days);
+    }
+    const out = await locked(() => {
+      const list = getAssets();
+      const asset = resolveAsset(list, a.asset);
+      if (asset.log.length >= MAX_ENTRIES) throw new Error(`${asset.id} already carries ${MAX_ENTRIES} entries, which is the ceiling. Nothing was written.`);
+      const e: LogEntry = {
+        date, work: a.work.trim(), cost_cents: a.cost_cents ?? 0,
+        technician: a.technician?.trim() || null,
+        next_due: due, interval_days: a.interval_days ?? null,
+        logged: new Date().toISOString(),
+      };
+      asset.log.push(e);
+      asset.updated = new Date().toISOString();
+      setAssets(list);
+      return { asset, e };
+    });
+    const notes: string[] = [];
+    if (due !== null) {
+      notes.push(`Next service due ${due}${a.interval_days !== undefined ? ` (${date} + ${a.interval_days} days)` : ""}. maintenance_due reports it the moment it is overdue.`);
+    } else {
+      notes.push("No next service was scheduled on this entry. Pass next_due or interval_days on the next log to put the asset on a schedule.");
+    }
+    return json({ logged: entryJson(out.e, out.asset.currency), asset: assetSummary(out.asset), notes, basis: `${DATES} ${MONEY}` });
+  } catch (e) { return fail((e as Error).message); }
+});
+
+server.registerTool("maintenance_due", {
+  title: "Report what is overdue and what is coming due",
+  description: "The due report across every asset: what is overdue and by how many days, what falls due within the next N days (default 30), what is scheduled later, and what has no schedule at all. Computed from the stored next-due dates against today, at call time. Pro feature.",
+  inputSchema: {
+    within_days: z.number().int().min(0).max(MAX_WITHIN_DAYS).optional().describe(`How far ahead to look, in days. Default ${DEFAULT_WITHIN_DAYS}`),
+  },
+}, async (a) => {
+  try {
+    if (!gate.isPro()) return fail(gate.upgradeText("the maintenance due report", "maintenance_due"));
+    const within = a.within_days ?? DEFAULT_WITHIN_DAYS;
+    const now = today();
+    const horizon = addDays(now, within);
+    const overdue: object[] = [];
+    const dueSoon: object[] = [];
+    const later: object[] = [];
+    const unscheduled: object[] = [];
+    for (const asset of getAssets()) {
+      const schedule = currentSchedule(asset);
+      const base = {
+        id: asset.id, name: asset.name, tag: asset.tag, location: asset.location,
+        last_service: lastServiceDate(asset),
+        set_by: schedule ? { work_date: schedule.work_date, work: schedule.work } : null,
+      };
+      if (!schedule) {
+        unscheduled.push({ ...base, entries: asset.log.length });
+        continue;
+      }
+      const row = { ...base, next_due: schedule.next_due };
+      if (schedule.next_due < now) {
+        overdue.push({ ...row, days_overdue: daysBetween(schedule.next_due, now) });
+      } else if (schedule.next_due <= horizon) {
+        dueSoon.push({ ...row, days_until_due: daysBetween(now, schedule.next_due) });
+      } else {
+        later.push({ ...row, days_until_due: daysBetween(now, schedule.next_due) });
+      }
+    }
+    overdue.sort((x, y) => (y as { days_overdue: number }).days_overdue - (x as { days_overdue: number }).days_overdue);
+    dueSoon.sort((x, y) => (x as { days_until_due: number }).days_until_due - (y as { days_until_due: number }).days_until_due);
+    later.sort((x, y) => (x as { days_until_due: number }).days_until_due - (y as { days_until_due: number }).days_until_due);
+    const notes: string[] = [];
+    if (overdue.length) notes.push(`${overdue.length} asset${overdue.length === 1 ? " is" : "s are"} overdue. Log the service with maintenance_log and set the next due date there.`);
+    if (unscheduled.length) notes.push(`${unscheduled.length} asset${unscheduled.length === 1 ? " has" : "s have"} no schedule: pass next_due or interval_days on their next log to put them on one.`);
+    return json({
+      today: now, within_days: within, due_soon_window: `${now} to ${horizon}`,
+      overdue_count: overdue.length, due_soon_count: dueSoon.length,
+      overdue, due_soon: dueSoon, scheduled_later: later, unscheduled,
+      rule: "An asset lives under the next-due date set by its most recent log entry that carries one. Overdue is before today; due soon is today through the window; the rest is scheduled later. Computed at call time; nothing about it is stored.",
+      notes, basis: DATES,
+    });
+  } catch (e) { return fail((e as Error).message); }
+});
+
+server.registerTool("asset_history", {
+  title: "Read one asset's log and total spend",
+  description: "Read one asset in full by id, tag or name: every log entry in chronological order, the total spend as integer cents with a formatted amount, the last service date, and the next-due date the asset currently lives under. Reads only.",
+  inputSchema: {
+    asset: assetArg,
+  },
+}, async (a) => {
+  try {
+    const list = getAssets();
+    const asset = findAsset(list, a.asset);
+    if (!asset) throw new Error(`no asset matches "${a.asset}". Known: ${list.map((x) => `${x.id} (${x.name})`).join(", ") || "none"}.`);
+    const schedule = currentSchedule(asset);
+    const perTechnician = new Map<string, number>();
+    for (const e of asset.log) {
+      const who = e.technician ?? "unrecorded";
+      perTechnician.set(who, (perTechnician.get(who) ?? 0) + e.cost_cents);
+    }
+    return json({
+      ...assetSummary(asset),
+      notes: asset.notes,
+      created: asset.created,
+      schedule: schedule
+        ? { next_due: schedule.next_due, set_by: { work_date: schedule.work_date, work: schedule.work }, days_until_due: daysBetween(today(), schedule.next_due) }
+        : null,
+      spend_by_technician: [...perTechnician.entries()].map(([technician, cents]) => ({ technician, total_cents: cents, total: money(cents, asset.currency) })),
+      log: sortedLog(asset).map((e) => entryJson(e, asset.currency)),
+      basis: `${DATES} ${MONEY}`,
+    });
+  } catch (e) { return fail((e as Error).message); }
+});
+
+server.registerTool("maintenance_export", {
+  title: "Export the log as CSV or Markdown",
+  description: "Export maintenance entries dated inside a range. CSV (free): one row per entry, ready for a spreadsheet. Markdown (Pro): one section per asset with its entries, total spend and next due date, ready to paste into notes or a report. Writes nothing.",
+  inputSchema: {
+    from: str("from", 10).optional().describe("Only entries dated on or after this, YYYY-MM-DD. Default: no lower bound"),
+    to: str("to", 10).optional().describe("Only entries dated on or before this, YYYY-MM-DD. Default: no upper bound"),
+    format: z.enum(["csv", "markdown"]).optional().describe("csv (default) or markdown. Markdown summaries are a Pro feature"),
+  },
+}, async (a) => {
+  try {
+    const from = a.from !== undefined ? checkDate(a.from, "from") : null;
+    const to = a.to !== undefined ? checkDate(a.to, "to") : null;
+    if (from !== null && to !== null && from > to) throw new Error(`from ${from} is after to ${to}. A range runs from the earlier date to the later. Nothing was written.`);
+    const format = a.format ?? "csv";
+    if (format === "markdown" && !gate.isPro()) return fail(gate.upgradeText("Markdown summaries", "maintenance_export"));
+    const assets = getAssets();
+    const picked = assets
+      .map((asset) => ({ asset, entries: sortedLog(asset).filter((e) => (from === null || e.date >= from) && (to === null || e.date <= to)) }))
+      .filter((p) => p.entries.length > 0);
+
+    if (format === "csv") {
+      const lines: string[] = [];
+      lines.push("asset_id,asset_name,tag,location,date,work,technician,cost_cents,currency,cost,next_due");
+      for (const { asset, entries } of picked) {
+        for (const e of entries) {
+          lines.push([
+            asset.id, csvField(asset.name), csvField(asset.tag ?? ""), csvField(asset.location ?? ""),
+            e.date, csvField(e.work), csvField(e.technician ?? ""),
+            String(e.cost_cents), asset.currency, csvField(money(e.cost_cents, asset.currency)), e.next_due ?? "",
+          ].join(","));
+        }
+      }
+      const total = picked.reduce((n, p) => n + p.entries.length, 0);
+      if (total === 0) lines.push(`# no entries dated inside ${from ?? "the beginning"} to ${to ?? "today"}`);
+      return ok(lines.join("\n") + "\n");
+    }
+
+    const out: string[] = [];
+    out.push(`# Maintenance log${from !== null || to !== null ? `, ${from ?? "..."} to ${to ?? "..."}` : ""}`);
+    out.push("");
+    if (!picked.length) {
+      out.push(`No entries dated inside ${from ?? "the beginning"} to ${to ?? "today"}.`);
+    }
+    for (const { asset, entries } of picked) {
+      const schedule = currentSchedule(asset);
+      out.push(`## ${asset.name} (${asset.id})`);
+      out.push("");
+      const head = [
+        asset.tag ? `Serial/tag: ${asset.tag}` : null,
+        asset.location ? `Location: ${asset.location}` : null,
+        `Entries in range: ${entries.length}`,
+        `Spend in range: ${money(totalSpentCents(entries), asset.currency)}`,
+        schedule ? `Next due: ${schedule.next_due}` : "Next due: not scheduled",
+      ].filter(Boolean);
+      out.push(head.join(" -- "));
+      out.push("");
+      out.push(`| Date | Work | Technician | Cost | Next due |`);
+      out.push(`| --- | --- | --- | ---: | --- |`);
+      for (const e of entries) {
+        out.push(`| ${e.date} | ${mdCell(e.work)} | ${mdCell(e.technician ?? "")} | ${money(e.cost_cents, asset.currency)} | ${e.next_due ?? ""} |`);
+      }
+      out.push("");
+    }
+    return ok(out.join("\n") + "\n");
+  } catch (e) { return fail((e as Error).message); }
+});
+
+server.registerTool("asset_remove", {
+  title: "Remove an asset from the register",
+  description: "Remove an asset entered by mistake or sold off. One that carries a maintenance log is refused unless confirm is true, naming what would be lost, because removing it loses the record of work done. The AST number is never reissued.",
+  inputSchema: {
+    asset: assetArg,
+    confirm: z.boolean().optional().describe("Pass true to remove an asset that carries a maintenance log. The log goes with it; this cannot be undone"),
+  },
+}, async (a) => {
+  try {
+    const out = await locked(() => {
+      const list = getAssets();
+      const asset = findAsset(list, a.asset);
+      if (!asset) throw new Error(`no asset matches "${a.asset}". Known: ${list.map((x) => `${x.id} (${x.name})`).join(", ") || "none"}. Nothing was written.`);
+      if (asset.log.length && a.confirm !== true) {
+        throw new Error(
+          `${asset.id} holds ${asset.log.length} log ${asset.log.length === 1 ? "entry" : "entries"}, ${money(totalSpentCents(asset.log), asset.currency)} of work on record. ` +
+          `Removing it loses that record. Export it first with maintenance_export, then pass confirm: true to remove it. Nothing was written.`,
+        );
+      }
+      setAssets(list.filter((x) => x.id !== asset.id));
+      return asset;
+    });
+    const notes: string[] = [];
+    const free = freeTierNote();
+    if (free) notes.push(free);
+    return json({
+      removed: { id: out.id, name: out.name, entries_lost: out.log.length, spend_lost_cents: totalSpentCents(out.log) },
+      note: "The number is not reissued. The AST series only ever goes up, so a gap in it is the record that an asset was removed.",
+      notes,
+    });
+  } catch (e) { return fail((e as Error).message); }
+});
+
+gate.registerTools(server);
+
+const transport = new StdioServerTransport();
+await server.connect(transport);
+process.stderr.write(`mcp-maintenance-log ${VERSION} ready; store at ${dataDir()}\n`);

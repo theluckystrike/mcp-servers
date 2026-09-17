@@ -1,7 +1,7 @@
 import type { Profile } from "./profile.js";
 import { matchesKeyword, profileCorpus } from "./render.js";
 
-/** Words that carry no signal in a job posting. Kept short on purpose: an over-long list drops real requirements. */
+/** Words that carry no signal in a job posting. Kept short on purpose: an over-long list drops real requirements. The second line's last group (similar, record(s), reduce/reduced/reducing) is D-R75: measured non-keywords that entered the target set of a real posting and deflated the coverage figure it reported. */
 const STOP = new Set(`a an and are as at be been being but by can could do does doing for from had has have
 having he her his how i if in into is it its me my no nor not of on or our ours out over own she should so
 some such than that the their them then there these they this those through to too under until up very was
@@ -11,7 +11,8 @@ role roles job jobs position positions candidate candidates team teams work work
 experience experienced strong good great excellent ideal must plus bonus etc via per using use used
 opportunity company companies join looking seeking hire hiring apply application please send email
 required require requires essential need needs needed preferred nice core ideally like want
-responsibilities requirements qualifications benefits salary remote hybrid office full time part`
+responsibilities requirements qualifications benefits salary remote hybrid office full time part
+similar record records reduce reduced reducing`
   .split(/\s+/).filter(Boolean));
 
 /**
