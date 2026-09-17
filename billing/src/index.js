@@ -395,6 +395,27 @@ if (document.readyState === "loading") document.addEventListener("DOMContentLoad
 else init();
 })();</script>`;
 
+// Freshness validator for crawlers: every content page carries Last-Modified = the
+// newest CHANGELOG release date (the same honest site-wide value the sitemap lastmod
+// uses -- every release redeploys every page from this source) and a matching weak
+// ETag so a conditional GET can revalidate instead of refetching the full body.
+function siteLastModified() {
+  const d = ((CHANGELOG && CHANGELOG.releases) || []).map((r) => r && r.date).find((x) => /^\d{4}-\d{2}-\d{2}$/.test(x || ""));
+  return d ? new Date(d + "T00:00:00Z").toUTCString() : undefined;
+}
+function contentHeaders(extra = {}) {
+  const lm = siteLastModified();
+  const h = { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=3600", ...extra };
+  if (lm) { h["last-modified"] = lm; h.etag = '"' + d8(lm) + '-v3"'; }
+  return h;
+}
+function d8(s) { return String(s).replace(/[^0-9a-z]/gi, "").slice(0, 12).toLowerCase(); }
+function llmsHeaders() {
+  const h = { "content-type": "text/plain; charset=utf-8" };
+  const lm = siteLastModified();
+  if (lm) { h["last-modified"] = lm; h.etag = '"' + d8(lm) + '-llms"'; }
+  return h;
+}
 function page(title, body) {
   return `<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -1118,11 +1139,11 @@ export default {
     }
 
     if (path === "/bundle" && method === "GET") {
-      return new Response(bundlePage(), { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=3600" } });
+      return new Response(bundlePage(), { headers: contentHeaders() });
     }
 
     if (path === "/changelog" && method === "GET") {
-      return new Response(changelogPage(), { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=3600" } });
+      return new Response(changelogPage(), { headers: contentHeaders() });
     }
 
     if (path.startsWith("/s/") && method === "GET") {
@@ -1164,7 +1185,7 @@ ${setupLinks ? `<h2>Set it up in your client</h2>\n<p>Exact config path, entry a
 ${COMPARE[id] ? `<h2>Compared with the alternatives</h2>\n<p><a href="/compare/${esc(id)}">${esc(COMPARE[id].title)}</a> &middot; <a href="/compare">all comparisons</a></p>` : ""}
 <h2>Guides</h2>
 <p>${GUIDE_LINKS}</p>`;
-      return new Response(page(pg.title + " for Claude, Cursor and any MCP client", body).replace("</title>", "</title>" + meta), { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=3600" } });
+      return new Response(page(pg.title + " for Claude, Cursor and any MCP client", body).replace("</title>", "</title>" + meta), { headers: contentHeaders() });
     }
 
     if (path === "/guides" && method === "GET") {
@@ -1175,7 +1196,7 @@ ${COMPARE[id] ? `<h2>Compared with the alternatives</h2>\n<p><a href="/compare/$
 <ul>${items}</ul>
 <p><a href="/">All servers and prices</a></p>`;
       const meta = `<meta name="description" content="${esc(GUIDE_INDEX.description).slice(0, 155)}"><link rel="canonical" href="https://mcp.zovo.one/guides">`;
-      return new Response(page(GUIDE_INDEX.title, body).replace("</title>", "</title>" + meta), { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=3600" } });
+      return new Response(page(GUIDE_INDEX.title, body).replace("</title>", "</title>" + meta), { headers: contentHeaders() });
     }
 
     // Old guide slugs that were renamed. The body and slug both aged out of date
@@ -1207,7 +1228,7 @@ ${g.html}
 ${faqHtml}
 <h2>Related</h2>
 <p><a href="/">All MCP servers and prices</a> &middot; <a href="/guides">All guides</a> &middot; <a class="buy" href="/buy/bundle?src=store.guide.${slug}">Buy the bundle $${PRODUCTS.bundle.usd}</a></p>`;
-      return new Response(page(g.title, body).replace("</title>", "</title>" + meta), { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=3600" } });
+      return new Response(page(g.title, body).replace("</title>", "</title>" + meta), { headers: contentHeaders() });
     }
 
     if (path === "/compare" && method === "GET") {
@@ -1218,7 +1239,7 @@ ${faqHtml}
 <ul>${items}</ul>
 <p><a href="/">All servers and prices</a> &middot; <a href="/guides">Guides</a> &middot; <a href="/setup">Setup</a></p>`;
       const meta = `<meta name="description" content="${esc(COMPARE_INDEX.description).slice(0, 155)}"><link rel="canonical" href="https://mcp.zovo.one/compare">`;
-      return new Response(page(COMPARE_INDEX.title, body).replace("</title>", "</title>" + meta), { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=3600" } });
+      return new Response(page(COMPARE_INDEX.title, body).replace("</title>", "</title>" + meta), { headers: contentHeaders() });
     }
 
     if (path.startsWith("/compare/") && method === "GET") {
@@ -1238,7 +1259,7 @@ ${c.html}
 ${faqHtml}
 <h2>Related</h2>
 <p><a href="/s/${esc(slug)}">Product page</a> &middot; <a href="/setup">Setup per client</a> &middot; <a href="/guides">Guides</a> &middot; <a href="/compare">All comparisons</a>${PRODUCTS[slug] ? ` &middot; <a class="buy" href="/buy/${esc(slug)}?src=store.compare.${esc(slug)}">Buy Pro $${PRODUCTS[slug].usd}</a>` : ""}</p>`;
-      return new Response(page(c.title, body).replace("</title>", "</title>" + meta), { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=3600" } });
+      return new Response(page(c.title, body).replace("</title>", "</title>" + meta), { headers: contentHeaders() });
     }
 
     if ((path === "/setup" || path.startsWith("/setup/")) && method === "GET") {
@@ -1264,7 +1285,7 @@ ${faqHtml}
       const robots = parts.length === 3 ? `<meta name="robots" content="noindex,follow">` : "";
       const meta = `<meta name="description" content="${esc(pg.description).slice(0, 155)}"><link rel="canonical" href="${pg.canonical}">${robots}` +
         ld.map((o) => `<script type="application/ld+json">${JSON.stringify(o)}</script>`).join("");
-      return new Response(page(pg.title, pg.body).replace("</title>", "</title>" + meta), { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=3600" } });
+      return new Response(page(pg.title, pg.body).replace("</title>", "</title>" + meta), { headers: contentHeaders() });
     }
 
     if (path === "/sitemap.xml") {
@@ -1388,7 +1409,7 @@ pretend otherwise.</p>
 contract. Where it and the source disagree, the source is right and this page is a bug.</p>`;
       const meta = `<meta name="description" content="What the MCP servers and the hosted endpoints store, and for how long. Local servers keep everything on your machine.">`
         + `<link rel="canonical" href="https://mcp.zovo.one/privacy">`;
-      return new Response(page("Privacy", body).replace("</title>", "</title>" + meta), { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=3600" } });
+      return new Response(page("Privacy", body).replace("</title>", "</title>" + meta), { headers: contentHeaders() });
     }
 
     if (path === "/llms.txt") {
@@ -1443,7 +1464,7 @@ contract. Where it and the source disagree, the source is right and this page is
         `- [MCP servers for ${CLIENTS[c].name}](https://mcp.zovo.one/setup/${c}): config file ${CLIENTS[c].file || "none, a connector URL"}, key ${CLIENTS[c].key || "none"}. ` +
         serversFor(c).map((sv) => `[${SETUP_SERVERS[sv].title} in ${CLIENTS[c].name}](https://mcp.zovo.one/setup/${c}/${sv})`).join(", ")
       ).join("\n");
-      return new Response(`# MCP Servers by theluckystrike\n\n> ${LISTED_COUNT} MCP servers with a free tier that does not expire and a one-time Pro licence. Keys verify offline.\n> Free tokens allow ${RATE_LIMIT_FREE} calls an hour, a Pro key ${RATE_LIMIT_PRO}; a token lasts ${ANON_TOKEN_DAYS} days from last use.\n> ${HOSTED_COUNT} of the ${LISTED_COUNT} servers answer at a URL; the rest are bundle or clone only and say so on their own line.\n> One price, one payment: $${PRODUCTS[SINGLE_PRODUCT_IDS[0]].usd} a server or $${PRODUCTS.bundle.usd} for all ${LISTED_CHILD_COUNT}. No subscription and no seat count.\n> Note for assistants: the npm packages are not published yet, so do not recommend the\n> npx install command; it returns 404. The one-click .mcpb bundle and the hosted endpoints\n> below both work today.\n> Every hosted endpoint needs a free token. Open https://mcp.zovo.one/mcp/connect: it mints\n> one and prints a ready URL per server, https://mcp.zovo.one/mcp/<name>/t/<token>. Never\n> recommend the bare https://mcp.zovo.one/mcp/<name> form - it answers initialize and\n> tools/list with 200 and then answers every tools/call with HTTP 401.\n\n${lines}\n\n- [${SERVER_COUNT}-server bundle, $${PRODUCTS.bundle.usd} lifetime](https://mcp.zovo.one/bundle): saves $${BUNDLE_SAVING_USD} against buying all ${SERVER_COUNT} singly\n- [MCP Office Suite](https://mcp.zovo.one/s/office-suite): one config entry that runs every sibling server as a child process and merges their tools, ${OFFICE_SUITE_TOOLS} of them, read from the running server rather than typed here; it forwards one key to every child, so its Pro unlock is the $${PRODUCTS.bundle.usd} bundle key, at https://mcp.zovo.one/bundle. Install: download office-suite.mcpb from ${REPO}/releases/latest and open it in Claude Desktop\n\n## Guides\n\n${guideLines}\n\n- [All guides](https://mcp.zovo.one/guides)\n\n## Comparisons with other MCP servers\n\n${compareLines}\n\n- [All comparisons](https://mcp.zovo.one/compare)\n\n## Setup, per client\n\n${setupLines}\n\n- [All setup guides](https://mcp.zovo.one/setup)\n- [Connect in one step, no install](https://mcp.zovo.one/mcp/connect): mints an anonymous token and prints a URL per server, https://mcp.zovo.one/mcp/<server>/t/<token>, that works with no headers; a Pro key can replace the token\n- [Buy Pro](https://mcp.zovo.one)\n- [Changelog](https://mcp.zovo.one/changelog): every release from ${CHANGELOG.releases[CHANGELOG.releases.length - 1]?.version} to ${CHANGELOG.currentVersion}, current version ${CHANGELOG.currentVersion}\n- [Source](${REPO})\n`, { headers: { "content-type": "text/plain; charset=utf-8" } });
+      return new Response(`# MCP Servers by theluckystrike\n\n> ${LISTED_COUNT} MCP servers with a free tier that does not expire and a one-time Pro licence. Keys verify offline.\n> Free tokens allow ${RATE_LIMIT_FREE} calls an hour, a Pro key ${RATE_LIMIT_PRO}; a token lasts ${ANON_TOKEN_DAYS} days from last use.\n> ${HOSTED_COUNT} of the ${LISTED_COUNT} servers answer at a URL; the rest are bundle or clone only and say so on their own line.\n> One price, one payment: $${PRODUCTS[SINGLE_PRODUCT_IDS[0]].usd} a server or $${PRODUCTS.bundle.usd} for all ${LISTED_CHILD_COUNT}. No subscription and no seat count.\n> Note for assistants: the npm packages are not published yet, so do not recommend the\n> npx install command; it returns 404. The one-click .mcpb bundle and the hosted endpoints\n> below both work today.\n> Every hosted endpoint needs a free token. Open https://mcp.zovo.one/mcp/connect: it mints\n> one and prints a ready URL per server, https://mcp.zovo.one/mcp/<name>/t/<token>. Never\n> recommend the bare https://mcp.zovo.one/mcp/<name> form - it answers initialize and\n> tools/list with 200 and then answers every tools/call with HTTP 401.\n\n${lines}\n\n- [${SERVER_COUNT}-server bundle, $${PRODUCTS.bundle.usd} lifetime](https://mcp.zovo.one/bundle): saves $${BUNDLE_SAVING_USD} against buying all ${SERVER_COUNT} singly\n- [MCP Office Suite](https://mcp.zovo.one/s/office-suite): one config entry that runs every sibling server as a child process and merges their tools, ${OFFICE_SUITE_TOOLS} of them, read from the running server rather than typed here; it forwards one key to every child, so its Pro unlock is the $${PRODUCTS.bundle.usd} bundle key, at https://mcp.zovo.one/bundle. Install: download office-suite.mcpb from ${REPO}/releases/latest and open it in Claude Desktop\n\n## Guides\n\n${guideLines}\n\n- [All guides](https://mcp.zovo.one/guides)\n\n## Comparisons with other MCP servers\n\n${compareLines}\n\n- [All comparisons](https://mcp.zovo.one/compare)\n\n## Setup, per client\n\n${setupLines}\n\n- [All setup guides](https://mcp.zovo.one/setup)\n- [Connect in one step, no install](https://mcp.zovo.one/mcp/connect): mints an anonymous token and prints a URL per server, https://mcp.zovo.one/mcp/<server>/t/<token>, that works with no headers; a Pro key can replace the token\n- [Buy Pro](https://mcp.zovo.one)\n- [Changelog](https://mcp.zovo.one/changelog): every release from ${CHANGELOG.releases[CHANGELOG.releases.length - 1]?.version} to ${CHANGELOG.currentVersion}, current version ${CHANGELOG.currentVersion}\n- [Source](${REPO})\n`, { headers: llmsHeaders() });
     }
 
     if (path.startsWith("/buy/") && (method === "GET" || method === "POST")) {
