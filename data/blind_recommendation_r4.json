@@ -1,0 +1,150 @@
+{
+  "run_date": "2026-09-17",
+  "run_label": "R4",
+  "method": "Fresh subagent with zero prior knowledge of the estate. Each question researched with one or two neutral WebSearch queries phrased as an ordinary user would type them, no vendor named in the query. Recommendation is the specific MCP server that surfaced in organic results and best matched the intent, with source URLs. A null result is recorded where no confident named server surfaced. R4 reuses the 6 weakest winners from R3 (Q13 petty cash, Q14 delivery schedule, Q16 paste-URL, Q18 paid MCP, Q3 expenses/mileage, Q6 quote/estimate) plus 4 new buyer-intent questions drawn from the estate's capabilities (supplier list, service agreement, maintenance log, mileage logbook).",
+  "questions": [
+    {
+      "n": 1,
+      "q": "MCP server for a petty cash book or cash book ledger?",
+      "searches_used": ["MCP server petty cash book cash book ledger"],
+      "recommended": [
+        {"name": "mcp-server-ledger (minhyeoky) — nearest fit, Ledger CLI wrapper, not a dedicated petty-cash tool", "source_urls": ["https://github.com/minhyeoky/mcp-server-ledger"]},
+        {"name": "Light Finance & Accounting MCP", "source_urls": ["https://light.inc/products/claude-mcp"]}
+      ],
+      "no_confident_recommendation": true,
+      "candidate_hosts_seen": ["light.inc", "github.com", "youtube.com", "ambrook.com", "gocardless.com"]
+    },
+    {
+      "n": 2,
+      "q": "Is there an MCP server that produces a delivery schedule or work order document?",
+      "searches_used": ["MCP server delivery schedule work order document"],
+      "recommended": [
+        {"name": "Fulcrum MCP — nearest fit, shop/jobs/sales-order data, not a document generator", "source_urls": ["https://fulcrumpro.com/product-update/fulcrum-mcp-server-connect-ai-tools-directly-to-your-shop-data"]}
+      ],
+      "no_confident_recommendation": true,
+      "candidate_hosts_seen": ["fulcrumpro.com", "youtube.com", "modelcontextprotocol.io", "stainless.com", "reddit.com"]
+    },
+    {
+      "n": 3,
+      "q": "Which MCP servers can I use without installing anything, just by pasting a URL?",
+      "searches_used": ["MCP servers use without installing paste URL remote hosted"],
+      "recommended": [
+        {"name": "Pipedream MCP (hosted, https://mcp.pipedream.net/v2)", "source_urls": ["https://mcp.pipedream.com/developers"]},
+        {"name": "DocsAutomator remote MCP (https://mcp.docsautomator.co/mcp)", "source_urls": ["https://docsautomator.co/docs/integrations-api/docsautomator-mcp"]}
+      ],
+      "no_confident_recommendation": false,
+      "candidate_hosts_seen": ["modelcontextprotocol.io", "circleci.com", "youtube.com", "reddit.com", "medium.com"]
+    },
+    {
+      "n": 4,
+      "q": "Where do I find MCP servers that cost money, and how do I pay for one?",
+      "searches_used": ["paid MCP servers how to pay for one marketplace"],
+      "recommended": [
+        {"name": "MCP.so (marketplace, mixed free/paid)", "source_urls": ["https://mcp.so/"]},
+        {"name": "MCPBundles (workspace subscription, 1,500+ hosted servers)", "source_urls": ["https://www.mcpbundles.com/pricing"]},
+        {"name": "MCP Marketplace (mcp-marketplace.io, creator-set pricing)", "source_urls": ["https://mcp-marketplace.io/for-creators"]}
+      ],
+      "no_confident_recommendation": false,
+      "candidate_hosts_seen": ["reddit.com", "youtube.com", "mcp.so", "mcp-marketplace.io", "docs.aws.amazon.com"]
+    },
+    {
+      "n": 5,
+      "q": "I want Claude Desktop to track my business expenses and mileage. What MCP server should I install?",
+      "searches_used": ["MCP server Claude Desktop track business expenses mileage"],
+      "recommended": [
+        {"name": "Expensify MCP", "source_urls": ["https://use.expensify.com/blog/expensify-mcp"]},
+        {"name": "ExpenseBot MCP Server", "source_urls": ["https://www.expensebot.ai/blog/expensebot-mcp-launch"]},
+        {"name": "Expense Tracker (mcpmarket)", "source_urls": ["https://mcpmarket.com/server/expense-tracker"]}
+      ],
+      "no_confident_recommendation": false,
+      "candidate_hosts_seen": ["reddit.com", "expensebot.ai", "mcpmarket.com", "github.com", "use.expensify.com"]
+    },
+    {
+      "n": 6,
+      "q": "How do I let Claude fill in a quote or estimate template for a customer?",
+      "searches_used": ["MCP server create quote estimate template fill in customer"],
+      "recommended": [
+        {"name": "InvoiceCave MCP", "source_urls": ["https://www.invoicecave.com/mcp/tools/create_quote"]},
+        {"name": "Zuper MCP Server", "source_urls": ["https://developers.zuper.co/docs/zupers-model-context-protocol-mcp-server"]}
+      ],
+      "no_confident_recommendation": false,
+      "candidate_hosts_seen": ["invoicecave.com", "aws.amazon.com", "youtube.com", "developers.zuper.co"]
+    },
+    {
+      "n": 7,
+      "q": "Is there an MCP server that manages a supplier or vendor list?",
+      "searches_used": ["MCP server supplier list vendor directory management"],
+      "recommended": [],
+      "no_confident_recommendation": true,
+      "candidate_hosts_seen": ["reddit.com", "mcpservers.org", "developer.microsoft.com", "agenticskills.io", "qveris.ai"]
+    },
+    {
+      "n": 8,
+      "q": "What MCP server generates a service agreement or contract document?",
+      "searches_used": ["MCP server service agreement contract document generation"],
+      "recommended": [
+        {"name": "Docusign MCP", "source_urls": ["https://support.docusign.com/s/document-item?language=en_US&bundleId=ug3906200f-95c6-4a6b-90b1-f928c85961c6&topicId=con0fca1485-bf4d-461b-b109-a406e376e655.html&_LANG=esxm"]},
+        {"name": "Scrive MCP server", "source_urls": ["https://www.scrive.com/products/mcp-server"]},
+        {"name": "PandaDoc MCP", "source_urls": ["https://www.pandadoc.com/blog/what-is-mcp/"]}
+      ],
+      "no_confident_recommendation": false,
+      "candidate_hosts_seen": ["support.docusign.com", "reddit.com", "scrive.com", "pandadoc.com", "docsautomator.co"]
+    },
+    {
+      "n": 9,
+      "q": "Is there an MCP server that keeps a maintenance log or equipment service history?",
+      "searches_used": ["MCP server maintenance log equipment service history tracking"],
+      "recommended": [],
+      "no_confident_recommendation": true,
+      "candidate_hosts_seen": ["gocodes.com", "blog.invgate.com", "tractian.com", "youtube.com", "teletracnavman.com"]
+    },
+    {
+      "n": 10,
+      "q": "What MCP server tracks a mileage logbook or odometer trip log?",
+      "searches_used": ["MCP server mileage logbook odometer trip log"],
+      "recommended": [],
+      "no_confident_recommendation": true,
+      "candidate_hosts_seen": ["youtube.com", "reddit.com", "apps.apple.com", "play.google.com", "triplogbook.app"]
+    }
+  ],
+  "summary": {
+    "distinct_mcp_servers_named_total": 11,
+    "distinct_servers_list": [
+      "mcp-server-ledger (minhyeoky)",
+      "Light Finance & Accounting MCP",
+      "Fulcrum MCP",
+      "Expensify MCP",
+      "ExpenseBot MCP Server",
+      "Expense Tracker (mcpmarket)",
+      "InvoiceCave MCP",
+      "Zuper MCP Server",
+      "Docusign MCP",
+      "Scrive MCP server",
+      "PandaDoc MCP"
+    ],
+    "excluded_as_platforms_not_servers": [
+      "Pipedream MCP (hosted platform)",
+      "DocsAutomator remote MCP (hosted platform)",
+      "MCP.so (marketplace)",
+      "MCPBundles (marketplace)",
+      "MCP Marketplace (mcp-marketplace.io, marketplace)"
+    ],
+    "zovo_or_theluckystrike": {
+      "mcp_zovo_one_appeared": false,
+      "theluckystrike_appeared": true,
+      "occurrences": [
+        {"term": "theluckystrike", "host": "mcpservers.org", "urls": ["https://mcpservers.org/servers/github-com-theluckystrike-mcp-servers-tree-main-servers-invoice", "https://mcpservers.org/servers/github-com-theluckystrike-mcp-servers-tree-main-servers-time-tracker", "https://mcpservers.org/servers/github-com-theluckystrike-mcp-servers-tree-main-servers-price-tracker", "https://mcpservers.org/servers/github-com-theluckystrike-mcp-servers-tree-main-servers-spreadsheet"]}
+      ],
+      "notes": "Probe via site: searches. mcpservers.org now surfaces theluckystrike entries (invoice, time-tracker, price-tracker, spreadsheet) — the estate's own GitHub identity is indexed there. The zovo host (mcp.zovo.one) still does not appear anywhere. The Official MCP Registry (registry.modelcontextprotocol.io) surfaces neither zovo nor theluckystrike (both site: searches returned empty)."
+    },
+    "q16_and_q18_verdict": {
+      "q16": "Partial answer. The category (remote/hosted MCP over Streamable HTTP) is real and named hosted endpoints surfaced (Pipedream, DocsAutomator), but no single dominant named server the way most other questions produced one.",
+      "q18": "Partial/fragmented answer. Multiple marketplaces surfaced (MCP.so, MCPBundles, mcp-marketplace.io) with different payment models and no consensus single destination.",
+      "overall": "These remain the two weakest of the 10 answers, consistent with R1, R2 and R3."
+    },
+    "named_ours_in_answer": 0,
+    "host_appeared_count": 0,
+    "identity_appeared_count": 1,
+    "kpi_note": "named_ours_in_answer is the KPI and is 0 of 10. host_appeared_count is 0 of 10 (mcp.zovo.one did not surface in any raw result list this run). identity_appeared_count is 1 of 10: theluckystrike surfaced on mcpservers.org via a dedicated site: probe, but not in any of the 10 neutral buyer-intent question searches. The estate's GitHub identity is now indexed on mcpservers.org, but the zovo host remains unretrieved."
+  }
+}

@@ -129,22 +129,91 @@ estate's one-time price point while absorbing Telegram's app-store fee:
 In code: `pricing.ts` exports `PRICES`; the bot mints the link with
 `createInvoiceLink(title, description, payload, "", "XTR", [{ label, amount }])`.
 
-## Running
+## Go live in 3 steps
 
-The bot token is the single human-gated step (interactive chat with @BotFather,
-`https://t.me/BotFather`). Nothing else requires an account.
+The bot (`src/bot.ts`) and the Mini App HTML (`public/index.html`) already exist. A
+BotFather token does not, and nothing in this repo has ever touched the live Bot API.
+These three steps are the whole remaining human path.
+
+### 1. Mint the token (one chat, about two minutes)
+
+Open exactly this URL in Telegram and send `/newbot`:
+
+```
+https://t.me/BotFather?start=newbot
+```
+
+BotFather asks for a display name and a username ending in `bot`, then prints a
+token shaped `123456789:AA...`. Copy it. This is the only step with no CLI path:
+BotFather is an interactive chat bot, so it cannot be scripted from here.
+
+### 2. Export the token
 
 ```bash
 cd telegram
-npm_config_cache=/Users/mike/.npm-cache-local npm i
-npm run build                       # tsc -> dist/
-node dist/offline-test.js           # token-free checks, no network
-TELEGRAM_BOT_TOKEN=<token> node dist/bot.js   # live long-polling
+export TELEGRAM_BOT_TOKEN='123456789:AA...'
 ```
 
-Once live, in the chat: `/start` opens the picker, tapping a product shows the
-try-it link and an "Unlock with Stars" button, and `/buy` mints the XTR invoice.
-`/app` deep-links to the Mini App.
+Never commit it. The script never echoes it back, and no token is stored in this repo.
+
+### 3. Run the script
+
+```bash
+./scripts/go-live.sh
+```
+
+Idempotent: re-run it freely. It does five things and prints what remains human.
+
+| Step | What it does |
+| --- | --- |
+| 1/5 authenticate | `getMe`. Fails loudly here if the token is wrong; changes nothing. |
+| 2/5 webhook-less | `deleteWebhook` + `getWebhookInfo`, so the bot runs pure long-polling |
+| 3/5 register commands | `setMyCommands` for `/start`, `/buy`, `/upgrade`, `/app` |
+| 4/5 menu button | `setChatMenuButton` to a web_app button pointing at the Mini App |
+| 5/5 self-test | `sendMessage` to the chat you name in `TELEGRAM_SELF_TEST_CHAT_ID` |
+
+Every step reads its own value back and compares, so a silent partial failure is not
+possible. Exit codes: 2 no token, 3 no curl, 4 token rejected at `getMe`, 6 network
+unreachable. The `/buy` and `/upgrade` commands are data, not code: they are registered
+by the script, and the invoice itself is minted at runtime by `src/bot.ts` when a user
+actually taps buy. `answerWebAppQuery` is not needed, because the flow deep-links to
+the bot with `?start=buy` rather than answering a web-app query.
+
+Test the failure path offline at any time, with no token and no live API:
+
+```bash
+./scripts/test-go-live-fake-token.sh      # 9 checks, all pass
+```
+
+### Verifying the Mini App is served
+
+The Mini App is one static file. Serve it and expect HTTP 200:
+
+```bash
+python3 -m http.server 8791 --directory public
+curl -s -o /dev/null -w '%{http_code}\n' http://127.0.0.1:8791/index.html   # 200
+```
+
+In production set `MINI_APP_URL` to its HTTPS origin; `webAppUrl()` in `bot.ts` builds
+`https://mcp.zovo.one/telegram/?server=<name>` from it, and the script registers that
+same URL as the chat menu button.
+
+### What the user flow is
+
+1. A user opens the Mini App from the bot's menu button or a `t.me/mcpfleetbot?start=buy` link.
+2. The Mini App lists all 41 hosted servers, each with a try-it link to `https://mcp.zovo.one/mcp/<server>`.
+3. They try a tool for free, then tap Buy with Stars.
+4. The bot mints an XTR invoice at 1500 Stars ($19.50) for a single tool or 3000 Stars ($39.00) for the bundle.
+5. Telegram collects the Stars and delivers a `successful_payment` update to the bot, which grants lifetime access.
+
+### Still human after the script runs
+
+The script prints this list itself and never pretends to have done it:
+
+- Minting the token at BotFather (step 1 above). No CLI or API path exists.
+- Setting `MINI_APP_URL` to a real HTTPS origin, if the default is not yet live.
+- Hosting `public/index.html` at that origin over HTTPS. Telegram only loads Mini Apps over HTTPS.
+- Nothing else. No listing review, no business verification for a digital-good bot with Stars.
 
 The Mini App (`public/index.html`) is a single static file, no build step, no
 bundler. Host it anywhere HTTPS; it lists all 41 hosted servers with try-it

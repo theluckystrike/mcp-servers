@@ -4,6 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
+<!-- Telegram Mini App SDK. Required: without it window.Telegram.WebApp is
+     undefined inside the Telegram client, so the app cannot read launch params,
+     call ready()/expand(), or open the Stars invoice flow. Loaded before the
+     in-page script so the object exists when that script runs. -->
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 <title>MCP Fleet Mini App - Free AI Paperwork Tools in Telegram</title>
 <style>
   :root {
@@ -132,6 +137,13 @@
   ];
 
   var grid = document.getElementById("grid");
+  if (!grid) {
+    grid = document.createElement("div");
+    grid.id = "grid";
+    grid.className = "grid";
+    var gridAnchor = document.getElementById("catalog");
+    (gridAnchor || document.querySelector("main")).appendChild(grid);
+  }
   CATALOG.forEach(function (e, i) {
     var card = document.createElement("article");
     card.className = "card" + (e.hi ? " hi" : "");
