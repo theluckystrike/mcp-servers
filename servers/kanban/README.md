@@ -9,6 +9,8 @@ JSON on your own machine.
 
 Built by [theluckystrike](https://github.com/theluckystrike).
 
+**In the [official MCP Registry](https://registry.modelcontextprotocol.io/v0.1/servers/io.github.theluckystrike%2Fkanban-todo-tasks-projects-board/versions/latest)** (`io.github.theluckystrike/kanban-todo-tasks-projects-board`).
+
 ![kanban demo](../../assets/demo-kanban.gif)
 
 **A local kanban board per project -- columns, due dates, estimates, weekly review -- zero setup, all local.**

@@ -4,6 +4,8 @@ Work out the daily travel allowance for a business trip on the rate tables the t
 
 Built by [theluckystrike](https://github.com/theluckystrike).
 
+**In the [official MCP Registry](https://registry.modelcontextprotocol.io/v0.1/servers/io.github.theluckystrike%2Fper-diem/versions/latest)** (`io.github.theluckystrike/per-diem`).
+
 ![per-diem demo](../../assets/demo-per-diem.gif)
 
 ## Install

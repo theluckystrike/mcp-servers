@@ -1,5 +1,7 @@
 # mcp-office-suite
 
+**In the [official MCP Registry](https://registry.modelcontextprotocol.io/v0.1/servers/io.github.theluckystrike%2Foffice-suite-time-invoice-expense-excel-price/versions/latest)** (`io.github.theluckystrike/office-suite-time-invoice-expense-excel-price`).
+
 ![office-suite demo](../../assets/demo-office-suite.gif)
 
 One install for the whole freelancer office. This MCP server proxies all 31 sibling servers in this repository, so a client gets every one of their 292 tools behind a single config entry instead of 31. The child list is published at runtime as the `office://tools_map` resource, which is the only figure to trust: it is read from the running server, not from this file. Under the hood it starts each sibling as its own stdio child process, forwards `tools/call`, `resources/*` and `prompts/*` to whichever child owns the name, and merges their license state into one `license_status` / `license_activate` pair. Nothing is re-implemented: each child server runs exactly as it does standalone, with its own local JSON storage.

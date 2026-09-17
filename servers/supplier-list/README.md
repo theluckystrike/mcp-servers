@@ -1,5 +1,6 @@
 # mcp-supplier-list
 
+**In the [official MCP Registry](https://registry.modelcontextprotocol.io/v0.1/servers/io.github.theluckystrike%2Fsupplier-list/versions/latest)** (`io.github.theluckystrike/supplier-list`).
 This is the mcp supplier list server: a supplier directory inside your MCP client that does not rot the way the spreadsheet does. Add each supplier once -- what they supply, who to contact and how, the payment terms, the lead time in days, and notes -- and every record carries the date it was last reviewed, so "which of these records have gone stale?" is a question the directory answers instead of a chore you forget. Ask for a supplier by name, list the directory by category, and export the whole thing to CSV or Markdown when someone else needs it. Everything stays on this machine; there is no account and no network call.
 
 Built by theluckystrike.

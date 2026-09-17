@@ -8,6 +8,8 @@ states nothing you did not put in your profile. Where a fact is missing, the let
 exports markdown for an ATS box, and writes printable HTML. Everything runs locally: no upload, no account, no
 native dependency.
 
+**In the [official MCP Registry](https://registry.modelcontextprotocol.io/v0.1/servers/io.github.theluckystrike%2Fresume-cover-letter-docx-generator/versions/latest)** (`io.github.theluckystrike/resume-cover-letter-docx-generator`).
+
 ![resume demo](../../assets/demo-resume.gif)
 
 **A resume that fits the page and a cover letter that cannot lie about you.**

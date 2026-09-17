@@ -4,6 +4,8 @@ Ask your assistant what something costs right now. Point it at any product page 
 
 Built by [theluckystrike](https://github.com/theluckystrike).
 
+**In the [official MCP Registry](https://registry.modelcontextprotocol.io/v0.1/servers/io.github.theluckystrike%2Fprice-tracker-drop-alert-watch/versions/latest)** (`io.github.theluckystrike/price-tracker-drop-alert-watch`).
+
 ![price-tracker demo](../../assets/demo-price-tracker.gif)
 
 **Watch any product page for price drops from chat -- no scraping service, no account, all local.**

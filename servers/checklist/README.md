@@ -1,5 +1,6 @@
 # mcp-checklist
 
+**In the [official MCP Registry](https://registry.modelcontextprotocol.io/v0.1/servers/io.github.theluckystrike%2Fchecklist/versions/latest)** (`io.github.theluckystrike/checklist`).
 Checklists you build once and run many times, and the dated record of each run that
 somebody signs. A checklist is a named list of steps, optionally grouped into sections, each
 one required or optional. A run is one pass of that checklist against a job: every step is

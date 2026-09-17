@@ -10,6 +10,8 @@ machine as plain text.
 
 Built by [theluckystrike](https://github.com/theluckystrike).
 
+**In the [official MCP Registry](https://registry.modelcontextprotocol.io/v0.1/servers/io.github.theluckystrike%2Fcalendar-ics-reader-events-freebusy-conflicts/versions/latest)** (`io.github.theluckystrike/calendar-ics-reader-events-freebusy-conflicts`).
+
 ![calendar demo](../../assets/demo-calendar.gif)
 
 **Import the .ics your calendar exports, then ask what is on, when you are free, and what clashes -- zero setup, all local.**

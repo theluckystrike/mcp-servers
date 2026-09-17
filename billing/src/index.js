@@ -844,6 +844,9 @@ export function checkoutIntentPage(url, productId, askedId = productId, tenant =
   return page(`Buy ${p.name}`, `<h1>${esc(p.name)}</h1>
 ${alias}<p><strong>$${p.usd}.00 USD</strong> &middot; one payment &middot; lifetime licence</p>
 <p>${esc(p.desc || (productId === "bundle" ? `All ${SERVER_COUNT} servers, one key.` : ""))}</p>
+${p.free ? `<p class="muted">${esc(p.free)}</p>` : ""}
+${p.pro ? `<p><strong>${esc(p.pro)}</strong></p>` : ""}
+<p class="muted">Key issued instantly after payment &middot; one payment, lifetime licence, works offline${productId !== "bundle" ? ` &middot; or get all ${SERVER_COUNT} servers with one key for $39: <a href="/buy/bundle?src=store.buy.${esc(productId)}">the bundle</a>` : ""}.</p>
 ${bound}<form method="post" action="${esc(action)}"><input type="hidden" name="intent" value="checkout">
 <button class="buy" type="submit">Continue to secure Stripe checkout</button></form>
 <p class="muted">No payment session has been created yet. Stripe collects the card on the next page.</p>

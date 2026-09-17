@@ -4,6 +4,8 @@ Ask your assistant what something is worth in another currency and get a real an
 
 Built by [theluckystrike](https://github.com/theluckystrike).
 
+**In the [official MCP Registry](https://registry.modelcontextprotocol.io/v0.1/servers/io.github.theluckystrike%2Fcurrency-converter-ecb-rates-daily-keyless/versions/latest)** (`io.github.theluckystrike/currency-converter-ecb-rates-daily-keyless`).
+
 ![currency demo](../../assets/demo-currency.gif)
 
 **Real ECB exchange rates in your chat -- no API key, cached locally, works offline.**

@@ -7,6 +7,8 @@ duplicate names, and the entry that claims to be 200 MB inside a 199 KB file. Bu
 quotes and exports into one file to send to an accountant. Everything runs on your machine: no upload, no
 account, no API key, and no network call of any kind.
 
+**In the [official MCP Registry](https://registry.modelcontextprotocol.io/v0.1/servers/io.github.theluckystrike%2Fzip-archive-create-extract-bomb-guard/versions/latest)** (`io.github.theluckystrike/zip-archive-create-extract-bomb-guard`).
+
 ![zip demo](../../assets/demo-zip.gif)
 
 npm publish for `@theluckystrike/mcp-zip` is pending, so `npx -y @theluckystrike/mcp-zip` returns 404 today. Until then, the `.mcpb` one-click bundle or a clone+build is the working path.

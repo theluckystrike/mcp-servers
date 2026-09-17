@@ -1,5 +1,6 @@
 # mcp-catalogue
 
+**In the [official MCP Registry](https://registry.modelcontextprotocol.io/v0.1/servers/io.github.theluckystrike%2Fcatalogue/versions/latest)** (`io.github.theluckystrike/catalogue`).
 One price list and one rate card, kept where the invoice and the quote can both read them.
 Give a product a code, a name, a unit and a price in minor units, with the day that price
 comes into force. Give a role an hourly rate the same way. Then hand the catalogue a list

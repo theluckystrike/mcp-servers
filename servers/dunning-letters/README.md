@@ -1,5 +1,6 @@
 # mcp-dunning-letters
 
+**In the [official MCP Registry](https://registry.modelcontextprotocol.io/v0.1/servers/io.github.theluckystrike%2Fdunning-letters/versions/latest)** (`io.github.theluckystrike/dunning-letters`).
 Chase overdue invoices without losing the thread. Register an unpaid invoice -- client, invoice reference, amount in integer cents, currency, due date -- and the server runs the escalation ladder: reminder 1 (polite, due + 7 days), reminder 2 (firm, with the late fees note, due + 14), and the final notice (before-action wording, due + 21; the gaps are configurable per invoice). For each stage it generates the letter, as Markdown or as a self-contained printable HTML page. It records what you sent and when, lists everything overdue with days late and stage, ages the whole register into current/30/60/90+ buckets, and answers "what do I need to send today". **Nothing is emailed or sent anywhere: this server produces the letter text, and sending it is your act.**
 
 Built by theluckystrike.

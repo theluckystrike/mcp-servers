@@ -2,6 +2,8 @@
 
 Say "make these five photos 1200 pixels wide" or "shrink this screenshot and strip the GPS out of it" and it happens, on your machine, in a second. This MCP server does the small image jobs that otherwise send you to a web uploader: resize, convert between PNG, JPEG, BMP, GIF and TIFF, compress with a real before-and-after byte count, crop, thumbnail a folder, watermark with your business name, and drop the EXIF block a phone camera writes into every photo. No upload, no account, no native dependency, no image editor.
 
+**In the [official MCP Registry](https://registry.modelcontextprotocol.io/v0.1/servers/io.github.theluckystrike%2Fimage-resize-convert-compress-watermark/versions/latest)** (`io.github.theluckystrike/image-resize-convert-compress-watermark`).
+
 ![image demo](../../assets/demo-image.gif)
 
 **The image chores of a freelance business, done from chat instead of from a browser tab you would rather not hand a client photo to.**

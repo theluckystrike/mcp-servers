@@ -1,5 +1,6 @@
 # mcp-packing-list
 
+**In the [official MCP Registry](https://registry.modelcontextprotocol.io/v0.1/servers/io.github.theluckystrike%2Fpacking-list/versions/latest)** (`io.github.theluckystrike/packing-list`).
 The packing slip for a shipment, and the answer to the only two questions anybody asks
 while packing one: what is in which box, and what is still to pack. A packing list is
 raised against an order you name, the lines that order says should ship are declared on
