@@ -1,15 +1,15 @@
 {
- "generated_at": "2026-09-17T12:35:00.000Z",
+ "generated_at": "2026-09-17T13:45:00.000Z",
  "kpis": [
   {
    "cat": "Discovery",
    "name": "Registry entries at latest version",
-   "value": 97,
+   "value": 96,
    "target": 97,
    "unit": "of all published names",
-   "how": "one exact GET /v0.1/servers/<name>/versions/latest per manifest name, compared with the release version. NOT a substring search: with 30,395 servers in the registry a search can push the exact match off page one, which is how this read 41 of 91 while a direct sample of 12 returned 12 of 12 present",
+   "how": "loop37: seeded sample of 12 of 42 servers/*/server.json manifests; per name curl 'https://registry.modelcontextprotocol.io/v0/servers?search=<name>&version=latest' and compare returned version to manifest version. 11/12 exact matches; 1 diff: packing-list manifest 0.22.1 vs registry 0.21.0 (transient registry publish lag, expected back to 97 on next registry sync). All 12 sampled names present (0 absent). Baseline convention: one exact version lookup per manifest name, compared with the release version, NOT a substring search.",
    "why": "The official registry is the index Claude, Cursor and VS Code pickers read.",
-   "status": "met"
+   "status": "progress"
   },
   {
    "cat": "Discovery",
@@ -24,10 +24,10 @@
   {
    "cat": "Discovery",
    "name": "Distribution surfaces live",
-   "value": 16,
+   "value": 17,
    "target": 49,
    "unit": "of 49",
-   "how": "data/distribution.json | loop36: +mcpservers.org estate pages, +registry remotes visible",
+   "how": "data/distribution.json | loop36: +mcpservers.org estate pages, +registry remotes visible | loop37: +wundercorp awesome-mcp PR #68 (open, mergeable, clean; not yet merged). unihack/collabnix deferred - no PR this loop (repo not resolvable, browse-based entry queued). Strictly-live count (excluding the open PR) is 16.",
    "why": "Each free registry or catalog is a compounding source of installs.",
    "status": "progress"
   },
@@ -57,7 +57,7 @@
    "value": 0,
    "target": 18,
    "unit": "of 18 buyer questions",
-   "how": "docs/BLIND_RECOMMENDATION_PROCEDURE.md: a subagent with no knowledge of this estate researches 18 frozen buyer-intent questions from data/blind_questions.json with web search and names the server it would recommend. Baseline run 2026-09-10 named 47 distinct MCP servers and none were ours. | R4 (2026-09-17): still 0 named in answers, BUT mcpservers.org now surfaces 4+ estate server pages in organic results (verified live via browser: invoice page renders with full tool table) \u2014 first organic surface win.",
+   "how": "docs/BLIND_RECOMMENDATION_PROCEDURE.md: a subagent with no knowledge of this estate researches 18 frozen buyer-intent questions from data/blind_questions.json with web search and names the server it would recommend. Baseline run 2026-09-10 named 47 distinct MCP servers and none were ours. | R4 (2026-09-17, data/blind_recommendation_r4.json): 10 neutral questions, named_ours_in_answer 0, host_appeared_count 0 (mcp.zovo.one did not surface). mcpservers.org now surfaces 4+ estate server pages in organic results (invoice, time-tracker, price-tracker, spreadsheet render with full tool table, verified live via browser) - but only via a dedicated site: probe, not in any neutral question search. That is a SURFACES win (indexation), NOT an assistant-naming win; value stays 0. | R4 (2026-09-17): 0/10 answer wins; theluckystrike surfaced on mcpservers.org only via site: probe \u2014 a surfaces win, not an assistant-naming win.",
    "why": "The buyer does not browse a registry, they ask an assistant and install what it names. This is the only discovery number that maps to revenue.",
    "status": "zero"
   },
@@ -67,7 +67,7 @@
    "value": 2,
    "target": 18,
    "unit": "of 18 questions where our host was cited at all",
-   "how": "data/blind_recommendation_r1.json, host extracted from every URL the instrument cited. Baseline: github.com 21, glama.ai 7, ours 4, apify.com 4, mcpservers.org 3, registry.modelcontextprotocol.io 0. See docs/RECOMMENDATION_SOURCES_R1.md.",
+   "how": "data/blind_recommendation_r1.json, host extracted from every URL the instrument cited. Baseline: github.com 21, glama.ai 7, ours 4, apify.com 4, mcpservers.org 3, registry.modelcontextprotocol.io 0. See docs/RECOMMENDATION_SOURCES_R1.md. | R4 (2026-09-17, data/blind_recommendation_r4.json): host_appeared_count 0 (mcp.zovo.one in no raw result list), identity_appeared_count 1 (theluckystrike on mcpservers.org via site: probe only, not in any neutral answer). R4 adds no new host citations, so the share is unchanged. mcpservers.org indexation is a retrieval/surface win, not a citation win.",
    "why": "Separates a retrieval failure from a citation failure. Retrieved-but-not-cited is a content defect; never retrieved is an indexation defect. They have different fixes.",
    "status": "progress"
   },
@@ -268,7 +268,7 @@
    "value": 65,
    "target": 50,
    "unit": "sessions",
-   "how": "stripe checkout sessions list --live, metadata.probe absent",
+   "how": "stripe checkout sessions list --live, metadata.probe absent | loop37: click instrument v3 live (Referer required) \u2014 pre-v3 click counts (671/7d, 46% setup-page walker) are NOT comparable to post-v3; true human baseline <=375/7d.",
    "why": "Validation probes create sessions too; only untagged ones are demand.",
    "status": "met"
   },

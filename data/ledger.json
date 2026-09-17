@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-17T13:15:45.870Z",
+  "generated_at": "2026-09-17T13:42:29.562Z",
   "session": {
-    "count": 87,
+    "count": 88,
     "history": [
       {
         "at": "2026-09-02T12:48:50.865Z",
@@ -350,6 +350,10 @@
       {
         "at": "2026-09-17T13:15:45.775Z",
         "note": "loop 36: PR 13963 conflict fixed (11/11 MERGEABLE), 42/42 registry badges on READMEs, checkout page value prop live (329->2917 chars), conversion audit R2: 46% of clicks are a setup-page walker, true human <=375"
+      },
+      {
+        "at": "2026-09-17T13:42:29.484Z",
+        "note": "loop 37: click instrument v3 live (referer required, honest funnel from here), collabnix PR #117 (5th list), changelog v0.22.0 -> sitemap lastmod fresh, IndexNow 178/178 accepted, KPI refresh (registry 96/97 during 0.22.1 propagation)"
       }
     ]
   },
@@ -3078,6 +3082,10 @@
     {
       "file": "docs/RELEASE_V0210.md",
       "first_line": "Release v0.21.0 (2026-09-07)"
+    },
+    {
+      "file": "docs/RELEASE_V0220.md",
+      "first_line": "Release v0.22.0 (2026-09-17)"
     },
     {
       "file": "docs/RELEASE_V060.md",
