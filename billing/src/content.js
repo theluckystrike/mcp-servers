@@ -8638,6 +8638,280 @@ so it maps a sentence you might say to the server that answers it.${FOOT}`,
       { q: "Is one $19 licence enough, or do I need the bundle?", a: `A $${SINGLE_USD} key unlocks one server. If you need more than two or three of them, the $${BUNDLE_USD} bundle for all ${LISTED_CHILD_COUNT} is the cheaper path, and one key covers every server.` },
     ],
   },
+  "supplier-directory-from-chat": {
+    title: "MCP Supplier Directory: keep supplier lists from rotting in a spreadsheet",
+    description: "What a supplier list is really for: contacts, payment terms, lead times and a review date on every record, with a due-review report so the directory stays true instead of going stale.",
+    html: `<h1>A supplier list that does not rot</h1>
+<p>Buyer problem: you buy from a handful of suppliers and the record of who, on what terms and at what
+lead time lives in a spreadsheet. It rots. Someone changes a phone number, a payment term moves from
+Net 30 to Net 60, a lead time doubles, and nobody writes it down. The spreadsheet becomes a place you
+avoid opening because you no longer trust it. This server exists to keep that record true.</p>
+
+<h2>What the tool actually does</h2>
+<p>You add each supplier once: the name, what they supply, the contact, the payment terms, the lead time
+in days and notes. It returns a <code>SUP-YYYY-NNNN</code> id. Every record carries the date it was last
+reviewed, so the age of each entry is always visible.</p>
+<p>The tools that keep it from rotting are where the value is. <code>supplier_list</code> reads the
+directory A to Z, with a category filter and a free-text search across every field.
+<code>supplier_update</code> changes only the fields you pass, so fixing one phone number cannot
+overwrite anything else. <code>supplier_mark_reviewed</code> stamps a record as checked against
+reality, and a review dated in the future is refused. <code>supplier_due_review</code> answers which
+records have gone stale, most overdue first, and a record never reviewed is always due.
+<code>supplier_export</code> hands the directory over as CSV or a Markdown table, inline.</p>
+<p>Two guards stop the directory silently corrupting itself. A second record carrying a name already in
+the directory is refused, a partial name matching more than one supplier is refused with the candidates
+named, and the <code>SUP</code> number is never reissued.</p>
+
+<h2>Install it</h2>
+${install("supplier-list")}
+<p>Whichever path you take, there is no account, no API key and no login step. It writes to
+<code>~/.local/share/mcp-servers/supplier-list/</code>.</p>
+
+<h2>Queries that work</h2>
+<p>These are the sentences you type, phrased the way you would say them:</p>
+<p><strong>Add a supplier.</strong> "Add Shenzhen Box Co, packaging: Maria Chen,
+sales@shenzhenbox.example, Net 30, 21 days lead time." One call, one record with its
+<code>SUP-YYYY-NNNN</code> id.</p>
+<p><strong>Review what is stale.</strong> "Which of my supplier records have gone stale?" returns the
+overdue ones, most overdue first.</p>
+<p><strong>Update one field.</strong> "Change Maria's email to maria.chen@shenzhenbox.example" changes
+only that field.</p>
+<p><strong>Export.</strong> "Export the directory as CSV." The free tier includes CSV export.</p>
+
+<h2>How it compares to doing it by hand</h2>
+<p>In a spreadsheet, a directory is as current as your last disciplined edit. The job this server does
+that a spreadsheet does not is the review loop: it stores a review date per record, computes stale from
+that at the moment you ask, and refuses to let a future review stamp a record as checked. That is the
+difference between a directory you trust and a directory you quietly stop updating.</p>
+<p>There is no direct MCP competitor: an npm registry probe for supplier, supplier-list, vendors,
+procurement, lead-times and supplier-directory found no other server that holds a supplier directory
+with review dates.</p>
+
+<h2>Free tier and Pro</h2>
+<p>${freeText("supplier-list")}</p>
+<p>Pro ($${SINGLE_USD} once, lifetime) opens unlimited suppliers, Markdown export, and the due-review
+report. The full comparison is in <a href="/guides/mcp-server-free-vs-pro">free versus Pro</a>. Product
+page: <a href="/s/supplier-list">MCP Supplier List</a>. There are ${LISTED_CHILD_COUNT} of these MCP
+servers in total; one lifetime key covering all of them, this one included, is $${BUNDLE_USD}.</p>
+
+<h2>Connect without installing</h2>
+<p>Claude.ai, the Claude Desktop connector dialog and several IDE pickers take a remote URL and nothing
+else. <a href="/mcp/connect">mcp/connect</a> mints a token and prints a ready-to-paste URL for every
+hosted server, including this one at <code>https://mcp.zovo.one/mcp/supplier-list</code>.${FOOT}`,
+    faq: [
+      { q: "What is the best MCP server for supplier lists?", a: `MCP Supplier List is the one made for it: it stores contacts, payment terms and lead times per supplier, keeps a review date on every record, and answers which suppliers have gone stale with supplier_due_review. It is $${SINGLE_USD} once for unlimited suppliers, and ten suppliers with CSV export are free on every tier.` },
+      { q: "What keeps a supplier directory from going stale?", a: "Every record carries the date it was last reviewed, supplier_due_review lists the overdue records most stale first, and a review dated in the future is refused. A record never reviewed is always due, so nothing quietly ages out of sight." },
+      { q: "Can I export my supplier list?", a: "Yes, as CSV on the free tier and as CSV or a Markdown table on every tier. supplier_export hands the directory over inline, no file download step." },
+      { q: "Is the hosted URL real?", a: `Yes. https://mcp.zovo.one/mcp/supplier-list answers over streamable HTTP with nothing installed. mcp/connect mints a free anonymous token and prints the ready URL with the token in the path.` },
+    ],
+  },
+  "service-agreements-from-chat": {
+    title: "MCP Service Agreement: stop copying a rotting contract template off the internet",
+    description: "Service agreements for freelancers: scope, deliverables, rate, termination and liability, rendered for signing with a checklist so you catch the one-sided gaps before you send it.",
+    html: `<h1>A service agreement before the work starts</h1>
+<p>Buyer problem: you are about to start client work and you need the engagement on paper. The template
+you copy off the internet is old, half-finished, and full of fields you do not fill in because the last
+person did not either. You are not a lawyer, so you send it anyway and hope. This server writes the
+agreement from what you tell it, checks it for missing fields and one-sided gaps, and renders it ready
+for signing.</p>
+
+<h2>What the tool actually does</h2>
+<p>You describe the engagement in plain language: the parties, the scope of services, the deliverables,
+the rate in whole cents with its unit, the payment terms, start and end dates, a termination notice
+period, a liability cap and the governing jurisdiction. <code>agreement_create</code> stores it and
+returns it rendered as clean Markdown with a signature block, numbered <code>SA-YYYY-NNNN</code>.</p>
+<p>Two tools do the before-you-send work. <code>agreement_checklist</code> lists the missing fields and
+flags one-sided gaps neutrally, so it does not call your terms bad, it points at the blank and the
+asymmetry. <code>agreement_update_status</code> moves the agreement exactly one step at a time:
+draft, sent, signed, expired, stamping a date and note into its history, and a skipped step is refused,
+so a draft cannot leap to signed by accident.</p>
+<p>The built-in clause library covers IP assignment, mutual confidentiality, late payment interest, kill
+fee and revision rounds, filled with the agreement's own variables. Every render carries a one-line note
+that it is a template, not legal advice.</p>
+
+<h2>Install it</h2>
+${install("service-agreement")}
+<p>Whichever path you take, there is no account, no API key and no login step. It writes to
+<code>~/.local/share/mcp-servers/service-agreement/</code>.</p>
+
+<h2>Queries that work</h2>
+<p>These are the sentences you type:</p>
+<p><strong>Write an agreement.</strong> "Write an agreement between Anna Nowak and Brightleaf Studio:
+design and build of a five-page site, 85.00 EUR an hour, Net 14, 14 days notice, capped at 8,500 EUR,
+England and Wales." One call, one rendered agreement with a signature block.</p>
+<p><strong>Check it before sending.</strong> "Run the checklist on it before I send it." Missing fields
+and one-sided gaps, listed.</p>
+<p><strong>Advance its status.</strong> "Mark it sent today." The status moves one step to sent with a
+date stamp.</p>
+
+<h2>How it compares to doing it by hand</h2>
+<p>Copying a template means filling in whatever the template happens to ask for and missing the rest.
+This server asks for the specific set of fields a service agreement needs and refuses to let one leak
+past unchecked: the checklist is the part a Word document does not give you, and the one-step status
+machine means there is always a record of where each agreement is. It will not replace a lawyer, and it
+says so on every render, but it replaces the copy-and-hope template.</p>
+<p>There is no direct MCP competitor: an npm registry probe for service-agreement, service-contract,
+freelance contract, agreement and contract template found no other server that holds and renders a
+service agreement.</p>
+
+<h2>Free tier and Pro</h2>
+<p>${freeText("service-agreement")}</p>
+<p>Pro ($${SINGLE_USD} once, lifetime) opens unlimited active agreements, the full clause texts with the
+agreement's variables filled in, and print-ready HTML rendering. The full comparison is in
+<a href="/guides/mcp-server-free-vs-pro">free versus Pro</a>. Product page:
+<a href="/s/service-agreement">MCP Service Agreement</a>. There are ${LISTED_CHILD_COUNT} of these MCP
+servers in total; one lifetime key covering all of them, this one included, is $${BUNDLE_USD}.</p>
+
+<h2>Connect without installing</h2>
+<p>Claude.ai, the Claude Desktop connector dialog and several IDE pickers take a remote URL and nothing
+else. <a href="/mcp/connect">mcp/connect</a> mints a token and prints a ready-to-paste URL for every
+hosted server, including this one at <code>https://mcp.zovo.one/mcp/service-agreement</code>.${FOOT}`,
+    faq: [
+      { q: "What is the best MCP server for service agreements?", a: `MCP Service Agreement writes a scope, deliverables, rate, payment terms, termination notice, liability cap and governing jurisdiction into a rendered agreement numbered SA-YYYY-NNNN, and checks it for missing fields and one-sided gaps before you send it. Three active agreements are free; Pro is $${SINGLE_USD} once for unlimited.` },
+      { q: "Is it legal advice?", a: "No. Every render carries a one-line note that it is a template, not legal advice. It produces the document and the checklist; a lawyer reviews the important ones." },
+      { q: "Can I see what is missing before I send it?", a: "Yes. agreement_checklist lists the missing fields and flags one-sided gaps neutrally. It is a before-you-send pass, not a grading." },
+      { q: "Does it run hosted?", a: `Yes. https://mcp.zovo.one/mcp/service-agreement answers over streamable HTTP. mcp/connect mints a free anonymous token and prints the ready URL.` },
+    ],
+  },
+  "equipment-maintenance-log-from-chat": {
+    title: "MCP Maintenance Log: know what service is due without anyone remembering",
+    description: "One register of the equipment you look after and the work done on it: assets, service entries with costs, and a due report computed from the stored dates the moment you ask.",
+    html: `<h1>A maintenance log that computes what is due</h1>
+<p>Buyer problem: the workshop, the rental flats, the van fleet, the studio. Equipment needs a service
+record, and the usual way of running one is a spreadsheet plus someone's memory of when the last service
+was. The boiler gets serviced a month late because nobody could say when it was due. This server keeps
+one register of the equipment and the work done on it, and answers what is due from the dates on file, so
+nothing depends on anyone remembering.</p>
+
+<h2>What the tool actually does</h2>
+<p><code>asset_add</code> records a machine with its name, serial or asset tag, location and currency,
+returning an <code>AST-YYYY-NNNN</code> id. The serial or tag is unique across the register, so the same
+boiler cannot be entered twice. <code>maintenance_log</code> records the work: the day, what was done,
+the cost in whole cents, who did it, and when the next service falls due, as <code>next_due</code> or
+<code>interval_days</code>, never both, so a date and an interval cannot fight each other.</p>
+<p><code>maintenance_due</code> is the reason to run this at all. At the moment you ask it answers what
+is overdue and by how many days, what falls due within the next N days, and what has no schedule at all.
+It computes from the stored dates, so the register cannot go stale between edits.
+<code>asset_history</code> reads one asset's whole log in chronological order with its total spend in
+integer cents and spend per technician, and <code>maintenance_export</code> hands a date range over as
+CSV or a Markdown summary per asset.</p>
+<p>An asset carrying a log cannot be removed without <code>confirm: true</code>, and the
+<code>AST</code> number is never reissued, so the history stays append-only in a way a spreadsheet is
+not.</p>
+
+<h2>Install it</h2>
+${install("maintenance-log")}
+<p>Whichever path you take, there is no account, no API key and no login step. It writes to
+<code>~/.local/share/mcp-servers/maintenance-log/</code>.</p>
+
+<h2>Queries that work</h2>
+<p>These are the sentences you type:</p>
+<p><strong>Add an asset.</strong> "Add the combi boiler, serial SN-88-4412, at 14 Nowa Street flat 3,
+EUR." One call, one asset with an <code>AST-YYYY-NNNN</code> id.</p>
+<p><strong>Log the work.</strong> "Log the annual service on the 9th, 120.00 by Acme Heating, next due
+in 365 days." The cost in cents, the technician, and the next service date.</p>
+<p><strong>Ask what is due.</strong> "What is overdue or coming due this month?" Computed from the stored
+dates, most overdue first.</p>
+<p><strong>Export for the records.</strong> "Export this year's service log as CSV."</p>
+
+<h2>How it compares to doing it by hand</h2>
+<p>A spreadsheet can hold the rows, but it cannot answer "what is due" without you working out each date.
+The job this server does that a spreadsheet does not is the due report computed from dates you actually
+stored, plus the per-asset history with spend and spend per technician. That is the difference between a
+log you have to interrogate and a register that answers.</p>
+<p>There is no direct MCP competitor: an npm registry probe for maintenance-log, maintenance-schedule,
+equipment log, service-log and maintenance found no other server that holds an equipment register with a
+due report.</p>
+
+<h2>Free tier and Pro</h2>
+<p>${freeText("maintenance-log")}</p>
+<p>Pro ($${SINGLE_USD} once, lifetime) opens unlimited assets, the due report (overdue and
+due-within-N-days) and the Markdown summaries. The full comparison is in
+<a href="/guides/mcp-server-free-vs-pro">free versus Pro</a>. Product page:
+<a href="/s/maintenance-log">MCP Maintenance Log</a>. There are ${LISTED_CHILD_COUNT} of these MCP
+servers in total; one lifetime key covering all of them, this one included, is $${BUNDLE_USD}.</p>
+
+<h2>Connect without installing</h2>
+<p>Claude.ai, the Claude Desktop connector dialog and several IDE pickers take a remote URL and nothing
+else. <a href="/mcp/connect">mcp/connect</a> mints a token and prints a ready-to-paste URL for every
+hosted server, including this one at <code>https://mcp.zovo.one/mcp/maintenance-log</code>.${FOOT}`,
+    faq: [
+      { q: "What is the best MCP server for equipment maintenance?", a: `MCP Maintenance Log keeps one register of assets and the work done on them, and answers what is overdue or coming due from the stored dates the moment you ask. Three assets with CSV export are free; Pro is $${SINGLE_USD} once for unlimited assets and the due report.` },
+      { q: "How does the due report work?", a: "maintenance_due reads the dates on file and answers what is overdue by how many days, what falls due within the next N days, and what has no schedule. It is computed at the moment you ask, so it cannot go stale." },
+      { q: "Can I see how much I have spent on one machine?", a: "Yes. asset_history reads one asset's whole log in chronological order with total spend in integer cents and spend per technician." },
+      { q: "Does it run hosted?", a: `Yes. https://mcp.zovo.one/mcp/maintenance-log answers over streamable HTTP. mcp/connect mints a free anonymous token and prints the ready URL.` },
+    ],
+  },
+  "vehicle-mileage-log-from-chat": {
+    title: "MCP Mileage Log: keep the deductible log at the moment of the drive, not in April",
+    description: "Trip-by-trip mileage for deductible driving with effective-dated rates, a summary priced by the rate in force on the day each trip was driven, and a CSV export for the accountant.",
+    html: `<h1>A mileage log kept as you drive</h1>
+<p>Buyer problem: you drive for work and you want the mileage deduction. The log that makes it usable is
+reconstructed from memory in April, and it is missing half the trips. A few US agencies have mileage
+allowances set by the year, and the practical versions of "your one rate" are fine, but what most
+freelancers need is simply: log the drive when it happens, price it with the right rate, and hand the
+accountant something that adds up. This server does that.</p>
+
+<h2>What the tool actually does</h2>
+<p><code>trip_add</code> logs one drive: the date, where from and to, the distance in miles or km, the
+purpose and the category (business, medical, moving, charitable, personal), returning a
+<code>TR-YYYY-NNNN</code> id, with a future date refused. <code>rate_set</code> records what one mile or
+km is worth for one category in one jurisdiction from a date forward, an effective-dated series rather
+than one global number, and each trip earns the rate in force on the day it was driven, rounded half-up
+to the cent.</p>
+<p>Distances in miles and in km are kept apart and never added together; a trip whose unit differs from
+the rate's is converted first, 1 mile = 1.609344 km exactly. <code>mileage_summary</code> prices a date
+range per category with totals per currency, and trips with no applicable rate are listed with the
+reason, never silently dropped. <code>mileage_export</code> is the CSV for the accountant, refusing while
+any non-personal trip in the window is unpriced, so you cannot hand over a CSV that has holes.</p>
+<p>No rate ships with the server and none of it is tax advice: you set the rates your jurisdiction
+allows.</p>
+
+<h2>Install it</h2>
+${install("mileage-log")}
+<p>Whichever path you take, there is no account, no API key and no login step. It writes to
+<code>~/.local/share/mcp-servers/mileage-log/</code>.</p>
+
+<h2>Queries that work</h2>
+<p>These are the sentences you type:</p>
+<p><strong>Set a rate.</strong> "Set the US federal business rate at 0.70 a mile from 2026-01-01." An
+effective-dated series, not a global number.</p>
+<p><strong>Log a drive.</strong> "Log yesterday: home office to the client site, 12.5 miles, the Kowalski
+site visit." The purpose becomes the category the trip belongs to.</p>
+<p><strong>Summarize.</strong> "Summarize this year." Priced per category by the rate in force on each
+trip's date.</p>
+<p><strong>Export.</strong> "Export this year as CSV for my accountant." Refuses while any non-personal
+trip is unpriced.</p>
+
+<h2>How it compares to doing it by hand</h2>
+<p>Reconstructing a year of drives from memory is the failure mode. This server logs the drive at the
+moment, prices it by the rate that was in force on that day, and keeps miles and kilometres apart, so the
+CSV you hand over is priced and complete rather than a best guess. The effective-dated rate series is the
+part a manual spreadsheet does not give you: the rate for a trip is the one that applied that day, not
+the one you happened to type last.</p>
+<p>There is no direct MCP competitor: an npm registry probe for mileage-log, mileage-logbook, mileage
+tracker, mileage and tax-deduction mileage found no other server that holds a trip log with
+effective-dated rates and a priced export.</p>
+
+<h2>Free tier and Pro</h2>
+<p>${freeText("mileage-log")}</p>
+<p>Pro ($${SINGLE_USD} once, lifetime) opens unlimited trips, the year-over-year rate series, and the
+CSV export for the accountant. The full comparison is in
+<a href="/guides/mcp-server-free-vs-pro">free versus Pro</a>. Product page:
+<a href="/s/mileage-log">MCP Mileage Log</a>. There are ${LISTED_CHILD_COUNT} of these MCP servers in
+total; one lifetime key covering all of them, this one included, is $${BUNDLE_USD}.</p>
+
+<h2>Connect without installing</h2>
+<p>Claude.ai, the Claude Desktop connector dialog and several IDE pickers take a remote URL and nothing
+else. <a href="/mcp/connect">mcp/connect</a> mints a token and prints a ready-to-paste URL for every
+hosted server, including this one at <code>https://mcp.zovo.one/mcp/mileage-log</code>.${FOOT}`,
+    faq: [
+      { q: "What is the best MCP server to track vehicle mileage?", a: `MCP Mileage Log logs each trip with date, route, distance, purpose and category, prices it by the effective-dated rate in force on that day, and exports a CSV for the accountant. Twenty trips a month with one rate per category are free; Pro is $${SINGLE_USD} once for unlimited trips and the priced export.` },
+      { q: "How does the mileage rate work?", a: "rate_set records what one mile or km is worth for one category in one jurisdiction from a date forward, so a trip earns the rate in force on the day it was driven. Distances in miles and km are kept apart and never added together." },
+      { q: "Does it give me a number my accountant can use?", a: "Yes, if every trip is priced. mileage_export refuses while any non-personal trip in the window is unpriced, so you cannot hand over a CSV that has holes." },
+      { q: "Does it run hosted?", a: `Yes. https://mcp.zovo.one/mcp/mileage-log answers over streamable HTTP. mcp/connect mints a free anonymous token and prints the ready URL.` },
+    ],
+  },
 };
 
 export const GUIDE_INDEX = {
