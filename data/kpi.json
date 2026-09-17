@@ -14,10 +14,10 @@
   {
    "cat": "Discovery",
    "name": "Registry findable share",
-   "value": 50,
+   "value": 66,
    "target": 60,
    "unit": "% of tracked tokens",
-   "how": "data/organic.json (name-substring search probes)",
+   "how": "measured 2026-09-17 via scripts/s39_findable_probe.py: 71 tracked tokens, fully-paginated /v0/servers?search=<token> walks; 47/71 tokens show at least one io.github.theluckystrike/* row on page 1 (66%). Previous 50 was page-1-or-top-pages estimate; R2 counts page-1 only, so 50->66 is method-consistent improvement measure not apples-to-apples. 11 tokens fully absent (time tracker, product, shop, price tracker, table, data, word, cv, hiring, agenda, ical); 13 present but off page 1.",
    "why": "Search is name-only; a server nobody can find by the words they type does not exist.",
    "status": "progress"
   },
