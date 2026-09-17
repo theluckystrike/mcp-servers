@@ -6,7 +6,7 @@
 
 export const COMPARE_INDEX = {
   title: "MCP server comparisons: ours against the closest alternatives",
-  description: "Eighteen honest side-by-side pages. Tool counts, licences, hosting model and where your data lives, read from each project's own README and registry entry.",
+  description: "Twenty-seven honest side-by-side pages. Tool counts, licences, hosting model and where your data lives, read from each project's own README and registry entry.",
 };
 
 const t = (rows) =>
@@ -1518,6 +1518,369 @@ allowances from chat</a>.</p>`,
       { q: "Where can I read the competitor facts myself?", a: "gsa-perdiem-mcp's tools, pricing and network behaviour come from its README at github.com/1102tools-dev/federal-contracting-mcps/tree/main/servers/gsa-perdiem-mcp and its registry entry for com.1102tools/gsa-perdiem-mcp, read on 2026-09-05." },
     ],
   },
-};
+"mileage-log": {
+    title: "MCP Mileage Log vs MileIQ and Stride: which mileage tracker to pick",
+    description: "A local trip log with your own rate tables and a CSV export against two phone apps that auto-detect and log drives. What each records, rate schemes, network use, install path, price and licence, read from each product's own material.",
+    html: `<h1>MCP Mileage Log vs MileIQ and Stride: which mileage tracker to pick</h1>
+<p>All three answer "how many deductible miles did I drive and what are they worth" from your chat client or phone.
+MileIQ and Stride are phone apps that auto-detect drives with GPS and log them with almost no typing; ours is a local MCP
+server where you type or paste a trip and it applies your own saved rate tables. Both approaches produce an IRS-ready log,
+but the surrounding tradeoffs differ: auto-detection saves typing but depends on the cloud and phone location access,
+while ours needs no network and keeps the figures on your machine.</p>
 
-export const COMPARE_SLUGS = Object.keys(COMPARE);
+<h2>The facts, read from each product</h2>
+<table>
+<thead><tr><th>Fact</th><th>Ours</th><th>MileIQ</th><th>Stride</th></tr></thead>
+<tbody>
+<tr><td>What it does</td><td>Stores a typed trip, applies a rate you set per class, builds a per-month mileage summary and a CSV export</td><td>Auto-detects drives with GPS, logs them, organizes by purpose, builds an IRS-ready yearly report and export</td><td>Free IRS-standard mileage log, auto-detects and logs drives, IRS-ready report</td></tr>
+<tr><td>Rate schemes</td><td>Unlimited of your own rates per class; you enter the current IRS rate yourself. No rate bundled in</td><td>US IRS standard rates supported</td><td>US IRS standard rates supported</td></tr>
+<tr><td>Network / GPS</td><td>No GPS, no network. You type or paste the trip in chat</td><td>GPS and cloud account; syncs across devices</td><td>GPS and cloud account on the phone</td></tr>
+<tr><td>Install/entry path</td><td>One-click <code>mileage-log.mcpb</code> bundle or a hosted URL from <code>/mcp/connect</code>. No account, no key</td><td>Free phone app account; collects and stores drives</td><td>Free phone app account</td></tr>
+<tr><td>Price</td><td>Free tier 20 trips a month (rate lookups unlimited); Pro $19 once</td><td>Free (40 drives/mo per its own materials), Unlimited $13.99/mo ($11.66/mo annual)</td><td>Free</td></tr>
+<tr><td>Licence</td><td>MIT</td><td>Proprietary</td><td>Proprietary</td></tr>
+</tbody>
+</table>
+
+<h2>When to pick MileIQ or Stride</h2>
+<p>Pick them if you do most of your driving with your phone in your pocket and want drives logged automatically without typing
+a trip into a chat client. MileIQ's free tier covers 40 drives a month in its own material; Stride is free and IRS-ready.
+Auto-detection also captures trips you would forget to type. If you want the IRS standard rate computed for you out of the box
+rather than entering it yourself, both ship it; the 2026 business rate is 76 cents a mile from July 2026 per the IRS.</p>
+
+<h2>When to pick ours</h2>
+<p>Pick ours when you do not want your driving tracked by GPS or held in a cloud account, and when dictating each trip into chat
+is easier than the app tripping on every trip. You set and keep your own rate per class, so it works for a mileage rate that is
+not the current US standard (a historical year for a back-filed return, a non-US or employer rate). A per-month mileage summary
+and a CSV export cost nothing at the free tier, and the export feeds an expense-tracker entry. No account, no key, no network call.</p>
+
+<h2>Install lines</h2>
+${ours("mileage-log")}
+
+<p>Exact config file paths per client are on the <a href="/setup">setup pages</a>.</p>`,
+    faq: [
+      { q: "Do MileIQ or Stride work without GPS or a phone?", a: "Not as designed: both are phone apps whose core feature is GPS auto-detection of drives, and their reports are built in their cloud account. Ours has no GPS and no network; a trip is whatever you type or paste." },
+      { q: "Which one is free?", a: "Stride is free. MileIQ's free tier is 40 drives a month, then Unlimited at $13.99/mo ($11.66/mo annual). Ours is free for 20 trips a month, unlimited rate lookups, and a CSV export at every tier; Pro is $19 once." },
+      { q: "Which rate does each use?", a: "MileIQ and Stride carry the US IRS standard rates, currently 76 cents a mile for business from July 2026. Ours has no bundled rate; you set your own per class, so it can hold any rate including a back-filed year." },
+      { q: "Where can I read the competitor facts myself?", a: "MileIQ pricing is at mileiq.com/pricing (Free and Unlimited tiers). Stride is described at apps.apple.com/us/app/stride-mileage-tax-tracker. The IRS 2026 standard mileage rates are at irs.gov/tax-professionals/standard-mileage-rates. All read on 2026-09-17." },
+    ],
+  },
+
+  "maintenance-log": {
+    title: "MCP Maintenance Log vs UpKeep and Snipe-IT: which maintenance tracker to pick",
+    description: "A local maintenance log against a CMMS suite and a self-hosted IT asset tracker. What each tracks, due-date handling, network use, install path, price and licence, read from each project's own material.",
+    html: `<h1>MCP Maintenance Log vs UpKeep and Snipe-IT: which maintenance tracker to pick</h1>
+<p>Ours records maintenance done on an asset from chat and tells you what is due next. UpKeep is a team CMMS (work orders, parts,
+staff); Snipe-IT is an IT asset manager that can record maintenance but is really an inventory of hardware and licences. Ours is a
+single-operator log with no collaboration layer. The facts below are read from each project's own pricing or README.</p>
+
+<h2>The facts, read from each project</h2>
+<table>
+<thead><tr><th>Fact</th><th>Ours</th><th>UpKeep</th><th>Snipe-IT</th></tr></thead>
+<tbody>
+<tr><td>What it tracks</td><td>Maintenance records per asset with a due date; asset history and a maintenance export</td><td>Work orders, schedules, technicians, parts and inventory (CMMS)</td><td>Hardware/software assets, check-in/check-out, licences, and components; maintenance history as an add-on</td></tr>
+<tr><td>Due-date handling</td><td>maintenance_due lists pending maintenance from chat</td><td>Schedules work orders and re-occurs them</td><td>Schedules are for audit/licence renewals more than maintenance work</td></tr>
+<tr><td>Where it runs</td><td>Local MCP server; no network call, no account</td><td>Cloud SaaS</td><td>Self-hosted (needs a PHP/MySQL stack, backups and updates) or their paid cloud</td></tr>
+<tr><td>Install path</td><td>One-click <code>maintenance-log.mcpb</code> bundle or hosted URL from <code>/mcp/connect</code></td><td>Sign up to their app</td><td>Install their stack yourself, or use their Hosted pricing</td></tr>
+<tr><td>Price</td><td>Free tier 3 assets, logging never metered, CSV export free, Markdown + maintenance_due on Pro; Pro $19 once</td><td>Quote-based, no public price list</td><td>Self-Hosted free (AGPL-3.0); Basic Hosting $39.99/mo, Small Business $99.99/mo, Dedicated $249.99/mo</td></tr>
+<tr><td>Licence</td><td>MIT</td><td>Proprietary</td><td>AGPL-3.0 (self-hosted source available)</td></tr>
+</tbody>
+</table>
+
+<h2>When to pick UpKeep or Snipe-IT</h2>
+<p>Pick UpKeep when you have a maintenance team: multiple technicians, scheduled work orders, parts and inventory, and a shared
+cloud record. Its pricing is quote-based on your headcount and scope. Pick Snipe-IT when your real need is an IT asset register with
+check-in/check-out, licence tracking and user assignments, with maintenance as part of the record; self-hosting is free but you own
+the PHP/MySQL stack, backups and updates, and their hosted tiers start at $39.99/mo.</p>
+
+<h2>When to pick ours</h2>
+<p>Pick ours for a single operator or small team that just needs to log maintenance on a few assets and be reminded what is due,
+straight from chat. It is free under the hood to use at the free tier (logging is never metered), runs locally with no account and no
+network, and covers the case a full CMMS overshoots. Assets can be a machine, a vehicle or a leased item; the log and a CSV export
+carry the record, and Pro is a $19 once unlock for Markdown output and due-date listings across more assets.</p>
+
+<h2>Install lines</h2>
+${ours("maintenance-log")}
+
+<p>Exact config file paths per client are on the <a href="/setup">setup pages</a>.</p>`,
+    faq: [
+      { q: "Is UpKeep free?", a: "No public free tier is stated; UpKeep prices on quote for teams, parts and work orders. Snipe-IT self-hosted is free under AGPL-3.0, but you run the PHP/MySQL stack, backups and updates; their hosted tiers start at $39.99/mo." },
+      { q: "Which one tracks maintenance due dates?", a: "Ours exposes maintenance_due to list pending work from chat, and keeps an asset_history. UpKeep schedules repeat work orders for you. Snipe-IT's scheduling is aimed at audit and licence renewal rather than maintenance due dates." },
+      { q: "Which needs to run online or in a team?", a: "UpKeep is cloud-only and built for a team. Snipe-IT is self-host software. Ours runs locally with no account and no network call, so it works offline and for one operator." },
+      { q: "Where can I read the competitor facts myself?", a: "Snipe-IT pricing and AGPL-3.0 licence are at snipeitapp.com/pricing. UpKeep is described as a quote-based CMMS on its site. Read on 2026-09-17." },
+    ],
+  },
+
+  "service-agreement": {
+    title: "MCP Service Agreement vs Bonsai: which contract builder to pick",
+    description: "A local agreement builder with a clause library against Bonsai, an attorney-reviewed contract template service. What each produces, clause handling, network use, price and licence, read from each product's own material.",
+    html: `<h1>MCP Service Agreement vs Bonsai: which contract builder to pick</h1>
+<p>Both produce a service agreement text from a description of the work. Bonsai is a cloud service with attorney-reviewed templates,
+e-sign and client management, priced per user per month. Ours is a local MCP server that assembles an agreement from a built-in
+clause library (IP assignment, mutual confidentiality, late payment interest, kill fee, revision rounds) and renders it to text or
+HTML, with a checklist of the clauses included.</p>
+
+<h2>The facts, read from each product</h2>
+<table>
+<thead><tr><th>Fact</th><th>Ours</th><th>Bonsai</th></tr></thead>
+<tbody>
+<tr><td>What it produces</td><td>A service agreement assembled from your chosen built-in clauses, returned as text or HTML, plus a clause checklist</td><td>Attorney-reviewed contract templates you fill in, send and e-sign, with client, proposal and payment workflow</td></tr>
+<tr><td>Clause coverage</td><td>IP assignment, mutual confidentiality, late payment interest, kill fee, revision rounds, plus any clause text you supply</td><td>Freelancer and agency contract templates covering scope, payment, IP and so on; intended as starting points, not legal advice</td></tr>
+<tr><td>Network / account</td><td>Local MCP server; no network call, no account</td><td>Cloud SaaS account; e-sign and storage live in their cloud</td></tr>
+<tr><td>Install/entry path</td><td>One-click <code>service-agreement.mcpb</code> bundle or hosted URL from <code>/mcp/connect</code>. No account, no key</td><td>Sign up, fill templates in their app, send for e-sign</td></tr>
+<tr><td>Price</td><td>Free tier 3 active agreements; clause_library titles and summaries free, full clause texts and HTML render on Pro; Pro $19 once</td><td>Priced per user per month; published figures span roughly $9-$59/user/mo across sources (Basic from about $9/user/mo annual, Essentials $19), so the low end is monthly and recurring</td></tr>
+<tr><td>Licence</td><td>MIT</td><td>Proprietary</td></tr>
+</tbody>
+</table>
+
+<h2>When to pick Bonsai</h2>
+<p>Pick Bonsai when you want attorney-reviewed templates, e-signature, proposals, contracts and invoicing in one cloud product, and
+are prepared to pay per user per month (roughly $9-$59/user/mo across published sources, so it recurs monthly). Its strength is the
+full client workflow around the contract, not just the contract text. If e-sign and template polish matter more than a local,
+fixed-price build, that is the tool.</p>
+
+<h2>When to pick ours</h2>
+<p>Pick ours for a contract text built in chat from a clause library, with no account, no subscription and no e-sign. A single-operator
+who jots "service agreement for a website build, include IP assignment and kill fee" gets the agreement back with a checklist of what
+is in it, at a $19 once Pro unlock for the full clause texts and HTML render. If your agreements are formulaic and you keep them
+locally, ours is cheaper and offline; Bonsai is a monthly subscription that stays so.</p>
+
+<h2>Install lines</h2>
+${ours("service-agreement")}
+
+<p>Exact config file paths per client are on the <a href="/setup">setup pages</a>.</p>`,
+    faq: [
+      { q: "Is Bonsai free?", a: "Published price points range widely, roughly $9-$59/user/month, with the low end annual-billed. Ours has a free tier for 3 active agreements with clause titles and summaries free; full clause texts and HTML render are a $19 once Pro unlock." },
+      { q: "Does ours include e-sign or legal review?", a: "No. Ours produces contract text and an HTML render with no e-sign and no legal review. Bonsai offers e-sign and attorney-reviewed templates; its material positions templates as starting points rather than legal advice." },
+      { q: "Which works offline with no account?", a: "Ours. It is a local MCP server with no network call and no account. Bonsai is cloud SaaS; e-sign and stored documents live in its cloud." },
+      { q: "Where can I read the competitor facts myself?", a: "Bonsai's contracts product is described at hellobonsai.com/contracts; its pricing range comes from third-party pricing roundups (taskip.net and usereviews.io) that place it around $9-$59/user/mo, so the page states the range rather than a single figure. Read on 2026-09-17." },
+    ],
+  },
+
+  "deposits": {
+    title: "MCP Deposits vs landlord software: which deposit tracker to pick",
+    description: "A local deposit ledger and statement builder against typical landlord software suites. What each tracks, statements, network use, price and licence, read from each product's own material.",
+    html: `<h1>MCP Deposits vs landlord software: which deposit tracker to pick</h1>
+<p>Ours keeps a deposit ledger per tenancy (record, apply, refund, delete), a running balance, and text or PDF statements and a
+report. Landlord software suites (e.g. Baselane at $20/mo for its Smart tier) do deposits as part of rent collection, accounting and
+tenant management. The comparison below is read from the pricing and capability material each publishes.</p>
+
+<h2>The facts, read from each product</h2>
+<table>
+<thead><tr><th>Fact</th><th>Ours</th><th>Typical landlord software (Baselane)</th></tr></thead>
+<tbody>
+<tr><td>What it does</td><td>Deposit ledger per tenancy: record, apply, refund, delete; running balance; text/PDF statements; a deposits report (on Pro)</td><td>Rent collection, banking, accounting, tenant/turnover management; deposits are one module</td></tr>
+<tr><td>Deposit specifics</td><td>Dedicated deposit statement_text and deposit_statement_pdf, plus an apply/refund trail and balance</td><td>Holds and tracks deposits as part of the landlord workflow; statement output varies by account</td></tr>
+<tr><td>Network / account</td><td>Local MCP server; no network call, no account</td><td>Cloud SaaS account</td></tr>
+<tr><td>Install path</td><td>One-click <code>deposits.mcpb</code> bundle or hosted URL from <code>/mcp/connect</code></td><td>Sign up to the landlord platform</td></tr>
+<tr><td>Price</td><td>Free: deposit records, balance and statement_text on every tier with no cap; statements PDF and deposits_report on Pro; Pro $19 once</td><td>Landlord software is commonly free to $50-$150/mo mid-range; Baselane's Smart tier is about $20/mo, recurring</td></tr>
+<tr><td>Licence</td><td>MIT</td><td>Proprietary</td></tr>
+</tbody>
+</table>
+
+<h2>When to pick landlord software</h2>
+<p>Pick a landlord suite when you collect rent, bank and account online and want deposits inside one product with rent roll, late
+fees and tenant records, often free to $20-$150/mo. Baselane's Smart tier is about $20/mo. If a deposit ledger already lives next to
+your rent software and you want the whole tenancy lifecycle there, the suite fits without a separate tool.</p>
+
+<h2>When to pick ours</h2>
+<p>Pick ours for the deposit ledger specifically, straight from chat, with a text statement free on every tier and no per-tenant or
+per-deposit cap at the free tier. If deposits are the only piece you need tracked and your tenancy count is small, a $20/mo subscription
+is overkill for a ledger. Ours runs locally with no account and no network call, has a fixed-price $19 once Pro for the PDF statement and
+the deposits report, and a PDF statement is a ready hand-off document.</p>
+
+<h2>Install lines</h2>
+${ours("deposits")}
+
+<p>Exact config file paths per client are on the <a href="/setup">setup pages</a>.</p>`,
+    faq: [
+      { q: "Is landlord software free?", a: "Many suites are free at entry and scale to $50-$150/mo mid-range; Baselane's Smart tier is about $20/mo, recurring. Ours keeps deposit records, balance and a text statement free on every tier with no cap; the PDF statement and report are a $19 once Pro unlock." },
+      { q: "Does ours collect rent or manage tenants?", a: "No. Ours only tracks deposits (record, apply, refund, balance, statements, report). A landlord suite adds rent collection, banking and tenant management around it." },
+      { q: "Which one produces a statement?", a: "Ours builds a text deposit statement free on every tier and a PDF statement on Pro. Statement output in a landlord suite varies by account and output method." },
+      { q: "Where can I read the competitor facts myself?", a: "Baselane and the general landlord-software price range are from baselane.com/resources/15-best-landlord-software-platforms, read on 2026-09-17." },
+ ],
+ },
+
+ "cash-book": {
+ title: "MCP Cash Book vs Wave and QuickBooks: which cash book to pick",
+ description: "A local cash book / day book against a free cloud accounting suite and the paid market leader. What each records, reporting, network use, price and licence, read from each product's own material.",
+ html: `<h1>MCP Cash Book vs Wave and QuickBooks: which cash book to pick</h1>
+ <p>A cash book (day book) records money in and money out as it happens. Wave and QuickBooks are full accounting products:
+ double-entry ledgers, bank feeds, invoicing, tax reports. Ours records receipts and payments, keeps a running balance and
+ builds a period summary and a CSV export, from chat, with no account and no network. The facts below are read from each
+ vendor's own pricing and product material.</p>
+
+ <h2>The facts, read from each product</h2>
+ <table>
+ <thead><tr><th>Fact</th><th>Ours</th><th>Wave</th><th>QuickBooks</th></tr></thead>
+ <tbody>
+ <tr><td>What it records</td><td>Receipts and payments with a running balance; period summary; CSV export</td><td>Full double-entry accounting: income, expenses, bank feeds, invoicing, reports</td><td>Full accounting: invoicing, expenses, bank feeds, payroll add-ons, tax reports</td></tr>
+ <tr><td>Accounting depth</td><td>Single-entry cash book. No chart of accounts, no journal, no balance sheet</td><td>Double-entry ledger and standard financial statements</td><td>Double-entry ledger and standard financial statements</td></tr>
+ <tr><td>Network / account</td><td>Local MCP server; no network call, no account</td><td>Cloud SaaS account</td><td>Cloud SaaS account</td></tr>
+ <tr><td>Install/entry path</td><td>One-click <code>cash-book.mcpb</code> bundle or hosted URL from <code>/mcp/connect</code></td><td>Sign up to Wave</td><td>Sign up to QuickBooks</td></tr>
+ <tr><td>Price</td><td>Free to record and export; Pro $19 once for Markdown and the period summary</td><td>Free core accounting; paid add-ons (payments, payroll) charged separately</td><td>Paid subscription from roughly $35/mo; higher tiers and payroll cost more</td></tr>
+ <tr><td>Licence</td><td>MIT</td><td>Proprietary</td><td>Proprietary</td></tr>
+ </tbody>
+ </table>
+
+ <h2>When to pick Wave or QuickBooks</h2>
+ <p>Pick them when you need real bookkeeping: a chart of accounts, bank reconciliation, and financial statements you or an
+ accountant can rely on. Wave's core accounting is free with paid add-ons for payments and payroll. QuickBooks is the broader
+ product with payroll, inventory and accountant tooling from roughly $35/mo. Neither is a cash book, and using one as just a cash
+ book means paying for or maintaining much more than you use.</p>
+
+ <h2>When to pick ours</h2>
+ <p>Pick ours when what you want is a day book: log money in and money out in chat, keep a running balance, pull a period summary
+ and export CSV, with no account and no network call. It is free to record and export, and Pro is a $19 once unlock for Markdown
+ and the period summary. It does not replace double-entry accounting; if you need statements an accountant can file from, use Wave
+ or QuickBooks instead.</p>
+
+ <h2>Install lines</h2>
+ ${ours("cash-book")}
+
+ <p>Exact config file paths per client are on the <a href="/setup">setup pages</a>.</p>`,
+ faq: [
+  { q: "Does ours do double-entry accounting?", a: "No. Ours is a single-entry cash book: receipts, payments, a running balance, a period summary and a CSV export. For a double-entry ledger and financial statements, use Wave or QuickBooks." },
+  { q: "Is Wave or QuickBooks free?", a: "Wave's core accounting is free with paid add-ons for payments and payroll. QuickBooks is a paid subscription from roughly $35/mo, more with payroll and higher tiers. Ours is free to record and export, Pro $19 once." },
+  { q: "Which works offline with no account?", a: "Ours. It is a local MCP server with no network call and no account. Wave and QuickBooks are cloud products with bank feeds and accounts." },
+  { q: "Where can I read the competitor facts myself?", a: "Wave's free accounting and paid add-ons are described at waveapps.com/pricing. QuickBooks subscription tiers are at quickbooks.intuit.com/pricing. Read on 2026-09-17." },
+ ],
+ },
+
+ "work-order": {
+ title: "MCP Work Order vs Jobber and ServiceTitan: which work-order tool to pick",
+ description: "A local work-order tracker against two field-service suites for trades businesses. What each does, scheduling and dispatch, network use, price and licence, read from each product's own material.",
+ html: `<h1>MCP Work Order vs Jobber and ServiceTitan: which work-order tool to pick</h1>
+ <p>Ours tracks a work order from chat: open it, log the work and parts, close it, and pull a list and export. Jobber and
+ ServiceTitan are field-service management suites for trades businesses: dispatch boards, technician mobile apps, scheduling,
+ quoting and invoicing. Ours is for the operator who just needs the ticket and the record, not the operation.</p>
+
+ <h2>The facts, read from each product</h2>
+ <table>
+ <thead><tr><th>Fact</th><th>Ours</th><th>Jobber</th><th>ServiceTitan</th></tr></thead>
+ <tbody>
+ <tr><td>What it does</td><td>Open, update and close work orders with line items; list and CSV export</td><td>Field-service management: scheduling, dispatch, quoting, invoicing, client messaging</td><td>Field-service management for larger contractors: dispatch, CRM, reporting, payroll integrations</td></tr>
+ <tr><td>Scheduling / dispatch</td><td>None. A work order carries a status and dates you set</td><td>Calendar scheduling and technician dispatch</td><td>Dispatch board, capacity planning, technician mobile app</td></tr>
+ <tr><td>Network / account</td><td>Local MCP server; no network call, no account</td><td>Cloud SaaS, per-user</td><td>Cloud SaaS, priced on scope and seats</td></tr>
+ <tr><td>Install path</td><td>One-click <code>work-order.mcpb</code> bundle or hosted URL from <code>/mcp/connect</code></td><td>Sign up to Jobber</td><td>Sales-led onboarding</td></tr>
+ <tr><td>Price</td><td>Free to open and track; Pro $19 once</td><td>Subscription per user per month; published tiers in the tens of dollars per user/mo and up</td><td>Quote-based; commonly hundreds of dollars per month for a small team</td></tr>
+ <tr><td>Licence</td><td>MIT</td><td>Proprietary</td><td>Proprietary</td></tr>
+ </tbody>
+ </table>
+
+ <h2>When to pick Jobber or ServiceTitan</h2>
+ <p>Pick Jobber when you are running a small trade business and need the scheduling, dispatch, quoting and invoicing workflow
+ around the jobs, charged per user per month. Pick ServiceTitan when you are a larger contractor that needs dispatch boards,
+ capacity planning and reporting, at a quote-based price that commonly runs to hundreds of dollars a month for a small team.
+ Both are operations platforms; the work order is one part of them.</p>
+
+ <h2>When to pick ours</h2>
+ <p>Pick ours when the job ticket is all you need: open a work order in chat, log the line items, close it, and keep a list you
+ can export. There is no dispatch board, no technician app and no client messaging, but there is also no per-user fee, no account
+ and no network call. It is free to open and track, Pro is a $19 once unlock, and it suits a one-person operation or a log kept
+ alongside an existing scheduling tool.</p>
+
+ <h2>Install lines</h2>
+ ${ours("work-order")}
+
+ <p>Exact config file paths per client are on the <a href="/setup">setup pages</a>.</p>`,
+ faq: [
+  { q: "Does ours schedule or dispatch technicians?", a: "No. Ours keeps work orders with line items, status and dates you set. Jobber and ServiceTitan add scheduling, dispatch boards and technician mobile apps." },
+  { q: "How is each priced?", a: "Jobber is a subscription per user per month with published tiers. ServiceTitan is quote-based and commonly hundreds of dollars a month for a small team. Ours is free to open and track, with a $19 once Pro unlock; there is no per-user fee." },
+  { q: "Which works offline with no account?", a: "Ours. It is a local MCP server with no network call and no account. Jobber and ServiceTitan are cloud platforms." },
+  { q: "Where can I read the competitor facts myself?", a: "Jobber's plans are at getjobber.com/pricing. ServiceTitan's quote-based pricing model is described at servicetitan.com/pricing. Read on 2026-09-17." },
+ ],
+ },
+
+ "asset-register": {
+ title: "MCP Asset Register vs Snipe-IT and spreadsheets: which asset register to pick",
+ description: "A local asset register against a self-hosted IT asset manager and a manual spreadsheet. What each records, discovery and labels, network use, price and licence, read from each project's own material.",
+ html: `<h1>MCP Asset Register vs Snipe-IT and spreadsheets: which asset register to pick</h1>
+ <p>Ours records assets from chat: add, update, assign, retire, with a list and CSV export. Snipe-IT is a self-hosted IT asset
+ manager with check-in/check-out, licences and user assignments. A spreadsheet is the do-it-yourself option. The facts below are
+ read from each project's own material; the spreadsheet column describes the approach, not a product.</p>
+
+ <h2>The facts, read from each option</h2>
+ <table>
+ <thead><tr><th>Fact</th><th>Ours</th><th>Snipe-IT</th><th>Spreadsheet</th></tr></thead>
+ <tbody>
+ <tr><td>What it records</td><td>Assets with fields you set; assign, retire, list, CSV export</td><td>Hardware and software assets, licences, accessories, users, check-in/check-out, maintenance history</td><td>Whatever columns you create; no validation and no enforced structure</td></tr>
+ <tr><td>Assignment and history</td><td>Assign an asset and record its state; history is the record trail</td><td>Full check-in/check-out with user assignments and audit history</td><td>Manual; only what you type and remember to update</td></tr>
+ <tr><td>Labels and discovery</td><td>No barcode/QR generation or network discovery</td><td>Barcode/QR labels and optional agent-based discovery</td><td>None</td></tr>
+ <tr><td>Where it runs</td><td>Local MCP server; no network call, no account</td><td>Self-hosted (PHP/MySQL stack, backups, updates) or their paid cloud</td><td>Wherever the file lives</td></tr>
+ <tr><td>Price</td><td>Free tier 10 assets; Pro $19 once</td><td>Self-Hosted free (AGPL-3.0); hosted from $39.99/mo</td><td>The spreadsheet licence, typically already paid for</td></tr>
+ <tr><td>Licence</td><td>MIT</td><td>AGPL-3.0 (self-hosted source available)</td><td>Varies with the spreadsheet product</td></tr>
+ </tbody>
+ </table>
+
+ <h2>When to pick Snipe-IT or a spreadsheet</h2>
+ <p>Pick Snipe-IT when you need IT asset management proper: check-in/check-out with user assignment, licence tracking, barcode
+ labels, audit history, and possibly discovery agents. Self-hosting is free under AGPL-3.0 but you run the PHP/MySQL stack and
+ its updates; their hosted tiers start at $39.99/mo. Pick a spreadsheet when the register is small and static, you already keep
+ it in one, and you accept that structure and history are only as good as your discipline.</p>
+
+ <h2>When to pick ours</h2>
+ <p>Pick ours when you want a structured register you update in chat, with no server to run and no subscription: add assets, assign
+ them, retire them, and export CSV. The free tier holds 10 assets and Pro is a $19 once unlock. If you need check-in/check-out
+ workflows, licence entitlements or barcode labels, Snipe-IT is the better fit; ours is the lightweight middle ground between a
+ spreadsheet and a full asset manager, and it works offline with no account.</p>
+
+ <h2>Install lines</h2>
+ ${ours("asset-register")}
+
+ <p>Exact config file paths per client are on the <a href="/setup">setup pages</a>.</p>`,
+ faq: [
+  { q: "Does ours generate barcode or QR labels?", a: "No. Ours records assets, assignments and status with no label generation and no discovery. Snipe-IT adds barcode/QR labels and optional agent-based discovery." },
+  { q: "Is Snipe-IT free?", a: "Self-hosted Snipe-IT is free under AGPL-3.0, but you run the PHP/MySQL stack, backups and updates yourself. Their hosted tiers start at $39.99/mo. Ours is free for 10 assets, Pro $19 once, with nothing to host." },
+  { q: "How is ours different from a spreadsheet?", a: "Ours enforces a structure and keeps the record trail in one place you update by chat, with a CSV export. A spreadsheet has no validation and no history unless you maintain it by hand." },
+  { q: "Where can I read the competitor facts myself?", a: "Snipe-IT's AGPL-3.0 licence, features and hosted prices are at snipeitapp.com/pricing. The spreadsheet column describes the approach rather than a product. Read on 2026-09-17." },
+ ],
+ },
+
+ "supplier-list": {
+ title: "MCP Supplier List vs a CRM and a spreadsheet: which supplier list to pick",
+ description: "A local supplier and vendor list against a general CRM and a manual spreadsheet. What each records, contact handling, network use, price and licence, read from each product's own material.",
+ html: `<h1>MCP Supplier List vs a CRM and a spreadsheet: which supplier list to pick</h1>
+ <p>Ours keeps suppliers from chat: add a supplier, its contacts, categories and notes, and pull a list or CSV export. A general
+ CRM (e.g. HubSpot's free tier) manages contacts and deals in the cloud. A spreadsheet is the manual option. The facts below are
+ read from each product's own material; the spreadsheet column describes the approach, not a product.</p>
+
+ <h2>The facts, read from each option</h2>
+ <table>
+ <thead><tr><th>Fact</th><th>Ours</th><th>HubSpot (free CRM)</th><th>Spreadsheet</th></tr></thead>
+ <tbody>
+ <tr><td>What it records</td><td>Suppliers with contacts, categories and notes; list and CSV export</td><td>Contacts, companies, deals, tickets, and activity tracking in a cloud CRM</td><td>Whatever columns you create; no validation</td></tr>
+ <tr><td>Supplier specifics</td><td>Supplier-oriented: category, contact, notes per vendor</td><td>Company records are sales-oriented; supplier details are custom fields you add</td><td>Manual</td></tr>
+ <tr><td>Network / account</td><td>Local MCP server; no network call, no account</td><td>Cloud account; free tier exists, paid tiers per seat per month</td><td>Wherever the file lives</td></tr>
+ <tr><td>Install path</td><td>One-click <code>supplier-list.mcpb</code> bundle or hosted URL from <code>/mcp/connect</code></td><td>Sign up to the CRM</td><td>Open the file</td></tr>
+ <tr><td>Price</td><td>Free to add and export; Pro $19 once</td><td>Free tier available; paid seats per user per month (commonly tens of dollars and up)</td><td>The spreadsheet licence, typically already paid for</td></tr>
+ <tr><td>Licence</td><td>MIT</td><td>Proprietary</td><td>Varies with the spreadsheet product</td></tr>
+ </tbody>
+ </table>
+
+ <h2>When to pick a CRM or a spreadsheet</h2>
+ <p>Pick a CRM when your suppliers sit alongside customers, deals and tickets and you want one cloud record with reporting, email
+ integration and pipeline. HubSpot has a free tier with paid per-seat tiers above it; that is a sales CRM first, with suppliers
+ as custom-field company records. Pick a spreadsheet when the list is small and static and you already keep it in one, accepting
+ no validation and no history beyond what you type.</p>
+
+ <h2>When to pick ours</h2>
+ <p>Pick ours when you just need the vendor list: add suppliers with contacts, categories and notes in chat, and export CSV, with
+ no account, no per-seat fee and no network call. It is free to add and export and Pro is a $19 once unlock. It is not a CRM: no
+ deal pipeline, no email integration, no reporting suite. If suppliers are part of a sales relationship you track, a CRM fits
+ better; ours is the lightweight list between a spreadsheet and one.</p>
+
+ <h2>Install lines</h2>
+ ${ours("supplier-list")}
+
+ <p>Exact config file paths per client are on the <a href="/setup">setup pages</a>.</p>`,
+ faq: [
+  { q: "Is ours a CRM?", a: "No. Ours keeps a supplier list with contacts, categories and notes, plus a CSV export. A CRM adds deals, tickets, email integration and reporting." },
+  { q: "Is the CRM free?", a: "HubSpot has a free CRM tier with paid per-seat tiers above it. Ours is free to add and export, Pro $19 once, with no per-seat fee and no account." },
+  { q: "Which works offline with no account?", a: "Ours. It is a local MCP server with no network call and no account. A cloud CRM needs a sign-in; a spreadsheet needs only the file." },
+  { q: "Where can I read the competitor facts myself?", a: "HubSpot's free tier and paid seat pricing are at hubspot.com/pricing/crm. The spreadsheet column describes the approach rather than a product. Read on 2026-09-17." },
+  ],
+  },
+
+  };
+
+ export const COMPARE_SLUGS = Object.keys(COMPARE);
