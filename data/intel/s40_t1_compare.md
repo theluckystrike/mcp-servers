@@ -1,6 +1,6 @@
 # s40_t1 — Compare-page expansion
 
-STATUS: in progress
+- STATUS: superseded — this agent exhausted its budget on selection + fact research without writing entries; a follow-up agent (s40_t1b) wrote the 8 entries from this research and the orchestrator deduped, gated, deployed, and verified them live. See s40_t1b_compare.md.
 
 ## Selection basis
 
