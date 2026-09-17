@@ -1,6 +1,6 @@
 # s37 KPI Refresh
 
-- STATUS: in progress
+- STATUS: shippable — agent applied 4 of 5 edits before its cap; orchestrator completed the rest in loops 37-38 (monetization v3 comparability note, dashboard regeneration, and the registry correction below). One agent finding was overturned: the 96/97 read sampled primary names whose remotes are legitimately owned by alias manifests (credit-memo, deliverable-tracker, carton-consignment-waybill-pack-list) at 0.22.0; the version drift was in our manifests, repaired to 0.22.0, registry re-verified 97/97 met.
 - Loop: 37
 - Date: 2026-09-17
 - KPI table: `data/kpi.json` (consumed by `scripts/update-root-dashboard.mjs`)
