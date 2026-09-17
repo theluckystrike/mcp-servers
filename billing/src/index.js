@@ -231,14 +231,14 @@ const REPO = "https://github.com/theluckystrike/mcp-servers";
  * The home page previously claimed "399 of 399" against a real 951 of 951, and named
  * "Seventeen" servers when there were thirty.
  */
-export const VALIDATION = { at: "2026-09-17", pass: 1192, total: 1192, servers: 41, medianMs: 483 };
+export const VALIDATION = { at: "2026-09-17", pass: 1192, total: 1192, servers: 41, medianMs: 452 };
 
 /**
  * Unit tests in billing/test. Restated for the same reason as VALIDATION and pinned the
  * same way: test/checkout-r1.test.mjs counts the `test(` declarations on disk and fails
  * if this disagrees. The page said 25 when there were 99.
  */
-export const BILLING_TEST_COUNT = 155;
+export const BILLING_TEST_COUNT = 139;
 
 /**
  * The npm publish is pending: `npx -y @theluckystrike/mcp-<server>` returns E404 today,
