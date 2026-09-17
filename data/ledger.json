@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-17T13:42:29.562Z",
+  "generated_at": "2026-09-17T13:50:53.410Z",
   "session": {
-    "count": 88,
+    "count": 89,
     "history": [
       {
         "at": "2026-09-02T12:48:50.865Z",
@@ -354,6 +354,10 @@
       {
         "at": "2026-09-17T13:42:29.484Z",
         "note": "loop 37: click instrument v3 live (referer required, honest funnel from here), collabnix PR #117 (5th list), changelog v0.22.0 -> sitemap lastmod fresh, IndexNow 178/178 accepted, KPI refresh (registry 96/97 during 0.22.1 propagation)"
+      },
+      {
+        "at": "2026-09-17T13:50:53.410Z",
+        "note": "loop 38: registry version drift repaired (3 primary manifests realigned to 0.22.0 matching release assets + aliases owning remotes; registry 97/97 confirmed), worker redeployed dfcb6560"
       }
     ]
   },

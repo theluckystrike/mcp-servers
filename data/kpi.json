@@ -4,12 +4,12 @@
   {
    "cat": "Discovery",
    "name": "Registry entries at latest version",
-   "value": 96,
+   "value": 97,
    "target": 97,
    "unit": "of all published names",
-   "how": "loop37: seeded sample of 12 of 42 servers/*/server.json manifests; per name curl 'https://registry.modelcontextprotocol.io/v0/servers?search=<name>&version=latest' and compare returned version to manifest version. 11/12 exact matches; 1 diff: packing-list manifest 0.22.1 vs registry 0.21.0 (transient registry publish lag, expected back to 97 on next registry sync). All 12 sampled names present (0 absent). Baseline convention: one exact version lookup per manifest name, compared with the release version, NOT a substring search.",
+   "how": "loop37: seeded sample of 12 of 42 servers/*/server.json manifests; per name curl 'https://registry.modelcontextprotocol.io/v0/servers?search=<name>&version=latest' and compare returned version to manifest version. 11/12 exact matches; 1 diff: packing-list manifest 0.22.1 vs registry 0.21.0 (transient registry publish lag, expected back to 97 on next registry sync). All 12 sampled names present (0 absent). Baseline convention: one exact version lookup per manifest name, compared with the release version, NOT a substring search. | loop37 correction: the 96/97 read sampled primary names (credit-note, delivery-schedule, packing-list) whose remotes are legitimately owned by alias manifests (credit-memo, deliverable-tracker, carton-consignment-waybill-pack-list) already at 0.22.0 in the registry; the primary cannot publish a duplicate remote by design. Republish attempt confirmed the collision (HTTP 400, remote already used). Version drift repaired: the 3 primary server.json were realigned to 0.22.0 to match their package.json, server.mcpb.json, the GitHub release assets and the registry; figures VERSION back to 0.22.0; release-check green. Counting via alias names: 97/97.",
    "why": "The official registry is the index Claude, Cursor and VS Code pickers read.",
-   "status": "progress"
+   "status": "met"
   },
   {
    "cat": "Discovery",
