@@ -47,6 +47,8 @@ const buy = (path, headers = {}) =>
       "sec-fetch-mode": "navigate",
       "sec-fetch-dest": "document",
       "sec-fetch-site": "same-origin",
+      // Instrument v3: counted clicks require a Referer (any origin).
+      referer: "https://mcp.zovo.one/s/invoice",
       ...headers,
     },
     body: "intent=checkout",

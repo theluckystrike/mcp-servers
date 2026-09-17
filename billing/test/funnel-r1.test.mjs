@@ -45,6 +45,8 @@ const HUMAN = {
   "sec-fetch-dest": "document",
   "sec-fetch-site": "same-origin",
   "sec-fetch-user": "?1",
+  // Instrument v3: real navigations always carry a Referer (origin at minimum).
+  referer: "https://mcp.zovo.one/s/invoice",
 };
 const req = (path, headers, method = "GET") => new Request(`https://mcp.zovo.one${path}`, {
   method,
@@ -75,7 +77,7 @@ test("CONTROL: one identifiable human click moves the counter by exactly one, an
   const kv = countingKv();
   const SRC = "probe.funnel-r1.control";
   const stats0 = await clickStats(env(kv));
-  assert.equal(stats0.total_clicks, 0, "the v2 instrument does not start at zero");
+  assert.equal(stats0.total_clicks, 0, "the v3 instrument does not start at zero");
 
   // The one request that should count: a browser navigation from a tagged storefront link.
   await buyOnce(kv, `/buy/invoice?src=${SRC}`, HUMAN);
@@ -147,7 +149,7 @@ test("v1 click counters are reported apart from v2 and never summed into it", as
   assert.equal(stats.clicks_7d, 1);
   assert.equal(stats.legacy.total_clicks, 999, "v1 counters were dropped instead of kept for forensics");
   assert.ok(!("store.home.table.invoice" in stats.by_src), "a v1 src appeared in the v2 table");
-  assert.equal(stats.instrument, 2);
+  assert.equal(stats.instrument, 3);
   assert.ok(stats.counting_rule.includes("sec-fetch-dest: document"), "the instrument does not state its own counting rule");
 });
 
@@ -162,6 +164,17 @@ test("isHumanNavigation is not start-anchored and cannot be defeated by forgetti
   // Opting out is still honoured, but opting IN is what the count depends on, so an agent
   // that forgets x-mcp-probe is excluded anyway rather than counted as demand.
   assert.equal(isHumanNavigation(h({ ...HUMAN, "x-mcp-probe": "1" })), false);
+});
+
+test("instrument v3: no Referer means not counted, any-origin Referer counts", () => {
+  const h = (o) => new Headers(o);
+  // The 2026-09-17 setup-page walker: browser-shaped but header-set without Referer.
+  const { referer, ...noRef } = HUMAN;
+  assert.equal(isHumanNavigation(h(noRef)), false);
+  // A real in-site navigation from a product page.
+  assert.equal(isHumanNavigation(h({ ...HUMAN, referer: "https://mcp.zovo.one/s/invoice" })), true);
+  // External human traffic (a directory listing) also counts.
+  assert.equal(isHumanNavigation(h({ ...HUMAN, referer: "https://mcpservers.org/" })), true);
 });
 
 test("no page tells anyone to paste a hosted URL that answers every tool call with 401", async () => {

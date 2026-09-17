@@ -238,7 +238,7 @@ export const VALIDATION = { at: "2026-09-17", pass: 1192, total: 1192, servers: 
  * same way: test/checkout-r1.test.mjs counts the `test(` declarations on disk and fails
  * if this disagrees. The page said 25 when there were 99.
  */
-export const BILLING_TEST_COUNT = 139;
+export const BILLING_TEST_COUNT = 140;
 
 /**
  * The npm publish is pending: `npx -y @theluckystrike/mcp-<server>` returns E404 today,
@@ -809,7 +809,15 @@ export function isHumanNavigation(headers) {
   if (get("x-mcp-probe") === "1") return false;
   const ua = headers.get("user-agent") || "";
   if (BOT_UA_RE.test(ua) || TOOL_UA_RE.test(ua)) return false;
-  return get("sec-fetch-mode") === "navigate" && get("sec-fetch-dest") === "document";
+  if (get("sec-fetch-mode") !== "navigate" || get("sec-fetch-dest") !== "document") return false;
+  // Instrument v3: every real browser navigation sends a Referer (the default
+  // referrerpolicy, strict-origin-when-cross-origin, still sends the origin). Same-origin
+  // referer names the page the buyer was on; cross-origin referer (mcpservers.org, reddit,
+  // a search result) is external human traffic we specifically want to count. A header set
+  // without Referer is the shape of curl, a script or a prefetcher -- the setup-page walker
+  // of 2026-09-17 sent none -- so it is not counted as demand.
+  const ref = headers.get("referer");
+  return typeof ref === "string" && ref.length > 0;
 }
 
 /**
@@ -922,8 +930,8 @@ export async function clickStats(env) {
   const unattributed = (src) => src.startsWith(UNATTRIBUTED_PREFIX);
   return {
     generated_at: new Date().toISOString(),
-    instrument: 2,
-    counting_rule: "a click counts only when the request carries sec-fetch-mode: navigate AND sec-fetch-dest: document, its User-Agent names no crawler or HTTP library, it sends no x-mcp-probe header, and its ?src= is one a live page emits. Everything else is either not counted or bucketed under unattributed.*, which is excluded from total_clicks and clicks_7d.",
+    instrument: 3,
+    counting_rule: "a click counts only when the request carries sec-fetch-mode: navigate AND sec-fetch-dest: document, its User-Agent names no crawler or HTTP library, it sends no x-mcp-probe header, it carries a Referer (any origin -- real browsers always send one; scripts and the 2026-09-17 setup-page walker do not), and its ?src= is one a live page emits. Everything else is either not counted or bucketed under unattributed.*, which is excluded from total_clicks and clicks_7d.",
     by_src: bySrc,
     total_clicks: sum(bySrc, "total", attributed),
     clicks_7d: sum(bySrc, "last7d", attributed),
