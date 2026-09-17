@@ -1,6 +1,6 @@
 # S36 T3 — Awesome-list PR triage and push
 
-STATUS: complete (triage + conflict fix done by orchestrator; subagent hit budget before working — deliverable written direct)
+STATUS: complete — orchestrator fixed 13963 + wrote this file; late-finishing subagent (deleg_2f718085) additionally fixed 13964-13966 glama labels and opened wundercorp PR #68; all claims independently re-verified by orchestrator via gh pr view
 
 ## 1. punkpeye/awesome-mcp-servers PR triage (11 PRs)
 
@@ -10,7 +10,7 @@ Measured: `gh pr view <n> --json state,mergeable` per PR, 2026-09-17 19:50 local
 |----|-------|-----------|------|
 | 14559-14565 (7, opened 09-17) | OPEN | MERGEABLE | CI check-submission pass (verified loop 35) |
 | 13963 | OPEN | MERGEABLE (was CONFLICTING) | fixed this loop, see §2 |
-| 13964-13966 (opened 09-08) | OPEN | MERGEABLE | CI pass; 9 days old, no maintainer response yet |
+| 13964-13966 (opened 09-08) | OPEN | MERGEABLE | were `missing-glama` (maintainer nudge 09-15); subagent added Glama badge in 13963's format, labels flipped to `has-glama` + `has-emoji,valid-name`, check-submission re-ran pass — verified `gh pr view <n> --json mergeable,labels` |
 
 11/11 OPEN, 11/11 MERGEABLE, 0 closed.
 
@@ -34,11 +34,18 @@ gives the maintainer a reason to merge.
 
 ## 4. New list submissions
 
-Not attempted this loop — the two remaining subagent budgets were consumed elsewhere
-(T4 registry badges, conversion leak audit). Queued for next loop from data/dist_r6.json.
+- **wundercorp/awesome-mcp — PR #68 opened** (subagent): OPEN, MERGEABLE, mergeStateStatus=CLEAN
+  (verified `gh pr view 68 -R wundercorp/awesome-mcp --json state,mergeable,mergeStateStatus`).
+  Files: servers/data/zovo-mcp/server.json + regenerated README.md (8 categories);
+  passes their required validate-catalog.mjs (23 entries) and generate-readme.mjs;
+  repository_url + provider fields added per their schema.
+- habitoai: already has our PR #144 open covering Finance — skipped as duplicate.
+- unihack/collabnix: next candidate, needs a browse-based entry — queued next loop.
 
 ## 5. Raw evidence log
 
 - 11x `gh pr view <n> -R punkpeye/awesome-mcp-servers --json state,mergeable` (output above)
 - `gh pr view 52 -R Albertchamberlain/Awesome-MCP --json state,mergeable` -> OPEN MERGEABLE
 - `gh pr checks 13963` -> check-submission pass after rebase
+- `gh pr view 13964 --json labels` -> has-emoji,valid-name,has-glama (was missing-glama)
+- `gh pr view 68 -R wundercorp/awesome-mcp` -> OPEN MERGEABLE CLEAN
