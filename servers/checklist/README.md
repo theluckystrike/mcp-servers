@@ -1,5 +1,7 @@
 # mcp-checklist
 
+[![theluckystrike/mcp-checklist MCP server](https://glama.ai/mcp/servers/theluckystrike/mcp-checklist/badges/score.svg)](https://glama.ai/mcp/servers/theluckystrike/mcp-checklist)
+
 **In the [official MCP Registry](https://registry.modelcontextprotocol.io/v0.1/servers/io.github.theluckystrike%2Fchecklist/versions/latest)** (`io.github.theluckystrike/checklist`).
 Checklists you build once and run many times, and the dated record of each run that
 somebody signs. A checklist is a named list of steps, optionally grouped into sections, each

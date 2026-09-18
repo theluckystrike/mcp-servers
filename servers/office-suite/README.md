@@ -1,5 +1,7 @@
 # mcp-office-suite
 
+[![theluckystrike/mcp-office-suite MCP server](https://glama.ai/mcp/servers/theluckystrike/mcp-office-suite/badges/score.svg)](https://glama.ai/mcp/servers/theluckystrike/mcp-office-suite)
+
 **In the [official MCP Registry](https://registry.modelcontextprotocol.io/v0.1/servers/io.github.theluckystrike%2Foffice-suite-time-invoice-expense-excel-price/versions/latest)** (`io.github.theluckystrike/office-suite-time-invoice-expense-excel-price`).
 
 ![office-suite demo](../../assets/demo-office-suite.gif)

@@ -1,5 +1,7 @@
 # mcp-credit-note
 
+[![theluckystrike/mcp-credit-note MCP server](https://glama.ai/mcp/servers/theluckystrike/mcp-credit-note/badges/score.svg)](https://glama.ai/mcp/servers/theluckystrike/mcp-credit-note)
+
 **In the [official MCP Registry](https://registry.modelcontextprotocol.io/v0.1/servers/io.github.theluckystrike%2Fcredit-note/versions/latest)** (`io.github.theluckystrike/credit-note`).
 Credit notes (credit memos) for freelancers and small businesses, kept the way the paperwork keeps them. Issue a credit against an invoice or standalone: the recipient, the reason (returned goods, overcharge, discount correction, service issue, other), line items with quantity, unit price and tax rate, and the currency. Every credit note starts as a draft you can revise and delete; finalizing burns the final CN-YYYY-NNNN number and freezes it, because a finalized credit note is a document the client may have seen. Render one to Markdown to paste into an email, or to a self-contained printable HTML page, and get the totals credited per currency, reason and month. Every amount is an integer number of minor units, and nothing is sent anywhere.
 

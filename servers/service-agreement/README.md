@@ -1,5 +1,7 @@
 # mcp-service-agreement
 
+[![theluckystrike/mcp-service-agreement MCP server](https://glama.ai/mcp/servers/theluckystrike/mcp-service-agreement/badges/score.svg)](https://glama.ai/mcp/servers/theluckystrike/mcp-service-agreement)
+
 **In the [official MCP Registry](https://registry.modelcontextprotocol.io/v0.1/servers/io.github.theluckystrike%2Fservice-agreement/versions/latest)** (`io.github.theluckystrike/service-agreement`).
 An mcp service agreement writer for freelancers who are about to start client work and do not want to copy a rotting template off the internet again. Give it the parties, the scope of services, the deliverables, the rate and payment terms, start and end dates, a termination notice period, a liability cap and the governing jurisdiction, and it stores the agreement and renders clean Markdown -- or print-ready HTML -- with a signature block for both sides. A before-you-send-it checklist lists missing fields and flags one-sided gaps neutrally, like an agreement with no termination clause. A built-in clause library covers IP assignment, confidentiality, late payment interest, kill fee and revision rounds, filled with your agreement's own details. Every render carries a one-line note that it is a template, not legal advice. Everything stays on this machine; there is no account and no network call.
 

@@ -1,5 +1,7 @@
 # mcp-job-card
 
+[![theluckystrike/mcp-job-card MCP server](https://glama.ai/mcp/servers/theluckystrike/mcp-job-card/badges/score.svg)](https://glama.ai/mcp/servers/theluckystrike/mcp-job-card)
+
 **In the [official MCP Registry](https://registry.modelcontextprotocol.io/v0.1/servers/io.github.theluckystrike%2Fjob-card/versions/latest)** (`io.github.theluckystrike/job-card`).
 One card per job, the way the paper one on the dashboard works. Open a card for the client and the site, log the hours each worker puts in at their rate and the materials that go into the job, and the card keeps the running totals: labor, materials and the grand total, always in integer cents. Move the card along as the job moves -- open, in progress, done, invoiced, archived -- and when the client wants to see it, print the card with its signature line for sign-off. A daily or weekly summary answers where the crew's hours went and what the work is worth, per currency. Everything stays on this machine; there is no account and no network call.
 

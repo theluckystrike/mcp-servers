@@ -1,5 +1,7 @@
 # mcp-mileage-log
 
+[![theluckystrike/mcp-mileage-log MCP server](https://glama.ai/mcp/servers/theluckystrike/mcp-mileage-log/badges/score.svg)](https://glama.ai/mcp/servers/theluckystrike/mcp-mileage-log)
+
 **In the [official MCP Registry](https://registry.modelcontextprotocol.io/v0.1/servers/io.github.theluckystrike%2Fmileage-log/versions/latest)** (`io.github.theluckystrike/mileage-log`).
 An **mcp mileage** tracker that keeps the mileage log freelancers need at tax time, the moment the drive happens instead of reconstructed from memory in April. Log each trip with the date, from and to, the distance in miles or km, the purpose and the category (business, medical, moving, charitable, personal); set the rates that apply to you as an effective-dated series per jurisdiction and category; and the summary prices every trip at the rate in force on the day it was driven, per category and per currency. When the log is right, one call exports it as CSV to hand to your accountant. Everything stays on this machine; there is no account and no network call.
 

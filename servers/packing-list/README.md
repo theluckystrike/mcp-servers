@@ -1,5 +1,7 @@
 # mcp-packing-list
 
+[![theluckystrike/mcp-packing-list MCP server](https://glama.ai/mcp/servers/theluckystrike/mcp-packing-list/badges/score.svg)](https://glama.ai/mcp/servers/theluckystrike/mcp-packing-list)
+
 **In the [official MCP Registry](https://registry.modelcontextprotocol.io/v0.1/servers/io.github.theluckystrike%2Fpacking-list/versions/latest)** (`io.github.theluckystrike/packing-list`).
 The packing slip for a shipment, and the answer to the only two questions anybody asks
 while packing one: what is in which box, and what is still to pack. A packing list is

@@ -1,5 +1,7 @@
 # mcp-maintenance-log
 
+[![theluckystrike/mcp-maintenance-log MCP server](https://glama.ai/mcp/servers/theluckystrike/mcp-maintenance-log/badges/score.svg)](https://glama.ai/mcp/servers/theluckystrike/mcp-maintenance-log)
+
 **In the [official MCP Registry](https://registry.modelcontextprotocol.io/v0.1/servers/io.github.theluckystrike%2Fmaintenance-log/versions/latest)** (`io.github.theluckystrike/maintenance-log`).
 An mcp maintenance log for the workshop, the rental flats, the van fleet or the studio: one local register of every piece of equipment you look after, and the work that has been done on it. Add each asset once -- name, serial or asset tag, where it lives -- then log each service or repair as it happens: the date, what was done, what it cost in cents, who did it, and when the next service falls due, either as a date or as an interval in days. Ask what is due and the report answers what is overdue and what comes up in the next N days, computed from the stored dates at the moment you ask, so it can never go stale. Per-asset history keeps the chronological log with its total spend, and export hands the record over as CSV for a spreadsheet or a Markdown summary per asset. Everything stays on this machine; there is no account and no network call.
 
