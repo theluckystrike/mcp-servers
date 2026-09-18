@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-18T01:11:22.542Z",
+  "generated_at": "2026-09-18T10:56:50.254Z",
   "session": {
     "count": 93,
     "history": [
@@ -374,6 +374,10 @@
       {
         "at": "2026-09-18T01:11:22.542Z",
         "note": "sprint 42: T2 ETag root cause PROVEN (CF strips etags on edge-rewritten HTML; llms.txt control survives; code fixed content-derived W/ SHA-256, deployed version 161696a4, live - surfacing blocked only by CF Auto Minify dashboard toggle); T4 first 2 off-site outreach answers posted live (mcp/servers #2794, #1469); T3 glama reprobe 12/42 unchanged (16 short slugs published hours ago, recheck 24-72h); T1 IndexNow 190 URLs accepted HTTP/2 202; KPI refresh 32 indicators 9 met; Google impressions still 0 - GSC/Bing verification remains the single unlock"
+      },
+      {
+        "at": "2026-09-18T10:56:50.000Z",
+        "note": "sprint 44 (waves 1+2): fan-in wave 2 live - 20 GUIDE_PRODUCT_LINKS, 152/152 tests (deploy 9e75c9f6); 3 new guides published - invoice-payment-terms-best-practices, how-to-categorize-bank-transactions, petty-cash-log-template (110 guides total, sitemap 193 URLs, IndexNow accepted 193/0 failed); checkout trust rework - 'What you get for ' + purchase-promise block on buy intent and success pages (deploy 54123edd, tests green, live UI probe path-dependent - verify in browser); T9 off-page: mcp.so still NOT ingested (positive-control verified), PR #300 OPEN+MERGEABLE no reviews, MCP Playground found as new fully-autonomous directory target (free web form); wave-1 agents T1 GPTBot delta + T2 bingbot 35/141 URL-pattern affinity; outreach R2 drafts 3 held for user OK; commits 7148ef2f, fffaceee, cabdafbb, 55d78a7c"
       }
     ]
   },

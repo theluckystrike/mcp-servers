@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-06T08:21:51.964Z",
-  "total_commits": 671,
-  "sessions": 55,
+  "generated_at": "2026-09-18T10:57:09.187Z",
+  "total_commits": 859,
+  "sessions": 94,
   "loops": [
     {
       "name": "Loop 1: build, billing, registry",
@@ -140,13 +140,13 @@
     },
     {
       "name": "Loop 28: change-order, hosted round on catalogue, v0.20.0",
-      "sessions": 1,
+      "sessions": 2,
       "commits": 32
     },
     {
       "name": "Loop 29: plan v26",
-      "sessions": 0,
-      "commits": 70
+      "sessions": 38,
+      "commits": 258
     }
   ],
   "rows": [
@@ -815,7 +815,7 @@
       "at": "2026-09-06T07:06:13.423Z",
       "note": "Loop 27: catalogue is the twenty-ninth server, hosted and audited 18/18; v0.19.0 shipped (30 bundles, 80 manifests, tests 1455/1466, validate 902/902); dist-version check and stale-dist guard; registry JWT expiry caught and re-login pattern recorded",
       "loop": "Loop 28: change-order, hosted round on catalogue, v0.20.0",
-      "commits": 102,
+      "commits": 30,
       "subjects": [
         "Plan v22: recoverable slots, honest gates, the last slot",
         "Cap messages: tell the client not to total or journal by hand from refused data",
@@ -829,6 +829,416 @@
         "billing-docs: refuse a duplicate document, and a delete per kind gives the slot back",
         "invoice: refuse a byte-identical client, and client_delete removes an unused one",
         "Add round 32 user-value audit: amortization, hosted (15/18, matches r31 stdio)"
+      ]
+    },
+    {
+      "n": 56,
+      "at": "2026-09-06T08:22:23.182Z",
+      "note": "Loop 28: change-order is the thirtieth server (built, wired 20/20, hosted as endpoint 30, audit 18/18 after D-R99 and D-R100); v0.20.0 shipped (31 bundles, 83 manifests, tests 1507/1518, validate 951/951); catalogue hosted round 38 18/18 and D-R97/D-R98 fixed; change-order round 39 11/18 with D-R101 and D-R102 mitigated server-side; every SPEC.md free of em dashes",
+      "loop": "Loop 28: change-order, hosted round on catalogue, v0.20.0",
+      "commits": 73,
+      "subjects": [
+        "Release v0.17.0: petty-cash joins; bump 29 packages, 70 internal ranges and 102 server manifests",
+        "sha256 of the v0.17.0 bundles into every manifest that references one",
+        "Loop 25 close: v0.17.0 dashboard, sprint log loop 25; unit-test KPI reads the release chain's count",
+        "Sprint log: loop 25 row",
+        "Plan v23: job orders, the test count in the chain",
+        "record-tests.mjs writes data/tests.json for the KPI; Stripe key lost product_write, recorded as human-gated",
+        "User value round 34: petty-cash hosted, 16/18 vs round 33's 14/18 stdio",
+        "work-order: job orders for trades and field work",
+        "Round 21 checklist: wire work-order into the estate",
+        "SERVER_COUNT 27 to 28 for work-order",
+        "work-order PRODUCTS entry with a PENDING_HUMAN price, a 503 buy page, and a named product gap in release-check",
+        "Wire work-order into the estate lists, facts, tools, setup, guide and pages"
+      ]
+    },
+    {
+      "n": 57,
+      "at": "2026-09-07T01:29:42.831Z",
+      "note": "Loop 29: checkout gate removed (32/32 live), 114 registry manifests repointed to product pages, sitemap 312->96 with permutations noindex, 96 URLs to IndexNow, audience measured honestly",
+      "loop": "Loop 29: plan v26",
+      "commits": 0,
+      "subjects": []
+    },
+    {
+      "n": 58,
+      "at": "2026-09-07T01:48:00.882Z",
+      "note": "Loop 29 close: v0.21.0 in progress",
+      "loop": "Loop 29: plan v26",
+      "commits": 0,
+      "subjects": []
+    },
+    {
+      "n": 59,
+      "at": "2026-09-07T02:16:17.016Z",
+      "note": "Loop 29: v0.21.0 shipped. Checkout gate removed (33/33 live), 85 registry names repointed from the robots-disallowed /buy/ redirect to product pages, sitemap curated and submitted to IndexNow, organic measured for the first time: 0 Google impressions ever, ClaudeBot crawls 311 of 312.",
+      "loop": "Loop 29: plan v26",
+      "commits": 0,
+      "subjects": []
+    },
+    {
+      "n": 60,
+      "at": "2026-09-07T03:57:19.315Z",
+      "note": "Sprint close: registry namespace mechanism proven (HTTP domain auth grants a namespace, one Cloudflare DNS token away from a com.* namespace worth 10-45 registry places), llms.txt no longer tells assistant crawlers to run a 404 install command, README generated from data with a drift gate",
+      "loop": "Loop 29: plan v26",
+      "commits": 0,
+      "subjects": []
+    },
+    {
+      "n": 61,
+      "at": "2026-09-07T04:26:11.950Z",
+      "note": "Sprint: npm proven human-gated by two live OIDC workflow runs; every live URL that printed a 404 install command now discloses it and leads with a working path; hosted endpoints answer directory probes instead of 401; registry namespace mechanism proven and one token away; 4 stale registry rows deprecated",
+      "loop": "Loop 29: plan v26",
+      "commits": 43,
+      "subjects": [
+        "loop 29: audience reality check, install-path forensics, IndexNow key, baseline",
+        "conversion audit R1: the 152 'human' upgrade clicks are 77.9% self-inflicted; proved by a controlled increment test on /stats/clicks",
+        "distribution round 24: npm re-verified human-gated, awesome-mcp-servers emoji fixed, new surface submitted",
+        "measurement: Cloudflare + GSC traffic instrument; Googlebot has crawled 2 of 312 pages and mcp.zovo.one has 0 Google impressions ever",
+        "registry: repoint all 114 manifest websiteUrl from the robots-disallowed /buy/ redirect to the /s/ product page (office-suite to /bundle); brief: click-metric contamination warning",
+        "docs: why Google declines this site, measured",
+        "indexnow: submit the 96 substantive URLs to Bing/Yandex/Seznam/Naver, permutations excluded",
+        "checkout r1: every product reaches a real Stripe checkout, no human step left",
+        "seo: sitemap 312->96 (client x product permutations excluded and marked noindex,follow); license: tag in-product upgrade clicks; kpi: stop reporting crawler fetches as a met install target, add measured organic rows",
+        "docs: measured namespace lever against the registry findability ceiling",
+        "dashboard: reality-check tab with the measured audience, the download metric that was wrong, and what changed this loop",
+        "kpi: all 29 indicators measured, organic rows resolved"
+      ]
+    },
+    {
+      "n": 62,
+      "at": "2026-09-08T08:33:18.249Z",
+      "note": "Loop 30: registry namespace claimed and measured live (3rd vs 15th on schedule); first green PR in awesome-mcp-servers; 3 Goose PRs; 4 verified inbound links; 14 reference guides; privacy page",
+      "loop": "Loop 29: plan v26",
+      "commits": 0,
+      "subjects": []
+    },
+    {
+      "n": 63,
+      "at": "2026-09-08T08:48:07.594Z",
+      "note": "Loop 30 close: namespace claimed and measured live; hosted endpoints answer discovery without a token, which unblocks every URL-checking directory; registry confirmed the growing channel and crawlers saturated",
+      "loop": "Loop 29: plan v26",
+      "commits": 0,
+      "subjects": []
+    },
+    {
+      "n": 64,
+      "at": "2026-09-08T09:58:04.181Z",
+      "note": "Loop 30 close: namespace claimed and measured, and the registry proved it cannot be A/B tested; hosted endpoints answer discovery; mirror Dockerfiles fixed and verified by a real docker run",
+      "loop": "Loop 29: plan v26",
+      "commits": 19,
+      "subjects": [
+        "loop 30 brief",
+        "walk the whole product as a stranger: bundle downloads, boots, free tier binds with a clear upgrade, checkout is live, zero-install path returns 13 tools",
+        "namespace: claimed com.bestremotetools without the DNS token via a git-connected Pages site, and measured the gain live: the same server ranks 3rd not 21st on schedule and 2nd not 26th on delivery",
+        "dist r26: one server per PR on awesome-mcp-servers, first all-green Glama gate",
+        "client galleries: the picker inside the client, worked properly for the first time",
+        "guides: 14 reference pages about MCP itself, for the crawlers that are actually reading",
+        "privacy: a factual data inventory with real retention figures and a contact route that exists, which also unblocks a directory that requires one; 14 reference guides live, sitemap 141",
+        "Inbound links R1: three contextual links placed, two prior links found lost",
+        "vscode gallery watch: registry-backed, 250 rows, ours 0, with a positive control; inbound links round 1",
+        "dashboard: loop 30 panel with the measured namespace result, the directory outcomes and the regression found on another site",
+        "measurement R2: split the saturated Cloudflare grouping by day and control-test the guard; Google holds 0 of 126 URLs in its index (URL Inspection, 0 ever crawled); IndexNow brought YandexBot in 23 minutes and Bing not at all; registry referral baseline stamped for the placement experiment",
+        "dist r26 addendum: close docker/mcp-registry#4892; resubmission blocked by a measured build defect"
+      ]
+    },
+    {
+      "n": 65,
+      "at": "2026-09-09T07:12:20.081Z",
+      "note": "Loop 31: found why VS Code's MCP picker excludes us (every one of its 252 entries points at a repo with no subfolder; all 89 of ours use one), one controlled entry published to test it; Glama connectors went 4 to 25 unprompted and one shared tool description capped the whole fleet",
+      "loop": "Loop 29: plan v26",
+      "commits": 0,
+      "subjects": []
+    },
+    {
+      "n": 66,
+      "at": "2026-09-09T07:34:10.858Z",
+      "note": "Loop 31 close: estate green (46 failing assertions to 0), every server's worst tool description above 3.0 where none were, VS Code picker exclusion diagnosed and under test",
+      "loop": "Loop 29: plan v26",
+      "commits": 0,
+      "subjects": []
+    },
+    {
+      "n": 67,
+      "at": "2026-09-09T07:44:08.540Z",
+      "note": "Loop 31 close: hosted licence twin fixed, the string Glama connectors actually score",
+      "loop": "Loop 29: plan v26",
+      "commits": 0,
+      "subjects": []
+    },
+    {
+      "n": 68,
+      "at": "2026-09-09T09:29:01.769Z",
+      "note": "Loop 32: Google indexed the first URL ever; hosted buyers were losing their data on activation and crawlers were creating live Stripe sessions, both fixed",
+      "loop": "Loop 29: plan v26",
+      "commits": 0,
+      "subjects": []
+    },
+    {
+      "n": 69,
+      "at": "2026-09-09T10:15:47.167Z",
+      "note": "Loop 32 close: Google indexed the first URL ever; two money-path defects fixed; honesty gates green and wired into the release check; 13 reference guides live, sitemap 154",
+      "loop": "Loop 29: plan v26",
+      "commits": 0,
+      "subjects": []
+    },
+    {
+      "n": 70,
+      "at": "2026-09-09T10:54:57.588Z",
+      "note": "Loop 32 close: Google indexed the first URL ever; hosted buyers no longer lose data on activation; crawlers no longer create live Stripe sessions; mirrors synced with working Dockerfiles and CI; 13 guides live, sitemap 154; honesty gates 107/107 and wired into the release check",
+      "loop": "Loop 29: plan v26",
+      "commits": 0,
+      "subjects": []
+    },
+    {
+      "n": 71,
+      "at": "2026-09-09T11:23:24.963Z",
+      "note": "Loop 32 close: 32 of 32 mirrors green; a livelock that hung seven servers on any /proc path found and fixed; Google indexed the first URL ever",
+      "loop": "Loop 29: plan v26",
+      "commits": 0,
+      "subjects": []
+    },
+    {
+      "n": 72,
+      "at": "2026-09-09T11:30:51.618Z",
+      "note": "Loop 32: both experiments still open and honestly marked; gallery pagination broken upstream so the watch degrades to partial",
+      "loop": "Loop 29: plan v26",
+      "commits": 0,
+      "subjects": []
+    },
+    {
+      "n": 73,
+      "at": "2026-09-09T11:44:09.517Z",
+      "note": "Registry visibility: four servers were buried at 52 to 93 of a hundred on their contested token and are now at 5, 7, 3 and 32, measured live on the one channel that delivers people",
+      "loop": "Loop 29: plan v26",
+      "commits": 0,
+      "subjects": []
+    },
+    {
+      "n": 74,
+      "at": "2026-09-09T11:54:54.073Z",
+      "note": "Registry visibility: 443 places gained across ten contested tokens on the one channel that delivers people; nine of ten now in the first eight results",
+      "loop": "Loop 29: plan v26",
+      "commits": 0,
+      "subjects": []
+    },
+    {
+      "n": 75,
+      "at": "2026-09-09T12:09:23.356Z",
+      "note": "Loop close: 443 registry places gained across ten contested tokens, three new deep inbound links on indexed pages, and the discovery that impressions are not indexation",
+      "loop": "Loop 29: plan v26",
+      "commits": 66,
+      "subjects": [
+        "loop 31 brief: Glama publishes its scoring formula and 40 percent of it is the worst-described tool",
+        "readme: the landing page for the only channel that delivers humans opened with text and no proof; it now opens with a real demo and the two install paths that actually work. Repo description named 4 of 31 servers; topics widened from 10 to 20",
+        "vscode gallery: the cut is not stars, org, namespace, language or age. All 252 entries point at a repo with no subfolder; all 89 of ours point at a monorepo subfolder. One controlled entry published to test it",
+        "gallery watch tracks the subfolder ratio each run, so the hypothesis is confirmed or killed by data",
+        "brief: tool descriptions are load-bearing in remote/build-vendor.mjs too",
+        "hosted endpoints serve a person a page and a client the JSON: real users in Chrome, Edge and Mobile Safari are arriving from Google and Bing at /mcp/<server> and were handed raw JSON. Content negotiation on accept: text/html; the protocol path is byte-identical",
+        "docs: the first search arrivals this project has ever had, and the page they were landing on",
+        "docs: Docker MCP catalog round 2 - one server submitted and verified end to end",
+        "correct the search-arrivals claim: Search Console says these URLs are unknown to Google and never crawled, and some requests carry an HTML entity in the path, so this is automated traffic and not organic search",
+        "loop 31 result; docker PR 5030 open and locally validated, and their queue is 19 days stalled with 1,146 open PRs",
+        "mirrors stop being one squashed commit: they now carry history, CI and a real release",
+        "SERVER_COUNT was 30 while 31 servers gate Pro: adding delivery-schedule left every cap message and bundle link naming a stale count"
+      ]
+    },
+    {
+      "n": 76,
+      "at": "2026-09-12T03:39:22.785Z",
+      "note": "loop 34: +4 servers, hosted 34/37, validation 1135/1135, registry 97, rename T0 rank 2",
+      "loop": "Loop 29: plan v26",
+      "commits": 0,
+      "subjects": []
+    },
+    {
+      "n": 77,
+      "at": "2026-09-12T03:41:08.260Z",
+      "note": "loop 34 close: tests 1816/1827, validation 1135/1135",
+      "loop": "Loop 29: plan v26",
+      "commits": 6,
+      "subjects": [
+        "rename experiment R1: mcp-invoice -> mcp-invoice-generator, rank 6 -> 2 at T0",
+        "loop 34 wave 1: field scout, 5 catalogue PRs, glama census, blind R2, gemini verified live",
+        "four new servers: bill-of-sale, credit-note, job-card, dunning-letters (wired mid-flight)",
+        "loop 34: four servers shipped end to end, rename experiment T0 rank 6 -> 2, validation 1135/1135",
+        "Require explicit intent before Stripe checkout",
+        "Add Stripe checkout attribution metadata"
+      ]
+    },
+    {
+      "n": 78,
+      "at": "2026-09-17T05:56:42.393Z",
+      "note": "root dashboard build: first render, KPI table + blind R3 + distribution R4 wired in",
+      "loop": "Loop 29: plan v26",
+      "commits": 0,
+      "subjects": []
+    },
+    {
+      "n": 79,
+      "at": "2026-09-17T05:56:53.971Z",
+      "note": "root dashboard build: second run verification, session.log accumulates and HTML grows",
+      "loop": "Loop 29: plan v26",
+      "commits": 0,
+      "subjects": []
+    },
+    {
+      "n": 80,
+      "at": "2026-09-17T05:57:58.873Z",
+      "note": "verification run: syntax check clean, third render confirms idempotent regeneration",
+      "loop": "Loop 29: plan v26",
+      "commits": 0,
+      "subjects": []
+    },
+    {
+      "n": 81,
+      "at": "2026-09-17T07:50:50.185Z",
+      "note": "orchestrator: 1192/1192 validation green, billing 146/146, worker redeployed honest figures",
+      "loop": "Loop 29: plan v26",
+      "commits": 0,
+      "subjects": []
+    },
+    {
+      "n": 82,
+      "at": "2026-09-17T07:51:34.090Z",
+      "note": "final sync: dashboard refreshed from green validation run",
+      "loop": "Loop 29: plan v26",
+      "commits": 0,
+      "subjects": []
+    },
+    {
+      "n": 83,
+      "at": "2026-09-17T08:11:11.816Z",
+      "note": "dist r6+r6b: mcpHQ #61 merged today (domain in servers.json), 14 verified-live surfaces, 7 green awesome-list PRs",
+      "loop": "Loop 29: plan v26",
+      "commits": 0,
+      "subjects": []
+    },
+    {
+      "n": 84,
+      "at": "2026-09-17T10:02:26.676Z",
+      "note": "registry remote R1: v0.22.0 release + 38 mcpb assets, 38 registry publishes, 15 entries now carry hosted remotes (was 0)",
+      "loop": "Loop 29: plan v26",
+      "commits": 0,
+      "subjects": []
+    },
+    {
+      "n": 85,
+      "at": "2026-09-17T12:07:01.496Z",
+      "note": "loop 35b: registry remotes 0->41 endpoints visible (3 via aliases), v0.22.1 figures, billing 148/148, worker redeployed 48272a6b",
+      "loop": "Loop 29: plan v26",
+      "commits": 0,
+      "subjects": []
+    },
+    {
+      "n": 86,
+      "at": "2026-09-17T12:42:53.589Z",
+      "note": "loop 36: blind R4 run — mcpservers.org now surfaces estate server pages (verified live: invoice renders all tools); Telegram Mini App defects fixed (SDK tag + grid container, 42 cards render, go-live.sh tested 9/9); STRATEGY-36 written",
+      "loop": "Loop 29: plan v26",
+      "commits": 0,
+      "subjects": []
+    },
+    {
+      "n": 87,
+      "at": "2026-09-17T13:15:45.775Z",
+      "note": "loop 36: PR 13963 conflict fixed (11/11 MERGEABLE), 42/42 registry badges on READMEs, checkout page value prop live (329->2917 chars), conversion audit R2: 46% of clicks are a setup-page walker, true human <=375",
+      "loop": "Loop 29: plan v26",
+      "commits": 0,
+      "subjects": []
+    },
+    {
+      "n": 88,
+      "at": "2026-09-17T13:42:29.484Z",
+      "note": "loop 37: click instrument v3 live (referer required, honest funnel from here), collabnix PR #117 (5th list), changelog v0.22.0 -> sitemap lastmod fresh, IndexNow 178/178 accepted, KPI refresh (registry 96/97 during 0.22.1 propagation)",
+      "loop": "Loop 29: plan v26",
+      "commits": 0,
+      "subjects": []
+    },
+    {
+      "n": 89,
+      "at": "2026-09-17T13:50:53.410Z",
+      "note": "loop 38: registry version drift repaired (3 primary manifests realigned to 0.22.0 matching release assets + aliases owning remotes; registry 97/97 confirmed), worker redeployed dfcb6560",
+      "loop": "Loop 29: plan v26",
+      "commits": 0,
+      "subjects": []
+    },
+    {
+      "n": 90,
+      "at": "2026-09-17T14:19:54.367Z",
+      "note": "sprint 39: 4 buyer-intent guides live (+16th surface), Last-Modified/ETag validators on all pages + llms.txt, IndexNow 144 /s/+guides URLs accepted, PR sweep: 16/16 MERGEABLE",
+      "loop": "Loop 29: plan v26",
+      "commits": 0,
+      "subjects": []
+    },
+    {
+      "n": 91,
+      "at": "2026-09-17T14:58:11.726Z",
+      "note": "sprint 39 closed: 4 buyer-intent guides live, Last-Modified validators on all pages + llms.txt, IndexNow 144 accepted, findable share re-measured 66% page-1 (71 tokens), PR sweep 16/16 MERGEABLE",
+      "loop": "Loop 29: plan v26",
+      "commits": 0,
+      "subjects": []
+    },
+    {
+      "n": 92,
+      "at": "2026-09-17T15:51:46.159Z",
+      "note": "sprint 40: 8 new compare pages live (27 total), IndexNow remainder 34 accepted, main repo description+topics refreshed, blind R5 (0/10 named unchanged, mcpservers.org 5 estate pages)",
+      "loop": "Loop 29: plan v26",
+      "commits": 21,
+      "subjects": [
+        "loop 35: registry remotes live (15 zovo endpoints in official registry, 0 before), v0.22.0 release + 38 mcpb assets, mcpb shas filled, 4 hosted-row waivers reconciled, Awesome-MCP PR #52, 38/38 mirror descriptions with hosted URL, discoverability R1 audit",
+        "loop 35b: rebase onto checkout-intent main, resolve validate/billing conflicts keeping curl probes, VALIDATION median 452, BILLING_TEST_COUNT 139, figures v0.22.1",
+        "loop 35b: dashboards",
+        "loop 36: STRATEGY-36, blind R4 (mcpservers.org surfaces estate pages - first organic win), telegram mini app defects fixed + go-live.sh, kpi refresh",
+        "loop 36: registry badges on 42 READMEs, checkout page value prop (329->2917 chars: Free/Pro, delivery, bundle cross-sell), conversion leak audit R2 (671 clicks = 46% automation walker; true human <=375)",
+        "loop 36: dashboards + intel docs (t3 t4 t5 conversion)",
+        "loop 36: t3 deliverable updated with late subagent results (13964-66 glama fixed, wundercorp PR #68)",
+        "loop 37: click instrument v3 — counted clicks require Referer (real browsers always send one; the setup-page walker did not), 149/0 tests, deployed a67cd552",
+        "loop 37: RELEASE_V0220.md -> changelog -> sitemap lastmod 2026-09-17 live; IndexNow resubmit 178/178 accepted (pages changed since last submit)",
+        "loop 37: KPI refresh (surfaces 17, registry 96/97 during 0.22.1 propagation, honest statuses), s37 intel docs, dashboards",
+        "loop 38: repair 0.22.1 version drift (server.json x3 + figures VERSION -> 0.22.0 to match release assets and registry), KPI registry 97/97 via alias-name convention, worker redeployed dfcb6560",
+        "loop 38: s37 KPI refresh deliverable closed out (status shippable, registry 96/97 finding corrected to 97/97 via alias convention)"
+      ]
+    },
+    {
+      "n": 93,
+      "at": "2026-09-18T01:11:22.542Z",
+      "note": "sprint 42: T2 ETag root cause PROVEN (CF strips etags on edge-rewritten HTML; llms.txt control survives; code fixed content-derived W/ SHA-256, deployed version 161696a4, live - surfacing blocked only by CF Auto Minify dashboard toggle); T4 first 2 off-site outreach answers posted live (mcp/servers #2794, #1469); T3 glama reprobe 12/42 unchanged (16 short slugs published hours ago, recheck 24-72h); T1 IndexNow 190 URLs accepted HTTP/2 202; KPI refresh 32 indicators 9 met; Google impressions still 0 - GSC/Bing verification remains the single unlock",
+      "loop": "Loop 29: plan v26",
+      "commits": 17,
+      "subjects": [
+        "sprint 41 T1: glama badges for indexed mirrors",
+        "sprint 41 T8: KPI refresh 2026-09-18",
+        "sprint 41 batch1: glama badges 12/42 (T1), IndexNow full 190 accepted + homepage Last-Modified defect found (T2), 2 new awesome-list PRs (T3), blind R6 0/18 - indexing!=retrieval insight (T4)",
+        "sprint 41 T5: homepage Last-Modified/ETag validator (T2 finding)",
+        "sprint 41 T6: glama reconciliation + badges R2",
+        "sprint 41 batch2: T5 homepage Last-Modified/ETag live, T6 registry reconciliation 121 slugs all 42 covered, T7 7 outreach drafts, T8 KPI refresh 2026-09-18 (tenants 616->799, checkout sessions 65->100, method discontinuities flagged)",
+        "sprint 41: dashboard refreshed (KPI 09-18, blind R6, session log)",
+        "sprint 41: dashboard KPI table corrected to 09-18 values (multi-line row fix)",
+        "sprint 41 T1: cosmetic count-string cleanup (12/30 canonical)",
+        "sprint 42 backlog: worker-wide ETag defect (T5 4b)",
+        "sprint 42 T4: posted 2 GitHub outreach answers (2794, 1469)",
+        "sprint 42 T2: content-derived W/ etag (CF strips etags on rewritten HTML); T3 glama reprobe 12/42 unchanged"
+      ]
+    },
+    {
+      "n": 94,
+      "at": "2026-09-18T10:56:50.000Z",
+      "note": "sprint 44 (waves 1+2): fan-in wave 2 live - 20 GUIDE_PRODUCT_LINKS, 152/152 tests (deploy 9e75c9f6); 3 new guides published - invoice-payment-terms-best-practices, how-to-categorize-bank-transactions, petty-cash-log-template (110 guides total, sitemap 193 URLs, IndexNow accepted 193/0 failed); checkout trust rework - 'What you get for ' + purchase-promise block on buy intent and success pages (deploy 54123edd, tests green, live UI probe path-dependent - verify in browser); T9 off-page: mcp.so still NOT ingested (positive-control verified), PR #300 OPEN+MERGEABLE no reviews, MCP Playground found as new fully-autonomous directory target (free web form); wave-1 agents T1 GPTBot delta + T2 bingbot 35/141 URL-pattern affinity; outreach R2 drafts 3 held for user OK; commits 7148ef2f, fffaceee, cabdafbb, 55d78a7c",
+      "loop": "Loop 29: plan v26",
+      "commits": 15,
+      "subjects": [
+        "sprint 42 T10: reprobe R1 - mcp.so not yet ingested, registry healthy, MCP Market pending verification (curl 403 bot-shield)",
+        "sprint 43 T4: crawler coverage probe R1 + IndexNow delta",
+        "sprint 43 T1: mcpmarket verification R1",
+        "sprint 43: strategy + T2 EDNA submission sent via AppleScript direct-send",
+        "sprint 43 T3: guide->/s fan-in links shipped (13 guides, 152 tests, deployed 45b1beba, IndexNow 190/190)",
+        "sprint 43: distribution.json + mcpmarket surface (13/53 live), kpi refresh",
+        "sprint 43 T5+T7: mcpmux PR #300 live (new surface), Glama reprobe 12/42 unchanged",
+        "sprint 43 T3: measured after-counts (0-inbound 15->1, 192 total inbound links)",
+        "sprint 43 T6: mcpmarket coverage R1 - 12/42 listed, 0 link equity (JSON-LD only), submit=repo-level only",
+        "sprint 43 T3b: office-suite fan-in via 2 suite guides (0-inbound slugs now 0)",
+        "sprint 43 close: RATING-S43 8.5/10 + S44 handoff",
+        "sprint 43: DASHBOARD session-log unit (S43 closed 8.5/10)"
       ]
     }
   ]
