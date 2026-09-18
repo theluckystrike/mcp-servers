@@ -1261,7 +1261,18 @@ export default {
 ${setupLinks ? `<h2>Set it up in your client</h2>\n<p>Exact config path, entry and caveats: ${setupLinks} &middot; <a href="/setup">all clients</a></p>` : ""}
 ${COMPARE[id] ? `<h2>Compared with the alternatives</h2>\n<p><a href="/compare/${esc(id)}">${esc(COMPARE[id].title)}</a> &middot; <a href="/compare">all comparisons</a></p>` : ""}
 <h2>Guides</h2>
-<p>${GUIDE_LINKS}</p>`;
+<p>${GUIDE_LINKS}</p>
+${(() => {
+  // Search-crawler fan-in (docs/T6_SEARCH_FANIN_S45): Googlebot fetched only 16 of 193
+  // sitemap URLs in 7d. The /s pages it did fetch are the only sure re-crawl seeds, so
+  // every product page now links a rotating window of 8 sibling product pages. This
+  // gives each of the 42 /s pages 8 additional internal inbound links from templates
+  // Googlebot has demonstrably crawled, without touching the human-facing copy above.
+  const ids = SERVER_IDS.filter((x) => x !== id);
+  const start = Math.abs([...id].reduce((a, c) => a + c.charCodeAt(0), 0)) % ids.length;
+  const sib = Array.from({ length: Math.min(8, ids.length) }, (_, k) => ids[(start + k) % ids.length]);
+  return `<h2>More servers</h2>\n<p>${sib.map((s) => `<a href="/s/${esc(s)}">${esc(PAGES[s] ? PAGES[s].title : s)}</a>`).join(" &middot; ")}</p>`;
+})()}`;
       const html = page(pg.title + " for Claude, Cursor and any MCP client", body).replace("</title>", "</title>" + meta);
       return new Response(html, { headers: await contentHeaders(html) });
     }
