@@ -1135,7 +1135,13 @@ export default {
     }
 
     if (path === "/" && method === "GET") {
-      return new Response(home(), { headers: { "content-type": "text/html; charset=utf-8" } });
+      // The homepage was the one content route hand-rolling its own header object, so it
+      // shipped no Last-Modified, no ETag and no Cache-Control while every sibling route got
+      // all three from contentHeaders(). / is the first URL in the sitemap, so the strongest
+      // crawl target had the weakest freshness signal: a conditional GET on / could not
+      // revalidate and always refetched the full 89KB body. Same helper, same date scheme
+      // (newest CHANGELOG release date) as every other page.
+      return new Response(home(), { headers: contentHeaders() });
     }
 
     if (path === "/bundle" && method === "GET") {
