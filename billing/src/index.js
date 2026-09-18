@@ -347,6 +347,18 @@ function esc(s) {
 }
 
 /**
+ * OpenGraph tags for social/link previews. Every page already emits a meta
+ * description and a canonical link; OG mirrors those two plus the title and URL
+ * so a shared link renders a real preview card instead of a bare URL. No og:image
+ * is emitted because this site has no per-page image asset and fabricating one
+ * would be worse than omitting it. type defaults to website; product pages pass
+ * "product" and article pages pass "article".
+ */
+function og(title, description, url, type = "website") {
+  return `<meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(description).slice(0, 155)}"><meta property="og:url" content="${esc(url)}"><meta property="og:type" content="${type}"><meta property="og:site_name" content="MCP Servers by theluckystrike">`;
+}
+
+/**
  * Progressive copy button for every `<pre class="prompt">` block (guide pages, the
  * bundle page and the /s/<id> "First five minutes" sections). No CSP header is set
  * on this service (grepped: none), so a plain inline script is fine; if one is ever
@@ -1220,7 +1232,7 @@ export default {
       // rejected by every child it forwards to. Price the page from what it actually sells.
       const sold = PRODUCTS[resolveProductId(id)] || PRODUCTS[id];
       const soldUsd = sold ? sold.usd : PRODUCTS.bundle.usd;
-      const meta = `<meta name="description" content="${esc(pg.description).slice(0, 155)}"><link rel="canonical" href="https://mcp.zovo.one/s/${esc(id)}">
+      const meta = `<meta name="description" content="${esc(pg.description).slice(0, 155)}"><link rel="canonical" href="https://mcp.zovo.one/s/${esc(id)}">${og(pg.title, pg.description, `https://mcp.zovo.one/s/${id}`, "product")}
 <script type="application/ld+json">${JSON.stringify({ "@context": "https://schema.org", "@type": "SoftwareApplication", name: pg.title, applicationCategory: "DeveloperApplication", operatingSystem: "macOS, Windows, Linux", description: pg.description, url: `https://mcp.zovo.one/s/${id}`, author: { "@type": "Person", name: "theluckystrike", url: "https://github.com/theluckystrike" }, offers: [{ "@type": "Offer", price: "0", priceCurrency: "USD", name: "Free tier" }, { "@type": "Offer", price: String(soldUsd), priceCurrency: "USD", name: "Pro, lifetime", url: `https://mcp.zovo.one/buy/${id}?src=store.s.${id}` }] })}</script>`;
       const setupLinks = SETUP_SERVERS[id]
         ? CLIENT_ORDER.map((c) => `<a href="/setup/${c}/${id}">${esc(CLIENTS[c].name)}</a>`).join(" &middot; ")
@@ -1261,7 +1273,7 @@ ${COMPARE[id] ? `<h2>Compared with the alternatives</h2>\n<p><a href="/compare/$
 <p>${esc(GUIDE_INDEX.description)} Every server runs locally over stdio, has a free tier that is useful on its own, and a Pro key that is a one-time payment.</p>
 <ul>${items}</ul>
 <p><a href="/">All servers and prices</a></p>`;
-      const meta = `<meta name="description" content="${esc(GUIDE_INDEX.description).slice(0, 155)}"><link rel="canonical" href="https://mcp.zovo.one/guides">`;
+      const meta = `<meta name="description" content="${esc(GUIDE_INDEX.description).slice(0, 155)}"><link rel="canonical" href="https://mcp.zovo.one/guides">${og(GUIDE_INDEX.title, GUIDE_INDEX.description, "https://mcp.zovo.one/guides", "website")}`;
       const html = page(GUIDE_INDEX.title, body).replace("</title>", "</title>" + meta);
       return new Response(html, { headers: await contentHeaders(html) });
     }
@@ -1288,7 +1300,7 @@ ${COMPARE[id] ? `<h2>Compared with the alternatives</h2>\n<p><a href="/compare/$
         { "@context": "https://schema.org", "@type": "TechArticle", headline: g.title, description: g.description, url: canonical, author: { "@type": "Person", name: "theluckystrike", url: "https://github.com/theluckystrike" }, publisher: { "@type": "Organization", name: "theluckystrike", url: "https://mcp.zovo.one" } },
         { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: g.faq.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })) },
       ].map((o) => `<script type="application/ld+json">${JSON.stringify(o)}</script>`).join("");
-      const meta = `<meta name="description" content="${esc(g.description).slice(0, 155)}"><link rel="canonical" href="${canonical}">${ld}`;
+      const meta = `<meta name="description" content="${esc(g.description).slice(0, 155)}"><link rel="canonical" href="${canonical}">${og(g.title, g.description, canonical, "article")}${ld}`;
       // Every guide points at the product pages it is actually about. Without this the
       // Related block linked only /, /guides and /buy/bundle, so 15 of the 42 /s/<slug>
       // pages had 0 or 1 internal inbound link and were effectively orphaned for crawlers.
@@ -1313,7 +1325,7 @@ ${faqHtml}
 <p>${esc(COMPARE_INDEX.description)} Where a competing server does something we do not, the page says so and names the tool.</p>
 <ul>${items}</ul>
 <p><a href="/">All servers and prices</a> &middot; <a href="/guides">Guides</a> &middot; <a href="/setup">Setup</a></p>`;
-      const meta = `<meta name="description" content="${esc(COMPARE_INDEX.description).slice(0, 155)}"><link rel="canonical" href="https://mcp.zovo.one/compare">`;
+      const meta = `<meta name="description" content="${esc(COMPARE_INDEX.description).slice(0, 155)}"><link rel="canonical" href="https://mcp.zovo.one/compare">${og(COMPARE_INDEX.title, COMPARE_INDEX.description, "https://mcp.zovo.one/compare", "website")}`;
       const html = page(COMPARE_INDEX.title, body).replace("</title>", "</title>" + meta);
       return new Response(html, { headers: await contentHeaders(html) });
     }
@@ -1328,13 +1340,14 @@ ${faqHtml}
         { "@context": "https://schema.org", "@type": "TechArticle", headline: c.title, description: c.description, url: canonical, author: { "@type": "Person", name: "theluckystrike", url: "https://github.com/theluckystrike" }, publisher: { "@type": "Organization", name: "theluckystrike", url: "https://mcp.zovo.one" } },
         { "@context": "https://schema.org", "@type": "FAQPage", mainEntity: c.faq.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })) },
       ].map((o) => `<script type="application/ld+json">${JSON.stringify(o)}</script>`).join("");
-      const meta = `<meta name="description" content="${esc(c.description).slice(0, 155)}"><link rel="canonical" href="${canonical}">${ld}`;
+      const meta = `<meta name="description" content="${esc(c.description).slice(0, 155)}"><link rel="canonical" href="${canonical}">${og(c.title, c.description, canonical, "article")}${ld}`;
       const body = `<p class="muted"><a href="/">Home</a> &middot; <a href="/compare">Comparisons</a></p>
 ${c.html}
 <h2>Questions</h2>
 ${faqHtml}
 <h2>Related</h2>
-<p><a href="/s/${esc(slug)}">Product page</a> &middot; <a href="/setup">Setup per client</a> &middot; <a href="/guides">Guides</a> &middot; <a href="/compare">All comparisons</a>${PRODUCTS[slug] ? ` &middot; <a class="buy" href="/buy/${esc(slug)}?src=store.compare.${esc(slug)}">Buy Pro $${PRODUCTS[slug].usd}</a>` : ""}</p>`;
+<p><a href="/s/${esc(slug)}">Product page</a> &middot; <a href="/setup">Setup per client</a> &middot; <a href="/guides">Guides</a> &middot; <a href="/compare">All comparisons</a>${PRODUCTS[slug] ? ` &middot; <a class="buy" href="/buy/${esc(slug)}?src=store.compare.${esc(slug)}">Buy Pro $${PRODUCTS[slug].usd}</a>` : ""}</p>
+${relatedGuidesBlock(slug)}`;
       const html = page(c.title, body).replace("</title>", "</title>" + meta);
       return new Response(html, { headers: await contentHeaders(html) });
     }
@@ -1360,7 +1373,7 @@ ${faqHtml}
       // live and keep passing link value, but they are not offered to a crawler as
       // separately indexable. See docs/SEO_INDEXATION_R1.md.
       const robots = parts.length === 3 ? `<meta name="robots" content="noindex,follow">` : "";
-      const meta = `<meta name="description" content="${esc(pg.description).slice(0, 155)}"><link rel="canonical" href="${pg.canonical}">${robots}` +
+      const meta = `<meta name="description" content="${esc(pg.description).slice(0, 155)}"><link rel="canonical" href="${pg.canonical}">${og(pg.title, pg.description, pg.canonical, "article")}${robots}` +
         ld.map((o) => `<script type="application/ld+json">${JSON.stringify(o)}</script>`).join("");
       const html = page(pg.title, pg.body).replace("</title>", "</title>" + meta);
       return new Response(html, { headers: await contentHeaders(html) });

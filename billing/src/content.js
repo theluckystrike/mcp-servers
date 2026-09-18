@@ -9119,6 +9119,71 @@ export const GUIDE_PRODUCT_LINKS = {
   "recurring-invoices-on-a-schedule": ["recurring", "invoice"],
 };
 
+/**
+ * PRODUCT_GUIDE_LINKS: product slug -> topically-correct guide slugs. This is the
+ * fan-in map used by /setup, /compare and /s templates to link crawled pages into
+ * the /guides bucket (which bingbot/GPTBot under-crawl). Derived from the inverse
+ * of GUIDE_PRODUCT_LINKS plus manual entries for products the guide map does not
+ * cover. Every guide slug here must exist in GUIDES (validated at build).
+ */
+export const PRODUCT_GUIDE_LINKS = {
+  "time-tracker": ["track-time-in-claude-code", "kanban-board-in-claude-with-time-tracking", "project-profitability-hours-versus-budget"],
+  "price-tracker": ["price-drop-alerts-with-claude", "price-lists-and-rate-cards-from-chat", "supplier-directory-from-chat"],
+  spreadsheet: ["read-excel-in-cursor", "csv-to-excel-and-back-in-claude", "answer-questions-about-a-spreadsheet-without-formulas"],
+  invoice: ["invoice-pdf-from-chat", "quotes-and-estimates-to-invoice-in-claude", "recurring-invoices-on-a-schedule"],
+  "expense-tracker": ["expense-tracking-in-claude", "rebill-client-expenses-with-a-markup", "bank-statement-csv-categorize-reconcile"],
+  currency: ["currency-conversion-ecb-rates-in-claude", "currency-conversion-mcp-servers-compared"],
+  docx: ["word-documents-proposals-from-chat", "fill-a-quote-or-estimate-template-from-chat"],
+  timezone: ["meeting-slots-across-time-zones", "calendar-ics-free-busy-in-claude"],
+  resume: ["resume-and-cover-letter-from-chat"],
+  recurring: ["recurring-invoices-on-a-schedule", "invoice-pdf-from-chat"],
+  clauses: ["contract-clauses-library-assembly", "service-agreements-from-chat"],
+  calendar: ["calendar-ics-free-busy-in-claude", "meeting-slots-across-time-zones"],
+  pdf: ["pdf-merge-split-stamp-from-chat", "split-a-scanned-pdf-into-separate-documents", "combine-receipts-into-one-pdf-for-your-accountant"],
+  image: ["image-resize-compress-watermark-from-chat"],
+  "bank-statement": ["bank-statement-csv-categorize-reconcile", "reconcile-a-bank-export-with-your-invoices", "how-to-categorize-bank-transactions"],
+  kanban: ["kanban-board-in-claude-with-time-tracking", "work-orders-and-job-cards-from-chat"],
+  quotes: ["quotes-and-estimates-to-invoice-in-claude", "fill-a-quote-or-estimate-template-from-chat"],
+  barcode: ["sepa-payment-qr-codes-on-invoices-from-chat"],
+  zip: ["zip-archives-safely-from-chat", "send-a-month-of-paperwork-as-one-zip"],
+  "billing-docs": ["credit-notes-and-purchase-orders-from-chat", "fixed-assets-and-depreciation-from-chat"],
+  deposits: ["client-deposits-and-retainers-from-chat", "loan-and-lease-schedules-from-chat"],
+  "per-diem": ["per-diem-and-travel-allowances-from-chat"],
+  "asset-register": ["fixed-assets-and-depreciation-from-chat", "equipment-maintenance-log-from-chat"],
+  "statement-of-account": ["client-statements-and-dunning-from-chat", "chase-unpaid-invoices-without-a-crm"],
+  "cash-book": ["one-ledger-from-every-server", "petty-cash-book-and-cash-ledger-mcp-servers"],
+  amortization: ["loan-and-lease-schedules-from-chat"],
+  "petty-cash": ["petty-cash-float-from-chat", "petty-cash-book-and-cash-ledger-mcp-servers"],
+  "work-order": ["work-orders-and-job-cards-from-chat", "delivery-schedule-and-work-order-documents-from-mcp"],
+  catalogue: ["price-lists-and-rate-cards-from-chat", "supplier-directory-from-chat"],
+  "change-order": ["change-orders-and-contract-value-from-chat", "price-a-job-with-a-rate-card-and-a-change-order"],
+  "delivery-schedule": ["delivery-schedule-and-work-order-documents-from-mcp"],
+  "packing-list": ["delivery-schedule-and-work-order-documents-from-mcp", "credit-notes-and-purchase-orders-from-chat"],
+  checklist: ["work-orders-and-job-cards-from-chat"],
+  "bill-of-sale": ["bill-of-sale-from-chat"],
+  "credit-note": ["credit-notes-and-purchase-orders-from-chat"],
+  "job-card": ["work-orders-and-job-cards-from-chat", "price-a-job-with-a-rate-card-and-a-change-order"],
+  "dunning-letters": ["chase-unpaid-invoices-without-a-crm", "client-statements-and-dunning-from-chat"],
+  "supplier-list": ["supplier-directory-from-chat", "price-lists-and-rate-cards-from-chat"],
+  "service-agreement": ["service-agreements-from-chat", "change-orders-and-contract-value-from-chat"],
+  "maintenance-log": ["equipment-maintenance-log-from-chat"],
+  "mileage-log": ["mileage-log-for-tax-from-chat", "vehicle-mileage-log-from-chat"],
+  "office-suite": ["one-install-office-suite", "best-mcp-servers-for-small-business-accounting"],
+};
+
+/**
+ * relatedGuidesBlock(productSlug): renders a "Related guides & tools" block linking
+ * the product's /s page plus its topically-correct /guides pages. Only emits slugs
+ * that exist in GUIDES (no dangling links). Returns "" when there is nothing to link.
+ */
+export function relatedGuidesBlock(productSlug) {
+  const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  const guideSlugs = (PRODUCT_GUIDE_LINKS[productSlug] || []).filter((g) => GUIDES[g]);
+  if (!guideSlugs.length) return "";
+  const links = guideSlugs.map((g) => `<a href="/guides/${g}">${esc(GUIDES[g].title)}</a>`).join(" &middot; ");
+  return `<h2>Related guides &amp; tools</h2>\n<p>${links}</p>`;
+}
+
 export const GUIDE_INDEX = {
   title: "Guides for MCP servers in Claude and Cursor",
   description: `${Word(Object.keys(GUIDES).length)} guides. How MCP itself works, from config file locations and transports to protocol versions, registry search and shipping a server. Getting an MCP server to start in Claude Desktop, Claude Code, Cursor, VS Code, Windsurf and Cline. Then real work with one: billable hours, invoice PDFs, VAT and reverse charge, retainers, expenses and rebilling, Excel and CSV, bank reconciliation, quotes, travel allowances, depreciation, client statements and dunning, petty cash, safe zip archives, and what each free tier actually gives you.`,
