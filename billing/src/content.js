@@ -8931,6 +8931,11 @@ export const GUIDE_PRODUCT_LINKS = {
   "loan-and-lease-schedules-from-chat": ["amortization", "deposits"],
   "one-install-office-suite": ["office-suite", "invoice"],
   "best-mcp-servers-for-small-business-accounting": ["office-suite", "invoice", "cash-book", "expense-tracker"],
+  "bank-statement-csv-categorize-reconcile": ["bank-statement", "expense-tracker"],
+  "fixed-assets-and-depreciation-from-chat": ["asset-register", "billing-docs"],
+  "invoice-pdf-from-chat": ["invoice", "quotes"],
+  "quotes-and-estimates-to-invoice-in-claude": ["quotes", "invoice"],
+  "recurring-invoices-on-a-schedule": ["recurring", "invoice"],
 };
 
 export const GUIDE_INDEX = {
