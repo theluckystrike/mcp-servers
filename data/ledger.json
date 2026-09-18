@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-17T15:51:46.246Z",
+  "generated_at": "2026-09-18T01:11:22.542Z",
   "session": {
-    "count": 92,
+    "count": 93,
     "history": [
       {
         "at": "2026-09-02T12:48:50.865Z",
@@ -370,6 +370,10 @@
       {
         "at": "2026-09-17T15:51:46.159Z",
         "note": "sprint 40: 8 new compare pages live (27 total), IndexNow remainder 34 accepted, main repo description+topics refreshed, blind R5 (0/10 named unchanged, mcpservers.org 5 estate pages)"
+      },
+      {
+        "at": "2026-09-18T01:11:22.542Z",
+        "note": "sprint 42: T2 ETag root cause PROVEN (CF strips etags on edge-rewritten HTML; llms.txt control survives; code fixed content-derived W/ SHA-256, deployed version 161696a4, live - surfacing blocked only by CF Auto Minify dashboard toggle); T4 first 2 off-site outreach answers posted live (mcp/servers #2794, #1469); T3 glama reprobe 12/42 unchanged (16 short slugs published hours ago, recheck 24-72h); T1 IndexNow 190 URLs accepted HTTP/2 202; KPI refresh 32 indicators 9 met; Google impressions still 0 - GSC/Bing verification remains the single unlock"
       }
     ]
   },
@@ -3190,6 +3194,46 @@
     {
       "file": "docs/STATUS_R7.md",
       "first_line": "Status round 7 (2026-09-03) -- task 4: registry re-probe, submissions, Search Console, downloads"
+    },
+    {
+      "file": "docs/T1_GLAMA_R1.md",
+      "first_line": "T1 Glama.ai Distribution Audit + Expansion — Round 1"
+    },
+    {
+      "file": "docs/T2_ETAG_R1.md",
+      "first_line": "T2 — Content-Derived Strong ETag (T5 4b)"
+    },
+    {
+      "file": "docs/T2_GOOGLE_R1.md",
+      "first_line": "T2 Google Coverage Push — Round 1"
+    },
+    {
+      "file": "docs/T3_GLAMA_REPROBE_R2.md",
+      "first_line": "T3 — Glama Re-probe R2 (post 16 short-slug registry publishes)"
+    },
+    {
+      "file": "docs/T3_SURFACES_R1.md",
+      "first_line": "T3_SURFACES_R1 — New distribution-surface sweep, round 1"
+    },
+    {
+      "file": "docs/T4_BLIND_R6.md",
+      "first_line": "T4 — Blind recommendation test, round 6 (R6)"
+    },
+    {
+      "file": "docs/T5_FIXES_R1.md",
+      "first_line": "T5 — Homepage Last-Modified / ETag Validator Fix (Sprint 41)"
+    },
+    {
+      "file": "docs/T6_GLAMA_R2.md",
+      "first_line": "T6 — Glama Reconciliation R2 + Badge Expansion"
+    },
+    {
+      "file": "docs/T7_COMMENTS_R1.md",
+      "first_line": "T7_COMMENTS_R1 — Community Answer Drafts (Round 1)"
+    },
+    {
+      "file": "docs/T8_KPI_R1.md",
+      "first_line": "T8 — KPI Refresh & Delta Report (R1)"
     },
     {
       "file": "docs/TIMEZONE_AUDIT.md",
