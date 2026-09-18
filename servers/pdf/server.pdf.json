@@ -1,0 +1,23 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.theluckystrike/pdf",
+  "description": "Merge, split, extract, rotate, reorder and stamp PDF pages from your AI chat, all offline.",
+  "version": "0.22.1",
+  "repository": {
+    "url": "https://github.com/theluckystrike/mcp-servers",
+    "source": "github",
+    "subfolder": "servers/pdf"
+  },
+  "websiteUrl": "https://mcp.zovo.one/s/pdf",
+  "packages": [
+    {
+      "registryType": "mcpb",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.22.0/pdf.mcpb",
+      "version": "0.22.0",
+      "fileSha256": "6dba36f80f9bb152199ad8405783271cfc83ba4f7fed1defc7536a5a0d460345",
+      "transport": {
+        "type": "stdio"
+      }
+    }
+  ]
+}

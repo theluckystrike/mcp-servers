@@ -1,0 +1,23 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.theluckystrike/recurring",
+  "description": "Recurring invoices on a schedule: define once, generate the due PDFs, forecast revenue.",
+  "version": "0.22.1",
+  "repository": {
+    "url": "https://github.com/theluckystrike/mcp-servers",
+    "source": "github",
+    "subfolder": "servers/recurring"
+  },
+  "websiteUrl": "https://mcp.zovo.one/s/recurring",
+  "packages": [
+    {
+      "registryType": "mcpb",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.22.0/recurring.mcpb",
+      "version": "0.22.0",
+      "fileSha256": "2cc0270e74dab78458185796750cdd80e934fc55405ea2803d029ec08cfd9d94",
+      "transport": {
+        "type": "stdio"
+      }
+    }
+  ]
+}

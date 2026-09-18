@@ -1,0 +1,23 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.theluckystrike/timezone",
+  "description": "Time zone conversion, meeting-slot finding across countries, DST checks and .ics invites. All.",
+  "version": "0.22.1",
+  "repository": {
+    "url": "https://github.com/theluckystrike/mcp-servers",
+    "source": "github",
+    "subfolder": "servers/timezone"
+  },
+  "websiteUrl": "https://mcp.zovo.one/s/timezone",
+  "packages": [
+    {
+      "registryType": "mcpb",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.22.0/timezone.mcpb",
+      "version": "0.22.0",
+      "fileSha256": "f70084d03b415a60c2c2e5ccfb280814dfc64851ec58caa946286cb9e7e1f63d",
+      "transport": {
+        "type": "stdio"
+      }
+    }
+  ]
+}

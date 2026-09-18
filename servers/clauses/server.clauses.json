@@ -1,0 +1,23 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.theluckystrike/clauses",
+  "description": "A personal library of reusable contract and proposal clauses, assembled into a real Word .docx.",
+  "version": "0.22.1",
+  "repository": {
+    "url": "https://github.com/theluckystrike/mcp-servers",
+    "source": "github",
+    "subfolder": "servers/clauses"
+  },
+  "websiteUrl": "https://mcp.zovo.one/s/clauses",
+  "packages": [
+    {
+      "registryType": "mcpb",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.22.0/clauses.mcpb",
+      "version": "0.22.0",
+      "fileSha256": "7bf25060e28940be217a466529fa7f984a5fde51044b4b25b5bc22fc420b8d54",
+      "transport": {
+        "type": "stdio"
+      }
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.theluckystrike/zip",
+  "description": "Create, inspect and extract zip archives offline, with traversal, symlink and zip-bomb guards.",
+  "version": "0.22.1",
+  "repository": {
+    "url": "https://github.com/theluckystrike/mcp-servers",
+    "source": "github",
+    "subfolder": "servers/zip"
+  },
+  "websiteUrl": "https://mcp.zovo.one/s/zip",
+  "packages": [
+    {
+      "registryType": "mcpb",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.22.0/zip.mcpb",
+      "version": "0.22.0",
+      "fileSha256": "3d71504c5897fd76ba1ef02a9b841fbf897acb15aeb77f3ee9ff561b4cb2af43",
+      "transport": {
+        "type": "stdio"
+      }
+    }
+  ]
+}

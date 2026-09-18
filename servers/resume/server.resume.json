@@ -1,0 +1,23 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.theluckystrike/resume",
+  "description": "Tailor a resume and write a cover letter as real Word .docx files from facts you stored once.",
+  "version": "0.22.1",
+  "repository": {
+    "url": "https://github.com/theluckystrike/mcp-servers",
+    "source": "github",
+    "subfolder": "servers/resume"
+  },
+  "websiteUrl": "https://mcp.zovo.one/s/resume",
+  "packages": [
+    {
+      "registryType": "mcpb",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.22.0/resume.mcpb",
+      "version": "0.22.0",
+      "fileSha256": "38519bcf2230a67e344f515d917091816defac0854851037c50318807722d4d4",
+      "transport": {
+        "type": "stdio"
+      }
+    }
+  ]
+}
