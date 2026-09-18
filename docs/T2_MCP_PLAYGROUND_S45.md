@@ -61,3 +61,6 @@ Rate limit observed: ~3 submissions per few minutes; 429 body: {"error":"Too man
 
 Listing is review-gated; recheck for public listings in a later session.
 STATUS: complete
+
+## HOTFIX NOTE (same sprint)
+relatedGuidesBlock was used in /compare template but never imported in index.js → 500 on all /compare pages after deploy 3bba1541. Fixed (import added), local worker smoke (8 paths incl. /buy price check) before redeploy 45c727fe. Live verified: /compare/invoice 200 + Related guides block, /guides + /setup pages confirmed.
