@@ -1,7 +1,7 @@
 {
   "generated_at": "2026-09-18T10:56:50.254Z",
   "session": {
-    "count": 93,
+    "count": 94,
     "history": [
       {
         "at": "2026-09-02T12:48:50.865Z",
@@ -345,7 +345,7 @@
       },
       {
         "at": "2026-09-17T12:42:53.589Z",
-        "note": "loop 36: blind R4 run — mcpservers.org now surfaces estate server pages (verified live: invoice renders all tools); Telegram Mini App defects fixed (SDK tag + grid container, 42 cards render, go-live.sh tested 9/9); STRATEGY-36 written"
+        "note": "loop 36: blind R4 run \u2014 mcpservers.org now surfaces estate server pages (verified live: invoice renders all tools); Telegram Mini App defects fixed (SDK tag + grid container, 42 cards render, go-live.sh tested 9/9); STRATEGY-36 written"
       },
       {
         "at": "2026-09-17T13:15:45.775Z",
@@ -386,6 +386,10 @@
       {
         "at": "2026-09-18T17:17:01.405Z",
         "note": "sprint 45 wave 2: MCP Playground ESTATE COMPLETE - all 42 products submitted (36 wave-2, each 200 success + 409 dup double-confirm, zero failures, resumable script docs/submit_w2.mjs); outreach drafts T1 (Reddit/HN value post, modelcontextprotocol/registry Discussions post, R2 addendum with S45 proof points) held for user approval; T3 platform rechecks: Glama 13 theluckystrike servers listed (partial, high-traffic 3 not under expected slugs), mcp.so #4227/#4228 + mcpmux PR #300 still OPEN pending, Bing site: operator unreliable (73 phrase-indexed references), MCP Playground review-gated listings absent as expected; kpi 10/32 met; GSC first impressions on mcp.zovo.one (10); commits eabcf31a, de0ec6f3, T1/T2/T3 wave-2 docs 1eec21dd"
+      },
+      {
+        "at": "2026-09-18T17:49:53.000Z",
+        "note": "session 97 (S45 epilogue): RATING-S45+NEXT-SPRINT committed (0dbb6f1f); T11 Glama 13/42 RESOLVED as glama-side ingest lag behind registry renames, official registry 42/42 @0.22.0 verified (0f79ac6e); T12 directory census R2 (f41d650a): mcp.so organic now $39 paid-only (issues route stalled), smithery 404, mcpmarket gated; 2 human-gated levers: $39 mcp.so listing, npm publish -> smithery. Re-crawl read due after 72h window."
       }
     ]
   },
@@ -2205,11 +2209,11 @@
   "docs": [
     {
       "file": "docs/AGENT_PAYMENTS_R1.md",
-      "first_line": "Agent-native payments for the hosted MCP endpoints — research, design, verdict"
+      "first_line": "Agent-native payments for the hosted MCP endpoints \u2014 research, design, verdict"
     },
     {
       "file": "docs/AI_INDEX_R1.md",
-      "first_line": "AI-assistant index measurement — R1 (2026-09-10)"
+      "first_line": "AI-assistant index measurement \u2014 R1 (2026-09-10)"
     },
     {
       "file": "docs/AMORTIZATION_AUDIT.md",
@@ -2265,7 +2269,7 @@
     },
     {
       "file": "docs/BILLING_BIND_RESULT.md",
-      "first_line": "In-product upgrade path (billing <-> hosted endpoints bind) — RESULT"
+      "first_line": "In-product upgrade path (billing <-> hosted endpoints bind) \u2014 RESULT"
     },
     {
       "file": "docs/BILLING_DOCS_AUDIT.md",
@@ -2281,11 +2285,11 @@
     },
     {
       "file": "docs/BLIND_RECOMMENDATION_R1.md",
-      "first_line": "Blind MCP Recommendation Run — R1"
+      "first_line": "Blind MCP Recommendation Run \u2014 R1"
     },
     {
       "file": "docs/BLIND_RECOMMENDATION_R2.md",
-      "first_line": "Blind Recommendation Run R2 — 18 Buyer Questions"
+      "first_line": "Blind Recommendation Run R2 \u2014 18 Buyer Questions"
     },
     {
       "file": "docs/CALENDAR_AUDIT.md",
@@ -2337,27 +2341,27 @@
     },
     {
       "file": "docs/CODEX_REVIEW.md",
-      "first_line": "1. `packages/mcp-license/src/index.ts:94-96` — P0 — Pro enforcement is a local boolean in code controlled by the user; modifying `isPro()` unlocks every gated call. Fix: move Pro operations to a service controlled by the vendor or treat offline licensing as non-enforceable."
+      "first_line": "1. `packages/mcp-license/src/index.ts:94-96` \u2014 P0 \u2014 Pro enforcement is a local boolean in code controlled by the user; modifying `isPro()` unlocks every gated call. Fix: move Pro operations to a service controlled by the vendor or treat offline licensing as non-enforceable."
     },
     {
       "file": "docs/CODEX_REVIEW_REMOTE.md",
-      "first_line": "1. `remote/src/index.ts:173` — P1 — `/mcp/token` is unauthenticated and unlimited, so callers can mint new tenants to reset hourly limits and free-tier quotas while generating unlimited KV records. Fix: rate-limit token issuance by IP/device and require a durable abuse-control identity or challenge."
+      "first_line": "1. `remote/src/index.ts:173` \u2014 P1 \u2014 `/mcp/token` is unauthenticated and unlimited, so callers can mint new tenants to reset hourly limits and free-tier quotas while generating unlimited KV records. Fix: rate-limit token issuance by IP/device and require a durable abuse-control identity or challenge."
     },
     {
       "file": "docs/CODEX_REVIEW_REMOTE_V2.md",
-      "first_line": "1. `remote/src/shims/fs.ts:75` — High — Paths are raw map keys; traversal segments are not rejected, and names ending `.tmp` are silently excluded from persistence. Trigger: `sheet_load` with `name=\"../data.json\"` or `\"x.tmp\"`. Fix: normalize paths, enforce `/sheets/` confinement, and reject reserved suffixes."
+      "first_line": "1. `remote/src/shims/fs.ts:75` \u2014 High \u2014 Paths are raw map keys; traversal segments are not rejected, and names ending `.tmp` are silently excluded from persistence. Trigger: `sheet_load` with `name=\"../data.json\"` or `\"x.tmp\"`. Fix: normalize paths, enforce `/sheets/` confinement, and reject reserved suffixes."
     },
     {
       "file": "docs/CODEX_REVIEW_V2.md",
-      "first_line": "1. [servers/expense-tracker/src/money.ts:61](/Users/mike/mcp-servers/servers/expense-tracker/src/money.ts:61) — P1 — Rounding net instead of the VAT component loses VAT on half-cent cases. Fix: calculate `vat = roundHalfUp(gross * rate / (100 + rate))`, then `net = gross - vat`. Trigger: `expense_add {amount:0.03,currency:\"EUR\",vat_rate:20}` reports VAT `EUR 0.00` instead of `EUR 0.01`."
+      "first_line": "1. [servers/expense-tracker/src/money.ts:61](/Users/mike/mcp-servers/servers/expense-tracker/src/money.ts:61) \u2014 P1 \u2014 Rounding net instead of the VAT component loses VAT on half-cent cases. Fix: calculate `vat = roundHalfUp(gross * rate / (100 + rate))`, then `net = gross - vat`. Trigger: `expense_add {amount:0.03,currency:\"EUR\",vat_rate:20}` reports VAT `EUR 0.00` instead of `EUR 0.01`."
     },
     {
       "file": "docs/CODEX_REVIEW_V3.md",
-      "first_line": "1. `servers/time-tracker/src/index.ts:65` — P0 — Any read or JSON parse failure is treated as an empty database; the next mutation overwrites the existing history. Minimal input: malformed `data.json` followed by `timer_start`. Fix: treat only `ENOENT` as empty and fail without saving on corruption or permission errors."
+      "first_line": "1. `servers/time-tracker/src/index.ts:65` \u2014 P0 \u2014 Any read or JSON parse failure is treated as an empty database; the next mutation overwrites the existing history. Minimal input: malformed `data.json` followed by `timer_start`. Fix: treat only `ENOENT` as empty and fail without saving on corruption or permission errors."
     },
     {
       "file": "docs/CODEX_REVIEW_V4.md",
-      "first_line": "1. [servers/currency/src/rates.ts:39](/Users/mike/mcp-servers/servers/currency/src/rates.ts:39) — P1 — The six-decimal cross rate is used for conversion, producing `KWD 12.000` instead of `KWD 11.667`. Fix: multiply by `toPerEur / fromPerEur` at full precision and round only the target minor units. Trigger: `convertAmount({VND:30000,KWD:0.35}, 1000000, \"VND\", \"KWD\")`."
+      "first_line": "1. [servers/currency/src/rates.ts:39](/Users/mike/mcp-servers/servers/currency/src/rates.ts:39) \u2014 P1 \u2014 The six-decimal cross rate is used for conversion, producing `KWD 12.000` instead of `KWD 11.667`. Fix: multiply by `toPerEur / fromPerEur` at full precision and round only the target minor units. Trigger: `convertAmount({VND:30000,KWD:0.35}, 1000000, \"VND\", \"KWD\")`."
     },
     {
       "file": "docs/COMPARE_RESULT.md",
@@ -2409,7 +2413,7 @@
     },
     {
       "file": "docs/CONTENT_R2.md",
-      "first_line": "CONTENT_R2 — 14 reference pages about MCP, organic content round 2, 2026-09-08"
+      "first_line": "CONTENT_R2 \u2014 14 reference pages about MCP, organic content round 2, 2026-09-08"
     },
     {
       "file": "docs/CONTENT_R20_RESULT.md",
@@ -2421,7 +2425,7 @@
     },
     {
       "file": "docs/CONTENT_R3.md",
-      "first_line": "CONTENT_R3 — 13 new reference pages about MCP, organic content round 3, 2026-09-09"
+      "first_line": "CONTENT_R3 \u2014 13 new reference pages about MCP, organic content round 3, 2026-09-09"
     },
     {
       "file": "docs/CONTENT_R3_RESULT.md",
@@ -2489,15 +2493,15 @@
     },
     {
       "file": "docs/DIRECTORIES_RESULT.md",
-      "first_line": "Directories submission — RESULT"
+      "first_line": "Directories submission \u2014 RESULT"
     },
     {
       "file": "docs/DISCOVERABILITY_R1.md",
-      "first_line": "Discoverability audit R1 — 2026-09-17"
+      "first_line": "Discoverability audit R1 \u2014 2026-09-17"
     },
     {
       "file": "docs/DISTRIBUTION.md",
-      "first_line": "Distribution runbook — 4 MCP servers (theluckystrike)"
+      "first_line": "Distribution runbook \u2014 4 MCP servers (theluckystrike)"
     },
     {
       "file": "docs/DISTRIBUTION_R2.md",
@@ -2581,7 +2585,7 @@
     },
     {
       "file": "docs/DIST_R26_RESULT.md",
-      "first_line": "Distribution round 26 — one server per PR, and the first honestly green Glama gate"
+      "first_line": "Distribution round 26 \u2014 one server per PR, and the first honestly green Glama gate"
     },
     {
       "file": "docs/DIST_R3_RESULT.md",
@@ -2597,7 +2601,7 @@
     },
     {
       "file": "docs/DIST_R6_NOTES.md",
-      "first_line": "DIST_R6_NOTES — r5/r6 distribution round"
+      "first_line": "DIST_R6_NOTES \u2014 r5/r6 distribution round"
     },
     {
       "file": "docs/DIST_R6_RESULT.md",
@@ -2637,11 +2641,11 @@
     },
     {
       "file": "docs/FORMS_RESULT.md",
-      "first_line": "Free directory submissions (forms + PR lists) — RESULT"
+      "first_line": "Free directory submissions (forms + PR lists) \u2014 RESULT"
     },
     {
       "file": "docs/FUNNEL_R1.md",
-      "first_line": "Funnel R1 (loop 35): 65 checkout sessions, 0 paid — broken funnel or zero demand?"
+      "first_line": "Funnel R1 (loop 35): 65 checkout sessions, 0 paid \u2014 broken funnel or zero demand?"
     },
     {
       "file": "docs/GEMINI_EXT_R1.md",
@@ -2657,11 +2661,11 @@
     },
     {
       "file": "docs/GLAMA_R1.md",
-      "first_line": "Glama round 1 — is the awesome-mcp-servers PR really hard-blocked?"
+      "first_line": "Glama round 1 \u2014 is the awesome-mcp-servers PR really hard-blocked?"
     },
     {
       "file": "docs/GLAMA_R2.md",
-      "first_line": "Glama round 2 — why 1 of 33, and what to do instead"
+      "first_line": "Glama round 2 \u2014 why 1 of 33, and what to do instead"
     },
     {
       "file": "docs/GOOGLE_INDEX_R1.md",
@@ -2741,15 +2745,15 @@
     },
     {
       "file": "docs/INTEL_R2.md",
-      "first_line": "INTEL_R2 — Submission, directory, and registry-slot re-measurement"
+      "first_line": "INTEL_R2 \u2014 Submission, directory, and registry-slot re-measurement"
     },
     {
       "file": "docs/INTEL_R3.md",
-      "first_line": "INTEL_R3 — re-measuring the three servers now in build (currency, docx, timezone)"
+      "first_line": "INTEL_R3 \u2014 re-measuring the three servers now in build (currency, docx, timezone)"
     },
     {
       "file": "docs/INTEL_R4.md",
-      "first_line": "INTEL_R4 — next two servers after resume/cover-letter"
+      "first_line": "INTEL_R4 \u2014 next two servers after resume/cover-letter"
     },
     {
       "file": "docs/INTEL_R5.md",
@@ -2805,7 +2809,7 @@
     },
     {
       "file": "docs/LOOP34_BRIEF.md",
-      "first_line": "LOOP 34 BRIEF — distribution, surfaces, and the rename test"
+      "first_line": "LOOP 34 BRIEF \u2014 distribution, surfaces, and the rename test"
     },
     {
       "file": "docs/LOOP34_FIELDS_R1.md",
@@ -2813,11 +2817,11 @@
     },
     {
       "file": "docs/LOOP34_RESULT.md",
-      "first_line": "LOOP 34 RESULT — 2026-09-12"
+      "first_line": "LOOP 34 RESULT \u2014 2026-09-12"
     },
     {
       "file": "docs/LOOP35_BRIEF.md",
-      "first_line": "LOOP 35 BRIEF — 2026-09-12 (orchestrated, 10 agents wave A+B)"
+      "first_line": "LOOP 35 BRIEF \u2014 2026-09-12 (orchestrated, 10 agents wave A+B)"
     },
     {
       "file": "docs/LOOP36_FIELDS_R1.md",
@@ -2837,7 +2841,7 @@
     },
     {
       "file": "docs/MIRROR_SYNC_R1.md",
-      "first_line": "Mirror sync round 1 — the full re-sync, and the five defects it was hiding"
+      "first_line": "Mirror sync round 1 \u2014 the full re-sync, and the five defects it was hiding"
     },
     {
       "file": "docs/NAMESPACE_R1.md",
@@ -2845,11 +2849,11 @@
     },
     {
       "file": "docs/NAMING_R2_RESULT.md",
-      "first_line": "NAMING_R2_RESULT.md — registry name variants, round 2, 2026-09-03"
+      "first_line": "NAMING_R2_RESULT.md \u2014 registry name variants, round 2, 2026-09-03"
     },
     {
       "file": "docs/NAMING_R3_RESULT.md",
-      "first_line": "NAMING_R3_RESULT.md — registry name variants, round 3, 2026-09-04"
+      "first_line": "NAMING_R3_RESULT.md \u2014 registry name variants, round 3, 2026-09-04"
     },
     {
       "file": "docs/NAMING_R4_RESULT.md",
@@ -2869,7 +2873,7 @@
     },
     {
       "file": "docs/NAMING_RESULT.md",
-      "first_line": "NAMING_RESULT.md — registry name rewrite, 2026-09-02"
+      "first_line": "NAMING_RESULT.md \u2014 registry name rewrite, 2026-09-02"
     },
     {
       "file": "docs/NEW_USER_E2E_R1.md",
@@ -2877,11 +2881,11 @@
     },
     {
       "file": "docs/NPM_AUTH_RESULT.md",
-      "first_line": "npm auth acquisition attempt — RESULT"
+      "first_line": "npm auth acquisition attempt \u2014 RESULT"
     },
     {
       "file": "docs/NPM_UNBLOCK_R2.md",
-      "first_line": "npm unblock, round 2 — exhausting every path to a first publish"
+      "first_line": "npm unblock, round 2 \u2014 exhausting every path to a first publish"
     },
     {
       "file": "docs/OPERATOR_ACTIONS_LOOP33.md",
@@ -3041,7 +3045,7 @@
     },
     {
       "file": "docs/README_DEPTH_RESULT.md",
-      "first_line": "README depth pass — 2026-09-02"
+      "first_line": "README depth pass \u2014 2026-09-02"
     },
     {
       "file": "docs/RECOMMENDATION_SOURCES_R1.md",
@@ -3057,7 +3061,7 @@
     },
     {
       "file": "docs/REGISTRY_REMOTE_R1.md",
-      "first_line": "Registry remote R1 — 2026-09-17"
+      "first_line": "Registry remote R1 \u2014 2026-09-17"
     },
     {
       "file": "docs/REGISTRY_VISIBILITY_R1.md",
@@ -3169,7 +3173,7 @@
     },
     {
       "file": "docs/REPO_SIGNALS_R1.md",
-      "first_line": "Repository signals round 1 — Glama Maintenance, and what a mirror is allowed to claim"
+      "first_line": "Repository signals round 1 \u2014 Glama Maintenance, and what a mirror is allowed to claim"
     },
     {
       "file": "docs/RESUME_AUDIT.md",
@@ -3193,7 +3197,7 @@
     },
     {
       "file": "docs/SPEC_RESULT.md",
-      "first_line": "S4 — contract specs per server"
+      "first_line": "S4 \u2014 contract specs per server"
     },
     {
       "file": "docs/STATEMENT_AUDIT.md",
@@ -3209,43 +3213,43 @@
     },
     {
       "file": "docs/T1_GLAMA_R1.md",
-      "first_line": "T1 Glama.ai Distribution Audit + Expansion — Round 1"
+      "first_line": "T1 Glama.ai Distribution Audit + Expansion \u2014 Round 1"
     },
     {
       "file": "docs/T2_ETAG_R1.md",
-      "first_line": "T2 — Content-Derived Strong ETag (T5 4b)"
+      "first_line": "T2 \u2014 Content-Derived Strong ETag (T5 4b)"
     },
     {
       "file": "docs/T2_GOOGLE_R1.md",
-      "first_line": "T2 Google Coverage Push — Round 1"
+      "first_line": "T2 Google Coverage Push \u2014 Round 1"
     },
     {
       "file": "docs/T3_GLAMA_REPROBE_R2.md",
-      "first_line": "T3 — Glama Re-probe R2 (post 16 short-slug registry publishes)"
+      "first_line": "T3 \u2014 Glama Re-probe R2 (post 16 short-slug registry publishes)"
     },
     {
       "file": "docs/T3_SURFACES_R1.md",
-      "first_line": "T3_SURFACES_R1 — New distribution-surface sweep, round 1"
+      "first_line": "T3_SURFACES_R1 \u2014 New distribution-surface sweep, round 1"
     },
     {
       "file": "docs/T4_BLIND_R6.md",
-      "first_line": "T4 — Blind recommendation test, round 6 (R6)"
+      "first_line": "T4 \u2014 Blind recommendation test, round 6 (R6)"
     },
     {
       "file": "docs/T5_FIXES_R1.md",
-      "first_line": "T5 — Homepage Last-Modified / ETag Validator Fix (Sprint 41)"
+      "first_line": "T5 \u2014 Homepage Last-Modified / ETag Validator Fix (Sprint 41)"
     },
     {
       "file": "docs/T6_GLAMA_R2.md",
-      "first_line": "T6 — Glama Reconciliation R2 + Badge Expansion"
+      "first_line": "T6 \u2014 Glama Reconciliation R2 + Badge Expansion"
     },
     {
       "file": "docs/T7_COMMENTS_R1.md",
-      "first_line": "T7_COMMENTS_R1 — Community Answer Drafts (Round 1)"
+      "first_line": "T7_COMMENTS_R1 \u2014 Community Answer Drafts (Round 1)"
     },
     {
       "file": "docs/T8_KPI_R1.md",
-      "first_line": "T8 — KPI Refresh & Delta Report (R1)"
+      "first_line": "T8 \u2014 KPI Refresh & Delta Report (R1)"
     },
     {
       "file": "docs/TIMEZONE_AUDIT.md",
@@ -3265,23 +3269,23 @@
     },
     {
       "file": "docs/TRAFFIC_R1.md",
-      "first_line": "Traffic reality, loop 29 (2026-09-07) — agent B, measurement"
+      "first_line": "Traffic reality, loop 29 (2026-09-07) \u2014 agent B, measurement"
     },
     {
       "file": "docs/TRAFFIC_R2.md",
-      "first_line": "Traffic reality, loop 30 (2026-09-08) — measurement"
+      "first_line": "Traffic reality, loop 30 (2026-09-08) \u2014 measurement"
     },
     {
       "file": "docs/TRAFFIC_R3.md",
-      "first_line": "Traffic reality, loop 32 (2026-09-09) — measurement"
+      "first_line": "Traffic reality, loop 32 (2026-09-09) \u2014 measurement"
     },
     {
       "file": "docs/USER_VALUE.md",
-      "first_line": "User value audit — 2026-09-02"
+      "first_line": "User value audit \u2014 2026-09-02"
     },
     {
       "file": "docs/USER_VALUE_R10.md",
-      "first_line": "User value audit, round 10 — 2026-09-03"
+      "first_line": "User value audit, round 10 \u2014 2026-09-03"
     },
     {
       "file": "docs/USER_VALUE_R11.md",
@@ -3313,11 +3317,11 @@
     },
     {
       "file": "docs/USER_VALUE_R16_TIMEZONE.md",
-      "first_line": "User value audit, round 16 (timezone re-run) — 2026-09-05"
+      "first_line": "User value audit, round 16 (timezone re-run) \u2014 2026-09-05"
     },
     {
       "file": "docs/USER_VALUE_R17.md",
-      "first_line": "User value audit, round 17 — 2026-09-05"
+      "first_line": "User value audit, round 17 \u2014 2026-09-05"
     },
     {
       "file": "docs/USER_VALUE_R18_CALENDAR.md",
@@ -3329,11 +3333,11 @@
     },
     {
       "file": "docs/USER_VALUE_R18_QUOTES.md",
-      "first_line": "User value audit, round 18 (quotes re-run) — 2026-09-05"
+      "first_line": "User value audit, round 18 (quotes re-run) \u2014 2026-09-05"
     },
     {
       "file": "docs/USER_VALUE_R2.md",
-      "first_line": "User value audit, round 2 — 2026-09-02"
+      "first_line": "User value audit, round 2 \u2014 2026-09-02"
     },
     {
       "file": "docs/USER_VALUE_R20_BANK.md",
@@ -3369,7 +3373,7 @@
     },
     {
       "file": "docs/USER_VALUE_R3.md",
-      "first_line": "User value audit, round 3 — 2026-09-02"
+      "first_line": "User value audit, round 3 \u2014 2026-09-02"
     },
     {
       "file": "docs/USER_VALUE_R30_CASH_BOOK.md",
@@ -3397,27 +3401,27 @@
     },
     {
       "file": "docs/USER_VALUE_R4.md",
-      "first_line": "User value audit, round 4 — 2026-09-02"
+      "first_line": "User value audit, round 4 \u2014 2026-09-02"
     },
     {
       "file": "docs/USER_VALUE_R5.md",
-      "first_line": "User value audit, round 5 — 2026-09-03"
+      "first_line": "User value audit, round 5 \u2014 2026-09-03"
     },
     {
       "file": "docs/USER_VALUE_R6.md",
-      "first_line": "User value audit, round 6 — 2026-09-03"
+      "first_line": "User value audit, round 6 \u2014 2026-09-03"
     },
     {
       "file": "docs/USER_VALUE_R7.md",
-      "first_line": "User value audit, round 7 — 2026-09-03"
+      "first_line": "User value audit, round 7 \u2014 2026-09-03"
     },
     {
       "file": "docs/USER_VALUE_R8.md",
-      "first_line": "User value audit, round 8 — 2026-09-03"
+      "first_line": "User value audit, round 8 \u2014 2026-09-03"
     },
     {
       "file": "docs/USER_VALUE_R9.md",
-      "first_line": "User value audit, round 9 — 2026-09-03"
+      "first_line": "User value audit, round 9 \u2014 2026-09-03"
     },
     {
       "file": "docs/VARIANTS_LOOP35.md",
