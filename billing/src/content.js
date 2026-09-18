@@ -8929,6 +8929,8 @@ export const GUIDE_PRODUCT_LINKS = {
   "supplier-directory-from-chat": ["supplier-list", "catalogue", "price-tracker"],
   "price-lists-and-rate-cards-from-chat": ["price-tracker", "catalogue", "supplier-list"],
   "loan-and-lease-schedules-from-chat": ["amortization", "deposits"],
+  "one-install-office-suite": ["office-suite", "invoice"],
+  "best-mcp-servers-for-small-business-accounting": ["office-suite", "invoice", "cash-book", "expense-tracker"],
 };
 
 export const GUIDE_INDEX = {
