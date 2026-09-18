@@ -26,3 +26,8 @@ leads with a real answer and discloses the estate before linking a *specific* gu
 1. Open the thread, read the current replies.
 2. If the question is already answered, skip it — don't add a redundant link.
 3. Paste the draft, keep the disclosure line, and confirm the linked guide still matches the question.
+
+## POSTED 2026-09-18 (sprint 42)
+- #2794 (tool ceiling) -> https://github.com/modelcontextprotocol/servers/issues/2794#issuecomment-5723336751 (draft 02)
+- #1469 (Windows failed to start) -> https://github.com/modelcontextprotocol/servers/issues/1469#issuecomment-5723339142 (draft 01 adapted; original target discussion #325 found CLOSED, replaced)
+- Remaining human-gated: drafts 03-06 (Reddit), 07 (dev.to)

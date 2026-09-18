@@ -854,5 +854,26 @@
       "github-mirror": "pending",
       "registry-name": "pending 0.22.0 (io.github.theluckystrike/deliverable-tracker, io.github.theluckystrike/milestone-schedule)"
     }
+  },
+  "outreach": {
+    "posted_round1": [
+      {
+        "surface": "github:modelcontextprotocol/servers#2794",
+        "thread": "https://github.com/modelcontextprotocol/servers/issues/2794",
+        "posted": "2026-09-18",
+        "url": "https://github.com/modelcontextprotocol/servers/issues/2794#issuecomment-5723336751",
+        "guide": "mcp-server-not-showing-up-in-claude-desktop",
+        "draft": "docs/outreach/R1/02-github-tool-ceiling.md"
+      },
+      {
+        "surface": "github:modelcontextprotocol/servers#1469",
+        "thread": "https://github.com/modelcontextprotocol/servers/issues/1469",
+        "posted": "2026-09-18",
+        "url": "https://github.com/modelcontextprotocol/servers/issues/1469#issuecomment-5723339142",
+        "guide": "mcp-server-not-showing-up-in-claude-desktop",
+        "draft": "docs/outreach/R1/01 adapted (Windows)",
+        "note": "draft 01 target discussion #325 closed; adapted to live issue 1469"
+      }
+    ]
   }
 }
