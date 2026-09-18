@@ -30,3 +30,6 @@
 ## Human-gated / skipped
 - npm publish, Stars, paid listings, any account creation. Checkout improvements need
   payment rails: not autonomous, skip this sprint.
+
+## Sprint-42 backlog (from T5)
+- Worker-wide ETag defect: contentHeaders() assigns etag (src/index.js:409) but it never reaches the wire on ANY page (verified on origin). Fix = content-derived strong ETag (body hash). Filed docs/T5_FIXES_R1.md #4b.
