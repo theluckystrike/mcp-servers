@@ -123,8 +123,7 @@ confirms it is not listed at all:
 curl -s -o /tmp/g_tt.html -w '%{http_code} %{size_download}\n' -m 20 -A "$UA" -L \
   'https://glama.ai/mcp/servers/theluckystrike/mcp-time-tracker'
 -> 404 52          (repo page does not exist)
-```
-```
+
 
 Rendered-badge text proves these are real scores, not placeholders:
 
