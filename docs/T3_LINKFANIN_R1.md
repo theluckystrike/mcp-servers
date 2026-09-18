@@ -138,3 +138,9 @@ TBD
   are themselves 404 on prod -> those slugs were audit ghosts; only real slugs kept.
 - IndexNow: node scripts/indexnow.mjs --all -> accepted 190, failed 0 (2x 200 batches).
 STATUS: complete
+
+## Orchestrator completion (2026-09-18 08:xx UTC) — MEASURED AFTER-COUNTS
+Post-deploy (version 45b1beba) full-site refetch of all 147 non-/s sitemap pages, live HTML regex href="/s/<slug>" count (curl -A Mozilla/5.0, producing data in /tmp/fanin2/result.json):
+- Zero-inbound slugs: 1 of 42 (office-suite) — DOWN from 15 at 0-1 before.
+- Total internal inbound links to the 42 /s pages: 192 (median 3, max 24 = invoice).
+- STATUS: verified — deploy + IndexNow (190 URLs, 202) + commit e419f5b0 done by orchestrator; the earlier projected AFTER column above is superseded by these measured values.
