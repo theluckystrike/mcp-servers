@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-09-18",
+  "updated_at": "2026-09-18T08:25:00Z",
   "surfaces": {
     "github": {
       "status": "published",
@@ -257,6 +257,11 @@
       "status": "identified",
       "url": "https://mcp.zovo.one",
       "note": "mcpmetrics.io, feryn.lv, aigregate.com already index our endpoints without landing links; claim/swap next batch (docs/T5_SURFACES_R2.md)"
+    },
+    "mcpmarket": {
+      "status": "published",
+      "url": "https://mcpmarket.com/search?q=theluckystrike",
+      "note": "S43 T1 (2026-09-18): browser-verified (curl 403 bot-shield) - >=12 of our servers listed with links back to mcp.zovo.one; Free Queue submission from S42 landed. Deep coverage diff in docs/T6_MCPMARKET_COVERAGE_R1.md."
     }
   },
   "per_server": {
