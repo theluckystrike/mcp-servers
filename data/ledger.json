@@ -378,6 +378,10 @@
       {
         "at": "2026-09-18T10:56:50.000Z",
         "note": "sprint 44 (waves 1+2): fan-in wave 2 live - 20 GUIDE_PRODUCT_LINKS, 152/152 tests (deploy 9e75c9f6); 3 new guides published - invoice-payment-terms-best-practices, how-to-categorize-bank-transactions, petty-cash-log-template (110 guides total, sitemap 193 URLs, IndexNow accepted 193/0 failed); checkout trust rework - 'What you get for ' + purchase-promise block on buy intent and success pages (deploy 54123edd, tests green, live UI probe path-dependent - verify in browser); T9 off-page: mcp.so still NOT ingested (positive-control verified), PR #300 OPEN+MERGEABLE no reviews, MCP Playground found as new fully-autonomous directory target (free web form); wave-1 agents T1 GPTBot delta + T2 bingbot 35/141 URL-pattern affinity; outreach R2 drafts 3 held for user OK; commits 7148ef2f, fffaceee, cabdafbb, 55d78a7c"
+      },
+      {
+        "at": "2026-09-18T13:12:59.091Z",
+        "note": "sprint 45 wave 1 CLOSED: T1 fan-in /setup+/compare -> /guides via PRODUCT_GUIDE_LINKS (42) + relatedGuidesBlock; T2 MCP Playground 6 high-traffic servers submitted (POST /api/mcp-submit, no captcha, review-gated, rate limit ~1/2-3min, 36 remain); T3 og() helper + OG tags on 6 templates + sitemap 193 lastmods; T4 README storefront + hosted column (42 /mcp/ + 42 /s/ links, 0 dangling), repo desc 31->42; T5 symmetric GUIDE_RELATED mesh 109 guides/13 clusters wired into guide template; incident: missing relatedGuidesBlock import 500ed /compare in prod - hotfixed deploy 45c727fe, live-probe rule reinforced; IndexNow 193/193 x2; 152/152 tests; commits 7ff8b6eb, ebcb2d12, 45e569a7, ae9b2fba, c40deadc, ce07d7b7, add9155d"
       }
     ]
   },
