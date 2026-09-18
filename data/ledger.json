@@ -382,6 +382,10 @@
       {
         "at": "2026-09-18T13:12:59.091Z",
         "note": "sprint 45 wave 1 CLOSED: T1 fan-in /setup+/compare -> /guides via PRODUCT_GUIDE_LINKS (42) + relatedGuidesBlock; T2 MCP Playground 6 high-traffic servers submitted (POST /api/mcp-submit, no captcha, review-gated, rate limit ~1/2-3min, 36 remain); T3 og() helper + OG tags on 6 templates + sitemap 193 lastmods; T4 README storefront + hosted column (42 /mcp/ + 42 /s/ links, 0 dangling), repo desc 31->42; T5 symmetric GUIDE_RELATED mesh 109 guides/13 clusters wired into guide template; incident: missing relatedGuidesBlock import 500ed /compare in prod - hotfixed deploy 45c727fe, live-probe rule reinforced; IndexNow 193/193 x2; 152/152 tests; commits 7ff8b6eb, ebcb2d12, 45e569a7, ae9b2fba, c40deadc, ce07d7b7, add9155d"
+      },
+      {
+        "at": "2026-09-18T17:17:01.405Z",
+        "note": "sprint 45 wave 2: MCP Playground ESTATE COMPLETE - all 42 products submitted (36 wave-2, each 200 success + 409 dup double-confirm, zero failures, resumable script docs/submit_w2.mjs); outreach drafts T1 (Reddit/HN value post, modelcontextprotocol/registry Discussions post, R2 addendum with S45 proof points) held for user approval; T3 platform rechecks: Glama 13 theluckystrike servers listed (partial, high-traffic 3 not under expected slugs), mcp.so #4227/#4228 + mcpmux PR #300 still OPEN pending, Bing site: operator unreliable (73 phrase-indexed references), MCP Playground review-gated listings absent as expected; kpi 10/32 met; GSC first impressions on mcp.zovo.one (10); commits eabcf31a, de0ec6f3, T1/T2/T3 wave-2 docs 1eec21dd"
       }
     ]
   },

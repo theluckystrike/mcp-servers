@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-18T13:12:59.172Z",
-  "total_commits": 870,
-  "sessions": 95,
+  "generated_at": "2026-09-18T17:17:01.498Z",
+  "total_commits": 875,
+  "sessions": 96,
   "loops": [
     {
       "name": "Loop 1: build, billing, registry",
@@ -145,8 +145,8 @@
     },
     {
       "name": "Loop 29: plan v26",
-      "sessions": 39,
-      "commits": 269
+      "sessions": 40,
+      "commits": 274
     }
   ],
   "rows": [
@@ -1233,7 +1233,7 @@
       "at": "2026-09-18T13:12:59.091Z",
       "note": "sprint 45 wave 1 CLOSED: T1 fan-in /setup+/compare -> /guides via PRODUCT_GUIDE_LINKS (42) + relatedGuidesBlock; T2 MCP Playground 6 high-traffic servers submitted (POST /api/mcp-submit, no captcha, review-gated, rate limit ~1/2-3min, 36 remain); T3 og() helper + OG tags on 6 templates + sitemap 193 lastmods; T4 README storefront + hosted column (42 /mcp/ + 42 /s/ links, 0 dangling), repo desc 31->42; T5 symmetric GUIDE_RELATED mesh 109 guides/13 clusters wired into guide template; incident: missing relatedGuidesBlock import 500ed /compare in prod - hotfixed deploy 45c727fe, live-probe rule reinforced; IndexNow 193/193 x2; 152/152 tests; commits 7ff8b6eb, ebcb2d12, 45e569a7, ae9b2fba, c40deadc, ce07d7b7, add9155d",
       "loop": "Loop 29: plan v26",
-      "commits": 26,
+      "commits": 12,
       "subjects": [
         "sprint 42 T10: reprobe R1 - mcp.so not yet ingested, registry healthy, MCP Market pending verification (curl 403 bot-shield)",
         "sprint 43 T4: crawler coverage probe R1 + IndexNow delta",
@@ -1247,6 +1247,27 @@
         "sprint 43 T3b: office-suite fan-in via 2 suite guides (0-inbound slugs now 0)",
         "sprint 43 close: RATING-S43 8.5/10 + S44 handoff",
         "sprint 43: DASHBOARD session-log unit (S43 closed 8.5/10)"
+      ]
+    },
+    {
+      "n": 96,
+      "at": "2026-09-18T17:17:01.405Z",
+      "note": "sprint 45 wave 2: MCP Playground ESTATE COMPLETE - all 42 products submitted (36 wave-2, each 200 success + 409 dup double-confirm, zero failures, resumable script docs/submit_w2.mjs); outreach drafts T1 (Reddit/HN value post, modelcontextprotocol/registry Discussions post, R2 addendum with S45 proof points) held for user approval; T3 platform rechecks: Glama 13 theluckystrike servers listed (partial, high-traffic 3 not under expected slugs), mcp.so #4227/#4228 + mcpmux PR #300 still OPEN pending, Bing site: operator unreliable (73 phrase-indexed references), MCP Playground review-gated listings absent as expected; kpi 10/32 met; GSC first impressions on mcp.zovo.one (10); commits eabcf31a, de0ec6f3, T1/T2/T3 wave-2 docs 1eec21dd",
+      "loop": "Loop 29: plan v26",
+      "commits": 19,
+      "subjects": [
+        "sprint 44 T1-T6: gptbot/bingbot delta analyses, wave-2 fan-in live (20 guide links, deploy 9e75c9f6), mcpmux playbook, 3 outreach drafts, monetization map, kpi+dashboard refresh",
+        "sprint 44: kpi refresh",
+        "sprint 44 wave 2: 3 new guides + checkout trust rework + off-page intel",
+        "sprint 44: ledger + sprint log + dashboard render",
+        "sprint 44 fix: pass per-product price to purchase promise (was defaulting all buy pages to bundle $39)",
+        "sprint 44: T7 doc orchestrator addendum (price bug + live verify)",
+        "sprint 45 open: strategy, traffic R2 re-measure (Googlebot 2->16 URLs), kpi baseline",
+        "sprint 45 T4: README storefront+hosted column (42 /s/ links, 42 /mcp/ links), hero no-install line; repo description 31->42 via API",
+        "sprint 45 T1: fan-in from /setup + /compare into /guides via PRODUCT_GUIDE_LINKS (42 products) + relatedGuidesBlock; 152/152",
+        "sprint 45 T3 deliverable + metrics refresh",
+        "sprint 45 T2: MCP Playground — 6 high-traffic servers submitted (200s, rate-limit documented)",
+        "sprint 45 T5: symmetric GUIDE_RELATED mesh (109 guides, 13 clusters) wired into guide template; 152/152"
       ]
     }
   ]
