@@ -171,13 +171,25 @@ and additionally gained the `cache-control: public, max-age=3600` it was missing
 - `billing/src/index.js` — homepage route now uses `contentHeaders()` (lines 1137-1146).
 - `docs/T5_FIXES_R1.md` — this report.
 
-Commit: `<see §7>` — `sprint 41 T5: homepage Last-Modified/ETag validator (T2 finding)`
+Commit: `8cc2a1a62f0b36de55cdaed48e67a111bdbc7dde`
+`sprint 41 T5: homepage Last-Modified/ETag validator (T2 finding)`
 
 ## 7. Commit & push
 
 ```
-(sha recorded below after push)
+$ git commit -m 'sprint 41 T5: homepage Last-Modified/ETag validator (T2 finding)'
+8cc2a1a6 sprint 41 T5: homepage Last-Modified/ETag validator (T2 finding)
+
+$ git push origin main
+To https://github.com/theluckystrike/mcp-servers.git
+   ab20bd58..8cc2a1a6  main -> main
+
+$ git rev-parse HEAD
+8cc2a1a62f0b36de55cdaed48e67a111bdbc7dde
 ```
+Pushed to `github.com/theluckystrike/mcp-servers` `main`. Deploy and commit are independent:
+the worker was deployed from source before the commit, and the commit records the exact
+source that is live (version `c4902ec7-323b-4488-b74c-0f36dc623667`).
 
 ## 8. Follow-up filed (not done in T5)
 
