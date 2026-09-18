@@ -238,7 +238,7 @@ export const VALIDATION = { at: "2026-09-17", pass: 1192, total: 1192, servers: 
  * same way: test/checkout-r1.test.mjs counts the `test(` declarations on disk and fails
  * if this disagrees. The page said 25 when there were 99.
  */
-export const BILLING_TEST_COUNT = 140;
+export const BILLING_TEST_COUNT = 142;
 
 /**
  * The npm publish is pending: `npx -y @theluckystrike/mcp-<server>` returns E404 today,
@@ -397,16 +397,30 @@ else init();
 
 // Freshness validator for crawlers: every content page carries Last-Modified = the
 // newest CHANGELOG release date (the same honest site-wide value the sitemap lastmod
-// uses -- every release redeploys every page from this source) and a matching weak
-// ETag so a conditional GET can revalidate instead of refetching the full body.
+// uses -- every release redeploys every page from this source) and a content-derived
+// strong ETag so a conditional GET can revalidate instead of refetching the full body.
+// The ETag is a SHA-256 of the rendered body (first 16 hex chars, quoted), so it is a
+// genuine validator: it changes iff the body changes, and it is strong (no W/ prefix).
+// The previous value was runtime-static ('"'+d8(lm)+'-v3"') and Cloudflare's validator
+// classifier never put it on the wire (docs/T5_FIXES_R1.md §4b); a content-derived
+// strong ETag is the fix.
 function siteLastModified() {
   const d = ((CHANGELOG && CHANGELOG.releases) || []).map((r) => r && r.date).find((x) => /^\d{4}-\d{2}-\d{2}$/.test(x || ""));
   return d ? new Date(d + "T00:00:00Z").toUTCString() : undefined;
 }
-function contentHeaders(extra = {}) {
+async function contentHeaders(body, extra = {}) {
   const lm = siteLastModified();
   const h = { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=3600", ...extra };
-  if (lm) { h["last-modified"] = lm; h.etag = '"' + d8(lm) + '-v3"'; }
+  if (lm) h["last-modified"] = lm;
+  if (typeof body === "string" && body.length > 0) {
+    const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(body));
+    const hex = [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, "0")).join("").slice(0, 16);
+    // Weak ETag: Cloudflare strips STRONG ETags from compressed (gzip/brotli) HTML
+    // responses but preserves weak ones. Verified live 2026-09-18: SHA-256 strong
+    // ETag never reached the wire on origin; llms.txt (text/plain, uncompressed)
+    // ETag survives. A W/ ETag is still a valid revalidation validator for crawlers.
+    h.etag = 'W/"' + hex + '"';
+  }
   return h;
 }
 function d8(s) { return String(s).replace(/[^0-9a-z]/gi, "").slice(0, 12).toLowerCase(); }
@@ -1141,15 +1155,18 @@ export default {
       // crawl target had the weakest freshness signal: a conditional GET on / could not
       // revalidate and always refetched the full 89KB body. Same helper, same date scheme
       // (newest CHANGELOG release date) as every other page.
-      return new Response(home(), { headers: contentHeaders() });
+      const body = home();
+      return new Response(body, { headers: await contentHeaders(body) });
     }
 
     if (path === "/bundle" && method === "GET") {
-      return new Response(bundlePage(), { headers: contentHeaders() });
+      const body = bundlePage();
+      return new Response(body, { headers: await contentHeaders(body) });
     }
 
     if (path === "/changelog" && method === "GET") {
-      return new Response(changelogPage(), { headers: contentHeaders() });
+      const body = changelogPage();
+      return new Response(body, { headers: await contentHeaders(body) });
     }
 
     if (path.startsWith("/s/") && method === "GET") {
@@ -1191,7 +1208,8 @@ ${setupLinks ? `<h2>Set it up in your client</h2>\n<p>Exact config path, entry a
 ${COMPARE[id] ? `<h2>Compared with the alternatives</h2>\n<p><a href="/compare/${esc(id)}">${esc(COMPARE[id].title)}</a> &middot; <a href="/compare">all comparisons</a></p>` : ""}
 <h2>Guides</h2>
 <p>${GUIDE_LINKS}</p>`;
-      return new Response(page(pg.title + " for Claude, Cursor and any MCP client", body).replace("</title>", "</title>" + meta), { headers: contentHeaders() });
+      const html = page(pg.title + " for Claude, Cursor and any MCP client", body).replace("</title>", "</title>" + meta);
+      return new Response(html, { headers: await contentHeaders(html) });
     }
 
     if (path === "/guides" && method === "GET") {
@@ -1202,7 +1220,8 @@ ${COMPARE[id] ? `<h2>Compared with the alternatives</h2>\n<p><a href="/compare/$
 <ul>${items}</ul>
 <p><a href="/">All servers and prices</a></p>`;
       const meta = `<meta name="description" content="${esc(GUIDE_INDEX.description).slice(0, 155)}"><link rel="canonical" href="https://mcp.zovo.one/guides">`;
-      return new Response(page(GUIDE_INDEX.title, body).replace("</title>", "</title>" + meta), { headers: contentHeaders() });
+      const html = page(GUIDE_INDEX.title, body).replace("</title>", "</title>" + meta);
+      return new Response(html, { headers: await contentHeaders(html) });
     }
 
     // Old guide slugs that were renamed. The body and slug both aged out of date
@@ -1234,7 +1253,8 @@ ${g.html}
 ${faqHtml}
 <h2>Related</h2>
 <p><a href="/">All MCP servers and prices</a> &middot; <a href="/guides">All guides</a> &middot; <a class="buy" href="/buy/bundle?src=store.guide.${slug}">Buy the bundle $${PRODUCTS.bundle.usd}</a></p>`;
-      return new Response(page(g.title, body).replace("</title>", "</title>" + meta), { headers: contentHeaders() });
+      const html = page(g.title, body).replace("</title>", "</title>" + meta);
+      return new Response(html, { headers: await contentHeaders(html) });
     }
 
     if (path === "/compare" && method === "GET") {
@@ -1245,7 +1265,8 @@ ${faqHtml}
 <ul>${items}</ul>
 <p><a href="/">All servers and prices</a> &middot; <a href="/guides">Guides</a> &middot; <a href="/setup">Setup</a></p>`;
       const meta = `<meta name="description" content="${esc(COMPARE_INDEX.description).slice(0, 155)}"><link rel="canonical" href="https://mcp.zovo.one/compare">`;
-      return new Response(page(COMPARE_INDEX.title, body).replace("</title>", "</title>" + meta), { headers: contentHeaders() });
+      const html = page(COMPARE_INDEX.title, body).replace("</title>", "</title>" + meta);
+      return new Response(html, { headers: await contentHeaders(html) });
     }
 
     if (path.startsWith("/compare/") && method === "GET") {
@@ -1265,7 +1286,8 @@ ${c.html}
 ${faqHtml}
 <h2>Related</h2>
 <p><a href="/s/${esc(slug)}">Product page</a> &middot; <a href="/setup">Setup per client</a> &middot; <a href="/guides">Guides</a> &middot; <a href="/compare">All comparisons</a>${PRODUCTS[slug] ? ` &middot; <a class="buy" href="/buy/${esc(slug)}?src=store.compare.${esc(slug)}">Buy Pro $${PRODUCTS[slug].usd}</a>` : ""}</p>`;
-      return new Response(page(c.title, body).replace("</title>", "</title>" + meta), { headers: contentHeaders() });
+      const html = page(c.title, body).replace("</title>", "</title>" + meta);
+      return new Response(html, { headers: await contentHeaders(html) });
     }
 
     if ((path === "/setup" || path.startsWith("/setup/")) && method === "GET") {
@@ -1291,7 +1313,8 @@ ${faqHtml}
       const robots = parts.length === 3 ? `<meta name="robots" content="noindex,follow">` : "";
       const meta = `<meta name="description" content="${esc(pg.description).slice(0, 155)}"><link rel="canonical" href="${pg.canonical}">${robots}` +
         ld.map((o) => `<script type="application/ld+json">${JSON.stringify(o)}</script>`).join("");
-      return new Response(page(pg.title, pg.body).replace("</title>", "</title>" + meta), { headers: contentHeaders() });
+      const html = page(pg.title, pg.body).replace("</title>", "</title>" + meta);
+      return new Response(html, { headers: await contentHeaders(html) });
     }
 
     if (path === "/sitemap.xml") {
@@ -1415,7 +1438,8 @@ pretend otherwise.</p>
 contract. Where it and the source disagree, the source is right and this page is a bug.</p>`;
       const meta = `<meta name="description" content="What the MCP servers and the hosted endpoints store, and for how long. Local servers keep everything on your machine.">`
         + `<link rel="canonical" href="https://mcp.zovo.one/privacy">`;
-      return new Response(page("Privacy", body).replace("</title>", "</title>" + meta), { headers: contentHeaders() });
+      const html = page("Privacy", body).replace("</title>", "</title>" + meta);
+      return new Response(html, { headers: await contentHeaders(html) });
     }
 
     if (path === "/llms.txt") {
