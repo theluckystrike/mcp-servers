@@ -1,19 +1,40 @@
-# NEXT-SPRINT — S44 handoff (from S43 close, 2026-09-18)
+# NEXT-SPRINT — S46 handoff (from S45 close, 2026-09-19)
 
 ## Context
-S43 closed at 8.5/10. Fan-in complete (0 /s pages without internal inbound links). Distribution 13/53. All agent deliverables harvested; 9 commits pushed (6c79dce7..0fe4e237).
+S45 closed at 8.5/10. MCP Playground 42/42 double-confirmed. Search fan-in live
+(336 new internal links, deploy 588c5be4). KPI 10/32. GSC first impressions (10).
+Commits thru 1f813d9c.
 
 ## Priority queue (biggest-impact first)
-1. **GSC/Bing verification** (HUMAN-GATED, highest unlock): Googlebot at 2/190. Once verified: submit sitemap, request indexing on the 42 /s pages + top 20 guides. Everything on-site is ready for this.
-2. **CF Auto Minify toggle** (HUMAN-GATED): dashboard.cloudflare.com -> Speed -> Optimization -> Content Optimization -> disable Auto Minify. Worker weak-ETag fix (161696a4) already deployed; this toggle alone restores ETags on every HTML page -> conditional crawling works.
-3. **T-A: recheck clocks (agents can do)**: mcp.so /server/theluckystrike-mcp-invoice + office-suite (was 404; #4227/#4228 filed). If ingested, file the remaining 36 repos per T9 pipeline. EDNA listing check (sam@enterprisedna.co said ~a week). mcpmux PR #300 merge watch (never ping maintainers).
-4. **T-B: MCPmarket 30-server gap**: 30 of 42 missing. Mechanism = repo-level only; decide whether separate per-server repos are worth it, or defer to the $29 fast-track decision (human call). Also claim account + fix source-repo links (HUMAN-GATED).
-5. **T-C: compare-page fan-in audit**: guides now fan in; /compare pages already do; audit /setup pages (8 URLs) for missing /s links.
-6. **T-D: outreach posting** (partially human-gated): drafts 03-07 in docs/outreach/R1/ + R2/ need Reddit/dev.to accounts.
-7. **T-E: KPI refresh + dashboard** after any coverage change (data/traffic.json is the source of truth for crawler sets).
+1. **Re-crawl measurement** (agent): re-run scripts/traffic.mjs after 72h+7d window —
+   did Googlebot/bingbot pick up the 336 sibling links? Compare crawler_url_coverage
+   vs this sprint's snapshot (GB 16, bingbot 3). This is the direct read on whether
+   fan-in moves search crawlers.
+2. **Glama slug repair** (agent, autonomous): 13 servers listed but invoice/spreadsheet/
+   bank-statement 404 on slug probes. Check glama.ai author page for actual slug
+   patterns; if listing is auto-ingested from GitHub, check what differs for those 3
+   (repo structure? mcp.json? description?).
+3. **Outreach posting** (HUMAN-GATED): 5+ drafts held — R1 3, R2 replies w/ S45 proof,
+   w2 Reddit/HN value post + registry Discussions post. User green-light = biggest
+   distribution unlock available.
+4. **GSC + Bing Webmaster verification** (HUMAN-GATED, still #1 unlock): 10 first
+   impressions prove Google will surface the domain once indexed properly.
+5. **mcp.so recheck** (~1wk): #4227/#4228 ingestion watch; if ingested, file remaining
+   per the T9 pipeline.
+6. **MCP Playground listing check** (~1wk): review-gated; probe
+   mcpplaygroundonline.com/mcp-registry?q=zovo for live listings.
+7. **Stripe funnel**: 334 clicks → 29.9% checkout → 0 paid. Leak inside Stripe.
+   Consider pre-filled email/test-mode audit (human-gated for Stripe dashboard).
+8. **CF Auto Minify off** (HUMAN-GATED, one toggle): restores ETags sitewide.
 
-## Conventions
-- Leaf contract: 30 iterations, deliverable first with STATUS: in progress, evidence with producing commands, RESULT block, do not commit (orchestrator commits).
+## Conventions (unchanged)
+- Leaf contract: 30 iterations, deliverable first (STATUS: in progress), evidence with
+  producing commands, no commit (orchestrator commits), no sleep/poll.
+- Leaf edits: node --test + diff review + LIVE handler probe (T7 price bug, T5 missing
+  import both passed tests and broke prod).
 - kpi.mjs reads data/distribution.json; kpi.json parse via d['kpis'].
-- IndexNow: node scripts/indexnow.mjs --all (190 URLs); key verified serving at site root.
+- IndexNow: node scripts/indexnow.mjs --all (193 URLs).
 - Deploy: cd billing && npx wrangler deploy; run node --test test/ first.
+- MCP Playground rate: ~1/2-3min, 429 → 120s backoff, 409 = already submitted (counts).
+- docs/submit_w2.mjs is resumable (reads docs/w2_results.log); reuse the pattern for
+  future batch submissions.
