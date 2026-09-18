@@ -905,7 +905,7 @@ ${whatYouGet}
 <form method="post" action="${esc(action)}"><input type="hidden" name="intent" value="checkout">
 <button class="buy" type="submit">Continue to secure Stripe checkout</button></form>
 <p class="muted">No payment session has been created yet. Stripe collects the card on the next page.</p>
-${purchasePromiseHtml()}
+${purchasePromiseHtml(p.usd)}
 ${bound}<p class="muted"><a href="/#faq">FAQ</a> &middot; <a href="/changelog">Changelog</a> &middot; Source at <a href="${REPO}">github.com/theluckystrike/mcp-servers</a></p>
 <p><a href="${productId === "bundle" ? "/" : `/s/${encodeURIComponent(askedId)}`}">Back</a></p>`);
 }
@@ -1109,7 +1109,7 @@ Reloading this page always shows the same key. If you lose it, email support@zov
 <pre><code>MCP_LICENSE_KEY=${esc(key)}</code></pre>
 <h2>Install</h2>
 ${installSnippet(productId)}
-${purchasePromiseHtml()}
+${purchasePromiseHtml(p.usd)}
 <p>Docs: <a href="${REPO}">${REPO}</a></p>`);
 }
 
