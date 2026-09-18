@@ -8914,6 +8914,23 @@ hosted server, including this one at <code>https://mcp.zovo.one/mcp/mileage-log<
   },
 };
 
+export const GUIDE_PRODUCT_LINKS = {
+  "bill-of-sale-from-chat": ["bill-of-sale", "invoice"],
+  "change-orders-and-contract-value-from-chat": ["change-order", "service-agreement"],
+  "price-a-job-with-a-rate-card-and-a-change-order": ["change-order", "job-card", "work-order"],
+  "work-orders-and-job-cards-from-chat": ["job-card", "work-order"],
+  "delivery-schedule-and-work-order-documents-from-mcp": ["delivery-schedule", "work-order", "packing-list"],
+  "credit-notes-and-purchase-orders-from-chat": ["billing-docs", "packing-list"],
+  "equipment-maintenance-log-from-chat": ["maintenance-log", "asset-register"],
+  "service-agreements-from-chat": ["service-agreement", "clauses"],
+  "petty-cash-float-from-chat": ["petty-cash", "cash-book"],
+  "petty-cash-book-and-cash-ledger-mcp-servers": ["petty-cash", "cash-book", "expense-tracker"],
+  "credit-notes-and-purchase-orders-from-chat": ["billing-docs", "packing-list"],
+  "supplier-directory-from-chat": ["supplier-list", "catalogue", "price-tracker"],
+  "price-lists-and-rate-cards-from-chat": ["price-tracker", "catalogue", "supplier-list"],
+  "loan-and-lease-schedules-from-chat": ["amortization", "deposits"],
+};
+
 export const GUIDE_INDEX = {
   title: "Guides for MCP servers in Claude and Cursor",
   description: `${Word(Object.keys(GUIDES).length)} guides. How MCP itself works, from config file locations and transports to protocol versions, registry search and shipping a server. Getting an MCP server to start in Claude Desktop, Claude Code, Cursor, VS Code, Windsurf and Cline. Then real work with one: billable hours, invoice PDFs, VAT and reverse charge, retainers, expenses and rebilling, Excel and CSV, bank reconciliation, quotes, travel allowances, depreciation, client statements and dunning, petty cash, safe zip archives, and what each free tier actually gives you.`,
