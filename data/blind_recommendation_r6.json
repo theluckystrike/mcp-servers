@@ -1,0 +1,893 @@
+{
+ "round": 6,
+ "run_at": "2026-09-18",
+ "procedure": "docs/BLIND_RECOMMENDATION_PROCEDURE.md",
+ "question_set": "data/blind_questions.json v1 (frozen 2026-09-10)",
+ "instrument": "fresh research context, no estate priming, top-6 web results per question",
+ "primed": false,
+ "scores": {
+  "questions_run": 18,
+  "named_by_blind_assistant": 0,
+  "estate_appearance_any_position": 0,
+  "identity_appearance": 0,
+  "kpi_named": "0/18",
+  "kpi_citation_share": "2/18"
+ },
+ "per_question": {
+  "1": {
+   "q_index": 1,
+   "results_returned": 6,
+   "estate_appearance": false,
+   "estate_named": false,
+   "top_url": "https://www.reddit.com/r/ClaudeAI/comments/1sfn6zd/i_built_an_mcp_server_that_handles_invoicing_from/",
+   "results": [
+    {
+     "title": "I built an MCP server that handles invoicing from Claude Desktop ...",
+     "url": "https://www.reddit.com/r/ClaudeAI/comments/1sfn6zd/i_built_an_mcp_server_that_handles_invoicing_from/",
+     "desc": "I built PingBill \u2014 an MCP server that lets you create, send, and track invoices directly from Claude Desktop. creates the invoice, generates a ...MCP for converting Claude's output"
+    },
+    {
+     "title": "Claude Just Changed Invoicing Forever! (Tutorial) - YouTube",
+     "url": "https://www.youtube.com/watch?v=A4DmbVkqW8E",
+     "desc": "... PDF invoices with all client details and project pricing pulled automatically, and email them directly to clients. The system uses MCP servers ..."
+    },
+    {
+     "title": "Invoice MCP Server",
+     "url": "https://mcpservers.org/servers/markslorach/invoice-mcp",
+     "desc": "Create professional PDF invoices using natural language. Browse Invoice MCP Server for Claude, Cursor, VS Code, and other AI agents."
+    },
+    {
+     "title": "Automating invoice data entry with Claude AI - Facebook",
+     "url": "https://www.facebook.com/groups/claudeaicommunity/posts/1280407627459735/",
+     "desc": "Anyone can drop a PDF invoice in (or scan one straight from the office MFP), and within about 60 seconds a clean row appears in a shared ..."
+    },
+    {
+     "title": "MCP Server for Invoicing with AI Agents",
+     "url": "https://www.invoicemyclients.com/features/mcp-server",
+     "desc": "Connect Claude, ChatGPT or any MCP client to Invoice My Clients: 80+ tools to create invoices, track time and manage clients from your AI assistant."
+    },
+    {
+     "title": "how to use Claude for invoicing: the ultimate AI guide - InvoiceCave",
+     "url": "https://www.invoicecave.com/blog/how-to-use-claude-for-invoicing",
+     "desc": "By connecting Claude Desktop to a billing platform via an invoice MCP server, Claude becomes an active agent. You just type, \"Create an invoice for Acme Corp ..."
+    }
+   ]
+  },
+  "2": {
+   "q_index": 2,
+   "results_returned": 6,
+   "estate_appearance": false,
+   "estate_named": false,
+   "top_url": "https://github.com/espresso3389/pdf-splitter-mcp",
+   "results": [
+    {
+     "title": "espresso3389/pdf-splitter-mcp: MCP server to handle PDF files efficiently",
+     "url": "https://github.com/espresso3389/pdf-splitter-mcp",
+     "desc": "A Model Context Protocol (MCP) server that provides random access to PDF contents, reducing total reading costs by allowing selective extraction of pages and ..."
+    },
+    {
+     "title": "Top PDF Reading & Manipulating MCP Servers - PulseMCP",
+     "url": "https://www.pulsemcp.com/servers?q=pdf",
+     "desc": "# Top PDF Reading & Manipulating MCP Servers\n## Showing  1  -  42  of  296  servers for \"pdf\"\n[**DocWand PDF**\\\n\\\nDocWand\\\n\\\nSign, fill, merge, and split PDFs in the browser withou"
+    },
+    {
+     "title": "PDF Co MCP Server",
+     "url": "https://mcpservers.org/servers/pdfdotco/pdfco-mcp",
+     "desc": "# PDF.co MCP\n## \ud83d\ude80 Key Features\n### \ud83d\udee0\ufe0f PDF Editing & Modification\n- **PDF Merging**: Combine multiple PDF files into one\n- **PDF Splitting**: Split PDFs by specific pages or page ra"
+    },
+    {
+     "title": "pdf-chapter-splitter | MCP Servers - LobeHub",
+     "url": "https://lobehub.com/mcp/keigoly-pdf-chapter-splitter",
+     "desc": "The pdf-chapter-splitter MCP Server is a tool for splitting PDFs by chapters or sections and reading them in Claude-friendly chunks."
+    },
+    {
+     "title": "Any recommendations for MCP servers to process pdf, docx, and ...",
+     "url": "https://www.reddit.com/r/LLMDevs/comments/1k67ntv/any_recommendations_for_mcp_servers_to_process/",
+     "desc": "Any recommendations for MCP servers to process pdf, docx, and xlsx files? ... I built a free merging tool for documents like PDF, Word, and images."
+    },
+    {
+     "title": "PDF Chapter Splitter | Claude Code Skill for PDF Processing",
+     "url": "https://mcpmarket.com/tools/skills/pdf-chapter-splitter",
+     "desc": "Split PDFs by chapters or text patterns automatically. Use this Claude Code skill to organize large documents for RAG, NotebookLM, or archival purposes."
+    }
+   ]
+  },
+  "3": {
+   "q_index": 3,
+   "results_returned": 6,
+   "estate_appearance": false,
+   "estate_named": false,
+   "top_url": "https://www.expensebot.ai/blog/expensebot-mcp-launch",
+   "results": [
+    {
+     "title": "ExpenseBot MCP Server: AI Assistant Expense Management",
+     "url": "https://www.expensebot.ai/blog/expensebot-mcp-launch",
+     "desc": "Claude Desktop, Cursor, assistant can search expenses, submit receipts, scan Gmail, and run analytics directly against your real ExpenseBot ..."
+    },
+    {
+     "title": "I hate manual expense tracking so I built an MCP server to do it for me",
+     "url": "https://www.reddit.com/r/SaaS/comments/1s6tx1i/i_hate_manual_expense_tracking_so_i_built_an_mcp/",
+     "desc": "So I built an MCP server for my platform. Now I just snap a photo of a receipt, send it to Claude, and it reads every item, picks the right ...I built a local MCP server into my Ma"
+    },
+    {
+     "title": "AI-Powered Expense Tracker MCP Server | Manage your ... - GitHub",
+     "url": "https://github.com/shivamprasad1001/expense-mcp-server",
+     "desc": "# Expense Tracker MCP Server\n## Overview\nThe Expense MCP Server implements the Model Context Protocol to provide expense tracking capabilities to AI tools like Claude Desktop, Curs"
+    },
+    {
+     "title": "Expense Tracker: Efficiently Manage & Summarize Expenses - MCP Market",
+     "url": "https://mcpmarket.com/server/expense-tracker",
+     "desc": "Track, list, and summarize your expenses efficiently with Expense Tracker. Powered by FastMCP for high performance and seamless Claude Desktop integration, ..."
+    },
+    {
+     "title": "How to Use MCP Servers with Claude Desktop | Real-Time AI Integration",
+     "url": "https://www.youtube.com/watch?v=vDT1_b5eEkM",
+     "desc": "In this video, I walk you through the basics of getting started with MCP servers using Claude Desktop as the client. Whether you're new to ..."
+    },
+    {
+     "title": "Expense Tracker MCP | MCP Servers - LobeHub",
+     "url": "https://lobehub.com/mcp/killerheller6203-expense-tracker-mcp",
+     "desc": "A remote MCP server that lets you track your personal expenses directly through Claude. Each user gets their own isolated SQLite database."
+    }
+   ]
+  },
+  "4": {
+   "q_index": 4,
+   "results_returned": 6,
+   "estate_appearance": false,
+   "estate_named": false,
+   "top_url": "https://bankstatemently.com/developers/mcp",
+   "results": [
+    {
+     "title": "Bankstatemently MCP Server Setup: Claude, Cursor, ChatGPT & Agents",
+     "url": "https://bankstatemently.com/developers/mcp",
+     "desc": "Rating 4.1(94) \u00b7 Free \u00b7 FinanceBankstatemently's MCP server lets AI agents \u2014 including accounting and bookkeeping agents \u2014 convert bank statements into structured transactions, acc"
+    },
+    {
+     "title": "[D] How to Automate parsing of Bank Statement PDFs to extract ... - Reddit",
+     "url": "https://www.reddit.com/r/MachineLearning/comments/1nbisbw/d_how_to_automate_parsing_of_bank_statement_pdfs/",
+     "desc": "I am working on a project where I need to extract transaction data from Bank Statement PDFs. 80% of my working PDFs are digitally generated ...Created a neat app that decrypts PDF "
+    },
+    {
+     "title": "How to Extract and Categorize Bank Transactions from a PDF",
+     "url": "https://www.docuclipper.com/blog/compile-categorize-bank-transactions-pdf-csv/",
+     "desc": "Convert bank statement PDFs to CSV, then categorize each transaction by payee or keyword rule. Works for any bank."
+    },
+    {
+     "title": "Statement to Budget - MCP Connector - Glama",
+     "url": "https://glama.ai/mcp/connectors/com.statementtobudget.www/bank-statement-converter",
+     "desc": "Turn bank statement PDFs, CSVs, XLSX and OFX into categorised transactions plus a summary. If you are the author of this connector, you can ..."
+    },
+    {
+     "title": "Stop Writing Bank Statement Parsers \u2014 Use LLMs Instead - Medium",
+     "url": "https://medium.com/@mahmudulhoque/stop-writing-bank-statement-parsers-use-llms-instead-50902360a604",
+     "desc": "# Stop Writing Bank Statement Parsers \u2014 Use LLMs Instead\n## The Old Way: Parser Hell\n```\n# HSBC Parser - Just one of many...\ndef parse_hsbc_statement(pdf_text):\n    # Extract accou"
+    },
+    {
+     "title": "How to use Claude to extract bank statement data: a guide for lawyers",
+     "url": "https://www.counselpro.ai/blog/lawyers-guide-claude-extract-bank-statement",
+     "desc": "You upload a PDF or image file to Claude.ai, ask it to extract the transactions, and it will produce a table with dates, descriptions, amounts, ..."
+    }
+   ]
+  },
+  "5": {
+   "q_index": 5,
+   "results_returned": 6,
+   "estate_appearance": false,
+   "estate_named": false,
+   "top_url": "https://glama.ai/mcp/servers/MeterLong/MCP-Doc",
+   "results": [
+    {
+     "title": "Doc/docx-MCP by MeterLong - Glama",
+     "url": "https://glama.ai/mcp/servers/MeterLong/MCP-Doc",
+     "desc": "A powerful Word document processing service based on FastMCP, enabling AI assistants to create, edit, and manage docx files with full formatting support."
+    },
+    {
+     "title": "Built a Word MCP server so AI can actually edit Word Documents Live",
+     "url": "https://www.reddit.com/r/mcp/comments/1sg1bpf/built_a_word_mcp_server_so_ai_can_actually_edit/",
+     "desc": "MCP Server Office \u2013 A server providing tools to read, write, and edit Microsoft Word (docx) files through the Model Context Protocol, allowing ..."
+    },
+    {
+     "title": "Microsoft Word MCP Server \u2014 Easy Connect - Gumloop",
+     "url": "https://www.gumloop.com/mcp/word",
+     "desc": "Create, read, search, append to, and manage Word documents with AI. you create, read, and manage Word documents just by chatting with your AI agent."
+    },
+    {
+     "title": "MS Docs MCP Server: Build an Agent that Reads the Docs - YouTube",
+     "url": "https://www.youtube.com/watch?v=3dzHpnmaGv0",
+     "desc": "... make your agent better. - Deploying to Teams, so the agent can be used by anyone: Group chats, private chats, Teams meetings. Chapters: 0:00 ..."
+    },
+    {
+     "title": "GongRzhe/Office-Word-MCP-Server - GitHub",
+     "url": "https://github.com/gongrzhe/office-word-mcp-server",
+     "desc": "# Office-Word-MCP-Server\n## Usage with Claude for Desktop\n### Configuration\n#### Method 1: After Local Installation\n```\n{\n  \"mcpServers\": {\n    \"word-document-server\": {\n      \"com"
+    },
+    {
+     "title": "Word reference (preview) - Microsoft Copilot Studio",
+     "url": "https://learn.microsoft.com/en-us/microsoft-copilot-studio/mcp-word-tools",
+     "desc": "Creates a new Word document in the root of the user's OneDrive. Provide a desired file name (can be empty) and HTML or plain text content to ..."
+    }
+   ]
+  },
+  "6": {
+   "q_index": 6,
+   "results_returned": 6,
+   "estate_appearance": false,
+   "estate_named": false,
+   "top_url": "https://developers.zuper.co/docs/zupers-model-context-protocol-mcp-server",
+   "results": [
+    {
+     "title": "Zuper's Model Context Protocol (MCP) Server",
+     "url": "https://developers.zuper.co/docs/zupers-model-context-protocol-mcp-server",
+     "desc": "invoice/estimate packages. List and filter estimates in Zuper. Create a new quote/estimate update_estimate. Send an estimate to a customer via email list_ ..."
+    },
+    {
+     "title": "Freight MCP Server \u2014 Quote & Book LTL/FTL from Claude, Cursor ...",
+     "url": "https://www.wearewarp.com/agents/mcp",
+     "desc": "Through warp-agent-mcp your AI client quotes, books, tracks, pulls BOLs and invoices, and reviews lane history across 31 tools."
+    },
+    {
+     "title": "building a non-standard deal through the MCP server, from pricing model ...",
+     "url": "https://www.reddit.com/r/Quote_to_Cash/comments/1vt17vl/a_worked_example_building_a_nonstandard_deal/",
+     "desc": "It is also nothing a standard quote template handles, which is why deals of this shape usually leave the CPQ tool and reappear as a spreadsheet ...MCP server template generator bec"
+    },
+    {
+     "title": "How to Build Interactive Tools with FastMCP (Python) - YouTube",
+     "url": "https://www.youtube.com/watch?v=BYDr3jIuybU",
+     "desc": "... Full AI Engineer Roadmap course access NEWSLETTER ... Build ANYTHING With an Advanced MCP Server (Python, Authentication, Databases & More)."
+    },
+    {
+     "title": "Easyship MCP Server: AI Shipping Rates, Labels & Tracking for ...",
+     "url": "https://www.easyship.com/blog/easyship-mcp-server",
+     "desc": "Rating 4.3(1,493) \u00b7 Free \u00b7 Business/ProductivityConnect AI agents to real shipping workflows with the Easyship MCP Server. Compare rates, generate labels, track shipments, and acce"
+    },
+    {
+     "title": "Quality Control Plan MCP Server",
+     "url": "https://mcpservers.org/servers/imnoo-team/quality-control-plan-mcp",
+     "desc": "Quote complete assemblies: drop in one file. Quote the whole machine as easily as one part. Drawing-only estimation \u2014 quote from the PDF alone."
+    }
+   ]
+  },
+  "7": {
+   "q_index": 7,
+   "results_returned": 6,
+   "estate_appearance": false,
+   "estate_named": false,
+   "top_url": "https://trackingtime.co/mcp-time-tracking-for-ai-assistants",
+   "results": [
+    {
+     "title": "MCP Time Tracking for AI Assistants: Claude, Gemini, ChatGPT+",
+     "url": "https://trackingtime.co/mcp-time-tracking-for-ai-assistants",
+     "desc": "Rating 4.8(10)The TrackingTime MCP Server gives your AI assistant direct access to your workspace. Log hours, list projects and tasks, query team reports, and create entries ..."
+    },
+    {
+     "title": "MCP Server (AI Assistants) - Timesheet Documentation",
+     "url": "https://docs.timesheet.io/integrations/mcp-server/",
+     "desc": "The Timesheet MCP server lets you control your time tracking with natural language from AI assistants and editors.\n\n## What is MCP [\u200b](https://docs.timesheet.io/integrations/mcp-se"
+    },
+    {
+     "title": "Timesheet Time Tracking | MCP Server",
+     "url": "https://mcp.so/servers/timesheet-mcp",
+     "desc": "Time Tracking is an official MCP server for the Timesheet API. It allows users to control their timer using natural language , project management, and expense ..."
+    },
+    {
+     "title": "WebWork Launches the First Complete MCP Time Tracking ...",
+     "url": "https://www.azcentral.com/press-release/story/122782/webwork-launches-the-first-complete-mcp-time-tracking-server-with-120-tools-across-21-areas/",
+     "desc": "2 days ago \u00b7 WebWork's MCP time tracking server puts timesheet approvals, team management, shifts and leave decisions inside the AI assistant a team ..."
+    },
+    {
+     "title": "Official Model Context Protocol (MCP) server for Timesheet API ... - GitHub",
+     "url": "https://github.com/timesheetIO/timesheet-mcp",
+     "desc": "A Model Context Protocol (MCP) server that provides natural language access to the Timesheet API through standardized tools. Features Timer Management: Start, ..."
+    },
+    {
+     "title": "Timesheet Mcp - AI Marketplace | G2",
+     "url": "https://ai.g2.com/marketplace/tools/timesheet-mcp",
+     "desc": "MCP is an open-source Model Context Protocol (MCP) server providing natural language access to the Timesheet API. It enables users to manage timers, tasks, ..."
+    }
+   ]
+  },
+  "8": {
+   "q_index": 8,
+   "results_returned": 6,
+   "estate_appearance": false,
+   "estate_named": false,
+   "top_url": "https://github.com/wesbos/currency-conversion-mcp",
+   "results": [
+    {
+     "title": "A currency conversion MCP server - GitHub",
+     "url": "https://github.com/wesbos/currency-conversion-mcp",
+     "desc": "An MCP server that provides real-time currency conversion and exchange rate data using the Frankfurter API. Using URL base is https://currency-mcp.wesbos.com"
+    },
+    {
+     "title": "MCP Currency Converter Server",
+     "url": "https://mcpservers.org/servers/wesbos/currency-conversion-mcp",
+     "desc": "Provides real-time currency conversion and exchange rate data using the Frankfurter API. Fetch the latest exchange rates."
+    },
+    {
+     "title": "Building a Simple Exchange Rate MCP Server using FastMCP - Medium",
+     "url": "https://medium.com/@sin4ch/building-a-simple-exchange-rate-mcp-server-using-fastmcp-c87d7a454545",
+     "desc": "In this article, I will guide you towards creating an Exchange Rate MCP server to use in any coding agent, Claude Desktop, or anywhere else you ..."
+    },
+    {
+     "title": "currency-mcp - PyPI",
+     "url": "https://pypi.org/project/currency-mcp/",
+     "desc": "Real-time Exchange Rates: Get current exchange rates for 31+ supported currencies; Historical Data: Convert currencies using historical rates ..."
+    },
+    {
+     "title": "Real-time Currency Conversion API & Exchange Rate Data - MCP Market",
+     "url": "https://mcpmarket.com/server/currency-conversion",
+     "desc": "This tool operates as an MCP (Model Context Protocol) server, offering comprehensive currency conversion and exchange rate functionalities."
+    },
+    {
+     "title": "Open Exchange Rates MCP Server | Pipedream",
+     "url": "https://mcp.pipedream.com/app/open_exchange_rates",
+     "desc": "Consistent, reliable exchange rate data and currency conversion for your business. Get the latest exchange rates available. Convert any money value from one ..."
+    }
+   ]
+  },
+  "9": {
+   "q_index": 9,
+   "results_returned": 6,
+   "estate_appearance": false,
+   "estate_named": false,
+   "top_url": "https://github.com/SzeMeng76/mcp-time-server",
+   "results": [
+    {
+     "title": "SzeMeng76/mcp-time-server - GitHub",
+     "url": "https://github.com/SzeMeng76/mcp-time-server",
+     "desc": "Calendar Management: Convert appointment times for travel; Communication: Find optimal meeting times across time zones; Planning: Coordinate ..."
+    },
+    {
+     "title": "Time MCP Server",
+     "url": "https://mcpservers.org/servers/beordle/time-mcp-server",
+     "desc": "International Meeting Planning: Schedule meetings across different timezones; Travel Planning: Check local times at destination; Remote Work Coordination ..."
+    },
+    {
+     "title": "Cronofy MCP - Connectors | Microsoft Learn",
+     "url": "https://learn.microsoft.com/en-us/connectors/cronofymcp/",
+     "desc": "The Cronofy MCP Server enables AI agents to schedule meetings on behalf of users by checking real-time calendar availability across all participants."
+    },
+    {
+     "title": "Meeting Management MCP - Free time availability",
+     "url": "https://community.powerplatform.com/forums/thread/details/?threadid=6bb88c75-fea6-f011-bbd2-000d3a151ca1",
+     "desc": "Meeting Management MCP server is buggy for demos, with timezone problems outside US time zones and repeated prompts for calendar ID. State the ..."
+    },
+    {
+     "title": "Outlook Calendar MCP Server \u2014 AI Scheduling | MintMCP",
+     "url": "https://www.mintmcp.com/outlook-calendar",
+     "desc": "# Outlook Calendar MCP server for secure AI enterprise scheduling automation\nCreating Teams meeting on 15th at 10:00 AM...\n\n## Use cases\n### Consulting teams\nSchedule client engage"
+    },
+    {
+     "title": "World Clock Meeting Planner - Time Zones - Time and Date",
+     "url": "https://www.timeanddate.com/worldclock/meeting.html",
+     "desc": "Location 1: UTC / GMTWashington DCFairfaxManassasRestonHaymarketSterlingAlexandriaAbidjanAbu DhabiAbujaAcapulcoAccraAdakAdamstownAddis AbabaAdelaideAdenAgraAguascalientesAhmedgarhA"
+    }
+   ]
+  },
+  "10": {
+   "q_index": 10,
+   "results_returned": 6,
+   "estate_appearance": false,
+   "estate_named": false,
+   "top_url": "https://www.youtube.com/watch?v=vzGkSn59rDU",
+   "results": [
+    {
+     "title": "Build an MCP Server in 20 Minutes (with Python) - YouTube",
+     "url": "https://www.youtube.com/watch?v=vzGkSn59rDU",
+     "desc": "This MCP server will let you fetch real time data, and create/modify spreadsheets via Google sheets. This is a great project for any Python ..."
+    },
+    {
+     "title": "A few MCP servers to give agents reliable access to messy data ...",
+     "url": "https://www.reddit.com/r/mcp/comments/1vj8608/a_few_mcp_servers_to_give_agents_reliable_access/",
+     "desc": "MCP Server \u2013 A Model Context Protocol server that enables AI assistants to read from and write to Microsoft Excel files, supporting formats ...How to MCP: Everything I learned buil"
+    },
+    {
+     "title": "How to Build a Lightweight Excel Server Using Model Context ...",
+     "url": "https://medium.com/@surya.vijjeswarapu/how-i-built-a-lightweight-excel-mcp-server-using-openais-chatgpt-and-understood-model-context-544a539d0f07",
+     "desc": "In this article, I'll walk you through how I built a minimal Excel MCP server from scratch \u2014 starting without any AI involvement, and then ..."
+    },
+    {
+     "title": "10 Microsoft MCP Servers to Accelerate Your Development ...",
+     "url": "https://developer.microsoft.com/blog/10-microsoft-mcp-servers-to-accelerate-your-development-workflow/",
+     "desc": "MCP servers give your AI assistant real-time access to external tools and data sources, turning it from a code generator into a productivity ..."
+    },
+    {
+     "title": "Building mcp-server-spreadsheet: A Data-First MCP Server for Excel",
+     "url": "https://marekrost.cz/mcp-server-spreadsheet/",
+     "desc": "mcp-server-spreadsheet is a single-file Python server offering 26 tools across two modes: direct cell operations via openpyxl (read, write, ..."
+    },
+    {
+     "title": "Has anyone built an MCP for API data querying with AI? - Facebook",
+     "url": "https://www.facebook.com/groups/1577315533418837/posts/1683713339445722/",
+     "desc": "We've launched an MCP server implementation that lets AI agents query graph data natively through MCP. That means structured context\u2014like ..."
+    }
+   ]
+  },
+  "11": {
+   "q_index": 11,
+   "results_returned": 6,
+   "estate_appearance": false,
+   "estate_named": false,
+   "top_url": "https://github.com/jwalsh/mcp-server-qrcode",
+   "results": [
+    {
+     "title": "Model Context Protocol server for generating QR codes \u00b7 GitHub",
+     "url": "https://github.com/jwalsh/mcp-server-qrcode",
+     "desc": "Overview. Generate QR codes seamlessly using the Model Context Protocol (MCP). This server connects large language models to QR code generation ..."
+    },
+    {
+     "title": "QR Code Generator - MCP Market",
+     "url": "https://mcpmarket.com/server/qr-code-generator",
+     "desc": "Generate QR codes for URLs, WiFi, vCards, and more! Customize size, error correction, and format. Seamlessly integrates with MCP for LLM workflows."
+    },
+    {
+     "title": "Best MCP Server for QR Codes and AI Automation - ME-QR",
+     "url": "https://me-qr.com/page/blog/best-qr-code-mcp-server?srsltid=AU7gw4VR593TZ2jp1RhNKzW-MWL5TreD2drrIKCNIIHqCnwZ1LbFJ9FY",
+     "desc": "A QR code MCP server is an MCP-compatible tool that lets an AI assistant create, update, or manage QR codes directly from a conversation, ...Testing Methodology \u00b7 Best QR Code MCP "
+    },
+    {
+     "title": "Enhanced QR Code MCP Server",
+     "url": "https://mcpservers.org/servers/myownipgit/mcp-server-qrcode-enhanced",
+     "desc": "Enhanced QR Code MCP Server. Advanced QR code generation and processing with support for custom styling, multiple formats, batch processing, and analytics."
+    },
+    {
+     "title": "domdomegg/barcode-scanner-mcp: MCP server for scanning ... - GitHub",
+     "url": "https://github.com/domdomegg/barcode-scanner-mcp",
+     "desc": "MCP server for scanning and generating barcodes and QR codes. Use Cases. Decode a barcode from a photo: \"What does this barcode say?\" \u2192 reads the image ..."
+    },
+    {
+     "title": "QR Code MCP Server - QR Planet",
+     "url": "https://qrplanet.com/qr-code-mcp",
+     "desc": "Production-ready MCP server for developers. Connect your infrastructure to AI models with secure, standardized tools and prompt templates. Get started fast."
+    }
+   ]
+  },
+  "12": {
+   "q_index": 12,
+   "results_returned": 6,
+   "estate_appearance": false,
+   "estate_named": false,
+   "top_url": "https://mcpmarket.com/server/zip",
+   "results": [
+    {
+     "title": "Zip: Compress & Decompress Files with MCP for Claude",
+     "url": "https://mcpmarket.com/server/zip",
+     "desc": "Zip is a developer tool that compresses, decompresses, and retrieves metadata from ZIP archives using the Model Context Protocol (MCP)."
+    },
+    {
+     "title": "GitHub - 7gugu/zip-mcp: An MCP tool that provides AI with the ability to ...",
+     "url": "https://github.com/7gugu/zip-mcp",
+     "desc": "# ZIP MCP Server\n## Installation\n```\nnpm install -g zip-mcp\n```\n\n## MCP Configuration\n```\n{\n  \"mcpServers\": {\n    \"zip-mcp\": {\n      \"command\": \"zip-mcp\",\n      \"args\": []\n    }\n  "
+    },
+    {
+     "title": "ZIP MCP Server",
+     "url": "https://mcp.so/servers/zip-mcp",
+     "desc": "After configuration, AI clients (e.g., Claude, Raycast, Cursor) can call its tools ( compress , decompress , getZipInfo , echo ) through the MCP protocol. Key ..."
+    },
+    {
+     "title": "I built an MCP server that lets Claude search inside your local files (Word ...",
+     "url": "https://www.reddit.com/r/ClaudeAI/comments/1sb2i57/i_built_an_mcp_server_that_lets_claude_search/",
+     "desc": "I built an MCP server that lets Claude search inside your local files (Word, Excel, PDF) \u2014 fully offline. It indexes Word, Excel, PowerPoint, ...Zip files and uploads : r/ClaudeAI "
+    },
+    {
+     "title": "Desktop Extensions: One-click MCP server installation for Claude Desktop",
+     "url": "https://www.anthropic.com/engineering/desktop-extensions",
+     "desc": "# Desktop Extensions: One-click MCP server installation for Claude Desktop\n## Architecture overview\n```\n{\n  \"mcpb_version\": \"0.1\",\n  \"name\": \"My MCP Extension\",\n  \"display_name\": \""
+    },
+    {
+     "title": "Claude Code MCP: How to Add MCP Servers (Complete Guide) - YouTube",
+     "url": "https://www.youtube.com/watch?v=DfWHX7kszQI&vl=en",
+     "desc": "Access ALL video resources & get personalized help in my community: ..."
+    }
+   ]
+  },
+  "13": {
+   "q_index": 13,
+   "results_returned": 6,
+   "estate_appearance": false,
+   "estate_named": false,
+   "top_url": "https://light.inc/products/claude-mcp",
+   "results": [
+    {
+     "title": "Finance and Accounting MCP Server for Claude - Light",
+     "url": "https://light.inc/products/claude-mcp",
+     "desc": "Your ledger, in Claude Light's MCP server connects Claude directly to your books. Ask about balances, run reports, search transactions, manage bills and ..."
+    },
+    {
+     "title": "A Ledger CLI MCP Server - GitHub",
+     "url": "https://github.com/minhyeoky/mcp-server-ledger",
+     "desc": "This MCP server exposes Ledger CLI's functionality through a standardized interface, making it easy for AI assistants to help you with financial reporting, ..."
+    },
+    {
+     "title": "I Built an MCP Server So Claude Could Do Accounting Tasks",
+     "url": "https://www.youtube.com/watch?v=KuWd6NA58VI",
+     "desc": "In this video, I show the difference between a remote MCP server and a local MCP server by walking through two practical examples."
+    },
+    {
+     "title": "How to Use a Petty Cash Record Book - Ambrook",
+     "url": "https://ambrook.com/education/accounting-basics/petty-cash-record-book",
+     "desc": "The petty cash account is how this cash is identified in your chart of accounts and, in turn, your general ledger. It costs $2.99."
+    },
+    {
+     "title": "How to Use a Cash Book in Accounting | GoCardless",
+     "url": "https://gocardless.com/en-us/guides/posts/cash-book-in-accounting",
+     "desc": "A cash book in accounting records all cash transactions in detail. This is different from a cash account, which is an account that appears in a general ledger."
+    },
+    {
+     "title": "Cash Book - Petty Cash Transactions List - Prelude Software Help",
+     "url": "https://help.prelude.software/knowledge-base/cash-book-petty-cash-transactions-list/",
+     "desc": "Purpose: To print listing of petty cash transactions which account for small cash purchases \u2013 at least monthly as part of Period End process."
+    }
+   ]
+  },
+  "14": {
+   "q_index": 14,
+   "results_returned": 6,
+   "estate_appearance": false,
+   "estate_named": false,
+   "top_url": "https://fulcrumpro.com/product-update/fulcrum-mcp-server-connect-ai-tools-directly-to-your-shop-data",
+   "results": [
+    {
+     "title": "Fulcrum MCP server: connect AI tools directly to your shop data",
+     "url": "https://fulcrumpro.com/product-update/fulcrum-mcp-server-connect-ai-tools-directly-to-your-shop-data",
+     "desc": "The MCP server gives AI tools access across your entire operation: jobs, sales orders, quotes, purchase orders, invoices, customers, vendors, ..."
+    },
+    {
+     "title": "Build and Ship Any MCP Server in MINUTES (Full Guide) - YouTube",
+     "url": "https://www.youtube.com/watch?v=Zw3sfAIpeH8&vl=en",
+     "desc": "# Build and Ship Any MCP Server in MINUTES (Full Guide)\n```\n\nKey resources:\n\n- Check out Sentry for production monitoring of your MCP servers and other applications:\n\n\n[https://sen"
+    },
+    {
+     "title": "Architecture overview - What is the Model Context Protocol (MCP)?",
+     "url": "https://modelcontextprotocol.io/docs/2026-07-28/learn/architecture",
+     "desc": "This overview of the Model Context Protocol (MCP) discusses its scope and core concepts, and provides an example demonstrating each core ..."
+    },
+    {
+     "title": "Local MCP Server - Stainless MCP Portal",
+     "url": "https://www.stainless.com/mcp/local-mcp-server/",
+     "desc": "Build a local MCP server from scratch with our complete guide. Connect AI models to your computer tools while keeping data private and secure on-device."
+    },
+    {
+     "title": "Still Confused About How MCP Works? Here's the Explanation That ...",
+     "url": "https://www.reddit.com/r/ClaudeAI/comments/1ioxu5r/still_confused_about_how_mcp_works_heres_the/",
+     "desc": "When AI uses an MCP server, it's like having a menu at a restaurant. The menu (server) tells you what's available and what each thing is in ..."
+    },
+    {
+     "title": "Adobe Workfront MCP server tools",
+     "url": "https://experienceleague.adobe.com/en/docs/workfront/using/basics/workfront-mcp-server/workfront-mcp-server-tools",
+     "desc": "Reference list of the tools available through the Adobe Workfront MCP server, grouped by Workfront area."
+    }
+   ]
+  },
+  "15": {
+   "q_index": 15,
+   "results_returned": 6,
+   "estate_appearance": false,
+   "estate_named": false,
+   "top_url": "https://docs.portkey.ai/docs/aigw/integrations/mcp-servers/stripe-mcp-server",
+   "results": [
+    {
+     "title": "Stripe MCP server - Portkey Docs",
+     "url": "https://docs.portkey.ai/docs/aigw/integrations/mcp-servers/stripe-mcp-server",
+     "desc": "3 days ago \u00b7 Create and list invoices, payment links, and payment intents; Handle subscriptions, disputes, and refunds; Search Stripe resources and ..."
+    },
+    {
+     "title": "Recurly MCP Server & Skill",
+     "url": "https://www.mcpbundles.com/skills/recurly",
+     "desc": "Recurly MCP server with 21 tools for AI agents. Recurly is a subscription billing platform that automates recurring billing, invoicing, and revenue management"
+    },
+    {
+     "title": "AI Billing Infrastructure with MCP Server - Chargebee",
+     "url": "https://www.chargebee.com/mcp/",
+     "desc": "Today, agents and developers query live billing data through the MCP server: subscription state, invoices, usage, credit ledgers, and payment history, all ..."
+    },
+    {
+     "title": "BillingServ MCP Server | Connect AI Assistants to Your Billing",
+     "url": "https://www.billingserv.com/mcp/",
+     "desc": "Webhost BillingAutomate hosting plans, renewals and invoicing for your customers. FreelanceInvoice clients and collect recurring retainers without the admin."
+    },
+    {
+     "title": "MCP - SubscriptionFlow",
+     "url": "https://www.subscriptionflow.com/mcp/",
+     "desc": "# SubscriptionFlow MCP Connector\n## **What You Can Do**\n- **Billing & Invoicing:** Generate invoices, track payments, and manage pricing"
+    },
+    {
+     "title": "list_recurring_invoices \u2014 AI Invoicing MCP Tool - InvoiceCave",
+     "url": "https://www.invoicecave.com/mcp/tools/list_recurring_invoices",
+     "desc": "Returns a paginated list of recurring invoices from the organization, with optional filters (status, date range, customer, search term). This tool is part of ..."
+    }
+   ]
+  },
+  "16": {
+   "q_index": 16,
+   "results_returned": 6,
+   "estate_appearance": false,
+   "estate_named": false,
+   "top_url": "https://circleci.com/blog/what-is-a-remote-mcp-server/",
+   "results": [
+    {
+     "title": "What is a remote MCP server? - CircleCI",
+     "url": "https://circleci.com/blog/what-is-a-remote-mcp-server/",
+     "desc": "## How a remote MCP server works under the hood\n### Seeing the difference in config\n```json\n{\n  \"mcpServers\": {\n    \"local-example\": {\n      \"command\": \"npx\",\n      \"args\": [\"-y\", "
+    },
+    {
+     "title": "Connect to remote MCP Servers - Model Context Protocol",
+     "url": "https://modelcontextprotocol.io/docs/2026-07-28/develop/connect-remote-servers",
+     "desc": "## [\u200b](https://modelcontextprotocol.io/docs/2026-07-28/develop/connect-remote-servers#connecting-to-a-remote-mcp-server)  Connecting to a Remote MCP Server\n- **Desktop**: Either us"
+    },
+    {
+     "title": "Build and Ship Any MCP Server in MINUTES (Full Guide) - YouTube",
+     "url": "https://www.youtube.com/watch?v=Zw3sfAIpeH8&vl=en",
+     "desc": "# Build and Ship Any MCP Server in MINUTES (Full Guide)\n[![Cole Medin](https://yt3.ggpht.com/hypu_gAVvu_zrtDWjVw833AeSwI2OwJSJ5ZSy1QAhgbIPs1qmNnKreOnHMhaU55bBRLMA47E=s48-c-k-c0x00f"
+    },
+    {
+     "title": "Build a fully remote MCP multi-tool server with FastMCP SSE transport ...",
+     "url": "https://medium.com/@texasdave2/build-a-fully-remote-mcp-tool-server-with-fastmcp-sse-transport-and-cursor-integration-ec4ab0a3f01e",
+     "desc": "Open chrome browser, paste the URL you got from MCP Inspector output. Change the localhost to your Ubuntu MCP server IP. You should see the MCP ..."
+    },
+    {
+     "title": "Hosted MCP servers URLs should be treated as secrets - Reddit",
+     "url": "https://www.reddit.com/r/mcp/comments/1j64skl/hosted_mcp_servers_urls_should_be_treated_as/",
+     "desc": "Hosted MCP servers URLs should be treated as secrets ... TL;DR: the current hype around hosted MCP servers has some bad patterns around security."
+    },
+    {
+     "title": "Best MCP servers for productivity in 2026 - Paste",
+     "url": "https://pasteapp.io/blog/best-mcp-servers-for-productivity",
+     "desc": "# Best MCP servers for productivity in 2026\n### Local or cloud: which kind to use\nA remote MCP server is the easy path: you sign in once and the vendor runs everything.\n\n### The MC"
+    }
+   ]
+  },
+  "17": {
+   "q_index": 17,
+   "results_returned": 6,
+   "estate_appearance": false,
+   "estate_named": false,
+   "top_url": "https://www.catchr.io/post/best-mcp-servers-finance-teams",
+   "results": [
+    {
+     "title": "10 Best MCP Servers for Finance Teams in 2026 - Catchr",
+     "url": "https://www.catchr.io/post/best-mcp-servers-finance-teams",
+     "desc": "# 10 Best MCP Servers for Finance Teams in 2026\n## 6. Dynamics 365 Business Central MCP\n**Best for small and midsize business accounting**"
+    },
+    {
+     "title": "Best MCP Servers for Documents - LlamaIndex",
+     "url": "https://www.llamaindex.ai/insights/best-mcp-servers-for-documents",
+     "desc": "Compare the best document MCP servers\u2014how they preserve tables, reading order, and structure \u2026 1. LlamaParse 2. LandingAI 3. Docling 4. ..."
+    },
+    {
+     "title": "I Built an MCP Server So Claude Could Do Accounting Tasks",
+     "url": "https://www.youtube.com/watch?v=KuWd6NA58VI",
+     "desc": "In this video, I show the difference between a remote MCP server and a local MCP server by walking through two practical examples."
+    },
+    {
+     "title": "Official QuickBooks MCP Server",
+     "url": "https://mcpservers.org/servers/quickbooks-remote-mcp",
+     "desc": "Its remote MCP server gives assistants governed access to company financials so books, invoices, and cash-flow questions can be handled with live account data."
+    },
+    {
+     "title": "Best MCP Servers for Small Businesses | SocialVik Blog",
+     "url": "https://www.socialvik.com/blog/best-mcp-servers-small-business",
+     "desc": "The official Xero server runs via npx with over 50 commands covering contacts, invoices, chart of accounts, payments, payroll employee records, ..."
+    },
+    {
+     "title": "What's the best MCP server you've built or used? - Reddit",
+     "url": "https://www.reddit.com/r/mcp/comments/1wghabe/whats_the_best_mcp_server_youve_built_or_used/",
+     "desc": "3 days ago \u00b7 I build https://sawdust.diy which is a carpentry simulator. Agents (or humans using the human UI) get access to a materials library of common ..."
+    }
+   ]
+  },
+  "18": {
+   "q_index": 18,
+   "results_returned": 6,
+   "estate_appearance": false,
+   "estate_named": false,
+   "top_url": "https://www.reddit.com/r/mcp/comments/1rjqjkj/after_3_months_of_building_mcp_servers_for_free_i/",
+   "results": [
+    {
+     "title": "After 3 months of building MCP servers for free, I finally figured out ...",
+     "url": "https://www.reddit.com/r/mcp/comments/1rjqjkj/after_3_months_of_building_mcp_servers_for_free_i/",
+     "desc": "Found this project called xpay \u2014 it lets you charge per-call for any MCP tool. it lets you monetize any MCP server without changing your code.How do you monetize your MCP server? -"
+    },
+    {
+     "title": "The Hidden Cost of MCP Servers (And When They're Worth It)",
+     "url": "https://mariogiancini.com/the-hidden-cost-of-mcp-servers-and-when-theyre-worth-it",
+     "desc": "# The Hidden Cost of MCP Servers (And When They're Worth It)\n## The Context Tax You're Already Paying\n| Configuration | Token Cost | % of 200k Context |\n|-|-|-|\n| Single MCP (Playw"
+    },
+    {
+     "title": "Claude Code Built Me an MCP Server That Makes Money (in 15 minutes)",
+     "url": "https://www.youtube.com/watch?v=DA8lylzeoYU",
+     "desc": "... pay for. What you'll learn: \u2014 How to use MC Pies to ideate and validate profitable MCP servers \u2014 Integrating MC Pies skills directly into ..."
+    },
+    {
+     "title": "MCP Cost & Pricing \u2014 How Much Does an MCP Server Cost?",
+     "url": "https://www.mcpbundles.com/pricing",
+     "desc": "# Get started free\n## Frequently Asked Questions\n### How much does an MCP server cost?\n**Building a custom MCP App for your brand** is a separate Managed MCP Apps project \u2014 [from $"
+    },
+    {
+     "title": "Build vs. Buy: The Hidden Costs of Custom MCP Servers | Truto Blog",
+     "url": "https://truto.one/blog/build-vs-buy-the-hidden-costs-of-custom-mcp-servers/",
+     "desc": "## [The True Cost of a Custom MCP Server](https://truto.one/blog/build-vs-buy-the-hidden-costs-of-custom-mcp-servers/#the-true-cost-of-a-custom-mcp-server)\nHubSpot uses `paging.nex"
+    },
+    {
+     "title": "7 MCP Servers for Marketing Work (What Each One Costs) - Ryan Doser",
+     "url": "https://ryandoser.com/mcp-servers-for-marketers/",
+     "desc": "Pricing: Pay-as-you-go with a $50 minimum deposit. The server itself is free and open source. Per-call costs vary by endpoint. Free trial: You ..."
+    }
+   ]
+  }
+ },
+ "citation_source_breakdown": {
+  "other/vendor-blog": 50,
+  "reddit.com": 12,
+  "youtube.com": 11,
+  "github.com": 10,
+  "mcpservers.org": 7,
+  "mcpmarket.com": 5,
+  "medium.com": 4,
+  "facebook.com": 2,
+  "lobehub.com": 2,
+  "glama.ai": 2,
+  "mcp.so": 2,
+  "pulsemcp.com": 1
+ },
+ "estate_visibility_probes": {
+  "site:mcpservers.org theluckystrike": [
+   {
+    "url": "https://mcpservers.org/servers/github-com-theluckystrike-mcp-servers-tree-main-servers-time-tracker",
+    "title": "Time Tracker MCP Server"
+   },
+   {
+    "url": "https://mcpservers.org/servers/github-com-theluckystrike-mcp-servers-tree-main-servers-price-tracker",
+    "title": "MCP Price Tracker - Servers"
+   },
+   {
+    "url": "https://mcpservers.org/servers/github-com-theluckystrike-mcp-servers-tree-main-servers-spreadsheet",
+    "title": "MCP Spreadsheet - Servers"
+   },
+   {
+    "url": "https://mcpservers.org/servers/github-com-theluckystrike-mcp-servers-tree-main-servers-invoice",
+    "title": "MCP Invoice - Servers"
+   },
+   {
+    "url": "https://mcpservers.org/es/servers/github-com-theluckystrike-mcp-servers-tree-main-servers-price-tracker",
+    "title": "Servidor MCP de Price Tracker"
+   },
+   {
+    "url": "https://mcpservers.org/ja/servers/github-com-theluckystrike-mcp-servers-tree-main-servers-invoice",
+    "title": "Invoice MCP\u30b5\u30fc\u30d0\u30fc | Awesome MCP Servers"
+   },
+   {
+    "url": "https://mcpservers.org/vi/servers/github-com-theluckystrike-mcp-servers-tree-main-servers-time-tracker",
+    "title": "M\u00e1y ch\u1ee7 MCP Time Tracker"
+   },
+   {
+    "url": "https://mcpservers.org/all?page=23",
+    "title": "12713 MCP Servers \u2014 Page 23"
+   },
+   {
+    "url": "https://mcpservers.org/de/all?page=24",
+    "title": "12.756 MCP-Server \u2014 Seite 24"
+   },
+   {
+    "url": "https://mcpservers.org/servers/supabase-mcp-server",
+    "title": "Official Supabase MCP Server"
+   }
+  ],
+  "site:mcp.zovo.one": [
+   {
+    "url": "https://mcp.zovo.one/",
+    "title": "MCP servers for Claude: invoices, time tracking and freelance tools"
+   }
+  ],
+  "site:registry.modelcontextprotocol.io zovo theluckystrike": [
+   {
+    "url": "https://modelcontextprotocol.io/registry/about",
+    "title": "The MCP Registry - Model Context Protocol"
+   },
+   {
+    "url": "https://registry.modelcontextprotocol.io/",
+    "title": "Official MCP Registry"
+   },
+   {
+    "url": "https://blog.modelcontextprotocol.io/posts/2025-09-08-mcp-registry-preview/",
+    "title": "Introducing the MCP Registry | Model Context Protocol Blog"
+   },
+   {
+    "url": "https://github.com/modelcontextprotocol/registry",
+    "title": "A community driven registry service for Model Context Protocol (MCP ..."
+   },
+   {
+    "url": "https://modelcontextprotocol.info/tools/registry/",
+    "title": "MCP Registry - Model Context Protocol \uff08MCP\uff09"
+   },
+   {
+    "url": "https://registry.modelcontextprotocol.io/?q=verifimind",
+    "title": "Recently Updated - Official MCP Registry"
+   },
+   {
+    "url": "https://registry.modelcontextprotocol.io/docs",
+    "title": "Official MCP Registry Reference"
+   },
+   {
+    "url": "https://www.youtube.com/watch?v=W19jh6nbFwY",
+    "title": "Open Source MCP Registry for all MCP Servers - YouTube"
+   },
+   {
+    "url": "https://www.reddit.com/r/mcp/comments/1nc4l7i/introducing_the_mcp_registry/",
+    "title": "Introducing the MCP Registry : r/mcp - Reddit"
+   },
+   {
+    "url": "https://github.blog/ai-and-ml/github-copilot/meet-the-github-mcp-registry-the-fastest-way-to-discover-mcp-servers/",
+    "title": "Meet the GitHub MCP Registry: The fastest way to discover MCP Servers"
+   }
+  ],
+  "mcp.zovo.one": [
+   {
+    "url": "https://mcp.zovo.one/",
+    "title": "MCP servers for Claude: invoices, time tracking and ... - Zovo.one"
+   },
+   {
+    "url": "https://zovo.one/",
+    "title": "Zovo.one"
+   },
+   {
+    "url": "https://glama.ai/mcp/servers/theluckystrike/mcp-office-suite",
+    "title": "mcp-office-suite by theluckystrike | Glama"
+   },
+   {
+    "url": "https://zovo.one/best/best-free-clipboard-managers-chrome-extensions",
+    "title": "Free Chrome Extensions for Productivity & Privacy - Zovo.one"
+   },
+   {
+    "url": "https://zovo.one/services",
+    "title": "Built by Zovo | Custom Extension Development"
+   },
+   {
+    "url": "https://lobehub.com/mcp/theluckystrike-mcp-delivery-schedule",
+    "title": "mcp-delivery-schedule | MCP Servers \u00b7 LobeHub"
+   },
+   {
+    "url": "https://github.com/github/github-mcp-server/discussions/1257",
+    "title": "MCP Server Published But Not Visible on github.com/mcp Registry ..."
+   },
+   {
+    "url": "https://zovo.one/pricing",
+    "title": "Zovo Pricing: Pro $4.99/mo or Lifetime $99"
+   },
+   {
+    "url": "https://zovo.one/reviews",
+    "title": "Chrome Extension Reviews \u2014 In-Depth Analysis - Zovo.one"
+   },
+   {
+    "url": "https://zovo.one/about",
+    "title": "About | Zovo - Built by Someone Who Ships"
+   }
+  ]
+ },
+ "comparison_to_r5": {
+  "r5": {
+   "questions": 10,
+   "named": 0,
+   "estate_pages_appeared": 5,
+   "channel": "mcpservers.org"
+  },
+  "r6": {
+   "questions": 18,
+   "named": 0,
+   "estate_pages_appeared": 0,
+   "channel": "none"
+  },
+  "delta_estate_pages": -5,
+  "verdict": "regression on result-appearance; mcpservers.org channel delivered 7 results, 0 estate"
+ },
+ "notes": [
+  "mcp.zovo.one indexed only at site root (site: probe returned 1 page) -> no server-level page can rank for a server-specific query",
+  "site:mcpservers.org theluckystrike returns 8 indexed estate pages, none retrieved by buyer-intent queries",
+  "Q16 hosted-remote story named by a primed parallel instrument only; excluded from blind scorecard"
+ ],
+ "failures": [
+  "first search batch stdout-truncated at Q7; Q8-Q18 re-run identically, no data loss",
+  "registry site: probe returned no estate entries; probe limitation possible, not concluded"
+ ]
+}
