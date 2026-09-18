@@ -1,0 +1,66 @@
+time-tracker -> HTTP 200 {"success":true}
+price-tracker -> HTTP 200 {"success":true}
+spreadsheet -> HTTP 200 {"success":true}
+currency -> HTTP 200 {"success":true}
+docx -> HTTP 200 {"success":true}
+docx -> HTTP 409 {"error":"This server name has already been submitted and is pending review."}
+timezone -> HTTP 200 {"success":true}
+timezone -> HTTP 409 {"error":"This server name has already been submitted and is pending review."}
+resume -> HTTP 200 {"success":true}
+resume -> HTTP 409 {"error":"This server name has already been submitted and is pending review."}
+recurring -> HTTP 200 {"success":true}
+recurring -> HTTP 409 {"error":"This server name has already been submitted and is pending review."}
+clauses -> HTTP 200 {"success":true}
+clauses -> HTTP 409 {"error":"This server name has already been submitted and is pending review."}
+calendar -> HTTP 200 {"success":true}
+calendar -> HTTP 409 {"error":"This server name has already been submitted and is pending review."}
+pdf -> HTTP 200 {"success":true}
+pdf -> HTTP 409 {"error":"This server name has already been submitted and is pending review."}
+image -> HTTP 200 {"success":true}
+image -> HTTP 409 {"error":"This server name has already been submitted and is pending review."}
+kanban -> HTTP 200 {"success":true}
+kanban -> HTTP 409 {"error":"This server name has already been submitted and is pending review."}
+quotes -> HTTP 200 {"success":true}
+quotes -> HTTP 409 {"error":"This server name has already been submitted and is pending review."}
+barcode -> HTTP 200 {"success":true}
+barcode -> HTTP 409 {"error":"This server name has already been submitted and is pending review."}
+zip -> HTTP 200 {"success":true}
+zip -> HTTP 409 {"error":"This server name has already been submitted and is pending review."}
+billing-docs -> HTTP 200 {"success":true}
+billing-docs -> HTTP 409 {"error":"This server name has already been submitted and is pending review."}
+deposits -> HTTP 200 {"success":true}
+deposits -> HTTP 409 {"error":"This server name has already been submitted and is pending review."}
+per-diem -> HTTP 200 {"success":true}
+per-diem -> HTTP 409 {"error":"This server name has already been submitted and is pending review."}
+asset-register -> HTTP 200 {"success":true}
+asset-register -> HTTP 409 {"error":"This server name has already been submitted and is pending review."}
+statement-of-account -> HTTP 200 {"success":true}
+cash-book -> HTTP 200 {"success":true}
+statement-of-account -> HTTP 409 {"error":"This server name has already been submitted and is pending review."}
+cash-book -> HTTP 409 {"error":"This server name has already been submitted and is pending review."}
+amortization -> HTTP 200 {"success":true}
+petty-cash -> HTTP 200 {"success":true}
+amortization -> HTTP 409 {"error":"This server name has already been submitted and is pending review."}
+work-order -> HTTP 200 {"success":true}
+petty-cash -> HTTP 409 {"error":"This server name has already been submitted and is pending review."}
+catalogue -> HTTP 200 {"success":true}
+work-order -> HTTP 409 {"error":"This server name has already been submitted and is pending review."}
+change-order -> HTTP 200 {"success":true}
+catalogue -> HTTP 409 {"error":"This server name has already been submitted and is pending review."}
+delivery-schedule -> HTTP 200 {"success":true}
+change-order -> HTTP 409 {"error":"This server name has already been submitted and is pending review."}
+packing-list -> HTTP 200 {"success":true}
+delivery-schedule -> HTTP 409 {"error":"This server name has already been submitted and is pending review."}
+checklist -> HTTP 200 {"success":true}
+packing-list -> HTTP 409 {"error":"This server name has already been submitted and is pending review."}
+credit-note -> HTTP 200 {"success":true}
+checklist -> HTTP 409 {"error":"This server name has already been submitted and is pending review."}
+job-card -> HTTP 200 {"success":true}
+credit-note -> HTTP 409 {"error":"This server name has already been submitted and is pending review."}
+dunning-letters -> HTTP 200 {"success":true}
+job-card -> HTTP 409 {"error":"This server name has already been submitted and is pending review."}
+supplier-list -> HTTP 200 {"success":true}
+dunning-letters -> HTTP 409 {"error":"This server name has already been submitted and is pending review."}
+maintenance-log -> HTTP 200 {"success":true}
+supplier-list -> HTTP 409 {"error":"This server name has already been submitted and is pending review."}
+mileage-log -> HTTP 200 {"success":true}
