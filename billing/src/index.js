@@ -884,16 +884,57 @@ export function checkoutIntentPage(url, productId, askedId = productId, tenant =
     ? `<p class="muted">This purchase will upgrade the hosted connection you came from automatically.</p>`
     : "";
   const action = `${url.pathname}${url.search}`;
+  // What the $19 actually buys, on the page where the decision is made. Until this ran the
+  // buyer saw the free tier line and a one-line desc, then a button: nothing said which
+  // tools/lines a single licence unlocks, and 334 clicks produced 100 confirmations and no
+  // payment. `p.pro` is the seller's own short list; when a product has no free tier the
+  // line is omitted rather than invented.
+  const gets = p.pro ? p.pro.replace(/^Pro:\s*/, "") : "";
+  const free = p.free ? `<li>Free tier, no key: ${esc(p.free.replace(/^Free:\s*/, ""))}</li>` : "";
+  const whatYouGet = `<h2>What you get for $${p.usd}</h2>
+<ul>
+<li><strong>Your Pro key, in the Stripe receipt</strong> &mdash; same minute the payment clears, re-sendable from <a href="/recover">/recover</a>.</li>${gets ? `\n<li><strong>Pro unlocks:</strong> ${esc(gets)}</li>` : ""}${free}
+${productId === "bundle"
+      ? `<li><strong>All ${SERVER_COUNT} servers, one key, lifetime</strong>, for $${PRODUCTS.bundle.usd} instead of $${PRODUCTS.bundle.usd + BUNDLE_SAVING_USD} bought one at a time.</li>`
+      : `<li><strong>All ${SERVER_COUNT} servers instead for $${PRODUCTS.bundle.usd}</strong> &mdash; one key, lifetime, a $${BUNDLE_SAVING_USD} saving: <a href="/buy/bundle?src=store.buy.${esc(productId)}">the bundle</a>.</li>`}
+</ul>`;
   return page(`Buy ${p.name}`, `<h1>${esc(p.name)}</h1>
 ${alias}<p><strong>$${p.usd}.00 USD</strong> &middot; one payment &middot; lifetime licence</p>
 <p>${esc(p.desc || (productId === "bundle" ? `All ${SERVER_COUNT} servers, one key.` : ""))}</p>
-${p.free ? `<p class="muted">${esc(p.free)}</p>` : ""}
-${p.pro ? `<p><strong>${esc(p.pro)}</strong></p>` : ""}
-<p class="muted">Key issued instantly after payment &middot; one payment, lifetime licence, works offline${productId !== "bundle" ? ` &middot; or get all ${SERVER_COUNT} servers with one key for $39: <a href="/buy/bundle?src=store.buy.${esc(productId)}">the bundle</a>` : ""}.</p>
-${bound}<form method="post" action="${esc(action)}"><input type="hidden" name="intent" value="checkout">
+${whatYouGet}
+<form method="post" action="${esc(action)}"><input type="hidden" name="intent" value="checkout">
 <button class="buy" type="submit">Continue to secure Stripe checkout</button></form>
 <p class="muted">No payment session has been created yet. Stripe collects the card on the next page.</p>
+${purchasePromiseHtml()}
+${bound}<p class="muted"><a href="/#faq">FAQ</a> &middot; <a href="/changelog">Changelog</a> &middot; Source at <a href="${REPO}">github.com/theluckystrike/mcp-servers</a></p>
 <p><a href="${productId === "bundle" ? "/" : `/s/${encodeURIComponent(askedId)}`}">Back</a></p>`);
+}
+/**
+ * The buyer-facing promise block: the two risks an email-only digital sale leaves open
+ * (does the key turn up, and what if the thing is no good) answered without a testimonial
+ * we do not have and without a countdown or a struck-through price we never charged.
+ *
+ * Applied to the pitch page (see `checkoutIntentPage`) and to /success, so the promise a
+ * buyer reads before paying is the same one they read after, in the same words. Nothing
+ * here is invented: each line is a measurable property of the product (offline tools, the
+ * refund window the seller honours, the key arriving in the receipt and being re-sendable
+ * from /recover).
+ */
+/** The promise a buyer read before paying (checkoutIntentPage), repeated here after it, in
+ * the same words. Post-payment is where a refund fear is cheapest to defuse: no support
+ * ticket, no chargeback. `purchasePromiseHtml` takes only the amount paid so the block
+ * reads identically on both pages, which is the point - a buyer who reads two versions of a
+ * guarantee has read no guarantee. */
+export function purchasePromiseHtml(paidUsd = PRODUCTS.bundle.usd) {
+  return `<h2>One key, ${SERVER_COUNT} servers, yours for good</h2>
+<ul>
+<li><strong>Lifetime licence.</strong> One payment of $${paidUsd}&mdash; or $${PRODUCTS.bundle.usd} for all ${SERVER_COUNT} together. No subscription, no renewals, no per-seat charge, no usage cap.</li>
+<li><strong>The key arrives in the Stripe receipt</strong>, seconds after the card clears &mdash; and re-sendable any time from the same address at <a href="/recover">/recover</a>. No email from a human in between.</li>
+<li><strong>Runs offline.</strong> Every server does its work on your machine. No account, no cloud round-trip, your invoices and client data never leave the box.</li>
+<li><strong>Keep the files you already have.</strong> The tools read and write plain Markdown, CSV and PDF; there is no proprietary store and no lock-in.</li>
+<li><strong>14-day refund</strong> on the first payment, from support@zovo.one.</li>
+<li><strong>Every server, the source included</strong>, plus the working tree behind them at <a href="${REPO}">github.com/theluckystrike/mcp-servers</a>.</li>
+</ul>`;
 }
 /** Probe Checkout Sessions are reused for 23h; Stripe expires a Session after 24h. */
 const PROBE_SESSION_TTL = 23 * 60 * 60;
@@ -1068,6 +1109,7 @@ Reloading this page always shows the same key. If you lose it, email support@zov
 <pre><code>MCP_LICENSE_KEY=${esc(key)}</code></pre>
 <h2>Install</h2>
 ${installSnippet(productId)}
+${purchasePromiseHtml()}
 <p>Docs: <a href="${REPO}">${REPO}</a></p>`);
 }
 

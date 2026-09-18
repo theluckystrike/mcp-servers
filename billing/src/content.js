@@ -8912,6 +8912,187 @@ hosted server, including this one at <code>https://mcp.zovo.one/mcp/mileage-log<
       { q: "Does it run hosted?", a: `Yes. https://mcp.zovo.one/mcp/mileage-log answers over streamable HTTP. mcp/connect mints a free anonymous token and prints the ready URL.` },
     ],
   },
+  "invoice-payment-terms-best-practices": {
+    title: "Invoice payment terms best practices: Net 30, due date and late fees",
+    description: "How to set invoice payment terms that actually get paid: choose the right due date, state terms clearly, use deposits and late fees, and issue terms on every invoice you send from chat.",
+    html: `
+<h1>Invoice payment terms best practices</h1>
+<p>Payment terms are the sentence on your invoice that says when you expect to be paid. In practice that sentence decides when money lands, how much chasing you do, and whether you get paid at all. This guide covers the terms that work for a small business, the ones to avoid, and how to put them on every invoice you generate from chat.</p>
+
+<h2>Start from when the work is done, not the date</h2>
+<p>Most freelancers write <code>Net 30</code> and hope. The terms that actually get paid start from a trigger the client can feel: <code>due on receipt</code> for a deposit, <code>Net 15</code> from the invoice date for the balance, or <code>Net 30</code> from project completion. Whichever you choose, the due date must be <em>unambiguous</em> - write the exact calendar date the payment is due, not just a number of days, because "Net 30" leaves room for a client to count from when they opened it.</p>
+<ul>
+<li><strong>Deposit up front:</strong> require 30-50% before work starts. A client who pays a deposit has already decided the project is real.</li>
+<li><strong>Balance Net 15 or Net 30:</strong> shorter for one-off work, longer for established retainers.</li>
+<li><strong>Interest and late fees:</strong> state a percentage per month (check what your jurisdiction allows) and a flat admin fee.</li>
+<li><strong>Stop-work clause:</strong> "work pauses after 14 days overdue" is the most effective collection tool you have.</li>
+</ul>
+
+<h2>Put the terms on the invoice itself</h2>
+<p>A due date buried in a contract is a debt nobody remembers. Every invoice should carry a visible terms line - payment due date, deposit already received, and what happens if it is late. When you generate an invoice from chat you control that wording, so keep it short and concrete.</p>
+
+<h2>Generate invoices with terms from chat</h2>
+<p>The invoicing server mints a full invoice PDF from a chat message. Point your client at it and ask for terms at the same time:</p>
+<pre><code># once - mint a free token, then paste the printed URL into your client
+# https://mcp.zovo.one/mcp/connect
+
+claude mcp add --transport http invoice \\
+  https://mcp.zovo.one/mcp/invoice/t/&lt;token&gt;
+</code></pre>
+<p>Then in the same conversation: "Invoice Acme for the onboarding work, 50% deposit already paid, balance Net 15 from today, 1.5% per month late." The server turns that into a dated invoice with the terms printed where the client can see them. Ask it to add a Stop-work note on the balance line when the job is overdue.</p>
+
+<h2>Send terms at the proposal stage too</h2>
+<p>Payment terms belong on the quote, not just the invoice. Agreeing the schedule before work starts prevents the single biggest argument in freelancing: the client who thought Net 30 started when they received the finished file. The quote server stores terms with the estimate so the invoice inherits them later. <a href="/s/quotes">See how quotes capture payment terms</a>.</p>
+
+<h2>What to avoid</h2>
+<ul>
+<li><strong>"Payment due upon completion":</strong> leaves the date fuzzy and invites disputes about what "completion" means.</li>
+<li><strong>Net 60 as a default:</strong> fine for big clients, ruinous for cash flow if you default to it.</li>
+<li><strong>Vague late fees:</strong> a fee you cannot state as a number is a fee you will never collect.</li>
+</ul>
+
+<h2>Checklist before you send</h2>
+<ol>
+<li>Exact due date written out (day, month, year).</li>
+<li>Deposit received shown as a line, not a mystery deduction.</li>
+<li>Late-fee percentage and admin fee stated.</li>
+<li>Stop-work or suspension clause for overdue balances.</li>
+<li>Same terms on the quote so nothing is a surprise.</li>
+</ol>
+<p>Payment terms are a cash-flow improvement you will make. Put them on the quote, repeat them on the invoice, and enforce the date you set.</p>
+`,
+    faq: [
+      { q: "What does Net 30 mean on an invoice?", a: "Net 30 means the full invoice amount is due within 30 days of the invoice date. It is the most common B2B term. Shorter terms like Net 14 or due-on-receipt get small businesses paid faster with little friction." },
+      { q: "Can I charge late fees on overdue invoices?", a: "Yes, if the fee is stated in your payment terms before the work is done. Keep it simple and enforceable - a flat percentage per month or a fixed late charge - and apply it consistently to every overdue invoice." },
+      { q: "Should I ask for a deposit?", a: "For any engagement over a few thousand dollars or any fixed-fee project, take a deposit (often 30-50%) before starting. It filters out non-serious clients and funds the work. Write the deposit amount and refund rules into the quote and repeat them on the invoice." },
+      { q: "How do I add payment terms to invoices made with an MCP server?", a: "State the terms in your prompt when you generate the invoice - for example: 'invoice Acme $4,200, Net 30, late fee 1.5% monthly, deposit already paid $1,500'. The invoice MCP server at https://mcp.zovo.one/mcp/invoice puts those terms on the PDF exactly as stated." },
+    ],
+  },
+  "how-to-categorize-bank-transactions": {
+    title: "How to categorize bank transactions",
+    description: "A repeatable method for categorizing bank transactions - set categories, make rules, classify transfers and reimbursements - and do it from chat without a CSV dance.",
+    html: `
+<h1>How to categorize bank transactions</h1>
+<p>Categorizing bank transactions is the step between a raw statement and a profit-and-loss statement you trust. This guide gives you a method that scales - set your categories, build matching rules, handle the tricky cases, and let chat do the grunt work.</p>
+
+<h2>Choose a small category list</h2>
+<p>Start with ten to fifteen categories, not forty. Every category you add makes the next statement harder. A workable starter set:</p>
+<ul>
+<li>Revenue / client payments</li>
+<li>Contractor and freelancer payments</li>
+<li>Software and subscriptions</li>
+<li>Office and equipment</li>
+<li>Travel and mileage</li>
+<li>Marketing</li>
+<li>Bank fees and interest</li>
+<li>Owner's draw (not an expense)</li>
+</ul>
+<p>Keep categories broad enough that a transaction has an obvious home, and resist splitting "Office" into a dozen flavours until a tax return actually needs it.</p>
+
+<h2>Build rules, then exceptions</h2>
+<p>The fastest way to categorize is to turn repeat suppliers into rules. Your coffee-shop spend and your hosting bill appear every month - teach the categorizer to recognise the payee and the rest of the work disappears. The rule should match on the payee name and amount pattern, not a wildcard, so an occasional different purchase still surfaces for a look.</p>
+
+<h2>Handle the cases that break people</h2>
+<ul>
+<li><strong>Transfers between accounts:</strong> not income, not expense. Mark as a transfer so your revenue stays honest.</li>
+<li><strong>Reimbursed client expenses:</strong> if a client repays you for a cost you fronted, split the transaction - the repaid part is not your expense.</li>
+<li><strong>Refunds:</strong> negative to the same category, never "other income".</li>
+<li><strong>Owner's draw:</strong> a distribution, not salary and not an expense.</li>
+<li><strong>Grey payees:</strong> a name you do not recognise should be a rule trigger to review, not auto-assigned.</li>
+</ul>
+
+<h2>Categorize from chat</h2>
+<p>You do not need to export a CSV and fight spreadsheet filters. Connect the bank-statement and expense-tracking servers and describe the work in plain words:</p>
+<pre><code># once - mint a free token and paste the printed URL into your client
+# https://mcp.zovo.one/mcp/connect
+
+claude mcp add --transport http bank-statement \\
+  https://mcp.zovo.one/mcp/bank-statement/t/&lt;token&gt;
+claude mcp add --transport http expense-tracker \\
+  https://mcp.zovo.one/mcp/expense-tracker/t/&lt;token&gt;
+</code></pre>
+<p>Then: "Take this month's statement, put every Stripe payout in Revenue, every Adobe charge in Software, mark the transfer to savings as a transfer, and list anything you are not sure about." The server applies your rules, flags the grey ones, and returns a clean categorized ledger you can review in minutes. <a href="/s/bank-statement">See what the bank-statement server categorizes</a>.</p>
+
+<h2>Review monthly, and reconcile</h2>
+<p>Categorization is only useful if it is complete. At month end, run the categorizer over the full statement and check the total against what your bank says. When the categorized total matches the statement balance, your categories are trustworthy enough to feed the P&amp;L. Do it in the same sitting as your reconciliation so the rules you build cover next month too.</p>
+
+<h2>A weekly habit that beats month-end panic</h2>
+<p>The single best improvement is frequency. Ten minutes of categorizing each week (as the statement updates) beats a two-hour CSV session on tax day. Because the server keeps your rules, the weekly pass gets faster until it is mostly confirming autos and fixing the odd grey payee.</p>
+`,
+    faq: [
+      { q: "What is the best way to categorize bank transactions?", a: "Start with a small set of categories (Revenue, Software, Payroll, Travel, Meals, Transfers, Unclear), write a rule per recurring payee, and classify everything else by hand the first month. Each month the rules cover more, so manual work shrinks to the odd grey payee." },
+      { q: "How do I handle transfers between my own accounts?", a: "Mark them as Transfers, never as income or expense - otherwise you double-count money moving between accounts. A categorizer rule for your own savings or card account handles this automatically." },
+      { q: "Can bank transactions be categorized automatically from chat?", a: "Yes. Point the bank-statement MCP server at a CSV export or statement and describe your rules in plain language; it applies them, flags the uncertain payees, and returns a clean ledger: https://mcp.zovo.one/mcp/bank-statement." },
+    ],
+  },
+  "petty-cash-log-template": {
+    title: "Petty cash log template",
+    description: "A working petty cash log: columns for date, voucher, recipient, purpose, amount, running balance, and a monthly reconciliation - plus how to keep it from chat.",
+    html: `
+<h1>Petty cash log template</h1>
+<p>A petty cash log is the running record that proves every note in the float went somewhere. Without it the float is just a tin of money that never balances. This guide gives you a template that survives an audit and shows you how to keep it updated from chat.</p>
+
+<h2>The columns that make a log audit-proof</h2>
+<p>Keep these on every row, and the log tells the whole story of the cash:</p>
+<ul>
+<li><strong>Date</strong> - the day the cash left or came in</li>
+<li><strong>Voucher #</strong> - a sequential number per receipt or request</li>
+<li><strong>Recipient / person</strong> - who took the cash</li>
+<li><strong>Purpose / expense category</strong> - what it was for</li>
+<li><strong>Amount out</strong> - money leaving the float</li>
+<li><strong>Amount in</strong> - top-ups and change</li>
+<li><strong>Running balance</strong> - what should be in the tin</li>
+</ul>
+<p>The voucher number is the column people skip, and it is the one that makes the float auditable. Every expense row ties to a physical or digital voucher with the same number, so a reviewer can trace cash to paper in one step.</p>
+
+<h2>A simple table to start</h2>
+<pre><code>Date       Voucher  Recipient     Purpose        Out    In     Balance
+----------- -------- ------------- -------------- ------ ------ ---------
+2026-09-01  --      float top-up  opening cash     --   100.00   100.00
+2026-09-03  001     office       stationery       12.40   --      87.60
+2026-09-05  002     courier      client delivery  18.00   --      69.60
+2026-09-12  --      petty cash   reimbursement    --    40.00   109.60
+</code></pre>
+<p>Add a category column if you split costs across projects or clients, and a "project" column if you reimburse or rebill petty cash later. Those two columns are what turn a simple log into something you can recover VAT or rebill on.</p>
+
+<h2>Reconcile the tin to the log</h2>
+<p>At month end, count the physical cash and compare it to the running balance. They should match. If they do not:</p>
+<ol>
+<li>Check for a missing voucher (a spent note nobody logged).</li>
+<li>Check for cash that never got a top-up row.</li>
+<li>If a small difference cannot be traced, record it as a <em>cash over/short</em> row and note it - a real log is honest about a &pound;2 shortfall, not silent about it.</li>
+</ol>
+
+<h2>Keep the log from chat</h2>
+<p>You do not need to hand-type the ledger into a spreadsheet. Point the cash-book and petty-cash servers at your float and describe each transaction:</p>
+<pre><code># once - mint a free token and paste the printed URL into your client
+# https://mcp.zovo.one/mcp/connect
+
+claude mcp add --transport http cash-book \\
+  https://mcp.zovo.one/mcp/cash-book/t/&lt;token&gt;
+claude mcp add --transport http petty-cash \\
+  https://mcp.zovo.one/mcp/petty-cash/t/&lt;token&gt;
+</code></pre>
+<p>Then: "Log voucher 002, &pound;18 to the courier for the client delivery, out of the float." The server keeps the running balance, numbers the vouchers for you, and at month end prints the log as a sheet ready to reconcile. <a href="/s/petty-cash">See the petty-cash server workflow</a>.</p>
+
+<h2>Keep the float simple</h2>
+<p>A float of &pound;50-&pound;100 in a locked tin, reconciled monthly and logged with voucher numbers, is all a small business needs. Resist the urge to make petty cash a second bank account - if a cost is recurring and regular, pay it properly and keep the float for genuine incidentals. When you do use the float, log it the same day, while the voucher is still in your hand.</p>
+
+<h2>Monthly close checklist</h2>
+<ol>
+<li>Count the physical cash and compare to the running balance.</li>
+<li>Confirm every voucher number is present in the log.</li>
+<li>Top the float back up to its target and log the top-up.</li>
+<li>File vouchers in voucher order.</li>
+</ol>
+<p>A petty cash log is twenty minutes a month of discipline that saves hours of "where did the cash go" at tax time.</p>
+`,
+    faq: [
+      { q: "What columns should a petty cash log have?", a: "Date, voucher number, recipient, purpose, amount in, amount out, and running balance. That is enough to reconcile the tin against the ledger in minutes and to answer any tax-time question about a cash expense." },
+      { q: "How often should petty cash be reconciled?", a: "Monthly is the sweet spot for a small business: count the cash, compare it to the log, top the float back up, and file the vouchers in voucher order. Reconcile more often only if the float moves fast." },
+      { q: "Can I keep a petty cash log from chat instead of a spreadsheet?", a: "Yes. Log each voucher in one line of chat and the petty-cash MCP server keeps the running balance and prints the month-end sheet: https://mcp.zovo.one/mcp/petty-cash. Pair it with the cash-book server for the ledger side." },
+    ],
+  },
 };
 
 export const GUIDE_PRODUCT_LINKS = {
