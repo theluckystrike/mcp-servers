@@ -1,6 +1,6 @@
 import { mintLicense, verifyLicenseKey, hex } from "./license.js";
 import { PAGES, CHANGELOG } from "./pages.js";
-import { GUIDES, GUIDE_INDEX, GUIDE_PRODUCT_LINKS } from "./content.js";
+import { GUIDES, GUIDE_INDEX, GUIDE_PRODUCT_LINKS, GUIDE_RELATED } from "./content.js";
 import { COMPARE, COMPARE_INDEX } from "./compare.js";
 import { setupPage, clientHub, setupIndex, setupUrls, serversFor, CLIENTS, CLIENT_ORDER, SETUP_SERVERS } from "./setup.js";
 // Counts derived from the manifests by scripts/build-figures.mjs. Before this import the
@@ -1308,12 +1308,17 @@ ${COMPARE[id] ? `<h2>Compared with the alternatives</h2>\n<p><a href="/compare/$
       const crossHtml = cross.length
         ? `\n<p>Servers used in this guide: ${cross.map((s) => `<a href="/s/${esc(s)}">${esc(PAGES[s] ? PAGES[s].title : s)}</a>`).join(" &middot; ")}</p>`
         : "";
+      // Guide->guide topical mesh (GUIDE_RELATED, symmetric): crawl paths + session depth.
+      const related = (GUIDE_RELATED[slug] || []).filter((s) => GUIDES[s]);
+      const relatedHtml = related.length
+        ? `\n<p>Related guides: ${related.map((s) => `<a href="/guides/${esc(s)}">${esc(GUIDES[s].title)}</a>`).join(" &middot; ")}</p>`
+        : "";
       const body = `<p class="muted"><a href="/">Home</a> &middot; <a href="/guides">Guides</a></p>
 ${g.html}
 <h2>Questions</h2>
 ${faqHtml}
 <h2>Related</h2>
-<p><a href="/">All MCP servers and prices</a> &middot; <a href="/guides">All guides</a> &middot; <a class="buy" href="/buy/bundle?src=store.guide.${slug}">Buy the bundle $${PRODUCTS.bundle.usd}</a></p>${crossHtml}`;
+<p><a href="/">All MCP servers and prices</a> &middot; <a href="/guides">All guides</a> &middot; <a class="buy" href="/buy/bundle?src=store.guide.${slug}">Buy the bundle $${PRODUCTS.bundle.usd}</a></p>${relatedHtml}${crossHtml}`;
       const html = page(g.title, body).replace("</title>", "</title>" + meta);
       return new Response(html, { headers: await contentHeaders(html) });
     }
