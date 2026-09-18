@@ -1,6 +1,6 @@
 import { mintLicense, verifyLicenseKey, hex } from "./license.js";
 import { PAGES, CHANGELOG } from "./pages.js";
-import { GUIDES, GUIDE_INDEX, GUIDE_PRODUCT_LINKS, GUIDE_RELATED } from "./content.js";
+import { GUIDES, GUIDE_INDEX, GUIDE_PRODUCT_LINKS, GUIDE_RELATED, relatedGuidesBlock } from "./content.js";
 import { COMPARE, COMPARE_INDEX } from "./compare.js";
 import { setupPage, clientHub, setupIndex, setupUrls, serversFor, CLIENTS, CLIENT_ORDER, SETUP_SERVERS } from "./setup.js";
 // Counts derived from the manifests by scripts/build-figures.mjs. Before this import the
