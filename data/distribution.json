@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-09-19T03:30:00.000Z",
+  "updated_at": "2026-09-19T03:15:00.000Z",
   "surfaces": {
     "github": {
       "status": "published",
@@ -269,7 +269,7 @@
       "note": "S45 w1+w2: all 42 servers submitted via POST /api/mcp-submit, no account/captcha; each double-confirmed 200 then 409 already-submitted (docs/submit_w2.mjs, docs/w2_results.log). Review-gated: recheck listings ~2026-09-25."
     },
     "mcpservers.com": {
-      "status": "candidate: live free directory, sign-in route /submit (200), NOT yet listed (positive control 2)"
+      "status": "identified: distinct from mcpservers.org, /submit 200 sign-in, not listed, positive control passed (T14 S46)"
     },
     "aiagentslist.com": {
       "status": "blocked: login + paid tiers ($29 submit / $49 launch)"

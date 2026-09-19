@@ -1,6 +1,6 @@
 # T14 - Organic Distribution Intel Sweep (S46)
 
-STATUS: in progress
+STATUS: complete
 
 ## Task 1: Guide Redirects Style Check
 
@@ -61,8 +61,19 @@ VERDICT (Task 3): Unchanged from prior rounds: the mcp-checklist server page is 
 
 ## Task 4: Registry MCP Latest-Version Post-Rename
 
-TODO
+All three renamed servers confirmed present at /versions/latest when the name portion is URL-encoded (only the name, not the whole path; over-encoding the full path 404s). curl evidence:
 
-## Task 4: Registry MCP Latest-Version Post-Rename
+```
+GET https://registry.modelcontextprotocol.io/v0.1/servers/io.github.theluckystrike%2Fspreadsheet/versions/latest  -> 200, v0.1.1
+GET https://registry.modelcontextprotocol.io/v0.1/servers/io.github.theluckystrike%2Finvoice/versions/latest      -> 200, v0.1.1
+GET https://registry.modelcontextprotocol.io/v0.1/servers/io.github.theluckystrike%2Fstatement-of-account/versions/latest -> 200, v0.22.0, remote mcp.zovo.one/mcp/statement-of-account
+```
 
-TODO
+VERDICT (Task 4): PASS. All three renamed servers are live in the registry at their latest versions with correct remote URLs. The earlier 404s were probe artifacts (whole-path encoding), not registry gaps. No action needed.
+
+## Final Verdict
+
+- Task 1: PASS, all sampled guides 200 + self-canonical.
+- Task 2: one actionable add (mcpservers.com), two login/paid-gated, three dead probes.
+- Task 3: Glama ingest lag unchanged (renamed servers still 404 there).
+- Task 4: registry fully consistent post-rename; probe-encoding note recorded for future scripts.
