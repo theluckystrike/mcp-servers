@@ -65,7 +65,7 @@ The caps in the brief were off by one against the source: the spreadsheet free w
 
 ## Defects found (not fixed — all live in src)
 
-**D-S1. 43 of 128 tool descriptions exceed 220 characters.** Every server is affected. The
+Every server is affected. The
 longest is `expense-tracker` `expense_to_invoice` at 1,135 characters; `invoice_from_hours`
 562, `sheet_add_column` 529, `rate_on` 486, `mileage_add` 470.
 
@@ -109,7 +109,7 @@ declarative ("Write a real .docx file from...", "Turn markdown into a .docx...")
 
 `currency` and `recurring` pass trivially: they expose no file or URL tool.
 
-**D-S3. `currency` `cache_status` reports success while quarantining a corrupt cache.**
+D-S3. `currency` `cache_status` reports success while quarantining a corrupt cache.
 Measured: write garbage into `daily.json`, call `cache_status`. The file is correctly moved
 to `daily.json.corrupt-<timestamp>` byte-for-byte and the marker is written — but the tool
 returns `isError: false` and a normal-looking status block. The caller is told the cache is
@@ -121,12 +121,12 @@ locking in the wrong behaviour.
 Second-order: `currency` has no mutating tool that works offline — every write path
 refreshes from the ECB — so the quarantine contract on its *write* path is untested here.
 
-**D-S4. `serverInfo.name` is still inconsistent.** Nine servers report `mcp-<name>`;
+Nine servers report `mcp-<name>`;
 `price-tracker` and `time-tracker` report the bare id. This was raised in `docs/AUDIT.md`
 (2026-09-02, "failures not fixed" item 6) and is still open. It is visible to every client
 that groups tools by server name.
 
-**D-S5. Capability registration is uneven.** `invoice` and `spreadsheet` answer
+`invoice` and `spreadsheet` answer
 `prompts/list` with a method-not-found error while the other nine register one prompt each;
 `spreadsheet` also registers no resource while the other ten register one. Not a
 correctness bug, but a client that lists prompts sees the bundle as partly furnished.

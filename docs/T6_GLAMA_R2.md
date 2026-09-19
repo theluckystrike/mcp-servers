@@ -15,7 +15,7 @@ $ python3 /tmp/reg.py   # cursor-paged GET /v0.1/servers?search=io.github.theluc
 DISTINCT 121
 ```
 
-**All 42 server dirs already have registry coverage.** 26 dirs have an entry whose slug is
+26 dirs have an entry whose slug is
 exactly the dir name; the other 16 are covered only under a long SEO slug:
 
 | dir | registry slug present under |
@@ -42,7 +42,7 @@ slug Glama keys its URL on (`/mcp/servers/theluckystrike/mcp-<dir>`).
 
 ## 2. Registry publish attempt for missing entries
 
-**Not human-gated.** `scripts/registry-publish-all.mjs` header documents the working recipe:
+`scripts/registry-publish-all.mjs` header documents the working recipe:
 `mcp-publisher login github --token "$(gh auth token)"` — no interactive prompt, no npm auth.
 `gh auth status` confirms logged in as `theluckystrike`; `/opt/homebrew/bin/mcp-publisher` present.
 
@@ -95,10 +95,6 @@ kanban True 0.22.1
 CONFIRMED 16 of 16
 ```
 
-**42/42 dirs now have a registry entry under their exact short slug.**
-
-
-
 ## 3. Glama re-probe of 42 servers
 
 Re-probed all 42 with the documented method (Chrome UA, `-m 20`, `-L`):
@@ -128,7 +124,7 @@ $ bash /tmp/probe.sh   # curl -s -o /tmp/g_<dir>.html -w '%{http_code} %{size_do
 404 52 invoice               404 52 zip
 ```
 
-**12 of 42 indexed** — identical to R1 (bill-of-sale, checklist, credit-note, dunning-letters,
+— identical to R1 (bill-of-sale, checklist, credit-note, dunning-letters,
 job-card, maintenance-log, mileage-log, office-suite, packing-list, service-agreement,
 statement-of-account, supplier-list). 404 with exactly 52 bytes = not indexed in every case;
 200 responses are 261 KB–1.8 MB.

@@ -203,7 +203,7 @@ judged on a later census, not on this one.
 
 ## What I changed
 
-**Repo: `/Users/mike/extension-insiders`** (`git@github.com:theluckystrike/extension-insiders.git`) —
+(`git@github.com:theluckystrike/extension-insiders.git`) —
 the SSR renderer behind zovo.one. **File: `api/render.ts`. Not committed, not pushed, not deployed.**
 `git diff --numstat` = `6 1`. `npx tsc --noEmit --skipLibCheck api/render.ts` exits 0 with no
 diagnostics. Backup of the original at `scratchpad/render.ts.bak`.
@@ -225,7 +225,7 @@ Each claim was verified against the target page before the anchor was written: `
 billable time without leaving your AI chat"; `/s/invoice` does carry a Source link to
 `github.com/theluckystrike/mcp-servers/tree/main/servers/invoice`.
 
-**One more edit, and it is a repair, not an addition.** `api/render.ts:1244` emitted only the
+`api/render.ts:1244` emitted only the
 mcp.zovo.one footer anchor, but the live footer serves two:
 
     <footer><a href="https://mcp.zovo.one">MCP servers for Claude</a> · <a href="https://tg.zovo.one/">Telegram bots for reminders, expenses &amp; habits</a></footer>

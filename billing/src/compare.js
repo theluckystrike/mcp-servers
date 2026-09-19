@@ -42,9 +42,9 @@ is what the config becomes the day that changes:</p>
 
 export const COMPARE = {
   "time-tracker": {
-    title: "MCP Time Tracker vs clockify-mcp and timesheet-mcp: which MCP server to pick",
+    title: "MCP Time Tracker vs clockify-mcp and timesheet-mcp - which MCP server to pick",
     description: "Local JSON timer against two MCP servers that front a time tracking SaaS. Tool counts, licences, accounts required and where the hours are stored.",
-    html: `<h1>MCP Time Tracker vs clockify-mcp and timesheet-mcp: which MCP server to pick</h1>
+    html: `<h1>MCP Time Tracker vs clockify-mcp and timesheet-mcp - which MCP server to pick</h1>
 <p>All three let you say "start a timer for Acme" in Claude Code or Cursor. The difference is what
 sits behind the tool call. <a href="https://github.com/tracegazer/clockify-mcp">clockify-mcp</a> and
 <a href="https://github.com/timesheetIO/timesheet-mcp">timesheet-mcp</a> are clients for an existing
@@ -116,9 +116,9 @@ walkthrough is in <a href="/guides/track-time-in-claude-code">tracking billable 
   },
 
   "price-tracker": {
-    title: "MCP Price Tracker vs keepa-mcp and pricetrack-mcp: which MCP server to pick",
+    title: "MCP Price Tracker vs keepa-mcp and pricetrack-mcp - which MCP server to pick",
     description: "Watch any shop page locally, or query an Amazon history API, or a SaaS pricing catalogue. Tool counts, keys required and what each one can actually see.",
-    html: `<h1>MCP Price Tracker vs keepa-mcp and pricetrack-mcp: which MCP server to pick</h1>
+    html: `<h1>MCP Price Tracker vs keepa-mcp and pricetrack-mcp - which MCP server to pick</h1>
 <p>These three answer different questions. <a href="https://github.com/purahmanian/keepa-mcp">keepa-mcp</a>
 answers "what has this Amazon ASIN cost over the last year", using the Keepa API.
 <a href="https://github.com/PriceTrack-dev/pricetrack-mcp">pricetrack-mcp</a> answers "what does this
@@ -186,9 +186,9 @@ watch and alert workflow.</p>`,
   },
 
   spreadsheet: {
-    title: "MCP Spreadsheet vs agent-spreadsheet and mcp-server-spreadsheet: which MCP server to pick",
+    title: "MCP Spreadsheet vs agent-spreadsheet and mcp-server-spreadsheet - which MCP server to pick",
     description: "Three local xlsx and csv servers compared: tool counts, formula recalculation, SQL over sheets, licences and what each one refuses to do.",
-    html: `<h1>MCP Spreadsheet vs agent-spreadsheet and mcp-server-spreadsheet: which MCP server to pick</h1>
+    html: `<h1>MCP Spreadsheet vs agent-spreadsheet and mcp-server-spreadsheet - which MCP server to pick</h1>
 <p>This is the one category where all three options are local. None of them uploads your workbook.
 <a href="https://github.com/PSU3D0/agent-spreadsheet">agent-spreadsheet</a> is a Rust engine aimed at
 formula-heavy models, with recalculation and a write, recalc, proof, diff loop.
@@ -260,9 +260,9 @@ large CSV from chat.</p>`,
   },
 
   invoice: {
-    title: "MCP Invoice vs einvoice-mcp and IMW Invoice: which MCP server to pick",
+    title: "MCP Invoice vs einvoice-mcp and IMW Invoice - which MCP server to pick",
     description: "A local numbered invoice PDF, a German XRechnung XML generator, or a hosted service. Tool counts, standards covered, and where the data sits.",
-    html: `<h1>MCP Invoice vs einvoice-mcp and IMW Invoice: which MCP server to pick</h1>
+    html: `<h1>MCP Invoice vs einvoice-mcp and IMW Invoice - which MCP server to pick</h1>
 <p>Three different products with the same word on the tin.
 <a href="https://github.com/makririch/einvoice-mcp">einvoice-mcp</a> builds and validates German
 XRechnung XML to EN 16931. <a href="https://www.independent.management/ai">IMW Invoice</a> is a hosted
@@ -336,9 +336,9 @@ walks through a full example.</p>`,
   },
 
   "expense-tracker": {
-    title: "MCP Expense Tracker vs Expense Budget Tracker and Expense by Labnotes: which MCP server to pick",
+    title: "MCP Expense Tracker vs Expense Budget Tracker and Expense by Labnotes - which MCP server to pick",
     description: "Local receipts and mileage against two hosted expense services with OAuth endpoints. Tools, storage, licences and what each does with a receipt.",
-    html: `<h1>MCP Expense Tracker vs Expense Budget Tracker and Expense by Labnotes: which MCP server to pick</h1>
+    html: `<h1>MCP Expense Tracker vs Expense Budget Tracker and Expense by Labnotes - which MCP server to pick</h1>
 <p>The two closest alternatives are both real applications with a database behind them.
 <a href="https://github.com/kirill-markin/expense-budget-tracker">Expense Budget Tracker</a> is a
 self-hostable Postgres app with a hosted MCP endpoint that exposes a restricted SQL surface.
@@ -407,9 +407,9 @@ expense to invoice path.</p>`,
     ],
   },
   currency: {
-    title: "MCP Currency Converter vs exchange-mcp and tcmb_mcp: which MCP server to pick",
+    title: "MCP Currency Converter vs exchange-mcp and tcmb_mcp - which MCP server to pick",
     description: "Keyless local ECB rates against a pay-per-call hosted ECB server and the Turkish central bank series. Tools, cost per call and rate source.",
-    html: `<h1>MCP Currency Converter vs exchange-mcp and tcmb_mcp: which MCP server to pick</h1>
+    html: `<h1>MCP Currency Converter vs exchange-mcp and tcmb_mcp - which MCP server to pick</h1>
 <p>All three answer "what is this worth in that currency", and all three read a central bank rather than
 a trading venue. <a href="https://registry.smithery.ai/servers/stockvibes07/exchange-mcp">stockvibes07/exchange-mcp</a>
 reads the same ECB series we do and serves it as a hosted endpoint you pay for per call.
@@ -482,9 +482,9 @@ ${ours("currency")}
   },
 
   docx: {
-    title: "MCP Docx vs docx-mcp and usejunior docx-mcp: which MCP server to pick",
+    title: "MCP Docx vs docx-mcp and usejunior docx-mcp - which MCP server to pick",
     description: "Proposals and contracts with reference numbers, against a JSON-schema document builder and a tracked-changes editor. Licences and versions.",
-    html: `<h1>MCP Docx vs docx-mcp and usejunior docx-mcp: which MCP server to pick</h1>
+    html: `<h1>MCP Docx vs docx-mcp and usejunior docx-mcp - which MCP server to pick</h1>
 <p>These three write Word files and almost nothing else about them is the same.
 <a href="https://www.npmjs.com/package/@docx-mcp/docx-mcp">@docx-mcp/docx-mcp</a> is a document builder:
 you hand it a validated JSON document tree and it renders it, with images, syntax-highlighted code blocks
@@ -562,9 +562,9 @@ claude mcp add safe-docx -- safe-docx</code></pre>
   },
 
   timezone: {
-    title: "MCP Timezone Planner vs meeting-mcp and timezone-toolkit: which MCP server to pick",
+    title: "MCP Timezone Planner vs meeting-mcp and timezone-toolkit - which MCP server to pick",
     description: "Ranked meeting slots and ics files, locally, against a hosted pay-per-call scheduler with holidays and Google Calendar, and an astronomical time toolkit.",
-    html: `<h1>MCP Timezone Planner vs meeting-mcp and timezone-toolkit: which MCP server to pick</h1>
+    html: `<h1>MCP Timezone Planner vs meeting-mcp and timezone-toolkit - which MCP server to pick</h1>
 <p>Three servers that all convert a time between zones, and then diverge.
 <a href="https://registry.smithery.ai/servers/stockvibes07/meeting-mcp">stockvibes07/meeting-mcp</a> is a
 hosted scheduling assistant with a public holiday dataset and Google Calendar event creation, paid per
@@ -640,9 +640,9 @@ ${ours("timezone")}
     ],
   },
   resume: {
-    title: "MCP Resume and Cover Letter vs cv-forge and mcp-resume: which MCP server to pick",
+    title: "MCP Resume and Cover Letter vs cv-forge and mcp-resume - which MCP server to pick",
     description: "Word output and a letter that cannot invent a number, against a 14-tool PDF and email generator and a one-tool Chinese CV renderer that uploads the file.",
-    html: `<h1>MCP Resume and Cover Letter vs cv-forge and mcp-resume: which MCP server to pick</h1>
+    html: `<h1>MCP Resume and Cover Letter vs cv-forge and mcp-resume - which MCP server to pick</h1>
 <p>Three servers that turn stored facts into a job application, and then differ on almost everything
 else. <a href="https://www.npmjs.com/package/cv-forge">cv-forge</a> is the broadest: fourteen tools that
 parse a posting, write a CV in four formats, draft a cover letter and an email, and can do all of it in
@@ -728,9 +728,9 @@ claude mcp add cv-forge -- cv-forge</code></pre>
   },
 
   recurring: {
-    title: "MCP Recurring Invoices vs invovate-mcp-server and paddle-mcp: which MCP server to pick",
+    title: "MCP Recurring Invoices vs invovate-mcp-server and paddle-mcp - which MCP server to pick",
     description: "Local retainer schedules that generate invoices you own, against a hosted PDF and UBL renderer and the official client for a merchant of record.",
-    html: `<h1>MCP Recurring Invoices vs invovate-mcp-server and paddle-mcp: which MCP server to pick</h1>
+    html: `<h1>MCP Recurring Invoices vs invovate-mcp-server and paddle-mcp - which MCP server to pick</h1>
 <p>Start with the finding, because it shapes the page. Searching npm and the official MCP registry on
 2026-09-03 turned up no MCP server that keeps recurring billing schedules locally and generates invoices
 into a store you own. The invoice servers are one-shot document generators with no scheduling at all,
@@ -830,9 +830,9 @@ claude mcp add invoice   -- npx -y @theluckystrike/mcp-invoice</code></pre>
   },
 
   clauses: {
-    title: "MCP Clause Library vs OpenAgreements and dingdawg-legal-agent: which MCP server to pick",
+    title: "MCP Clause Library vs OpenAgreements and dingdawg-legal-agent - which MCP server to pick",
     description: "A searchable clause library assembled into Word, against a catalogue of real standard forms with source licences, and a paid contract review service.",
-    html: `<h1>MCP Clause Library vs OpenAgreements and dingdawg-legal-agent: which MCP server to pick</h1>
+    html: `<h1>MCP Clause Library vs OpenAgreements and dingdawg-legal-agent - which MCP server to pick</h1>
 <p>Three servers that a freelancer might reach for when a contract is due, doing three different jobs.
 <a href="https://www.npmjs.com/package/@open-agreements/contract-templates-mcp">@open-agreements/contract-templates-mcp</a>
 fills real, named standard forms: the Common Paper set, the four Y Combinator SAFEs and seven NVCA
@@ -930,15 +930,15 @@ claude mcp add --transport http open-agreements https://openagreements.org/api/m
   },
 
   pdf: {
-    title: "MCP PDF Tools vs pdf-mcp and DocWand: which MCP server to pick",
+    title: "MCP PDF Tools vs pdf-mcp and DocWand - which MCP server to pick",
     description: "A pure-JavaScript page-level PDF server against a full editing suite and a browser-based signing tool. Tool counts, what pdf_text can and cannot read, and where each one runs.",
-    html: `<h1>MCP PDF Tools vs pdf-mcp and DocWand: which MCP server to pick</h1>
+    html: `<h1>MCP PDF Tools vs pdf-mcp and DocWand - which MCP server to pick</h1>
 <p>All three say they merge, split and stamp a PDF from chat. <a href="https://github.com/nitaiaharoni1/pdf-mcp">pdf-mcp</a>
 (npm package <code>mcp-pdf</code>) goes much further than page-level jobs, adding form filling, annotations
 and signature fields. <a href="https://docwand.app">DocWand</a> runs the opposite way: no install at all, a
 hosted MCP endpoint whose signing and form-filling actually execute in your browser tab rather than on the
 server. Ours sits between them: page-level jobs only, done locally, with an honest answer about the one
-thing none of the three can promise -- reading text out of a PDF whose font was not built for it.</p>
+thing none of the three can promise: reading text out of a PDF whose font was not built for it.</p>
 
 <h2>The facts, read from each project</h2>
 ${t({ head: ["pdf-mcp", "DocWand"], body: [
@@ -999,9 +999,9 @@ walkthrough, including the glyph-index caveat in detail, is in
   },
 
   calendar: {
-    title: "MCP Calendar vs mcp-ical and google-calendar-mcp: which MCP server to pick",
+    title: "MCP Calendar vs mcp-ical and google-calendar-mcp - which MCP server to pick",
     description: "A local .ics reader with free-busy and conflicts against a bare feed cache and a full Google Calendar API server. Tool counts, OAuth, and what each one actually computes.",
-    html: `<h1>MCP Calendar vs mcp-ical and google-calendar-mcp: which MCP server to pick</h1>
+    html: `<h1>MCP Calendar vs mcp-ical and google-calendar-mcp - which MCP server to pick</h1>
 <p>All three read calendar data into a chat. <a href="https://github.com/voxxit/mcp-ical">mcp-ical</a>
 (npm package <code>@voxxit/mcp-ical</code>) is the closest in shape to ours: it also reads
 <code>.ics</code> feeds with no Google or Microsoft account. <a href="https://github.com/nspady/google-calendar-mcp">google-calendar-mcp</a>
@@ -1067,9 +1067,9 @@ walkthrough is in <a href="/guides/calendar-ics-free-busy-in-claude">reading a .
   },
 
   kanban: {
-    title: "MCP Kanban vs KanbanThing and SwiftKanban CLI: which MCP server to pick",
+    title: "MCP Kanban vs KanbanThing and SwiftKanban CLI - which MCP server to pick",
     description: "A local board with due dates, estimates and a time-tracker handoff against a hosted no-account board and a CLI for an enterprise SaaS. Tool counts, accounts, and where the board lives.",
-    html: `<h1>MCP Kanban vs KanbanThing and SwiftKanban CLI: which MCP server to pick</h1>
+    html: `<h1>MCP Kanban vs KanbanThing and SwiftKanban CLI - which MCP server to pick</h1>
 <p>All three let an agent move a card. <a href="https://github.com/tronschell/kanban-thing">KanbanThing</a>
 hosts the board itself at a shareable link with no account at all, closest to ours in spirit but not in
 where the data lives or how long it stays there. <a href="https://github.com/digiteinfotech/sk-cli">SwiftKanban
@@ -1143,9 +1143,9 @@ Claude with time tracking</a>.</p>`,
   },
 
   image: {
-    title: "MCP Image Tools vs Pictomancer and Image Resize API: which MCP server to pick",
+    title: "MCP Image Tools vs Pictomancer and Image Resize API - which MCP server to pick",
     description: "Local resize, compress, crop, watermark and metadata strip against two metered per-call APIs that need a URL. Tool counts, pricing per operation, and what happens to a PNG.",
-    html: `<h1>MCP Image Tools vs Pictomancer and Image Resize API: which MCP server to pick</h1>
+    html: `<h1>MCP Image Tools vs Pictomancer and Image Resize API - which MCP server to pick</h1>
 <p>All three resize an image from a chat. <a href="https://pictomancer.ai">Pictomancer</a>
 (<code>ai.pictomancer/image-processing</code> on the official registry, hosted at
 <code>api.pictomancer.ai/mcp</code>) is a metered API: six operations, billed per call, and every input is
@@ -1215,9 +1215,9 @@ watermarking images from chat</a>.</p>`,
   },
 
   "bank-statement": {
-    title: "MCP Bank Statement vs MainBook and bankstatementparser-mcp: which MCP server to pick",
+    title: "MCP Bank Statement vs MainBook and bankstatementparser-mcp - which MCP server to pick",
     description: "A stored, categorized ledger against a paid PDF-to-Excel converter and a stateless multi-format parser. Tool counts, accounts required, and what happens on a second import.",
-    html: `<h1>MCP Bank Statement vs MainBook and bankstatementparser-mcp: which MCP server to pick</h1>
+    html: `<h1>MCP Bank Statement vs MainBook and bankstatementparser-mcp - which MCP server to pick</h1>
 <p>All three turn a bank statement into structured data from a chat. <a href="https://github.com/human-beyond/mainbook-mcp">MainBook Bank Statement Converter</a>
 (<code>ai.mainbook/bank-statement-converter</code> on the official registry) converts a PDF statement to a
 checked Excel, CSV or JSON file through a paid, account-gated cloud job.
@@ -1295,9 +1295,9 @@ bank CSV export</a>.</p>`,
     ],
   },
   quotes: {
-    title: "MCP Quotes vs SendQuoteNow and estimate-invoice: which MCP server to pick",
+    title: "MCP Quotes vs SendQuoteNow and estimate-invoice - which MCP server to pick",
     description: "A local quote-to-invoice lifecycle against two hosted quote-and-invoice SaaS products behind an API key or OAuth. Tool counts, accounts required, and how each one prices a VAT-rate change.",
-    html: `<h1>MCP Quotes vs SendQuoteNow and estimate-invoice: which MCP server to pick</h1>
+    html: `<h1>MCP Quotes vs SendQuoteNow and estimate-invoice - which MCP server to pick</h1>
 <p>All three let a chat turn "quote this" into a numbered document and, later, "they said yes" into an
 invoice. <a href="https://sendquotenow.com">SendQuoteNow</a> (<code>com.sendquotenow/quote-engine</code>
 on the official registry) is a hosted quote-and-invoice generator for contractors, reached over one
@@ -1375,9 +1375,9 @@ invoice</a>.</p>`,
   },
 
   barcode: {
-    title: "MCP Barcode vs qrcode and Barcode Generator API: which MCP server to pick",
+    title: "MCP Barcode vs qrcode and Barcode Generator API - which MCP server to pick",
     description: "A local, no-network code drawer against two hosted MCP servers, one wrapping a free public QR API, the other charging per call in USDC. Tool counts, accounts required, and where the SEPA payment and check-digit logic lives.",
-    html: `<h1>MCP Barcode vs qrcode and Barcode Generator API: which MCP server to pick</h1>
+    html: `<h1>MCP Barcode vs qrcode and Barcode Generator API - which MCP server to pick</h1>
 <p>All three let a chat turn "make me a QR code" or "give this a barcode" into a scannable image.
 <a href="https://github.com/pipeworx-io/mcp-qrcode">qrcode</a>
 (<code>io.github.pipeworx-io/qrcode</code> on the official registry) is one pack of a larger hosted
@@ -1452,9 +1452,9 @@ walkthrough for the payment code specifically is in
   },
 
   "per-diem": {
-    title: "MCP Per Diem vs gsa-perdiem-mcp: which MCP server to pick",
+    title: "MCP Per Diem vs gsa-perdiem-mcp - which MCP server to pick",
     description: "Three bundled statutory rate tables against a live reader of the GSA Per Diem API. What each looks up, which schemes, network calls, install path, price and licence, read from each project's own README.",
-    html: `<h1>MCP Per Diem vs gsa-perdiem-mcp: which MCP server to pick</h1>
+    html: `<h1>MCP Per Diem vs gsa-perdiem-mcp - which MCP server to pick</h1>
 <p>Both answer "what is the per diem for this trip" from a chat client. The difference is what data
 sits behind the answer and how many schemes it covers.
 <a href="https://github.com/1102tools-dev/federal-contracting-mcps/tree/main/servers/gsa-perdiem-mcp">gsa-perdiem-mcp</a>

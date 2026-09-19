@@ -13,7 +13,7 @@ The Code 128 and EAN/UPC encoders are written here, in `src/symbology.ts`.
 
 ## Design decisions worth stating
 
-**The linear encoders are local, the QR encoder is not.** A QR encoder is Reed-Solomon over GF(256) plus mask
+A QR encoder is Reed-Solomon over GF(256) plus mask
 selection: writing that by hand to save one pure-JS dependency would be new arithmetic nobody has scanned. Code
 128 and EAN-13 are lookup tables and a modulus, so they are here, where their failure modes can be refused with
 a sentence instead of a stack trace.
@@ -25,14 +25,14 @@ symbol still had the right structure. See the measured insight at the end. Every
 it produced are pinned in `test/unit.test.mjs` as `TRUTH`), and `verifyTables()` re-checks the structural
 invariants at module load and in the suite.
 
-**PNG needs `out_path`; the server never returns base64.** A 2,000 px PNG is 58 KB, which is roughly 80,000
+A 2,000 px PNG is 58 KB, which is roughly 80,000
 tokens of base64 in a conversation. `format: "png"` with no `out_path` is refused with that reason.
 
-**out_path is not sandboxed.** It is the caller's own filesystem, the same rule `quotes` and `expense-tracker`
+It is the caller's own filesystem, the same rule `quotes` and `expense-tracker`
 use. What is guaranteed is that a directory, a missing parent, a wrong extension and an existing file are each
 refused with a sentence, before anything is encoded, and that the target is untouched.
 
-**Free is the SVG tier, not a small-PNG tier.** For the thing most people do with a code (put it in a document
+For the thing most people do with a code (put it in a document
 and print it) SVG is the better file. The numbers are in the README.
 
 ---
@@ -74,7 +74,7 @@ Harness: `servers/barcode/test/_client.mjs` spawns `node servers/barcode/dist/in
 
 ### The defects the probes caused
 
-**1. The free monthly cap could be exceeded by two processes (probe 20, P0).** The cap was read under one lock
+The cap was read under one lock
 and the register row was appended under another. Two servers on one data directory both read 19 and both wrote:
 **23 codes were drawn against an allowance of 20**, a 15% overrun, and every one of them was the thing being sold.
 Fixed by making the count and the row one critical section (`reserve()` in `src/index.ts` now appends the row it
@@ -114,8 +114,6 @@ the path exactly as given, before any extension is appended.
 ---
 
 ## Measured insight
-
-**A wrong symbology table does not look wrong. It looks like a barcode.**
 
 The Code 128 pattern table was transcribed by hand, 107 rows of six digits. It passed every structural invariant
 worth writing: each row 11 modules wide, each row starting with a bar, three bars and three spaces, even bar

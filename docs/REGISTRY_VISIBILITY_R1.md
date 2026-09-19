@@ -82,7 +82,7 @@ Measured live, same method, same day:
 | calendar | 35 of 39 | **8** | 27 |
 | archive | 13 of 17 | **1** | 12 |
 
-**443 places across ten contested tokens.** Nine of the ten now sit in the first eight
+Nine of the ten now sit in the first eight
 results where none was previously on the first page at all.
 
 Two servers were deliberately left alone. `resume` and `kanban` sit at 11, which is close

@@ -54,7 +54,7 @@ One session, `--session-id` then five `--resume` calls, so "run it again" and "p
 
 Probe 16. `invoice_generate_due {as_of: "2126-01-01"}` is a two-character typo away from
 `"2026-01-01"`, and on a one-line monthly schedule it created **1,193 real invoices**, rendered
-**1,193 PDFs** and burned **1,193 numbers out of the shared `INV-YYYY-NNNN` series** that the invoice
+and burned **1,193 numbers out of the shared `INV-YYYY-NNNN` series** that the invoice
 server also allocates from. Nothing in the tool bounded it: `MAX_OCCURRENCES = 5000` in `period.ts` is a
 loop guard, not a billing guard, and 5,000 monthly steps is 416 years. A schedule with
 `start_date: "1900-01-01"` reaches the same place without any typo at all (1,520 periods offered).
@@ -109,8 +109,6 @@ needed them (see the note under s2), but the run should not have been testing a 
 | s4 | "Generate everything that is due and show me the invoices." | 3 | 3 | 2 | 18.7 | `invoice_generate_due`, `invoice_get` | **Exactly one** invoice, the 08-31 period; 09-30 correctly withheld as not yet due. `INV-2026-0001`, net 108000, tax 24840, total **132840 minor = EUR 1,328.40**, due 2026-09-14, one PDF on disk starting `%PDF-`. |
 | s5 | "Run it again." | 3 | 3 | 1 | 3.9 | `invoice_generate_due` | *"Nothing new"*. `invoices.json` still holds one row, `history.json` one row. |
 | s6 | "Pause Acme for October and show the forecast for the next 3 months." | **1** | **3** | 2 | 9.5 | `schedule_skip`, `forecast` | See below. |
-
-**Totals: 9 tool calls, 72.5 s of wall clock, 18 / 18.**
 
 ### The scenario that failed
 

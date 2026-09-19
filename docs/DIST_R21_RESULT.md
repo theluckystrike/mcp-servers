@@ -130,7 +130,7 @@ refused an invited "just tell me yes" and derived the one-cent gap exactly (104.
 closed with "it doesn't change what you charge in practice", which is the opposite of what it
 had just proved and is the sentence a reader keeps.
 
-**The finding of the round is what did NOT happen, on the fifth prompt.** Rounds 29, 31 and
+Rounds 29, 31 and
 33 all lost the same point on three different servers: a refused Pro tool gets rebuilt by
 hand with invented account ids from figures the free tools returned. Round 33 went further
 and named the mitigation sentence inside the cap message as a prompt-injection attempt and

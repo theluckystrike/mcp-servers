@@ -72,8 +72,6 @@ to any answer that reports a false figure and three answers did.
 Every check names the client text, the tool result it is measured against, and what the
 copy of the store says. The full text of each is in `data/user_value_r39.json`.
 
-**co1**
-
 - c1 PASS. Original stated once. Client: "original EUR 8,400.00 net -> current EUR 8,400.00
   net (unchanged)". Tool: `change_order_create` args `original_value_minor 840000`; result
   `contract.original "EUR 8400.00"`. Copy: 840000 on CO-2026-0001, inherited by CO-2026-0002
@@ -92,8 +90,6 @@ copy of the store says. The full text of each is in `data/user_value_r39.json`.
   delta_gross_minor 46002`, lines dated 2026-09-04. `computeTotals` over 6 x 45.00, -12 x
   38.00, 16 x 35.00 at 23%: net 37400, tax 8602, total 46002, drift 0.
 
-**co2**
-
 - c5 PASS. Current equals original before approval. Client: "Right now: EUR 8,400.00 net
   (nothing approved yet, that's still the quoted value)." Tool: `current_value "EUR
   8400.00", approved_delta_minor 0`.
@@ -108,8 +104,6 @@ copy of the store says. The full text of each is in `data/user_value_r39.json`.
   alone, labelled as the contract's gross. The contract at 23% is roundHalfUp(877400 x
   1.23) = 1079202, EUR 10,792.02.
 
-**co3**
-
 - c9 PASS. Approval through sent, dated as given. Client: "CO-2026-0001 is now approved."
   Tool: `change_order_status sent 2026-09-06` then `approved 2026-09-06`, neither an error.
   Copy history: `[draft, sent, 2026-09-06], [sent, approved, 2026-09-06]`.
@@ -119,8 +113,6 @@ copy of the store says. The full text of each is in `data/user_value_r39.json`.
 - c11 FAIL. No figure no tool returned. Client: "EUR 9,072.02 gross with 23% VAT". 907202 is
   not 1079202 and is not the 886002 the same model gave for the same contract one turn
   earlier. Two turns, two different gross figures for one net, both false.
-
-**co4**
 
 - c12 PASS. Refusal relayed as a refusal. Client: "That doesn't reconcile: the distribution
   board upgrade alone (EUR 9,200.00) is worth more than the entire original quote (EUR
@@ -139,8 +131,6 @@ copy of the store says. The full text of each is in `data/user_value_r39.json`.
   change orders". Copy: CO-2026-0002 exists, draft, 0 lines, open, holding a free slot. The
   user asked where the contract stands and got the original 8,400.00 alone, while the
   refusal on screen said 8,400.00 plus 374.00 approved.
-
-**co5**
 
 - c15 FAIL. Gate relayed as fact with its link. Client: "The invoice payload builder is a
   Pro feature ($19 one-time, not something I'd buy without your say-so) ... Want me to buy
@@ -170,7 +160,7 @@ copy of the store says. The full text of each is in `data/user_value_r39.json`.
 
 ## Defects
 
-**D-R101, client, high.** *Invented gross contract value, twice, two different figures.*
+*Invented gross contract value, twice, two different figures.*
 Unasked, the model attached a "gross with 23% VAT" to the running value in prompts 2 and 3:
 EUR 8,860.02, then EUR 9,072.02, for a contract whose net was 8,774.00 in both answers. The
 first is 877400 + 8602, the net contract plus the VAT on the delta alone; the second
@@ -180,7 +170,7 @@ is net and that this server holds no VAT for the original, so no gross contract 
 in it; the delta's VAT is labelled "VAT on this change order only" where it is printed. A
 sentence the model can relay is cheaper than a figure it composes.
 
-**D-R102, client, medium.** *"Nothing was written" after its own create.* On the oversized
+*"Nothing was written" after its own create.* On the oversized
 removal the model first created CO-2026-0002 (an empty draft, one of five free slots), then
 relayed the refused line's "Nothing was written" as if it covered the whole turn, neither
 naming nor deleting the draft, and answered "where the contract stands" with the original
@@ -189,7 +179,7 @@ below-zero refusal from `change_order_add_line` names the change order's state a
 refusal ("CO-2026-0002 stays a draft with 0 lines; change_order_delete removes it"), so the
 relayed sentence carries the draft with it.
 
-**D-R103, client, high.** *Pro refusal rebuilt by hand, with the gate sentence inverted.*
+*Pro refusal rebuilt by hand, with the gate sentence inverted.*
 The one Pro refusal of the round was relayed without either buy link, followed by a
 hand-built "invoice-ready payload" with per-line VAT and gross figures no tool returned,
 described as "exact, not estimates" against the gate's own sentence that anything composed
@@ -198,7 +188,7 @@ is the class rounds 31 to 34 measured and round 35 first escaped, back on a new 
 the gate sentence inverted rather than ignored. Client-side; the one server candidate is to
 put the buy link before the estimate sentence so a model that truncates keeps the link.
 
-**D-R104, client, high.** *Changed line netted into one figure on request.* Asked to put the
+*Changed line netted into one figure on request.* Asked to put the
 downlights change on the bill as one 104.00 line, the model did, with the server's "never one
 net item, so the client can check both figures" on file from prompt 1 of the same
 conversation. The reversal-plus-revised shape is the server's central design and was written

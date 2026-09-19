@@ -30,7 +30,7 @@ the posting rules, the bank matching, the trial balance and the CSV writer).
 
 ## Design decisions worth stating
 
-**The bank import posts nothing.** This is the decision the whole ledger rests on and it is
+This is the decision the whole ledger rests on and it is
 counter-intuitive, because the account is called cash and the bank statement is the record
 of cash. A bank line and a payment record are not two transactions, they are one transaction
 seen twice: `invoice_mark_paid` records the receipt, and the same receipt arrives again when
@@ -42,19 +42,19 @@ refund or asset behind it is a payment nobody entered, and a posted cash movemen
 bank line behind it either has not cleared or did not happen. See the measured insight
 below; this is the single decision that changes the most numbers.
 
-**A bank row that could match two postings is matched to neither.** Picking the first would
+Picking the first would
 be a coin toss written into a ledger, and two candidates for one bank line is exactly the
 case a human has to look at. Probe 20 seeds two expenses of the same amount on the same day
 against one bank debit.
 
-**Nothing is ever balanced with a plug.** Every entry is posted exactly as the source
+Every entry is posted exactly as the source
 document states it, and when its own legs do not add up the entry is still posted and the
 difference is raised by name. A trial balance can only find a broken document if it is
 allowed to come out non-zero: forcing a balancing figure would turn the one check this
 server exists for into a formality that always passes. `offenders` names the entry, the
 source server and the source document behind every unit of the difference.
 
-**An unreadable store is never read as an empty one, and no store is fatal.** The invoice
+The invoice
 ledger is not fatal either, unlike in `servers/statement-of-account`, because a business
 with only bank imports and expenses still has a cash book. What a missing store costs is
 stated per store and in words, and the reason it has to be stated is that a ledger short one
@@ -62,7 +62,7 @@ whole store still balances perfectly: both legs of every missing entry are missi
 `sources` block carries `read: false` with an error, which is a figure that could not be
 computed, distinctly from `read: true, rows: 0`, which is a figure that is genuinely zero.
 
-**A deposit applied to an invoice never touches cash.** `deposit_apply` in
+`deposit_apply` in
 `servers/deposits` raises the invoice's `paid_minor` and appends nothing to `payments[]`,
 and the cash arrived earlier, when the deposit was received. So the application debits
 deposits held and credits receivables. The first cut posted it to cash, which received the
@@ -73,37 +73,37 @@ not re-implemented here. `paymentRows` from `servers/statement-of-account` alrea
 including what to do when the deposit book and the invoice ledger disagree, and a second
 copy of a reconciliation rule is a second rule to drift.
 
-**The VAT comes out of the gross, never on top of it.** `servers/expense-tracker` stores an
+`servers/expense-tracker` stores an
 expense amount VAT-INCLUSIVE, so the input VAT is `round(gross * rate / (100 + rate))` and
 the category account takes the rest. Adding it on top would overstate the expense and the
 reclaim together, and both figures would look ordinary.
 
-**A purchase order is a memo and is never posted.** An order is a commitment, not a
+An order is a commitment, not a
 transaction: nothing has been delivered and nothing is owed. A ledger that posts an open
 order reports a liability the business does not have, and it is the kind of liability that
 gets believed because it came out of a computer.
 
-**A credit note is stored negative by `servers/billing-docs`,** which is the sign a ledger
+which is the sign a ledger
 wants, so no row here flips one. A credit note found stored POSITIVE is posted as it stands
 and flagged, because a silent flip would hide the fact that something other than that server
 wrote the row.
 
-**Currencies are never added together.** One ledger is one currency, a period holding two is
+One ledger is one currency, a period holding two is
 refused by name until one is chosen, and the documents in the other are counted as excluded
 rather than silently dropped. There is no exchange rate in this server, so a single trial
 balance over a EUR book and a USD one would be an invented number that balances.
 
-**A close is a snapshot, not a freeze.** `month_close` records what the trial balance said
+`month_close` records what the trial balance said
 at the moment of closing. It does not and cannot freeze the sibling stores, which this
 server does not own; closing again after one of them moved reports the drift by name rather
 than quietly adopting the new figure. The snapshot is the only place that change is visible.
 
-**This ledger opens at nothing.** It derives only what the period itself contains, so an
+It derives only what the period itself contains, so an
 account balance here is the period's MOVEMENT. No opening balance is carried in from a book
 this server does not keep, because an opening figure that nobody can walk back to a document
 is the first invented number in a set of books.
 
-**The free cap is on the PERIOD, not on the question.** `trial_balance` and `ledger_lines`
+`trial_balance` and `ledger_lines`
 are free and unlimited on every tier: whether the books add up is the question this server
 exists for, and a free tier that hides the answer is a demo. Three distinct periods a
 calendar month are metered by from, to and currency, so rebuilding one already in the

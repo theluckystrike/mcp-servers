@@ -14,15 +14,13 @@ Pro unlocks the limits for a one-time payment: $19 per server or $39 for the bun
 41 servers plus the office-suite aggregator, 41 of them also reachable as a hosted endpoint with no install.
 <!-- /gen:counts -->
 
-**No install? Use any server instantly as a hosted endpoint: `https://mcp.zovo.one/mcp/<server>` — or browse the catalog at [mcp.zovo.one](https://mcp.zovo.one).**
+No install? Use any server instantly as a hosted endpoint: `https://mcp.zovo.one/mcp/<server>` — or browse the catalog at [mcp.zovo.one](https://mcp.zovo.one).
 
 <!-- gen:install -->
 ![invoice](assets/demo-invoice.gif)
 
 That is the invoice server answering a real prompt: a client, some hours, a VAT rate, and a numbered PDF at the end.
 Every server in the table below has a demo like it.
-
-**Two ways to run any of these, both working today.**
 
 1. **One click.** Download the server's `.mcpb` bundle from the [latest release](https://github.com/theluckystrike/mcp-servers/releases/latest) and open it in Claude Desktop. No terminal, no config file.
 2. **No install at all.** Point a client at `https://mcp.zovo.one/mcp/<server>`. `GET https://mcp.zovo.one/mcp/connect` mints a free token and prints a ready URL for each server.

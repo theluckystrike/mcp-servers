@@ -650,7 +650,7 @@ three are accepted risks, documented at the end. Deployed as version
 `https://mcp.zovo.one`; `node scripts/validate.mjs` stayed at `remote: 14/14`
 (run 42, 127/127 overall).
 
-**1. Sheet names are confined (`remote/src/shims/sheet-load.ts`, `safeName`).** A name is
+A name is
 now rejected, not sanitised: a rejected name never silently becomes a different file. No
 `/` or `\`, no `..`, no leading dot, no `.tmp` / `.lock` / `.corrupt` suffix, and 1-64
 characters of `[A-Za-z0-9_-]` once an optional `.csv/.tsv/.txt/.xlsx/.xlsm/.json`
@@ -661,7 +661,7 @@ tool's `path` argument and to `out_path`, so no argument can address a key outsi
 "reserved"; `.hidden` -> "cannot start with a dot"; `my sheet!` and a 70-character name ->
 the charset/length error; `ok_name-1.csv` still loads.
 
-**2. Tenant ids are delimiter-free (`remote/src/index.ts`, `TENANT_ID_RE`).** KV keys are
+KV keys are
 `${tenant}:${server}` and the sweep deletes by the `${tenant}:` prefix, so an id
 containing `:` made one tenant's prefix a prefix of another's. Licence ids and anonymous
 token bodies must now match `/^[A-Za-z0-9_-]{1,64}$/` before any key is built; a key with
@@ -669,13 +669,13 @@ an unusable id is refused with 401 `invalid_license`. Verified with keys signed 
 ids `abc:spreadsheet`, `meta:x` and `a/b` (all 401 with the reason above) and `ok_id-1`
 (initialises normally).
 
-**3. `appendFileSync` enforces the aggregate cap (`remote/src/shims/fs.ts`).** An append is
+An append is
 now a write of the concatenation and goes through the same `checkCaps` as
 `writeFileSync`; on refusal nothing is written and the previous content is untouched.
 Verified in a bundled unit run against the real shim: 200 appends of 10 bytes under a
 1 KB cap stop at 1010 bytes of file with the "over the 1 KB cap" message.
 
-**5. 64 files per tenant, and an incremental byte counter (`remote/src/shims/fs.ts`).**
+5. 64 files per tenant, and an incremental byte counter (`remote/src/shims/fs.ts`).
 `recount()` runs once per request at hydration; every later mutation adjusts `ctx().bytes`
 and `ctx().nfiles`, so a write no longer rescans and re-encodes the whole map. `MAX_FILES`
 is 64 persisted files per tenant per endpoint (plus a hard 128-entry ceiling that also
@@ -685,7 +685,7 @@ counts scratch files). `sheet_load` and `sheet_unload` now go through `writeFile
 incremental counter equals it. Verified live: sheets `s1..s64` load, `s65` returns "your
 token already keeps 64 files", and `sheet_files` reports 64.
 
-**6. The body cap is enforced on the stream (`remote/src/index.ts`, `readBodyCapped`).**
+6. The body cap is enforced on the stream (`remote/src/index.ts`, `readBodyCapped`).
 The declared `content-length` is still rejected first; a body with no usable length is now
 read chunk by chunk and abandoned with 413 the moment it passes 256 KB, before anything is
 parsed. Cloudflare's edge supplies a `content-length` even for a chunked upload, so the
@@ -694,7 +694,7 @@ streaming branch was verified under `wrangler dev` (local workerd): a 400 KB chu
 normal small request still returns 200. Against production both the declared-length and
 chunked forms return 413.
 
-**9. The admin sweep is POST-only (`remote/src/index.ts`).** The method is checked before
+The method is checked before
 the secret, so the route is never reachable by a link or a prefetch. Verified: `GET` and
 `HEAD /mcp/admin/sweep` return 405 with `allow: POST`, with or without a secret header;
 `POST` with a wrong secret returns the usual 404.
@@ -734,18 +734,18 @@ the chunked `readCsvHead` path.
 
 ### Accepted risks
 
-**4. The quota counts decoded bytes.** An xlsx is charged its decoded size while KV stores
+An xlsx is charged its decoded size while KV stores
 base64 inside a JSON document, roughly a third more, and an outstanding one-hour download
 copy is not charged at all. The cap is therefore a lower bound on real KV usage, by a
 bounded and known factor. Accepted: charging serialised bytes would make the caller-facing
 number ("87.1 KB of 2 MB") stop matching the data they sent.
 
-**7. Counters are eventually consistent.** The rate-limit and token-mint counters are KV
+The rate-limit and token-mint counters are KV
 read-modify-write, so concurrent requests can observe the same count and a burst can
 briefly exceed the limit. They are ceilings on sustained use, not admission control.
 Accepted: a Durable Object per token would make every request pay a coordination hop.
 
-**8. Last write wins per tenant.** The tenant document is read at the start of a request
+The tenant document is read at the start of a request
 and written at the end, so two concurrent requests for one token both write a whole
 document and the later one wins; the sweep is likewise not fenced against an active
 tenant. Accepted for the same reason as 7 - one token is one client, and the failure mode
@@ -793,14 +793,14 @@ Three things make that safe:
 
 A refresh happens at most once per worker invocation, because the vendored read-through only
 downloads when its own copy is over the age limit. Concurrency across isolates is guarded
-**best effort** with `shared:ecb:lock:<key>` (60 s TTL): a request that finds the cache stale
+with `shared:ecb:lock:<key>` (60 s TTL): a request that finds the cache stale
 and the lock held re-reads the key once, in case the holder has just finished, and otherwise
 takes the lock itself. Two isolates can still download the same file; both then write the
 same content and the last one wins, which is exactly the stdio server's own tmp+rename
 guarantee. On a successful refresh the new bytes are put back to the shared key and the lock
 is dropped.
 
-**SSRF: an allowlist, not a denylist.** `baseUrl()` no longer reads `ECB_BASE_URL`, and
+`baseUrl()` no longer reads `ECB_BASE_URL`, and
 `fetchText` runs `guardEcbUrl()` first: `https:` only, host exactly `www.ecb.europa.eu` or
 `ecb.europa.eu`. That is strictly stronger than the price-tracker's private-range guard -
 no private, loopback or metadata address can name itself the ECB.
@@ -966,8 +966,6 @@ $ clauses contract_assemble {title: "Service Agreement", categories: ["payment"]
 `GET /mcp` now lists eleven endpoints. `tools/list`: resume 13, recurring 14, clauses 12.
 `servers/{resume,recurring,clauses}/remotes.json` were added in the `time-tracker` shape, and
 `scripts/validate.mjs` covers the three endpoints plus one real call each:
-**remote 26/26, whole run 247/247.**
-
 ### Limitations
 
 - `clause_import` reads a file from a disk this endpoint does not have. It now says so and
@@ -1208,12 +1206,12 @@ no-op. `strip: ["/uploads/"]` (a new `ServerCfg` field that also replaced the ha
 `product === "spreadsheet"` branch in the response rewriter) keeps the virtual root out of
 the answer: the caller sees `probe.pdf`, which is the name they uploaded.
 
-**The upload limit.** `MAX_UPLOAD_BYTES` is 2 MB, but the 256 KB request-body cap binds long
+`MAX_UPLOAD_BYTES` is 2 MB, but the 256 KB request-body cap binds long
 first: a base64 payload inside a JSON-RPC envelope leaves roughly **190 KB of actual PDF per
 POST**. That is stated in the `pdf_upload` description, in the `pdf` entry of `GET /mcp`, and
 in the refusal text. A bigger file has to be split before upload, or run over stdio.
 
-**pdf-lib and node:zlib under `nodejs_compat`: both work, verified live.** pdf-lib parses,
+pdf-lib parses,
 copies pages, embeds `StandardFonts.HelveticaBold` and saves; `pdf_text` decompressed the
 FlateDecode content streams with `node:zlib` and read the text back. `Buffer` is not a global
 on Workers, so `servers/pdf/src/text.ts` is vendored with an added `import { Buffer } from
@@ -1373,8 +1371,6 @@ URL for never appeared in the answer and **every batch link was silently lost**.
 the full path now and `strip: ["/uploads/", "/out/"]` removes the roots from whatever is left
 (an input named in a sentence, say), so a caller sees `probe-32.png` and never a virtual path.
 
-**jimp under `nodejs_compat`: two real blockers, both fixed.**
-
 1. *The `browser` export condition.* Wrangler's bundler resolves it, and in this install
    `jimp/dist/browser/index.js` is a one-line stub (`export {}`), so every named import
    failed at build time. `rewriteSpec` maps the `jimp` specifier to its ESM build by file
@@ -1443,8 +1439,6 @@ $ image image_watermark {path: "probe", out_path: "w"}
 `servers/image/remotes.json` already had, and `scripts/validate.mjs` covers both endpoints in
 the `tools/list` sweep plus three real calls (kanban task_add + board, image upload + info +
 resize + download signature and content type, image_convert for the decode/encode proof):
-**remote 42/42, whole run 366/366.**
-
 ### Limitations
 
 - 190 KB of image per POST is the real ceiling, not the 2 MB per-file cap -- the same
@@ -1673,8 +1667,6 @@ transactions_list -> the transaction imported from it is still there
 had, and `scripts/validate.mjs` covers the endpoint in the `tools/list` sweep plus three
 real calls (bank_upload + statement_import + re-import duplicate count, recurring_detect,
 statement_export download signature and content type):
-**remote 46/46, whole run 370/370.**
-
 ### Limitations
 
 1. **The parser reads delimited text, not OFX or QIF.** That is the stdio server's own
@@ -1902,7 +1894,7 @@ error you would see in a test.
 1. *The `browser` map.* `qrcode`'s `package.json` carries
    `"browser": { "./lib/index.js": "./lib/browser.js", "fs": false }`, and wrangler's
    bundler resolves it, so `import QRCode from "qrcode"` would silently become the
-   **canvas** renderer: `lib/browser.js` draws through `document.createElement("canvas")`,
+   renderer: `lib/browser.js` draws through `document.createElement("canvas")`,
    which does not exist here. This is jimp's blocker exactly (Extension 5), and it takes
    jimp's fix: `rewriteSpec` maps the `qrcode` specifier to
    `node_modules/qrcode/lib/server.js` by file path, so the exports map is never consulted.
@@ -2110,7 +2102,7 @@ it re-exports the patched `paths.ts` and the untouched `zipfile.ts`, so a later 
 importing `@theluckystrike/mcp-zip/lib` here gets the hosted shapes rather than a module that
 cannot load.
 
-**fflate bundles, with the entry point pinned.** Its exports map offers a `node` condition
+Its exports map offers a `node` condition
 whose ESM build opens with `createRequire("/")` and `require("worker_threads")` at module
 load; the `import` condition is `esm/browser.js`, the same pure-JS codebase with the worker
 shim behind a function the sync API never calls. Which one a bundler picks is a condition-order
@@ -2187,7 +2179,7 @@ endpoint needs both: an **archive** to inspect and a plain **file** to pack.
   `.tmp/.lock/.corrupt`, 1-64 characters of `[A-Za-z0-9_-]` with an optional extension.
   No extension means `.zip`.
 - One upload is capped at 1 MB and the 256 KB request-body cap binds long first: about
-  **190 KB of archive per POST** once base64 sits inside a JSON-RPC envelope. That is stated in
+  once base64 sits inside a JSON-RPC envelope. That is stated in
   the `zip_upload` description, in the `zip` entry of `GET /mcp`, and in the refusal text, as the
   other upload shims now do.
 
@@ -2738,8 +2730,6 @@ $ billing-docs credit_note_list {invoice: "INV-2026-0002"}
 run, with the next cent refused; `credit_note_pdf`'s download content type, title, heading
 and the invoice it names; `purchase_order_create` -> `purchase_order_receive` ->
 `billing_docs_report`), and the index assertion moved from 19 endpoints to 20:
-**remote 72/72, whole run 475/475.**
-
 ### Limitations
 
 - **The download is HTML, not a PDF**, the same trade `invoice_pdf` and `quote_pdf` make:
@@ -2996,14 +2986,14 @@ first use" and `lib.ts` with "The tables are read from disk on first use"; both 
 been the only sentences in the vendored copy that lied about what it does. The `must()`
 discipline applies to a claim as much as to a call.
 
-**A build assertion, on the bytes that were written.** Three of them, after the copy:
+Three of them, after the copy:
 the vendored `tables.ts` must no longer contain `readFileSync` or `import.meta.url`; all
 five ids `FILES` names must be present in the generated data; and each parsed table must
 still carry `header.source_url`, `header.effective_date` and a `rates` array. The last one
 is the one that matters - an inline that silently produced `{}` would pass a name check and
 fail a taxpayer.
 
-**The lib assertion got wider.** Extension 11's rule (every `@theluckystrike/mcp-<x>/lib`
+Extension 11's rule (every `@theluckystrike/mcp-<x>/lib`
 import in a vendored server must have `x`'s `lib.ts` in `SERVERS`) scanned `index.ts` only.
 per-diem imports `readJsonFile` from `@theluckystrike/mcp-timezone/lib` in **`store.ts`**
 and `isValidZone`, `resolveZone`, `wallIn`, `offsetMinutes` and `zonedToUtc` from the same
@@ -3203,7 +3193,7 @@ id in `TABLES[name].ids` must be present in the generated `tables-data.ts`; and 
 table must still carry `header.source_url`, `header.effective_date` and a `rates` array.
 The generated `tables-data.ts` is 13,919 bytes, holding 12,410 bytes of JSON.
 
-**The lib assertion needed nothing.** Extension 13 widened it to scan every file in a
+Extension 13 widened it to scan every file in a
 server's own `SERVERS` list rather than `index.ts` only, and that is exactly what this
 server needed: `store.ts` imports `readJsonFile` from `@theluckystrike/mcp-timezone/lib`
 and `index.ts` imports it nowhere - per-diem's shape again. The timezone engine's `lib.ts`
@@ -3556,8 +3546,6 @@ which is the as-at rule stated as a number: the naive rule reports 35000 there a
 overdue. The third is `dunning_text` level 1 carrying the profile IBAN and the no-invented-fee
 sentence, beside `statement_pdf`'s download content type, `<title>`, `<h1>` and the client
 name in the body. The index assertion moved from 23 endpoints to 24:
-**remote 88/88, whole run 641/641.**
-
 ### Limitations
 
 - **The download is HTML, not a PDF**, the same trade `invoice_pdf`, `quote_pdf`,
@@ -3998,8 +3986,6 @@ correction applied before it could bite: the tenant behind the bundle key is not
 between runs, so `outstanding_by_currency` sums every EUR loan a previous run left in the
 register and is not a stable figure. `per_loan.find(x => x.id === amId)` is. The same reason
 makes `loan_create` mint a uniquely named loan per run rather than reusing one.
-**remote 98/98, `node scripts/validate.mjs` run 50: 719/719.**
-
 ### Limitations
 
 - The free cap is 3 loans; `loan_schedule` and `loan_list` are free and unlimited. The

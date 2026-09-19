@@ -63,7 +63,7 @@ claude mcp add credit-note -- npx -y @theluckystrike/mcp-credit-note
 
 Finalizing is the metered act because that is what turns a draft into the document the client sees. Everything else is free and unlimited: a free tier that withholds the rendered document or the totals is a demo, and ten real finalized credit notes is a working year for a freelancer who credits an invoice now and then.
 
-**Get Pro:** https://mcp.zovo.one/buy/credit-note -- $19 one-time for this server, or $39 for the bundle.
+Get Pro: https://mcp.zovo.one/buy/credit-note, $19 one-time for this server, or $39 for the bundle.
 
 ## The rounding rule
 

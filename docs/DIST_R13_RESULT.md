@@ -154,7 +154,7 @@ written out by name, the CLI's own file and web tools denied, one conversation v
 `--resume`, empty working directory. Seeded by direct JSON-RPC: the business profile, one client, the
 mixed-VAT `INV-2026-0001` and a plain `INV-2026-0002`.
 
-**16 of 18, 9 tool calls, 57.8 s, zero tool errors.** b1 credit in full 3, b2 the EUR 177.00 partial 3,
+b1 credit in full 3, b2 the EUR 177.00 partial 3,
 b3 the over-credit 1, b4 purchase order 3, b5 partial receipt 3, b6 overdue deliveries 3.
 
 The one lost scenario is a client-side defect, recorded as D-R86: on b3 the model refused the over-credit

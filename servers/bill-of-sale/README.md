@@ -3,7 +3,7 @@
 [![theluckystrike/mcp-bill-of-sale MCP server](https://glama.ai/mcp/servers/theluckystrike/mcp-bill-of-sale/badges/score.svg)](https://glama.ai/mcp/servers/theluckystrike/mcp-bill-of-sale)
 
 **In the [official MCP Registry](https://registry.modelcontextprotocol.io/v0.1/servers/io.github.theluckystrike%2Fbill-of-sale/versions/latest)** (`io.github.theluckystrike/bill-of-sale`).
-Record a sale and get a signed-paper-ready bill of sale. Tell your assistant who sold, who bought, what the item is -- with the VIN, serial number or IMEI where it has one -- the price and the date, and the server writes the document: parties, item, price, an as-is clause for second-hand sales, any warranty in your own words, and signature lines for both sides. Work on it as a draft, finalize it into the frozen signing copy, and print it as Markdown or as a single self-contained HTML file that prints to PDF from any browser with no assets beside it. Everything stays on your machine; there is no account and no network call in this server at all.
+Record a sale and get a signed-paper-ready bill of sale. Tell your assistant who sold, who bought, what the item is, with the VIN, serial number or IMEI where it has one, the price and the date, and the server writes the document: parties, item, price, an as-is clause for second-hand sales, any warranty in your own words, and signature lines for both sides. Work on it as a draft, finalize it into the frozen signing copy, and print it as Markdown or as a single self-contained HTML file that prints to PDF from any browser with no assets beside it. Everything stays on your machine; there is no account and no network call in this server at all.
 
 Built by theluckystrike.
 
@@ -62,7 +62,7 @@ claude mcp add bill-of-sale -- npx -y @theluckystrike/mcp-bill-of-sale
 
 The document itself is never metered. Whether you hold a signed record of the sale is the question this server exists to answer, and a free tier that withholds the document is a demo. What is metered is the volume of records held: ten open drafts and five finalized documents is a real year of side-business sales, not a trial. `sale_delete` is free for the same reason the cap is on records held: a draft typed in twice would otherwise cost a slot with no way back but a key.
 
-**Get Pro:** https://mcp.zovo.one/buy/bill-of-sale -- $19 one-time for this server, or $39 for the bundle.
+Get Pro: https://mcp.zovo.one/buy/bill-of-sale, $19 one-time for this server, or $39 for the bundle.
 
 ## How a sale flows
 

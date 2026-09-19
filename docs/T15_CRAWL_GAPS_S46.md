@@ -42,7 +42,6 @@ Aggregate (from `crawler_url_coverage`):
 | GPTBot | 15 | 21 | 7.8% |
 | bingbot | 3 | 32 | 1.6% |
 
-**Never-fetched by ANY of the 4 crawlers, per section:**
 - /guides/: 95 of 109
 - /s/: 30 of 42
 - /setup/: 5 of 8
@@ -62,7 +61,7 @@ Evidence:
 
 Cross-reference: all 95 never-crawled guides appear in BOTH the homepage link set and the /guides hub link set.
 
-**Result: ZERO orphans.** Every never-crawled guide has at least one inbound internal link from the homepage and from the /guides hub. The crawl gap is NOT caused by missing internal links. It is a crawl-budget / prioritization problem: crawlers are not spending their limited budget on the long tail of guides, even though all are linked.
+Every never-crawled guide has at least one inbound internal link from the homepage and from the /guides hub. The crawl gap is NOT caused by missing internal links. It is a crawl-budget / prioritization problem: crawlers are not spending their limited budget on the long tail of guides, even though all are linked.
 
 ## 4. Ranked top-5 fixes (for orchestrator next session)
 

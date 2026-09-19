@@ -1,7 +1,5 @@
 # T3 S45: Sitemap + Robots + SEO-Infrastructure Audit and Upgrade
 
-**STATUS: complete**
-
 ## Scope
 Audit and improve crawler-facing infrastructure for https://mcp.zovo.one:
 - robots.txt (allows /guides, /s, /setup, /compare)
@@ -45,7 +43,7 @@ Sitemap: https://mcp.zovo.one/sitemap.xml
 | /setup (index) | ✅ | ✅ | ❌ | ✅ TechArticle + Organization + Person |
 | /setup/{client}/{server} | ✅ | ✅ | ❌ | ✅ (noindex,follow) |
 
-**Single gap across all templates: OpenGraph tags.** canonical + meta description + JSON-LD already present everywhere. lastmod already present. No stuffing needed.
+canonical + meta description + JSON-LD already present everywhere. lastmod already present. No stuffing needed.
 
 ## Changes Implemented (billing/src/index.js)
 

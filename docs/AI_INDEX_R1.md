@@ -151,7 +151,6 @@ Depth probes, each an independent query, unioned:
 | section `/setup` | `?q=site%3Amcp.zovo.one%2Fsetup` | 0 |
 | section `/compare` | `?q=site%3Amcp.zovo.one%2Fcompare` | 0 |
 
-**Distinct retrievable URLs in Brave: 1 of 154 sitemap URLs (0.65%).**
 Not one of the 15 guides, 19 compare pages or 8 setup pages is retrievable.
 
 This corroborates `docs/BLIND_RECOMMENDATION_R1.md` exactly: that blind run surfaced
@@ -195,7 +194,6 @@ Run spaced 14s apart by hand because the script's tighter loop trips Brave's rat
 | mcp server kanban board | 24 | — |
 | mcp server for freelancers | **UNMEASURED** (HTTP 429 on two attempts) | — |
 
-**14 of 15 measured. We appear in 2 of 14. We appear in the top 10 of ZERO of 14.**
 Both appearances are rank 16 and rank 21 — below the fold, and below the result depth an
 assistant typically ingests. `github.com/theluckystrike/*` did not appear for any query.
 
@@ -295,7 +293,7 @@ https://searchadvisor.naver.com/indexnow -> HTTP 200 ""
 **Stated plainly: a 200 from IndexNow means *accepted for consideration*. It does not mean
 crawled, and it certainly does not mean indexed.** IndexNow exposes no status or read-back
 API, so there is no way to verify effect except by re-measuring the index later.
-**Re-measure on 2026-09-24** (14 days) with `node scripts/ai-index-probe.mjs`. The number to
+(14 days) with `node scripts/ai-index-probe.mjs`. The number to
 watch is Brave depth, currently 1; and bingbot's URL coverage in `data/traffic.json`,
 currently 35/141.
 

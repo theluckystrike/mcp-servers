@@ -52,7 +52,7 @@ rules with a test each that fails on the pre-fix source and passes on the fixed 
 
 ## The defects
 
-**D-R99, change-order, high, FIXED.** *A removal larger than the contract was accepted and
+*A removal larger than the contract was accepted and
 approved, and the running value went below zero.* `change_order_add_line` bounded the line
 by its own arguments only (quantity positive, price non-negative), never by what the
 reference is worth, so `removed 13 x 3999` against an original of 47988 was taken, the
@@ -77,7 +77,7 @@ can still print a negative projection while two such drafts are both open; that 
 projection of a set that the approval rule will not let happen, and it is left visible
 rather than clamped.
 
-**D-R100, change-order, medium, FIXED.** *The reversal and revised item descriptions
+*The reversal and revised item descriptions
 carried a bare MINOR figure into the MAJOR-unit invoice payload.* `deltaItems` wrote
 `"Website audit (was 3 x 45000, reversed: ...)"` and `"(now 5 x 42000)"` while the same
 item's `unit_price` was `450` for `invoice_create`. That is the 100x seam the whole payload

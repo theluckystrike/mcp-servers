@@ -10,7 +10,7 @@ The test is not "did it pick the right tool". It is whether the number at the en
 numbers at the start. A statement of account is the only document in this suite that reads three
 separate stores at once, so it is the only prompt that can be wrong because two servers disagree.
 
-**Result: 26 of 27.** Closing balance EUR 496.30, and it reconciles to the minor unit against the
+Closing balance EUR 496.30, and it reconciles to the minor unit against the
 invoice, the credit note and the deposit that produced it.
 
 ## Method
@@ -61,8 +61,6 @@ exclude the client's own `ToolSearch` schema lookups.**
 | 8 | per-diem | "I am going to Berlin ... Breakfast is included at the hotel both days. What diet am I owed?" | **3** | 1 | 13.5 |
 | 9 | statement-of-account | "Give me Acme's statement of account for September 2026 and show me the aging" | **3** | 2 | 9.1 |
 
-**Totals: 17 bundle tool calls, 118.6 s of wall clock, 26 / 27 (96%).**
-
 ## The month, in the figures the stores hold
 
 | Step | Server, tool | What the store holds |
@@ -86,13 +84,13 @@ exclude the client's own `ToolSearch` schema lookups.**
 it, at 224 tools on one `tools/list`.** Round 17 recorded the same result at 186 tools with nineteen
 children. Adding five more children and 38 more tools did not degrade selection.
 
-**The single point lost is not a selection failure.** On prompt 4 the model called the right tool,
+On prompt 4 the model called the right tool,
 `deposit_apply`, and the tool answered with `balance_due` EUR 607.00, which is the invoice total
 less the payment and takes no account of the credit note at all. The model caught it, said so, and
 built the real figure by hand: EUR 496.30. The right answer reached the user because the model
 remembered a document the tool it called cannot see. That is D-R96 below.
 
-**The free tier covered the whole month except one thing.** `asset_journal` is Pro and refused by
+`asset_journal` is Pro and refused by
 name on prompt 7. The model did not stop and did not invent a journal: it fell back to the free,
 unlimited `asset_schedule`, answered the actual question (September's charge is PLN 0.00, because
 the Polish convention starts depreciation the month after an asset enters use), and named the Pro
@@ -130,7 +128,7 @@ never off the model's prose.
 
 ## Defects
 
-**D-R95, invoice, open.** *A hand-written shared business profile silently loses the VAT rate.*
+*A hand-written shared business profile silently loses the VAT rate.*
 `business_set` accepts `vat_rate`, `tax_rate` and `vat` as aliases for `default_tax_rate`, but the
 shared-profile reader in `servers/invoice/src/store.ts` `getBusiness` maps only the exact key
 `default_tax_rate`. A first attempt at this round seeded the profile with `vat_rate: 23`; the very
@@ -139,7 +137,7 @@ and **nothing in the response said a rate had been dropped**. Reseeding with `de
 produced EUR 1,107.00. Fix: accept the same aliases the write path already accepts, or say in the
 response that the profile carried no default rate.
 
-**D-R96, invoice and deposits, open.** *The invoice store has no idea a credit note exists.*
+*The invoice store has no idea a credit note exists.*
 `deposit_apply` reported `balance_due` EUR 607.00, and a direct `invoice_get` probe carries only
 `total_minor` 110700 and `paid_minor` 50000, with no credited or open field at all. CN-2026-0001 is
 invisible to both. `statement-of-account` does net it, returning `open_minor` 49630, so the document

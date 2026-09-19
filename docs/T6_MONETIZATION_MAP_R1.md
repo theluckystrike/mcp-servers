@@ -5,7 +5,7 @@ STATUS: in progress
 
 ## 0. Headline
 
-**There is no per-page monetization gap.** Every one of the 42 `/s/<slug>` pages renders the same
+Every one of the 42 `/s/<slug>` pages renders the same
 template (`billing/src/index.js:1172-1212`), which unconditionally emits a `Buy Pro $<n>` anchor and a
 bundle cross-sell above the fold. A sweep of all 42 pages' `/buy/<slug>` routes returned a live
 checkout route for **42/42** — zero dead payment links. The real problems are (a) the buyer's own
@@ -46,7 +46,7 @@ Result: **no output** — all 42 `/buy/<slug>` routes answer `303` (live checkou
 
 Columns: **CK** = checkout/pricing link (`href="/buy/...` present), **HT** = hosted-try link
 (`/mcp/connect` + no-install URL line), **CFG** = MCP config snippet (`npx -y` / `mcpServers`),
-**UPG** = dedicated upgrade/Pro CTA (a labelled upgrade control beyond the buy link), **BUND** = bundle cross-sell.
+= dedicated upgrade/Pro CTA (a labelled upgrade control beyond the buy link), **BUND** = bundle cross-sell.
 
 | # | slug | tier | HTTP | CK | HT | CFG | UPG | BUND | Buy anchor text |
 |---|------|------|------|----|----|-----|-----|------|-----------------|
@@ -61,8 +61,6 @@ Columns: **CK** = checkout/pricing link (`href="/buy/...` present), **HT** = hos
 | 9 | catalogue | long-tail | 200 | y | y | y | n | y | `Buy Pro $19` |
 | 10 | asset-register | long-tail (sub. for `aging`) | 200 | y | y | y | n | y | `Buy Pro $19` |
 | — | aging | task-supplied | **404** | n | n | n | n | n | *page does not exist* |
-
-**Column evidence (per-page, `curl` + regex over the saved HTML):**
 
 ```bash
 python3 - <<'EOF'
@@ -91,7 +89,7 @@ Exact rendered top-of-page row, `invoice` (identical shape on all 42):
 "All 41" is correct, not stale: `SERVER_COUNT = SINGLE_PRODUCT_IDS.length` = 41 sellable products
 (`index.js:60,148`); the 42nd `PAGES` key is the `office-suite` bundle **alias**. See §4, G3.
 
-**Row 10 (`asset-register`) evidence:** `curl -A <browser UA> https://mcp.zovo.one/s/asset-register`
+`curl -A <browser UA> https://mcp.zovo.one/s/asset-register`
 → `200`, 36,833 B; `curl -A <browser UA> https://mcp.zovo.one/buy/asset-register?src=...` → `303`
 (live). Same template, same columns as row 9.
 
@@ -120,7 +118,7 @@ Key pointers (all `billing/src/index.js`, `wc -c` = 142,994 B):
 | dead `/buy/` 404 + click count | 1545-1553 | counts the miss, then offers `/buy/bundle?src=store.notfound` |
 | Stripe client | 663-671 | `https://api.stripe.com/v1/${path}` |
 
-**Verified end-to-end (the good news).** A *navigation-shaped* request gets the real checkout page:
+A *navigation-shaped* request gets the real checkout page:
 
 ```bash
 curl -sSL -A 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 \
@@ -170,14 +168,12 @@ link, and it is invisible to every automated/LLM consumer."** Content vs data at
 
 ## 5. Recommendations (top 3, ordered by effort)
 
-**R1 — Fix the site-wide "41 vs 42" count (lowest effort, highest credibility).**
 Change the bundle cross-sell string so the number it prints equals the number of servers the store
 actually lists. `curl` the four servers absent from the task's original list to confirm the true count
 in the grid, then make `SERVER_COUNT` and the homepage grid derive from the same `Object.keys(PAGES)`
 length instead of a literal. One-line change in the `/s/` body at `index.js:1206`, verified by
 `curl -s https://mcp.zovo.one/s/invoice | grep -o 'All [0-9]* for'`.
 
-**R2 — Make the paid path machine-visible (middle effort).**
 Every `/s` page already emits JSON-LD `Offer` at `index.js:1182` — good — but the *human* CTA is a
 single `class="buy"` anchor, and automated/LLM consumers (which the brief says is the dominant
 channel) only see the 401 wall. Add the price and the Pro unlock into the *visible HTML* near the
@@ -185,14 +181,14 @@ hosted line: a two-column "Free (token, 401 on tool calls) | Pro $19 lifetime (n
 table, and reuse the existing `/bundle` argument (`$39 beats $19 × 42`). No new route, no billing
 change — pure template text in `index.js:1192-1206`.
 
-**R3 — Turn the token/401 paragraph into a conversion bridge (highest effort, highest ceiling).**
+R3 — Turn the token/401 paragraph into a conversion bridge (highest effort, highest ceiling).
 `hostedLine` is the single most-read paid-adjacent paragraph and currently sells *nothing*. Append
 the upgrade framing at the end of it, where the reader has just been told the free route requires a
 token they must fetch: "…or skip tokens entirely with a lifetime Pro key." Instrument it by giving
 this new anchor its own `?src=store.s.<id>.upgrade` so it separates from the existing
 `store.s.<id>` 334-clicks/7d baseline in the click metric.
 
-**Do not** change the `/buy/` UA guard (`index.js:1534,1570`). It is load-bearing: the inline comment
+change the `/buy/` UA guard (`index.js:1534,1570`). It is load-bearing: the inline comment
 records 2,780 open/expired sessions in seven days with no PaymentIntent before it existed. The 303 is
 correct behaviour; the fix for "the link looks dead to my curl" is documentation, not code.
 

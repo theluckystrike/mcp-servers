@@ -129,41 +129,37 @@ EUR/USD 2026-08-04..2026-09-02, 22 business days: min 1.1515 max 1.1699 avg 1.15
 | 4 | A | "What was the ECB rate for USD on Sunday 2026-08-30?" | **2** | 1 | 6909 | `rate_on` returned the right date and rule; the model said *"The ECB doesn't publish rates on weekends -- 2026-08-30 was a Sunday. The last published rate before it was Friday 2026-08-28"*. The rule is stated correctly and the date is right. It called the pair as `USD -> EUR` and quoted **0.858885 EUR per USD** -- arithmetically correct but the reciprocal of the number the ECB actually publishes (1 EUR = 1.1643 USD). D-C4 |
 | 5 | B | "Log a 45 EUR Amazon receipt for Nova, then rebill Nova in USD at today's ECB rate." | **3** | 3 | 20064 | `expense_add {45 EUR Amazon Nova}` -> `rate_on {EUR USD 2026-09-03}` -> `expense_to_invoice {target_currency: "USD", fx_rates: {EUR: 1.1578}}`. **The rate was never asked of the user**, and the model said out loud that 2026-09-03 has no rate yet so 2026-09-02 applies. Result **USD 52.10**, which is 45 x 1.1578 = 52.101 -> 52.10, verified against `daily.json`. It stopped at the preview and named `invoice_create` + `expense_mark_rebilled` as the next steps rather than inventing an invoice |
 
-**Total: 14 / 15.**
-
 The chained scenario, which is the reason this server exists, worked on the first attempt with no rate
 typed by the user and no arithmetic done by the model.
 
 ### Defects
 
-**D-C1 (high, fixed) -- `convert` emitted `Infinity` as money.**
 Repro: `convert {amount: 1e308, from: "EUR", to: "JPY"}` returned `isError: false`,
 `"result": "JPY Infinity"`, `"result_number": null`. A downstream invoice line would have taken
 `null` as its amount. Fixed in `src/rates.ts`; `test/smoke.test.mjs` and `test/rates.test.mjs` assert it.
 
-**D-C2 (high, fixed) -- a truncated history download silently replaced a good cache.**
+D-C2 (high, fixed) -- a truncated history download silently replaced a good cache.
 Repro in `/private/tmp/curaudit/probe3.mjs`: warm a 40-day cache, age `fetched_at` past 24 h, serve a
 body cut mid-stream. Before: the cache became 3 days and `rate_history {days: 40}` answered min/max/avg
 over 3 rows without a word. Fixed by `assertComplete()` plus the shrink guard; `test/smoke.test.mjs`
 covers it end to end.
 
-**D-C3 (medium, fixed) -- a self-contradicting error over a partial cache.**
 `2026-08-04 is before the first ECB reference rate (2026-09-01). The series starts on 1999-01-04.`
 Both halves cannot be true. Now the message names the cache's earliest date and says the cache is
 incomplete, with the remedy (`cache_status`, delete the cache).
 
-**D-C4 (low, mitigated in the tool description) -- the model quoted the reciprocal rate.**
+D-C4 (low, mitigated in the tool description) -- the model quoted the reciprocal rate.
 Repro: `/private/tmp/cv1/out/s4.jsonl`, `CALLS: mcp__currency__rate_on {"from":"USD","to":"EUR",...}`.
 Asked for "the ECB rate for USD", the model chose `USD -> EUR` and answered 0.858885 rather than the
 published 1.1643. The server answered exactly what it was asked, so this is a prompting defect, but it
 is one the tool description can prevent: `rate_on` now states that the ECB quotes every currency per
 1 euro and that "the ECB rate for USD" means `from: "EUR", to: "USD"`. Not re-measured after the edit.
 
-**D-C5 (low, not fixed, client-side) -- every lane spent its first turn on `ToolSearch`.**
+D-C5 (low, not fixed, client-side) -- every lane spent its first turn on `ToolSearch`.
 All five conversations opened with a `ToolSearch select:mcp__currency__...` call before any real work,
 which is a fixed cost of the deferred-tool harness, not of this server. No action taken.
 
-**Not a defect: a string amount.** `"1,250.00"` is refused by the schema rather than parsed. Parsing
+`"1,250.00"` is refused by the schema rather than parsed. Parsing
 it would mean guessing whether `1,250` is one thousand two hundred fifty or one and a quarter, which
 differs by locale; the fix is a message that tells the caller exactly what to send. Scenario 5 shows a
 model handed "45 EUR" in prose sends `45`, not `"45"`.

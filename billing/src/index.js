@@ -239,7 +239,6 @@ export const VALIDATION = { at: "2026-09-17", pass: 1192, total: 1192, servers: 
  * if this disagrees. The page said 25 when there were 99.
  */
 export const BILLING_TEST_COUNT = 154;
-
 /**
  * The npm publish is pending: `npx -y @theluckystrike/mcp-<server>` returns E404 today,
  * and publishing needs an operator browser login (docs/HUMAN_GATED_PACK.md section 1).
@@ -493,22 +492,37 @@ function page(title, body) {
 emit a richer twitter:title + twitter:description via the og() helper, which simply repeats
 these two harmless values. card is summary: the site has no og:image asset. Added in T13. -->
 <meta name="twitter:card" content="summary"><meta name="twitter:title" content="${esc(title)}">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600&family=Space+Mono&display=swap">
 <style>
-:root{color-scheme:light dark}
-body{font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;max-width:760px;margin:0 auto;padding:40px 20px}
-h1{font-size:28px;margin:0 0 8px}h2{font-size:19px;margin:32px 0 8px}
-.muted{opacity:.7}
-table{border-collapse:collapse;width:100%;margin:20px 0}
-td,th{text-align:left;padding:10px 8px;border-bottom:1px solid rgba(128,128,128,.3);vertical-align:middle}
-a.buy{display:inline-block;padding:8px 16px;border:1px solid currentColor;border-radius:6px;text-decoration:none;font-weight:600;white-space:nowrap}
-button.buy{display:inline-block;padding:10px 18px;border:1px solid currentColor;border-radius:6px;background:transparent;color:inherit;font:inherit;font-weight:600;cursor:pointer}
-pre{background:rgba(128,128,128,.12);padding:12px;border-radius:6px;overflow-x:auto;font-size:13px}
-code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
-.key{font-size:15px;word-break:break-all;user-select:all}
-footer{margin-top:48px;font-size:14px;opacity:.7}
-nav.pg{font-size:12px;opacity:.6;margin:0 0 24px}
-p.feat{font-size:14px;background:rgba(128,128,128,.08);padding:10px 12px;border-radius:6px;margin:0 0 20px}
-.copy-btn{display:inline-block;margin:-8px 0 4px;padding:3px 10px;font-size:12px;line-height:1.6;border:1px solid currentColor;border-radius:4px;background:transparent;color:inherit;cursor:pointer;font-family:inherit}
+:root{color-scheme:dark;--bg:#0a0a0a;--fg:#e8e8e8;--mut:#888;--bd:#222;--ac:#06b6d4;--ok:#22c55e;--warn:#eab308;--pur:#a855f7;--red:#ef4444}
+body{background:var(--bg);color:var(--fg);font:16px/1.6 "IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;max-width:860px;margin:0 auto;padding:32px 20px}
+h1,h2,h3,th{font-family:"Space Mono",ui-monospace,Menlo,monospace}
+h1{font-size:32px;margin:0 0 12px;letter-spacing:-.5px}h2{font-size:19px;margin:32px 0 8px;color:var(--fg)}
+a{color:var(--ac);text-decoration:none}a:hover{text-decoration:underline}
+.muted{color:var(--mut)}
+table{border-collapse:collapse;width:100%;margin:20px 0;font-size:14px}
+td,th{text-align:left;padding:10px 8px;border-bottom:1px solid var(--bd);vertical-align:middle}
+th{color:var(--mut);text-transform:uppercase;font-size:11px;letter-spacing:.8px;border-bottom:2px solid var(--bd)}
+tbody tr:nth-child(even){background:#111}
+td p{margin:.4em 0}
+a.buy{display:inline-block;padding:7px 14px;border:1px solid var(--ac);border-radius:0;color:var(--ac);text-decoration:none;font-weight:600;white-space:nowrap;font-size:13px}
+a.buy:hover{background:var(--ac);color:var(--bg);text-decoration:none}
+button.buy{display:inline-block;padding:9px 16px;border:1px solid var(--ac);border-radius:0;background:transparent;color:var(--ac);font:inherit;font-size:13px;font-weight:600;cursor:pointer}
+button.buy:hover{background:var(--ac);color:var(--bg)}
+pre{background:#111;border:1px solid var(--bd);padding:12px;border-radius:0;overflow-x:auto;font-size:13px}
+code{font-family:"Space Mono",ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.92em}
+.key{font-size:13px;word-break:break-all;user-select:all;color:var(--warn)}
+footer{margin-top:48px;font-size:13px;color:var(--mut);border-top:1px solid var(--bd);padding-top:16px}
+nav.pg{font-size:12px;margin:0 0 24px;color:var(--mut)}
+nav.pg a{margin-right:2px}
+p.feat{font-size:14px;background:#111;border:1px solid var(--bd);padding:10px 12px;border-radius:0;margin:0 0 20px}
+.copy-btn{display:inline-block;margin:-8px 0 4px;padding:3px 10px;font-size:12px;line-height:1.6;border:1px solid var(--bd);border-radius:0;background:transparent;color:var(--fg);cursor:pointer;font-family:inherit}
+.copy-btn:hover{border-color:var(--ac);color:var(--ac)}
+a.grid{display:inline-block;width:31%;min-width:200px;margin:0 1% 6px 0;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;vertical-align:top}
+.lede{font-size:15px;color:var(--fg);margin:.4em 0 0}
+.det{font-size:13px;color:var(--mut);margin:.3em 0 0;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+@media(max-width:640px){a.grid{width:100%}}
 </style></head><body><nav class="pg" aria-label="Popular guides">${PRIORITY_GUIDES.filter((s) => GUIDES[s]).slice(0, 10).map((s) => `<a href="/guides/${s}">${esc(GUIDES[s].title)}</a>`).join(" &middot; ")}</nav>${body}
 <footer>Home: <a href="/">All servers</a> &middot; <a href="/guides">Guides</a> &middot; <a href="/setup">Setup</a> &middot; <a href="/compare">Compare</a> &middot; <a href="/changelog">Changelog</a> &middot; Support: support@zovo.one &middot; Built by <a href="${REPO}">theluckystrike</a></footer>
 ${COPY_BUTTON_SCRIPT}
@@ -533,11 +547,26 @@ function home() {
     const pg = PAGES[id];
     const name = p ? p.name.replace(/ Pro$/, "") : (pg ? pg.title : id);
     const what = p ? p.desc : (pg ? pg.tagline : "");
+    // Split each description at the first colon: the lead clause before it becomes the
+    // one-line summary the eye lands on; the detail after it drops to a muted second line.
+    // Descriptions that are themselves multi-sentence essays (no short lead before the
+    // colon) fall back to the first sentence as the lede so no cell carries a 600-char wall.
+    const ci = what.indexOf(": ");
+    let lede, det;
+    if (ci > 0 && ci <= 90) {
+      lede = what.slice(0, ci);
+      det = what.slice(ci + 2);
+    } else {
+      const si = what.search(/[.!?] /);
+      lede = si > 0 ? what.slice(0, si + 1) : what;
+      det = si > 0 ? what.slice(si + 2) : "";
+    }
+    const whatHtml = `<p class="lede">${esc(lede)}</p>${det ? `<p class="det">${esc(det)}</p>` : ""}`;
     const url = hosted.has(id)
       ? `<code>https://mcp.zovo.one/mcp/${esc(id)}/t/&lt;token&gt;</code>`
       : `<span class="muted">No URL yet. Bundle or clone.</span>`;
     const price = p ? `$${p.usd}` : `<span class="muted">In the $${PRODUCTS.bundle.usd} bundle</span>`;
-    return `<tr><td><a href="/s/${esc(id)}">${esc(name)}</a></td><td>${esc(what)}</td><td>${url}</td><td>${price}</td></tr>`;
+    return `<tr><td><a href="/s/${esc(id)}">${esc(name)}</a></td><td>${whatHtml}</td><td>${url}</td><td>${price}</td></tr>`;
   }).join("\n");
   const rows = Object.entries(PRODUCTS).map(([id, p]) =>
     `<tr><td><strong>${p.pkg ? `<a href="/s/${esc(id)}">${esc(p.name)}</a>` : esc(p.name)}</strong><br>${esc(p.desc)}<br><span class="muted">${esc(p.free)} ${esc(p.pro)}</span>${p.pkg ? `<br><span class="muted">Install: <code>npx -y ${esc(p.pkg)}</code> &middot; <a href="${REPO}/tree/main/servers/${esc(id)}#readme">docs</a></span>` : ""}</td>
@@ -600,10 +629,10 @@ function home() {
 <p>Free tier on every one of them, with no key, no account and no expiry. Pro is $${PRODUCTS[SINGLE_PRODUCT_IDS[0]].usd} once for one server or $${PRODUCTS.bundle.usd} once for all ${LISTED_CHILD_COUNT} sold singly, lifetime, and the key verifies offline. Price arithmetic is at <a href="/bundle">/bundle</a>.</p>
 <h2>Four ways to start, three of which work today</h2>
 <ol>
-<li><strong>Connect by URL, no install:</strong> open <a href="/mcp/connect">/mcp/connect</a>, it mints a token and prints a ready URL for every server. Paste that URL into a Claude.ai custom connector, the Claude Desktop connector dialog, Claude Code (<code>claude mcp add --transport http</code>), Cursor, or VS Code. No header, no config file.</li>
-<li><strong>Install the .mcpb:</strong> download the Claude Desktop bundle from the <a href="${REPO}/releases/latest">releases page</a> and open it; Claude Desktop installs the server.</li>
-<li><strong>Install from a clone:</strong> <code>git clone</code>, <code>npm install</code>, <code>npm run build -w packages/mcp-license -w servers/&lt;server&gt;</code>, then point your client's <code>command</code> at <code>node</code> and its one argument at the built <code>dist/index.js</code>; exact steps for six clients are on the <a href="/setup">setup pages</a>.</li>
-<li><strong>Install with npx, not yet:</strong> <code>npx -y @theluckystrike/mcp-&lt;server&gt;</code> is the line the day the npm publish lands. It returns 404 today, so do not paste it into a config expecting a server to start.</li>
+<li>Connect by URL, no install: open <a href="/mcp/connect">/mcp/connect</a>, it mints a token and prints a ready URL for every server. Paste that URL into a Claude.ai custom connector, the Claude Desktop connector dialog, Claude Code (<code>claude mcp add --transport http</code>), Cursor, or VS Code. No header, no config file.</li>
+<li>Install the .mcpb: download the Claude Desktop bundle from the <a href="${REPO}/releases/latest">releases page</a> and open it; Claude Desktop installs the server.</li>
+<li>Install from a clone: <code>git clone</code>, <code>npm install</code>, <code>npm run build -w packages/mcp-license -w servers/&lt;server&gt;</code>, then point your client's <code>command</code> at <code>node</code> and its one argument at the built <code>dist/index.js</code>; exact steps for six clients are on the <a href="/setup">setup pages</a>.</li>
+<li>Install with npx, not yet: <code>npx -y @theluckystrike/mcp-&lt;server&gt;</code> is the line the day the npm publish lands. It returns 404 today, so do not paste it into a config expecting a server to start.</li>
 </ol>
 <p class="muted">${NPM_PENDING_NOTE} The first three paths above need no npm.</p>
 <p>A Pro key removes the free-tier limits on any of these three paths: run <code>license_activate</code> with the key in Claude, set <code>MCP_LICENSE_KEY</code>, or paste the key where the connect-by-URL token goes. Keys verify offline; nothing is sent anywhere after checkout. Refunds within 14 days: support@zovo.one.</p>
@@ -616,7 +645,7 @@ function home() {
 <h2>Setup guides per client</h2>
 <p>The exact config file, key and entry for every server in <a href="/setup/claude-desktop">Claude Desktop</a>, <a href="/setup/claude-code">Claude Code</a>, <a href="/setup/cursor">Cursor</a>, <a href="/setup/vscode">VS Code</a>, <a href="/setup/windsurf">Windsurf</a> and <a href="/setup/cline">Cline</a>: <a href="/setup">all 36 setup pages</a>.</p>
 <h2>Guides</h2>
-<p>Setup and worked examples: ${GUIDE_LINKS}</p>
+<p>${GUIDE_LINKS.split(" &middot; ").map((l) => `<a class="grid" href="${l.match(/href="([^"]+)"/)[1]}">${l.match(/>([^<]+)</)[1]}</a>`).join("")}</p>
 <p>Source and docs: <a href="${REPO}">${REPO}</a></p>`);
   return html.replace("</title>", "</title>" + meta);
 }
@@ -701,10 +730,10 @@ export function bundlePage() {
 <table><tr><th>Server</th><th>What it does</th><th>Free tier</th></tr>${rows}</table>
 <h2>Four ways to start, three of which work today</h2>
 <ol>
-<li><strong>Connect by URL, no install:</strong> open <a href="/mcp/connect">/mcp/connect</a>, it mints a token and prints a ready URL for every server; paste it into a Claude.ai custom connector, the Claude Desktop connector dialog, Claude Code (<code>claude mcp add --transport http</code>), Cursor or VS Code. The bundle key can replace that token on any of them to remove the free-tier limits.</li>
-<li><strong>Install the .mcpb:</strong> download each server's bundle from the <a href="${REPO}/releases/latest">releases page</a> and open it; Claude Desktop installs the server.</li>
-<li><strong>Install from a clone:</strong> build once with <code>npm run build</code> and point each client entry's <code>command</code> at <code>node</code> and its one argument at that server's built <code>dist/index.js</code>; exact steps for six clients are on the <a href="/setup">setup pages</a>.</li>
-<li><strong>Install with npx, not yet:</strong> <code>npx -y @theluckystrike/mcp-&lt;server&gt;</code> is the line the day the npm publish lands. It returns 404 today, so do not paste it into a config expecting a server to start.</li>
+<li>Connect by URL, no install: open <a href="/mcp/connect">/mcp/connect</a>, it mints a token and prints a ready URL for every server; paste it into a Claude.ai custom connector, the Claude Desktop connector dialog, Claude Code (<code>claude mcp add --transport http</code>), Cursor or VS Code. The bundle key can replace that token on any of them to remove the free-tier limits.</li>
+<li>Install the .mcpb: download each server's bundle from the <a href="${REPO}/releases/latest">releases page</a> and open it; Claude Desktop installs the server.</li>
+<li>Install from a clone: build once with <code>npm run build</code> and point each client entry's <code>command</code> at <code>node</code> and its one argument at that server's built <code>dist/index.js</code>; exact steps for six clients are on the <a href="/setup">setup pages</a>.</li>
+<li>Install with npx, not yet: <code>npx -y @theluckystrike/mcp-&lt;server&gt;</code> is the line the day the npm publish lands. It returns 404 today, so do not paste it into a config expecting a server to start.</li>
 </ol>
 <p class="muted">${NPM_PENDING_NOTE} The first three paths above need no npm.</p>
 <h2>How the key arrives</h2>
@@ -974,7 +1003,7 @@ export function checkoutIntentPage(url, productId, askedId = productId, tenant =
   const free = p.free ? `<li>Free tier, no key: ${esc(p.free.replace(/^Free:\s*/, ""))}</li>` : "";
   const whatYouGet = `<h2>What you get for $${p.usd}</h2>
 <ul>
-<li><strong>Your Pro key, in the Stripe receipt</strong> &mdash; same minute the payment clears, re-sendable from <a href="/recover">/recover</a>.</li>${gets ? `\n<li><strong>Pro unlocks:</strong> ${esc(gets)}</li>` : ""}${free}
+<li><strong>Your Pro key, in the Stripe receipt</strong> &mdash; same minute the payment clears, re-sendable from <a href="/recover">/recover</a>.</li>${gets ? `\n<li>Pro unlocks: ${esc(gets)}</li>` : ""}${free}
 ${productId === "bundle"
       ? `<li><strong>All ${SERVER_COUNT} servers, one key, lifetime</strong>, for $${PRODUCTS.bundle.usd} instead of $${PRODUCTS.bundle.usd + BUNDLE_SAVING_USD} bought one at a time.</li>`
       : `<li><strong>All ${SERVER_COUNT} servers instead for $${PRODUCTS.bundle.usd}</strong> &mdash; one key, lifetime, a $${BUNDLE_SAVING_USD} saving: <a href="/buy/bundle?src=store.buy.${esc(productId)}">the bundle</a>.</li>`}
@@ -1088,7 +1117,7 @@ export async function clickStats(env) {
   return {
     generated_at: new Date().toISOString(),
     instrument: 3,
-    counting_rule: "a click counts only when the request carries sec-fetch-mode: navigate AND sec-fetch-dest: document, its User-Agent names no crawler or HTTP library, it sends no x-mcp-probe header, it carries a Referer (any origin -- real browsers always send one; scripts and the 2026-09-17 setup-page walker do not), and its ?src= is one a live page emits. Everything else is either not counted or bucketed under unattributed.*, which is excluded from total_clicks and clicks_7d.",
+    counting_rule: "a click counts only when the request carries sec-fetch-mode: navigate AND sec-fetch-dest: document, its User-Agent names no crawler or HTTP library, it sends no x-mcp-probe header, it carries a Referer (any origin, real browsers always send one; scripts and the 2026-09-17 setup-page walker do not), and its ?src= is one a live page emits. Everything else is either not counted or bucketed under unattributed.*, which is excluded from total_clicks and clicks_7d.",
     by_src: bySrc,
     total_clicks: sum(bySrc, "total", attributed),
     clicks_7d: sum(bySrc, "last7d", attributed),
@@ -1313,7 +1342,7 @@ export default {
       // the fold with the bundle. HOSTED is empty for office-suite, which spawns local child
       // processes and has no remote endpoint.
       const hostedLine = HOSTED_SERVERS.has(id)
-        ? `<p><b>Two ways to run it, both free to start.</b> Open <a href="https://mcp.zovo.one/mcp/connect">mcp.zovo.one/mcp/connect</a>, copy the <b>${esc(id)}</b> URL and paste it into any client that takes a URL. It already carries a free token, so there is nothing to install, no account and no header to set. The URL is <code>https://mcp.zovo.one/mcp/${esc(id)}/t/&lt;token&gt;</code>. <b>The token is not optional:</b> the bare <code>https://mcp.zovo.one/mcp/${esc(id)}</code> connects and lists its tools and then answers every tool call with HTTP 401, so use the link from /mcp/connect or send <code>Authorization: Bearer &lt;token&gt;</code>. Or download <a href="${REPO}/releases/latest">${esc(id)}.mcpb</a> and double-click it in Claude Desktop.</p>`
+        ? `<p>Two ways to run it, both free to start. Open <a href="https://mcp.zovo.one/mcp/connect">mcp.zovo.one/mcp/connect</a>, copy the ${esc(id)} URL and paste it into any client that takes a URL. It already carries a free token, so there is nothing to install, no account and no header to set. The URL is <code>https://mcp.zovo.one/mcp/${esc(id)}/t/&lt;token&gt;</code>. The token is not optional: the bare <code>https://mcp.zovo.one/mcp/${esc(id)}</code> connects and lists its tools and then answers every tool call with HTTP 401, so use the link from /mcp/connect or send <code>Authorization: Bearer &lt;token&gt;</code>. Or download <a href="${REPO}/releases/latest">${esc(id)}.mcpb</a> and double-click it in Claude Desktop.</p>`
         // The absence of a URL has to be stated, not implied. A reader who has just been
         // told on the home page that most of these servers connect by URL will otherwise
         // assume this one does too, and an assistant answering from this page has no way to

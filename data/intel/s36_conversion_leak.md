@@ -142,7 +142,7 @@ Consequence for the KPI: click->checkout ratio 9.7 vs target 40 is computed agai
 ## 5. Top 3 ranked fixes
 
 ### FIX 1 (highest leverage) - Render the value proposition on the checkout page
-**File:** `billing/src/index.js` **line 839-840** (inside `checkoutIntentPage`, defined at line 835).
+`billing/src/index.js` **line 839-840** (inside `checkoutIntentPage`, defined at line 835).
 `p.free` and `p.pro` already exist for every product (`billing/src/index.js:15-34`) and are already rendered as a Free vs Pro table on `/s/invoice`. `checkoutIntentPage` renders only `<h1>`, the price line and the single-line `p.desc`.
 
 Change the body to include the Free vs Pro pair plus a delivery line, e.g. insert after the `p.desc` paragraph:
@@ -156,7 +156,7 @@ ${p.pro ? `<p><strong>${esc(p.pro)}</strong></p>` : ""}
 This is the highest-leverage fix because it is the only change that acts on the exact hop where intent is provably highest (the buyer already clicked Buy) and it needs no new data - the strings, the table markup pattern and the CSS already exist one page upstream. At 329 characters the page currently gives the buyer nothing to justify $19 beyond a price.
 
 ### FIX 2 - Stop shipping the leaky denominator; make click counting unforgeable
-**File:** `billing/src/index.js` **line 811** (inside `isHumanNavigation`, defined at line 807).
+`billing/src/index.js` **line 811** (inside `isHumanNavigation`, defined at line 807).
 `return get("sec-fetch-mode") === "navigate" && get("sec-fetch-dest") === "document";` admits any script that sets two headers. Add a signal a script cannot cheaply forge - require a same-origin `referer` matching a live emitting page, or a signed short-lived token minted into the `/buy/` href and validated on arrival:
 
 ```js
@@ -167,7 +167,7 @@ if (!ref || !ref.startsWith(new URL("https://" + "" ).origin)) return false;  //
 (minimal form: reject when `referer` is absent or its origin differs from the request origin). Without this, every future funnel number inherits the same 1.8x inflation and the `store.setup.*` walker keeps being reported as human demand. Fix the measurement before trusting more traffic to it.
 
 ### FIX 3 - Add delivery, refund and bundle cross-sell to the checkout page
-**File:** `billing/src/index.js` **lines 841-847** (button/help/back block) and **line 57** (bundle `desc`/`free`/`pro` all `""`).
+`billing/src/index.js` **lines 841-847** (button/help/back block) and **line 57** (bundle `desc`/`free`/`pro` all `""`).
 1. Add a delivery + risk-reversal line under the button: "Instant key by email. 30-day refund, no questions." (matching whatever refund policy support@zovo.one actually honours - confirm before shipping).
 2. Add the bundle cross-sell that `/s/invoice` already shows (`All 41 for $39`) as a secondary link on single-product checkouts, e.g. `href="/buy/bundle"`.
 3. Give `bundle` real `desc`, `free` and `pro` strings at `billing/src/index.js:57` (all three are currently `""`), so `/buy/bundle` does not fall back to a generic sentence and carries the same value content as single-product pages.
@@ -176,7 +176,7 @@ if (!ref || !ref.startsWith(new URL("https://" + "" ).origin)) return false;  //
 
 ## 6. Single highest-leverage fix
 
-**Render `p.free` / `p.pro` (and a delivery line) inside `checkoutIntentPage` at `billing/src/index.js:839`.**
+Render `p.free` / `p.pro` (and a delivery line) inside `checkoutIntentPage` at `billing/src/index.js:839`.
 
 Rationale: the funnel's only trustworthy signal is that a buyer reached the checkout page with intent; the page then hands them a price and a button and 329 characters of nothing. Every comparison the buyer needs already exists in the data model and on the previous page, so this converts an information void into a decision aid at zero new content cost. Fix 2 is essential for honesty of measurement but does not by itself convert anyone; Fix 1 acts on the population that is already real.
 

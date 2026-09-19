@@ -2,7 +2,7 @@
 
 STATUS: verified
 
-**Verdict: CONFIRMED LIVE.** The theluckystrike MCP estate is publicly listed on
+The theluckystrike MCP estate is publicly listed on
 mcpmarket.com and discoverable by author-name search. See "Caveat" below regarding
 which repo URL the listings point at.
 
@@ -22,7 +22,6 @@ site's bot shield; all evidence below was collected in a real Chrome session).
 
 ## 2. Evidence — search by author name
 
-**URL: `https://mcpmarket.com/search?q=theluckystrike`**
 Page title: `Search Search results for "theluckystrike" | MCP Market`
 
 Search returned our servers (exact listing titles + descriptions as rendered):
@@ -51,7 +50,6 @@ result page shows the entity clearly.
 
 ## 3. Evidence — search by 'zovo'
 
-**URL: `https://mcpmarket.com/search?q=zovo`**
 Result set is fuzzy-matched Z-terms only (Zotero ×4, Zscaler, Zvec, ZeroZen ×2,
 Zengram, Z-Image Studio, Zero-Vector, etc.). **No zovo.one / theluckystrike result.**
 Interpretation: the market indexes by **author handle + server name**, not by the
@@ -60,7 +58,6 @@ absence from results is expected and is NOT evidence against the submission.
 
 ## 4. Evidence — individual listing page live
 
-**URL: `https://mcpmarket.com/server/invoice-2`**
 Page title: `Invoice: Generate Professional PDF Invoices from Chat`
 
 Rendered on-page (exact strings observed):
@@ -122,7 +119,7 @@ per-server link is undesired.
 
 ## 7. Re-submission decision
 
-**NOT re-submitted.** Rationale: the required precondition ("clear evidence the earlier
+Rationale: the required precondition ("clear evidence the earlier
 submission never registered") is false — §4 shows a live, fully populated listing for
 this author. The Free Queue submission registered. No form was touched, so no
 confirmation capture was needed.

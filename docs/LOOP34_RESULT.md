@@ -5,7 +5,7 @@ numbers below carry their commands in the cited files.
 
 ## Shipped
 
-**Four new servers, end to end, same day.** Picked by measurement, not taste
+Picked by measurement, not taste
 (docs/LOOP34_FIELDS_R1.md: GitHub repo-search field sizes for 20 candidates; the four sit on
 fields of 0, 3, 2 and 7 results): **bill-of-sale**, **credit-note**, **job-card**,
 **dunning-letters**. Each: full CONVENTIONS contract, contract suites 19/19, 17/17, 20/20,
@@ -16,13 +16,13 @@ the monorepo release (38 assets), storefront product page + setup pages + buy fl
 EIGHT registry names verified at 0.21.0 by exact GET (4 primaries + the phrase variants
 bill-of-sale-generator, credit-memo, job-card-template, overdue-invoice-reminder).
 
-**The rename experiment ran.** mcp-invoice -> mcp-invoice-generator (docs/RENAME_TEST_PLAN_R1.md).
+mcp-invoice -> mcp-invoice-generator (docs/RENAME_TEST_PLAN_R1.md).
 Baseline measured, override hook in all three repo-name derivation points, redirect verified,
 T0 re-measure: **rank 6 -> rank 2** on `mcp invoice generator` (field 11), controls flat
 (quotes 69/399, deposits 3/24). Success criterion is rank <= 3 at T+7d and T+14d;
 `MEASURE_ONLY=t7d scripts/rename-invoice-test.sh`.
 
-**Distribution.** 5 PRs opened and verified OPEN (Chat2AnyLLM/awesome-mcp-servers#22 with
+5 PRs opened and verified OPEN (Chat2AnyLLM/awesome-mcp-servers#22 with
 `make ci` green quoted, zencoderai/zenagents-library#31, jaw9c/awesome-remote-mcp-servers#769,
 Appnova-EU-OU/awesome-remote-mcp-servers#614 with their CI replicated locally,
 composio-community/awesome-claude-plugins#465). Loop-33's Sagargupta16#88 confirmed MERGED.

@@ -9,7 +9,7 @@ one submission route that actually exists.
 
 ## 1. The instrument was broken in two separate ways, and both are fixed
 
-**The 400 was a deprecated endpoint, not a service fault.** `https://api.mcp.github.com/v0/servers`
+`https://api.mcp.github.com/v0/servers`
 returns the header `deprecation: true`, and its `metadata.next_cursor` is the raw hex id of the
 last row in the page:
 
@@ -30,7 +30,7 @@ opaque `metadata.nextCursor` of the form `mcp.cursor.<base64>` and pages cleanly
     page 3 got 52  total 252 cursor
     TOTAL ROWS 252
 
-**The v0 endpoint also silently drops the field the whole hypothesis rested on.** Its
+Its
 `repository` object is a legacy shape carrying `id`, `readme`, `url` and `source` and *no*
 `subfolder` key, for every row, including rows that demonstrably have one. `com.supabase/mcp`
 reads as `subfolder: null` on v0 and `subfolder: packages/mcp-server-supabase` on v0.1. The
@@ -50,7 +50,7 @@ probes with the control as a fail-closed gate. A zero from it is now measured, n
 
 ## 2. The verdict
 
-**REFUTED.** Fourteen of the 252 gallery entries point at a monorepo subfolder:
+Fourteen of the 252 gallery entries point at a monorepo subfolder:
 
 | Entry | Stars | Subfolder |
 |---|---|---|
@@ -133,10 +133,10 @@ with a metadata table. It is a public discussion, free, needs no account beyond 
 login, and is open for comments (closed and answered, but not locked; the most recent request is
 2026-09-09).
 
-**A request was posted this round** and is verifiable:
+and is verifiable:
 https://github.com/github/github-mcp-server/discussions/1257#discussioncomment-18387359
 
-**Its measured yield is poor, and that number belongs in the record.** Of the eleven servers whose
+Of the eleven servers whose
 onboarding was requested in that thread, the membership probe returns 200 for two and 404 for nine:
 
     one.faf/claude-faf-mcp                  200

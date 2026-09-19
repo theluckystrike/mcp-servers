@@ -72,8 +72,6 @@ infer. 0 = failed.
 | tz3 | "What time is 2026-11-05 09:00 Warsaw for Ann in New York? I want to be sure the daylight saving changes are handled." | **3** | 1 | 14 | One `convert_time`. `09:00 Warsaw (GMT+1, UTC+01:00)` -> `03:00 New York (EST, UTC-05:00)`, `UTC instant 2026-11-05T08:00:00.000Z`. Both zones have left DST by 5 November (EU 25 Oct, US 1 Nov), the offsets prove it, and the model named both dates and said the gap is a steady 6 hours |
 | tz4 | "Book that November 5th call as a 60 minute meeting and give me an .ics file I can download." | **2** | 0, then 1 | 13 + 14 | **No tool ran on the first turn**: the model warned that 03:00 is the middle of Ann's night and asked whether to book anyway - defensible, and not what was asked. On the second turn one `ics_create`. `GET` the link: 200, `text/calendar; charset=utf-8`, 472 bytes, `filename="meeting.ics"`, and the file parses: `BEGIN:VEVENT`, `DTSTART:20261105T080000Z`, `DTEND:20261105T090000Z`, `SUMMARY:Beta Corp platform review`, `ORGANIZER;CN="Nova Studio"`. Ann and Kenji have no email, so the server put them in `DESCRIPTION` and said why rather than inventing addresses |
 
-**Totals: 39 / 48, 26 tool calls, 266 s.**
-
 ## Independent verification
 
 Every number below was re-read from the endpoints by `curl tools/call` or decoded from the
@@ -144,7 +142,7 @@ receipts only, any statements imported under this token are in a separate store 
 read, and **no count of them can be given here**, so call `/mcp/bank-statement`'s tool. It does not
 pretend to a number it cannot have. Absent is not evidence of empty, and that is the whole fix.
 
-**Follow-up, 2026-09-04: the unconditional sentence is now the real count again.** The
+The
 `bankLedgerLine` patch above was a stopgap while `remote/src/index.ts` hydrated only one side of
 this pair (`/mcp/bank-statement` reading the expense ledger, per Extension 6 in
 `docs/REMOTE_RESULT.md`). `SERVERS["expense-tracker"]` now carries the mirror image -
@@ -175,7 +173,7 @@ past the end of the request is not a shortening.
 
 `windowNote(from, to)` in `servers/expense-tracker/src/index.ts` now has three outcomes instead of
 two. Inside the window: untouched, no note. Straddling the cutoff: clamped, and the note names
-**both ends** of what was covered. Entirely older than the window: `nothing_read: true`, the reported
+of what was covered. Entirely older than the window: `nothing_read: true`, the reported
 `from` is **null** rather than an impossible date, and the note opens `Nothing was read` and closes
 `this is not an empty result - the period was never opened`. The clamp still governs the SELECT, so
 no gated row is read. All four call sites pass `to`.
@@ -188,7 +186,7 @@ note at all, so the test cannot pass by flagging everything.
 
 ### D-R78 (medium, recurring) - FIXED, with tests
 
-**Every amount this server printed was gross, and it never said so.** A EUR 1,500 monthly retainer
+A EUR 1,500 monthly retainer
 reads back as `amount: "EUR 1845.00"` in `schedule_create`, `schedule_list`, `schedule_get`,
 `schedule_upcoming` and `invoice_generate_due`. The number is right - the shared profile carries
 `default_tax_rate: 23` - but nothing in the payload distinguishes "the server added 23% tax" from
@@ -205,7 +203,7 @@ and arithmetic are untouched.
 
 ### D-R79 (medium, recurring) - FIXED, with tests
 
-**A total that no visible row adds up to.** `schedule_upcoming` sums every occurrence found in the
+`schedule_upcoming` sums every occurrence found in the
 horizon and then truncates the list to the free-tier cap, so six months of a monthly retainer
 returned three rows of EUR 1,845.00 above `totals_per_currency: ["EUR 11070.00"]`. The note says how
 many were withheld; nothing says the total counts them. The cost is visible in the transcript: the
@@ -243,7 +241,7 @@ on the free tier. The model found it on a second call. One sentence would have s
 
 ### D-R82 (high, timezone) - FIXED, with tests
 
-**Asked to find a slot for "all three of us", the model asked the user what timezone they are in.**
+Asked to find a slot for "all three of us", the model asked the user what timezone they are in.
 No tool call at all. `find_meeting_slots` made `zone` required on every participant, `contacts_list`
 listed everyone except the caller, and nothing anywhere surfaced the home zone - even though the
 shared business profile has carried it since D-R31, `zoneOf("home")` resolves it, and **this same

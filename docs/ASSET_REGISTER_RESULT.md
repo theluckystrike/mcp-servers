@@ -19,7 +19,7 @@ something.
 
 ## Design decisions worth stating
 
-**The rate tables are bundled files, not a feed.** `src/tables/*.json`, read from disk on
+`src/tables/*.json`, read from disk on
 first use and copied into `dist/tables` by the build. There is no network call anywhere in
 this server. A depreciation rate that changed under the user between two runs of the same
 register is worse than one that is visibly stale: the stale one is checkable against the file
@@ -28,13 +28,13 @@ the instrument, the source URL, the date the rates took effect, the date they we
 the convention they imply, and the `assets://categories` resource returns that header with
 the rates, so the provenance travels with the number.
 
-**A value that could not be stated with confidence was omitted, and the header says so.**
+A value that could not be stated with confidence was omitted, and the header says so.
 This is the single rule the tables were built under. See "What is not bundled" below. A
 depreciation rate ends up on a tax return; a wrong figure that looks authoritative is worse
 than an absent one, because the absent one is refused by name and sends the caller to the
 source.
 
-**The schedule sums to the depreciable base by construction, not by luck.** `allocate` rounds
+`allocate` rounds
 the CUMULATIVE total at each step and takes each period as the difference between two rounded
 cumulatives, with the last period set to the remainder. `sum(periods) == cost - residual`
 therefore holds for every input, and the same rule splits a period into months, so the months
@@ -42,7 +42,7 @@ sum to their year and the years sum to the base. The contract suite asserts the 
 every schedule the three tables can produce, 67 of them, rather than for the two or three a
 unit test would have picked.
 
-**The convention is the table's, not the caller's, and every answer names it.** Poland charges
+Poland charges
 from the month AFTER the asset enters the register (art. 16h ust. 1 pkt 1), so an asset in
 service on 15 March starts on 1 April and year one is nine twelfths. The US GDS percentages
 already carry the half-year convention inside them, which is why a 5-year class runs six
@@ -50,7 +50,7 @@ periods. A UK writing down allowance is a full-period allowance on a pool and is
 by month at all. The same asset gives three different year-one figures under the three
 schemes, and all three are right.
 
-**The Polish declining-balance method switches, and says which year it switched.** Art. 16k:
+Art. 16k:
 the rate times a coefficient of up to 2.0 on the written-down value, and from the first year
 the declining amount would fall below the straight-line one, the rest of the schedule is
 straight line. A truck at 20 percent times 2 on 10,000.00 gives 4000.00 / 2400.00 / 2000.00 /
@@ -58,32 +58,32 @@ straight line. A truck at 20 percent times 2 on 10,000.00 gives 4000.00 / 2400.0
 excludes from the method (passenger cars, buildings, civil engineering works) refuse it by
 name rather than computing it anyway.
 
-**MACRS ignores salvage, so a residual is reported as ignored rather than applied.** The
+The
 published percentages recover the whole cost. Applying a residual under them would either
 break the published row or silently rebase it; both are worse than saying in the answer that
 the number was not used and keeping it on the record for book purposes.
 
-**A category is matched exactly or by prefix, never as a substring.** `"land".includes("and")`
+`"land".includes("and")`
 is true, and so is the same trap in six other row names. With a deliberately partial table a
 substring fallback is not a near miss, it is a row that should never have matched at all: it
 would price a delivery van at the land row's 0 percent and say nothing. The fallback is a
 prefix of four characters or more, and an ambiguous prefix is refused.
 
-**Currencies are never added together.** `asset_list`, `asset_journal` and `asset_report`
+`asset_list`, `asset_journal` and `asset_report`
 total per currency. There is no exchange rate in this server, so there is no rate to be
 silently wrong, and one number over a PLN register and a USD one would be invented.
 
-**Ids are `ASSET-YYYY-NNNN`.** Same reasoning as `TRIP-YYYY-NNNN` and `INV-YYYY-NNNN`: a
+Same reasoning as `TRIP-YYYY-NNNN` and `INV-YYYY-NNNN`: a
 counter that resets every January collides with last January's schedule. The counter is
 written before the row, so a crash burns an id rather than reusing one, and existing ids are
 scanned so a restored register cannot reissue one that is already on a filed return.
 
-**The free cap is on the SIZE of the register, not on the arithmetic.** `asset_schedule` is
+`asset_schedule` is
 free and unlimited on every tier. The rates are public information published by a tax
 authority; metering the reading of a regulation would be charging for the government's work
 rather than for this server's.
 
-**The scheme is derived, and reported as a derivation.** The shared business profile has
+The shared business profile has
 `name`, `address` and `default_currency` but no country field. Rather than infer a country
 from free-text address lines, the scheme is derived from `default_currency`, which is a
 closed set, and every answer that uses it says in words that it is a derivation. A profile

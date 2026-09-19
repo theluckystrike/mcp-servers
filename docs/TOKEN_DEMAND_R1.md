@@ -30,14 +30,13 @@ The official registry's `search=` is not a search engine.
 
 Two consequences drive everything.
 
-**1. Our namespace decides our rank before the local name is read.**
 `io.github.theluckystrike` is compared before the slash is reached. So the local name only
 reorders us within our own cluster; it cannot move us ahead of one single competing
 namespace. That makes our landing rank for a token **arithmetic on live data, not a guess**:
 
     landing_rank = 1 + count(rows whose full name sorts strictly before "io.github.theluckystrike/")
 
-**2. Rows are per stored VERSION, not per server.** `com.hellobasestation/pdfkit` is three
+`com.hellobasestation/pdfkit` is three
 rows. Both are reported: `supply_rows` is what the sort actually orders and therefore what
 sets our rank; `supply_servers` is the distinct-name count and is the honest measure of how
 many other people are attempting the job.
@@ -69,11 +68,11 @@ Five probed tokens map onto one of those and are excluded on that ground rather 
 
 No search volume was invented. Three free sources were tried and all three are reported.
 
-**Source 1: registry attempts.** How many distinct MCP servers already carry the token in
+How many distinct MCP servers already carry the token in
 their name. A crowded token is evidence of demand and evidence of competition at once, so
 both `supply_servers` and the resulting `landing_rank` are in the table.
 
-**Source 2: GitHub repository search, QUALIFIED.** `gh api search/repositories` `total_count`
+`gh api search/repositories` `total_count`
 for the token in `name,description`, with and without the word `mcp`.
 
 The first pass used the bare token and produced a table that was wrong. On GitHub, "training"
@@ -85,7 +84,7 @@ correction is visible rather than hidden. It is not small: 767x on `training`, 1
 `retention`, 409x on `donation`, 34x on `readability`, 8.5x on `packing`. Under the bare
 counts, `training` scored 1.000 and ranked first; qualified, it scores 0.265 and ranks 25th.
 
-**Source 3: the MCP spec and the official server list. Measured, and empty.** The
+The
 `modelcontextprotocol/servers` README and the draft spec index were fetched and grepped for
 all 70 tokens. Positive control: `filesystem` returns 3 hits in the official list, so the
 instrument works. Real hits for the candidates: **zero**. The five apparent matches were
@@ -94,7 +93,7 @@ substrings inside other words (`sla` in "translation", `rma` in "format", `lien`
 measured-and-empty rather than scored. It is in the JSON as `in_official_server_list: 0` and
 `in_spec: 0` on every row so a later round does not re-derive it.
 
-**Unsourced candidates are not scored.** A candidate with zero registry attempts AND fewer
+A candidate with zero registry attempts AND fewer
 than five qualified MCP repos is marked `demand_sourced: false`, listed, and excluded.
 Twelve candidates fall out that way. They are not zero-demand; they are unmeasured, and the
 difference matters.
@@ -119,7 +118,7 @@ with zero paid APIs and no network dependency, like the other 32?
 
 `visibility_p` barely separates the winners, because `min(1, 10/rank)` saturates at rank 10
 and thirty-odd candidates land at or above it. That is the finding rather than a defect:
-**once a token is winnable, rank stops being the lever.** What rank still does, decisively,
+What rank still does, decisively,
 is act as a hard gate. It zeroes `bom` (109), `sla` (409) and `rma` (502): those three are
 permanently unreachable under this namespace, no matter what the local name is, and building
 for them would be building something nobody can find. Below rank 100, demand and buildability

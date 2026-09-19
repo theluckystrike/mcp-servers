@@ -6,17 +6,17 @@ Say "stamp PAID on that invoice and save a copy" or "pull pages 2 to 6 out of th
 
 ![pdf demo](../../assets/demo-pdf.gif)
 
-**The PDF chores of a freelance business, done from chat instead of from a browser tab you do not trust with an invoice.**
+The PDF chores of a freelance business, done from chat instead of from a browser tab you do not trust with an invoice.
 
 ## 60-second install
 
 npm publish for `@theluckystrike/mcp-pdf` is pending. Until then, the `.mcpb` one-click bundle or a clone+build
-is the working path -- both are verified below.
+is the working path, both are verified below.
 
-**One-click (.mcpb):** download `pdf.mcpb` from the latest release and double-click it in Claude Desktop:
+One-click (.mcpb): download `pdf.mcpb` from the latest release and double-click it in Claude Desktop:
 https://github.com/theluckystrike/mcp-servers/releases/latest
 
-**Claude Desktop** (`claude_desktop_config.json`):
+(`claude_desktop_config.json`):
 
 ```json
 {
@@ -29,13 +29,13 @@ https://github.com/theluckystrike/mcp-servers/releases/latest
 }
 ```
 
-**Claude Code:**
+Claude Code:
 
 ```sh
 claude mcp add pdf -- npx -y @theluckystrike/mcp-pdf
 ```
 
-**Cursor** (`.cursor/mcp.json`):
+(`.cursor/mcp.json`):
 
 ```json
 {
@@ -129,13 +129,11 @@ A tier limit is an answer, not an error, and nothing is written when one refuses
 
 Pro is a one-time $19, or $39 for every server in the collection, lifetime.
 
-**Get Pro: https://mcp.zovo.one/buy/pdf**
-
 ## `pdf_text` is best effort, and here is exactly what that means
 
 A PDF does not store text. It stores drawing operators, and the text you see is bytes handed to a font. This server
 decompresses each page's FlateDecode content stream with `node:zlib` and reads the four text-showing operators --
-`Tj`, `TJ`, `'` and `"` -- plus the positioning operators that end a line. That is a parser written here, in about
+`Tj`, `TJ`, `'` and `"`, plus the positioning operators that end a line. That is a parser written here, in about
 two hundred lines, with no `pdfjs` and no native module, and it has three real limits the tool states in its own
 answer every time:
 
@@ -149,8 +147,8 @@ answer every time:
   recovered from the large negative kerns a `TJ` array uses for them, so a PDF that positions every word separately
   can come back with words run together.
 
-PDFs written by word processors, invoicing tools and report generators -- everything with a standard or fully
-embedded font -- read back cleanly. Anything else tells you why it did not.
+PDFs written by word processors, invoicing tools and report generators, everything with a standard or fully
+embedded font, read back cleanly. Anything else tells you why it did not.
 
 ## Encrypted PDFs are refused, not guessed
 
@@ -162,7 +160,7 @@ and `pdf_count` reports it as one unreadable file while still counting the rest.
 
 ## Existing files are never overwritten, and inputs are never modified
 
-Every tool writes a new file and leaves its inputs byte-for-byte alone -- there is no in-place mode, on purpose.
+Every tool writes a new file and leaves its inputs byte-for-byte alone, there is no in-place mode, on purpose.
 An `out_path` that already exists is refused:
 
 ```
@@ -173,13 +171,13 @@ Pass overwrite: true to replace it, or give a different out_path.
 The path is reserved with an exclusive create, not an existence check, so two processes writing the same `out_path`
 at the same time cannot clobber each other: one wins, the other is refused and writes nothing. `pdf_split` reserves
 every one of its output paths before it writes any of them, so a collision on part 3 does not leave parts 1 and 2
-behind as a half-done split -- and the reservations are released, so nothing empty is left on disk either.
+behind as a half-done split, and the reservations are released, so nothing empty is left on disk either.
 
 Pass `overwrite: true` when replacing the file is what you want.
 
 `overwrite: true` still does not let an output be an input. Writing the result of an operation back over one of its
-own sources destroys that source -- the pages are already in memory and get written over the file they came from,
-which takes a three-page file to the one page you extracted -- and every later read of that path is then quietly
+own sources destroys that source, the pages are already in memory and get written over the file they came from,
+which takes a three-page file to the one page you extracted, and every later read of that path is then quietly
 wrong. So an `out_path` that resolves to (or shares an inode with) any input of the same call is refused before any
 work happens:
 
@@ -195,8 +193,8 @@ take the original's place, rename it yourself once you have checked it.
 - A file that does not start with `%PDF-` is refused before anything is read.
 - Rotation is recorded as page metadata, in multiples of 90 degrees, which is all the format has. Nothing is redrawn.
 - Stamp text goes through a built-in PDF font, which carries WinAnsi and its 256 code points. A character outside it
-  is transliterated where it has an obvious Latin body -- Polish `OPŁACONE` stamps as `OPLACONE`, and the answer says
-  so and prints what was actually drawn -- and removed and counted where it does not, so there is no CJK stamp. A
+  is transliterated where it has an obvious Latin body, Polish `OPŁACONE` stamps as `OPLACONE`, and the answer says
+  so and prints what was actually drawn, and removed and counted where it does not, so there is no CJK stamp. A
   newline is a word separator, never a deletion.
 - `font_size` must be between 1 and 1600 points. A stamp too long to fit even at the smallest size this server will
   use is still drawn, and the answer says how far past the edge it runs, so you can shorten it.
@@ -217,8 +215,8 @@ lock on `.../pdf/.lock`, so two clients on one data directory cannot lose a reco
 and are renamed into place.
 
 If the register is unreadable or not valid JSON it is never treated as "empty": it is moved aside byte-for-byte as
-`operations.json.corrupt-<timestamp>` with a marker beside it. The PDF you asked for is still written -- the file is
-on disk before the register is touched -- and the answer tells you the history could not be updated.
+`operations.json.corrupt-<timestamp>` with a marker beside it. The PDF you asked for is still written, the file is
+on disk before the register is touched, and the answer tells you the history could not be updated.
 
 The business footer reads the one shared profile the whole suite uses,
 `${XDG_DATA_HOME:-~/.local/share}/mcp-servers/profile/business.json`, written by `business_set` in mcp-invoice or
@@ -232,10 +230,10 @@ anywhere, which is the entire reason this exists.
 
 ## Pairs with
 
-- [mcp-invoice](../invoice/README.md) -- the invoice you sent, stamped PAID: the `mark_invoice_paid` prompt chains `invoice_get` into `pdf_stamp`.
-- [mcp-docx](../docx/README.md) -- write the proposal as `.docx`, print it to PDF, then stamp, merge or split it here.
-- [mcp-resume](../resume/README.md) -- join a CV, a cover letter and a portfolio into the one file an application form accepts.
-- [office-suite](../office-suite/README.md) -- several servers behind one install, one config entry.
+- [mcp-invoice](../invoice/README.md), the invoice you sent, stamped PAID: the `mark_invoice_paid` prompt chains `invoice_get` into `pdf_stamp`.
+- [mcp-docx](../docx/README.md), write the proposal as `.docx`, print it to PDF, then stamp, merge or split it here.
+- [mcp-resume](../resume/README.md), join a CV, a cover letter and a portfolio into the one file an application form accepts.
+- [office-suite](../office-suite/README.md), several servers behind one install, one config entry.
 
 ## Troubleshooting
 

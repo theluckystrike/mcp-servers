@@ -61,38 +61,38 @@ query about a figure on an old invoice lands on one line of one file rather than
 argument. The unit suite runs a three-row ladder (39000 from 2025-01-01, 45000 from
 2026-01-01, 49500 from 2026-07-01) against three dates and asserts three different rows.
 
-**A date before every row has no price, and that is a refusal.** Filling it with the
+Filling it with the
 earliest row is the tempting default and it reprices history: a job done in December 2024
 would be billed at the January 2025 price and reconcile perfectly against a price list that
 did not exist yet. The refusal names the earliest row and the date it starts.
 
-**One row per currency, tier and valid-from date; setting that key again REPLACES the row.**
+One row per currency, tier and valid-from date; setting that key again REPLACES the row.
 Two rows on one key make "the price that day" a coin toss, decided by array order. The
 response says what was replaced and what it became. A call that would change nothing at all
 is refused by name instead, so `updated` is not rewritten and no repricing is reported that
 did not happen.
 
-**No current price is stored.** A SKU record holds its code, its name, its unit, its VAT
+A SKU record holds its code, its name, its unit, its VAT
 rate and its rows. Everything else is derived on the call. `contract.test.mjs` greps the raw
 store file for nine derived key names and asserts the record's keys are the facts only. A
 stored current price is a second copy of what the rows already decide, and the copy is the
 one still being quoted a month after the rise.
 
-**A price is never invented.** No fallback, no profile default rate, no nearest match. An
+No fallback, no profile default rate, no nearest match. An
 unknown SKU or role is refused by name, and so is a code with no price in the currency and
 tier asked for. The invented number would be printed on a document a customer pays from.
 The same rule kills currency conversion: one resolution carries one currency, a line in
 another is refused, and `catalogue_report` counts the SKUs that carry no price in the
 profile's default currency because those are the rows that stop a resolution dead.
 
-**A byte-identical duplicate is refused BEFORE the free cap is consulted.** Two codes with
+Two codes with
 one name, one unit and one price are one product filed twice far more often than they are
 two products. The refusal names the code already stored, and the adversarial suite asserts
 that refusal text does not contain "free tier": a duplicate is not an occasion to sell an
 upgrade, and it burns neither a slot nor a place in the list. `duplicate_ok` is the way
 through for a genuine second product.
 
-**`sku_delete` is free on every tier, and the register is what makes that safe.** Every
+Every
 resolution updates one row per SKU and role it priced, so the register is bounded by the
 size of the catalogue rather than by traffic. A code that has priced a line, or that a rate
 card points at, is refused by name with the times it was used and the last resolution id: a
@@ -100,11 +100,11 @@ code printed on a document somebody sent is a fact about that document. Everythi
 deletes without a key, because a way back under the cap that only a Pro key can reach is
 not a way back (docs/RECOVERABLE_SLOTS_RESULT.md).
 
-**This server creates no invoice and no quote.** `lines_resolve` returns arguments and says
+`lines_resolve` returns arguments and says
 `posted: false`. The caller runs `invoice_create` in the invoice server, or `quote_create`
 in the quotes server.
 
-**The price list PDF prints every line at a quantity of one and says so.** A price list has
+A price list has
 no total of its own. `renderDocPdf` takes a document with totals, so the page carries the
 sum of one of each and the footer states in words that this is a price list and not a
 quotation, rather than printing a figure that looks like a document total and means

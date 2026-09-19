@@ -32,7 +32,7 @@ was full and `metadata.nextCursor` was present (confirmed present for both `imag
 poorly as standalone name segments, so the proposed name blends rarity with a natural,
 word-rich phrase rather than a strict ascending sort.
 
-**Proposed registry name:** `io.github.theluckystrike/image-resize-thumbnail-compress-photo-convert`
+`io.github.theluckystrike/image-resize-thumbnail-compress-photo-convert`
 (45 chars)
 
 ### bank-statement (CSV import, categorise by rules, reconcile, monthly summary)
@@ -57,7 +57,7 @@ word-rich phrase rather than a strict ascending sort.
 `categorize` (0 hits, and 0 across every compound tried) is the rarest word measured this
 round across both servers -- notably rarer than `clause` (R4's rarest at 2).
 
-**Proposed registry name:** `io.github.theluckystrike/bank-statement-categorize-reconcile-transactions-ledger`
+`io.github.theluckystrike/bank-statement-categorize-reconcile-transactions-ledger`
 (55 chars)
 
 ### Free / Pro split

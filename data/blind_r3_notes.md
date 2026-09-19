@@ -17,7 +17,7 @@ could be named. R1's two homepage appearances (rank 8 and 10) did not recur.
 ## Which servers win, and why
 
 The 30 distinct servers named across the 18 questions are dominated by a single shape:
-**individual one-server GitHub repositories** whose repo name carries the query terms, with
+whose repo name carries the query terms, with
 a README that states what it does and how to install it. Representative winners:
 
 - `markslorach/invoice-mcp` (Q1) — repo name is literally the query; README has a demo,

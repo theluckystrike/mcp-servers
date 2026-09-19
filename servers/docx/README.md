@@ -1,22 +1,22 @@
 # mcp-docx
 
-Say "write a proposal for Beta Corp, checkout rebuild, 4,500 EUR, three phases" and get a real `.docx` you can send. This MCP server writes Word documents from chat -- proposals, quotes, service agreements, statements of work and letters -- with your letterhead, headings, bullet and numbered lists and tables. It also turns markdown into `.docx`, reads an existing `.docx` back as text and outline, and fills `{{placeholders}}` in a template you already use, keeping every style, table, header and image of the original. Everything runs locally: no upload, no account, no native dependency.
+Say "write a proposal for Beta Corp, checkout rebuild, 4,500 EUR, three phases" and get a real `.docx` you can send. This MCP server writes Word documents from chat, proposals, quotes, service agreements, statements of work and letters, with your letterhead, headings, bullet and numbered lists and tables. It also turns markdown into `.docx`, reads an existing `.docx` back as text and outline, and fills `{{placeholders}}` in a template you already use, keeping every style, table, header and image of the original. Everything runs locally: no upload, no account, no native dependency.
 
 **In the [official MCP Registry](https://registry.modelcontextprotocol.io/v0.1/servers/io.github.theluckystrike%2Fdocx-document-generator-proposal-contract-markdown/versions/latest)** (`io.github.theluckystrike/docx-document-generator-proposal-contract-markdown`).
 
 ![docx demo](../../assets/demo-docx.gif)
 
-**Real Word documents from chat -- proposals, contracts and letters, without a template site or an office subscription.**
+Real Word documents from chat, proposals, contracts and letters, without a template site or an office subscription.
 
 ## 60-second install
 
 npm publish for `@theluckystrike/mcp-docx` is pending. Until then, the `.mcpb` one-click bundle or a clone+build
-is the working path -- both are verified below.
+is the working path, both are verified below.
 
-**One-click (.mcpb):** download `docx.mcpb` from the latest release and double-click it in Claude Desktop:
+One-click (.mcpb): download `docx.mcpb` from the latest release and double-click it in Claude Desktop:
 https://github.com/theluckystrike/mcp-servers/releases/latest
 
-**Claude Desktop** (`claude_desktop_config.json`):
+(`claude_desktop_config.json`):
 
 ```json
 {
@@ -29,13 +29,13 @@ https://github.com/theluckystrike/mcp-servers/releases/latest
 }
 ```
 
-**Claude Code:**
+Claude Code:
 
 ```sh
 claude mcp add docx -- npx -y @theluckystrike/mcp-docx
 ```
 
-**Cursor** (`.cursor/mcp.json`):
+(`.cursor/mcp.json`):
 
 ```json
 {
@@ -121,7 +121,7 @@ launch 1 week. Valid until the end of the year.
 
 The file opens in Word, Pages, LibreOffice and Google Docs: letterhead, cover title, "Prepared for Beta Corp",
 Summary, Scope of work, Deliverables, a Timeline table, an Investment table with `EUR 4,500.00`, the payment
-terms, and a signature block for both parties. Every amount carries its currency code -- no bare numbers.
+terms, and a signature block for both parties. Every amount carries its currency code, no bare numbers.
 
 ## Free vs Pro
 
@@ -136,15 +136,13 @@ terms, and a signature block for both parties. Every amount carries its currency
 
 Pro is a one-time $19, or $39 for every server in the collection, lifetime.
 
-**Get Pro: https://mcp.zovo.one/buy/docx**
-
 ## How the .docx is produced and read
 
-Documents are written with [`docx`](https://www.npmjs.com/package/docx), a pure-JavaScript OOXML writer -- no native module, no headless browser, no office install.
+Documents are written with [`docx`](https://www.npmjs.com/package/docx), a pure-JavaScript OOXML writer, no native module, no headless browser, no office install.
 
-Reading and template filling use no dependency at all. A `.docx` is a ZIP, so `node:zlib` opens it and a small WordprocessingML walk pulls out paragraphs, heading levels (from `w:pStyle`), list items and tables in document order. Numbered lists are told apart from bullets by resolving each paragraph's `w:numId` against `word/numbering.xml`, which is the only place that distinction is recorded -- without it every numbered list reads back as bullets.
+Reading and template filling use no dependency at all. A `.docx` is a ZIP, so `node:zlib` opens it and a small WordprocessingML walk pulls out paragraphs, heading levels (from `w:pStyle`), list items and tables in document order. Numbered lists are told apart from bullets by resolving each paragraph's `w:numId` against `word/numbering.xml`, which is the only place that distinction is recorded, without it every numbered list reads back as bullets.
 
-Template filling substitutes on the **joined text of each paragraph**, not per run. Word routinely breaks a placeholder you typed as `{{client}}` into three runs (`{{cli`, `ent}}`, ...) after an edit or a spell-check pass, and per-run replacement silently misses those -- the document comes back with the placeholder still in it. The replaced text goes into the first run, keeping its formatting, and the remaining runs of that paragraph are blanked. Every other part of the package is copied byte-for-byte, so styles, images, headers, footers and section setup survive. A placeholder with no value is left in place and reported, never blanked.
+Template filling substitutes on the **joined text of each paragraph**, not per run. Word routinely breaks a placeholder you typed as `{{client}}` into three runs (`{{cli`, `ent}}`, ...) after an edit or a spell-check pass, and per-run replacement silently misses those, the document comes back with the placeholder still in it. The replaced text goes into the first run, keeping its formatting, and the remaining runs of that paragraph are blanked. Every other part of the package is copied byte-for-byte, so styles, images, headers, footers and section setup survive. A placeholder with no value is left in place and reported, never blanked.
 
 ## Existing files are never overwritten
 
@@ -207,15 +205,15 @@ so a restored register can never hand back a reference that is already on a sent
 ## Privacy
 
 All data stays local. The server reads and writes files on your machine, stores its register under your data
-directory, and makes no network request of any kind -- not for licensing (keys are verified offline), not for
+directory, and makes no network request of any kind, not for licensing (keys are verified offline), not for
 fonts, not for telemetry.
 
 ## Pairs with
 
-- [mcp-invoice](../invoice/README.md) -- same `business_set` profile shape; the proposal you accepted becomes the invoice you send.
-- [mcp-time-tracker](../time-tracker/README.md) -- the `write_proposal_from_hours` prompt turns `invoice_summary` hours into a priced proposal.
-- [mcp-expense-tracker](../expense-tracker/README.md) -- quote a project with its pass-through costs already counted.
-- [office-suite](../office-suite/README.md) -- several servers behind one install, one config entry.
+- [mcp-invoice](../invoice/README.md), same `business_set` profile shape; the proposal you accepted becomes the invoice you send.
+- [mcp-time-tracker](../time-tracker/README.md), the `write_proposal_from_hours` prompt turns `invoice_summary` hours into a priced proposal.
+- [mcp-expense-tracker](../expense-tracker/README.md), quote a project with its pass-through costs already counted.
+- [office-suite](../office-suite/README.md), several servers behind one install, one config entry.
 
 ## Troubleshooting
 

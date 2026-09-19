@@ -99,7 +99,7 @@ adding it in would report a value the customer has never accepted. `contract_val
 and void change orders count for nothing and are listed so they can be seen to count for
 nothing.
 
-**Every delta is derived on the call from the lines; nothing is stored.** A line is a kind
+A line is a kind
 (added, removed, changed), a quantity and a unit price in MINOR units, and for a changed
 line the quantity and unit price it replaces. The delta is `roundHalfUp(q x p)` for an
 addition, its negative for a removal, and the difference of the two products for a change.
@@ -115,7 +115,7 @@ items in the test process (`computeTotals` over the invoice items; the quote ite
 the same engine as though their minor figure were a major one) and asserts the quotient is
 exactly 100.
 
-**A changed line is emitted as a reversal and a new line, never as one net item.** A change
+A change
 from 3 x 450.00 to 5 x 420.00 is worth +750.00, but an item of quantity 1 at 750.00 shows
 the customer nothing they can check. The payload carries `-3 x 450.00` and `5 x 420.00`,
 each of which reproduces on a calculator, and `computeTotals` over both is the same +750.00
@@ -130,11 +130,11 @@ anything, cannot be quoted as a delta. The payload still carries the items in MI
 the scale identity holds, and `quote_create.ready` is false with the rule named; the way
 through is to re-quote the job whole in the quotes server, or to invoice the delta.
 
-**Only an APPROVED change order has an invoice payload.** A draft or sent one is not agreed;
+A draft or sent one is not agreed;
 a rejected or void one bills nothing. The refusal names the status and, for a sent one, the
 date it went out.
 
-**Lines are added only while a change order is a draft.** Once it is sent, the client is
+Once it is sent, the client is
 looking at a document, and a line added under them makes their approval an approval of
 something else. A sent change order that needs another line is voided and raised again; the
 void is recorded with its date.
@@ -146,7 +146,7 @@ a date it was never sent has no date to show for the sending. Every step carries
 date, and a step dated before the change order's own date or before the last step is refused
 so the history reads as a timeline.
 
-**The free cap counts OPEN change orders (draft and sent), and closing one frees its slot.**
+The free cap counts OPEN change orders (draft and sent), and closing one frees its slot.
 Approving, rejecting or voiding a change order is free on every tier, and so is deleting a
 draft with no lines, so the cap is one you can get back under without a key
 (docs/RECOVERABLE_SLOTS_RESULT.md). A byte-identical change order (reference, title, client,

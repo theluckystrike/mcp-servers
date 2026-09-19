@@ -22,14 +22,14 @@ next server that needs to state an account.
 
 ## Design decisions worth stating
 
-**This server writes into no book it reports on.** It reads three stores -- the invoice
+It reads three stores -- the invoice
 ledger, the credit note store and the deposit store -- and writes exactly one file of its
 own, a register of the statements that were built. No balance is ever read back out of that
 register. A statement of account is a view over books other servers own, and a second copy
 of a balance is a second number to be wrong. The contract suite asserts the bytes AND the
 mtimes of five sibling files are unchanged across all six tools, including the PDF path.
 
-**A sibling store that is unreadable is never read as an empty one.** The common case on a
+The common case on a
 real machine is that the user runs `mcp-invoice` and has never installed `mcp-deposits`:
 that statement is correct, it simply has no deposit line, and it says `read: true, rows: 0`.
 A store that is on disk and did not parse is a different thing: money exists that could not
@@ -39,7 +39,7 @@ of nothing owed is the one failure that would be invisible in the answer and exp
 the world. The invoice ledger is the exception to "never fatal": with no invoices there is
 no statement, so a corrupt `invoices.json` refuses all six tools by name.
 
-**`paid_minor` is the authority and `payments[]` is only the attribution.** The two do not
+The two do not
 have to agree, and on a real machine they routinely do not: `invoice_mark_paid` writes
 both, `deposit_apply` in `servers/deposits` raises `paid_minor` and appends NOTHING to
 `payments[]` (the movement lives on the deposit as a `DepositApplication`), and an invoice
@@ -51,42 +51,42 @@ balance reconciles to `total_minor - paid_minor` per invoice. Reconstructing rec
 `payments[]` alone would have lost 300.00 of the worked month's 900.00 of receipts, a third
 of the cash, with no error anywhere.
 
-**When the two books disagree, nothing is scaled and nothing is dropped silently.** If the
+If the
 attribution sums to MORE than `paid_minor`, the whole attribution is discarded, one row for
 `paid_minor` is shown at `paid_date`, and the disagreement comes back as a note naming the
 invoice and the difference. Probe 7 seeds exactly that: a deposit book claiming 800.00 went
 to an invoice that records 300.00 paid.
 
-**A deposit applied is money that moves once.** `deposit_apply` already put that money on
+`deposit_apply` already put that money on
 the invoice as `paid_minor`, so `payments_received` contains it and
 `of_which_deposits_applied` breaks it out. It is a breakdown, not a fourth column. The
 first cut of this server had it as a fourth column and paid every deposited invoice twice;
 the worked month is the test that caught it. Deposit money still HELD is a memo line and is
 never in the balance: it is the client's money until it is applied.
 
-**Aging is as at the date asked for, in both directions.** An invoice issued after the date
+An invoice issued after the date
 is not on the books, a payment made after it has not happened, and a credit note issued
 after it has not been given. See the measured insight below; this is the single decision
 that changes the most numbers.
 
-**Due today is not overdue.** An invoice enters the 0-30 bucket on the first day past its
+An invoice enters the 0-30 bucket on the first day past its
 due date, so the bucket holds days one to thirty and day zero sits in `not_yet_due`, which
 is reported beside the four buckets rather than inside them or hidden. The brief asked for
 four buckets and there are exactly four; what is outstanding and not yet due is real money
 and is shown, but it is not aged, because it is not late.
 
-**A credit note reduces the invoice it names and no other.** An open balance floors at zero
+An open balance floors at zero
 and the excess is reported as `unapplied_credit`. Quietly letting a 1,500.00 credit note on
 a paid invoice cancel an unrelated 400.00 invoice would be inventing an agreement the
 client never made. The statement, which is a balance rather than an aging, does carry the
 whole credit, so a client who is owed money sees a negative closing balance and the text
 says "is in your favour".
 
-**Currencies are never added together.** One statement is one currency and a client billed
+One statement is one currency and a client billed
 in two is asked which; `statement_aging` and `statements_report` total per currency. There
 is no exchange rate in this server, so there is no rate to be silently wrong.
 
-**A dunning letter escalates in tone and never in figures.** The amounts, the invoice list
+The amounts, the invoice list
 and the bank details are identical at all three levels, because a chase whose numbers
 escalate was wrong at level one. No level states a late fee, an interest rate or a legal
 cost: this server holds no contract terms, no statutory rate and no jurisdiction, and the
@@ -95,13 +95,13 @@ when the shared profile actually carries them, and when it does not the answer s
 letter asks for payment without saying where to send it. A chaser for a client with nothing
 past due is refused, and the refusal names what is outstanding but not yet due.
 
-**The free cap is on the DOCUMENT, not on the question.** `statement_aging` is free and
+`statement_aging` is free and
 unlimited on every tier: "who owes me money" is the question this server exists for, and a
 free tier that hides it is a demo. Five distinct statements a calendar month are metered by
 client, period and currency, so rebuilding one already in the register is free forever, on
 every tier and in all three renderings.
 
-**Ids are `STMT-YYYY-NNNN`.** Same reasoning as `INV-`, `CN-`, `DEP-` and `ASSET-`: the
+Same reasoning as `INV-`, `CN-`, `DEP-` and `ASSET-`: the
 counter is written before the record, so a crash burns an id rather than reusing one, and
 existing ids are scanned so a restored register cannot reissue a number that is already on
 a statement in a client's inbox.

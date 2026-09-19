@@ -14,17 +14,17 @@ Built by [theluckystrike](https://github.com/theluckystrike).
 
 ![calendar demo](../../assets/demo-calendar.gif)
 
-**Import the .ics your calendar exports, then ask what is on, when you are free, and what clashes -- zero setup, all local.**
+Import the .ics your calendar exports, then ask what is on, when you are free, and what clashes, zero setup, all local.
 
 ## 60-second install
 
 npm publish for `@theluckystrike/mcp-calendar` is pending. Until then, the `.mcpb` one-click bundle or a clone+build
-is the working path -- both are verified below.
+is the working path, both are verified below.
 
-**One-click (.mcpb):** download `calendar.mcpb` from the latest release and double-click it in Claude Desktop:
+One-click (.mcpb): download `calendar.mcpb` from the latest release and double-click it in Claude Desktop:
 https://github.com/theluckystrike/mcp-servers/releases/latest
 
-**Claude Desktop** (`claude_desktop_config.json`):
+(`claude_desktop_config.json`):
 
 ```json
 {
@@ -37,13 +37,13 @@ https://github.com/theluckystrike/mcp-servers/releases/latest
 }
 ```
 
-**Claude Code:**
+Claude Code:
 
 ```sh
 claude mcp add calendar -- npx -y @theluckystrike/mcp-calendar
 ```
 
-**Cursor** (`.cursor/mcp.json`):
+(`.cursor/mcp.json`):
 
 ```json
 {
@@ -133,7 +133,7 @@ Warsaw 10:00 meeting at 10:00 local across the March clock change.
 | Import from a URL or webcal feed | -- | yes |
 | Everything else | full | full |
 
-[Get Pro](https://mcp.zovo.one/buy/calendar) -- or $39 for every server in the suite, lifetime.
+[Get Pro](https://mcp.zovo.one/buy/calendar), or $39 for every server in the suite, lifetime.
 
 ## Privacy
 
@@ -145,28 +145,23 @@ addresses. Nothing is uploaded, no account is linked, and licence keys verify of
 
 ## Pairs with
 
-- [mcp-timezone](../timezone/README.md) -- this server reads its time zone and `.ics` engine from it: convert a meeting time, find slots across countries, write an invite.
-- [mcp-time-tracker](../time-tracker/README.md) -- `event_to_time_entry` hands it a finished meeting; it tracks and reports the hours.
-- [mcp-invoice](../invoice/README.md) -- turn those tracked hours into a numbered invoice.
-- [office-suite](../office-suite/README.md) -- several servers behind one install, one config entry.
+- [mcp-timezone](../timezone/README.md), this server reads its time zone and `.ics` engine from it: convert a meeting time, find slots across countries, write an invite.
+- [mcp-time-tracker](../time-tracker/README.md), `event_to_time_entry` hands it a finished meeting; it tracks and reports the hours.
+- [mcp-invoice](../invoice/README.md), turn those tracked hours into a numbered invoice.
+- [office-suite](../office-suite/README.md), several servers behind one install, one config entry.
 
 ## FAQ
 
-**Does it connect to my Google or Outlook account?**
 No. There is no OAuth, no token and no sync. You export a file (or paste a public feed URL on Pro) and it is read
 locally. That also means an import is a snapshot: re-import when the calendar has moved on.
 
-**Do recurring events work properly?**
 Yes, and that is most of the code. A weekly series is expanded on the wall clock, so a Warsaw 10:00 meeting stays
 10:00 through the DST change rather than drifting to 11:00. Monthly on the 31st skips February instead of rolling into
 March, `UNTIL` includes the occurrence that falls exactly on it, and a single moved instance replaces the original.
 
-**Why is my whole-day event one day shorter than I expected?**
 It is not: RFC 5545 makes `DTEND` exclusive for a whole-day event, so 1--3 June means the 1st and the 2nd. This
 server follows the spec, which is what your calendar app does too.
 
-**Can it write to my calendar?**
 It writes `.ics` files with `event_export`, which you can import anywhere. It never modifies the calendar it read.
 
-**How big a file can it read?**
 5 MB, which is a few thousand events. Export a narrower date range if a full history is bigger than that.

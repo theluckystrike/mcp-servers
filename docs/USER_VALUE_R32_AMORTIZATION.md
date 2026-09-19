@@ -69,7 +69,7 @@ changed as part of this round; it is measurement only. Cap: 30 minutes, met.
 | am5 | Add two more loans, total owed 30 June | 2 | **3** | Coffee machine correctly refused at the 3-loan free cap; the reported total EUR 17,789.15 covers exactly the three loans that exist, matching `loan_list`'s own aggregate exactly. The round 31 defect (a bolded total including debt for a refused agreement) did NOT recur |
 | am6 | Journal the first payment, price early settlement | 2 | **2** | All arithmetic exact against the free schedule, but the hand-built journal used invented account names ("Loan liability -- Van finance", "Cash / Bank") instead of the real ids (`interest_expense`, `loan_liability`, `cash`) `loan_journal` would have returned. Identical defect to round 31 am6 |
 
-**Totals: 15/18 hosted, matching round 31's 15/18 over stdio on the identical six prompts.**
+Totals: 15/18 hosted, matching round 31's 15/18 over stdio on the identical six prompts.
 
 ## Independent verification
 

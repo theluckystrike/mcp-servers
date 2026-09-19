@@ -42,7 +42,7 @@ could infer. 0 = failed.
 | 7 | all six | "What is my tier and how do I upgrade?" | **2** | 5 | 15.6 | Correct in one turn — free on all six, one token, $19 each with a tenant-carrying link, $39 for every server — and it declined to buy anything itself. Two deductions: `whoami` is an HTTP GET, not a tool, so there is no single call that answers the question and the model paid **one `license_status` per server**, five in a row (D-R50); and the $39 price was named with **no link**, though `/buy/bundle` exists and 303s to Stripe with the same tenant metadata (D-R43). |
 | 8 | invoice, new session | "What did I invoice this month?" | **3** | 1 | 10.2 | A session that had never seen any earlier turn read all three invoices back from the same URL with one `invoice_list`, totalled the two EUR invoices to EUR 2,460.00 and **kept the USD 585.78 separate** rather than mixing currencies, and flagged the two placeholder clients. Server-side state per anonymous token, at the URL, with nothing pasted. |
 
-**Totals: 19 / 24, 22 tool calls, 206.5 s.** Not comparable to r9's 23/24 — r9 re-scored eight known-weak
+Not comparable to r9's 23/24 — r9 re-scored eight known-weak
 sentences against the bundle on disk; this scores eight fresh scenarios against six hosted endpoints
 reached by URL. The three 3s are where the hosted path adds nothing to break. **Four of the five
 deductions are about what the endpoint tells the model about itself, not about what it computes.**

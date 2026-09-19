@@ -87,7 +87,7 @@ concurrently: **46 of 46 at 0.9.0**.
 `scripts/sync-mirrors.sh` pushed all 20. `mcp-zip` is new, and was verified the way the
 script's contract claims: fresh `git clone` of the pushed mirror, then
 `npm install && npm run build && npm test` with no access to the monorepo.
-**exit 0, 43 tests, 38 pass, 0 fail, 0 cancelled, 5 skipped** (Pro-key tests, whose signing
+(Pro-key tests, whose signing
 key never leaves the monorepo). The v0.8.0 fixes carried it: the script printed
 `pro-tier helper exports: proKey` for zip, so the signer inside `test/_client.mjs` was seen
 and the tests that call it were skipped rather than left to run against an empty key.

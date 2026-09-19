@@ -69,13 +69,13 @@ function install(slug) {
     .map((id) => `    "${id}": {\n      "command": "node",\n      "args": ["/absolute/path/to/mcp-servers/servers/${id}/dist/index.js"]\n    }`)
     .join(",\n");
   const hostedBlock = hosted.length === 0 ? "" : `
-<p><strong>Or a URL, with nothing installed.</strong> <a href="/mcp/connect">/mcp/connect</a> mints a free
+<p>Or a URL, with nothing installed. <a href="/mcp/connect">/mcp/connect</a> mints a free
 anonymous token and prints the ready line${hosted.length > 1 ? "s" : ""}:</p>
 <pre><code>${hosted.map((id) => `claude mcp add --transport http ${id.padEnd(width)} https://mcp.zovo.one/mcp/${id}/t/&lt;token&gt;`).join("\n")}</code></pre>`;
-  return `<p><strong>One click, no JSON.</strong> Download ${files} from the
+  return `<p>One click, with no JSON. Download ${files} from the
 <a href="${RELEASES}">latest release</a> and open ${many ? "them" : "it"} in Claude Desktop. ${many ? "They run" : "It runs"} on the
 Node runtime Claude Desktop ships with, so your own PATH and node version never come into it.</p>${hostedBlock}
-<p><strong>Or from a clone,</strong> for a client with no bundle installer. Build once, then point the
+<p>Or from a clone, for a client with no bundle installer. Build once, then point the
 client at the built file:</p>
 <pre><code>git clone https://github.com/theluckystrike/mcp-servers.git
 cd mcp-servers &amp;&amp; npm install
@@ -1783,7 +1783,7 @@ someone made in the meantime.</p>
 <p>The measured case (<code>test/adversarial.test.mjs</code>, "a VAT rate change between quote and
 acceptance never moves the agreed total"): a quote of EUR 1,000.00 net is issued while the profile's
 <code>default_tax_rate</code> is 23%, so the client is given EUR 1,230.00. Before the client answers, the
-profile's default rate is changed to 8%. Recomputing at acceptance time invoices EUR 1,080.00 -- EUR 150.00
+profile's default rate is changed to 8%. Recomputing at acceptance time invoices EUR 1,080.00, not EUR 150.00
 below the number the client actually agreed to, on one document, with nothing on either record explaining
 why they differ. Copying the quote's stored lines instead invoices EUR 1,230.00, and the assertion holds
 <code>tax_lines[0].rate === 23</code>. A later tax-rate change in the shared profile cannot move the

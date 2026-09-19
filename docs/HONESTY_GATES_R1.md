@@ -41,7 +41,7 @@ So the test was failing on the better behaviour. Every directory submission in
 `docs/HUMAN_GATED_PACK.md` ships `/buy/office-suite` as office-suite's homepage; a crawler
 that follows one now lands on the office-suite page instead of being bounced to the bundle.
 
-**Changed:** the test, not the site. The property in its own title, *sent to a page that
+the test, not the site. The property in its own title, *sent to a page that
 exists*, is now what it asserts: it follows the redirect and requires HTTP 200 and a page
 that is not the not-found body, for every entry in `PRODUCT_ALIASES` rather than for one
 hand-named alias. A pinned path is exactly the thing that went stale here, so the rewrite
@@ -67,8 +67,6 @@ was emitted **twice**, under two different titles, for one URL:
 read, in the measured week ClaudeBot fetched 311 of 312 URLs and Googlebot took 2, so a
 duplicate entry with two different descriptions is a defect in the one document that has an
 audience.
-
-**Changed: both.**
 
 *Site (`billing/src/index.js`, `/llms.txt`):* office-suite is skipped in the `PAGES` loop
 and written once, by hand, below the bundle. The hand-written line is the one kept because
@@ -99,7 +97,7 @@ fields it guards.
 telling buyers the estate was last validated three days ago and that the billing service
 had two fewer tests than it has.
 
-**Changed:** the site. `billing/src/index.js` lines 205 and 212. The gate was correct in
+the site. `billing/src/index.js` lines 205 and 212. The gate was correct in
 every particular; it just had nothing running it.
 
 ### 4. `the bundle description names the count, the one key and the saving`, the TEST was stale
@@ -116,7 +114,7 @@ constants, which passes even when both are wrong, so something had to anchor it 
 outside world. A spelled-out English word is the worst possible anchor: it goes stale the
 day a server ships, which is what happened.
 
-**Changed:** the test, and the anchor is now the estate on disk, `servers/*/package.json`
+the test, and the anchor is now the estate on disk, `servers/*/package.json`
 minus office-suite, which is where `scripts/release-check.mjs` reads the count from too, so
 the two sides of the comparison have genuinely different sources. Two assertions replace
 the literal:
@@ -150,7 +148,7 @@ Raised mid-loop. The orchestrator's diagnosis was that `delivery-schedule` is mi
 after the last user-value round, and that the other five were probably the same cause -
 with an instruction to check rather than assume. Checked:
 
-**Five of the six are that one cause.** `delivery-schedule` has `first_five: []`,
+`delivery-schedule` has `first_five: []`,
 `first_five_round: null` and no `<h2>First five minutes</h2>`. Four assertions in
 `first-five.test.mjs` and one in `copy-button.test.mjs` fail on it.
 
@@ -168,7 +166,7 @@ against one character of unrelated markup, and reported back as *"names round nu
 got printed. `first-five.test.mjs` now reads the section through a helper that asserts the
 heading is present first, so an absent section is reported as an absent section.
 
-**The sixth is a different cause, and it is the site.** `guide-figures.test.mjs` fails on
+`guide-figures.test.mjs` fails on
 the month-end-close guide quoting `292`, a number `data/user_value_r27.json` does not
 contain. It has nothing to do with `delivery-schedule` - that server is not mentioned in the
 guide. The guide opens:
@@ -287,7 +285,7 @@ A second check went in beside it: `--if-present` silently skips a workspace with
 script. All 33 have one (all identical: `node --test test/*.test.mjs`), and this fails the
 day one loses it and its tests stop running with no output change.
 
-**A gate nobody has seen fail is not a gate.** Control test, run twice. The second run is
+Control test, run twice. The second run is
 the one that matters, because the fault was injected into the honesty gate itself:
 `assert.equal(VALIDATION.pass, pass)` changed to `pass + 1` in `checkout-r1.test.mjs`.
 
@@ -320,7 +318,7 @@ check returning `ok`. It reports `billing/test: 1 failing` because that one fail
 Simulation against the gate's own comparison logic confirms it goes green the moment the
 guide quotes round 27's figures.
 
-**Still open, and it needs an owner with `package.json`:** root `npm test` still does not
+root `npm test` still does not
 run these suites. A developer running `npm test` locally still sees green while
 `billing/test` is red. One line closes it:
 
@@ -385,7 +383,7 @@ when it drifts:
    `tools.json`.
 6. **Two server counts on one site.** `/changelog` renders `CHANGELOG.serverCount` = **32**
    ("Current version v0.21.0, 32 servers") while the home page H1 renders `SERVER_COUNT` =
-   **31** ("Thirty-one local-first MCP servers"). Both are defensible, 32 counts the
+   ("Thirty-one local-first MCP servers"). Both are defensible, 32 counts the
    office-suite aggregator, 31 counts what is for sale, but a reader who visits both pages
    sees the estate disagree with itself, and neither number explains which convention it
    is using.

@@ -32,7 +32,7 @@ replenishment, the float store and the two account ids it adds.
 
 ## Design decisions worth stating
 
-**The replenishment is `imprest - balance`, never the sum of the vouchers.** This is the
+This is the
 decision the whole server rests on. The two figures differ by exactly what the counts found
 over or short, and the sum of the vouchers is the one a person reaches for, because it is
 the one the paperwork adds up to. On the worked month the vouchers total 20,194 minor units
@@ -42,7 +42,7 @@ same defect repeats every cycle while every reconciliation still reports a clean
 unit suite runs three cycles of it and asserts the float ends at 49,967 against a 50,000
 imprest.
 
-**A count is a FACT, so it moves the book balance.** Once a count is recorded the balance
+Once a count is recorded the balance
 is what was counted, and the difference is carried forward as an over or short rather than
 re-reported at every later count. The alternative, leaving the book at what the vouchers
 say and reporting the same difference forever, makes the second count a copy of the first
@@ -51,41 +51,41 @@ a tin that is short by a little every month is visible as a run rather than as o
 The suite asserts the second count on the same day, with nothing spent in between, comes
 back at exactly zero.
 
-**No balance is stored.** The float record holds the imprest, the top-ups and the counts;
+The float record holds the imprest, the top-ups and the counts;
 every balance is derived on the call from those and the vouchers. A stored balance is a
 second copy of what the vouchers already decide, and the copy is the one that gets believed
 after somebody deletes a voucher. `contract.test.mjs` greps the raw store file for
 `"balance` and asserts the record's keys are the terms and the events only.
 
-**A float is cash in a tin and can never hold less than nothing.** A voucher larger than
+A voucher larger than
 the balance on its own date is refused. So is a back-dated one that would make any LATER
 day negative, which the at-the-date check alone does not catch: back-dating takes the cash
 out earlier, so every day after it is short too. `firstNegative` replays the whole run of
 events in date order, and the refusal names the day it breaks, not the day it was typed.
 
-**A reconciled voucher cannot be deleted.** The cash it took out was counted on the day of
+The cash it took out was counted on the day of
 the count, so removing it would make a recorded count wrong by its own amount, and the
 refusal says so with the number. Deletion is free while a voucher is still uncounted, which
 is what keeps the monthly cap honest: a voucher typed in twice would otherwise cost a slot
 with no way back but a key. The VOU series never reissues a number, so a gap in it is the
 record that a voucher was deleted.
 
-**A byte-identical voucher is refused by name.** Same float, date, amount, category,
+Same float, date, amount, category,
 description, payee and receipt reference is one voucher entered twice far more often than
 it is two identical purchases. The refusal names the id already stored and the way through
 (`duplicate_ok`), so the second taxi fare of the day is still recordable, deliberately.
 
-**`replenish_request` writes nothing.** It says what the cheque should be; the cash is
+It says what the cheque should be; the cash is
 recorded with `topup_record` when it is physically back in the tin, and that call is what
 marks the vouchers reimbursed. A request is not a payment, and a float that counts a
 request as cash is short by the whole request until the cheque clears.
 
-**Under the imprest system `petty_cash` does not move.** It is debited once when the float
+It is debited once when the float
 is opened and again only if the imprest itself changes. A replenishment credits `cash` and
 debits the expenses; the float account is not in that journal at all, and the suite asserts
 its absence.
 
-**The chart of accounts is imported, not restated.** `cash` and the per-category
+`cash` and the per-category
 `expenses:<category>` ids come from `servers/cash-book`'s own `expenseAccount`, so a
 category spelled "Office Supplies", "office supplies" and "  OFFICE   SUPPLIES  " is one
 account and not three, and no rename in that server can leave this one posting to an
@@ -181,7 +181,7 @@ Selected results:
 
 ## The measured insight
 
-**The cheque is not the sum of the vouchers, and nothing in the voucher trail says so.**
+The cheque is not the sum of the vouchers, and nothing in the voucher trail says so.
 
 On the worked month the tin is 11 minor units short: eleven cents no receipt will ever
 explain. The replenishment that restores the float is 20,205, while the vouchers add to

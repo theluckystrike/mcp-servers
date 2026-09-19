@@ -33,7 +33,7 @@ insight: The 49 tracked surfaces are a closed set: every remaining *directory* i
 ## 1. Rules applied (from CLAUDE.md as restated in the task)
 
 - No paid listings, no account creation, no sign-ins. Anything needing those is
-  **human-gated**: record the exact URL and stop.
+  record the exact URL and stop.
 - Do not resubmit to any of the 49 surfaces already in `data/distribution.json`
   `surfaces`.
 - Never ping maintainers. `erkcet/awesome-telegram-bots` and

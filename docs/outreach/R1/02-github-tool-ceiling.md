@@ -1,12 +1,12 @@
 # Draft 02 — GitHub Issue: server exposes fewer tools than documented
 
-**Surface:** GitHub Issues (modelcontextprotocol/servers) — `OPEN` with a GitHub account
-**Thread URL:** https://github.com/modelcontextprotocol/servers/issues/541
-**Thread title:** *GitHub MCP Server missing some tools from the listed features*
-**Fit:** The report is "README says N tools, client only surfaces M." The real cause is usually a client
+GitHub Issues (modelcontextprotocol/servers) — `OPEN` with a GitHub account
+https://github.com/modelcontextprotocol/servers/issues/541
+*GitHub MCP Server missing some tools from the listed features*
+The report is "README says N tools, client only surfaces M." The real cause is usually a client
 tool ceiling rather than a server bug — a genuinely useful diagnostic angle the thread lacks.
 
-**Exact guide link to include:** https://mcp.zovo.one/guides/mcp-server-not-showing-up-in-claude-desktop
+https://mcp.zovo.one/guides/mcp-server-not-showing-up-in-claude-desktop
 
 ---
 

@@ -1,7 +1,5 @@
 # T4 S45: GitHub Repo Surface as Distribution Channel — README/Catalog Optimization for Clone Users
 
-**STATUS: in progress**
-
 ## Objective
 Turn the GitHub repo (theluckystrike/mcp-servers) into a distribution channel. 3,596 clones/14d, 605 clone uniques, 76 views, 0 stars, 0 forks — clones are 60x views. People clone and use the code but never star, never visit the site, never buy. This task: read-only research + proposal to optimize the README/catalog so clone users are routed to the hosted storefront (`/s/<server>`), the no-install hosted endpoints (`/mcp/<server>`), and the pricing page.
 
@@ -19,7 +17,7 @@ Turn the GitHub repo (theluckystrike/mcp-servers) into a distribution channel. 3
 
 But the repo has **42 server directories** (`ls servers/ | wc -l` = 42) and the README says "41 servers plus the office-suite aggregator". The description says **31** — it is 11 servers out of date. This is the single most visible line on the repo (shown in GitHub search, social cards, and the repo header). It undercounts the catalog by ~26% and undercuts the "42-server" value prop.
 
-**Fix:** Update description to "42 local-first MCP servers..." (or "41 + office-suite aggregator"). This is a `gh api` PATCH, not a README edit — propose it, do not apply (task says read-only).
+Update description to "42 local-first MCP servers..." (or "41 + office-suite aggregator"). This is a `gh api` PATCH, not a README edit — propose it, do not apply (task says read-only).
 
 ### 2. README has ZERO links to the `/s/<server>` storefront pages (HIGH priority)
 `grep -c 'mcp.zovo.one/s/' README.md` = **0**. The catalog table links each server only to its **local** `servers/<name>/README.md` file. There is no link to the hosted storefront UI (`https://mcp.zovo.one/s/<server>`) anywhere in the README.
@@ -55,10 +53,10 @@ The changes below are **pure additive markdown** (no restructuring of existing s
 
 ### 5b. README hero block (insert after H1, before `<!-- gen:badge -->`)
 ```markdown
-**42 practical MCP servers for people who work inside Claude, Cursor and other MCP clients.**
+42 practical MCP servers for people who work inside Claude, Cursor and other MCP clients.
 No account, no telemetry, no subscription — a genuinely useful free tier, and a one-time $19/server or $39/bundle Pro.
 
-**Try any server in 30 seconds, no install:** point your client at `https://mcp.zovo.one/mcp/<server>`
+point your client at `https://mcp.zovo.one/mcp/<server>`
 (`GET https://mcp.zovo.one/mcp/connect` mints a free token and prints a ready URL). Browse the live
 storefront and hosted demos at **https://mcp.zovo.one** — every server has a product page, a setup guide
 for six clients, and a head-to-head compare.
@@ -89,4 +87,4 @@ Change the `Server` column links from local `servers/<name>/README.md` to `https
 - README uses `<!-- gen:badge -->`, `<!-- gen:counts -->`, `<!-- gen:install -->`, `<!-- gen:table -->` generator blocks
 
 ## STATUS
-**complete** — research done, proposal drafted, shippable. No README edits applied (catalog table is generator-managed via `<!-- gen:table -->`; repo-description PATCH deferred to orchestrator per read-only constraint). Recommended next action: orchestrator applies the `gh api` description PATCH (31→42) and the additive hero block.
+— research done, proposal drafted, shippable. No README edits applied (catalog table is generator-managed via `<!-- gen:table -->`; repo-description PATCH deferred to orchestrator per read-only constraint). Recommended next action: orchestrator applies the `gh api` description PATCH (31→42) and the additive hero block.

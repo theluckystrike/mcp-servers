@@ -91,14 +91,13 @@ model's honest reaction was to route around the paywall with Bash rather than su
 
 ## Defects found
 
-**D-1 (high, spreadsheet) — free write cap truncates data while reporting success.**
 `sheet_add_column` on a 400-row sheet writes 200 rows and returns a success message plus a preview table.
 The output file is structurally valid and looks complete; only the prose note says otherwise.
 Repro: `node probe.mjs spreadsheet '{"name":"sheet_add_column","args":{"path":"/private/tmp/uv/sales.xlsx","sheet":"Sales","name":"Revenue","formula":"[Units] * [Unit Price]","out_path":"/private/tmp/uv/chk.csv"}}'`
 -> `wc -l /private/tmp/uv/chk.csv` = 200, source has 400. `servers/spreadsheet/src/index.ts:60`.
 Fix direction: refuse the write, or name the output `...-first-200-rows.csv`, or return `isError`.
 
-**D-2 (high, price-tracker) — a redirect off the product page still returns a price.**
+D-2 (high, price-tracker) — a redirect off the product page still returns a price.
 `https://www.ikea.com/us/en/p/billy-bookcase-white-00263850/` redirects to a category listing.
 `extractPrice` returns "39" USD with title "BILLY, Bookcase, oak effect" — the cheapest item on a
 different page. Sharper case: `https://www.ikea.com/us/en/p/billy-bookcase-white-00522047/` redirects to
@@ -106,35 +105,32 @@ different page. Sharper case: `https://www.ikea.com/us/en/p/billy-bookcase-white
 No check that `finalUrl` still looks like a product page and no confidence signal on `regex-fallback`.
 This is the worst failure mode for a price watcher: it will alert on a number that was never the price.
 
-**D-3 (high, time-tracker) — the rate has no currency, so "90 euros" becomes USD.**
 `entry_add` accepts `rate` but no `currency` (`src/index.ts:273-282`); currency lives only on the project
 via `project_set_rate` and `currencyFor()` defaults to `"USD"` (`:131`). Repro: the tt3/tt4 pair above —
 user says "90 euros an hour", the invoice summary prints `$90.00/hr` and `$225.00 USD`.
 Fix direction: add `currency` to `entry_add`, or infer the project currency on first rated entry.
 
-**D-4 (medium, price-tracker) — the server loses tool selection to the built-in WebFetch.**
+D-4 (medium, price-tracker) — the server loses tool selection to the built-in WebFetch.
 With normal client tools available, the natural prompt "What does this cost right now: <url>" was answered
 by WebFetch; `price_check` was never called (`out/pt1.jsonl`). It only wins when WebFetch is disallowed
 (`out/pt1b.jsonl`). The tool description does not say what it adds over a plain page fetch (history,
 normalized decimal price, currency detection, watch integration).
 
-**D-5 (medium, price-tracker) — `watch_add` stores a watch nothing ever checks.**
 There is no scheduler, no background refresh and no notification path, so "alert me if it goes under 40"
 cannot be honoured. In `out/pt2b.jsonl` the agent's next move was to invoke an external `schedule` skill
 to build a cron job. `watch_add` should say plainly that checks happen when the user asks, and
 `watch_refresh` should be the documented pattern.
 
-**D-6 (medium, spreadsheet) — no aggregation, so every "who sold the most" question leaves the server.**
+D-6 (medium, spreadsheet) — no aggregation, so every "who sold the most" question leaves the server.
 `sheet_query` filters and selects but cannot group or sum. Getting the top-5-by-region answer took 5 calls
 and 71 s, and the arithmetic was done by python outside the server (`out/ss2.jsonl`). A `group_by` +
 `agg` on `sheet_query`, or a `sheet_pivot` tool, would turn a 71 s multi-tool detour into one call.
 
-**D-7 (low, time-tracker) — no project name reconciliation.**
 "the Acme website project" created `Acme website`; "for Acme" created `Acme`. `entry_add` accepts any new
 string without listing near-matches, so the week's billing was split across two projects and the model had
 to reconcile them in prose. A near-match warning on project creation would fix it.
 
-**D-8 (low, invoice) — client auto-created with no address, and line amounts carry no currency symbol.**
+D-8 (low, invoice) — client auto-created with no address, and line amounts carry no currency symbol.
 `invoice_create` with `client: "Acme"` created the client silently, so BILL TO on the PDF is a bare name.
 Cosmetic, but it is the first thing a real client's accounts department looks at.
 

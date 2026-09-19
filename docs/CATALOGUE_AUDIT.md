@@ -49,7 +49,7 @@ Scorecard: **18 / 18** (3.0 / 3).
 
 ### Findings from the six prompts
 
-**The 100x gap in Part 2's own worked example (prompts 4 and 5).** This is the exact
+This is the exact
 trap `docs/CATALOGUE_RESULT.md` names as the whole reason `lines_resolve` builds both
 payloads: `quote_create`'s line carries `9500` in `unit_price_minor`; `invoice_create`'s
 line needed `95` in `unit_price` (major units) to land on the same `9500` minor-unit
@@ -60,14 +60,14 @@ block into the major-unit field. Nothing on disk overbilled; the finding is that
 this catalogue is built around is not hypothetical, it is precisely the seam a live
 model crosses twice in six prompts.
 
-**Pro gate demonstrated, not just described, only after a nudge (prompt 6).** As in the
+As in the
 work-order Part 2 run, the model's first pass treated "this needs a key" as settled and
 did not call the gated tool. Only the follow-up produced the actual `price_list_pdf`
 call and the actual refusal, and confirmed independently (via `permission_denials: []`
 and no file written) that the refusal came from the server's own license gate rather
 than the CLI's tool permission system.
 
-**Inline client on both the quote and the invoice.** Acme was never added via
+Acme was never added via
 `client_add` in either server. Both `quote_create` and `invoice_create` took the
 `client: { name: "Acme" }` inline path; the model flagged this unprompted both times
 ("Acme isn't a stored client yet"), matching the work-order Part 2 finding that inline

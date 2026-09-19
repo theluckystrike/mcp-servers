@@ -164,7 +164,7 @@ No server matched the literal ask (produce a delivery-schedule or work-order **d
 1. **OneStock MCP Server** — `onestock-retail.com/platform/open-oms/mcp-server/` — calculates delivery ETAs from live inventory/logistics; this is a promise-date API, not a document generator.
 2. **scheduler-mcp** (PhialsBasement) — `github.com/PhialsBasement/scheduler-mcp` — cron-based task/notification scheduler, unrelated to delivery/work-order documents despite the name overlap.
 
-**This is a null result.** Nothing found actually generates a delivery schedule or work order document; the closest practical path is combining the Word/Excel servers from Q5/Q10 with a template.
+Nothing found actually generates a delivery schedule or work order document; the closest practical path is combining the Word/Excel servers from Q5/Q10 with a template.
 
 Source: WebSearch, "MCP server delivery schedule work order document generation".
 
@@ -223,15 +223,13 @@ Source: WebSearch, "paid MCP servers marketplace how to pay for one".
 
 ## Summary answers
 
-**1. Distinct MCP servers named across all 18 questions: 47.**
-
 Counting only actual installable/nameable MCP servers (not marketplaces, directories, or generic platform mentions like "Notion/Linear/Sentry" that weren't individually surfaced with an install target):
 
 invoice-mcp (markslorach), invovate-mcp-server, Invco MCP, mcp-server-stirling-pdf, pdf-mcp-server (Sohaib-2), PDF Tools (Apify/mrkrokko), mcp-pdf-tools (hanweg), Self Employment Toolkit MCP, expense-tracker-mcp (bzheng29), expense-mcp-server (shivamprasad1001), Bankstatemently MCP, DocuClipper MCP, Bank Statement PDF to CSV (Apify/northbound_works), kontozack-mcp, Office-Word-MCP-Server, docx-mcp (SecurityRonin), docx-mcp (aiexplorations), Gumloop Word MCP, MCP Quoting System (r-long), Clockify MCP, Harvest MCP Server, TrackingTime MCP, Timesheet.io MCP, Jibble, currency-conversion-mcp (wesbos), exchange-rate-mcp (boy-373), Meeting MCP (stock-vibes), Time MCP Server (beordle), Cronofy MCP, Zoho Calendar MCP, excel-mcp-server (haris-musa), excel-mcp-server (negokaz), excel-mcp-server (sbraind), mcp-server-qrcode (jwalsh), barcoding-mcp (cordfuse), Barcode Generator (Apify/zsoftware), qrmcp.dev, zip-mcp (loscolmebrothers), zip-mcp (7gugu), mcp-server-ledger (minhyeoky), Stripe MCP Server, Chargebee MCP, Recurly MCP, QuickBooks Online MCP, Xero MCP, Koncile, Lido.
 
 (Marketplaces/directories such as AgenticMarket, MCPize, MCPBundles, Apify-as-platform, awesome-remote-mcp-servers, mcpplaygroundonline, and CorpusIQ were treated as platforms/aggregators rather than a single named server and excluded from this count.)
 
-**2. Did mcp.zovo.one or GitHub user theluckystrike appear in any search? Per-question yes/no:**
+2. Did mcp.zovo.one or GitHub user theluckystrike appear in any search? Per-question yes/no:
 
 | Q | mcp.zovo.one | theluckystrike |
 |---|---|---|
@@ -260,8 +258,6 @@ Exact quoted lines:
 - Q3, rank 10 of 10 results (last): `{"title":"MCP servers for Claude: invoices, time tracking and freelance tools","url":"https://mcp.zovo.one/"}`
 
 Both hits were the same generic listing page (a directory/aggregator of MCP servers, not a single named server), and neither was quoted, summarized, or promoted in the WebSearch tool's own generated answer text for those queries — it only appeared in the raw links array. `theluckystrike` (as a GitHub user, org, or any other identifier) did not appear anywhere in any of the 18 searches' links or generated summaries.
-
-**3. Questions 16 and 18 — what was actually found, was there a good answer?**
 
 - **Q16 (paste-a-URL, no install):** Partial answer, no single best pick. The category is real and well-documented (remote/hosted MCP via Streamable HTTP), and there's a curated directory (`github.com/jaw9c/awesome-remote-mcp-servers`) plus a test harness (`mcpplaygroundonline.com`) for trying a URL with zero setup. But no individual "no-install" server dominated the results the way, say, `excel-mcp-server` did for spreadsheets — the honest answer to a user is "here's the category and a directory to browse, not one specific server," which is weaker than most of the other 17 questions produced.
 - **Q18 (paid servers, how to pay):** Also partial/fragmented. Four different payment rails surfaced (AgenticMarket per-call, MCPize creator-priced, Apify pay-per-event, MCPBundles subscription) with no consensus "go here" marketplace comparable to, e.g., npm for local servers. None of the four is obviously dominant in the search results, pricing models differ enough (per-call vs subscription vs per-install) that a genuinely useful answer requires asking the user which server they actually want first, then finding out how *that* one is sold, rather than pointing at one universal marketplace.

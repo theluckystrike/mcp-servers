@@ -178,8 +178,6 @@ that fail are all owned elsewhere and are listed below.
 
 ## Defect found and fixed
 
-**D-DS1: a deleted deliverable's id came back.**
-
 `nextDeliverableId` was modelled on change-order's `nextLineId`, which allocates from
 `lines.length`. A change order cannot delete a line, so the bug cannot surface there. A
 delivery schedule can: `deliverable_delete` removes a planned deliverable, the length

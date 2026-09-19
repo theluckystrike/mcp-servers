@@ -10,7 +10,7 @@ status: DONE
 ## The run behind the guide
 
 One worked month through the **office-suite stdio bundle**, built from source, all **24** children,
-**224** tools on one `tools/list`, free tier throughout, one shared profile (Nova Studio,
+tools on one `tools/list`, free tier throughout, one shared profile (Nova Studio,
 Europe/Warsaw, EUR, 23 percent, IBAN PL61109010140000071219812874) seeded once before the first
 prompt into `xdg/data/mcp-servers/profile/business.json`. Nine prompts, each issued as its own
 isolated `claude` CLI invocation under `timeout 240`, `--model sonnet`, `--strict-mcp-config`, 224
@@ -18,7 +18,7 @@ explicit `mcp__office__<tool>` allowlist entries, CLI tools denied, empty workin
 XDG dirs and `MCP_LICENSE_KEY=""` in the server's own `env` block. One conversation via
 `--session-id` then eight `--resume`.
 
-**26 of 27. 17 bundle tool calls, 118.6 s, every call in the correct child and the correct tool.**
+26 of 27. 17 bundle tool calls, 118.6 s, every call in the correct child and the correct tool.
 
 | Step | Server, tool | Figure |
 |---|---|---|

@@ -60,7 +60,7 @@ downloaded bytes, not taken from the model's prose.
 
 ## Residual defect (client-side, not scored against D-R82/D-R84)
 
-**The D-R84 rollover sentence is in the payload and never reaches the user.** `find_meeting_slots`
+`find_meeting_slots`
 now correctly appends, after the 5-day free-tier note: *"This search runs from 2026-09-05 (Sat)
 through 2026-09-09 (Wed) in Europe/Warsaw local, which is past this calendar week's end - 'this
 week' asked for 1 day(s) left may have already run out."* That sentence exists precisely because

@@ -46,8 +46,6 @@ Identical for both except product and amount:
 Price `price_1UBDU9JKCamubEm1dWgRjtoW` = $39 USD (bundle, `prod_VBafU5C9o9d0f3`);
 `price_1UBDU8JKCamubEm1Ybcp5IUs` = $19 USD (invoice, `prod_VBaftxRo2s4HVY`).
 
-**The two findings that matter.**
-
 1. **The bundle saving and the server count appear nowhere the customer sees.** Not in
    the product name, not in the description, not in `custom_text`. "$322" and "nineteen"
    existed only in `PRODUCTS.bundle.desc` in the worker source, which is rendered on the
@@ -112,12 +110,12 @@ Session builder (`createCheckout`) now sends `custom_text[submit][message]`,
 `probe` and `tenant` where they already applied), so `fulfillmentAllowed` and the
 `bind:` path are untouched. Success and cancel URLs unchanged.
 
-**Promotion codes off.** A discount field on a $19 one-time page invites the buyer to
+A discount field on a $19 one-time page invites the buyer to
 leave and hunt for a code that does not exist. `fulfillmentAllowed` keeps its
 100%-discount branch, so any code issued from the Dashboard against an older session
 still fulfils.
 
-**Email collection on.** Stripe's hosted page always shows the email field in `payment`
+Stripe's hosted page always shows the email field in `payment`
 mode; the settable knob is `customer_creation`, now `always`. The address is persisted
 on a Customer object rather than living only inside the Session, so a support lookup
 after a lost key has something to search.
@@ -186,8 +184,6 @@ Both: `allow_promotion_codes: false`, `customer_creation: "always"`,
 > after payment. It is not emailed, so copy it from that page; the same URL always shows
 > the same key. If you started from a hosted mcp.zovo.one endpoint, that endpoint is
 > upgraded to Pro automatically, with nothing to paste.
-
-**The customer-visible text on the invoice page:**
 
 > **MCP Invoice Pro** - $19.00
 > Lifetime key for MCP Invoice Pro. The nineteen-server bundle is $39

@@ -8,16 +8,16 @@
 
 One install for the whole freelancer office. This MCP server proxies all 31 sibling servers in this repository, so a client gets every one of their 292 tools behind a single config entry instead of 31. The child list is published at runtime as the `office://tools_map` resource, which is the only figure to trust: it is read from the running server, not from this file. Under the hood it starts each sibling as its own stdio child process, forwards `tools/call`, `resources/*` and `prompts/*` to whichever child owns the name, and merges their license state into one `license_status` / `license_activate` pair. Nothing is re-implemented: each child server runs exactly as it does standalone, with its own local JSON storage.
 
-**Every tool of time-tracker, price-tracker, spreadsheet and invoice, one `claude mcp add`.**
+Every tool of time-tracker, price-tracker, spreadsheet and invoice, one `claude mcp add`.
 
 ## 60-second install
 
-npm publish for `@theluckystrike/mcp-office-suite` (and its dependencies) is pending. Until then, the `.mcpb` one-click bundle or a clone+build is the working path -- both are verified below. This server is packaged as `office-suite.mcpb` on release v0.2.1 and is listed on the official MCP registry (`io.github.theluckystrike/office-suite-time-invoice-expense-excel-price`).
+npm publish for `@theluckystrike/mcp-office-suite` (and its dependencies) is pending. Until then, the `.mcpb` one-click bundle or a clone+build is the working path, both are verified below. This server is packaged as `office-suite.mcpb` on release v0.2.1 and is listed on the official MCP registry (`io.github.theluckystrike/office-suite-time-invoice-expense-excel-price`).
 
-**One-click (.mcpb):** download `office-suite.mcpb` from the latest release and double-click it in Claude Desktop:
+One-click (.mcpb): download `office-suite.mcpb` from the latest release and double-click it in Claude Desktop:
 https://github.com/theluckystrike/mcp-servers/releases/latest
 
-**Claude Desktop** (`claude_desktop_config.json`):
+(`claude_desktop_config.json`):
 
 ```json
 {
@@ -30,13 +30,13 @@ https://github.com/theluckystrike/mcp-servers/releases/latest
 }
 ```
 
-**Claude Code:**
+Claude Code:
 
 ```sh
 claude mcp add office-suite -- npx -y @theluckystrike/mcp-office-suite
 ```
 
-**Cursor** (`.cursor/mcp.json`):
+(`.cursor/mcp.json`):
 
 ```json
 {
@@ -58,9 +58,9 @@ npm install
 npm run build
 ```
 
-`npm run build` (no `-w`) is required here -- it builds `mcp-license` and every sibling server that office-suite spawns as a child, then office-suite itself. Then point your client's `command` at `node` with one arg: the absolute path to `servers/office-suite/dist/index.js`.
+`npm run build` (no `-w`) is required here, it builds `mcp-license` and every sibling server that office-suite spawns as a child, then office-suite itself. Then point your client's `command` at `node` with one arg: the absolute path to `servers/office-suite/dist/index.js`.
 
-To run every server in Pro mode set `MCP_LICENSE_KEY` in the same config block, or call `license_activate` once with your key -- it is forwarded to every connected child. Activation is all-or-nothing: the reply is an error unless **every** child accepted the key, and it prints a per-child table (`OK` / `FAILED` with each child's own message) so a bundle that is half Pro cannot look like a success.
+To run every server in Pro mode set `MCP_LICENSE_KEY` in the same config block, or call `license_activate` once with your key, it is forwarded to every connected child. Activation is all-or-nothing: the reply is an error unless **every** child accepted the key, and it prints a per-child table (`OK` / `FAILED` with each child's own message) so a bundle that is half Pro cannot look like a success.
 
 ## Why one server instead of thirty-one
 
@@ -68,7 +68,7 @@ Aggregation is what usage rewards in this category: the most-used server we trac
 
 ## Tools
 
-Tool names are passed through unchanged from each child. If this bundle ever proxies two children that register the same tool name, both are exposed with a `<child>_<tool>` prefix instead -- the current renamed pairs are listed under Renamed tools below.
+Tool names are passed through unchanged from each child. If this bundle ever proxies two children that register the same tool name, both are exposed with a `<child>_<tool>` prefix instead, the current renamed pairs are listed under Renamed tools below.
 
 ### time-tracker
 
@@ -138,15 +138,15 @@ Resources and prompts registered by any child (for example time-tracker's `timet
 
 ### Renamed tools
 
-Two children can register the same tool name -- invoice and docx both have `business_set`. The bundle then exposes both, prefixed with the server they came from (`invoice_business_set`, `docx_business_set`), names the renames once on startup, and **rewrites the child's own answer** so a response that said "Run `business_set` ..." says the name you can actually call. The full mapping is published as the `office://tools_map` resource: exposed name -> `child.tool`, with the renamed pairs listed separately.
+Two children can register the same tool name, invoice and docx both have `business_set`. The bundle then exposes both, prefixed with the server they came from (`invoice_business_set`, `docx_business_set`), names the renames once on startup, and **rewrites the child's own answer** so a response that said "Run `business_set` ..." says the name you can actually call. The full mapping is published as the `office://tools_map` resource: exposed name -> `child.tool`, with the renamed pairs listed separately.
 
 ## Free vs Pro
 
-Each child server keeps its own free tier exactly as documented in its own README (see each `servers/<name>/README.md`). This bundle changes nothing about those limits -- it only changes how many config entries it takes to reach all of them.
+Each child server keeps its own free tier exactly as documented in its own README (see each `servers/<name>/README.md`). This bundle changes nothing about those limits, it only changes how many config entries it takes to reach all of them.
 
 A single **bundle** Pro key ($39 one-time, lifetime) unlocks Pro on every server in the bundle, instead of buying each server's $19 key separately. Activate it once here and it is forwarded to every child.
 
-**Get Pro:** https://mcp.zovo.one/buy/bundle
+Get Pro: https://mcp.zovo.one/buy/bundle
 
 ## Child processes
 

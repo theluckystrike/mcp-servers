@@ -1,6 +1,6 @@
 # mcp-currency
 
-Ask your assistant what something is worth in another currency and get a real answer with a date on it. It reads the European Central Bank's daily euro foreign exchange reference rates -- the same published series banks, tax authorities and accountants use -- converts amounts between any of the currencies the ECB quotes, and shows how a pair has moved over time. There is no API key, no account and no rate limit, because the ECB publishes the file openly. Both files are cached on your own machine, so after the first download every answer is instant and the server keeps working on a plane. Every answer states which rate date it used, because ECB rates are published once a day and a Sunday carries Friday's rate.
+Ask your assistant what something is worth in another currency and get a real answer with a date on it. It reads the European Central Bank's daily euro foreign exchange reference rates, the same published series banks, tax authorities and accountants use, converts amounts between any of the currencies the ECB quotes, and shows how a pair has moved over time. There is no API key, no account and no rate limit, because the ECB publishes the file openly. Both files are cached on your own machine, so after the first download every answer is instant and the server keeps working on a plane. Every answer states which rate date it used, because ECB rates are published once a day and a Sunday carries Friday's rate.
 
 Built by [theluckystrike](https://github.com/theluckystrike).
 
@@ -8,17 +8,15 @@ Built by [theluckystrike](https://github.com/theluckystrike).
 
 ![currency demo](../../assets/demo-currency.gif)
 
-**Real ECB exchange rates in your chat -- no API key, cached locally, works offline.**
-
 ## 60-second install
 
 npm publish for `@theluckystrike/mcp-currency` is pending. Until then, the `.mcpb` one-click bundle or a clone+build
-is the working path -- both are verified below.
+is the working path, both are verified below.
 
-**One-click (.mcpb):** download `currency.mcpb` from the latest release and double-click it in Claude Desktop:
+One-click (.mcpb): download `currency.mcpb` from the latest release and double-click it in Claude Desktop:
 https://github.com/theluckystrike/mcp-servers/releases/latest
 
-**Claude Desktop** (`claude_desktop_config.json`):
+(`claude_desktop_config.json`):
 
 ```json
 {
@@ -31,13 +29,13 @@ https://github.com/theluckystrike/mcp-servers/releases/latest
 }
 ```
 
-**Claude Code:**
+Claude Code:
 
 ```sh
 claude mcp add currency -- npx -y @theluckystrike/mcp-currency
 ```
 
-**Cursor** (`.cursor/mcp.json`):
+(`.cursor/mcp.json`):
 
 ```json
 {
@@ -93,15 +91,15 @@ expense-tracker -> currency -> invoice chain in one step.
 A refused history window returns the reason and the exact narrower call to make; it never silently truncates
 a table and it never returns a transport error.
 
-**Get Pro:** https://mcp.zovo.one/buy/currency (or $39 for the whole bundle: https://mcp.zovo.one/buy/bundle)
+Get Pro: https://mcp.zovo.one/buy/currency (or $39 for the whole bundle: https://mcp.zovo.one/buy/bundle)
 
 ## Pairs with
 
-- **[expense-tracker](../expense-tracker)** -- `expense_to_invoice` takes `target_currency` plus an `fx_rates`
+- **[expense-tracker](../expense-tracker)**, `expense_to_invoice` takes `target_currency` plus an `fx_rates`
   object and folds a multi-currency expense set into one invoice currency, but it will not fetch or invent a rate.
   `fx_rates_for {target, currencies}` here returns exactly that object. "Rebill Nova in USD" then works end to end
   without the user typing a single exchange rate.
-- **[invoice](../invoice)** -- one invoice carries one currency. Convert first, issue second, and put the returned
+- **[invoice](../invoice)**, one invoice carries one currency. Convert first, issue second, and put the returned
   `invoice_note` ("Converted at ECB reference rates of 2026-09-02") on the document so the client can check it.
 
 ```
@@ -116,8 +114,8 @@ invoice_create {currency: "USD", items: [...]}  -> the document
 - Source: the ECB euro foreign exchange reference rates, `eurofxref-daily.xml` and `eurofxref-hist.xml`.
 - Published around 16:00 CET on TARGET business days. There is no rate for a weekend, 1 January, Good Friday,
   Easter Monday, 1 May, or 25 and 26 December.
-- Asking for a date with no rate returns the last rate published on or before it -- the convention every bank
-  uses -- and the answer says which date it landed on and why. A date inside the cached range with no rate is
+- Asking for a date with no rate returns the last rate published on or before it, the convention every bank
+  uses, and the answer says which date it landed on and why. A date inside the cached range with no rate is
   a weekend or a TARGET holiday and is named as one; a date after the newest day in the cache is reported as
   not published yet, with the cache's latest date and whether this call went to the ECB to look for it.
 - The ECB quotes everything against the euro, so a USD/PLN rate is a cross rate: the ratio is formed and

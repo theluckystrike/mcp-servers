@@ -75,7 +75,7 @@ A 2025 trip then prices at 0.655 and a 2026 trip at 0.70, automatically. If your
 
 The monthly cap is counted on the month of the trip date, so reconstructing last year's log at tax time does not consume this month's allowance. The log itself is never metered: reading, listing and summarizing stay free for good.
 
-**Get Pro:** https://mcp.zovo.one/buy/mileage-log -- $19 one-time for this server, or $39 for the bundle.
+Get Pro: https://mcp.zovo.one/buy/mileage-log, $19 one-time for this server, or $39 for the bundle.
 
 ## Money and rounding
 

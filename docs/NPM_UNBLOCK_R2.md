@@ -3,16 +3,14 @@
 Date: 2026-09-07. Agent: npm (loop 29).
 Owned files: this file, `data/npm_unblock.json`, `.github/workflows/npm-publish-oidc.yml`.
 
-**VERDICT: NOT PUBLISHED. All 33 packages remain unpublished (registry HTTP 404).**
-
-**The single reason:** npm has no credential for the account `theluckystrike` anywhere on
+npm has no credential for the account `theluckystrike` anywhere on
 this machine or in this GitHub org, and npm trusted publishing (OIDC) cannot mint the
 first one, because a trusted publisher can only be attached to a package that already
 exists on the registry — and every one of these packages does not exist. The first
 publish of each package requires a token, and a token requires a human to sign in to
 npmjs.com once.
 
-**Did upgrading the npm CLI change the trusted-publishing picture? No.** The version floor
+The version floor
 was real but it was never the binding constraint. It is now cleared and the block is
 unchanged — see section 1, which contains the empirical proof, not a docs quotation.
 
@@ -69,7 +67,6 @@ OIDC", opened 2025-09-01, still **open**, no maintainer fix):
 A manual-dispatch workflow was written to `.github/workflows/npm-publish-oidc.yml` and run
 against the real registry. It is `workflow_dispatch:` only — it never fires on push or tag.
 
-**Run 1 — `https://github.com/theluckystrike/mcp-servers/actions/runs/34080853186`**
 Used `actions/setup-node` with `registry-url:`. Result:
 ```
 npm 12.0.2 / node v22.23.2
@@ -78,7 +75,7 @@ npm error 404 Not Found - PUT https://registry.npmjs.org/@theluckystrike%2fmcp-l
 npm error 404  The requested resource '@theluckystrike/mcp-license@0.21.0' could not be
 npm error 404  found or you do not have permission to access it.
 ```
-**This run is CONFOUNDED and its E404 must not be quoted as the OIDC verdict.** The job log
+The job log
 shows `actions/setup-node` set `NPM_CONFIG_USERCONFIG: /home/runner/work/_temp/.npmrc` and
 `NODE_AUTH_TOKEN: XXXXX-XXXXX-XXXXX-XXXXX`. With no `NODE_AUTH_TOKEN` secret in the repo,
 setup-node's template `//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}` expands to that
@@ -86,7 +83,6 @@ literal placeholder, so npm authenticated with a junk bearer token and had no re
 attempt the OIDC exchange at all. The E404 is what a bad token produces, not what a missing
 trusted publisher produces.
 
-**Run 2 — `https://github.com/theluckystrike/mcp-servers/actions/runs/34081070341`**
 `registry-url:` removed so npm sees no credential whatsoever, `--provenance` added.
 Preconditions proven in the job log itself:
 ```
@@ -230,7 +226,7 @@ $ scripts/publish-all.sh          (npm 12.0.2, dry run)
   2. @theluckystrike/mcp-barcode@0.21.0
   ... (33 total, all at 0.21.0)
 ```
-**All 33 packages dry-ran clean: 33 of 33 rows report `DRY-RUN (ok)`** — no missing `bin`,
+— no missing `bin`,
 no missing `dist/`. Note the count is **33**, not the 32 in the task brief; the extra one is
 `packages/mcp-license`, the runtime dependency the servers import.
 
@@ -271,7 +267,7 @@ contaminated.
 | `/changelog`, `/guides`, `/compare` indexes | 3 | 0 |
 | **Total** | **126** | **86** |
 
-**86 live URLs advertise a command that returns E404 for every visitor.** The `/setup/*`
+The `/setup/*`
 pages are the precedent for the fix: `billing/src/index.js:1038` carries the comment
 "Every install line here used to print `npx -y @theluckystrike/mcp-<name>`, which…", so
 that family was already switched to the `.mcpb` route.
@@ -280,7 +276,7 @@ that family was already switched to the `.mcpb` route.
 
 `git grep -c 'npx -y @theluckystrike'` — **101 tracked files, 269 occurrences.**
 
-**Group A — page generators (owner: billing). Changing these 5 files fixes all 86 live URLs.**
+Group A — page generators (owner: billing). Changing these 5 files fixes all 86 live URLs.
 
 | File | occurrences | which live pages it feeds |
 |---|---|---|
@@ -291,12 +287,9 @@ that family was already switched to the `.mcpb` route.
 | `billing/src/pages.js` | 1 | shared page furniture |
 | **subtotal** | **67** | **86 URLs** |
 
-**Group B — server documentation (owner: servers). 64 files, 96 occurrences.**
 `servers/<name>/README.md` × 32 and `servers/<name>/llms-install.md` × 32, one to three
 occurrences each. `llms-install.md` matters more than its size suggests: it is the file
 agent installers read.
-
-**Group C — repo front door (owner: repo/docs). 58 occurrences.**
 
 | File | occurrences |
 |---|---|
@@ -312,7 +305,6 @@ a second command that also fails.
 `remote/build-vendor.mjs` (11), `remote/src/index.ts` (1), `remote/src/shims/*.ts` (6 files,
 1 each), `remote/src/vendor/*/index.ts` and `fetch.ts` (9 files, 13).
 
-**Group E — historical docs and data (no user impact, leave alone).**
 11 files in `docs/` (16 occurrences), plus `data/content_r1.json` and
 `data/loop29_result.json` (1 each). These are records of past loops; rewriting them would
 falsify the record.
@@ -330,7 +322,7 @@ Two substitutes already exist and already work today, so no new infrastructure i
 
 ### 4d. Minimum viable edit
 
-**5 files (Group A, 67 occurrences) removes the broken command from all 86 live URLs.**
+5 files (Group A, 67 occurrences) removes the broken command from all 86 live URLs.
 Groups B, C and D (154 occurrences across 83 files) fix the GitHub-facing surface and the
 hosted-worker error strings, and can follow. Group E should not be touched.
 

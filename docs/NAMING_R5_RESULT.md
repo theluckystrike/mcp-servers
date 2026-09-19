@@ -14,7 +14,7 @@ registry requests, no background jobs, no paid submissions, no emojis, no em das
 
 ## Step 1 -- the mechanism, measured
 
-**Ordering.** The registry sorts and paginates strictly by the full server name string
+The registry sorts and paginates strictly by the full server name string
 (`<namespace>/<local-name>`), ASCII/case-sensitive, where uppercase A-Z sorts before
 lowercase a-z. It is not relevance-ranked and not recency-ranked. Confirmed by paginating
 the `pdf` token to exhaustion (`limit=100` + cursor, 4 pages, 323 total records: 100 +
@@ -22,13 +22,13 @@ the `pdf` token to exhaustion (`limit=100` + cursor, 4 pages, 323 total records:
 contiguous block at ranks 261-300 -- exactly where alphabetic sort places them, not
 scattered by relevance.
 
-**Pagination.** Cursor-based: `metadata.nextCursor` returns `"<name>:<version>"` of the
+Cursor-based: `metadata.nextCursor` returns `"<name>:<version>"` of the
 last row on the page; the next page starts immediately after it. `metadata.count` on
 each page is the raw row count returned (up to `limit`), not a distinct-server count --
 the same server name recurs once per stored version (e.g. `com.hellobasestation/pdfkit`
 appears 3 times on page 1 of `pdf`).
 
-**What `search=` actually matches.** Tested with two controls:
+Tested with two controls:
 - `search=hellobasestation` (a substring that exists only in a NAMESPACE, not in any
   local name) returned exactly the 3 `com.hellobasestation/pdfkit` records -- proving
   the match scans the full name string, namespace included.
@@ -42,7 +42,7 @@ appears 3 times on page 1 of `pdf`).
   "vat", so neither is findable for `search=vat` today, and adding VAT to a description
   would change nothing.
 
-**The "a" hypothesis, tested and rejected.** A hypothetical name starting with "a" was
+A hypothetical name starting with "a" was
 proposed as a way to sort first. It cannot, for a structural reason: sort compares the
 whole string `<namespace>/<local-name>`, and our namespace segment
 (`io.github.theluckystrike`) is fixed and compared BEFORE the local-name segment is ever
@@ -55,7 +55,7 @@ a whole string regardless of what follows our slash. An "a"-prefixed local name 
 namespace would still read `io.github.theluckystrike/aaa...`, which sorts after all of
 those, unchanged.
 
-**Page-1-reach test, per token.** For each capped token (page-1 count == 100 with a
+For each capped token (page-1 count == 100 with a
 `nextCursor`, meaning more than 100 total records exist), the test is: does our fixed
 namespace prefix `io.github.theluckystrike/` sort before the 100th (last) name currently
 shown on page 1? If not, at least 100 records already precede us for that token and no

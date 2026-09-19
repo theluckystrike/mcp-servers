@@ -37,7 +37,7 @@ of ours is among them (all three pages enumerated, `grep luckystrike` → 0 hits
 GitHub/VS Code gallery is a *slice* of the official registry, not a mirror of it. Being in the
 official registry is necessary and not sufficient.
 
-**2. The namespace lever does not transfer to client galleries.** The coordinator asked
+The coordinator asked
 specifically whether a registry-backed picker inherits the official registry's strict ASCII
 sort on the full server name — the thing that makes `io.github.theluckystrike/*` rank 21st
 where `com.bestremotetools/*` ranks 3rd. Measured answer: **no.** The one live registry-backed
@@ -59,7 +59,7 @@ on relevance, Windsurf on a verified-publisher tier. So the naming ceiling recor
 namespace claim should be justified on registry search alone. In Goose specifically we would
 control our own sort position outright, via the display name we choose.
 
-**3. Packaging, not process, is the gate — and it is already half-open.** Nearly every gallery
+Nearly every gallery
 wants either a `command` (`npx`/`uvx`, which we cannot produce: npm is human-gated and the
 advertised `npx` 404s) or a `url` for a streamable-http endpoint. **We have thirty of the
 second kind and nobody had used them.** 30 of our 89 registry rows declare a `remotes[]` block
@@ -137,7 +137,7 @@ $ python3 -c "import json;d=json.load(open('/Applications/Visual Studio Code.app
 https://main.vscode-cdn.net/mcp/servers.json
 ```
 
-**Surface A, the MCP gallery** — `api.mcp.github.com`, covered in finding 1 above. Enumerated
+— `api.mcp.github.com`, covered in finding 1 above. Enumerated
 in full (3 pages of 100, `metadata.total` = 250):
 
 ```
@@ -167,7 +167,7 @@ consistent with the ordering being popularity-first (finding 2) and with `total`
 the shape 59 of our 89 rows have. The action that follows is not a submission — there is no
 form — it is to be worth ranking, and to re-probe. A one-line watch is cheap.
 
-**Surface B, the curated list** — `main.vscode-cdn.net/mcp/servers.json`, gzipped, 37 entries:
+— `main.vscode-cdn.net/mcp/servers.json`, gzipped, 37 entries:
 `github, figma, notion, linear, playwright, sentry, duckdb, posthog, stripe, paypal, convex,
 …, codacy`. Hand-picked by Microsoft, no submission path, and not a realistic target.
 
@@ -341,7 +341,7 @@ behind a sign-in wall (`clau.de/desktop-extention-submission` → 302 → `docs.
 
 ## Two side answers the coordinator asked for
 
-**The `0.14.0` row is not a stale republish.** The registry keeps one row per published version
+The registry keeps one row per published version
 and only flags one as latest; a search without `version=latest` returns the whole history.
 
 ```
@@ -357,7 +357,7 @@ Across all 89 latest rows: 85 at `0.21.0` `active`, and 4 at `0.1.1` `deprecated
 the naming round deliberately retiring the old short names. No manifest silently failed to
 republish.
 
-**`com.bestremotetools` is not yet in the VS Code gallery** — expected, it was claimed today.
+— expected, it was claimed today.
 For scale, that gallery already carries 62 `com.*` rows against 114 `io.github.*` rows, so the
 namespace is not itself a barrier to entry there; and per finding 2 it would not change our
 position in the ordering if it were.

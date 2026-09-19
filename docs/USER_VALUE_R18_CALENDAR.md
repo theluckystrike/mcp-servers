@@ -54,8 +54,6 @@ infer. 0 = failed.
 | c5 | "Export next week's events to a calendar file I can download." | 3 | **3** | 1 | 12.0 | One `event_export {calendar: "Work", from: "2026-09-07", to: "2026-09-13", out_path: "next_week.ics"}`, 8 events, first and last named. `GET` the link: 200, `text/calendar; charset=utf-8`, `filename="next_week.ics"`, 1,467 B, opens `BEGIN:VCALENDAR`, 8 `VEVENT`s, and the holiday comes back as `DTSTART;VALUE=DATE:20260910` / `DTEND;VALUE=DATE:20260911` - the CALENDAR_AUDIT all-day fix still holds hosted |
 | c6 | "My team publishes its calendar at <url> - can you subscribe to that feed and pull it in?" | 2 | **3** | 1 | 10.1 | One `ics_import {url}`, refused: Pro, both prices, both tenant-carrying links, **plus the D-R58 fix**: "Free alternative, same result: open the feed in a browser or download the .ics, then paste the file contents - ics_import {name: \"Team\", text: \"<the .ics contents>\"}. url only adds fetching the feed for you; the events, the parser and the free-tier calendar allowance are identical." The model relayed that free alternative to the user verbatim in its own reply, on the first turn, and separately noticed `cal.example.com` is a documentation placeholder domain rather than treating it as real. **D-R58 holds live and now scores a clean 3, up from round 12's 2** - the model no longer has to work out the free route itself; the endpoint already tells it |
 
-**Totals: 18/18, 6 tool calls, 65.7 s. Round 12 was 17/18, 6 tool calls, 84.5 s.**
-
 ## Independent verification
 
 Every number below was re-read from the endpoint by `curl tools/call` or decoded from the

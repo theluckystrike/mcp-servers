@@ -1,11 +1,11 @@
 # Draft 03 — GitHub Issue: Brandrei/skills-integrate-mcp-with-copilot #13 — Expense Management & Cost Tracking
 
-**Surface:** GitHub Issues (Brandrei/skills-integrate-mcp-with-copilot) — `OPEN`, created 2026-04-15
-**Thread URL:** https://github.com/Brandrei/skills-integrate-mcp-with-copilot/issues/13
-**Thread title:** *Expense Management & Cost Tracking*
-**Ask (quote):** "Track operational expenses for activities and compute profitability metrics… Record activity-related expenses, categorize expenses (supplies, instructor fees, equipment, etc.), calculate net revenue per activity, generate expense reports."
-**Server that answers it:** `expense-tracker` — https://mcp.zovo.one/s/expense-tracker (hosted HTTP MCP endpoint `https://mcp.zovo.one/mcp/expense-tracker/t/<token>`)
-**Fit:** The ask is a structured expense-tracking capability (record, categorize, report) in an MCP+Copilot context. Our expense-tracker server answers exactly this, and the MCP context makes the config snippet directly relevant.
+GitHub Issues (Brandrei/skills-integrate-mcp-with-copilot) — `OPEN`, created 2026-04-15
+https://github.com/Brandrei/skills-integrate-mcp-with-copilot/issues/13
+*Expense Management & Cost Tracking*
+"Track operational expenses for activities and compute profitability metrics… Record activity-related expenses, categorize expenses (supplies, instructor fees, equipment, etc.), calculate net revenue per activity, generate expense reports."
+`expense-tracker` — https://mcp.zovo.one/s/expense-tracker (hosted HTTP MCP endpoint `https://mcp.zovo.one/mcp/expense-tracker/t/<token>`)
+The ask is a structured expense-tracking capability (record, categorize, report) in an MCP+Copilot context. Our expense-tracker server answers exactly this, and the MCP context makes the config snippet directly relevant.
 
 ---
 

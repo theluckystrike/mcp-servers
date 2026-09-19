@@ -63,11 +63,11 @@ These need no account and no money, and a follow-up round should take them:
 - **FlowiseAI/Flowise** — real, but the artefact is a TypeScript node class, not a catalogue row,
   so it carries ongoing maintenance. Its marketplace-template slot has no MCP entry yet.
 - **jaw9c/awesome-remote-mcp-servers** (1,110 stars, 755 open PRs, ~80 days idle) and
-  **Appnova-EU-OU/awesome-remote-mcp-servers** (604 open PRs) — cheap lottery tickets.
+  (604 open PRs) — cheap lottery tickets.
 
 ## Skipped on the operator's standing rules
 
-**punkpeye/awesome-remote-mcp-servers** is the best topical fit found in the whole round: a
+is the best topical fit found in the whole round: a
 remote-servers-only list, 110 stars, merging several outside pull requests every single day, and
 this project has 30 hosted endpoints. It was skipped anyway, on three grounds an agent should not
 decide alone:
@@ -124,7 +124,7 @@ Verified negatives, so no future round spends time on them:
   **Warp**, **Cloudflare**, **Witsy** — each either has no catalogue, a first-party-only catalogue,
   or a catalogue with no discoverable submission route. Details per surface in the JSON.
 - **e2b-dev/awesome-mcp-gateways**, **soxoj/awesome-osint-mcp-servers**,
-  **WagnerAgent/awesome-mcp-servers-devops** — alive and merging, but the vertical is gateways,
+  — alive and merging, but the vertical is gateways,
   OSINT and DevOps. These 32 servers are back-office tools. Submitting would be spam.
 
 ## One reusable lesson

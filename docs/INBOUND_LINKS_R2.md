@@ -189,14 +189,14 @@ No control page changed on either site, on any of the three deploys.
 
 ## Job 3: what was judged unsafe or not worth doing, and why
 
-**bestremotetools.com, a second link.** Git-connected, topically perfect, and rejected. 8 of 8
+Git-connected, topically perfect, and rejected. 8 of 8
 sampled article and topic pages are `Crawled - currently not indexed`, including
 `/how-to-build-custom-mcp-servers-for-claude` where R1's link already sits. The only indexed page is
 the homepage, which is produced from `_layouts/home.html`; editing a layout is a sitewide change to
 1,318 pages, not an insertion, so it is out of scope for a round whose every diff must be additions
 to one page.
 
-**welikeremotestack.com.** Git-connected and the best topical match in the safe set, because
+Git-connected and the best topical match in the safe set, because
 mcp.zovo.one's servers are freelancer back-office tools and this site reviews freelancer tooling.
 Rejected because the two pages where the link belongs,
 `/best-invoicing-tools-for-freelancers-2026/` and `/best-time-tracking-tools-for-remote-freelancers/`,
@@ -204,11 +204,11 @@ have **never been crawled**: `Discovered - currently not indexed`, `lastCrawlTim
 is indexed but is a card hub and a topic list with no editorial paragraph, so a link there would be
 bolted on rather than contextual, which is the shape this round is trying to avoid.
 
-**chrometipsguide.com and securetoolsguide.com.** Git-connected, homepages indexed, every sampled
+Git-connected, homepages indexed, every sampled
 article not indexed, and the topical fit is weak in both cases. `/guides/mcp-server-security-review`
 would be an honest target for a privacy-tools site, but there is no indexed host page to put it on.
 
-**bestchromeextensions.com.** The only safe-set site with real, current indexation: 103 pages
+The only safe-set site with real, current indexation: 103 pages
 carried impressions in the last 17 days. Rejected purely on relevance. Its indexed pages are
 `chrome-extension-network-debugging-guide`, `chrome-extension-npm-packages-guide`,
 `chrome-extension-service-worker-complete-guide`, `wxt-framework-chrome-extension-development` and
@@ -216,29 +216,29 @@ similar. There is no page on which a link to an MCP server catalogue would be us
 so it was skipped rather than forced. Traffic does not make an off-topic link legitimate; that was
 R1's rule for ingredientcalculator.com and it applies here too.
 
-**claudecodeguides.com.** Off limits by the round's own hard rule. Its repository was never cloned
+Off limits by the round's own hard rule. Its repository was never cloned
 and never opened.
 
-**earlythunder.com.** Git-connected, but crypto and deep-tech opportunity intelligence. No
+Git-connected, but crypto and deep-tech opportunity intelligence. No
 developer-tooling surface, no honest placement.
 
-**claudflow.com/guides/claude-code-workflow-automation.html.** The single highest-traffic indexed
+The single highest-traffic indexed
 page available anywhere in this round, 314 impressions in 17 days, and deliberately not used. The
 article is entirely about prompt templates and pipeline stages; `/usr/bin/grep -i mcp` on it returns
 zero hits. There is no sentence an MCP link would answer, so linking from it would have been placing
 a link because the page has traffic, which is the exact thing this round's target test forbids.
 
-**claudflow.com/answers/claude-error-troubleshooting.html was nearly rejected for the same reason**
+claudflow.com/answers/claude-error-troubleshooting.html was nearly rejected for the same reason
 and was only used after checking the target guide's actual content. The page never says "MCP", but
 its subject is the boundary between retryable and non-retryable failures, and the linked guide
 describes a failure that no HTTP status classification can express. The link earns its place on the
 argument, not on the keyword.
 
-**A third link on claudhq.com.** claudhq now carries three placements across three pages. A fourth
+claudhq now carries three placements across three pages. A fourth
 would stop looking like editorial cross-linking. R1 declined a third for this reason; R2 declines a
 fourth.
 
-**deepvalueradar.com, worthmyclaim.com, dscrradar.com.** Unchanged from R1's `not_done`. None is a
+Unchanged from R1's `not_done`. None is a
 git-connected Pages project, worthmyclaim's repo-versus-live drift has already deleted a live page,
 and dscrradar's link is still `fragile` because it was shipped by a mirror deploy. Nothing was
 touched.
@@ -249,7 +249,7 @@ touched.
 
 - Three new `expected_links` entries, each with its page URL, its exact expected `href` and a count,
   so the existing one-pass `verify_command` covers them with no change to the command. It now checks
-  **21** live placements.
+  live placements.
 - Every live entry re-stamped `verified: 2026-09-09`.
 - New per-link fields on the contextual placements: `host_index_verdict`, `host_coverage_state`,
   `host_last_crawl`, and where available `host_impressions_90d` and `host_avg_position`. This is the

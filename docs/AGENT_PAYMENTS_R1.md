@@ -52,7 +52,7 @@ fetched 2026-09-10: "The **current** protocol version is **2026-07-28**").
 | Items labelled `SEP`, all states | 223; payment-related: **1** |
 | Open SEPs today | 40; payment-related: **0** |
 
-**SEP-2007 "Payment Support for MCP Servers"** —
+—
 <https://github.com/modelcontextprotocol/modelcontextprotocol/pull/2007>.
 Opened **2025-12-23** by `shivankgoel`, labelled `SEP` on 2026-01-27, **closed unmerged
 2026-06-24** (`merged: false`, `merged_at: null`). Closing comment by `localden`, verbatim:
@@ -74,7 +74,7 @@ record. What it proposed (none of it exists on `main`):
 Two superseded duplicate issues: **#2008** (opened and closed 2025-12-23) and **#2009**
 (closed 2025-12-27, "transitioning to a new PR-based workflow for SEPs"). #2009 used a
 `payments/list` method and error `-32803` — neither number survives. A later non-SEP RFC,
-**issue #3229** (opened 2026-08-11, closed 2026-08-23), proposed `capabilities.x402_metering`
+(opened 2026-08-11, closed 2026-08-23), proposed `capabilities.x402_metering`
 and error `-4020`; it was never labelled `SEP` and never produced a PR.
 
 Live demand exists and is unowned: discussion **#2436** (2026-03-23, open, 28 comments)
@@ -82,12 +82,12 @@ Live demand exists and is unowned: discussion **#2436** (2026-03-23, open, 28 co
 audit of 14,519 registry entries in which **0** expose pricing machine-readably, and has
 never been answered.
 
-**Registry**: `server.json` `ServerDetail` properties are exactly `$schema, _meta,
+`server.json` `ServerDetail` properties are exactly `$schema, _meta,
 description, icons, name, packages, remotes, repository, title, version, websiteUrl`.
 `grep -rniE 'payment|monetiz|x402|pricing|price|billing'` over the registry's `schemas/`
 and `docs/reference/server-json/`: **0**. Monetisation could only ride in free-form `_meta`.
 
-**TypeScript SDK**: `grep -rniE 'x402|payment|32402|32803|pricing|micropay' packages/*/src/`
+`grep -rniE 'x402|payment|32402|32803|pricing|micropay' packages/*/src/`
 → **0**. `gh search code --repo modelcontextprotocol/typescript-sdk x402` → **0 files**.
 
 ### 1.2 The one merged thing in the spec that addresses payment
@@ -107,7 +107,7 @@ A URL-mode `elicitation/create` request carries exactly three parameters: **`mod
 only that the user consented to open the URL — the interaction completes out of band and the
 server discovers the outcome itself.
 
-**This is the actual, merged, current convention for payment in MCP: send the user to a URL.**
+This is the actual, merged, current convention for payment in MCP: send the user to a URL.
 It is what this estate already does, and it is the format the descriptor below adopts.
 
 ### 1.3 x402 — live, but not for us
@@ -138,8 +138,6 @@ sample):
 
 Networks are CAIP-2 in v2 (`eip155:8453`), replacing v1's `"base-sepolia"` strings.
 
-**Seller requirements, probed live:**
-
 | Facilitator | Probe | Networks | Verdict |
 |---|---|---|---|
 | `x402.org/facilitator` | HTTP 200, no auth | **testnets only** | no account, but testnet |
@@ -150,7 +148,7 @@ So the prior operator finding — *x402 is the only live rail* — **still holds
 more true than it was: there is a mainnet path (PayAI) that needs no account and no KYC.
 The blocker is not the facilitator. It is the wallet and the buyer.
 
-**Buyer requirements:** a funded wallet holding USDC **and its private key**. Coinbase's own
+a funded wallet holding USDC **and its private key**. Coinbase's own
 guide has the user run a local MCP bridge with `"env": { "EVM_PRIVATE_KEY": "<wallet with
 USDC>" }`. npm confirms the whole ecosystem is third-party bridges you install and fund
 yourself: `@hpp-io/x402-mcp-bridge`, `@zeam-labs/x402-mcp-bridge`, `@piprail/mcp`,
@@ -179,7 +177,7 @@ $0.01**.
 | **L402 / Lightning** (`lightninglabs/aperture`, pushed 2026-09-10) | yes | seller FUNDS-REQUIRED: a funded LND node |
 
 AP2 and TAP are trust/authorization layers, not rails: they move no money. Only **x402** and
-**L402** let an independent developer go from clone to received payment.
+let an independent developer go from clone to received payment.
 
 Note also: **Stripe's MCP server (`mcp.stripe.com`) is a developer tool, not a rail.** It
 calls the Stripe API *as you* with your own credentials. It has no "an agent pays you"
@@ -238,7 +236,7 @@ whether trying to pay is even possible. So:
    with an explicit "do not retry with a payment payload", so an x402-capable client stops
    immediately instead of retrying into a wall.
 5. The one part of the descriptor that follows a real merged convention is the
-   **`elicitation`** block: the verbatim `mode` / `message` / `url` parameter shape of a
+   block: the verbatim `mode` / `message` / `url` parameter shape of a
    URL-mode `elicitation/create` request (§1.2). A client that supports URL mode can lift it
    as-is. No format was invented where one existed; where none existed, the object is
    versioned and namespaced (`zovo.one/mcp-payment-descriptor/1`) so a revived SEP-2007
@@ -255,7 +253,7 @@ All changes are in `remote/` and `packages/mcp-license/`. Nothing deployed.
 *(Assigned mid-task by the orchestrator. Separate defect, same failure class as the
 401-on-initialize that had four servers published as DOWN.)*
 
-**Root cause, located.** Not our code. The SDK tests the Accept header with a literal
+Not our code. The SDK tests the Accept header with a literal
 substring match:
 
 ```
@@ -269,7 +267,7 @@ type including both required ones, and RFC 9110 §12.5.1 says a request with no 
 sends `Accept: */*` by default, so every naive health prober and every hand-typed test of
 `initialize` saw a 406.
 
-**Measured before, live, on three servers** (`invoice`, `cash-book`, `pdf` — identical):
+(`invoice`, `cash-book`, `pdf` — identical):
 
 | Accept | `initialize` | `tools/list` |
 |---|---|---|
@@ -279,8 +277,6 @@ sends `Accept: */*` by default, so every naive health prober and every hand-type
 | `application/json, text/event-stream` | 200 | 200 |
 | `text/html` | 406 | 200 |
 
-**Both of the orchestrator's questions, answered by measurement:**
-
 1. *Does this path ever use SSE?* **No.** `tools/list` returns 200 JSON on all five variants
    including `text/html`, because the worker answers it from module scope
    (`remote/src/index.ts`, the `tools/list` fast path) and never reaches the transport. The
@@ -289,7 +285,7 @@ sends `Accept: */*` by default, so every naive health prober and every hand-type
    required `text/event-stream` was never going to be used.
 2. *Ours or the SDK's?* **The SDK's.** So it is wrapped, not forked.
 
-**The fix** — `remote/src/accept.ts`, wired at one line in `remote/src/index.ts`:
+— `remote/src/accept.ts`, wired at one line in `remote/src/index.ts`:
 the worker rewrites the Accept header to the literal the SDK wants **only** when the
 caller's Accept genuinely admits both types per RFC 9110 §12.5.1 (specificity-ranked media
 ranges, `q=0` honoured, an unparseable `q` read as 0 so a malformed header can only ever be
@@ -367,7 +363,7 @@ pricing://invoice -> {"schema":"zovo.one/mcp-payment-descriptor/1","status":"inf
                       "agent_settleable":false,"price":"19.00","x402":false,"elicitation_mode":"url"}
 ```
 
-**Why hosted only.** Registering them on the stdio gate adds one resource and one prompt to
+Registering them on the stdio gate adds one resource and one prompt to
 all 31 local servers at once, and **17 suites under `servers/*/test` assert those lists with
 `deepEqual`**, while `scripts/gen-spec.mjs` derives docs from the same lists. Measured: doing
 it broke exactly those 17 tests. Both fixes live outside my assigned files. The hosted
@@ -405,7 +401,7 @@ Every claim above has a command behind it.
 | Accept matrix, after | `remote/test/accept.test.mjs`, real SDK transport | table in §3.1 |
 | resource + prompt live | stdio spawn of `servers/invoice/dist/index.js` | output in §3.3 |
 
-**The 3 root-suite failures are not from this work and are not in my files.** All three trace
+All three trace
 to a `servers/packing-list` directory created at 20:58 today by another agent, mid-flight:
 `SERVER_COUNT is 31 but 32 servers build a licence gate`; `PROFILE_READERS drifted from the
 grep` (`packing-list` grepped, not declared); `scripts/sync-mirrors.sh does not list
@@ -521,10 +517,10 @@ The constraint is real: a registry `remotes[]` entry, a directory row and an awe
 only ever carry `https://mcp.zovo.one/mcp/<server>`. So make that URL end the interaction in
 the user's hands rather than in a dead end.
 
-**Recommended, and NOT implemented — it collides with in-flight work.** On a **tokenless
+On a **tokenless
 `tools/call` only**, mint a token under the existing per-IP ceiling and return it *in the 401
 body* as `ready_to_use: { token, url: ".../mcp/<server>/t/<token>", how }`. This is an
-**offer, not a grant**: still HTTP 401, nothing served, and the token is exactly what
+still HTTP 401, nothing served, and the token is exactly what
 `GET /mcp/token` hands to anyone who asks — no new capability, just no scavenger hunt. It
 keeps everything A.2 says self-provisioning destroys: the token is visible, savable, portable
 to a second client, and bindable at checkout.

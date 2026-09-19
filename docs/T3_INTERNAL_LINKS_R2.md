@@ -13,8 +13,6 @@ STATUS: in progress
   `curl -s https://mcp.zovo.one/sitemap.xml | grep -o '/s/[^<]*' | sort -u` → 42. (Each slug confirmed: time-tracker, price-tracker, spreadsheet, invoice, expense-tracker, office-suite, currency, timezone, docx, resume, recurring, clauses, pdf, calendar, kanban, image, bank-statement, quotes, barcode, zip, billing-docs, deposits, per-diem, asset-register, statement-of-account, cash-book, amortization, petty-cash, work-order, catalogue, change-order, packing-list, checklist, bill-of-sale, credit-note, job-card, dunning-letters, supplier-list, service-agreement, maintenance-log, mileage-log, delivery-schedule.)
 
 ## Deliverable part (a) — /compare pages link the /s pages they compare
-**Verdict: already satisfied by the existing renderer — no code change needed.**
-
 - Compare data lives in `billing/src/compare.js` (`export const COMPARE`, 27 entries); the task limits edits to `billing/src/content.js`, so compare.js is untouched.
 - Every `/compare/<slug>` page ALREADY emits a link to the /s page it compares. `billing/src/index.js:1295` (the Related block) renders, unconditionally for every compare slug:
   `<a href="/s/${slug}">Product page</a>`.

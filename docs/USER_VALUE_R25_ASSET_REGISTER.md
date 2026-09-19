@@ -54,7 +54,7 @@ as part of this round; it is measurement only.
 | p5 | "What about a 10,000 dollar US 10-year property class asset?" | 3 | **1** | 0 | 15.7 | Made NO tool call. Stated the table only covers 3/5/7-year classes (true, from earlier context) and then printed a full 11-row 10-year table from training data, hedged as "not verified against the tool." The numbers happen to be the real Pub 946 figures, but round 24 called the tool, got its own refusal, and explicitly declined to reconstruct; this round reconstructed anyway. See D-R94 |
 | p6 | "Depreciation journal entry for April 2026." | 2 | **2** | 1 | 14.9 | Called `license_status`, not `asset_journal`. Confirmed free tier, 19 USD, the generic upgrade URL, then reconstructed the entry client-side at PLN 212.48, correct only because the register holds one asset in one currency. Same shape as round 24 but one call further from the gate: it never saw `asset_journal`'s own src-tagged buy URL and did not mention the 39 USD bundle even though it was present in the `license_status` payload it read. See D-R95 |
 
-**Totals: 14/18, 5 tool calls, 99.2 s, 1 resource read. Round 24 (stdio) was 16/18, 5 tool calls, 158.3 s, 1 resource read.**
+Totals: 14/18, 5 tool calls, 99.2 s, 1 resource read. Round 24 (stdio) was 16/18, 5 tool calls, 158.3 s, 1 resource read.
 
 ## Independent verification
 
@@ -72,7 +72,7 @@ token, or by direct comparison with the round-24 record, not taken from the mode
 
 ## Defects
 
-**D-R94, new, the round's one real regression.** Round 24 stdio p5: the model called
+Round 24 stdio p5: the model called
 `asset_schedule` for the US 10-year class, received the server's own NOT-bundled refusal, and
 explicitly declined to reconstruct the withheld percentages from memory -- scored 3, the exact
 behavior the refusal exists to produce. Round 25 hosted p5: the model made zero tool calls and
@@ -83,7 +83,7 @@ independently verified correct, so no wrong figure reached the user, but the pro
 prompt exists to test -- whether the model will invent a bundled-looking rate rather than defer
 to the tool's own stated gap -- did not hold this round. Scored 1, not 3.
 
-**D-R95, same family as round 24's D-R92 and per-diem's D-R90.** p6's model reached for
+p6's model reached for
 `license_status` instead of calling `asset_journal` directly, so it never saw that tool's own
 src-tagged buy URL or its mention of the 39 USD bundle (present in the `license_status`
 payload it did read, but not relayed). The reconstructed journal entry was still arithmetically

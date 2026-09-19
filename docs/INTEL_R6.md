@@ -66,22 +66,22 @@ release work visible in `git status` (in-flight `bundles/` changes) at probe tim
 Service account `zovo-gsc-cleanup@zovo-extensions.iam.gserviceaccount.com`,
 `sc-domain:zovo.one`, scope `webmasters.readonly` (same property as `docs/GSC_RESULT.md`).
 
-**Pages indexed vs submitted:** GSC's `sitemaps.list` last recorded a submission on
+GSC's `sitemaps.list` last recorded a submission on
 2026-09-03T08:42:41Z with **129 submitted, 0 indexed**. The live sitemap now serves
-**179 URLs** (measured this session) -- 50 pages have been added since the last GSC
+(measured this session) -- 50 pages have been added since the last GSC
 submission and have not been resubmitted. Every sitemap on the whole `sc-domain:zovo.one`
 property (including the 714-URL zovo.one root index) reports `indexed: 0` in this API
 response, so the zero is either a site-wide indexing-pipeline lag or an API-field quirk,
 not something specific to mcp.zovo.one.
 
-**Impressions and clicks, last 7 days (2026-08-28 to 2026-09-03):** `searchanalytics().query`
+`searchanalytics().query`
 filtered to pages containing `mcp.zovo.one`, dimensions `[page]` and `[query]`, returned
-**zero rows for both** -- 0 pages with any impression, 0 queries with any impression, 0
+-- 0 pages with any impression, 0 queries with any impression, 0
 clicks. A 28-day cross-check (2026-08-07 to 2026-09-03) also returned zero rows, so this
 is not a short-window artifact: mcp.zovo.one has **no measured Google Search impressions
 across the full available recent history** in this property.
 
-**Guides/compare/setup pages with any impression:** **none.** Of the 179 live URLs (20
+**none.** Of the 179 live URLs (20
 guides, 16 compare, 143 setup pages under claude-desktop/claude-code/cursor/vscode/
 windsurf/cline/claude-web x 17 servers), zero show any impression in the 7-day or 28-day
 window.
@@ -111,8 +111,6 @@ translate(12), zip(14).
 0.86 -- gated down hard on buildability since accurate translation without a network call
 or a model is not achievable in pure TS.)
 
-**Top 5 specs:**
-
 1. **templates** -- Pure-TS library of parameterized email/proposal/contract merge-field
    templates (no network) plugging into invoice/docx/resume/clauses output; `templates`
    has 1 registry result, the emptiest slot measured across R1-R6.
@@ -128,14 +126,14 @@ or a model is not achievable in pure TS.)
 
 ## 4. Docker catalog PR and Cline issue status (gh, read-only)
 
-**Docker MCP catalog PR #4892:** state open, mergeable, 0 comments, 0 review comments,
+state open, mergeable, 0 comments, 0 review comments,
 0 reviews, no labels, `changed_files: 32`, `updated_at: 2026-09-04T01:23:16Z` (today).
 The file count (32) is consistent with the 8-server scope `data/organic.json` recorded
 on 2026-09-03, but the PR body text still describes only the original four servers
 (time-tracker, price-tracker, spreadsheet, invoice) -- the description is stale relative
 to the diff. Still zero maintainer engagement.
 
-**Cline marketplace issues (2397-2401, 2408-2410):** all 8 open, 0 comments, no labels on
+all 8 open, 0 comments, no labels on
 any, last activity 2026-09-02T13:28 to 2026-09-03T02:39 -- unchanged since the R3 check,
 zero human review activity.
 

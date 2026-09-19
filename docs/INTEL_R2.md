@@ -17,12 +17,12 @@ Raw structured data: `data/intel_r2.json`.
 
 All 7 submissions remain unmerged/unreviewed by a human. No labels on any cline issue.
 
-**Verbatim maintainer/bot requests on PR#13473 (awesome-mcp-servers), both posted 2026-09-02T13:19:09Z:**
+Verbatim maintainer/bot requests on PR#13473 (awesome-mcp-servers), both posted 2026-09-02T13:19:09Z:
 
 1. `glama-check` bot: *"To ensure that only working servers are listed, we're updating our listing requirements. Please complete: 1) Ensure your server is listed on Glama (glama.ai/mcp/servers) and verify it passes all checks (add Dockerfile directly to Glama; server must start and respond to introspection). 2) Update your PR by adding a Glama score badge after the server description: `[![OWNER/REPO MCP server](https://glama.ai/mcp/servers/OWNER/REPO/badges/score.svg)](https://glama.ai/mcp/servers/OWNER/REPO)`."*
 2. `emoji-check` bot: *"Your submission is missing a required emoji tag or uses an unrecognized one. Each entry must include at least one of the permitted emojis after the repository link."* (list includes 🐍 Python, 📇 TS/JS, 🏠 Local Service, 🍎 macOS, 🪟 Windows, etc.)
 
-**Action implied:** PR#13473 will not pass CI until (a) each server is separately listed and passing checks on Glama, (b) a Glama badge is added per entry, and (c) a permitted emoji tag is added per entry. Currently none of the 6 servers are listed on Glama at all (see section 2), so this is a hard blocker, not just cosmetic.
+PR#13473 will not pass CI until (a) each server is separately listed and passing checks on Glama, (b) a Glama badge is added per entry, and (c) a permitted emoji tag is added per entry. Currently none of the 6 servers are listed on Glama at all (see section 2), so this is a hard blocker, not just cosmetic.
 
 ## 2. Directory listings (theluckystrike / our 6 server names)
 
@@ -34,7 +34,7 @@ All 7 submissions remain unmerged/unreviewed by a human. No labels on any cline 
 | registry.smithery.ai (q=theluckystrike, + per-name queries) | **No** | Zero theluckystrike matches in any of the 6 per-name searches; top rows are unrelated third-party servers |
 | PulseMCP | Unverifiable | HTTP 403 on every request (blocked at edge) |
 
-**Bottom line:** confirmed absent from Glama and Smithery (the two we could actually query); mcpservers.org, mcpmarket.com, PulseMCP could not be confirmed either way with curl alone (403 or client-side rendering).
+confirmed absent from Glama and Smithery (the two we could actually query); mcpservers.org, mcpmarket.com, PulseMCP could not be confirmed either way with curl alone (403 or client-side rendering).
 
 ## 3. Official registry slot movement (registry.modelcontextprotocol.io)
 
@@ -56,9 +56,9 @@ Compared to `data/registry_rank.json` → `after_v2_2026-09-02_post_expense_offi
 | office | 32 | 34 | none (unpublished) | **33** (office-suite server now live) |
 | suite | 86 | 88 | none (unpublished) | **78** (office-suite server now live) |
 
-**Key finding:** `io.github.theluckystrike/office-suite-time-invoice-expense-excel-price` — previously recorded as "never published via mcp-publisher" — **is now live in the registry** and appears in the `office` and `suite` slots.
+`io.github.theluckystrike/office-suite-time-invoice-expense-excel-price` — previously recorded as "never published via mcp-publisher" — **is now live in the registry** and appears in the `office` and `suite` slots.
 
-**New (non-ours) servers in these slots:** none detected. Every token's result-count delta (+2 to +4) is fully explained by our own re-publishes (new versions of existing rows + the new office-suite server); no unfamiliar third-party names appeared ahead of or displacing us in the time-tracker, price-tracker, or expense slots.
+none detected. Every token's result-count delta (+2 to +4) is fully explained by our own re-publishes (new versions of existing rows + the new office-suite server); no unfamiliar third-party names appeared ahead of or displacing us in the time-tracker, price-tracker, or expense slots.
 
 ## 4. GitHub repository search (`gh api search/repositories`)
 

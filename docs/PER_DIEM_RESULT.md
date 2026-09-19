@@ -16,7 +16,7 @@ trip store) for the next server that needs to price a trip.
 
 ## Design decisions worth stating
 
-**The rate tables are bundled files, not a feed.** `src/tables/*.json`, read from disk on first
+`src/tables/*.json`, read from disk on first
 use and copied into `dist/tables` by the build. There is no network call anywhere in this
 server. A per diem figure that changed under the user between two runs of the same trip is worse
 than one that is visibly stale: the second is checkable, the first is not. Every table carries a
@@ -30,40 +30,40 @@ DONE. See "What is not bundled" below. A per diem ends up on a tax return; a wro
 looks authoritative is worse than an absent one, because the absent one is refused by name and
 sends the caller to the source.
 
-**Start and end are instants, never wall clocks.** Either ISO 8601 carrying its own offset, or a
+Either ISO 8601 carrying its own offset, or a
 local datetime plus an IANA `timezone` resolved through the timezone engine's DST-aware
 resolver. Elapsed time is an epoch difference throughout. A per diem is counted in elapsed
 hours, so a trip across a clock change is 23 or 25 hours, and a naive text difference gets that
 wrong every March and October. A local time inside a spring-forward gap is moved forward rather
 than silently kept, so the allowance is the one the traveller could actually have earned.
 
-**The day model differs by scheme, and the answer says which one it used.** `pl` and `uk` count
+`pl` and `uk` count
 24-hour periods from departure (the Polish `doba`, and the shape HMRC's hour bands assume). `us`
 counts calendar days in the destination zone (FTR 301-11.101). The same 23-hour DST crossing is
 therefore one day under the Polish rule and two under the US one, and both are right.
 
-**Meal deductions are each scheme's own, and a day is floored at zero.** Poland domestic
+Poland domestic
 25/50/25 percent of the day, Poland foreign 15/30/30, US the published breakfast, lunch and
 dinner amounts of the M&IE tier with the incidentals never deducted, UK a pro rata share of the
 band. The UK pro rata is the one place this server interprets rather than transcribes: HMRC
 states that the rate is not payable for a meal that was provided, but not the arithmetic when
 only one of the three is. The answer's `rule` field says so in those words.
 
-**Currencies are never added together.** `trip_list` and `perdiem_report` total per currency.
+`trip_list` and `perdiem_report` total per currency.
 There is no exchange rate in this server, so there is no rate to be silently wrong, and one
 number over a PLN diet and a EUR one would be invented.
 
-**Ids are `TRIP-YYYY-NNNN`.** Same reasoning as `INV-YYYY-NNNN` and `DEP-YYYY-NNNN`: a counter
+Same reasoning as `INV-YYYY-NNNN` and `DEP-YYYY-NNNN`: a counter
 that resets every January collides with last January's claim. The counter is written before the
 row, so a crash burns an id rather than reusing one, and existing ids are scanned so a restored
 store cannot reissue one.
 
-**The free cap is on SAVING a trip, not on pricing one.** `perdiem_rates` and `perdiem_calc` are
+`perdiem_rates` and `perdiem_calc` are
 free and unlimited on every tier. The rates are public information published by a tax authority;
 metering the reading of a regulation would be charging for the government's work rather than for
 this server's.
 
-**The home scheme is derived, and reported as a derivation.** The shared business profile
+The shared business profile
 (`packages/mcp-license` `readSharedProfile`) has `name`, `address` and `default_currency` but no
 country field. Rather than infer a country from free-text address lines, the home scheme is
 derived from `default_currency`, which is a closed set, and every answer that uses it says in
@@ -153,7 +153,7 @@ fresh `XDG_DATA_HOME` / `XDG_CONFIG_HOME` and seeds the shared business profile 
 
 ## Measured insight
 
-**Substring matching a country name priced a trip to Oman at Romania's rate, silently.**
+Substring matching a country name priced a trip to Oman at Romania's rate, silently.
 
 The first build resolved a destination by exact country name, then ISO code, then
 `country.includes(destination)`. `"romania".includes("oman")` is `true`. A trip to Oman -- a

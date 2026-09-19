@@ -16,7 +16,7 @@ defect.
 - **Arrival.** `GET https://mcp.zovo.one/mcp/connect` -> 200 `text/html`, 7,684 bytes, minting
   `anon_f2a6240310b1076d5eb4824e313c96fb`. One token, reused for every lane.
 - **Registration.** Five `http` entries in `mcp.json`, each `https://mcp.zovo.one/mcp/<server>/t/<token>`,
-  **no `--header` anywhere**: `kanban`, `image`, `bank-statement`, `time-tracker`, `expense-tracker`.
+  `kanban`, `image`, `bank-statement`, `time-tracker`, `expense-tracker`.
   The kanban lane had kanban + time-tracker visible and the bank lane bank-statement + expense-tracker,
   the way the audits' Part 2 did, so the cross-server choice that D-B4 and D-K10 are about was live.
 - **Allowlist.** 117 `mcp__<server>__<tool>` entries from a live `tools/list` of each endpoint
@@ -68,7 +68,7 @@ workaround, or left the user a gap. 1 = partially wrong. 0 = failed.
 | b5 | "Which of my expenses have no bank line, and which bank lines have no receipt?" | **2** | 3 | 30.7 | `reconcile_expenses` is Pro, so the model reconciled by hand **across two hosted endpoints on one token**: 0 expenses without a bank line (Adobe EUR 61.50 matches the 08-07 debit), 35 of 36 in-window bank lines without a receipt, the second Adobe charge on 08-21 flagged, and the window it could not check named. Right answer, entirely by workaround |
 | b6 | "Export September to a file I can download." | **2** | 1 | 12.7 | Unlike the local s6 it did not ask which server or which year: right tool, right range, refusal relayed with the link, and then the four September rows printed inline - 9.99 + 25.00 + 3.60 + 6.40 = EUR 45.09, exactly what the file holds. No file, because the download path is Pro |
 
-**Totals: 49 / 54, 38 tool calls, 403.9 s.** Four of the five deductions are the free-tier paywall
+Four of the five deductions are the free-tier paywall
 rather than a wrong computation. Three bank-statement tools are Pro, and every time one refused the
 model answered anyway - **without the guardrails the tool would have applied**.
 
@@ -153,7 +153,7 @@ reserve `dmy`/`mdy` for the case where a choice was actually made.
 
 ### D-R55 (medium, bank-statement, product) - logged
 
-**The free tier removes the guardrail rather than the answer.** `recurring_detect` is Pro, so in b4
+`recurring_detect` is Pro, so in b4
 the model computed cadence itself and reproduced exactly what the D-B6 fix taught the tool not to
 say: Adobe "every ~2 weeks", annualised to about EUR 1,656/year off two charges fourteen days apart.
 The tool would have withheld that figure with `cadence_confirmed: false` until a third charge. The
@@ -190,7 +190,7 @@ nothing pasted. And the failure that made `BANK_AUDIT` s3 a 1 - the model answer
 spend" from the wrong ledger - did not reproduce with both ledgers connected by URL.
 
 What the hosted path adds is a new class of seam, and this round found it twice in the same place:
-**the endpoint states a limit that is not the limit that binds.** The upload tools quoted a
+The upload tools quoted a
 190 KB ceiling that no client can reach, because the payload is model output before it is a request
 body; a 38 KB photo hung a turn for thirteen minutes with no error, anywhere. The rate limiter
 quoted 600 calls and a flat hour, without saying that a five-endpoint session spends a dozen of them

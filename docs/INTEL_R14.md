@@ -97,7 +97,7 @@ variant -- so both were dropped and replaced with `retention-money` and
    supplier reference, cost resolved from catalogue by SKU; pairs with work-order
    and catalogue; no network.
 
-**retainage** (score 52.0, tied with materials-list, ranked 6th) independently
+(score 52.0, tied with materials-list, ranked 6th) independently
 clears the strict build gate too (count 0, fit 0.65 > 0.6, buildability 0.80 > 0.7)
 and is recorded as the closest miss, same pattern as round 13's `sign-off`/
 `milestone`.
@@ -124,7 +124,7 @@ and is recorded as the closest miss, same pattern as round 13's `sign-off`/
 
 # Part 2 -- is the marginal server (#31/32/33) still worth a build round?
 
-**Verdict: no.** On every measurable signal available, the last five servers built
+On every measurable signal available, the last five servers built
 are not paying for themselves, and a 32nd/33rd server would inherit the identical
 structural ceiling rather than escape it. The honest answer this round is that the
 build round should go into fixing conversion and distribution on the existing
@@ -134,18 +134,18 @@ build round should go into fixing conversion and distribution on the existing
 
 First-commit timestamps for `servers/<name>/` (`git log --diff-filter=A --follow`),
 all on 2026-09-06: cash-book 02:31, **amortization** 05:06, **petty-cash** 07:39,
-**work-order** 10:10, **catalogue** 12:46, **change-order** 14:27. The five most
+10:10, **catalogue** 12:46, **change-order** 14:27. The five most
 recently built are, oldest to newest: **amortization, petty-cash, work-order,
 catalogue, change-order**.
 
 ## Evidence, signal by signal
 
-**Sales / revenue.** `data/kpi.json` (2026-09-06): 68 checkout sessions from
+`data/kpi.json` (2026-09-06): 68 checkout sessions from
 humans in the last 100, **0 paid sessions, 0 license keys minted, 0 Pro tenants on
 hosted endpoints** -- across the *whole* 31-server estate. Revenue attributable to
 the newest 5 specifically cannot exceed the estate total of $0.
 
-**Whether the newest servers can even be bought.** Probed
+Probed
 `https://mcp.zovo.one/buy/<id>` with a browser User-Agent for all 5 (2026-09-07):
 amortization and petty-cash return a live `303` to `checkout.stripe.com`.
 **work-order, catalogue and change-order -- 3 of the last 5, 60% -- return HTTP 503
@@ -156,7 +156,7 @@ checks to avoid polluting the click counter; they should be treated as probe noi
 in `data/kpi.json`'s click count, not human demand, and are not cited as such
 above.)*
 
-**Registry rank on their own tokens.** All 5 are live at v0.20.0: amortization
+All 5 are live at v0.20.0: amortization
 rank 1 of 5, petty-cash rank 1 of 4, work-order rank 1 of 3, catalogue rank 11 of 14
 (p=10/11=0.91), change-order rank 1 of 1. All 5 also carry 1-2 published
 compound-slug registry-name variants (`loan-schedule`, `cash-float`,
@@ -170,14 +170,13 @@ price-tracker server ranks 106th of 131 on the bare word "price"). A 32nd/33rd
 server, however cleverly named, inherits this identical ceiling; naming variants
 cannot fix a search engine that returns 0 on a space.
 
-**Whether the fleet's own findability model even measures them.**
 `data/organic.json`'s `servers[]` list -- the file that computes the estate's
 tracked organic/findable score -- **contains none of amortization, petty-cash,
 work-order, catalogue or change-order**. It was last generated 2026-09-06 against
 an earlier server set. The estate's only findability instrument has never checked
 whether the newest third of the catalogue clears the ~50% ceiling at all.
 
-**Directory listings.** All 5 ARE submitted: Docker MCP catalog PR #4892's body
+All 5 ARE submitted: Docker MCP catalog PR #4892's body
 names all 5 (30 servers total in that PR), but the PR carries 1 general comment,
 **0 review comments**, and `mergeable_state: blocked` -- unchanged engagement from
 every prior round. Cline marketplace holds 5 open issues (#2455, #2458, #2459,
@@ -186,7 +185,7 @@ for the whole estate. The one directory with real traffic in progress,
 `awesome-mcp-servers` PR #13473 (2,237+ real entries), is CI-blocked on a Glama
 listing that has not happened -- and doesn't include any of these 5 at all.
 
-**Product page / traffic.** All 5 have a live `/s/<id>` page in the sitemap and a
+All 5 have a live `/s/<id>` page in the sitemap and a
 `/health` product entry, same as every other server. No per-server traffic
 instrument exists anywhere in this repo; the estate-wide traffic proxy (GitHub
 views/uniques/clones) was last measured flat at 0. Bundle downloads for the 5

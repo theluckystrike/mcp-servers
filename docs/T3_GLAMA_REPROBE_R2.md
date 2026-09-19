@@ -35,12 +35,12 @@ mcp-doesnotexist     404 52        (negative control, correct)
 mcp-bill-of-sale     200 312481    (positive control, correct)
 ```
 
-**Indexed: 12 of 42 — identical to the R1/R2 baseline.** The 12 indexed are exactly:
+The 12 indexed are exactly:
 bill-of-sale, checklist, credit-note, dunning-letters, job-card, maintenance-log,
 mileage-log, office-suite, packing-list, service-agreement, statement-of-account,
 supplier-list.
 
-**Newly indexed since baseline: 0.** The 16 short-slug registry publishes (2026-09-18,
+The 16 short-slug registry publishes (2026-09-18,
 version 0.22.1) have still not been picked up by Glama's crawler. Glama's crawl schedule
 remains the binding delay; the registry's own index lag is 1-3 min and is not the constraint.
 
@@ -65,7 +65,7 @@ kanban 200          office-suite 200 pdf 200         quotes 200
 recurring 200       resume 200     timezone 200      zip 200
 ```
 
-**All 16 short-slug registry entries still live (200).** No registry regression.
+No registry regression.
 
 ## 5. Commit + push
 

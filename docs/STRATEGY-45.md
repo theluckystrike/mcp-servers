@@ -1,6 +1,6 @@
 # Sprint 45 — Organic Traffic Disruption + MCP Server Visibility
 
-**Baseline (2026-09-18T12:27Z):** Google impressions 0, Googlebot 2 URLs, npm 0, paid 0.
+Google impressions 0, Googlebot 2 URLs, npm 0, paid 0.
 Funnel: 334 upgrade clicks/7d → 29.9% checkout → 0 paid (leak inside Stripe — pre-checkout trust shipped S44).
 Tenants 815 (was 799). GitHub: 3,596 clones/14d, 605 uniques, 0 stars.
 32 KPIs, 9 met.

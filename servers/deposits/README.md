@@ -105,8 +105,8 @@ invoice: `invoice_mark_paid {amount: 200}` for a bank transfer, then `invoice_ma
 300}` for the deposit, leaves `paid_minor` at 30000 and the reply reads "balance due EUR 700.00". The
 EUR 200.00 that actually arrived is gone from the record, and the client gets chased for it.
 
-`deposit_apply` writes the same three fields on the same record -- `paid_minor`, `paid_date`,
-`status` -- but ADDS: the same two payments leave `paid_minor` at 50000 and a balance due of EUR
+`deposit_apply` writes the same three fields on the same record, `paid_minor`, `paid_date`,
+`status`, but ADDS: the same two payments leave `paid_minor` at 50000 and a balance due of EUR
 500.00. Asserted in `test/unit.test.mjs`, "a second application ADDS to paid_minor, it does not
 replace it".
 

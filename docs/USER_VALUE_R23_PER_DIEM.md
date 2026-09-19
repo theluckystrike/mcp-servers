@@ -53,7 +53,7 @@ was changed as part of this round; it is measurement only.
 | p5 | "Save the Krakow one... and list trips on file." | 3 | **3** | 2 | 12.1 | `trip_record` saved TRIP-2026-0001 at PLN 258.75, `trip_list` read back count 1. Identical outcome to round 22, except the free-tier counter (present in the raw tool result) was dropped from the model's final answer this time rather than relayed |
 | p6 | "Report of totals per scheme and month for the month-end pack." | 2 | **2** | 1 | 11.6 | The model called `license_status` (now allowlisted) instead of `perdiem_report`, confirmed free tier, then built the report itself from p5's `trip_list` -- one row, PLN 258.75. It never called `perdiem_report` and so never saw its src-tagged buy URL; its own answer names no URL at all, one step further from the gate than round 22 |
 
-**Totals: 17/18, 9 tool calls, 78.9 s. Round 22 (stdio) was 17/18, 8 tool calls, 123.6 s.**
+Totals: 17/18, 9 tool calls, 78.9 s. Round 22 (stdio) was 17/18, 8 tool calls, 123.6 s.
 
 ## Independent verification
 
@@ -71,7 +71,7 @@ from the model's prose.
 
 ## Defects
 
-**D-R90 reproduces hosted with a new shape.** Round 22 stdio: the model called `perdiem_report`, got the
+Round 22 stdio: the model called `perdiem_report`, got the
 Pro refusal, relayed the price but dropped the buy URL, then reconstructed the report client-side from
 `trip_list`. Round 23 hosted: the model never called `perdiem_report` at all, reaching for `license_status`
 instead (now allowlisted) and building the same client-side report without ever seeing `perdiem_report`'s
@@ -79,7 +79,7 @@ own src-tagged refusal text. The end state is the same or slightly worse -- a ri
 and zero working links to the tool that would compute it correctly at scale. Not a new defect number: same
 family, one call further from the gate.
 
-**D-R92, new, low severity.** p5's `trip_record` response carries the free-tier counter
+p5's `trip_record` response carries the free-tier counter
 ("1 of 5 trips recorded in 2026-05") exactly as round 22's did; this time the model's final answer dropped
 it where round 22 relayed it. The save and list were both still correct, so this did not cost the score, but
 it is the same class of loss as D-R90: a server-supplied line reached the model and did not reach the user.

@@ -1,13 +1,13 @@
 # mcp-amortization
 
 **In the [official MCP Registry](https://registry.modelcontextprotocol.io/v0.1/servers/io.github.theluckystrike%2Famortization/versions/latest)** (`io.github.theluckystrike/amortization`).
-Loan and lease schedules for an AI assistant. Give it the terms of a credit agreement -- the amount, the nominal annual rate in basis points, how often interest compounds, how often a payment falls due, the term in periods, the method, any arrangement fee and any balloon -- and it works out the payment, the effective annual rate, and the schedule period by period: opening balance, payment, interest, principal, closing balance. It answers what settling early would cost and save, and hands back the double entry for a payment in the same account names the cash book uses. Everything is integer minor units, and every closing balance reaches the balloon, or zero, exactly. Nothing is sent anywhere: the register is a file on your machine.
+Loan and lease schedules for an AI assistant. Give it the terms of a credit agreement, the amount, the nominal annual rate in basis points, how often interest compounds, how often a payment falls due, the term in periods, the method, any arrangement fee and any balloon, and it works out the payment, the effective annual rate, and the schedule period by period: opening balance, payment, interest, principal, closing balance. It answers what settling early would cost and save, and hands back the double entry for a payment in the same account names the cash book uses. Everything is integer minor units, and every closing balance reaches the balloon, or zero, exactly. Nothing is sent anywhere: the register is a file on your machine.
 
 npm publish for `@theluckystrike/mcp-amortization` is pending, so `npx -y @theluckystrike/mcp-amortization` returns 404 today. Until then, the `.mcpb` one-click bundle or a clone+build is the working path.
 
 ## Install
 
-**Claude Desktop** -- macOS `~/Library/Application Support/Claude/claude_desktop_config.json`, Windows `%APPDATA%\Claude\claude_desktop_config.json`:
+**Claude Desktop**, macOS `~/Library/Application Support/Claude/claude_desktop_config.json`, Windows `%APPDATA%\Claude\claude_desktop_config.json`:
 
 ```json
 {
@@ -20,13 +20,11 @@ npm publish for `@theluckystrike/mcp-amortization` is pending, so `npx -y @thelu
 }
 ```
 
-**Claude Code**
-
 ```sh
 claude mcp add amortization -- npx -y @theluckystrike/mcp-amortization
 ```
 
-**Cursor** -- `~/.cursor/mcp.json` (global) or `.cursor/mcp.json` (project). Same entry as Claude Desktop.
+**Cursor**, `~/.cursor/mcp.json` (global) or `.cursor/mcp.json` (project). Same entry as Claude Desktop.
 
 ## Tools
 
@@ -56,7 +54,7 @@ claude mcp add amortization -- npx -y @theluckystrike/mcp-amortization
 
 The schedule is never metered. The payment and the interest are the question this server exists to answer, and a free tier that hides the answer is a demo. The meter is on the number of agreements held, which is the unit of work.
 
-**Get Pro:** https://mcp.zovo.one/buy/amortization -- $19 one-time for this server, or $39 for the bundle.
+Get Pro: https://mcp.zovo.one/buy/amortization, $19 one-time for this server, or $39 for the bundle.
 
 ## A measured insight
 

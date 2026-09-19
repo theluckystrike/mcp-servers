@@ -49,7 +49,7 @@ Scorecard: **17 / 18** (2.83 / 3). The one point lost is prompt 1's invented cli
 
 ### Findings from the six prompts
 
-**Client address invented from the site line (prompt 1).** Acme had no invoice client
+Acme had no invoice client
 record and no address was given, so `work_order_create`'s inline-client path required
 `client_address`. The model supplied `"12 Dame St"`, the SITE address, as the client's
 billing address, rather than asking whether the billing address is the same as the site (a
@@ -72,7 +72,7 @@ totals, oldest-open list) are not reproducible from any single free tool's outpu
 follow-up confirms the model deferred to `work_order_list` rather than composing a board
 report by hand.
 
-**A refusal demonstrated, not argued, once asked twice (prompts 4 and 6).** Both times, the
+Both times, the
 model's first pass described the Pro gate in prose without calling the gated tool. Only the
 follow-up ("try it anyway", "call it directly and show me the refusal verbatim") produced the
 actual tool call and the actual refusal text. Left to itself, the model treated "this needs a

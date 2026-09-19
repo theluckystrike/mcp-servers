@@ -112,7 +112,7 @@ For:
 
 Against: n=2 listed records. This cannot be proven from outside Glama.
 
-**Actionable: no.** Nothing this project can emit enters that queue. Round 1 already
+Nothing this project can emit enters that queue. Round 1 already
 established there is no unauthenticated add endpoint and that fetching an unindexed page does
 not trigger indexing; neither was retested.
 
@@ -127,7 +127,7 @@ Against: the survivor should then be the first one seen (`mcp-time-tracker`, cre
 2026-09-02), not the 27th created; and `mcp-servers` itself is 404, so the canonical repo did
 not win either.
 
-**Actionable: yes, by someone else.** See recommendation 4.
+See recommendation 4.
 
 ### H3 — Build failure withholds distribution. Defect confirmed, **not the cause**.
 
@@ -188,13 +188,13 @@ mcp-spreadsheet          -> []
 mcp-price-tracker        -> []
 ```
 
-**`glama.ai` has never appeared as a referrer on any repository, including the indexed one.**
+`glama.ai` has never appeared as a referrer on any repository, including the indexed one.
 That is not evidence of absence: GitHub's referrer table records `Referer` headers from human
 web browsing, and a crawler clones the repo or reads `raw.githubusercontent.com`, neither of
 which produces one. Clone traffic does not discriminate either — every mirror is cloned
 heavily (68–325 clones in 14 days) and the indexed repo is not an outlier.
 
-**Positive proof the crawler did visit that one repo** comes from Glama's own page instead:
+comes from Glama's own page instead:
 the embedded record carries `"observedAt","2026-09-05T18:06:49.992918Z"` and a
 `toolSchemaChangelog` entry reading *"8 tool updates v0.14.0"*. Enumerating 8 tools requires a
 clone, a build and a live `tools/list`. There is no equivalent evidence for the other 32.
@@ -228,7 +228,7 @@ version. It is stale because the server has not been re-run since the hour it wa
 
 The connector records, by contrast, all carry `Scored 2026-09-08` timestamps.
 
-**Falsifiable prediction for loop 32:** if `observed_at` on `mcp-statement-of-account` is
+if `observed_at` on `mcp-statement-of-account` is
 still 2026-09-05 after the tool descriptions change, then the `/mcp/servers` record cannot
 measure this work at all and only the connector surface can. `scripts/glama-watch.mjs` now
 records both numbers every run.
@@ -261,7 +261,7 @@ curl -I .../mcp/servers/theluckystrike/mcp-change-order          -> 404
 curl -I .../mcp/servers/theluckystrike/mcp-statement-of-account  -> 200
 ```
 
-**Glama's badge route serves a placeholder SVG for repositories that do not exist.** Taking
+Taking
 that 200 at face value would have put a badge for a 404 server into a public PR under the
 operator's handle — precisely the fabrication this loop was told not to commit, arrived at by
 accident rather than intent.

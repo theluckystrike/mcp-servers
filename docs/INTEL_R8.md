@@ -79,7 +79,7 @@ explicit "expired, re-probe the registry for a competitor" message, so a competi
 shows up later does not stay silently excused. `WAIVERS` in `scripts/release-check.mjs` is
 now `[]`.
 
-**Control test:** backdated a scratch copy of `compare_none.zip.date` to 2026-01-01 (246
+backdated a scratch copy of `compare_none.zip.date` to 2026-01-01 (246
 days old) -- `release-check` failed with `compare_none note expired (246d old, >30d;
 re-probe the registry for a competitor)`, exit 1. Restored the real date -- green again,
 exit 0.

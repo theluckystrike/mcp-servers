@@ -8,7 +8,7 @@ not a paid API key.
 
 ## Method
 
-**Part 1 harness** - `/private/tmp/pdfaudit/probe.mjs` (free tier) and `pro.mjs` (Pro key from
+- `/private/tmp/pdfaudit/probe.mjs` (free tier) and `pro.mjs` (Pro key from
 `scripts/sign-license.mjs pdf`) drive `servers/pdf/dist/index.js` over stdio JSON-RPC through the
 repository's own `test/_client.mjs`, which throws on any stdout line that does not parse as JSON.
 Fresh `XDG_DATA_HOME` per lane. Fixtures are built by `/private/tmp/pdfaudit/fixtures.mjs`:
@@ -25,10 +25,10 @@ Fresh `XDG_DATA_HOME` per lane. Fixtures are built by `/private/tmp/pdfaudit/fix
 | `imageonly.pdf` | one page, a filled rectangle, zero text operators |
 | `form.pdf` | AcroForm with two filled text fields (`applicant.name`, `total.due`) |
 
-**Input integrity** - sha256 of all ten fixtures is taken before the first probe and after the last one
+- sha256 of all ten fixtures is taken before the first probe and after the last one
 in every lane, and printed per file.
 
-**Part 2 harness** - the real `claude` CLI as MCP client: `claude -p "<prompt>" --mcp-config
+- the real `claude` CLI as MCP client: `claude -p "<prompt>" --mcp-config
 /private/tmp/uv60/mcp.json --strict-mcp-config --model sonnet --output-format json --max-turns 16
 --allowedTools "<19 tools written out by name>"`, one session (`--session-id` then five `--resume`),
 fresh `XDG_DATA_HOME=/private/tmp/uv60/data` and `XDG_CONFIG_HOME`, `MCP_LICENSE_KEY=""` so both
@@ -95,7 +95,6 @@ round 7).
 
 ### Defects and fixes
 
-**D-P1 (critical): `out_path` was allowed to be an input, and destroyed it.**
 `pdf_pages {path: a.pdf, pages: "1", out_path: a.pdf, overwrite: true}` returned
 `Extracted 1 page ... "source_pages": 3` and left `a.pdf` as a **1-page file**: the pages were already in
 memory and were written back over the file they came from. `pdf_merge {paths: [b,b], out_path: b,
@@ -109,12 +108,12 @@ with, any input of the same call, before `mkdirSync` and before any work. `overw
 override it and the refusal says why: it is consent to replace some other file, never to consume an
 input. Applied to merge, split, pages, rotate, stamp, watermark and reorder.
 
-**D-P2: a newline in stamp text ran the words together.** `sanitizeStampText` deleted every code point
+`sanitizeStampText` deleted every code point
 below 32, so `"PAID\nIN FULL"` was stamped as **`PAIDIN FULL`** and the answer reported it as such.
 Fix: any whitespace control is a word separator, not a deletion, and is not counted as a removed
 character.
 
-**D-P3: a Polish stroke was deleted, leaving a different real word.** `OPŁACONE` (paid, Polish) came
+`OPŁACONE` (paid, Polish) came
 back as **`OPACONE`** because U+0141 is outside WinAnsi. A deleted diacritic that leaves a plausible
 word is worse than a visible replacement.
 Fix: characters outside WinAnsi are first transliterated - an explicit table for the ones with no
@@ -122,24 +121,24 @@ decomposition (Ł, đ, ħ, œ, ŋ, ...) plus NFD with the combining marks stripp
 `OPŁACONE` stamps `OPLACONE`, and the answer says how many characters were replaced and prints the
 text that was actually drawn. Only what cannot be transliterated (CJK) is removed and counted.
 
-**D-P4: an overlong stamp was drawn off the page and reported as success.** `autoSize` stops shrinking
+`autoSize` stops shrinking
 at 6 pt, so 500 characters measured 2,001 pt of text in 595 pt of page and simply was not there when
 the file was opened.
 Fix: the width is compared against the room actually available (the page width, or the diagonal for a
 centred stamp) and the overflow is named: `2001 pt of text at 6 pt in 595 pt of room, the smallest size
 this server will use`.
 
-**D-P5: `font_size` was unbounded.** `-20` and `1e6` both produced a "stamped" file with nothing
+`-20` and `1e6` both produced a "stamped" file with nothing
 visible on the page.
 Fix: `font_size` must be greater than 0 and at most 1600 points; anything else is refused with nothing
 written.
 
-**D-P6: `pdf_text` returned an unbounded answer.** 2,000 pages came back as one message with no cut and
+2,000 pages came back as one message with no cut and
 no cap; on a text-heavy document that is megabytes into a chat turn.
 Fix: the whole answer is capped at 200,000 characters, the cut is stated with the page it stopped at,
 and the answer names the exact argument that continues it: `call pdf_text again with pages: "N-"`.
 
-**D-P7: a PDF/A claim was invisible and silently broken.** `pdf_info` never mentioned the `pdfaid`
+`pdf_info` never mentioned the `pdfaid`
 packet; `pdf_stamp` embedded a non-embedded standard font into a file that still claimed PDF/A-1b in
 its metadata; `pdf_merge`, `pdf_pages`, `pdf_split` and `pdf_reorder` built a new document and dropped
 the claim and the output intents with no note. Either way the user ends up with a file whose archival
@@ -148,19 +147,19 @@ Fix: `loadPdf` reads the claim, `pdf_info` reports `pdfa_claim: "PDF/A-1b"`, the
 copy still carries the claim but is no longer guaranteed to meet it, and every new-document tool says
 the output *is not* PDF/A-1b. Nothing is validated - the claim is reported as a claim.
 
-**D-P8: rotate lied about no-ops.** `degrees: 0` and `degrees: 360` answered `Rotated 3 pages` having
+`degrees: 0` and `degrees: 360` answered `Rotated 3 pages` having
 turned nothing; `450` was normalised to 90 with no word about it.
 Fix: a rotation that leaves every page at the angle it had says so, and a magnitude of 360 or more says
 `450 degrees is the same as 90 degrees; a PDF stores one angle per page, not a number of turns.`
 
-**D-P9: `pdf_text` could not see the values of a filled form.** A form's values live in the field
+A form's values live in the field
 objects and in each widget's appearance stream, not in the page content stream the extractor walks, so
 a filled application form came back as the single word `Application form` and the two values the user
 typed were absent with no note. Silent omission on a document that visibly has text on it.
 Fix: `pdf_text` reads the AcroForm fields back by name and prints them under a heading that states why
 they were not part of the page text.
 
-**D-P10 (part 2, partially fixed): the self-output refusal left the model stuck.** The D-P1 guard is
+The D-P1 guard is
 correct, but the first message did not tell the caller what to do instead, and the model in scenario 6
 wrote `acme-2-rotated.pdf` and told the user it could not replace the original.
 Fix: the refusal now names the safe sequence - write beside it, check it, rename it yourself. Replacing
@@ -196,8 +195,6 @@ clarification; 2 = correct but leaves the user a gap; 1 = partially wrong; 0 = f
 | s4 | "How many pages is that and what does page 2 say the total is?" | 3 | 4 | 10.8 | `pdf_info`, `pdf_text {pages:"2"}` | answered **2 pages** and **EUR 3,075.00**; independent `pdf_text` of page 2 reads `Total EUR 3075.00`, and `invoices.json` holds `total_minor 307500`. It also noticed the page still reads `Status: UNPAID` under the stamp |
 | s5 | "Split the merged file back into single pages named acme-1.pdf and acme-2.pdf." | 3 | 3 | 11.3 | `pdf_split` | `acme-1.pdf` and `acme-2.pdf`, 1 page each, both carrying the PAID stamp |
 | s6 | "Rotate the second one 90 degrees." | 2 | 5 | 19.3 | `pdf_rotate` (twice: refused, then a new name) | `acme-2-rotated.pdf` has `rotation: 90`, `acme-2.pdf` unchanged at 0. The rotation is right, but the user asked for "the second one" and got a second file: the model first tried to write over `acme-2.pdf`, hit the D-P1 guard, and could not finish the rename. D-P10 |
-
-**Totals: 25 tool calls, 80.9 s, 17 / 18.**
 
 ### Independent verification
 

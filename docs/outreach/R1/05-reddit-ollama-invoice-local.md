@@ -1,13 +1,13 @@
 # Draft 05 — Reddit r/ollama: invoice processing with a local LLM
 
-**Surface:** Reddit r/ollama — `HUMAN-GATED` (Reddit account required)
-**Thread URL:** https://www.reddit.com/r/ollama/comments/1tawcds/use_case_invoice_processing_with_local_llm_which/
-**Thread title:** *Use Case: Invoice processing with local LLM — which model / how*
-**Fit:** The poster wants a fully local invoice pipeline and is asking for model recommendations. The
+Reddit r/ollama — `HUMAN-GATED` (Reddit account required)
+https://www.reddit.com/r/ollama/comments/1tawcds/use_case_invoice_processing_with_local_llm_which/
+*Use Case: Invoice processing with local LLM — which model / how*
+The poster wants a fully local invoice pipeline and is asking for model recommendations. The
 useful redirection is that the model choice is the *second* problem — determinism of the extraction and
 the ledger format is the first, and that's a tooling shape question, not a model question.
 
-**Exact guide link to include:** https://mcp.zovo.one/guides/invoice-pdf-from-chat
+https://mcp.zovo.one/guides/invoice-pdf-from-chat
 
 ---
 
@@ -15,7 +15,7 @@ the ledger format is the first, and that's a tooling shape question, not a model
 
 Split this into two problems, because the model is the easy one.
 
-**Problem 1: extraction must be deterministic and auditable.** For a pipeline that runs monthly, you
+For a pipeline that runs monthly, you
 don't want free-form model output deciding what the invoice total was. The shape that survives contact
 with real invoices: a tool that reads the document and writes a *structured* row (vendor, number, date,
 net, VAT, gross, currency) into a local store on your disk, with the model only orchestrating that call
@@ -23,7 +23,7 @@ net, VAT, gross, currency) into a local store on your disk, with the model only 
 can diff and correct, not a re-derivation you can't reproduce. That also means re-running the pipeline
 is idempotent: same file in, no duplicate row out.
 
-**Problem 2: the model.** Once extraction is a tool call with a schema, the LLM you pick matters much
+Once extraction is a tool call with a schema, the LLM you pick matters much
 less — any tool-calling model that reliably emits the call arguments will do, because it isn't doing the
 hard part. That's the good news for a local setup: you're no longer gating your accounting pipeline on a
 70B model's arithmetic. Ollama models that handle tool calls strictly are plenty, and you keep the

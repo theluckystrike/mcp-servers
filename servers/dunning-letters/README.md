@@ -3,7 +3,7 @@
 [![theluckystrike/mcp-dunning-letters MCP server](https://glama.ai/mcp/servers/theluckystrike/mcp-dunning-letters/badges/score.svg)](https://glama.ai/mcp/servers/theluckystrike/mcp-dunning-letters)
 
 **In the [official MCP Registry](https://registry.modelcontextprotocol.io/v0.1/servers/io.github.theluckystrike%2Fdunning-letters/versions/latest)** (`io.github.theluckystrike/dunning-letters`).
-Chase overdue invoices without losing the thread. Register an unpaid invoice -- client, invoice reference, amount in integer cents, currency, due date -- and the server runs the escalation ladder: reminder 1 (polite, due + 7 days), reminder 2 (firm, with the late fees note, due + 14), and the final notice (before-action wording, due + 21; the gaps are configurable per invoice). For each stage it generates the letter, as Markdown or as a self-contained printable HTML page. It records what you sent and when, lists everything overdue with days late and stage, ages the whole register into current/30/60/90+ buckets, and answers "what do I need to send today". **Nothing is emailed or sent anywhere: this server produces the letter text, and sending it is your act.**
+Chase overdue invoices without losing the thread. Register an unpaid invoice, client, invoice reference, amount in integer cents, currency, due date, and the server runs the escalation ladder: reminder 1 (polite, due + 7 days), reminder 2 (firm, with the late fees note, due + 14), and the final notice (before-action wording, due + 21; the gaps are configurable per invoice). For each stage it generates the letter, as Markdown or as a self-contained printable HTML page. It records what you sent and when, lists everything overdue with days late and stage, ages the whole register into current/30/60/90+ buckets, and answers "what do I need to send today". **Nothing is emailed or sent anywhere: this server produces the letter text, and sending it is your act.**
 
 Built by theluckystrike.
 
@@ -61,20 +61,20 @@ claude mcp add dunning-letters -- npx -y @theluckystrike/mcp-dunning-letters
 | Late fee accrual in the letters | Yes | Yes |
 | Payment recording and history | Yes | Yes |
 
-The cap is on how many chases run at once, never on the letters or the aging: three late payers taken from first reminder to final notice is a real chase list, and an invoice that gets paid frees its slot. What is metered is breadth -- a fourth concurrent chase is a collections workload, not a freelancer's month.
+The cap is on how many chases run at once, never on the letters or the aging: three late payers taken from first reminder to final notice is a real chase list, and an invoice that gets paid frees its slot. What is metered is breadth, a fourth concurrent chase is a collections workload, not a freelancer's month.
 
-**Get Pro:** https://mcp.zovo.one/buy/dunning-letters -- $19 one-time for this server, or $39 for the bundle.
+Get Pro: https://mcp.zovo.one/buy/dunning-letters, $19 one-time for this server, or $39 for the bundle.
 
 ## A measured insight
 
-**The ladder is anchored to the due date, not to the last letter, and the two drift apart exactly when chasing is going badly.**
+The ladder is anchored to the due date, not to the last letter, and the two drift apart exactly when chasing is going badly.
 
-The worked chase in `test/_client.mjs`: USD 1,250.00 due 2026-06-01, gaps 7/14/21, so the letters fall due on 06-08, 06-15 and 06-22 whether or not anything was sent. If reminder 1 actually goes out late -- say 06-20, twelve days after its date -- a previous-letter-anchored ladder would push the final notice to 07-11. This one does not: 06-22 stands, because the client's obligation was fixed by the due date, not by when you got around to writing. Recording a sending moves only which stage is next; it never moves the schedule. The letters are also strictly sequential: an invoice 60 days late with nothing sent is still owed reminder 1, because a final notice that no polite letter preceded reads as a threat, not a chase.
+The worked chase in `test/_client.mjs`: USD 1,250.00 due 2026-06-01, gaps 7/14/21, so the letters fall due on 06-08, 06-15 and 06-22 whether or not anything was sent. If reminder 1 actually goes out late, say 06-20, twelve days after its date, a previous-letter-anchored ladder would push the final notice to 07-11. This one does not: 06-22 stands, because the client's obligation was fixed by the due date, not by when you got around to writing. Recording a sending moves only which stage is next; it never moves the schedule. The letters are also strictly sequential: an invoice 60 days late with nothing sent is still owed reminder 1, because a final notice that no polite letter preceded reads as a threat, not a chase.
 
-The late fee is measured the same way, once: simple interest, pro-rata on a 30-day month, on the amount outstanding on the day the letter is written, rounded once to the minor unit. On the worked chase that is 125,000 minor units at 2% over 30 days late -- 2,500 exactly -- and after a 50,000 part payment it is 1,500 on the 75,000 that remains, so the final notice asks for 76,500 and no invented figure more.
+The late fee is measured the same way, once: simple interest, pro-rata on a 30-day month, on the amount outstanding on the day the letter is written, rounded once to the minor unit. On the worked chase that is 125,000 minor units at 2% over 30 days late, 2,500 exactly, and after a 50,000 part payment it is 1,500 on the 75,000 that remains, so the final notice asks for 76,500 and no invented figure more.
 
 ## Privacy
 
-All data stays local, in `${XDG_DATA_HOME:-~/.local/share}/mcp-servers/dunning-letters/`. Two files: `invoices.json`, `counter.json`. Nothing is sent anywhere -- no account, no API key, no network call in this server at all -- and the letters are rendered to text for you to send yourself; this server holds no mail credentials and wants none. License keys are verified offline.
+All data stays local, in `${XDG_DATA_HOME:-~/.local/share}/mcp-servers/dunning-letters/`. Two files: `invoices.json`, `counter.json`. Nothing is sent anywhere, no account, no API key, no network call in this server at all, and the letters are rendered to text for you to send yourself; this server holds no mail credentials and wants none. License keys are verified offline.
 
 Built by theluckystrike. https://github.com/theluckystrike

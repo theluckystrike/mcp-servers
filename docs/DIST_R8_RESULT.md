@@ -132,7 +132,7 @@ Paid surfaces: none encountered, none submitted.
 
 ## OPEN, and it needs the orchestrator
 
-**The Docker catalog pin cannot yet point at a commit that contains this server.** origin/main is
+origin/main is
 `e89ac6f`; the two commits that carry `servers/quotes` (`8de23f9` the server, `c9c8255` this round's wiring)
 exist only in the local checkout, and pushing is the orchestrator's job. So all 17 catalog entries are
 pinned to `e89ac6f`, and Docker's build of the quotes entry will fail with a missing Dockerfile until

@@ -2,7 +2,7 @@
 
 STATUS: complete
 
-**Outcome:** `Last-Modified` gap on `https://mcp.zovo.one/` is **FIXED and live-verified**.
+`Last-Modified` gap on `https://mcp.zovo.one/` is **FIXED and live-verified**.
 A second, previously-unknown defect was uncovered while verifying the ETag half of the task
 and is **diagnosed but deliberately not "fixed"** — see §4. Fixing it requires a design
 decision, not a header edit.
@@ -125,7 +125,7 @@ treats a constant as a strong validator while the `last-modified` pairing implie
 making the pair invalid. The concrete trigger was **not** isolated without deploying
 instrumentation to production, which is outside a one-line header fix.
 
-**Decision: left as-is.** The homepage gap was a *consistency* defect with an obviously-correct
+The homepage gap was a *consistency* defect with an obviously-correct
 one-line fix (`/` should do what its 9 siblings do). The ETag issue is a *worker-wide
 correctness* question — the right fix is to make the ETag genuinely content-derived
 (a hash of the response body, i.e. a strong validator that cannot collide across pages)

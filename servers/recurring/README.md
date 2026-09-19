@@ -1,22 +1,22 @@
 # mcp-recurring
 
-Say "bill Acme 12 hours at 90 EUR on the 1st of every month" once, and stop remembering it. This MCP server stores recurring invoice schedules -- client, line items, cadence, start and end dates -- and then, when you ask, creates the invoices that have actually fallen due as real records in the [invoice server](../invoice), with its number series, its clients and its A4 PDF. Generation is idempotent: one invoice per schedule per period, keyed by the occurrence date, so running the billing run twice on the same day creates nothing the second time. It also answers "what falls due in the next 30 days" and "what will I invoice per month for the next year". Everything is stored in plain JSON files on your own machine; nothing is uploaded anywhere.
+Say "bill Acme 12 hours at 90 EUR on the 1st of every month" once, and stop remembering it. This MCP server stores recurring invoice schedules, client, line items, cadence, start and end dates, and then, when you ask, creates the invoices that have actually fallen due as real records in the [invoice server](../invoice), with its number series, its clients and its A4 PDF. Generation is idempotent: one invoice per schedule per period, keyed by the occurrence date, so running the billing run twice on the same day creates nothing the second time. It also answers "what falls due in the next 30 days" and "what will I invoice per month for the next year". Everything is stored in plain JSON files on your own machine; nothing is uploaded anywhere.
 
 **In the [official MCP Registry](https://registry.modelcontextprotocol.io/v0.1/servers/io.github.theluckystrike%2Frecurring-invoice-scheduler-subscription-billing-due-reminders/versions/latest)** (`io.github.theluckystrike/recurring-invoice-scheduler-subscription-billing-due-reminders`).
 
 ![recurring demo](../../assets/demo-recurring.gif)
 
-**Define a repeating invoice once, generate the due PDFs from chat -- no billing SaaS required.**
+Define a repeating invoice once, generate the due PDFs from chat, no billing SaaS required.
 
 ## 60-second install
 
 npm publish for `@theluckystrike/mcp-recurring` is pending. Until then, the `.mcpb` one-click bundle or a clone+build
-is the working path -- both are verified below.
+is the working path, both are verified below.
 
-**One-click (.mcpb):** download `recurring.mcpb` from the latest release and double-click it in Claude Desktop:
+One-click (.mcpb): download `recurring.mcpb` from the latest release and double-click it in Claude Desktop:
 https://github.com/theluckystrike/mcp-servers/releases/latest
 
-**Claude Desktop** (`claude_desktop_config.json`):
+(`claude_desktop_config.json`):
 
 ```json
 {
@@ -29,13 +29,13 @@ https://github.com/theluckystrike/mcp-servers/releases/latest
 }
 ```
 
-**Claude Code:**
+Claude Code:
 
 ```sh
 claude mcp add recurring -- npx -y @theluckystrike/mcp-recurring
 ```
 
-**Cursor** (`.cursor/mcp.json`):
+(`.cursor/mcp.json`):
 
 ```json
 {
@@ -63,14 +63,14 @@ To run in Pro mode set `MCP_LICENSE_KEY` in the same config block, or call `lice
 
 ## Pairs with
 
-- **[mcp-invoice](../invoice)** -- required in practice, not by code. This server writes into the invoice
+- **[mcp-invoice](../invoice)**, required in practice, not by code. This server writes into the invoice
   server's data directory and shares its number counter, its client list and its business profile, so every
   generated invoice appears in `invoice_list`, counts in `overdue_report` and can be re-rendered with
   `invoice_pdf`. Set your issuer details once with `business_set` **there**; this server has no `business_set`
   of its own on purpose, so there is only one profile to keep right.
-- **[mcp-time-tracker](../time-tracker)** -- for the hours that are not on a retainer. Track them, invoice
+- **[mcp-time-tracker](../time-tracker)**, for the hours that are not on a retainer. Track them, invoice
   them ad hoc, and leave the fixed monthly part to a schedule here.
-- **[mcp-expense-tracker](../expense-tracker)** -- rebillable costs that change every month belong on an ad
+- **[mcp-expense-tracker](../expense-tracker)**, rebillable costs that change every month belong on an ad
   hoc invoice; a schedule is for the amount that does not change.
 
 ## Tools
@@ -93,7 +93,7 @@ To run in Pro mode set `MCP_LICENSE_KEY` in the same config block, or call `lice
 | `license_activate` | Activate a Pro key (verified offline) |
 
 Resource: `recurring://upcoming` returns the next 30 days of occurrences as JSON.
-Prompt: `monthly_billing_run` -- dry run, generate, list what is coming, then report who needs a payment reminder.
+Prompt: `monthly_billing_run`, dry run, generate, list what is coming, then report who needs a payment reminder.
 
 ## What you can say
 
@@ -155,8 +155,6 @@ no-op rather than a duplicate invoice sitting in a client's inbox.
 
 Pro is a one-time $19, or $39 for every server in the collection, lifetime.
 
-**Get Pro: https://mcp.zovo.one/buy/recurring**
-
 ## Dates: what happens at a month end
 
 Every date is a local ISO calendar date, `YYYY-MM-DD`. An occurrence is the k-th step from `start_date`, and
@@ -166,7 +164,7 @@ occurrence 0 is `start_date` itself, so a schedule starting today is due today.
 - `monthly` = +1 month, `quarterly` = +3 months, `yearly` = +12 months.
 - **Month ends.** The month step keeps the day of month of `start_date` and clamps it to the length of the
   target month; it never carries the clamp forward. From `2026-01-31` the series is 01-31, **02-28**, 03-31,
-  04-30, 05-31 -- February does not silently turn a month-end retainer into a 28th-of-the-month retainer.
+  04-30, 05-31, February does not silently turn a month-end retainer into a 28th-of-the-month retainer.
 - **Feb 29.** The same rule makes a yearly schedule starting `2028-02-29` fall on 02-28 in common years and
   back on **02-29** in the next leap year.
 - **`anchor_day` / `end_of_month` (Pro).** `anchor_day` replaces the day of month before clamping, so
@@ -181,7 +179,7 @@ occurrence 0 is `start_date` itself, so a schedule starting today is due today.
 
 ## Money
 
-Amounts are held as integer minor units by the invoice engine -- the same ISO 4217 table, the same
+Amounts are held as integer minor units by the invoice engine, the same ISO 4217 table, the same
 round-per-line-then-sum contract, so a schedule's amount and the invoice it produces can never disagree. Each
 line's gross is rounded first, tax is computed and rounded per line and grouped into one line per rate, and
 the totals are integer sums of those already-rounded values. A schedule bills in its own `currency`, or your
@@ -191,12 +189,12 @@ business default currency if it has none; nothing here converts between currenci
 
 Schedules and the generation log live in
 `${XDG_DATA_HOME:-~/.local/share}/mcp-servers/recurring/` as `schedules.json` and `history.json`. The
-**invoices** go into the invoice server's directory, `${XDG_DATA_HOME:-~/.local/share}/mcp-servers/invoice/`,
-with their PDFs under its `pdf/` subfolder -- the same files `invoice_list`, `overdue_report` and
+go into the invoice server's directory, `${XDG_DATA_HOME:-~/.local/share}/mcp-servers/invoice/`,
+with their PDFs under its `pdf/` subfolder, the same files `invoice_list`, `overdue_report` and
 `invoice_pdf` read there.
 
 Every mutation runs under an advisory lock file. Anything that writes an invoice takes **two** locks, always
-in the same order -- `recurring/.lock` first, then `invoice/.lock` -- so two billing runs (or a billing run
+in the same order, `recurring/.lock` first, then `invoice/.lock`, so two billing runs (or a billing run
 and a hand-written invoice in the other server) cannot interleave, cannot allocate the same invoice number
 and cannot deadlock. Invoice numbers are allocated inside the lock; the PDFs are rendered after it is
 released, so a slow render never holds up the counter. Saves go to a temporary file and are renamed into
@@ -227,7 +225,7 @@ the schedule has ever covered.
 
 - **`npx` hangs or fails to find the package**: npm publish for this package is pending. Use the `.mcpb`
   bundle or the clone-and-build path above until it lands.
-- **Using the clone path**: build `servers/invoice` before `servers/recurring` -- the engine is imported from
+- **Using the clone path**: build `servers/invoice` before `servers/recurring`, the engine is imported from
   it. `npm run build -w packages/mcp-license -w servers/invoice -w servers/recurring` does that in order.
 - **"No business profile yet"**: run `business_set` in the invoice server (mcp-invoice), not here.
   Generation is never blocked by it; the PDF just carries the placeholder issuer "Your business".

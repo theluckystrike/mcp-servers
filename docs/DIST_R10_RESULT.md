@@ -22,11 +22,11 @@ None of these needed new action; no paid submissions attempted, no login flows a
 
 ## New research and one new submission
 
-**LobeHub** (`lobehub/lobe-chat-agents` and `gh search repos "lobehub mcp"`): the repo indexes LobeChat
+(`lobehub/lobe-chat-agents` and `gh search repos "lobehub mcp"`): the repo indexes LobeChat
 *agent* system prompts (`agent-template.json`, submit via GitHub issue form), not MCP servers. No LobeHub MCP
 marketplace repository exists. Recorded `not applicable`.
 
-**MCP Hub lists** (`gh search repos "awesome mcp servers" --sort stars`, 15 results reviewed): checked
+(`gh search repos "awesome mcp servers" --sort stars`, 15 results reviewed): checked
 README format on the top unblocked candidates for emoji-per-entry requirements.
 - `TensorBlock/awesome-mcp-servers` (838 stars): category docs under `docs/*.md`, entries are plain
   `- [Name](url): description` bullets, only the category *heading* carries a decorative emoji. Cleared as
@@ -40,7 +40,6 @@ README format on the top unblocked candidates for emoji-per-entry requirements.
 - `ever-works/awesome-mcp-servers`, `toolsdk-ai/toolsdk-mcp-registry`: reviewed, both viable
   (issue-form/PR-based, plain entries) but not reached within the 3-list cap or the time budget.
 
-**Awesome lists for Claude Desktop extensions (.mcpb/DXT)**:
 - `mgoldsborough/awesome-mcpb`: README, alphabetized `## <Category>` sections, plain
   `- [Name](url) - description.` bullets, no emoji anywhere in entries. **Submitted**: forked to
   `theluckystrike/awesome-mcpb`, added 19 entries (18 servers + the office-suite bundle) into the existing

@@ -9,16 +9,16 @@ exact step.
 
 ## 1. Glama "Add Server" GitHub OAuth — 33 missing server pages, the citation surface
 
-**Why first.** The blind instrument's citations split github.com 21 / glama.ai 7, and 6 of the
+The blind instrument's citations split github.com 21 / glama.ai 7, and 6 of the
 7 Glama citations were `/mcp/servers/<owner>/<repo>` pages — NOT the `/mcp/connectors/` surface
 where we hold 25 listings. Census this loop (docs/DISTRIBUTION_R3B.md): **1 of 34** mirror repos
 has a /mcp/servers/ page (mcp-statement-of-account); the other 33 return not_found. R2 watched
 our connector get fetched and passed over twice; the servers page is the row that gets cited.
 
-**The gate.** Glama server-page ingestion runs through a maintainer GitHub OAuth "Add Server"
+Glama server-page ingestion runs through a maintainer GitHub OAuth "Add Server"
 flow. Browser sign-in; no agent path (API is read-only).
 
-**The step.** https://glama.ai/mcp/servers — sign in with GitHub, add the repos. Highest-value
+https://glama.ai/mcp/servers — sign in with GitHub, add the repos. Highest-value
 order (blind-question fields): mcp-invoice-generator, mcp-pdf, mcp-time-tracker,
 mcp-expense-tracker, mcp-spreadsheet, mcp-currency, mcp-quotes, mcp-bank-statement, then the
 rest of the 34. 10 minutes for the top 8.

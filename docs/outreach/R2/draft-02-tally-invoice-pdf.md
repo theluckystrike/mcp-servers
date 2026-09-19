@@ -1,11 +1,11 @@
 # Draft 02 — GitHub Issue: gasparyanvazgen/tally #18 — Implement real invoice PDF generation
 
-**Surface:** GitHub Issues (gasparyanvazgen/tally) — `OPEN`, created 2026-08-27
-**Thread URL:** https://github.com/gasparyanvazgen/tally/issues/18
-**Thread title:** *Implement real invoice PDF generation*
-**Ask (quote):** "Replace browser print as the primary invoice-generation mechanism… Build an invoice PDF template. Include business information, client information, invoice number, issue date, billing period, line items, hours, rate, subtotal and total."
-**Server that answers it:** `invoice` — https://mcp.zovo.one/s/invoice (hosted HTTP MCP endpoint `https://mcp.zovo.one/mcp/invoice/t/<token>`)
-**Fit:** The ask enumerates exactly the fields our invoice server accepts and renders into a PDF. Value-first answer maps each required field to a working call.
+GitHub Issues (gasparyanvazgen/tally) — `OPEN`, created 2026-08-27
+https://github.com/gasparyanvazgen/tally/issues/18
+*Implement real invoice PDF generation*
+"Replace browser print as the primary invoice-generation mechanism… Build an invoice PDF template. Include business information, client information, invoice number, issue date, billing period, line items, hours, rate, subtotal and total."
+`invoice` — https://mcp.zovo.one/s/invoice (hosted HTTP MCP endpoint `https://mcp.zovo.one/mcp/invoice/t/<token>`)
+The ask enumerates exactly the fields our invoice server accepts and renders into a PDF. Value-first answer maps each required field to a working call.
 
 ---
 

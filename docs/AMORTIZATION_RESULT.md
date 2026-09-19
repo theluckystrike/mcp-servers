@@ -40,7 +40,7 @@ payment. On the reference loan that makes the final interest 882 rather than the
 unrounded balance carries, the total interest 66,188 rather than 66,186, and the closing
 balance exactly zero, with all twelve payments at 88,849.
 
-**A residual is only absorbed while it IS a residual.** The first cut absorbed it
+The first cut absorbed it
 unconditionally, and that is wrong the moment the balance clears before the term ends: the
 rule then reported a final "interest" of 33,608 on a balance of 55,241, and further out it
 reported negative interest on a negative balance. Per-period rounding drifts by about one
@@ -53,55 +53,55 @@ and the 720-schedule sweep in `adversarial.test.mjs` is the alarm on it.
 where the debt does.** See the measured insight below. Filling out the term instead
 produces rows the borrower does not owe.
 
-**Compounding and payment frequency are two different clocks.** The rate for one payment
+The rate for one payment
 period is the equivalent rate taken through the compounding clock, `(1 + r/m)^(m/p) - 1`,
 never the nominal rate divided by the number of payments. It is worth 1.0 percent of the
 interest on a one-year loan, in the lender's favour, and it is invisible in a quote.
 
-**No schedule is stored.** The register holds the terms and exactly two derived figures,
+The register holds the terms and exactly two derived figures,
 the payment and the effective annual rate, kept only so a list does not have to rebuild
 every schedule to name the payment. Every row is derived on the call. A stored schedule is
 a second copy of what the rate and the term already decide, and the copy is the one that
 gets believed after somebody edits the rate. `contract.test.mjs` greps the raw store file
 for `opening_minor`, `closing_minor` and `rows` and asserts none of them is there.
 
-**Only the interest is an expense.** `loan_journal` debits interest expense and loan
+`loan_journal` debits interest expense and loan
 liability and credits cash, and the `expense_add`-ready payload carries the INTEREST alone.
 Booking the whole payment as an expense overstates the cost of the business by the
 principal, every period, and still reconciles perfectly against the bank, which is why the
 error survives a bank reconciliation.
 
-**Nothing is posted from here.** The journal is a payload for the servers that own the
+The journal is a payload for the servers that own the
 ledger and the expense book, exactly as `asset_journal` in `servers/asset-register` hands
 back an `expense_add` payload rather than appending a row to a store whose id allocation,
 category rules and VAT split live inside another server's handler.
 
-**The account ids are the cash book's.** `cash` is `servers/cash-book`'s own `CASH` id,
+`cash` is `servers/cash-book`'s own `CASH` id,
 character for character. `loan_liability` and `interest_expense` are new, because that
 server derives no loan entries yet and holds no account for either; they follow its id
 convention exactly, so when it does derive them these are the ids it will use and no
 journal produced here has to be re-mapped. A contract test greps `cash-book/src/ledger.ts`
 for `export const CASH = "cash"`, so a rename over there fails here.
 
-**A balloon is due WITH the last payment and never inside it.** The closing balance of the
+The closing balance of the
 final period IS the balloon, and the answer says in words that the borrower owes it on top
 of the payment shown. Folding it into the last payment row would make one line of the
 schedule the size of a house deposit and would still total correctly.
 
-**Fees are not interest.** An arrangement fee is paid at drawdown, sits outside every
+An arrangement fee is paid at drawdown, sits outside every
 payment row and outside the total interest, and the cost of credit is reported as the two
 added together. Rolling the fee into the interest would make the schedule disagree with the
 agreement it came from.
 
-**An early settlement is stated gross AND net of the penalty.** A penalty larger than the
+A penalty larger than the
 interest saved makes repaying early a loss, and the verdict says "COSTS" rather than
 reporting a smaller saving. Nothing is written by `loan_repay_early`: the stored agreement
 keeps its terms, because an agreement is amended by whoever signs it.
 
-**Currencies are never added together.** This server holds no exchange rate, so one
+This server holds no exchange rate, so one
 outstanding figure over a EUR loan and a USD one would be an invented number.
 
-**Month arithmetic clamps.** A loan drawn on the 31st pays on the 28th in February and on
+A loan drawn on the 31st pays on the 28th in February and on
 the 31st again in March. Rolling forward would move a payment into the next month and shift
 every date after it.
 

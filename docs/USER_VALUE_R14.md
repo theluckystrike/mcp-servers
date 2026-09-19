@@ -82,8 +82,6 @@ workaround, or left the user a gap. 1 = partially wrong. 0 = failed.
 | rs3 | "Write me a cover letter for that job." | **3** | 1 | 13.9 | One `cover_letter_create`. 122 words, `highlights_not_in_profile: []`, `number_check: every figure in the letter traces to your profile; no figure from the posting was restated as yours`, `fills_required: []`, and `1 of 3 free letters used in 2026-09`. `GET`: 10,194 bytes, `PK`, `filename="helio-cloud-staff-platform-engineer-cover-letter.docx"` |
 | rs4 | "Give me the tailored resume as a Word file I can download." | **2** | 0 | 7.3 | **No tool ran.** The model restated rs2's link and warned it may have expired. Correct, and traceable - but the file it points at was written two turns earlier under a one-hour clock, and one `resume_create` costs one call. Client-side, the same shape as r12's D-R63 |
 
-**Totals: 57 / 60, 25 tool calls, 329.1 s.**
-
 ## Independent verification
 
 Every number below was re-read from the endpoints by `curl tools/call` or decoded from the
@@ -126,7 +124,7 @@ docx doc_read    ... A document this endpoint GENERATED is not one of these: gen
 
 ### D-R69 (medium, price-tracker + resume + docx) - FIXED, with a test that found a third instance
 
-**Hosted responses told the caller where their data is on a disk that does not exist.**
+Hosted responses told the caller where their data is on a disk that does not exist.
 `watch_add` ended `Stored in /home/mcp/.local/share/mcp-servers/price-tracker/watches.json`;
 `profile_set` ended `Stored under /home/mcp/.local/share/mcp-servers/resume; nothing leaves this
 machine.` The path is a Worker's in-memory root. The second sentence is worse than wrong: on the
@@ -147,7 +145,7 @@ before a deploy. On its first run it failed on a **third** line nobody had looke
 
 ### D-R70 (medium, price-tracker) - FIXED, with tests
 
-**One watch, one currency, three scales.** Prices are stored as decimal strings exactly as read, so
+Prices are stored as decimal strings exactly as read, so
 a page's `49.00`, a caller's `38.5` and a target typed as `40` printed as themselves:
 `min 38.50 / max 49 EUR`, `"current": "38.5 EUR"`, `"target": "40 EUR"`. Nothing was wrong - every
 comparison is numeric - which is exactly why the scorecard gave the turn a 3 and only re-reading
@@ -158,7 +156,7 @@ not line up is the one thing a human eye is used to trusting.
 path: a currency with minor units is padded (never rounded) to two decimals, a zero-decimal
 currency (JPY, KRW, VND, CLP, ISK, the CFA francs and the rest of the ISO 4217 list) stays whole,
 an unknown currency keeps the scale it arrived with. `stats()` returns the min and max
-**observations' own strings** instead of numbers, because `fmt()` turned `"49.00"` into `"49"`.
+instead of numbers, because `fmt()` turned `"49.00"` into `"49"`.
 Storage and arithmetic are untouched.
 
 `servers/price-tracker/test/round14.test.mjs` drives the real stdio server against a local shop:
@@ -169,7 +167,7 @@ assertion (`"min": "149"`) was updated to `"149.00"`: that was the defect, asser
 
 ### D-R71 (medium, currency) - FIXED, with a test
 
-**`rate_history` shortens a too-wide window; `rate_on` refused one date beyond the same window.**
+`rate_history` shortens a too-wide window; `rate_on` refused one date beyond the same window.
 `rate_on {date: 91 days ago}` answered `Nothing was looked up` and a $19 pitch. The caller asked
 for a rate and got a price. The estate's own rule (GUARDRAILS_RESULT: shorten and say what you
 covered) was applied to the range tool and not to the point tool.
@@ -244,7 +242,7 @@ as a zip and counted by row, 1,053 bytes of docx unzipped and grepped for five v
 remaining placeholders, two 10 KB Word files, and a watch store re-read on a second token.
 
 r13's seam was "the server knows something the caller is never told". r14's is narrower and worse:
-**the server tells the caller something that used to be true.** Every one of D-R69 through D-R72 is
+Every one of D-R69 through D-R72 is
 a sentence that was correct in the stdio server and became false when the same code was vendored
 onto a Worker - a data directory that no longer exists, a promise that nothing leaves your machine,
 a free window enforced by refusing rather than shortening, an instruction to upload a file the

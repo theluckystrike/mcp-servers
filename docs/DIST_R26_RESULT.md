@@ -72,7 +72,7 @@ curl -A "<Chrome UA>" "https://glama.ai/mcp/servers?query=author%3Atheluckystrik
 -> /mcp/servers/theluckystrike/mcp-statement-of-account
 ```
 
-**Still 1 of 33, unchanged since 2026-09-05.** Exactly one badge could honestly be written
+Exactly one badge could honestly be written
 this round, and exactly one was.
 
 ## 3. The four pull requests
@@ -174,7 +174,7 @@ incomplete (`gh search prs --author theluckystrike`):
 | MobinX/awesome-mcp-list | [#420](https://github.com/MobinX/awesome-mcp-list/pull/420) | OPEN | MERGEABLE / CLEAN |
 | JustInCache/awesome-mcp-collection | [#44](https://github.com/JustInCache/awesome-mcp-collection/pull/44) | OPEN | mergeability not yet computed by GitHub |
 
-**Nine list PRs are open right now, plus the four new ones = 13.** No maintainer has
+No maintainer has
 commented on any of them except punkpeye's triage close, and none was bumped.
 
 ### habitoai#144 — the only PR with real work to do
@@ -182,7 +182,7 @@ commented on any of them except punkpeye's triage close, and none was bumped.
 CodeRabbit posted two inline findings. Both were checked against this repo's source before
 being accepted, because a review bot is not evidence:
 
-**Finding 1, `expense_to_invoice`.** Claimed the entry oversold it. Correct:
+Claimed the entry oversold it. Correct:
 
 ```
 grep -rn "expense_to_invoice" servers/expense-tracker/README.md
@@ -195,7 +195,7 @@ servers/expense-tracker/src/index.ts:937 -> marking as rebilled is a separate to
 It previews line items. It does not create an invoice. "rebills straight into an invoice"
 became "prepares billable expenses as invoice line items".
 
-**Finding 2, "gap-free sequential numbering".** Also correct, and our own source says so:
+Also correct, and our own source says so:
 
 ```
 servers/invoice/src/store.ts:218-233
@@ -328,7 +328,7 @@ purpose; **no future loop should file more.**
 Task: close `docker/mcp-registry#4892` and resubmit as one single-server PR, choosing the
 server whose Dockerfile can most convincingly be shown to build and run.
 
-**#4892 is closed.** Comment:
+Comment:
 `https://github.com/docker/mcp-registry/pull/4892#issuecomment-5581945842`
 
 **No replacement PR was opened, and that is a deliberate call I am flagging rather than

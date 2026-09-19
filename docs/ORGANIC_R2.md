@@ -114,7 +114,7 @@ DuckDuckGo (`https://html.duckduckgo.com/html/?q=site%3Amcp.zovo.one`): returned
 202 and an anomaly/CAPTCHA challenge page ("Unfortunately, bots use DuckDuckGo too."
 -- "Select all squares containing a duck"). No results were served.
 
-**Conclusion: Bing/DDG indexation of mcp.zovo.one is unmeasured via curl.** Recorded as
+Recorded as
 such in `data/organic.json`'s Google/Bing/DDG surface row rather than assumed zero.
 Re-attempting from an actual browser session (not curl) is the fix if this number is
 needed.

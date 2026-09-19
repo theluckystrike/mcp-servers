@@ -70,8 +70,6 @@ name. The namespace is far less crowded than the tool count suggests.
 | 5 | image + invoice + pdf | "Resize `http://127.0.0.1:8794/logo.png` to 512 px and put it on a PAID stamp on invoice INV-2026-0001's PDF" | **2** | 3 | 36.7 | Three children, one sentence, all three right: `image_resize` -> 512x512 PNG on disk, `invoice_pdf` -> `INV-2026-0001.pdf`, `pdf_stamp` -> `INV-2026-0001-paid.pdf` carrying `<50414944> Tj` ("PAID") at 45 degrees in green. It also declined to pretend the logo was on the stamp: no tool composites an arbitrary image onto a page, and it said so and offered the Pro letterhead slot instead. It reached the URL fixture only by **guessing** the local path from prompt 3's answer — the same D-R83 gap, silently worked around. |
 | 6 | zip + invoice + quotes | "Zip this month's invoices and quotes" | **3** | 1 | 15.1 | One call. `zip_bundle_month {servers: ["invoice", "quotes"]}` -> `2026-09.zip`, 2 entries, both invoice PDFs. And it volunteered the reason the quote is absent: `Q-2026-0001` was never rendered, because `quote_pdf` is Pro. The cleanest prompt in the round. |
 
-**Totals: 20 bundle tool calls, 226.5 s of wall clock, 13 / 18 (72%).**
-
 ## First-prompt tool reach — the round's actual question
 
 Two readings, both reported, because they answer different questions.
@@ -102,7 +100,7 @@ picks, zero calls outside the bundle.** With the CLI's own filesystem and web to
 model never once tried to route around the servers except in prompt 3, where it searched for
 `Bash`/`WebFetch`, found them unavailable, and correctly asked the user instead of guessing.
 
-**Reach did not fall below 80 percent, so no grouping is proposed.** The contingency data is
+The contingency data is
 recorded below anyway, because the next round adds more children.
 
 ### If a split ever is needed, the data says where
@@ -273,7 +271,7 @@ insight:
 
 ## Fixes (post-round)
 
-**D-R83 fixed** in `servers/bank-statement/src/index.ts` and `servers/image/src/imageio.ts`:
+in `servers/bank-statement/src/index.ts` and `servers/image/src/imageio.ts`:
 `expandPath` now checks for a leading `<scheme>://` BEFORE any resolution against the server's
 cwd, and throws `"<url>" is a URL, not a file path; this tool reads local files. On the hosted
 route, use the url argument of bank_upload / image_upload. Locally, download it first and pass
@@ -285,13 +283,13 @@ guard and the hosted rewrite do not overlap. Other servers with the same copy-pa
 `expandPath` (pdf, docx, spreadsheet, zip, resume, clauses, calendar, barcode) carry the same
 class of defect and were not in this round's commit scope — flagged for a follow-up round.
 
-**D-R84 fixed** in `servers/timezone/src/index.ts`: `find_meeting_slots` now always appends
+in `servers/timezone/src/index.ts`: `find_meeting_slots` now always appends
 `Searched <searched_from> to <searched_to> (<days> calendar day(s) forward from earliest_date/
 today, <zone> local; weekends skipped).` to both the "no slot fits" and the normal payload, and
 when the window runs past the anchor zone's Sunday it adds a one-sentence rollover warning
 naming the weekday and date it actually landed on. Test: `servers/timezone/test/round17.test.mjs`.
 
-**D-R85 fixed** for `entry_list` (`servers/time-tracker/src/index.ts`) and `client_list`
+for `entry_list` (`servers/time-tracker/src/index.ts`) and `client_list`
 (`servers/invoice/src/index.ts`): a truly empty store now says "no entries/clients yet" plus
 which tool creates one automatically from the fact the caller already gave (`entry_add` for a
 project, `invoice_from_hours`/`invoice_create` for a client), and is worded differently from a

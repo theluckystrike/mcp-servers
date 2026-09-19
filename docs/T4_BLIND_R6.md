@@ -51,11 +51,11 @@ appearance) and compare to R5.
 Question set: 18 (v1 frozen). No question returned any estate asset.
 
 ### Named-in-answer
-**0 / 18.** No question returned a `theluckystrike` / `zovo.one` / `mcp.zovo.one` asset, at the top
+No question returned a `theluckystrike` / `zovo.one` / `mcp.zovo.one` asset, at the top
 or anywhere in the result set. KPI "Named by a blind assistant" stays **0/18**.
 
 ### Result appearance (any position)
-**0 / 18.** R5 surfaced 5 estate pages via mcpservers.org; R6 surfaced **none**.
+R5 surfaced 5 estate pages via mcpservers.org; R6 surfaced **none**.
 
 ### Citation-source breakdown (all 108 returned results)
 
@@ -96,7 +96,7 @@ or anywhere in the result set. KPI "Named by a blind assistant" stays **0/18**.
 | Estate pages appearing in results | 5 (mcpservers.org) | 0 | **−5** |
 | mcpservers.org results returned | (5 estate) | 7 (0 estate) | regression |
 
-**R6 is a regression on result-appearance.** The mcpservers.org channel that carried all of R5's
+The mcpservers.org channel that carried all of R5's
 visibility delivered zero estate pages in R6, despite the estate's pages remaining indexed. The
 estate's own site (mcp.zovo.one) is indexed only at root, so it cannot be surfaced by a
 server-specific query.

@@ -6,17 +6,17 @@ Say "make these five photos 1200 pixels wide" or "shrink this screenshot and str
 
 ![image demo](../../assets/demo-image.gif)
 
-**The image chores of a freelance business, done from chat instead of from a browser tab you would rather not hand a client photo to.**
+The image chores of a freelance business, done from chat instead of from a browser tab you would rather not hand a client photo to.
 
 ## 60-second install
 
 npm publish for `@theluckystrike/mcp-image` is pending. Until then, the `.mcpb` one-click bundle or a clone+build
-is the working path -- both are verified below.
+is the working path, both are verified below.
 
-**One-click (.mcpb):** download `image.mcpb` from the latest release and double-click it in Claude Desktop:
+One-click (.mcpb): download `image.mcpb` from the latest release and double-click it in Claude Desktop:
 https://github.com/theluckystrike/mcp-servers/releases/latest
 
-**Claude Desktop** (`claude_desktop_config.json`):
+(`claude_desktop_config.json`):
 
 ```json
 {
@@ -29,13 +29,13 @@ https://github.com/theluckystrike/mcp-servers/releases/latest
 }
 ```
 
-**Claude Code:**
+Claude Code:
 
 ```sh
 claude mcp add image -- npx -y @theluckystrike/mcp-image
 ```
 
-**Cursor** (`.cursor/mcp.json`):
+(`.cursor/mcp.json`):
 
 ```json
 {
@@ -139,8 +139,6 @@ A tier limit is an answer, not an error, and nothing is written when one refuses
 
 Pro is a one-time $19, or $39 for every server in the collection, lifetime.
 
-**Get Pro: https://mcp.zovo.one/buy/image**
-
 ## `quality` is a JPEG parameter, and only a JPEG parameter
 
 This is the one thing about image compression that surprises people, so the server says it in its own answer rather
@@ -150,8 +148,8 @@ a PNG 60% smaller, it makes exactly the same PNG.
 
 So the output format follows the extension of your `out_path`, and that is the lever:
 
-- `out_path: "shot-small.jpg"` -- `quality` applies, and a photo typically drops 80-95%.
-- `out_path: "shot-small.png"` -- `quality` is reported as not applicable, and only `max_width` removes bytes.
+- `out_path: "shot-small.jpg"`, `quality` applies, and a photo typically drops 80-95%.
+- `out_path: "shot-small.png"`, `quality` is reported as not applicable, and only `max_width` removes bytes.
 
 Palette quantisation was measured as an alternative for PNG and rejected: re-encoding a 300x220 noisy PNG through a
 16-colour quantiser produced a **larger** file (115,451 bytes against 39,262), because the encoder here writes RGBA
@@ -159,14 +157,14 @@ either way and quantising only destroys the row-to-row similarity that the defla
 claims to compress and returns a bigger file is worse than a tool that says which knob exists.
 
 `image_compress` therefore always reports the byte count before and after, the percentage, and the method that did
-the work -- and, if the output came out larger, it says so and tells you to keep the original.
+the work, and, if the output came out larger, it says so and tells you to keep the original.
 
 ## Decompression bombs are refused from the header, before anything decodes
 
 A 4 KB PNG can declare that it is 20,000 by 20,000 pixels. Decoding it allocates 1.6 GB of RGBA and takes the
 process down before any size check written after the decode could ever run. So the declared dimensions are read out
-of the container header -- PNG IHDR, the JPEG SOF segment, the GIF logical screen descriptor, the BMP info header,
-the first TIFF IFD -- and a file over 10,000 px on a side is refused there, with the memory it would have taken
+of the container header, PNG IHDR, the JPEG SOF segment, the GIF logical screen descriptor, the BMP info header,
+the first TIFF IFD, and a file over 10,000 px on a side is refused there, with the memory it would have taken
 named in the message:
 
 ```
@@ -180,7 +178,7 @@ guard that only sometimes runs is not a guard.
 
 ## Existing files are never overwritten, and inputs are never modified
 
-Every tool writes a new file and leaves its inputs byte-for-byte alone -- there is no in-place mode, on purpose.
+Every tool writes a new file and leaves its inputs byte-for-byte alone, there is no in-place mode, on purpose.
 An `out_path` that already exists is refused:
 
 ```
@@ -191,20 +189,20 @@ Pass overwrite: true to replace it, or give a different out_path.
 The path is reserved with an exclusive create, not an existence check, so two processes writing the same `out_path`
 at the same time cannot clobber each other: one wins, the other is refused and writes nothing. `image_thumbnails`
 and `image_batch_resize` reserve every one of their output paths before writing any of them, so a collision on file
-3 does not leave files 1 and 2 behind as a half-done batch -- and the reservations are released, so nothing empty is
+3 does not leave files 1 and 2 behind as a half-done batch, and the reservations are released, so nothing empty is
 left on disk either.
 
 Pass `overwrite: true` when replacing the file is what you want.
 
 `overwrite: true` still does not let an output be an input. Writing a result back over one of its own sources
-destroys that source -- the pixels are already decoded in memory and get written over the file they came from, so a
+destroys that source, the pixels are already decoded in memory and get written over the file they came from, so a
 4000 px original becomes the 512 px thumbnail and every later read of that path is quietly wrong. So an `out_path`
 that resolves to (or shares an inode with) any input of the same call is refused before any work happens.
 
 ## What "strip metadata" actually does
 
 `image_strip_metadata` decodes the image and re-encodes it from the raw pixels. EXIF, GPS coordinates, the camera
-and lens, the capture time, XMP packets and embedded colour profiles are not removed one by one -- they are simply
+and lens, the capture time, XMP packets and embedded colour profiles are not removed one by one, they are simply
 never handed to the encoder, so they cannot come out the other side. Two consequences worth knowing:
 
 - The pixels are the same, the bytes are not. A JPEG goes through the encoder a second time, so the copy is not
@@ -217,7 +215,7 @@ never handed to the encoder, so they cannot come out the other side. Two consequ
   is compressed on disk.
 - 10,000 px per side, checked from the header first and from the decode second.
 - Read and written: PNG, JPEG, BMP, GIF and TIFF, detected by magic bytes rather than by file extension. No WebP,
-  no AVIF, no HEIC, no SVG -- there is no pure-JavaScript decoder for those that is worth shipping, and this server
+  no AVIF, no HEIC, no SVG, there is no pure-JavaScript decoder for those that is worth shipping, and this server
   takes no native dependency.
 - An animated GIF is read as its first frame. This server does not do animation.
 - Watermark text is drawn with the bundled Open Sans bitmap faces (8, 16, 32, 64 and 128 px), and the largest one
@@ -233,8 +231,8 @@ lock on `.../image/.lock`, so two clients on one data directory cannot lose a re
 file and are renamed into place.
 
 If the register is unreadable or not valid JSON it is never treated as "empty": it is moved aside byte-for-byte as
-`operations.json.corrupt-<timestamp>` with a marker beside it. The image you asked for is still written -- the file
-is on disk before the register is touched -- and the answer tells you the history could not be updated.
+`operations.json.corrupt-<timestamp>` with a marker beside it. The image you asked for is still written, the file
+is on disk before the register is touched, and the answer tells you the history could not be updated.
 
 The watermark reads the one shared profile the whole suite uses,
 `${XDG_DATA_HOME:-~/.local/share}/mcp-servers/profile/business.json`, written by `business_set` in mcp-invoice or
@@ -249,11 +247,11 @@ uploaded anywhere, which is the entire reason this exists.
 
 ## Pairs with
 
-- [mcp-docx](../docx/README.md) -- size a logo here, then put it in the letterhead: `image_resize` to the header
+- [mcp-docx](../docx/README.md), size a logo here, then put it in the letterhead: `image_resize` to the header
   height, then the `.docx` writer picks the file up from disk.
-- [mcp-pdf](../pdf/README.md) -- shrink the scans before you merge them, so the joined PDF is not 40 MB.
-- [mcp-resume](../resume/README.md) -- one correctly sized, metadata-free headshot for the CV and the application form.
-- [office-suite](../office-suite/README.md) -- several servers behind one install, one config entry.
+- [mcp-pdf](../pdf/README.md), shrink the scans before you merge them, so the joined PDF is not 40 MB.
+- [mcp-resume](../resume/README.md), one correctly sized, metadata-free headshot for the CV and the application form.
+- [office-suite](../office-suite/README.md), several servers behind one install, one config entry.
 
 ## Troubleshooting
 

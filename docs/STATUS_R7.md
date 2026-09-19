@@ -67,10 +67,10 @@ servers keeping it there.
 
 ## 3. Submissions
 
-**Docker MCP catalog -- PR docker/mcp-registry#4892**: state OPEN, mergeable, `statusCheckRollup` empty (no
+state OPEN, mergeable, `statusCheckRollup` empty (no
 CI configured on this PR), 0 comments. No maintainer action since last check.
 
-**awesome-mcp-servers -- punkpeye#13473**: state OPEN. Two bot comments, verbatim:
+state OPEN. Two bot comments, verbatim:
 - glama-check: "Hey, To ensure that only working servers are listed, we're updating our listing
   requirements. Please complete the following steps: 1. Ensure your server is listed on Glama... 2. Update
   your PR by adding a Glama score badge..."
@@ -80,7 +80,7 @@ CI configured on this PR), 0 comments. No maintainer action since last check.
 Both are automated CI gates, not a human maintainer request. Hard-blocked on a Glama listing that does not
 exist yet for any of the 4 submitted servers.
 
-**cline/mcp-marketplace issues 2397-2401, 2408-2413** (11 total: time-tracker, price-tracker, spreadsheet,
+(11 total: time-tracker, price-tracker, spreadsheet,
 invoice, expense-tracker, currency, timezone, docx, resume, recurring, clauses): all 11 re-checked this
 round, all state OPEN, labels `[]`, comments `[]`. Zero maintainer engagement on any of them.
 
@@ -102,7 +102,7 @@ since round 5).
 | https://mcp.zovo.one/guides/connect-mcp-servers-without-installing | NEUTRAL | URL is unknown to Google |
 | https://mcp.zovo.one/setup/claude-web/invoice | NEUTRAL | Discovered - currently not indexed |
 
-**Indexed count: 0 of 129 submitted URLs.** All 4 inspected URLs are pre-crawl (no `lastCrawlTime` on any).
+All 4 inspected URLs are pre-crawl (no `lastCrawlTime` on any).
 Consistent with normal Google indexing latency, not a defect on our side.
 
 ## 5. Downloads (`node scripts/measure.mjs`)

@@ -65,7 +65,7 @@ business whose `default_tax_rate` is 23 returns `subtotal EUR 275.00`, `tax 23%`
 (INV-2026-0003). The same call against a profile where that field was left at 0 returns EUR 275.00 with
 `tax_rate "0%"` on both lines and no warning — see D-R7.
 
-**Did the model ever leave the bundle? No.** All eleven bundle tool calls were `mcp__office__*`:
+All eleven bundle tool calls were `mcp__office__*`:
 `timer_start`, `timer_stop`, `entry_add`, `expense_add`, `entry_list`, `invoice_summary`,
 `expense_to_invoice`, `invoice_create`, `expense_summary`, `expense_list`, `report`. No Bash, no
 python, no WebFetch, no file tools. The only non-office calls in the four turns were six `ToolSearch`
@@ -74,7 +74,7 @@ turn (a2) hit three different child processes and every result came back to the 
 
 ## Defects
 
-**D-R2 (high, invoice) — every invoicing path dead-ends on a missing business profile, after the work.**
+D-R2 (high, invoice) — every invoicing path dead-ends on a missing business profile, after the work.
 Reproduced on two surfaces and two transports, both first sessions: bundle a3 and remote b3.
 `invoice_create` / `invoice_from_hours` -> `Error: no business profile yet. Call business_set first.`
 In a3 that arrived 47.7 s in, after `entry_list`, `invoice_summary` and `expense_to_invoice` had all
@@ -84,7 +84,7 @@ Fix direction: either let the invoice be created with a placeholder issuer plus 
 these tools already do for an unknown *client* — or name the prerequisite in the description of every
 invoice-producing tool so the model asks first instead of last.
 
-**D-R3 (high, expense-tracker) — `expense_to_invoice` rebills a VAT-inclusive receipt as a net line.**
+D-R3 (high, expense-tracker) — `expense_to_invoice` rebills a VAT-inclusive receipt as a net line.
 Repro:
 `node /private/tmp/uv4/probe4.mjs '{"name":"expense_to_invoice","args":{"project":"Acme","from":"2026-09-01","to":"2026-09-02","include_rebilled":true}}'`
 -> `{"unit_price": 61.5, "tax_rate": 0, "total_net": "EUR 61.50"}`. The receipt was gross. Fix
@@ -92,14 +92,14 @@ direction: carry the gross figure alongside the net in the payload and refuse (o
 rebilled expense has `vat_rate: 0` while a non-zero default exists. Also: `expense_settings
 {default_vat_rate}` is not retroactive and does not say so.
 
-**D-R4 (medium, expense-tracker) — the rebilled flag is set before any invoice exists.**
+D-R4 (medium, expense-tracker) — the rebilled flag is set before any invoice exists.
 Repro: bundle a3. `expense_to_invoice` returned `marked_rebilled: true`; the following
 `invoice_create` failed. The expense is now flagged as billed and will not resurface in the next run.
 a4 read the ledger back and reported "EUR 0 shows as pending, but that's misleading". The model caught
 it; a user reading the first line of a4 would not. Fix direction: a `dry_run` default, or require an
 `invoice_number` so the flag is only set once a line is attached to a created invoice.
 
-**D-R5 (high, hosted) — the first HTTP connection is not ready at session start, so the model runs with zero tools.**
+D-R5 (high, hosted) — the first HTTP connection is not ready at session start, so the model runs with zero tools.
 Immediately after `claude mcp add --transport http`, the first `claude -p` run emitted
 `system/init` with `[{"name":"tt","status":"pending"},{"name":"inv","status":"pending"}]` and an empty
 `mcp__` tool list. The model answered "Could you clarify what you mean by Remote Co?" with **0 tool
@@ -107,7 +107,7 @@ calls** in 10.5 s. The identical command about a minute later showed `tt: connec
 worked in 11.8 s. The stdio surface never does this. Most likely a cold start on the hosted side
 rather than a client bug, but the prompt it loses is the user's very first one.
 
-**D-R7 (medium, invoice) — `business_set` silently drops an unrecognised `tax_rate` key.**
+D-R7 (medium, invoice) — `business_set` silently drops an unrecognised `tax_rate` key.
 `business_set {name:"Zovo Studio", tax_rate: 23}` succeeds and echoes back a profile containing
 `"default_tax_rate": 0`. The wrong key was accepted and discarded. `invoice_create` then produced
 INV-2026-0001 with `tax_rate "0%"` on every line and `total EUR 275.00` where EUR 338.25 was intended,
@@ -116,7 +116,7 @@ called `default_tax_rate`; the user and the model both say "tax rate". Fix direc
 `tax_rate` / `vat_rate` as aliases, or make the schema strict so an unknown key errors instead of
 vanishing. A silently zero VAT on a delivered invoice is the most expensive quiet failure in this repo.
 
-**D-R1 (medium, time-tracker) — `invoice_summary` prints a blended rate that is nobody's rate.**
+D-R1 (medium, time-tracker) — `invoice_summary` prints a blended rate that is nobody's rate.
 In the bundle run, project Acme held one 0.01 h entry with no rate and one 2.50 h entry at EUR 90.00.
 Neither has a task, so both land in the same `(no task)` group and the summary printed
 `(no task)  2.50  EUR 89.82  EUR 225.00` — 225.00 / 2.505 = 89.82. The amount is right; the rate is a
@@ -125,7 +125,6 @@ when tasks differ: `Design review 2.50 EUR 90.00 EUR 225.00` with a separate `(n
 Fix direction: group by (task, rate, currency), or print the rate only when every entry in the group
 shares it.
 
-**D-R6 (low, hosted) — the "document link" serves `text/html`, not a PDF.**
 `curl https://mcp.zovo.one/mcp/download/81ef3dda6579d2113f6eb6a73ac53c0b` -> HTTP 200, 1693 bytes,
 `Content-Type: text/html; charset=utf-8`. The body is a complete A4 print-stylesheet invoice
 (`<title>Invoice INV-2026-0001</title>`, `@page{size:A4;margin:18mm}`), so it prints correctly, but

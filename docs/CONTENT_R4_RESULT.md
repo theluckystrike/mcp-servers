@@ -98,7 +98,7 @@ claiming the category is empty forever.
 
 ## Numbers measured, not taken on trust
 
-**Profiles are too thin, not too fat.** From `docs/RESUME_AUDIT.md`. Probe P8 stored 300 experience
+From `docs/RESUME_AUDIT.md`. Probe P8 stored 300 experience
 bullets and asked for one page: 78 bullets kept, 222 dropped, 390 words against a 392-word budget, in
 27 ms. That is the case a resume generator is designed for. Scenario s2, driven through the real Claude
 CLI against a realistic profile, used **134 of a 361-word budget and dropped zero bullets**, while
@@ -106,19 +106,19 @@ CLI against a realistic profile, used **134 of a 361-word budget and dropped zer
 constraint on a real application is evidence, not space, which is why the guide's advice is to add a true
 fact to the profile rather than let anything add a false one to the resume.
 
-**The fact-integrity rule holds at 0 of 10.** Ten cover letters were generated against ten postings
+Ten cover letters were generated against ten postings
 stuffed with figures and no posting number reached a letter. Every digit run is checked against the
 profile and the passed arguments before the file is written; a number tracing to neither is an error, not
 a warning; the job description is deliberately not an allowed source; comparison is on whole numbers so a
 profile holding 2012 does not license a letter claiming 12.
 
-**The recurring cap was measured into existence.** From `servers/recurring/src/index.ts:28-42`: before
+From `servers/recurring/src/index.ts:28-42`: before
 `MAX_PERIODS_PER_RUN`, a schedule starting 1900-01-01 offered 1,520 due periods and one call with
 `as_of: "2126-01-01"` created 1,193 real invoices and 1,193 PDFs, 6.0 MB in 6.8 s, burning 1,193 numbers
 out of a series that never reuses one. The run is now bounded at 60, oldest first, with the idempotency
 key unchanged.
 
-**The clause prompt prints with spaces for a measured reason.** From
+From
 `servers/clauses/src/library.ts:52-57`: the shared docx engine parses inline markdown, so
 `[late_fee_percent]` reaches Word as `[latefeepercent]`, the underscore pair being read as an italic
 marker and dropped. The printed prompt uses spaces; `unfilled` keeps the real names.

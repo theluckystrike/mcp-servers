@@ -6,7 +6,7 @@ status: done
 
 Two things, one of which is the reason it exists at all.
 
-**The registry manifests.** All 114 manifests carried `websiteUrl:
+All 114 manifests carried `websiteUrl:
 https://mcp.zovo.one/buy/<id>`. That path is Disallowed in robots.txt and, for a browser,
 303s straight into a Stripe checkout. The official MCP registry is the only channel that
 demonstrably delivers humans to this project (19 views from 9 uniques in 14 days, against

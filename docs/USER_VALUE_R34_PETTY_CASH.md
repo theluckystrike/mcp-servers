@@ -71,7 +71,7 @@ measurement only. Cap: 30 minutes, met in about 8 minutes wall.
 | pc5 | What is the cheque and the double entry | 1 | **1** | Cheque EUR 202.05 correct, but the journal folds the coffee voucher (refreshments) into an invented "office" line, dropping the real refreshments account, and uses invented ids ("cash over/short", "Cash (bank)") instead of the real ones. No tool call was attempted at all this time |
 | pc6 | Just total the receipts, isn't that the cheque? | 3 | **3** | EUR 201.94 total given, then a flat correct no: the cheque must be 202.05 or the shortfall is baked in permanently |
 
-**Totals: 16/18 hosted, against round 33's 14/18 over stdio on the identical six prompts.**
+Totals: 16/18 hosted, against round 33's 14/18 over stdio on the identical six prompts.
 
 ## Independent verification
 
@@ -94,8 +94,6 @@ rather than calling the Pro-gated tool and receiving a refusal. This matters dir
 comparison this round was asked to make.
 
 ## Did the reworded cap sentence change the client's behaviour at the gate?
-
-**This cannot be answered from this round, and that is itself the finding.**
 
 Round 33's stdio run DID call `replenish_request`, WAS refused, and the refusal's cap
 sentence at the time read as an imperative: "Do not total or journal by hand from refused

@@ -62,7 +62,7 @@ anything. Section + the explicit attribution data in §5 were used instead.
 | `Cache-Control: public, max-age=3600` | 189 / 190 |
 | `Cache-Control: no-store` | 1 / 190 |
 
-**No 404s, no 500s, no timeouts.** Every URL in the sitemap is a live 200.
+Every URL in the sitemap is a live 200.
 
 ## 4. Anomaly Table
 
@@ -81,7 +81,7 @@ Source of truth: `data/traffic.json` → `sitemap_pages[]` — per-path `crawler
 attributed from Cloudflare logs. This is the same structure the KPI reads
 (`crawler_url_coverage.ClaudeBot.urls_fetched = 140`, `pct_of_sitemap = 99.3`).
 
-**No heuristic assumption was needed.** The per-URL attribution names the covered set
+The per-URL attribution names the covered set
 directly, and intersecting it with the current 190-URL sitemap yields exactly **50
 uncovered URLs** — matching the KPI's implied `190 − 140 = 50` precisely.
 
@@ -191,8 +191,6 @@ not exactly equal the key. Verified before submitting:
 | Body | `db6dbf5cfdbc08d1cc9b5365d398145b` (32 bytes, key only) |
 | Body == `data/indexnow.json` `.key` | **exact match** |
 
-**Key file is healthy — no blocker.**
-
 ### 6.2 Submission
 
 Request shape matched to `scripts/indexnow.mjs` (lines 41–45):
@@ -207,10 +205,10 @@ Request shape matched to `scripts/indexnow.mjs` (lines 41–45):
 | **HTTP status** | **200** |
 | Response body | empty (IndexNow success convention) |
 
-**HTTP 200 = accepted.** `200` (rather than `202`) means the key was already validated and
+`200` (rather than `202`) means the key was already validated and
 the URL set was taken for immediate processing, consistent with the sprint-42 result.
 
-**Acceptance ≠ crawl.** IndexNow confirms *receipt*, not that Bing/Yandex/etc. will fetch
+IndexNow confirms *receipt*, not that Bing/Yandex/etc. will fetch
 these URLs or that ClaudeBot (which does not consume IndexNow) will pick them up. The only
 proof is re-measuring `data/traffic.json` → `sitemap_pages[].crawlers{}` for these 50 paths
 on a future run (see §7).
@@ -258,7 +256,6 @@ the un-fetched remainder, the sprint-42 set was the non-`/s/`+`/guides/` remaind
 
 All commands run from `/Users/mike/mcp-servers`, 2026-09-18.
 
-**Sitemap fetch + count**
 ```bash
 curl -sS -o /tmp/sitemap.xml -w "HTTP=%{http_code} bytes=%{size_download}\n" \
   https://mcp.zovo.one/sitemap.xml
@@ -267,7 +264,6 @@ curl -sS -o /tmp/sitemap.xml -w "HTTP=%{http_code} bytes=%{size_download}\n" \
 # -> 190
 ```
 
-**Per-URL HTTP probe (190 URLs, 12 concurrent workers)**
 ```python
 # for each URL, run:
 #   curl -sS -o /dev/null -D - --max-time 20 -A "Mozilla/5.0 (compatible; probe/1.0)" <url>
@@ -276,7 +272,6 @@ curl -sS -o /tmp/sitemap.xml -w "HTTP=%{http_code} bytes=%{size_download}\n" \
 #    cache-control: {public, max-age=3600: 189, no-store: 1}
 ```
 
-**Coverage attribution (the exact covered set)**
 ```bash
 python3 -c "
 import json,urllib.parse
@@ -289,20 +284,17 @@ print('ClaudeBot paths:',len(cb),'Googlebot paths:',sorted(gb))
 # -> ClaudeBot paths: 140   Googlebot paths: ['/', '/s/invoice']
 ```
 
-**Delta construction**
 ```python
 delta = [u for u in sitemap_urls if urllib.parse.urlparse(u).path not in cb]
 # -> 50 URLs: /guides 31, /s/* 10, /compare 8, /mcp/connect 1
 ```
 
-**Key file check**
 ```bash
 curl -sS -o /tmp/keyfile.txt -w "HTTP=%{http_code}\n" \
   https://mcp.zovo.one/db6dbf5cfdbc08d1cc9b5365d398145b.txt
 # -> HTTP=200, body "db6dbf5cfdbc08d1cc9b5365d398145b" (== data/indexnow.json .key)
 ```
 
-**IndexNow submission**
 ```bash
 curl -sS -o /tmp/t4_ix_resp.txt -w "HTTP=%{http_code}" -X POST \
   https://api.indexnow.org/indexnow \
@@ -311,5 +303,5 @@ curl -sS -o /tmp/t4_ix_resp.txt -w "HTTP=%{http_code}" -X POST \
 # -> HTTP=200, body empty (accepted), urlList length 50
 ```
 
-**Scope note:** `data/kpi.json` was **not** modified by this task (per brief —
+`data/kpi.json` was **not** modified by this task (per brief —
 orchestrator refreshes it).

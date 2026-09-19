@@ -1481,7 +1481,7 @@ function npxJson(clientId, s) {
  */
 function bundleBlock(clientId, s) {
   if (clientId === "claude-desktop") {
-    return `<p><strong>One click, no JSON.</strong> Download <code>${s.slug}.mcpb</code> from the
+    return `<p>One click, with no JSON. Download <code>${s.slug}.mcpb</code> from the
 <a href="${RELEASES}">latest release</a> and open it. Claude Desktop installs it as an extension and runs
 it on the Node runtime it ships with, so neither your PATH nor your node version comes into it, and there
 is no file to edit. Everything below is the manual route, for when you want the entry in the config file

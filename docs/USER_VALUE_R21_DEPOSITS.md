@@ -71,7 +71,7 @@ on the same token, not taken from the model's prose.
 
 ## Defect
 
-**D-R88 reproduces hosted, unchanged.** Round 20 found the model answering "how much are we holding" (d5)
+Round 20 found the model answering "how much are we holding" (d5)
 from its own running total instead of calling `deposit_balance`, and refusing an over-application itself
 (d3) instead of letting `deposit_apply` refuse it. Both reproduce hosted with the same severity: the
 arithmetic was right both times because the session had just computed it in the same conversation, and

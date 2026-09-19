@@ -1,11 +1,11 @@
 # Draft 01 — GitHub Issue: kimai/cli #32 — Add invoice PDF generation
 
-**Surface:** GitHub Issues (kimai/cli) — `OPEN`, created 2026-09-08
-**Thread URL:** https://github.com/kimai/cli/issues/32
-**Thread title:** *Add invoice PDF generation*
-**Ask (quote):** "Could we add support for generating invoice PDFs through Kimai's API? Would this first require an endpoint that accepts invoice generation options and creates the PDF server side?"
-**Server that answers it:** `invoice` — https://mcp.zovo.one/s/invoice (hosted HTTP MCP endpoint `https://mcp.zovo.one/mcp/invoice/t/<token>`)
-**Fit:** The ask is exactly "an endpoint that accepts invoice generation options and creates the PDF server-side." That is precisely the shape of our hosted invoice MCP server: you pass business/client/line-item options and it returns a rendered PDF. Value-first answer below.
+GitHub Issues (kimai/cli) — `OPEN`, created 2026-09-08
+https://github.com/kimai/cli/issues/32
+*Add invoice PDF generation*
+"Could we add support for generating invoice PDFs through Kimai's API? Would this first require an endpoint that accepts invoice generation options and creates the PDF server side?"
+`invoice` — https://mcp.zovo.one/s/invoice (hosted HTTP MCP endpoint `https://mcp.zovo.one/mcp/invoice/t/<token>`)
+The ask is exactly "an endpoint that accepts invoice generation options and creates the PDF server-side." That is precisely the shape of our hosted invoice MCP server: you pass business/client/line-item options and it returns a rendered PDF. Value-first answer below.
 
 ---
 

@@ -92,7 +92,6 @@ Zero network calls of any kind from the server: `test/contract.test.mjs` greps `
 
 ## failures
 
-**D-DS1, found by a test and fixed: a deleted deliverable's id came back.**
 `nextDeliverableId` was copied from change-order's `nextLineId`, which allocates from
 `lines.length`. Change orders cannot delete a line, so the bug never surfaces there.
 Deliverables can: `deliverable_delete` removes a planned one, the length drops, and the
@@ -114,7 +113,7 @@ else.
 
 ## insight
 
-**"Late" cannot be stored, and this is measurable in one file.** The four probe lines
+The four probe lines
 above come from one store read at four dates, and no two agree. The store holds only what
 happened and when: a due date, and a dated history. Every reading is derived, so the same
 bytes answer correctly for last month's report and for today's. A schedule that stored a

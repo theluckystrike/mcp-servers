@@ -57,7 +57,7 @@ Stripe Checkout:
   the same second is not a new failure mode).
 - `click:<src>:total` - no TTL, a running lifetime count.
 
-**Why REMOTE_DATA, not LICENSES**: clicks are hosted-traffic telemetry, the same
+clicks are hosted-traffic telemetry, the same
 bucket `rl:`, `tok:`, `anon:`, `bind:` counters already live in, not a licensing
 record. LICENSES stays reserved for `session:` and `lic:` keys the mint path depends
 on, so a telemetry write can never race a fulfilment write in the KV namespace that
@@ -145,7 +145,7 @@ and traceable, but it could not answer "which tool produced this message", and t
 storefront's own links carried no `src` at all - which is where the `recurring.unknown`
 and `resume.unknown` rows on `/stats/clicks` came from.
 
-**Servers.** `scripts/codemod-upgrade-src.mjs` passes the enclosing `registerTool` name as
+`scripts/codemod-upgrade-src.mjs` passes the enclosing `registerTool` name as
 the `toolName` argument to every `gate.upgradeText` / `gated` call inside a handler: 73
 call sites across 19 servers. It masks strings, template literals, comments and regex
 bodies in one pass, then uses paren matching for the handler spans, and is idempotent - a
@@ -159,13 +159,13 @@ they sit in helpers shared by several tools (`pdf`'s `freePageText`, `time-track
 free-window note, `bank-statement`'s `windowNote`), where no single tool name is correct
 without threading a parameter through code that has no other reason to change.
 
-**Contract.** Two halves. `test/upgrade-src-contract.test.mjs` runs the codemod in
+Two halves. `test/upgrade-src-contract.test.mjs` runs the codemod in
 `--check` mode over all 20 servers, so a new untagged in-handler gate fails on the day it
 is written. The nine per-server contract suites that already trip a real cap assert the
 returned message carries `https://mcp.zovo.one/buy/<product>?src=<product>.<tool>` for the
 tool that produced it, at no extra server spawn.
 
-**Storefront.** Every `/buy` href the billing worker renders carries `src=store.<page>`:
+Every `/buy` href the billing worker renders carries `src=store.<page>`:
 `store.home`, `store.s.<id>` (product page CTA, JSON-LD offer url, and the README-derived
 links, which `scripts/build-pages.mjs` tags at build time so the 19 READMEs stay
 untouched), `store.guide.<slug>`, `store.compare.<slug>`, `store.setup.<client>`. Guides,
@@ -173,7 +173,7 @@ comparisons and setup pages had no `/buy` link at all before this, so nothing th
 could be attributed; each now carries one tagged CTA. `billing/test/store-src.test.mjs`
 fails on any untagged `/buy` href and checks the emitted tags pass `validSrc`.
 
-**Vendor tree.** Two `remote/build-vendor.mjs` patches were anchored across a call the
+Two `remote/build-vendor.mjs` patches were anchored across a call the
 codemod changed and stopped applying. Both are re-anchored on the prose they rewrite;
 `node remote/build-vendor.mjs` prints zero DRIFT.
 
@@ -183,7 +183,7 @@ all render on the live site, and `node scripts/validate.mjs` is 471/471.
 
 ## Update 2026-09-05: every cap message now carries the bundle link
 
-**The measurement.** 65 upgrade-link clicks in the 7 days to 2026-09-05, and not one of
+65 upgrade-link clicks in the 7 days to 2026-09-05, and not one of
 them through any bundle source. `/stats/clicks` had no `*.bundle` row at all, because no
 cap message contained a bundle link: every one of them linked only to the $19
 single-server checkout. The $39 offer was named in prose ("or $39 for every server,
@@ -192,7 +192,7 @@ find the storefront and start again. Two of the servers whose caps fire most (`p
 `time-tracker`) are worth $19 to a buyer who owns one and $39 to a buyer who has hit two,
 and the second buyer had no path.
 
-**The fix.** Every cap message, on every transport, now ends with one plain sentence:
+Every cap message, on every transport, now ends with one plain sentence:
 
 ```
 Or all 22 servers for $39: https://mcp.zovo.one/buy/bundle?src=<product>.<tool>.bundle
@@ -209,7 +209,7 @@ Or all 22 servers for $39: https://mcp.zovo.one/buy/bundle?src=<product>.<tool>.
 - The prose parenthetical was removed rather than kept beside the new sentence: it named
   the same price twice, and one link per offer is the point.
 
-**Where the count lives.** `packages/mcp-license/src/index.ts` exports `SERVER_COUNT`
+`packages/mcp-license/src/index.ts` exports `SERVER_COUNT`
 (22), `bundleLink(src, tenant?)` and `bundleSentence(src, tenant?)`; `upgradeText` and
 `hostedUpgradeText` both end with `bundleSentence(...)`. The published package cannot see
 `servers/` at runtime, so `SERVER_COUNT` is a constant, and
@@ -221,11 +221,11 @@ the others and sells nothing of its own, which is why a raw count of `servers/*/
 (23) is the wrong number. `remote/src/shims/license.ts` mirrors the constant for the
 worker's own bundled copy, and the same test pins the two together by value.
 
-**The 429.** `remote/src/index.ts` `rateLimit` appends the same sentence to its `note` and
+`remote/src/index.ts` `rateLimit` appends the same sentence to its `note` and
 its `bundleUrl` field is now tagged `<product>.rate_limit.bundle` rather than sharing
 `<product>.rate_limit` with the single-server link.
 
-**Contract.** The ten per-server contract suites that already assert the single-server
+The ten per-server contract suites that already assert the single-server
 `src` on a real cap now derive the bundle link from it and assert that too, at no extra
 server spawn: `bank-statement`, `barcode`, `billing-docs`, `calendar`, `expense-tracker`,
 `image`, `kanban`, `pdf`, `spreadsheet`, `zip`.

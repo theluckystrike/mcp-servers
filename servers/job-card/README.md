@@ -3,7 +3,7 @@
 [![theluckystrike/mcp-job-card MCP server](https://glama.ai/mcp/servers/theluckystrike/mcp-job-card/badges/score.svg)](https://glama.ai/mcp/servers/theluckystrike/mcp-job-card)
 
 **In the [official MCP Registry](https://registry.modelcontextprotocol.io/v0.1/servers/io.github.theluckystrike%2Fjob-card/versions/latest)** (`io.github.theluckystrike/job-card`).
-One card per job, the way the paper one on the dashboard works. Open a card for the client and the site, log the hours each worker puts in at their rate and the materials that go into the job, and the card keeps the running totals: labor, materials and the grand total, always in integer cents. Move the card along as the job moves -- open, in progress, done, invoiced, archived -- and when the client wants to see it, print the card with its signature line for sign-off. A daily or weekly summary answers where the crew's hours went and what the work is worth, per currency. Everything stays on this machine; there is no account and no network call.
+One card per job, the way the paper one on the dashboard works. Open a card for the client and the site, log the hours each worker puts in at their rate and the materials that go into the job, and the card keeps the running totals: labor, materials and the grand total, always in integer cents. Move the card along as the job moves, open, in progress, done, invoiced, archived, and when the client wants to see it, print the card with its signature line for sign-off. A daily or weekly summary answers where the crew's hours went and what the work is worth, per currency. Everything stays on this machine; there is no account and no network call.
 
 Built by theluckystrike.
 
@@ -63,7 +63,7 @@ claude mcp add job-card -- npx -y @theluckystrike/mcp-job-card
 
 The record is never metered. Ten active cards is a real working board for a small crew, and a card stops counting the moment it is archived, so logging, totals, printing and summaries stay free for good. What Pro lifts is how many jobs are on the board at once.
 
-**Get Pro:** https://mcp.zovo.one/buy/job-card -- $19 one-time for this server, or $39 for the bundle.
+Get Pro: https://mcp.zovo.one/buy/job-card, $19 one-time for this server, or $39 for the bundle.
 
 ## Money and rounding
 

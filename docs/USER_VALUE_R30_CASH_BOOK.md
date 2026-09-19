@@ -68,7 +68,7 @@ only. Cap: 30 minutes, met.
 | cb5 | March, April, May, then rebuild June | 3 | **3** | 8 | March/April genuinely empty and explained as such; May's build hit the real 3-periods-a-month cap while `trial_balance` still answered for it; June's rebuild came back byte-for-byte identical and free |
 | cb6 | Per-account report and CSV export | 2 | **2** | 2 | Hand-built table and CSV from free `ledger_lines` data, both arithmetically correct and disclosed as substitutes -- but `ledger_export_csv` was never called this turn, so the model never saw that tool's own refusal text, which explicitly says not to hand-build a CSV in place of the real export |
 
-**Totals: 17/18, 19 tool calls to the server. Round 29 (stdio) was 17/18, 16 tool calls.**
+Totals: 17/18, 19 tool calls to the server. Round 29 (stdio) was 17/18, 16 tool calls.
 
 ## Independent verification
 

@@ -39,7 +39,7 @@ exports its own `./lib`: the record types, the status machine and the money basi
 
 ## Design decisions worth stating
 
-**The markup goes on the UNIT cost, never on the line total.** This is the decision the whole
+This is the decision the whole
 server rests on, and it is worth exactly one minor unit at a time. The invoice server rounds
 a unit price into minor units FIRST and computes the line from that stored value (D-R24,
 `servers/invoice/src/money.ts`), so the marked-up unit is the only basis an invoice can
@@ -66,13 +66,13 @@ loses the quantity the customer is being charged for. `rounding_drift_minor` on 
 totals is asserted to be zero, which is the machine-checkable form of "this payload prices the
 same under either rounding basis".
 
-**No total is stored.** An order record holds its client, its lines and its status history.
+An order record holds its client, its lines and its status history.
 The value, the hours, the materials and the VAT are derived on every call. A stored total is
 a second copy of what the lines already decide, and the copy is the one that gets believed
 after somebody edits a line. `contract.test.mjs` greps the raw store file for nine derived
 key names and asserts the record's keys are the facts only.
 
-**The status machine moves one step forward at a time.** draft, scheduled, in_progress, done,
+draft, scheduled, in_progress, done,
 invoiced. A skipped step is refused naming the step that IS next, because every step carries
 its own date: a job that went from scheduled straight to invoiced was never marked done, so no
 completion report was ever produced and nothing records the day the work finished. A backwards
@@ -80,19 +80,19 @@ step is refused because a job that has to go back is a new work order, and the h
 first one has to stay true. A change dated before the requested date, or before the step
 already recorded, is refused as well, so the history always reads as a timeline.
 
-**This server creates no invoice and marks nothing.** `work_order_invoice_payload` returns
+`work_order_invoice_payload` returns
 arguments and says `posted: false, marked_invoiced: false`. The caller runs `invoice_create`
 in the invoice server and then sets the status to invoiced here. An order already marked
 invoiced refuses a second payload by name and refuses further lines, so neither route bills a
 customer twice through this server.
 
-**An unknown client name with no address is refused.** A bare name that matches no invoice
+A bare name that matches no invoice
 client record is a misspelling far more often than a new customer, and an invoice raised from
 the job would carry a BILL TO block with nothing in it. Either `client_add` in the invoice
 server first, or pass `client_address` here, and the job records the client inline and says
 in a note that the invoice server has no record of it.
 
-**A labour rate is never improvised.** The brief asked for the rate to fall back on the shared
+The brief asked for the rate to fall back on the shared
 profile's default rate "when present". It is not present: `PROFILE_FIELDS` in
 `packages/mcp-license/src/profile.ts` carries a default currency, a default tax rate and
 payment terms, and `readSharedProfile` drops every key outside that list, so no default hourly
@@ -102,7 +102,7 @@ name, and the refusal says which field would have filled it. The alternative is 
 refusal: a rate this server invented would be printed on a completion report the customer
 signs and on an invoice nobody typed it into.
 
-**The free cap counts OPEN work orders, and both ways back are free.** Five open jobs is a
+Five open jobs is a
 one-van trade. Closing a job frees its slot, and `work_order_delete` on a draft with no lines
 is free on every tier (docs/RECOVERABLE_SLOTS_RESULT.md: a way back that only a Pro key can
 reach is not a way back). A byte-identical work order is refused BEFORE the cap is consulted,
@@ -110,7 +110,7 @@ so the refusal names the id already stored rather than selling an upgrade, and b
 slot nor a WO number. The adversarial suite asserts the duplicate refusal text does not
 contain "free tier", and that the next real order is WO-2026-0002 rather than 0003.
 
-**Hours are counted on the LINE date, not on the order date.** A February call worked in March
+A February call worked in March
 logged its hours in March. Counting by order date moves a whole visit into the month the phone
 rang. The unit suite asserts a job requested 2026-03-06 whose only labour line is dated
 2026-04-02 contributes zero to March and one hour to April.
@@ -200,8 +200,6 @@ Selected results:
     - The markup goes on the unit cost, not on the line total
 
 ## The measured insight
-
-**A markup is one minor unit away from itself, and the invoice decides which one.**
 
 Seven parts at 1299 minor units with 15 percent on top is 10,458 if the markup goes on the
 unit and 10,457 if it goes on the line total. Nothing in the work order can tell you which is

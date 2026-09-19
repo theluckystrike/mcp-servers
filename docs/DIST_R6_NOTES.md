@@ -273,7 +273,7 @@ mcp-statement-of-account page_http=200 repo_refs_in_body=43 bytes=294938
 ### Not indexed / blocked (re-probed this round)
 
 - `api.mcp.github.com/v0/servers?search=theluckystrike` — 200, **455** results,
-  **0** ours. The search param does not filter to us; still absent.
+  ours. The search param does not filter to us; still absent.
 - `mcp.so/search?q=theluckystrike` — 200 but the only `theluckystrike` occurrence
   is the echoed query parameter itself; not indexed.
 - `mcpservers.org` — 403 (Cloudflare).

@@ -6,7 +6,7 @@ returns nothing, and that grep is asserted in `test/adversarial.test.mjs`.
 
 ## Method
 
-**Part 1 harness** -- `/private/tmp/clausesaudit/probe.mjs` spawns `dist/index.js`, writes JSON-RPC lines to
+-- `/private/tmp/clausesaudit/probe.mjs` spawns `dist/index.js`, writes JSON-RPC lines to
 stdin and flags every stdout line that does not parse as JSON. One fresh `XDG_DATA_HOME` per lane
 (`data` free, `pdata` Pro, `sdata` starter integrity, `cdata` corrupt store), `MCP_LICENSE_KEY=""` for the
 free lanes and a key from `scripts/sign-license.mjs clauses` for the Pro lanes. Every generated `.docx` is
@@ -15,7 +15,7 @@ read back with `unzip -p <file> word/document.xml`, never asserted on the tool's
 One probe was dropped: `clause_export` to `/etc/passwd` **hangs this sandbox** rather than returning
 `EACCES`, so it says nothing about the server. The traversal and overwrite probes cover the same ground.
 
-**Part 2 harness** -- the real `claude` CLI as an MCP client against `/private/tmp/uvc31/mcp.json`, which
+-- the real `claude` CLI as an MCP client against `/private/tmp/uvc31/mcp.json`, which
 registers `clauses` alone (`--strict-mcp-config`), fresh `XDG_DATA_HOME=/private/tmp/uvc31/data` and
 `XDG_CONFIG_HOME=/private/tmp/uvc31/cfg`, `MCP_LICENSE_KEY=""` (free tier). One session,
 `--session-id` then `--resume`, so scenario 3 can say "that contract". Per-tool allowlist written out by
@@ -59,7 +59,7 @@ name (12 entries, every tool the server exposes) -- `--allowedTools "mcp__*"` gr
 
 ### The two that mattered
 
-**Silent overwrite (12/14).** `contract_assemble` treated an explicit `out_path` as "the caller's to
+`contract_assemble` treated an explicit `out_path` as "the caller's to
 overwrite" and `clause_export` ended in a bare `writeFileSync`. Assembling a second contract onto the path
 of a signed one destroyed it with nothing in the answer to say so -- and this is a tool an assistant drives,
 so the path is often one the user only half-specified. Both now reserve the destination with an exclusive
@@ -67,7 +67,7 @@ create (`openSync(..., "wx")`), which also survives two processes racing on the 
 name the `overwrite: true` flag in the refusal. This matches the fix already made in `servers/docx`
 (`docs/DOCX_AUDIT.md`, defects 12/14).
 
-**A 10 000 character category (7).** `slugCategory` lower-cased and de-spaced its input and stored whatever
+`slugCategory` lower-cased and de-spaced its input and stored whatever
 was left. The category is a grouping key printed in every `clause_list` row, in `clause_search` results and
 in the `clauses://categories` resource, so one paste accident poisoned every listing the client would ever
 read. Capped at 40 characters.
@@ -108,7 +108,7 @@ Total cost of the five turns: $0.299. No tool returned an error in any scenario.
 
 ### User-value defects
 
-**U-1 (fixed, server-side): the category vocabulary is invisible to the client.** The `category` argument's
+The `category` argument's
 description listed only `CATEGORY_ORDER.slice(0, 6)`. In s4 the model took the user's word "fees" at face
 value and created a **new** category next to the existing `payment` one; a `categories`-based assembly sorts
 any unknown category last, so a rush-fee clause filed under `fees` would land after Governing Law. The
@@ -120,7 +120,7 @@ calls and re-read s2's `unfilled` array out of the transcript. The answer was co
 because the session was resumed; in a fresh session the same question needs `clause_get` or
 `variables_list`. Nothing in the server can force a call, and `variables_list` already exists for it.
 
-**U-3 (not fixed, by design): the starter set already contains a `Rush Fee` clause** (category `payment`),
+(category `payment`),
 so s4's user-written one is the second. The model titled its own `Rush Fee (48-Hour Notice)`, so the
 duplicate-title refusal never fired. The refusal is correct behaviour; a library that silently kept two
 clauses called `Rush Fee` would be worse.

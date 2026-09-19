@@ -65,31 +65,21 @@ Ours: time-tracker 3,362B / price-tracker 5,238B / spreadsheet 5,242B / invoice 
 
 ### Five recommendations
 
-**R1. Ship a remote streamable-HTTP endpoint for all four servers**
-
 - Do: Add a `remotes` block to each servers/<name>/server.json and deploy one Node HTTP transport per server (or one multiplexed host). Keep stdio as the default install.
 - Evidence: 15 of 15 top-use Smithery servers in our categories have remote=true and a deploymentUrl. 61 of 93 official-registry results for 'invoice' carry a remotes[] entry. Our 4 server.json files carry 0. Smithery useCount only accrues to deployed remote servers, so our measurable use is structurally pinned at 0.
 - Row: `remote_share_top15=15/15; registry_invoice_remote=61/93; ours=0/4`
-
-**R2. Occupy registry slots with per-locale name variants of one codebase**
 
 - Do: Publish invoice as invoice-vat-eu, invoice-us-1099, invoice-uk-vat, invoice-pl-jpk from the same dist, each with its own server.json name; do the same for time-tracker (timesheet-billing, billable-hours).
 - Evidence: app.wishpool holds 35 of the 93 official-registry results for 'invoice' (37.6%) using per-country names (argentina-invoice-mcp, belgium-invoice-mcp, brazil-invoice-mcp, chile-invoice-mcp, india-invoice). We hold 1 result, at rank 82 of 91. Registry search is name-substring only, so N names = N slots.
 - Row: `wishpool_share=35/93=37.6%; ours=1/93 at rank 82`
 
-**R3. Take each README from ~4KB to ~13KB and add a demo image**
-
 - Do: Add a rendered screenshot or an animated transcript of a real session to each README, plus a worked end-to-end example, a troubleshooting section, and a full tool-argument reference.
 - Evidence: n=20 GitHub cohort of the highest-starred MCP servers in our categories: median README 12,990 bytes, 90% carry at least one image, 85% MIT. Our READMEs are 3,362 / 4,344 / 5,238 / 5,242 bytes (2.5x to 3.9x shorter) and carry 0 images.
 - Row: `cohort_median_readme=12990B, demo_image=90%; ours max=5242B, demo_image=0%`
 
-**R4. Publish a single bundle server that re-exports all four tool sets**
-
 - Do: Add servers/bundle exposing the ~37 tools of the four servers behind one name and one install line, gated by the existing bundle license id.
 - Evidence: pipeworx/gateway carries 419,019 uses with 2,530 tools - 7.5x the #2 server in our categories and 30x the median. Aggregation, not depth, is what the use distribution rewards. Our four separate installs each ask the user for a separate config entry.
 - Row: `gateway_uses=419019 vs next=56138 (7.5x); tool_count 2530 vs cohort median 5.5`
-
-**R5. Add receipt and expense capture to the suite, as the fifth server**
 
 - Do: Ship an expense/receipt ledger server (see Part B pick) and cross-link it from the other four READMEs.
 - Evidence: Receiptor MCP is the highest-use non-gateway, non-Google server in our category set at 15,517 uses with 51 tools, and it does receipt and expense extraction - a capability none of our four have. 7 of 15 top servers show a pricing surface on their homepage, all metered or subscription; none sells a one-time key, which is the only rail a local stdio server has.

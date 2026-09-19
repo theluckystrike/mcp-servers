@@ -9,7 +9,7 @@ facts are carried forward in section 6.
 
 ## Verdict
 
-**MIXED.** The purchase path is mechanically sound end to end (verified live, everything
+The purchase path is mechanically sound end to end (verified live, everything
 short of entering a card). The "65 humans reached checkout" numerator is measurement
 contamination, proven three independent ways below. Verified in-product human demand in
 instrument v2 is **0 clicks**. Zero paid is exactly what a healthy funnel at zero verified
@@ -101,9 +101,9 @@ re-derives from the session id.
 The KPI query (`scripts/kpi.mjs:64`): `stripe checkout sessions list --live --limit 100`,
 counted when `metadata.probe !== "1"` and `created >= 2026-09-03T08:55Z`.
 
-**(a) Burst, not spread.** Same command re-run 2026-09-12T12:50Z, fields aggregated with
+Same command re-run 2026-09-12T12:50Z, fields aggregated with
 node (no PII printed): 100 sessions returned, `has_more: true`, and the window covers only
-**2026-09-12T02:32:15Z to 12:29:28Z** — "last 100" is a ~10-hour window. Of the 100:
+— "last 100" is a ~10-hour window. Of the 100:
 89 untagged post-9/3, 11 probe-tagged, 0 pre-tagging. All 89 are `payment_status: unpaid`,
 `status: open`, created **today** at a sustained 8–13 per hour around the clock
 (per-hour histogram 02:10, 03:9, 04:8, 05:12, 06:13, 07:5, 08:11, 09:9, 10:8, 11:10,
@@ -112,7 +112,7 @@ at 0 in 99+ days. By product: bundle 41, then a 24-product long tail (time-track
 expense-tracker 6, timezone 4, ...). Amounts: 1900 x45, 3900 x41, plus 499 x1 and 9900 x2
 the worker cannot create.
 
-**(b) Shared Stripe account.** 3 of the 89 carry **no `metadata.product`** — impossible
+3 of the 89 carry **no `metadata.product`** — impossible
 from `mcp-billing`, which always sets it. Field dump: `cs_live_a1DC...` amount 499,
 subscription, success_url `zovo.one/extension-engine/delivery`; `cs_live_a1co...` 9900,
 utm_source `zvonight`, same success_url; `cs_live_b1ot...` 9900, success_url
@@ -120,7 +120,7 @@ utm_source `zvonight`, same success_url; `cs_live_b1ot...` 9900, success_url
 KPI sample. Another 3 of the 89 are invoice sessions with tenant `anon_0000000...` —
 this repo's own validation fixture minting untagged sessions via `?tenant=`.
 
-**(c) The creation-guard hole, proven live.** `billing/src/index.js:1368` treats a request
+`billing/src/index.js:1368` treats a request
 as a buyer when it sends a browser UA and `accept: text/html` — the sec-fetch pair is
 required only for the *click counter* (`isHumanNavigation`), not for session creation:
 

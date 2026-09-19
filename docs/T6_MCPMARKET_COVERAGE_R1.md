@@ -60,7 +60,7 @@ The other 9 match the query string elsewhere (repo/description text) and belong 
 | /server/invoice-2 | Invoice | theluckystrike | ✅ |
 | /server/wick-1 | Wick | buildepicshit | ❌ other |
 
-**T1's "≥12 listings live" is CONFIRMED and is in fact exactly 12** — not more.
+— not more.
 
 ## Finding 2 — OWN-LISTED SET (12) vs FULL 42 → 30 MISSING
 Own-listed on MCPmarket (12):
@@ -99,7 +99,7 @@ Result (exact):
 - (ad) `https://github.com/knoxgraeme/tieline` — rel=`noopener noreferrer sponsored`
 - `https://modelcontextprotocol.io` — rel=`noopener`
 
-**`zovo.one` does NOT appear as an `<a href>` anchor anywhere on the listing.** It appears exactly
+It appears exactly
 twice in the raw HTML, both inside the JSON-LD `SoftwareApplication` structured data:
 ```
 "@type":"SoftwareApplication","name":"Dunning Letters",...,"url":"https://mcp.zovo.one/s/dunning-letters"
@@ -113,7 +113,7 @@ Verdict:
 - Anchor links to GitHub/NPM carry `rel="noopener noreferrer"` (fork-safe) — these are the only
   real outbound links, and they point at GitHub/NPM, not zovo.one.
 
-**Implication:** the MCPmarket listings do NOT contribute organic backlink equity to mcp.zovo.one.
+the MCPmarket listings do NOT contribute organic backlink equity to mcp.zovo.one.
 Organic traffic value is indirect (referral clicks only if a user copies the JSON-LD URL — effectively
 none). If a real dofollow backlink is required for the organic goal, a different channel or an
 MCPmarket profile/README surface that renders clickable links is needed.
@@ -158,7 +158,7 @@ MCPmarket. With the free queue, no such link exists at all.
 
 ## Finding 6 — SLUG COLLISION CONFIRMED (second listing probed)
 `browser_navigate https://mcpmarket.com/server/office-suite` → **page EXISTS** but is owned by
-**`walkingzzzy`** (GitHub link `[ref=e39]`, 0 stars, 1 category set), an unrelated Office-document MCP.
+(GitHub link `[ref=e39]`, 0 stars, 1 category set), an unrelated Office-document MCP.
 So our missing high-value product `office-suite` cannot claim the natural slug `/server/office-suite`
 — it is already occupied by a third party. Adding ours would require a distinct slug (e.g.
 `office-suite-2`, mirroring `invoice-2`, `kanban-4`, `wick-1`, `fetcher-1` patterns already seen).
@@ -176,7 +176,7 @@ Probed the bare `/server/<slug>` URL for each high-value product to see if the n
 | /server/bill-of-sale | yes (in own set) | theluckystrike | ✅ ours | /server/bill-of-sale |
 | /server/service-agreement | not enumerated in results | — | ❌ missing | none |
 
-**Consequence:** 2 of the 5 high-value slugs (`invoice`, `office-suite`) are occupied by third
+2 of the 5 high-value slugs (`invoice`, `office-suite`) are occupied by third
 parties, and even where we ARE listed we sometimes sit behind a suffixed slug (`invoice-2`,
 `kanban-4`, `wick-1`, `fetcher-1`). Any future submission must expect a numeric suffix when the
 bare slug is taken. Direct `/server/<slug>` guessing is NOT a reliable discovery method for our
@@ -198,14 +198,14 @@ STATUS: complete
    T1's "≥12" is confirmed and exact (12, not more).
 2. **30 of 42 MISSING** from MCPmarket (list in Finding 2).
 3. **High-value check:** 3/5 present (invoice→`/server/invoice-2`, bill-of-sale, dunning-letters);
-   **2/5 missing** (office-suite, service-agreement).
+   (office-suite, service-agreement).
 4. **Backlink: NO dofollow and NO plain HTML link to `mcp.zovo.one`.** The only mention is inside
    JSON-LD `SoftwareApplication.url` structured data — zero link equity. The only real outbound
    anchors are to `github.com/theluckystrike…` and npm, `rel="noopener noreferrer"`.
    ⇒ MCPmarket currently contributes **no organic backlink value** to mcp.zovo.one.
 5. **Add mechanism:** submission = **GitHub repo URL only** at `mcpmarket.com/submit`
    (one listing per repo). `mcp.zovo.one/s/<slug>` URLs cannot be submitted. Paid $29 tier is the
-   **only** way to get a clickable "Try Now" link to our own site.
+   way to get a clickable "Try Now" link to our own site.
 6. **Slug collisions:** `invoice` (markslorach) and `office-suite` (walkingzzzy) are third-party;
    ours used suffixed slugs (`invoice-2`, `kanban-4`, `wick-1`, `fetcher-1`).
 

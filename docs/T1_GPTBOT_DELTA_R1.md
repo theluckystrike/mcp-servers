@@ -10,7 +10,7 @@ Data source: `data/traffic.json`, `generated_at` = **2026-09-09T09:09:47.877Z**.
 Command: `python3 -c "import json;print(json.load(open('data/traffic.json'))['generated_at'])"`
 
 Note on the 190 vs 141 discrepancy: the sitemap serves 190 URLs; `sitemap_pages[]` tracks the
-**141** that received any traffic in the window. This report analyses the 141 tracked pages, as
+that received any traffic in the window. This report analyses the 141 tracked pages, as
 the task specifies. GPTBot fetches 141 - 90 = **51** of them (36.2%), matching
 `crawler_url_coverage.GPTBot = {urls_fetched: 90, requests: 149, pct_of_sitemap: 63.8}`.
 (The 63.8% figure is GPTBot's share of the **190-URL sitemap**, not of the 141 tracked set.)

@@ -24,7 +24,7 @@ every URL the blind instrument cited across all 18 buyer-intent questions and co
 the next source, and **Glama is second**. Between them they account for 28 of roughly 55
 citations.
 
-**The official MCP registry was cited zero times.** That is the surface this project has
+That is the surface this project has
 invested most of its effort in: 85+ published names, a namespace claim proved out against
 live ranking data, and a documented 443 places gained across ten contested tokens. It
 delivers about 10 unique human referrals per fourteen days and, on this measurement, no

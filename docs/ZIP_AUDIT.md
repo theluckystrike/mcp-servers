@@ -66,7 +66,7 @@ Four (#1, #2, #4, #6) were correct behavior with no prior explicit test and are 
 
 ## The one defect: `out_dir` as a file
 
-**Before**: `zip_extract` resolved `out_dir` with `expandPath` and went straight to
+`zip_extract` resolved `out_dir` with `expandPath` and went straight to
 `mkdirSync(outDir, { recursive: true })`. If a plain file already sat at that path, `mkdirSync`
 threw `EEXIST: file already exists, mkdir '/path'`, caught by `wrap()` and returned as
 `Error: EEXIST: file already exists, mkdir '/path'` — technically a refusal, not a crash, but a

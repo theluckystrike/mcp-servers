@@ -6,7 +6,7 @@ The Docker MCP catalog entry was abandoned this loop because the pull request ad
 servers to a repository whose forty most recent merges each added one. While closing it, a
 second and larger problem was measured: **no Dockerfile in this project built at all.**
 
-**Defect one, in the monorepo.** `packages/mcp-license/src/profile.ts` imports `resolveZone`
+`packages/mcp-license/src/profile.ts` imports `resolveZone`
 from `@theluckystrike/mcp-timezone/lib`, and `servers/timezone/src/index.ts` imports the
 licence gate from `@theluckystrike/mcp-license`. Every server Dockerfile builds those two in
 a linear `npm run build --workspace` sequence, so whichever goes first cannot resolve the
@@ -14,7 +14,7 @@ other. Both orders were built for real and both failed with TS2307. This does no
 `npm run build` at the repository root, because npm workspaces symlinks the packages and
 resolves the cycle; it only bites a linear container build.
 
-**Defect two, in the mirrors, and this is the one that was fixed.** Each of the 31 per-server
+Each of the 31 per-server
 mirror repositories shipped the monorepo Dockerfile verbatim, including `COPY servers
 ./servers`. A mirror has no `servers/` directory, so the build failed on its first COPY.
 That is galling, because a mirror is otherwise the ideal build context: it is self-contained,

@@ -79,7 +79,7 @@ workaround, or left the user a gap. 1 = partially wrong. 0 = failed.
 | p5 | "What does page 2 say the total is?" | **3** | 1 | 8.3 | `pdf_text {path, pages: "2"}` read `Total EUR 2500.00` off the stamped file, and the answer added that the page's own status field still says UNPAID under the stamp - the file/record gap named unprompted, the same thing the local s4 did. The tool printed how it read the page (`node:zlib`, no OCR, drawing order) |
 | p6 | "Split the stamped file back into single pages." | **3** | 1 | 9.4 | One `pdf_split`, two parts, two links. `GET` both: 2,031 B and 2,033 B, `application/pdf`, `filename="invoices-merged-paid-page1.pdf"` / `-page2.pdf`, 1 page each, and each carries its own invoice text plus `PAID` |
 
-**Totals: 51 / 54, 21 tool calls, 272.1 s.** Both deductions that are not client-side are a Pro
+Both deductions that are not client-side are a Pro
 refusal, and in both the model answered anyway.
 
 ## Independent verification
@@ -135,7 +135,7 @@ Verbatim from the suite:
 **Four pdf tools echo the input path back as `source`, and hosted that path is a virtual root the
 caller cannot see or pass back.** `pdf_split`, `pdf_rotate`, `pdf_stamp` and `pdf_reorder` all
 answer with `{source: f.path, ...}`. The link substitution only rewrites paths that were
-**published** in that request - the new output - so the input, which was published by an earlier
+in that request - the new output - so the input, which was published by an earlier
 request, was printed raw: `"source": "/out/invoices-merged.pdf"`. The caller uploaded
 `invoice-a`, merged into `invoices-merged`, and was then shown a root that exists nowhere they can
 reach and is not the string any tool accepts.

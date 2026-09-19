@@ -50,7 +50,6 @@ Part 2 harness: the real `claude` CLI as an MCP client against `/private/tmp/uv8
 
 ### Defects found and fixed in Part 1
 
-**D-B1 (high) - a trailing minus was read as income.**
 `12.50-` is how several German, Polish and SAP-derived exports write a debit. `parseNumberLoose` (in
 `servers/spreadsheet`, out of this unit's write scope) strips a trailing non-digit run before parsing, so the
 sign was dropped and the row was stored as **+12.50**. On a statement that writes every debit this way, every
@@ -61,14 +60,12 @@ Fixed in `src/detect.ts`: `parseMoneyCell()` takes the trailing sign off the cel
 applies it to the result, and is used for the amount, the debit, the credit and the balance columns.
 `test/adversarial.test.mjs` "a trailing minus is a debit, not income".
 
-**D-B2 (high) - a rule with an empty match categorised the entire ledger.**
 `category_rules {rules: [{match: "", category: "Everything"}]}` was accepted; the matcher's substring path is
 `description.includes("")`, which is true for every row, so one call silently rewrote every uncategorised
 transaction, including a row whose description is empty. Repro (pre-fix): the call above, then
 `transactions_list` - every row reads `"category": "Everything"`.
 Fixed in `src/index.ts`: a match that is empty or whitespace is refused with the reason and nothing is written.
 
-**D-B3 (medium) - a UTF-16 export could not be imported at all.**
 `readFileSync(p, "utf8")` on a UTF-16 file turns `Date` into `D\0a\0t\0e`, the header search then fails, and the
 error blames the user's file ("check that this is the CSV export and not a PDF converted by hand"). Excel on
 Windows writes UTF-16 for "Unicode Text" and several bank portals do the same. Repro (pre-fix): the fixture at
@@ -76,7 +73,7 @@ Windows writes UTF-16 for "Unicode Text" and several bank portals do the same. R
 Fixed in `src/index.ts`: `readStatementText()` reads the bytes, honours a UTF-16 byte-order mark either way, and
 falls back to UTF-8 when there is none.
 
-**D-B5 (low) - export replaced an existing file silently.** Now reported, and a directory target is refused.
+Now reported, and a directory target is refused.
 
 Not fixed, by decision: `statement_export` does not confine the path. The caller names the file, the same as
 `expense_export` in docs/EXPENSE_AUDIT.md probe 12; a traversal outside the user's own permissions fails with a
@@ -144,7 +141,7 @@ wording is not the lever. Fix direction, outside this unit: expense-tracker's `e
 own answer that it covers hand-logged receipts only and name the bank tool when a bank ledger exists on the same
 data dir; alternatively `office-suite`-style single-server packaging removes the choice.
 
-**D-B6 (medium) - two charges produced a yearly cost.** `recurring_detect` needed only `min_occurrences: 2`, and
+`recurring_detect` needed only `min_occurrences: 2`, and
 two charges are one interval: 14 days between the two Adobe payments became "fortnightly, annualised EUR
 1,599.00" for what is a monthly EUR 61.50 subscription billed twice. Repro (pre-fix): import two identical
 charges 14 days apart and call `recurring_detect {months: 6}`.

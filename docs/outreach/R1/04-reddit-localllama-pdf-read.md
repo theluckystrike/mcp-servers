@@ -1,14 +1,14 @@
 # Draft 04 — Reddit r/LocalLLaMA: MCP servers for reading PDF files
 
-**Surface:** Reddit r/LocalLLaMA — `HUMAN-GATED` (Reddit account required)
-**Thread URL:** https://www.reddit.com/r/LocalLLaMA/comments/1uyzxxm/mcp_servers_for_reading_pdf_files/
-**Thread title:** *MCP servers for reading pdf files*
-**Fit:** The ask is "give my text model a way to read PDFs." The genuinely useful answer is the
+Reddit r/LocalLLaMA — `HUMAN-GATED` (Reddit account required)
+https://www.reddit.com/r/LocalLLaMA/comments/1uyzxxm/mcp_servers_for_reading_pdf_files/
+*MCP servers for reading pdf files*
+The ask is "give my text model a way to read PDFs." The genuinely useful answer is the
 subset-font trap — why token-based PDF text extraction returns glyph numbers instead of words on a
 large fraction of modern PDFs — which almost no thread mentions and which saves the asker from
 thinking their setup is broken.
 
-**Exact guide link to include:** https://mcp.zovo.one/guides/pdf-merge-split-stamp-from-chat
+https://mcp.zovo.one/guides/pdf-merge-split-stamp-from-chat
 
 ---
 
@@ -20,7 +20,7 @@ digits and symbols — on a large fraction of real-world PDFs, and they'll do it
 
 Why: a PDF doesn't store text as characters, it stores drawing operators that place glyphs, and what
 those glyphs *mean* comes from the font's own encoding table. Most PDFs from modern tools embed a
-**subset** of the font and renumber the glyphs into a private table with no relation to any standard
+of the font and renumber the glyphs into a private table with no relation to any standard
 character set; some go further and index by raw glyph id (CID) rather than by character. A decoder-less
 extractor reads the operator bytes — which are glyph indices — and hands you those as "text." It looks
 like a successful extraction and reads like line noise, which is worse than an empty result.

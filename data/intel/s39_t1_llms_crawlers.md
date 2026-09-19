@@ -51,7 +51,7 @@ Both return HTTP/2 200 from `server: cloudflare` with no `Last-Modified` header:
   strict-transport-security, x-content-type-options, report-to, nel,
   server, cf-ray. **No Last-Modified, no ETag, no Cache-Control.**
 - `/s/invoice` — same set plus `cache-control: public, max-age=3600`.
-  **No Last-Modified, no ETag.** HTML pages get a 1h TTL but no
+  HTML pages get a 1h TTL but no
   conditional-request validator.
 
 ## 3. ClaudeBot 31-unfetched-URL analysis — NOT MACHINE-READABLE, skipped

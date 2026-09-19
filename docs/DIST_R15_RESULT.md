@@ -75,7 +75,6 @@ order, with what closed each.
   `delegacja`, `subsistence` and `hmrc` return **0 results each**. `dieta` returns one row,
   `io.github.mcp-dir/dieta-mcp`, which is nutrition tracking: the Polish word means diet in the food sense
   too. `mileage` returns only this estate's own expense-tracker.
-  **`gsa` returned something real, and it is named in the note rather than hidden.**
   `com.1102tools/gsa-perdiem-mcp` (pypi, stdio, 6 to 7 tools, 1.0.8, published 2026-08-24) is a live reader
   of the GSA per diem API for US federal travel. It is not a competitor this estate can write a comparison
   page against: it looks a US rate up over the network and returns it, with no Polish or UK scheme, no
@@ -121,16 +120,16 @@ entries written out by name, the CLI's own tools denied, one conversation via `-
 `servers/per-diem/test/_client.mjs` seeds it (Nova Studio, PLN), so the traveller resolves from the profile
 rather than from the prompt.
 
-**17 of 18, 8 tool calls, 123.6 s, zero clarifying turns.** p1 PL domestic 3, p2 UK band 3, p3 US GSA 3,
+p1 PL domestic 3, p2 UK band 3, p3 US GSA 3,
 p4 Oman 3, p5 record and list 3, p6 the Pro report 2. Every figure was re-run over stdio from a second
 client afterwards and read back off `trips.json`; all six verifications matched to the minor unit.
 
-**D-R90** is the lost point and it is the same family as D-R88: `perdiem_report` refused correctly as Pro,
+is the lost point and it is the same family as D-R88: `perdiem_report` refused correctly as Pro,
 and the model relayed the $19 price and the `license_activate` step but **dropped the buy URL the refusal
 actually returned**, then computed the withheld report itself out of the free `trip_list`. It was right only
 because there was one trip in one currency. A gate that returns a URL and a model that paraphrases the gate
 without the URL is a conversion path that silently ends nowhere.
-**D-R91** is harness-side and low: the allowlist omitted `license_status` and `license_activate`, so one turn
+is harness-side and low: the allowlist omitted `license_status` and `license_activate`, so one turn
 was spent reaching for a denied tool. Those two belong in any documented per-tool allowlist.
 
 A naming trap worth writing down: the round file was first written as `data/user_value_r22_per_diem.json`,
@@ -269,8 +268,6 @@ is 80/80 in run 50.
   made false. Named again here; still another server's row.
 
 ## Measured insight
-
-**A gap only stays honest if it is stated where the buying decision is made.**
 
 This server ships three complete rate tables and one deliberately empty one. The empty one is the HMRC
 overseas table, and it is empty for a good reason that is easy to state and easy to lose: roughly 2,000

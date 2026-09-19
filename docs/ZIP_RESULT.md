@@ -13,7 +13,7 @@ The zip container format, the central-directory reader and every safety decision
 
 ## Design decisions worth stating
 
-**fflate compresses; this server reads the format itself.** The library choice was fflate against a
+The library choice was fflate against a
 STORE/DEFLATE writer on `node:zlib`. The container is written here either way, because every guard in this
 server is a decision made from the central directory *before* anything is inflated, and an API that hands back
 `{name: bytes}` has already decompressed the bomb by the time you can look at it. What is left is the
@@ -22,22 +22,22 @@ sync ones each build a native stream (200 of them for 200 small files), while ff
 with no native handle and packs 200 files in 74 ms. The cost is stated in the README rather than hidden: fflate
 builds in one buffer, so inputs over 512 MB are refused rather than streamed, and ZIP64 is refused by name.
 
-**Refusing a bomb costs no decompression.** Sizes, ratios, names and external attributes all come out of the
+Sizes, ratios, names and external attributes all come out of the
 central directory. A 500 MB bomb that is 497.8 KB on disk is refused in 3 ms with `out_dir` not even created.
 
-**The ratio ceiling is the second guard, not the first.** A real, legitimate CSV export measured **82.69x**, so
+A real, legitimate CSV export measured **82.69x**, so
 a ceiling "safely below a bomb" would refuse real work and teach the caller to disable it. The total declared
 uncompressed size is the primary cap. See the measured insight.
 
-**`out_path` and `out_dir` are not sandboxed.** They are the caller's own filesystem, the same rule `pdf`,
+They are the caller's own filesystem, the same rule `pdf`,
 `quotes` and `barcode` use. What is guaranteed is that a directory, a missing parent and an existing file are
 each refused with a sentence before anything is read, and that entries from inside an archive can never land
 outside `out_dir`.
 
-**Reading is free on both tiers.** The archive somebody sent you is exactly the one that most needs inspecting,
+The archive somebody sent you is exactly the one that most needs inspecting,
 and metering `zip_list` would put a paywall in front of the safety check. The free tier meters writing only.
 
-**Passwords are refused, not ignored.** The classic zip cipher is broken and AES zip encryption is a vendor
+The classic zip cipher is broken and AES zip encryption is a vendor
 extension no two tools agree on. A `password` argument exists on the writing tools purely so that passing one
 produces a refusal rather than an archive the caller believes is encrypted.
 
@@ -83,13 +83,13 @@ produce the archives this server has to refuse. Every row below is asserted in
 
 ### The defects the probes caused
 
-**1. `zip_extract_text` made a file unreadable by asking for less of it (P1).** The read ceiling was computed
+The read ceiling was computed
 from `max_chars` (`hit.size > cap * 4`), so `max_chars: 100` on a 4.9 KB entry returned
 `is 4.9 KB, far past the 100-character ceiling` instead of the first 100 characters. Asking for a smaller
 excerpt is not a reason to refuse the file. The read ceiling is now the fixed `MAX_TEXT_CHARS` and `max_chars`
 only trims what is printed.
 
-**2. The first race counterfactual measured nothing (test-authoring defect).** Splitting the free-cap count and
+Splitting the free-cap count and
 the register append into two locked sections did **not** overrun the allowance: the window between them is a
 few microseconds of `randomBytes`. Three runs all drew exactly 10 of 10, which would have read as "the split
 lock is fine". It is not; the window in a real implementation holds the work. With 5 ms in it - the time to read
@@ -97,7 +97,7 @@ the files and build the archive - the same split-lock build drew **15, 25 and 19
 of 10**, a 50 to 150 percent overrun, while the shipped one-critical-section build drew exactly 10 every time.
 A concurrency probe with no work inside the window is not a probe.
 
-**3. Two authoring corrections worth recording.** A control-character regex written as literal bytes made
+A control-character regex written as literal bytes made
 `src/zipfile.ts` binary to `grep` (the file was fine; every search over it silently found nothing until the
 class was written as `\u0000-\u001f`). And a "not a zip" probe used an 18-byte string, which was refused by the
 length check rather than the signature search, so it asserted the wrong refusal.
@@ -146,7 +146,7 @@ length check rather than the signature search, so it asserted the wrong refusal.
 
 ## Measured insight
 
-**A bounded output buffer looks like a complete zip-bomb guard, and the way it is incomplete is silent.**
+A bounded output buffer looks like a complete zip-bomb guard, and the way it is incomplete is silent.
 
 The obvious way to inflate an entry safely is to cap the output: take the uncompressed size out of the central
 directory, allocate exactly that, and let the decompressor fill it. Memory is bounded by a number the archive

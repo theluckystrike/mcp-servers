@@ -126,7 +126,7 @@ September conversation resumed after 1 October would say 74.00 from memory while
 
 ## Defects and observations
 
-**D-R97 (proposed), catalogue hosted, low.** `price_list_pdf`, titled "The price list as a
+`price_list_pdf`, titled "The price list as a
 PDF", serves text/html on the hosted endpoint: content-disposition
 `price-list-EUR-standard-2026-09-06.html`, and its own `document` field says "HTML price list,
 A4 print-to-PDF layout (there is no PDF renderer on Workers)". The user asked for "a PDF I can
@@ -140,7 +140,7 @@ hosted endpoint" in the first sentence of the hosted `tools/list` description, w
 "render the A4 price list ... and return a download link" and never says HTML. The stdio server
 writes a real PDF and is unaffected.
 
-**D-R98 (proposed), catalogue, low.** The price-list document prints the issuer twice: the head
+The price-list document prints the issuer twice: the head
 block and an ISSUED BY block both carry Voss Electrical, 8 Mill Lane, Gdansk, the email, because
 `price_list_pdf` renders through the invoice layout with the party set to the issuer. From the
 source (`renderDocPdf` call in `servers/catalogue/src/index.ts`) the stdio PDF has the same
@@ -149,11 +149,11 @@ shape. The document also omits the booked later row that `price_list_text` print
 notice on the page. Fix candidate: drop the party block when the party is the issuer, and carry
 the bracketed later row in the line description the way `priceListText` does.
 
-**Observation, client-side, not deducted.** Prompt 2 made no tool call and answered from turn
+Prompt 2 made no tool call and answered from turn
 one's same-day `in_force` block (see above). A future round can resume a September conversation
 on an October wall clock to measure this directly.
 
-**Observation, client-side, low.** Prompt 5 reproduced the text list with re-aligned columns
+Prompt 5 reproduced the text list with re-aligned columns
 and without the closing rule line or the .txt download link; every row and figure present,
 nothing added. `license_status` was also called between the two list tools, a wasted turn on a
 key whose tier the preceding calls had already shown.

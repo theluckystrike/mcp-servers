@@ -27,8 +27,6 @@ registry result, empty_slot_score 45.0, top of the ranked list). This round fill
   restored immediately after) -- succeeded first try, no `yes y |` prompt needed for
   publish itself (login used `yes y |` per the recipe).
 
-**Search API verification (token "templates"):**
-
 | when | count | our match |
 |---|---|---|
 | before publish | 1 | none (only hit: `io.github.tresor4k/tabletemplates-mcp`) |
@@ -50,7 +48,7 @@ Service account `zovo-gsc-cleanup@zovo-extensions.iam.gserviceaccount.com`,
 None of the 5 sampled URLs have ever been crawled -- consistent with R6's finding of
 zero measured impressions across the full 28-day GSC history.
 
-**Googlebot anchor check (negative finding):** `curl -A 'Mozilla/5.0 (compatible;
+`curl -A 'Mozilla/5.0 (compatible;
 Googlebot/2.1; +http://www.google.com/bot.html)' https://zovo.one/` returned HTTP 200
 and 23,427 bytes of raw HTML with **zero** occurrences of the string `mcp.zovo.one`
 anywhere in the response. The homepage is a client-rendered React SPA (bundled JS:
@@ -60,7 +58,7 @@ first-pass HTML fetch (and this curl check) never executes. So the premise that 
 homepage "serves the mcp.zovo.one anchor to a Googlebot user agent" does **not** hold
 for the raw crawlable response; this is recorded as a negative finding, not assumed.
 
-**IndexNow ping:** `POST https://api.indexnow.org/indexnow`, host `mcp.zovo.one`, key
+`POST https://api.indexnow.org/indexnow`, host `mcp.zovo.one`, key
 from `data/indexnow.key` (`22fad93b71a88e2e60acae203c4288ae`), keyLocation verified
 live (`https://mcp.zovo.one/22fad93b71a88e2e60acae203c4288ae.txt` returns HTTP 200).
 Submitted the same 5 URLs -- **HTTP 200**.

@@ -1,7 +1,5 @@
 # T8 — KPI Refresh & Delta Report (R1)
 
-**STATUS: COMPLETE (shippable)**
-
 - Run: sprint 41 T8
 - Measurement window: **2026-09-17T13:45Z** vs **2026-09-18T00:35Z**
 - Command: `node scripts/kpi.mjs` (32 indicators, 9 met, 0 unmeasured; $0, unauthenticated endpoints only; wrangler/stripe/gh all local CLI with valid session)

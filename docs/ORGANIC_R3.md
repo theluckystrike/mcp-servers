@@ -78,10 +78,10 @@ single page. Full raw data: `data/registry_rank.json` -> `after_v3_2026-09-03_v0
 none matched, as expected; they widen the registry's own index count but are excluded
 from every per-server score.
 
-**Index lag:** none observed this pass beyond the documented 1-3 minutes; all fresh
+none observed this pass beyond the documented 1-3 minutes; all fresh
 `/v0/servers?search=` probes returned consistent counts across two calls per token.
 
-**Remotes:** re-derived from the full `theluckystrike` listing (69 rows across all
+re-derived from the full `theluckystrike` listing (69 rows across all
 versions). 8 of 9 servers carry `remotes[]` on their v0.3.2 row -- everything except
 `office-suite-time-invoice-expense-excel-price`, which is still stdio-only. This is a
 change from ORGANIC_R2: `expense-tracker` and `spreadsheet` were remotes-less at
@@ -130,8 +130,6 @@ results in GitHub's index) is what made it visible, the same mechanism that got
 | cline/mcp-marketplace#2410 (Docx) | OPEN | none | 0 | none |
 
 9 of 9 open submissions remain unmerged/unreviewed by a human.
-
-**Verbatim bot comments on PR#13473 (both posted, re-confirmed 2026-09-03):**
 
 1. `glama-check` bot: *"To ensure that only working servers are listed, we're updating
    our listing requirements. Please complete: 1) Ensure your server is listed on Glama

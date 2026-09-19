@@ -44,9 +44,7 @@ Tool-call counts exclude the client's own `ToolSearch` schema lookups.
 | 5 | invoice + docx | "Convert my invoice to a Word document I can edit." | **3** | 2 | 25.6 | `invoice_get {INV-2026-0001}` -> `doc_create {style: letter}` with a 5-column line table. Every figure in the .docx matches the store to the cent, including both FX annotations, and the model correctly framed it as editable text rather than a PDF. |
 | 6 | timezone | "How many working days did I have between the first and last Nova entry, in Poland?" | **3** | 1 | 11.1 | `business_days {2026-08-31 .. 2026-09-03, zone: "Poland"}` -> `Europe/Warsaw`, **4 of 4 calendar days**. The tool states it has no holiday calendar; the model relayed that limit and then checked the specific window rather than hiding behind it. |
 
-**Totals: 21 tool calls, 246.0 s of wall clock, 16 / 18.**
-
-**Per server** (calls made through the bundle, `ToolSearch` excluded):
+(calls made through the bundle, `ToolSearch` excluded):
 
 | Server | Calls | Tools used | Points it carried |
 |---|---|---|---|
@@ -92,7 +90,7 @@ model's prose.
 
 ## Defects
 
-**D-R24 (high, invoice) — a line's unit price times its quantity does not equal the line amount.**
+D-R24 (high, invoice) — a line's unit price times its quantity does not equal the line amount.
 `servers/invoice/src/money.ts:116` computes the line from the *unrounded* unit price
 (`gross = roundHalfUp(quantity * unit_price * f)`) while `:123` stores the *rounded* one
 (`unit_price_minor = roundHalfUp(unit_price * f)`). Any converted rate lands on a sub-cent unit
@@ -107,7 +105,7 @@ against the true converted total), or keep the precise basis and carry the extra
 displayed unit price (`USD 104.202`) plus a note. The `expense_to_invoice` -> `invoice_create` handoff
 should pass whichever it is; today it passes six-decimal unit prices into a two-decimal display.
 
-**D-R25 (medium, docx) — a literal `\n\n` reaches the printed page.** The `summary` argument of
+The `summary` argument of
 `proposal_create` is rendered as one paragraph. A model that wants two paragraphs writes `\n\n`, and
 the escape survives into `word/document.xml` as character data, so the delivered proposal reads
 "...proceed with confidence.\n\nBuilding on that foundation...". Repro:
@@ -134,7 +132,7 @@ regenerated at all: there is no way to edit a generated document. `doc_fill_temp
 can only be served by building the whole document again, which on the free tier costs one of three
 monthly generations and burns a reference number.
 
-**D-R27 (medium, timezone) — `ics_create` writes an invalid ATTENDEE value.** The file contains
+The file contains
 `ATTENDEE;CN=Sara:invalid:nomail`. RFC 5545 defines ATTENDEE as a CAL-ADDRESS, i.e. a URI, normally
 `mailto:`; `invalid:nomail` is a placeholder scheme. Strict parsers reject the property and lenient
 ones show an attendee nobody can reach, and the .ics carries no ORGANIZER at all, so the invite is

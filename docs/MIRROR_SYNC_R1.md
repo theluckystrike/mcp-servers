@@ -112,7 +112,7 @@ and the third line never returns. Probed directly on Linux:
     mkdir /tmp/a/b   recursive       OK           2ms
     mkdir /proc/nope recursive       <no return, killed at 120s, exit 137>
 
-**procfs answers `mkdir` with ENOENT rather than EPERM or EEXIST.** Node's recursive mkdir
+Node's recursive mkdir
 reads ENOENT as "the parent is missing, create it and retry", but the parent `/proc` is
 already there, so it retries forever. macOS never shows this: `/proc` does not exist and the
 first `mkdir` fails on the read-only root, so the call returns an error and the test passes.
@@ -121,7 +121,7 @@ This is a user-facing defect, not a test artefact: any `out_path` under a pseudo
 hangs the server process for good. `servers/calendar/src/index.ts:80` has the identical
 `mkdirSync(dir, { recursive: true })` and the same latent hang; it has no test that reaches it.
 
-**Left red deliberately.** The generator could mark the test skipped and the badge would go
+The generator could mark the test skipped and the badge would go
 green, and that would be the exact defect the loop brief forbids: hiding real behaviour to
 move a score. The honest skips in this script all exist because a mirror genuinely lacks a
 monorepo resource. This one fails because the server hangs. It belongs to whoever owns
@@ -233,7 +233,7 @@ first harness staged all thirty-two generated trees side by side, which *recreat
 so the import resolved and the test passed for a reason no real clone will ever have. It
 surfaced only by accident: the trees were built in alphabetical order, so when `invoice` ran,
 `time-tracker/dist/day.js` did not exist yet and the false pass became a visible ENOENT.
-**A mirror must be verified isolated.** The harness now gives each tree its own parent
+The harness now gives each tree its own parent
 directory containing nothing but the clone, and the final run in section 6 used that.
 
 Own-folder uses are rewritten to the mirror root, so the second D-R15 block — which imports
@@ -433,7 +433,7 @@ The unambiguous evidence that the corrected Dockerfile builds end to end is the 
 run above, which completed and produced an image; the previous round additionally verified
 that image answering initialize and tools/list over stdio.
 
-**Honest limit on this claim:** one mirror was built all the way through to an image
+one mirror was built all the way through to an image
 (`mcp-timezone`); two more got past every COPY and then hit the network. Nobody should read
 "32 of 32 build" into that. What is measured for all thirty-two is that the file on disk is
 the corrected one (`grep -c 'COPY servers' -> 0` on every clone) and that CI installs, builds

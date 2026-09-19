@@ -64,7 +64,7 @@ Six of eight fixed outright, one partial, one untouched.
 
 ## New defects
 
-**D-9 (high, price-tracker) — `checkRedirect` false-positives on slug-canonicalisation redirects.**
+D-9 (high, price-tracker) — `checkRedirect` false-positives on slug-canonicalisation redirects.
 `https://www.newegg.com/p/N82E16819113877` 301s to
 `https://www.newegg.com/amd-ryzen-7-9000-series-.../p/N82E16819113877` — the same product, same id.
 `checkRedirect` refuses it with `the path depth changed from 2 to 3 segments`
@@ -76,7 +76,6 @@ non-generic segment of the requested path (here the product id), or whose final 
 path with a leading slug inserted. This class — short canonical URL expanding to a slug URL — is
 common (Newegg, Amazon `/dp/`, Zalando), so the rule as written will cost real hits.
 
-**D-10 (medium, spreadsheet) — the aggregate answer silently narrows the question.**
 ss2's model call was `where '[Region] = "North" AND [Status] = "Closed"'`; nothing in the prompt asked
 for closed deals only. The server did exactly what it was told and the user read 391 instead of 650.
 The same query without the Status filter returns the ground truth in one call:
@@ -85,7 +84,7 @@ The same query without the Status filter returns the ground truth in one call:
 Fix direction: the group header already prints `5 groups from 102 of 400 rows`; have it echo the
 `where` clause too, so a filter the user never asked for is visible in the model's own output.
 
-**D-11 (medium, time-tracker) — `invoice_summary` is the last paywall that costs a free user work.**
+D-11 (medium, time-tracker) — `invoice_summary` is the last paywall that costs a free user work.
 With `alerts_pending` and `overdue_report` freed, this is the one Pro gate a first session still hits,
 and it sits on the exact phrase "give me invoice lines": 7 calls and 35.6 s to reconstruct one tool's
 output. `servers/time-tracker/src/index.ts:701`. Repro:
@@ -195,7 +194,6 @@ insight:
 
 Three defects from the list above are closed in code. Build and tests below are verbatim.
 
-**D-9 (price-tracker) — `checkRedirect` accepts slug canonicalisation.**
 `servers/price-tracker/src/redirect.ts:38` `GENERIC_PATH_SEGMENTS` (markers `p`/`dp`/`item`/... plus
 the listing words and, at `:44`, two-letter locales) defines which path segments carry no product
 identity. `servers/price-tracker/src/redirect.ts:57` `productToken` returns the longest purely
@@ -216,7 +214,6 @@ newegg `/p/N82E16819113877` -> same path with `?Item=...` (accept), newegg `/p/N
 -> `/us/en/cat/billy-bookcases-58288/` (refuse, `"cat" listing page`), `shop.example.com/item/123` ->
 `/` (refuse, home page), plus a direct `productToken` case.
 
-**D-10 (spreadsheet) — `sheet_query` echoes the query it ran.**
 `servers/spreadsheet/src/index.ts:241` `describeQuery` renders the effective `where`, `group_by`,
 `aggregate` (as `<fn> <col> as <alias>`), `sort` and `limit` as one line; `:326` puts it in front of
 the existing counts line, which stays byte-identical at `:321`. A call with no filter, grouping,
@@ -232,7 +229,6 @@ Case added, `servers/spreadsheet/test/query.test.mjs:153`: asserts that exact `Q
 a narrowed grouped query, the bare `Query: where [Region] = "South"` line for an ungrouped filter, and
 that an unfiltered read still starts with `15 of 15 rows match`.
 
-**D-11 (time-tracker) — `invoice_summary` is free inside the 7-day window.**
 `servers/time-tracker/src/index.ts:701` replaces `if (!gate.isPro()) return gated("invoice_summary")`
 with the same `pro` / `windowFor(a.from, a.to, pro)` treatment `entry_list`, `report` and `export_csv`
 already use: free callers get the last 7 days, Pro gets the full history. The clamp note is appended

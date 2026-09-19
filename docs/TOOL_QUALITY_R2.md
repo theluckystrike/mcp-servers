@@ -16,8 +16,7 @@ source of error in round 1, and it immediately corrected two beliefs the round-1
    something entirely different. On the same page `loan_journal` is byte-identical to
    `servers/amortization/src/index.ts`. So ordinary tools flow `servers/*/src` ->
    `remote/build-vendor.mjs` -> connector page, and the two licence tools do not.
-   **The 31x shared lever for the connector surface is `remote/src/shims/license.ts`.**
-2. **`packages/mcp-license` needs no work.** On the `/mcp/servers` surface, which is built from
+   2. **`packages/mcp-license` needs no work.** On the `/mcp/servers` surface, which is built from
    the GitHub repo and therefore reads that file, `license_activate` scores **4.3-4.4** and
    `license_status` **4.4-4.7** (`data/glama_watch.json`, `servers.mcp-office-suite.tools` and
    `servers.mcp-statement-of-account.tools`). Round 1's rewrite of that file worked. It was
@@ -29,7 +28,7 @@ source of error in round 1, and it immediately corrected two beliefs the round-1
    aggregate; the rubric table under them is fresh. That is the answer to the open question.
 4. **The fleet-wide minimum tool is no longer shared.** Round 2's `license_activate` capped
    20 of 20 connectors. It now caps 2 of 25, at 3.8. The new fleet minimum is
-   **`quote_create` at 2.7** (quotes), and the floor is now a different, server-specific tool
+   (quotes), and the floor is now a different, server-specific tool
    on almost every server. The one-string-fixes-everything era is over; this round is
    23 individual fixes plus three shared ones.
 
@@ -173,7 +172,7 @@ documents as "accepted and ignored"), and `resume_to_html` no longer names `out_
 | root `npm test` baseline, before any edit | 34 suites, 1574 tests, 1563 pass, **0 fail**, 0 `not ok` |
 | root `npm test`, final | 34 suites, 1545 tests, 1531 pass, **3 fail** |
 
-**The 3 remaining failures are not this agent's.** None mentions a description or a character
+None mentions a description or a character
 count; all three are A5's new `packing-list` server not yet registered estate-wide:
 
 ```
@@ -205,13 +204,13 @@ Fetched and diffed: our `glama.ai/mcp/connectors/io.github.theluckystrike/amorti
 connector `io.github.glennl201/leaseiq-pro` in the same two categories, and a `/mcp/servers` page
 for a server the blind test actually named, `cordfuse/barcoding-mcp`.
 
-**No field we control is empty.** Our connector page carries two `<dt>` rows the rival's does
+Our connector page carries two `<dt>` rows the rival's does
 not - `Repository` and `GitHub Stars` - and none that it has and we lack. The hosted URL row is
 populated (`<input readonly value="https://mcp.zovo.one/mcp/amortization">`; it looks blank only
 to a tag-stripping parser, which drops input values). Categories are assigned - Finance, Payments
 & Billing - and match the rival's exactly. Status is `Healthy`, last tested 2026-09-10 13:40.
 
-**What a connector page lacks, it lacks for everyone.** A `/mcp/servers` page renders the
+A `/mcp/servers` page renders the
 repository README in full: install commands (`npx @cordfuse/barcoding-mcp`), a Docker/GHCR
 section, a repo layout, environment variables, a Maintenance panel, a Schema tab and a Source
 tab. A connector page renders **one sentence** of prose, taken from `server.json.description`,
@@ -221,7 +220,7 @@ schedules: payment, interest, early settlement and the journal, to the minor uni
 and no worse than the rival's. Changing it needs a registry re-publish with a version bump,
 which is not this agent's file.
 
-**The finding that matters, and it is negative:** the connectors index holds **19,647** entries
+the connectors index holds **19,647** entries
 (`glama.ai/mcp/connectors`, "Updated 2026-09-10 13:30"), 2,592 of them in Finance alone. Its
 sort options are Featured, Search Relevance, GitHub Stars, Name and Date Updated. **TDQS is not
 one of them.** Raising the score does not move a row up that listing. It changes what a reader
@@ -231,7 +230,7 @@ assistant reading the page - but nobody should expect the score alone to produce
 Two levers on that listing that we do control and are not using: `GitHub Stars` (0 on every
 repo) and `Date Updated` (moved by publishing a registry version). Both belong to other agents.
 
-**One coherence point is unreachable by design.** Glama docks our Naming Consistency to 4/5 with
+Glama docks our Naming Consistency to 4/5 with
 *"the second part varies between verbs (activate, create, delete, list) and nouns (status,
 journal, schedule, report)"*; the rival scores 5/5 for a uniform `verb_noun` pattern. Fixing
 that means renaming tools, which loop 33 hard rule 2 forbids. Recorded so no later loop

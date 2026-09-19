@@ -6,18 +6,18 @@ returns only the checkout URL string, and that grep is asserted in `test/adversa
 
 ## Method
 
-**Part 1 harness** — `/private/tmp/resaudit/probe.mjs` spawns `dist/index.js`, writes JSON-RPC lines to
+— `/private/tmp/resaudit/probe.mjs` spawns `dist/index.js`, writes JSON-RPC lines to
 stdin and flags any stdout line that does not parse as JSON. Fresh `XDG_DATA_HOME` per lane
 (`/private/tmp/resaudit/{data,corrupt,facts}`), `MCP_LICENSE_KEY=""` so every probe runs on the free tier
 except the fact-integrity lane, which needs a signed Pro key from `scripts/sign-license.mjs` to write ten
 letters in one calendar month.
 
-**Verification of every generated document** — `unzip -t` for the ZIP container and every CRC, then the
+— `unzip -t` for the ZIP container and every CRC, then the
 package is read back with the docx server's own engine (`@theluckystrike/mcp-docx/lib` `readDocx`) and
 grepped. "A file appeared" is never the assertion. `word/document.xml` is also grepped directly for the
 escaping probes. LibreOffice is not installed on this machine, so there is no PDF render proof.
 
-**Part 2 harness** — the real `claude` CLI as an MCP client against `/private/tmp/uvres/mcp.json`, which
+— the real `claude` CLI as an MCP client against `/private/tmp/uvres/mcp.json`, which
 registers `resume` alone (`--strict-mcp-config`), fresh `XDG_DATA_HOME=/private/tmp/uvres/data` and
 `XDG_CONFIG_HOME=/private/tmp/uvres/cfg`, `MCP_LICENSE_KEY=""` (free tier). One session, `--session-id`
 then `--resume`, so scenario 3 can say "it" and scenario 4 "that role". Per-tool allowlist written out by

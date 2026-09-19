@@ -54,9 +54,7 @@ could infer. 0 = failed. Tool-call counts exclude the client's own `ToolSearch` 
 | 11 | resume | 120-word background, then "Tailor my resume to this Nova job posting: ..." | **2** | 5 | 80.0 | `profile_set` (3 roles, 8 bullets, 9 skills) -> `tailor_to_job` -> **`profile_set` again** -> `tailor_to_job` -> `resume_to_html`. The output is a real tailored resume, coverage 50% -> 57%, and no employer or date is fabricated. But there is no write path for tailoring: `tailor_to_job` only reports a gap, so the model **rewrote the user's stored profile** to raise the score, and in doing so a bullet the user dictated as "wrote the OpenAPI style guide two of those clients still use" is now stored, permanently, as "wrote the OpenAPI style guide **and governance documentation** two of those clients still use". D-R33. The keyword list is still noisy (`end`, `run`, `accretion`, `ten-year-old`, `austin-anchored` outrank nothing). |
 | 12 | time-tracker + invoice + expense | "What is unbilled, what is due, and what did I earn this week?" | **3** | 5 | 40.0 | `report {unbilled_only: true}` -> nothing, with the tool volunteering "2 entries are hidden because they have already been invoiced"; `overdue_report` -> 0; `invoice_list {unpaid}` -> INV-2026-0001 **USD 383.80** due 2026-09-17; `report {unbilled_only: false}` -> **3.00 h, EUR 270.00**; `expense_list` -> the orphan **PLN 34.50**. The answer is correct on all three counts and it surfaced the mileage as the one thing the week left open, offering to fix it. It also relayed the free tier's 7-day report window rather than pretending to full history. |
 
-**Totals: 51 tool calls, 468.0 s of wall clock, 27 / 36.**
-
-**Per server** (calls through the bundle, `ToolSearch` excluded):
+(calls through the bundle, `ToolSearch` excluded):
 
 | Server | Calls | Tools used | Scenarios |
 |---|---|---|---|
@@ -72,14 +70,14 @@ could infer. 0 = failed. Tool-call counts exclude the client's own `ToolSearch` 
 | currency | 1 | `fx_rates_for` | 8 |
 | price-tracker | 0 | — | a freelancer's week contains no price watch |
 
-**Did the model leave the bundle?** Once, in scenario 1: one `Read` and two `Write` calls against
+Once, in scenario 1: one `Read` and two `Write` calls against
 `~/.claude-alt2/projects/-private-tmp-uv41/memory/`, saving the business profile into the CLI's own
 memory files after it had already stored it in the server. Client-harness behaviour, not a fallback —
 every other request in the week was served by a bundle tool, and no `curl`, `WebFetch` or file read
 of a store ever happened. Tool selection was right on 50 of 51 calls; the miss is the `amount` /
 `gross` column guess in s10, which the schemas made unguessable.
 
-**Errors returned:** 1 of 51 (`sheet_query`, unknown column). No tool crashed, no non-JSON line, and
+1 of 51 (`sheet_query`, unknown column). No tool crashed, no non-JSON line, and
 the two free-tier gates that fired (docx generations, `schedule_upcoming` 30-day horizon) were both
 relayed to the user in plain words.
 
@@ -125,7 +123,7 @@ files and the `.html` — never off the model's prose.
 
 ## Defects
 
-**D-R31 (high, office-suite) — one business, three business profiles, and the user only fills one.**
+D-R31 (high, office-suite) — one business, three business profiles, and the user only fills one.
 Sentence 1 of a freelancer's week states the company, the VAT id, the currency, the tax rate and the
 payment terms. `invoice_business_set` stored all five. `docx` keeps its **own** `business.json` (the
 letterhead) and expense-tracker keeps its own `settings` (the default VAT rate), and neither was
@@ -141,7 +139,7 @@ that has a business or settings surface — invoice, docx, expense-tracker (`exp
 `invoice_business_set`'s answer name the other two calls, the way `invoice_summary` now names
 `entry_mark_billed`.
 
-**D-R32 (high, docx) — "create it again" is expensive advice.** `proposal_create` with no business
+`proposal_create` with no business
 profile still writes the file, still consumes a reference number, still counts against the free
 tier's three documents a month, and then tells the caller to create it again. The model did, so
 `documents.json` holds `PROP-2026-0001` and `PROP-2026-0002` pointing at the **same path**, one file
@@ -152,7 +150,7 @@ path twice. Server-side. Fix direction: check the business profile **before** wr
 refuse with the fix, so nothing is consumed; and since `proposal_update` now exists on the bundle,
 name it in that message ("... then `proposal_update {reference}`") instead of "create it again".
 
-**D-R33 (high, resume) — tailoring has no write path, so the model edits the user's profile.**
+D-R33 (high, resume) — tailoring has no write path, so the model edits the user's profile.
 `tailor_to_job` is read-only: it returns `matched`, `missing` and a coverage percentage. There is no
 `resume_create {emphasise: [...]}` or `tailor_apply`, so a model asked to "tailor my resume" has
 exactly one lever — `profile_set` — and it pulled it. The stored profile, the one every future resume
@@ -223,7 +221,7 @@ Fix direction: each starter clause already knows its own id; add a `references: 
 have `contract_assemble` return `missing_references: [{clause: "scope-of-work", refers_to:
 "change-requests"}]` with an offer to include them. Cheap, and it turns a silent hole into a prompt.
 
-**D-R38 (medium, spreadsheet seam) — the two exporters name the same column differently.**
+D-R38 (medium, spreadsheet seam) — the two exporters name the same column differently.
 `export_csv` (time) writes `amount`; `expense_export` writes `gross`, `net`, `vat`. A model that has
 just summed `amount` on the first file asks for `amount` on the second and gets
 `Error: column "amount" not found`. The error message is good — it lists the real columns — and the
@@ -240,7 +238,7 @@ arithmetic is right and it said what it was doing, but "show me the next 3 invoi
 schedule is a 90-day question, so the free cap makes the modal request unanswerable by the tool.
 Separately, the schedule was created at EUR 2,214.00 (inheriting the 23% default) and corrected to
 EUR 1,800.00 with `tax_rate: 0`; the reason — a non-EU client, reverse charge — is written into the
-**invoice** notes in s8 but there is no field for it on a schedule, so every invoice this retainer
+notes in s8 but there is no field for it on a schedule, so every invoice this retainer
 generates from October onward will carry 0% VAT with no explanation on the document. Repro:
 `/private/tmp/uv41/out/s9.jsonl` and `recurring/schedules.json`. Server-side. Fix direction: make the
 free cap a count of occurrences (3) rather than a window of days, so the plain question is answerable;
@@ -331,7 +329,7 @@ insight:
 Shipped 2026-09-03. Ten defects, one new shared module, ten servers touched. The through-line of
 round 8 was that the bundle had no memory of the user; the fix is that it now has exactly one.
 
-**The shared business profile** — `packages/mcp-license/src/profile.ts:59` `readSharedProfile()`
+— `packages/mcp-license/src/profile.ts:59` `readSharedProfile()`
 and `:112` `writeSharedProfile(patch)`, backed by
 `${XDG_DATA_HOME:-~/.local/share}/mcp-servers/profile/business.json` (`:47` `profilePath()`).
 Atomic write (tmp + pid + random suffix, then rename, `:130`), corrupt-marker quarantine

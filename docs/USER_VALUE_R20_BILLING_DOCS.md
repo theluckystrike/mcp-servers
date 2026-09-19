@@ -58,7 +58,7 @@ wire. No code was changed or fixed as part of this round; it is measurement only
 | b5 | "Only the brochures turned up today, the posters are still coming. Record that on the order." | 3 | **3** | 1 | 8.8 | One `purchase_order_receive {partial: true}` moved the order to `partially_received`, resolving "the order" from context without asking |
 | b6 | "Which of my purchase orders are past their delivery date?" | 3 | **3** | 1 | 6.7 | One `purchase_order_list` answered the Pro-shaped question for free: nothing overdue against 2026-09-20. No upgrade text shown |
 
-**Totals: 17/18, 9 tool calls, 55.1 s. Round 19 (stdio) was 16/18, 9 tool calls, 57.8 s.**
+Totals: 17/18, 9 tool calls, 55.1 s. Round 19 (stdio) was 16/18, 9 tool calls, 57.8 s.
 
 ## Independent verification
 
@@ -77,7 +77,7 @@ on the same token, not taken from the model's prose.
 
 ## Defect
 
-**D-R86 reproduces hosted, but lighter.** Round 19 found the model refusing an over-credit itself, with a
+Round 19 found the model refusing an over-credit itself, with a
 number no tool produced (EUR 3,400.00 instead of the true EUR 1,877.00 running total). Hosted, the same
 client-side pattern appears -- b3 ran zero tool calls -- but the arithmetic this time is correct, matching
 the server's own refusal text word for number. The residual gap is unchanged in kind: "do it" got a

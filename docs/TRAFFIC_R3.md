@@ -35,7 +35,7 @@ since the baseline (`--start 2026-09-08T08:26:26Z`) returns the complete referer
 with **no registry-ecosystem host on it at all**. So the finding is not "flat within noise";
 it is **zero registry-referred requests in 24.7 hours**.
 
-**Criterion 1 cannot be judged today, and that is a measurement fact, not a hedge.** GitHub's
+GitHub's
 traffic API is serving the identical 14-day window it served when the baseline was stamped:
 `2026-08-25 → 2026-09-07`, last non-zero day 09-07 with 1 view, totals 48 views / 25 uniques,
 referrers `registry.modelcontextprotocol.io` 21/10 and `github.com` 1/1. Every byte of
@@ -108,7 +108,7 @@ SemrushBot 98, GPTBot 90, meta-externalagent 67, bingbot 35, Applebot 33, Perple
 **Googlebot 2 (1.4%)**. The 14 new guides were picked up by ClaudeBot, Amazonbot and GPTBot
 within a day; Googlebot took none of them.
 
-**Moved:** GPTBot, Applebot, Amazonbot, SemrushBot. **Did not move:** ClaudeBot (already at
+GPTBot, Applebot, Amazonbot, SemrushBot. **Did not move:** ClaudeBot (already at
 its ceiling), Googlebot, bingbot, YandexBot, MJ12bot, meta-externalagent.
 
 ### A correction to a number both R1 and R2 carried: Googlebot's real coverage is 1 URL, not 2
@@ -145,7 +145,7 @@ Same discriminator as R1 and R2 (`botScore` is Enterprise-only on this zone).
 | Sitemap URLs with ≥1 such view, ex-homepage | 50 of 125 | **71 of 140** |
 
 Taken at face value that is off-homepage human page views rising from 13.3/day to 19.9/day.
-**It is not.** New this round, `render_proven_ua_profile` in `data/traffic.json` profiles each
+New this round, `render_proven_ua_profile` in `data/traffic.json` profiles each
 render-proven UA string by how many *distinct* catalogue URLs it touched and how many
 countries it appeared from. A person reads a few pages from one place; a rendering crawler
 touches many pages from a proxy pool.
@@ -243,7 +243,7 @@ Per calendar day (`cf_status_x_date`; 09-02 and 09-09 are partial):
 | **2026-09-08** | **17,474** | **3,093** | 1,246 | 1,088 | **3,549** |
 | 2026-09-09 (to 09:09Z) | 12,783 | **383** | 293 | 589 | **2,844** |
 
-**The 401s collapsed and 202s replaced them, on the same paths.** R2 reported 401 at
+R2 reported 401 at
 5,945/day and could not reduce it; it is now ~400–3,100/day and falling. In the 24.7-hour
 delta the top 401 paths are still `POST /mcp/<server>` (62, 51, 51, 49 …) but the top 202
 paths are the *same* endpoints at five times the volume (`POST /mcp/deposits` 322,
@@ -264,7 +264,7 @@ moved the 401 column. The scanner population is unchanged; the answer it gets is
 The metric R2 called immovable therefore did move, and it moved because the surface changed
 underneath it. Not measurement's call to judge whether that is wanted; reported.
 
-**404s are unchanged in shape** — the `/.well-known/*` discovery files that do not exist,
+— the `/.well-known/*` discovery files that do not exist,
 ~1,250/day. **504s did not recover.** R2 flagged a 5.7x spike on 09-07 concentrated on
 checkout; two days later `/buy/*` is still timing out (`GET /buy/bundle` 132, and every other
 `/buy/` route 20–31, in the last 24.7 h). This is the one operational finding that has
@@ -290,7 +290,7 @@ persisted across two rounds without improving. **429 is new**: 888 in the window
       google_canonical  https://mcp.zovo.one/
 
 Cloudflare corroborates from the other side: in the 24.7 hours since R2, Googlebot made
-**exactly one** sitemap fetch (`/`) and one `/sitemap.xml` fetch. That single crawl is the
+sitemap fetch (`/`) and one `/sitemap.xml` fetch. That single crawl is the
 whole event. Nine days after the subdomain went up and two days after the sitemap was cut and
 resubmitted, Google has fetched and indexed one page, and 140 of 141 URLs remain uncrawled.
 
@@ -352,8 +352,6 @@ last 10 days:
 | Property total, 28 d | 59 clicks, 4,746 impressions, 431 page rows |
 
 The control carries data through 2026-09-08, so the zero covers the day of the index entry.
-**Indexed, and still zero impressions.**
-
 ### Bing, Yandex and the rest: UNMEASURED, unchanged
 
 All three scripted `site:` probes ran with their positive controls and all three controls
@@ -375,7 +373,7 @@ exact `href="…"` counted with `/usr/bin/grep`, per the file's own `verify_comm
 | Footer/sitewide (`BACKLINKS_RESULT`, `_R2`, `_R3`): ukmoneycalc ×3, statewage ×3, ml0x, heytensor, kickllm, toolsthatrank, aiwebsitepipeline, lakelevelnow, dscrradar, zovo.one | 14 | **14** |
 | Previously recorded lost: deepvalueradar.com, worthmyclaim.com | 0 | 0 (still absent, string not present anywhere in either page) |
 
-**Nothing vanished this round.** Every one of the 18 matched on the *exact* href, so the
+Every one of the 18 matched on the *exact* href, so the
 tolerant fallback (trailing slash, single quotes) never had to be used, and every host page
 returned HTTP 200.
 
@@ -441,6 +439,6 @@ External calls this round: 2 full 141-URL sitemap censuses plus 1 × 36 endpoint
 (URL Inspection, free, 2,000/day quota), ~40 Cloudflare GraphQL queries across four windows,
 16 inbound-link page fetches, 5 GitHub API calls and 10 live probes of the host.
 
-**Durable risk, hit for the third session running:** the GSC key at
+the GSC key at
 `~/Desktop/keys/gsc-sa-key.json` is on iCloud Desktop and goes dataless without warning. See
 `docs/HUMAN_GATED_PACK.md`.

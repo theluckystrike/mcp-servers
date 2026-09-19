@@ -39,7 +39,6 @@ RESULT: ALL OFFLINE CHECKS PASSED
 `public/index.html` had two bugs. Both are now fixed and verified in a real
 browser (Chrome via the tool harness), not by reading the file.
 
-**Defect A — the Telegram Mini App SDK was never loaded.**
 There was no `<script src="https://telegram.org/js/telegram-web-app.js">` tag.
 Inside the Telegram client that leaves `window.Telegram.WebApp` undefined, so the
 app cannot read launch params, call `ready()`/`expand()`, or theme itself.
@@ -52,7 +51,6 @@ $ grep -n "telegram-web-app\|script src" public/index.html
 
 Fix: added the SDK script tag in `<head>`, before the in-page script.
 
-**Defect B — the catalog grid had no container, so 42 product cards were dropped.**
 The script did `document.getElementById("grid")` but no element with `id="grid"`
 existed in the document. `appendChild` on `null` throws, so the entire catalog —
 all 41 hosted servers plus the aggregate entry — never rendered. This was the

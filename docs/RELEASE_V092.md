@@ -60,7 +60,7 @@ servers, apparently never reached before the stall.
 Ran `scripts/sync-mirrors.sh bank-statement quotes barcode zip office-suite`. All 5
 pushed cleanly with no errors (office-suite vendors all 19 children and takes the
 longest). Re-verified all 20 mirrors afterward by the same commit-message check:
-**20 of 20 now match HEAD `e5575ff`.** No individual retries were needed.
+No individual retries were needed.
 
 ### 4. data/distribution.json
 

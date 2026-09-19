@@ -59,8 +59,6 @@ infer. 0 = failed.
 | ex3 | "Export those September expenses as a CSV I can download." | **3** | 3 | 1 | One `expense_export {format: "csv"}`. `GET`: 200, `text/csv; charset=utf-8`, 309 bytes, `filename="expenses-2026-09-01-to-2026-09-05.csv"`, 16 columns, exactly the three rows, byte-exact against what `expense_add` stored |
 | ex4 | "Now show me everything I logged in June 2026." | **3** | 2 | 1 | `expense_list {from: 2026-06-01, to: 2026-06-30}` returned `"from": null`, `"nothing_read": true`, and a note opening "Nothing was read" and naming the real cutoff (2026-08-06) - no range whose start is after its end. Relayed correctly on the first turn, nothing to rescue. **D-R77 verified fixed** |
 
-**Totals: 12/12, 6 tool calls.**
-
 ## Independent verification
 
 Every number below was re-read by direct `tools/call` or decoded from the downloaded CSV bytes,

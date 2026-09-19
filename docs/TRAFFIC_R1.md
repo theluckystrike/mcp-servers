@@ -3,7 +3,7 @@
 Instrument: `node scripts/traffic.mjs`. Raw output: `data/traffic.json`, `data/gsc.json`.
 Every figure below names the query that produced it. Nothing here is estimated.
 
-**Both measurement channels are now working.** Cloudflare GraphQL Analytics works on the
+Cloudflare GraphQL Analytics works on the
 env token `CLOUDFLARE_API_TOKEN`. Google Search Console was recovered: the
 service-account key at `~/Desktop/keys/gsc-sa-key.json` was iCloud-dataless, and a
 `brctl download` on it did materialise, on a delay of a few minutes rather than
@@ -37,7 +37,7 @@ But "all 312 crawled" hides the number that decides everything. Broken out by cr
 | ChatGPT-User | 1 | 0.3% | 1 |
 | Claude-User | 1 | 0.3% | 1 |
 
-**Googlebot has fetched 2 of the 312 pages: `/` and `/s/invoice`.** It fetched
+It fetched
 `/robots.txt` 4 times and `/sitemap.xml` 7 times in the same window, so it knows the
 sitemap exists and is choosing not to crawl it. This is a crawl-budget / discovery
 problem on a domain with no inbound links, not a technical block — the orchestrator
@@ -245,7 +245,7 @@ query or a row-limit artefact. It is also not a new-data artefact: the prior ext
 828 page rows for `sc-domain:zovo.one` — 783 on `zovo.one`, 45 on `www.zovo.one`,
 **0 on `mcp.zovo.one`**.
 
-**`mcp.zovo.one` has never received a single Google impression.** Not a low number — zero,
+Not a low number — zero,
 over at least the last 99 days. The 312-page storefront does not exist in Google's index.
 
 ---
@@ -289,5 +289,5 @@ per-path figure can never be silently under-counted. Every GraphQL query it sent
 stored verbatim under `queries` in `data/traffic.json`, and the classification regexes
 under `classification_rules`.
 
-**Durable risk:** the GSC key lives at `~/Desktop/keys/gsc-sa-key.json`, on iCloud
+the GSC key lives at `~/Desktop/keys/gsc-sa-key.json`, on iCloud
 Desktop, and will go dataless again. See `docs/HUMAN_GATED_PACK.md`.

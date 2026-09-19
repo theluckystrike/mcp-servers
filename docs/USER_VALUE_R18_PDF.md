@@ -59,8 +59,6 @@ workaround, or left the user a gap. 1 = partially wrong. 0 = failed.
 | p5 | "What does page 2 say?" | 3 | **3** | 1 | 9.7 | `pdf_text {path: merged-paid, pages: "2"}` read `fixture page 2` plus the `PAID` overlay, and named its own read method (FlateDecode via `node:zlib`, `Tj`/`TJ` operators, no OCR). Prompt adapted from round 12's dollar-total question since this fixture carries no invoice total |
 | p6 | "Split the stamped file back into single pages." | 3 | **3** | 1 | 15.5 | One `pdf_split`, four parts (this file has 4 pages, not round 12's 2), echoed `"source": "merged-paid.pdf"` - again no leak. `GET` all four: 1,832-1,834 B each, `application/pdf`, `filename="merged-paid-page1..4.pdf"`. Independent decode: pages 1/3 = `fixture page 1` + `PAID`, pages 2/4 = `fixture page 2` + `PAID`, matching the merge order |
 
-**Totals: 17 / 18, 6 tool calls, 67.9 s.**
-
 ## Independent verification
 
 Every number below was re-read from the endpoint by `curl` or decoded locally with pdf-lib and a

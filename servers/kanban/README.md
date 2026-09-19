@@ -13,17 +13,17 @@ Built by [theluckystrike](https://github.com/theluckystrike).
 
 ![kanban demo](../../assets/demo-kanban.gif)
 
-**A local kanban board per project -- columns, due dates, estimates, weekly review -- zero setup, all local.**
+A local kanban board per project, columns, due dates, estimates, weekly review, zero setup, all local.
 
 ## 60-second install
 
 npm publish for `@theluckystrike/mcp-kanban` is pending. Until then, the `.mcpb` one-click bundle or a clone+build
-is the working path -- both are verified below.
+is the working path, both are verified below.
 
-**One-click (.mcpb):** download `kanban.mcpb` from the latest release and double-click it in Claude Desktop:
+One-click (.mcpb): download `kanban.mcpb` from the latest release and double-click it in Claude Desktop:
 https://github.com/theluckystrike/mcp-servers/releases/latest
 
-**Claude Desktop** (`claude_desktop_config.json`):
+(`claude_desktop_config.json`):
 
 ```json
 {
@@ -36,13 +36,13 @@ https://github.com/theluckystrike/mcp-servers/releases/latest
 }
 ```
 
-**Claude Code:**
+Claude Code:
 
 ```sh
 claude mcp add kanban -- npx -y @theluckystrike/mcp-kanban
 ```
 
-**Cursor** (`.cursor/mcp.json`):
+(`.cursor/mcp.json`):
 
 ```json
 {
@@ -101,7 +101,7 @@ Also exposed: the resource `kanban://today` (due today plus everything overdue) 
 - "Move NS-3 to doing."
 - "What does the nova board look like?"
 - "What's overdue?"
-- "Start a timer on NS-3." -- then pass the arguments it returns to the time-tracker server.
+- "Start a timer on NS-3.", then pass the arguments it returns to the time-tracker server.
 - "I spent 40 minutes on NS-3."
 - "Weekly review."
 
@@ -119,13 +119,13 @@ Also exposed: the resource `kanban://today` (due today plus everything overdue) 
 
 Pro is a one-time $19 for this server, or $39 for every server, lifetime.
 
-**Get Pro:** https://mcp.zovo.one/buy/kanban
+Get Pro: https://mcp.zovo.one/buy/kanban
 
 ## Pairs with
 
-- [mcp-time-tracker](../time-tracker) -- `task_start_timer` hands it the project and task name, so hours land against the same project.
-- [mcp-calendar](../calendar) -- due dates on the board next to what is actually in your week.
-- [mcp-invoice](../invoice) -- turn the tracked hours behind those tasks into invoice line items.
+- [mcp-time-tracker](../time-tracker), `task_start_timer` hands it the project and task name, so hours land against the same project.
+- [mcp-calendar](../calendar), due dates on the board next to what is actually in your week.
+- [mcp-invoice](../invoice), turn the tracked hours behind those tasks into invoice line items.
 
 ## Privacy
 

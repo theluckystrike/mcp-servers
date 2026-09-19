@@ -1,7 +1,7 @@
 # T9 Off-Page Intel Sweep — R1
 
-**Date:** 2026-09-18
-**Status:** complete
+2026-09-18
+complete
 
 ## 1. mcp.so ingestion recheck — NOT INGESTED (confirmed, valid evidence)
 - **Method:** rendered-SPA search (curl `/server/...` returns HTTP 404 for ALL paths incl. positive controls, so it is NOT evidence; the SPA is the valid check).

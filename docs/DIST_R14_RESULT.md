@@ -104,7 +104,7 @@ empty working directory. Seeded by writing the invoice engine's own field shapes
 client, `INV-2026-0001` at EUR 1,230.00 **with `paid_minor` already 20000**, and a USD `INV-2026-0002` so the
 currency refusal has something real to refuse.
 
-**16 of 18, 6 tool calls, 38.1 s, zero tool errors.** d1 record 3, d2 the apply-on-top 3, d3 the
+d1 record 3, d2 the apply-on-top 3, d3 the
 over-application 2, d4 the currency refusal 3, d5 the balance question 2, d6 refund plus statement 3.
 
 Both lost points are the same client-side shape, and it is the shape round 19 also hit (D-R86): the model
@@ -260,7 +260,7 @@ The other agent's `invoice_mark_paid` fix is section C.
 
 ## Measured insight
 
-**Writing a second server against another server's store is the only review that reads the arithmetic.**
+Writing a second server against another server's store is the only review that reads the arithmetic.
 
 docs/DEPOSITS_RESULT.md found that `invoice_mark_paid` assigned `paid_minor` where it should have added,
 silently losing any payment that arrived first. That bug had been shipped, versioned, released, run through

@@ -8,17 +8,17 @@ Built by [theluckystrike](https://github.com/theluckystrike).
 
 ![price-tracker demo](../../assets/demo-price-tracker.gif)
 
-**Watch any product page for price drops from chat -- no scraping service, no account, all local.**
+Watch any product page for price drops from chat, no scraping service, no account, all local.
 
 ## 60-second install
 
 npm publish for `@theluckystrike/mcp-price-tracker` is pending. Until then, the `.mcpb` one-click bundle or a clone+build
-is the working path -- both are verified below.
+is the working path, both are verified below.
 
-**One-click (.mcpb):** download `price-tracker.mcpb` from the latest release and double-click it in Claude Desktop:
+One-click (.mcpb): download `price-tracker.mcpb` from the latest release and double-click it in Claude Desktop:
 https://github.com/theluckystrike/mcp-servers/releases/latest
 
-**Claude Desktop** (`claude_desktop_config.json`):
+(`claude_desktop_config.json`):
 
 ```json
 {
@@ -31,13 +31,13 @@ https://github.com/theluckystrike/mcp-servers/releases/latest
 }
 ```
 
-**Claude Code:**
+Claude Code:
 
 ```sh
 claude mcp add price-tracker -- npx -y @theluckystrike/mcp-price-tracker
 ```
 
-**Cursor** (`.cursor/mcp.json`):
+(`.cursor/mcp.json`):
 
 ```json
 {
@@ -167,7 +167,7 @@ restarted. A damaged database can therefore never be silently overwritten by the
 - **Real-world extraction success is roughly 5 of 12** on a mixed sample of major retailers: five sites
   returned an outright bot-wall 403 (H&M, Allegro, MediaMarkt, Home Depot, Etsy), one timed out (Best
   Buy), and the rest split between correct prices and one intentionally refused reading (a redirect off
-  the product page). This is a property of the open web, not a bug the server can fix -- there is no
+  the product page). This is a property of the open web, not a bug the server can fix, there is no
   headless browser or CAPTCHA solver here, by design (no native deps, no paid API). `price_add_manual`
   is the working answer for a blocked shop.
 - **There is no background job.** Nothing checks prices unless you (or your client, via a scheduled
@@ -175,7 +175,7 @@ restarted. A damaged database can therefore never be silently overwritten by the
   no business running a daemon on your machine.
 - Free tier caps watches at 3 and history at the last 30 observations per watch; `price_check` and
   `alerts_pending` are unlimited on free.
-- A `low`-confidence regex reading is still reported, but never silently treated as certain -- pass it on
+- A `low`-confidence regex reading is still reported, but never silently treated as certain, pass it on
   to the user as an estimate, not a fact.
 
 ## Troubleshooting
@@ -201,32 +201,27 @@ All data stays local, in `${XDG_DATA_HOME:-~/.local/share}/mcp-servers/price-tra
 
 ## Pairs with
 
-- [mcp-invoice](../invoice/README.md) -- bill a client for something you bought after tracking its price.
-- [mcp-spreadsheet](../spreadsheet/README.md) -- export `price_history` and analyze it as a sheet.
-- [mcp-time-tracker](../time-tracker/README.md) -- track the hours you spend shopping around, if that is somehow billable.
-- [office-suite](../office-suite/README.md) -- every sibling server behind one install, one config entry.
+- [mcp-invoice](../invoice/README.md), bill a client for something you bought after tracking its price.
+- [mcp-spreadsheet](../spreadsheet/README.md), export `price_history` and analyze it as a sheet.
+- [mcp-time-tracker](../time-tracker/README.md), track the hours you spend shopping around, if that is somehow billable.
+- [office-suite](../office-suite/README.md), every sibling server behind one install, one config entry.
 - Guide: [Watch a product price with Claude and get told when it drops](https://mcp.zovo.one/guides/price-drop-alerts-with-claude)
 
 ## FAQ
 
-**Why didn't it check the price automatically overnight?**
 There is no scheduler in this server. Prices are only re-read when `watch_refresh` runs, which happens
 when you ask for it (or when a cron/launchd job you set up yourself calls it).
 
-**Why does it refuse to give me a price on some pages?**
 Either the shop returned a bot-wall response (403) or the request redirected off the product page onto a
 listing, category or home page. Both are reported honestly instead of returning a wrong number; use
 `price_add_manual` to keep the history going by hand.
 
-**What does "confidence: low" mean?**
 The price came from a text-pattern fallback rather than the page's own structured data (JSON-LD,
 microdata, Open Graph). It is usually right but has not been verified against a machine-readable field.
 
-**Can I track a price in a currency different from what the page shows?**
 `watch_add` and `price_add_manual` accept an explicit `currency`, but the number you store should match
-what you actually read -- the server does not convert currencies.
+what you actually read, the server does not convert currencies.
 
-**Does it ever send my watch list anywhere?**
 No. The only outbound requests are to the product URLs you add, to fetch their pages. There is no
 telemetry and no account.
 

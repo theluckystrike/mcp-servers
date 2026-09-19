@@ -1,13 +1,13 @@
 # Draft 01 — GitHub Discussions: config parses, server still fails to start
 
-**Surface:** GitHub Discussions (modelcontextprotocol org) — `OPEN` with a GitHub account
-**Thread URL:** https://github.com/orgs/modelcontextprotocol/discussions/325
-**Thread title:** *I configured claude_desktop_config.json to configure mcp for claude, but every time I restart claude, I will be prompted that the service failed to start*
-**Fit:** The thread's exact symptom is "config is valid, server won't start." The guide below is a
+GitHub Discussions (modelcontextprotocol org) — `OPEN` with a GitHub account
+https://github.com/orgs/modelcontextprotocol/discussions/325
+*I configured claude_desktop_config.json to configure mcp for claude, but every time I restart claude, I will be prompted that the service failed to start*
+The thread's exact symptom is "config is valid, server won't start." The guide below is a
 six-check ordered list for precisely that, and the log-file location is the answer nobody in the
 thread has given.
 
-**Exact guide link to include:** https://mcp.zovo.one/guides/mcp-server-not-showing-up-in-claude-desktop
+https://mcp.zovo.one/guides/mcp-server-not-showing-up-in-claude-desktop
 
 ---
 

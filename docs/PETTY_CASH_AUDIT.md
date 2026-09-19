@@ -43,7 +43,7 @@ Scorecard: **16 / 18** (2.67 / 3).
 
 ### Findings from the six prompts
 
-**Custodian identity leak (prompt 1).** The model reached for a value that was in neither
+The model reached for a value that was in neither
 the user's sentence nor the shared profile and wrote it into the float record as
 `custodian_source: "call"`. The shared profile existed for exactly this ("Nova Studio" would
 have been the correct default), and the design in `PETTY_CASH_RESULT.md` explicitly treats
@@ -52,7 +52,7 @@ not a server defect: the server did exactly what it was told, and the tell worke
 auditor reading `floats.json` immediately sees the value came from a `call`, not the
 profile) — but the value itself should not have existed.
 
-**Correct number despite a dismissed guardrail (prompt 4).** The model's own words called
+The model's own words called
 the `NO_HAND_MATH` guard text a "paywall nudge... not a technical limitation" and did the
 math anyway. It happened to reach EUR 60.50, the answer the imprest-minus-balance rule gives,
 not EUR 60.39, the voucher-sum trap `PETTY_CASH_RESULT.md`'s three-cycle drift test exists to
@@ -61,7 +61,7 @@ which is in fact the correct decomposition — but a model that treats every gat
 marketing copy to override is one bad prompt away from confidently reporting the wrong
 figure with no server ever in the loop to catch it.
 
-**A refusal argued rather than demonstrated (prompt 5).** The right voucher survived, but no
+The right voucher survived, but no
 tool call happened, so the concrete evidence (`voucher_delete`'s refusal names the count date
 and the exact amount in minor units) never reached the transcript. Reasoning-only refusals
 are indistinguishable, from the outside, between "the model checked and is right" and "the

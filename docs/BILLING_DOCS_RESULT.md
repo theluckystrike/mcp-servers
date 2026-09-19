@@ -17,36 +17,36 @@ server that needs to read these documents.
 
 ## Design decisions worth stating
 
-**A credit note can never exceed the invoice's remaining creditable amount.** Remaining is the
+Remaining is the
 invoice total less everything already credited against it, read from this server's own store. The
 check and the write are one critical section under both locks, so two processes cannot each see room
 and both take it: ten concurrent EUR 200.00 credits against a EUR 1,107.00 invoice store exactly five
 and refuse exactly five (`test/concurrency.test.mjs`).
 
-**Crediting a whole invoice, or a whole invoice line, copies the stored numbers.** This is the
+This is the
 `quote_accept` insight from docs/QUOTES_RESULT.md applied one document further along: the client
 agreed to the numbers the invoice printed, and recomputing them from a rounded unit price is how a
 document and the credit note that reverses it come to differ by a cent. Only a partial quantity is
 recomputed, and then on the invoice's own unit price, tax rate and discount, through `computeTotals`.
 
-**Every money field on a credit note is stored negative, including the unit price.** The quantity
+The quantity
 stays positive, so `10 x EUR -90.00 = EUR -900.00` reproduces on a calculator, and a bookkeeper
 summing `gross_minor` over a period's documents gets the net of what was billed without knowing which
 rows to flip.
 
-**The invoice is not written to.** The invoice engine's `Invoice` record has no `credited_minor`
+The invoice engine's `Invoice` record has no `credited_minor`
 field (`servers/invoice/src/store.ts`), and adding one would mean two servers writing the same
 record, with whichever saved last winning. The link therefore lives on the credit note, and
 `credit_note_list {invoice: "INV-2026-0001"}` is the query. The create response says so in one line
 rather than leaving it to be discovered. `syncInvoiceCredited` writes the field back only if a future
 engine version already carries it, so the two can never disagree by omission.
 
-**Ids are `CN-YYYY-NNNN` and `PO-YYYY-NNNN`.** Same reasoning as `Q-YYYY-NNNN` and `INV-YYYY-NNNN`: a
+Same reasoning as `Q-YYYY-NNNN` and `INV-YYYY-NNNN`: a
 counter that resets every January collides with last January's document, and the two are different
 documents. The counter is written before the row, so a crash burns an id rather than reusing one, and
 existing ids are scanned so a restored store cannot reissue one.
 
-**Prices are taken in minor units and a decimal is refused.** `unit_price_minor: 9000` is EUR 90.00
+`unit_price_minor: 9000` is EUR 90.00
 and `150000` is JPY 150,000. Every line is checked to have round-tripped through the engine before
 anything is stored.
 

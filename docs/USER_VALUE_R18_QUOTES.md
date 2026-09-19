@@ -48,7 +48,7 @@ infer. 0 = failed.
 | q5 | "Acme wanted 3 days of consulting at PLN 1200 a day, so quote them too - and they have just declined it." | 3 | **3** | 2 | 10.3 | `quote_create` inferred **PLN** from the price rather than the profile's EUR default, 23% on PLN 3600.00 = PLN 828.00, total PLN 4,428.00, default 30-day validity (this prompt did not ask for two weeks). Then `quote_decline`, `open_quotes_now: 0` |
 | q6 | "What is my win rate this quarter?" | 2 | **3** | 1 | 11.3 | **One `quote_report {from: "2026-07-01", to: "2026-09-30"}` call, no refusal.** `win_rate_percent: 50`, `win_rate_basis` named ("accepted / (accepted + declined); a quote nobody answered is not a loss the client chose"), full per-currency breakdown (1 EUR accepted at 1697.40, 1 PLN declined at 4428.00). The model relayed the number and both quotes directly from the report instead of falling back to a hand count over `quote_list` |
 
-**Totals: 18/18, 8 tool calls, 58.2 s. Round 12 was 17/18, 9 tool calls, 73.4 s (quotes lane only).**
+Totals: 18/18, 8 tool calls, 58.2 s. Round 12 was 17/18, 9 tool calls, 73.4 s (quotes lane only).
 
 ## Independent verification
 

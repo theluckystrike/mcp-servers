@@ -11,10 +11,10 @@ Built by [theluckystrike](https://github.com/theluckystrike).
 ## Install
 
 
-**One-click (.mcpb):** download `per-diem.mcpb` from the latest release and double-click it in Claude Desktop:
+One-click (.mcpb): download `per-diem.mcpb` from the latest release and double-click it in Claude Desktop:
 https://github.com/theluckystrike/mcp-servers/releases/latest
 
-**Hosted, no install:** point a URL-based client at `https://mcp.zovo.one/mcp/per-diem`. `GET https://mcp.zovo.one/mcp/connect` mints a token and prints a ready URL.
+Hosted, no install: point a URL-based client at `https://mcp.zovo.one/mcp/per-diem`. `GET https://mcp.zovo.one/mcp/connect` mints a token and prints a ready URL.
 
 npm publish for `@theluckystrike/mcp-per-diem` is pending, so the `npx` line below returns 404 today.
 
@@ -98,7 +98,7 @@ No `vat_rate` is set on the payload. A statutory per diem is an allowance, not a
 
 ## A measured insight
 
-**Substring matching a country name is how a per diem gets quietly priced at another country's rate.**
+Substring matching a country name is how a per diem gets quietly priced at another country's rate.
 
 The first build resolved a destination by exact name, then ISO code, then `country.includes(destination)`. A trip to Oman came back priced, in EUR, with no warning: `"romania".includes("oman")` is `true`, so it took Romania's 42.00 EUR diet. Oman is not one of the 34 countries this build bundles, so the correct answer was a refusal naming the gap. Instead the caller got a confident number, in the wrong currency, from a country 3,000 km away.
 

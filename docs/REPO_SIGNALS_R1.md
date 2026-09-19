@@ -56,7 +56,7 @@ Quoted verbatim from `https://glama.ai/mcp/servers/theluckystrike/mcp-statement-
 | 12 | Author not verified | **True** | Needs a GitHub sign-in on Glama. Appended to `docs/HUMAN_GATED_PACK.md` as section 13. |
 
 Three more lines sit above the Maintenance block, in the 75% "Profile completion" panel:
-**"Has a Glama release — Latest release: v0.14.0"** (section 2), **"No related servers"**
+(section 2), **"No related servers"**
 (admin-gated, same sign-in as #12), and the score itself.
 
 ---
@@ -132,7 +132,7 @@ The orchestrator's finding mid-round raises what is at stake: if the registry en
 re-pointed from monorepo subfolders to these mirrors (`docs/VSCODE_GALLERY_R1.md`), the mirrors
 become the repository a VS Code user lands on, and its commit history is part of what they see.
 
-**Recommendation: keep squashing off. It is implemented and proven.** The risks, named:
+The risks, named:
 
 | Risk | Handling |
 |---|---|
@@ -189,7 +189,7 @@ actions/setup-node@v4"* — which is why the generator emits v5. The v5 run is c
 
 ### Two real defects CI found, both now fixed in the generator
 
-**(a) A mirror test read a sibling server's source.** `statement-of-account`'s contract suite
+`statement-of-account`'s contract suite
 reads `servers/invoice/src/store.ts`, `servers/billing-docs/src/store.ts` and
 `servers/deposits/src/store.ts` to check that the record shapes it seeds still match what those
 servers declare. A mirror vendors a sibling's `dist`, never its `src`. Measured on a fresh clone
@@ -208,7 +208,7 @@ module-scope constant holding a sibling path (kanban's `TT_ENTRY`). Nine servers
 pattern: amortization, bank-statement, calendar, cash-book, image, kanban, pdf, petty-cash,
 statement-of-account. After the fix, same clone: **47 tests, 0 failures.**
 
-**(b) A skipped test was the setup for a live one.** `timezone`'s concurrency suite signs a Pro
+`timezone`'s concurrency suite signs a Pro
 key into `process.env.CONC_KEY` inside its first test; step 5a2c skips that test because it runs
 the monorepo's `scripts/sign-license.mjs`. The second test read the now-empty key, ran on the
 free tier, and asserted 10 counted writes:
@@ -233,36 +233,34 @@ instead of absorbing it into its predecessor and skipping that one by mistake.
 
 ## 5. The lines that are true and stay true
 
-**"No community issues in the last 6 months."** Issues are enabled on all 31 server mirrors
+Issues are enabled on all 31 server mirrors
 (`gh repo list --json hasIssuesEnabled`), and `MIRROR.md` tells people to file in the monorepo,
 which guarantees the tracker stays empty. That is the right trade — one issue tracker for one
 codebase — and manufacturing issues to move a grade would be exactly the defect the brief names.
 Recorded, not fixed. If it ever becomes worth reconsidering, the question is whether Glama
 penalises an empty-but-open tracker more than a disabled one; that is unknown and was not guessed.
 
-**"No recent usage."** Glama's own tip says to seed it with "Try in Browser" on the server page.
+Glama's own tip says to seed it with "Try in Browser" on the server page.
 That is a browser action on Glama's site, not something this project can reach.
 
 ---
 
 ## 6. Are the mirrors current, and is a re-sync safe?
 
-**Currency.** 30 of the 31 server mirrors were pushed in one run on 2026-09-06 08:18–08:23Z, at
+30 of the 31 server mirrors were pushed in one run on 2026-09-06 08:18–08:23Z, at
 monorepo v0.20.0. `mcp-timezone` was pushed 2026-09-08T09:44:31Z (the Dockerfile fix). The
 monorepo is at v0.21.0 (`gh release list --repo theluckystrike/mcp-servers`). So every mirror
 except timezone is one release behind, and 30 of 31 still ship the Dockerfile whose first `COPY`
 takes a `servers/` directory a mirror does not have — confirmed by diffing the live
 `mcp-statement-of-account` Dockerfile against the generated one.
 
-**A gap: `servers/delivery-schedule` has no mirror at all.**
-
-    ls servers | wc -l                                    -> 32
+ls servers | wc -l                                    -> 32
     gh repo list ... | grep '^mcp-' | wc -l               -> 33   (31 server mirrors + mcp-servers + mcp-registry)
     comm: servers with no mirror                          -> delivery-schedule
 
 The next full run creates it, since the script creates a repository it cannot find.
 
-**Safety — the answer is no, not right now, and the reason is a live one.** The mirror tree is
+The mirror tree is
 built from the **working tree**, not from a commit, so uncommitted edits are published. At 06:57Z:
 
     git status --porcelain | grep '^ M servers/'   -> 21 servers with modified src/index.ts
@@ -293,7 +291,7 @@ Two guards were added rather than relying on anyone remembering this:
         and its dist is NEWER than that source, so the mirror carries the edit
       REQUIRE_CLEAN=1: skipping mcp-petty-cash
 
-**When it is safe, and the order to run it in.** Once the description work is committed and
+Once the description work is committed and
 `npm test` is green at the monorepo root:
 
     REQUIRE_CLEAN=1 scripts/sync-mirrors.sh timezone      # one mirror, already the newest

@@ -54,8 +54,6 @@ Tool-call counts exclude the client's own `ToolSearch` schema lookups.
 | 7 | #26/#27 tag totals | "Tag my last entry with review and demo, then show this week grouped by tag." | **1** | 2 | 7.3 | `entry_edit {tags}` succeeded; `report {group_by: "tag"}` -> **"group_by tag is a Pro feature"**. The user got a paywall, not an answer. The fix itself is correct under Pro (verified below) but is invisible on the tier this audit runs. D-R22. |
 | 8 | expense FX (D-R14 fix) | "Add expense 45 EUR at Amazon for Nova." then "Now rebill Nova this month in USD at 1.08." | **1** | 1 + 1 | 7.5 / 11.3 | The model picked `expense_to_invoice {target_currency: "USD", fx_rates: {EUR: 1.08}}` unprompted — the right call. Result: **`count: 0`**, because `expense_add` defaulted `billable: false`. Worse, the empty result said `"fx_note": "Nothing needed converting: every line was already in USD."` on a set with no lines at all. D-R20, D-R21. With `billable: true` the same call returns **`unit_price: 48.6`, `total_net: "USD 48.60"`**. |
 
-**Totals per fix area:**
-
 | Area | Scenarios | Score |
 |---|---|---|
 | time-tracker window/split (#20, #21-23) | 1, 3 | **6 / 6** |
@@ -167,7 +165,7 @@ pick a grouping it may not want. Repro: `/private/tmp/uv20/out/s7.jsonl`; probe
 Fix direction: make `group_by` optional (default `project`), and consider whether tag grouping is
 the right thing to gate — the gate here hides a correctness fix rather than a premium capability.
 
-**D-R23 (low, time-tracker) — the `.corrupt` marker file's contents are a path, and read as data.**
+D-R23 (low, time-tracker) — the `.corrupt` marker file's contents are a path, and read as data.
 Quarantine writes two files: `data.json.corrupt-<ts>` (the original bytes) and `data.json.corrupt`
 (90 bytes containing the absolute path of the first). The model read the marker, found a filename
 where it expected JSON, and called the pattern "unusual" and "not an accidental corruption" in its
@@ -177,7 +175,7 @@ answer to the user — a false alarm caused by the marker's own format. Repro:
 restored.`
 
 D-R11 / D-R9 are now superseded by D-R19 as one open defect class. D-R14 (multi-currency invoice) is
-**fixed and verified**: `expense_to_invoice` takes `target_currency` + `fx_rates` and produced
+`expense_to_invoice` takes `target_currency` + `fx_rates` and produced
 USD 48.60 with the rate written into the line description. D-R15 (UTC vs local "today") was not
 re-tested; this run started at 07:23 local in UTC+7, i.e. 00:23 UTC the same date, so the split is
 not observable. D-R16 and D-R17 stand as recorded.

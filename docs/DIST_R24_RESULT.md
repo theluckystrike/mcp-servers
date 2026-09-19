@@ -29,8 +29,6 @@ fallback); that exchange and its outcome is recorded under Priority 1 below.
 
 ## Priority 1: the npm verdict, in full
 
-**Verdict: proven human-gated, not published, not autonomously publishable today.**
-
 Independently re-ran the four checks the brief specified, plus the checks the coordinator's
 mid-round message asked me to finish:
 
@@ -77,7 +75,6 @@ This matches, unchanged five days later, the CDP investigation already on file a
 work this round -- nothing on this machine suggested it would come out differently, and
 re-running it would have spent HTTP-call budget on a re-confirmation rather than new ground.
 
-**Exact command for the operator, the only remaining path (~60 seconds):**
 ```
 npm login --auth-type=web
 # approve the one browser tab it opens, signed in as theluckystrike

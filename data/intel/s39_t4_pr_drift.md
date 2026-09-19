@@ -44,8 +44,6 @@ gh pr checks <N> --repo <repo>
 
 ## Maintainer comments / labels — new since 2026-09-17 morning
 
-**None. Zero new maintainer comments and zero label changes.**
-
 Verbatim check: every comment on every swept PR is dated 2026-09-15 or earlier, except the
 GitHub Actions bot badge/emoji notices that fire automatically on push. Full inventory:
 

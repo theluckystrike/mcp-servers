@@ -68,24 +68,23 @@ $19 one-time lifetime Pro unlock (offline license key, no subscription), $39 one
 all servers. Card payment via Stripe Checkout at mcp.zovo.one.**
 
 Icon path: `assets/<name>-logo.png` (repo root). Confirmed present for all 19 standalone servers;
-**office-suite has none** — flag this to the operator before submitting office-suite anywhere that
+— flag this to the operator before submitting office-suite anywhere that
 requires an icon upload.
 
 ---
 
 ## 1. npm — publish the 21 packages
 
-**URL:** https://www.npmjs.com/~theluckystrike (profile) — login itself happens at whatever URL
+https://www.npmjs.com/~theluckystrike (profile) — login itself happens at whatever URL
 `npm login --auth-type=web` prints (a one-time npmjs.com device-auth page, not a fixed URL you can
 bookmark).
 
-**Why human-gated:** the saved npm token is dead (401). No browser profile on this machine holds an
+the saved npm token is dead (401). No browser profile on this machine holds an
 npmjs.com session (Chrome default, Brave CDP, Safari all anonymous), and npmjs.com's Cloudflare
 challenge blocks headless Chrome unless given a normal desktop UA, which this environment cannot
 reliably supply. `npm login --auth-type=web` opens a real browser and needs one human click to
 approve the device code. There is no field to fill in beyond what npm's own page prompts for.
 
-**Step 1 (human):**
 ```
 npm login --auth-type=web
 ```
@@ -95,7 +94,6 @@ npm whoami
 ```
 should print `theluckystrike`.
 
-**Step 2 (command to run after login):**
 `scripts/publish-all.sh` now derives its package list from the workspace itself (every
 `package.json` under `packages/*` and `servers/*`) instead of a hardcoded 4-package array, and
 computes the publish order by topologically sorting each package's `@theluckystrike/*`
@@ -112,7 +110,7 @@ scripts/publish-all.sh          # dry run first — confirm the table below
 scripts/publish-all.sh --go     # after npm whoami succeeds
 ```
 
-**Dependency cycle found and resolved in the script:** `packages/mcp-license`
+`packages/mcp-license`
 (`@theluckystrike/mcp-license`) is **not published to npm today**, yet every one of the 20 servers
 lists it as a runtime `dependencies` entry at `^0.9.0` — confirmed a real `import` (not bundled) in
 `servers/time-tracker/dist/index.js:9`: `import { createLicenseGate, ... } from
@@ -127,7 +125,7 @@ either order and an installer resolves both once they both exist on npm. `script
 breaks the cycle by publishing `mcp-license` first (it is depended on by every other package here,
 so it wins the tie-break) and prints a `# CYCLE:` line when it does so.
 
-**Final order the script computes (21 packages):** `mcp-license` → `mcp-barcode`, `mcp-currency`,
+`mcp-license` → `mcp-barcode`, `mcp-currency`,
 `mcp-docx`, `mcp-expense-tracker`, `mcp-image`, `mcp-invoice`, `mcp-kanban`, `mcp-pdf`,
 `mcp-price-tracker`, `mcp-spreadsheet`, `mcp-time-tracker`, `mcp-timezone`, `mcp-zip` (these 13 only
 depend on `mcp-license`, already placed) → `mcp-bank-statement`, `mcp-calendar` (depend on
@@ -137,7 +135,7 @@ siblings). `packages/mcp-license` does resolve for an npm installer under this o
 publish list (unlike before), and its one `@theluckystrike/*` dependency, `mcp-timezone`, is
 covered by the cycle rule above rather than blocking it.
 
-**Dry-run result (this session, before any real publish):** all 21 packages produced a clean
+all 21 packages produced a clean
 `npm publish --access public --dry-run` — every tarball includes `dist/`, and every package that
 declares a `bin` entry has that file present under `dist/` (e.g. `mcp-license` packs
 `dist/index.js`, `dist/lock.js`, `dist/profile.js` plus `.d.ts`; `mcp-barcode` packs
@@ -145,7 +143,6 @@ declares a `bin` entry has that file present under `dist/` (e.g. `mcp-license` p
 `dist/payloads.js` plus `.d.ts`). None of the 21 names were already on the npm registry (no `SKIP:
 already on npm` rows), consistent with the dead npm login — nothing has been published yet.
 
-**Verify after `--go`:**
 ```
 npm view @theluckystrike/mcp-license version
 npm view @theluckystrike/mcp-time-tracker version
@@ -164,22 +161,20 @@ are now consistent.
 
 ## 2. Smithery
 
-**URL:** https://smithery.ai/auth/cli (direct fetch of this URL returns 404 outside the CLI flow —
+https://smithery.ai/auth/cli (direct fetch of this URL returns 404 outside the CLI flow —
 it is only meaningful as the target the `smithery` CLI itself opens, not a page to visit directly).
 
-**Why human-gated:** `npx -y @smithery/cli auth login` prints a one-time
+`npx -y @smithery/cli auth login` prints a one-time
 `https://smithery.ai/auth/cli?s=<session>` URL that must be opened in a real browser and approved
 by a human (GitHub OAuth). There is no email/password form and no way to script the OAuth consent
 click. Once that one login is done, the CLI holds a bearer key and everything after is scriptable.
 
-**Step 1 (human):**
 ```
 npx -y @smithery/cli auth login
 ```
 Open the printed URL (`https://smithery.ai/auth/cli?s=<session>`), approve via GitHub. `smithery.yaml`
 in each server directory is already validated against the CLI schema (name + target, loose).
 
-**Step 2 (command to run after login), once per server:**
 ```
 cd /Users/mike/mcp-servers/servers/<name>
 npx -y @smithery/cli deploy
@@ -193,7 +188,7 @@ Fields Smithery's own `smithery.yaml` schema wants (already filled per server, v
 deploy): `name`, `target` (loose in this repo's validated config) — no long-form web submission
 form exists; the CLI is the entire intake.
 
-**Verify it landed:** https://smithery.ai/server/@theluckystrike/<name> (or search
+https://smithery.ai/server/@theluckystrike/<name> (or search
 https://smithery.ai/search?q=theluckystrike) should list each server; `npx -y @smithery/cli list`
 after login should also enumerate what is registered under the account.
 
@@ -201,15 +196,15 @@ after login should also enumerate what is registered under the account.
 
 ## 3. cursor.directory
 
-**URL:** https://cursor.directory/plugins/new
+https://cursor.directory/plugins/new
 
-**Why human-gated:** `/plugins/new` redirects straight to `/login`, which offers GitHub or Google
+`/plugins/new` redirects straight to `/login`, which offers GitHub or Google
 OAuth only — no plain form fields to fill and no email/password option. `/mcp` on this site
 redirects to the homepage (no separate MCP submission path exists). This session re-fetched the
 page and got HTTP 429 (rate-limited) on top of the login redirect noted in prior rounds — both are
 consistent with "still login-gated," not evidence it opened up.
 
-**Step 1 (human):** open https://cursor.directory/plugins/new, sign in with GitHub or Google.
+open https://cursor.directory/plugins/new, sign in with GitHub or Google.
 
 **Step 2 (form fields, unverified beyond the login wall — the actual submission form has never
 been reached without an account, so treat every field below as likely-but-unconfirmed):**
@@ -219,16 +214,16 @@ been reached without an account, so treat every field below as likely-but-unconf
 - Category: per the table in section 0
 - Icon/logo upload: `assets/<name>-logo.png`
 
-**Step 3 (command):** none — this is a manual web form per server, no CLI exists for cursor.directory.
+none — this is a manual web form per server, no CLI exists for cursor.directory.
 
-**Verify it landed:** search https://cursor.directory/mcp?q=<name> or browse the plugins list for
+search https://cursor.directory/mcp?q=<name> or browse the plugins list for
 the entry; it should show the repo link and description you typed.
 
 ---
 
 ## 4. Claude Desktop / Claude.ai directory (Connectors Directory)
 
-**URL:** unresolved. There is no `data/distribution.json` entry for this surface (it is not one of
+unresolved. There is no `data/distribution.json` entry for this surface (it is not one of
 the 32 surfaces already tracked there), and this session could not find a public self-serve
 submission form. A direct fetch of Anthropic's own custom-connectors support article
 (support.claude.com "Getting started with custom connectors using remote MCP") confirms a
@@ -237,10 +232,10 @@ directory") but documents no developer submission URL or form — only a HackerO
 reporting *malicious* servers, which is not a listing path. Two direct URL guesses
 (`claude.ai/directory/submit`) returned HTTP 403.
 
-**Why human-gated:** no scriptable form was found at all; if a submission path exists it likely
+no scriptable form was found at all; if a submission path exists it likely
 requires a signed-in claude.ai session (human login) the same way the other directories do.
 
-**What to do:** before spending operator time here, have a human sign into claude.ai, open
+before spending operator time here, have a human sign into claude.ai, open
 Settings -> Connectors (or the in-app directory browse view), and look for a "Submit your
 connector" / developer-facing link from inside the logged-in UI — that is the most likely place a
 submission entry point would surface, since none exists on the public web. If found, record the
@@ -254,16 +249,16 @@ confirmed**, based on the pattern every other directory in this pack uses:
 - Category/tags
 - Support contact: support@zovo.one
 
-**Command / verify:** not applicable until the form itself is located.
+not applicable until the form itself is located.
 
 ---
 
 ## 5. Vercel login
 
-**URL:** https://vercel.com/login (device-flow login only; no fixed submission form — this is a
+https://vercel.com/login (device-flow login only; no fixed submission form — this is a
 deploy credential, not a directory listing).
 
-**Why human-gated:** this is not an MCP-server directory at all — it is the deploy blocker behind
+this is not an MCP-server directory at all — it is the deploy blocker behind
 the **zovo.one footer backlink** to mcp.zovo.one (the organic-traffic surface, tracked under
 `estate-backlinks` / the `extension-insiders` project, not `mcp-servers`). Per memory
 (`vercel-api-access.md`): the OAuth device flow works headless, but the CLI **deletes `auth.json`
@@ -274,7 +269,6 @@ committed (`extension-insiders` commit `0abd1977`, `MegaFooter.tsx` + `api/rende
 skeleton) but the Vercel deploy was **never confirmed live** because the CLI token was invalid at
 the time.
 
-**Step 1 (human):**
 ```
 vercel login
 ```
@@ -282,7 +276,7 @@ Complete the device-flow approval in the browser. **Before running any other `ve
 copy the resulting `~/.vercel/auth.json` (or the platform-equivalent path) to a backup** — a later
 expired-token failure will delete it again.
 
-**Step 2 (command to run after login):** from the `extension-insiders` project directory (not this
+from the `extension-insiders` project directory (not this
 repo):
 ```
 vercel deploy --prod
@@ -293,7 +287,7 @@ then confirm the deployment finished with:
 vercel ls
 ```
 
-**Verify it landed:** fetch https://zovo.one and confirm the footer contains a link to
+fetch https://zovo.one and confirm the footer contains a link to
 `https://mcp.zovo.one` (`curl -s https://zovo.one | grep -o 'mcp.zovo.one'`). This is out of scope
 for this repo's own git history — do not commit anything here for this section, it lives in the
 `extension-insiders` project.
@@ -302,10 +296,10 @@ for this repo's own git history — do not commit anything here for this section
 
 ## 6. Glama claim
 
-**URL:** https://glama.ai/mcp/servers?query=theluckystrike (search/browse) and
+https://glama.ai/mcp/servers?query=theluckystrike (search/browse) and
 https://glama.ai/settings/api-keys (API key, needs an account).
 
-**Why human-gated:** Glama has no unauthenticated "add server" endpoint. The crawler discovers
+Glama has no unauthenticated "add server" endpoint. The crawler discovers
 servers automatically from `glama.json` (already committed at the repo root and in every
 `servers/<name>/` directory, `maintainers: theluckystrike`), but *claiming* a listing (to control
 its page, add a score badge, etc.) requires the "Add Server" button, which needs a signed-in Glama
@@ -315,23 +309,23 @@ fields without an account, and confirmed at least one theluckystrike-maintained 
 Grammar Server, a different project) is already indexed by the crawler — consistent with crawler
 discovery working but claim/API access needing login.
 
-**Step 1 (human):** create/sign into a Glama account, click "Add Server" (or find the specific
+create/sign into a Glama account, click "Add Server" (or find the specific
 "claim this listing" control on each server's own Glama page once the crawler has indexed it), and
 generate an API key at https://glama.ai/settings/api-keys if programmatic access is wanted
 afterward.
 
-**Step 2 (fields, if a manual add/claim form appears — unverified beyond the button existing):**
+Step 2 (fields, if a manual add/claim form appears — unverified beyond the button existing):
 - Repo URL: `https://github.com/theluckystrike/mcp-servers` (or the `tree/main/servers/<name>`
   subpath if Glama wants per-server repo links)
 - Name / description: per the table in section 0
 - Maintainer: `theluckystrike` (already declared in each `glama.json`)
 
-**Step 3 (command, only relevant after an API key exists):** none scripted in this repo yet; if a
+none scripted in this repo yet; if a
 key is obtained, the Glama directory API (documented at glama.ai once logged in) can presumably be
 used to confirm/refresh listings, but no such script exists here — this would be a new script to
 write, not an existing one to run.
 
-**Verify it landed:** https://glama.ai/mcp/servers?query=theluckystrike should list each of the 20
+https://glama.ai/mcp/servers?query=theluckystrike should list each of the 20
 servers with a claimed/verified badge instead of only crawler-discovered rows. This also unblocks
 the `awesome-mcp-servers` PR #13473, which is hard-blocked specifically on "must be listed and
 passing on Glama with a score badge per entry" — so this step has a second payoff beyond Glama
@@ -365,7 +359,7 @@ The Stripe key in the keychain (`StripeCLI`, `default.live_mode_api_key`) is now
 
 ## npm publishing re-confirmed human-gated (2026-09-07, distribution round 24)
 
-**Why human-gated:** re-verified from scratch this round, independent of the 2026-09-02 CDP
+re-verified from scratch this round, independent of the 2026-09-02 CDP
 investigation above (same conclusion, still current). `npm view @theluckystrike/mcp-invoice`
 and `@theluckystrike/mcp-time-tracker` both return a clean E404 (never published, not a
 private/403), so the `npx -y @theluckystrike/mcp-<name>` install command printed on every
@@ -381,7 +375,6 @@ Chrome/Default/Cookies`, the Brave profile, and the CDP-driven profile at 127.0.
 shows only `npm_device`/`datadome` bot-management cookies -- no npmjs.com session anywhere,
 so `npm login --auth-type=web` cannot be auto-approved either.
 
-**Step 1 (human, ~60 seconds):**
 ```
 npm login --auth-type=web
 ```
@@ -394,7 +387,7 @@ username/password/OTP in the terminal), or generate a token at
 `https://www.npmjs.com/settings/theluckystrike/tokens` (Automation, "Read and write") and set
 `//registry.npmjs.org/:_authToken=npm_xxxx` in `~/.npmrc`.
 
-**Step 2 (after the first successful login), still human once:** publish each package once
+publish each package once
 (`npm publish --access public` from `packages/mcp-license` first, then each `servers/<name>`),
 then configure trusted publishing per package at
 `https://www.npmjs.com/package/@theluckystrike/mcp-<name>/access` -> Trusted publisher ->
@@ -402,7 +395,7 @@ GitHub Actions, repo `theluckystrike/mcp-servers`, workflow filename `publish.ym
 workflow body is drafted in `docs/NPM_AUTH_RESULT.md` section 5, not yet written to the repo).
 After that, no further human step is ever needed for npm publishing again.
 
-**Separately, and not human-gated:** the zero-auth fallback `npx -y
+the zero-auth fallback `npx -y
 github:theluckystrike/mcp-<name>` also fails today, for an unrelated structural reason (a
 nested `file:` vendor dependency -- `@theluckystrike/mcp-license` depending on
 `@theluckystrike/mcp-timezone`, both vendored by `scripts/sync-mirrors.sh` -- that npm's
@@ -410,14 +403,12 @@ git-installer cannot resolve). That fix is an engineering task (bundle the depen
 of vendoring it as a `file:` path), not a human-login blocker, and has been handed to the
 loop coordinator to route to the agent that owns `scripts/` and `servers/*/src`.
 
-**Verify it landed:** `npm view @theluckystrike/mcp-invoice` should return real package
+`npm view @theluckystrike/mcp-invoice` should return real package
 metadata instead of 404, and `npx -y @theluckystrike/mcp-invoice` should run the server.
 
 ---
 
 ## GSC service-account key lives on iCloud Desktop and keeps going dataless (agent B, loop 29, 2026-09-07)
-
-**Status this loop: RECOVERED, but it will break again.**
 
 `~/Desktop/keys/gsc-sa-key.json` is the only copy of the Google Search Console
 service-account key. It was `compressed,dataless` at the start of this loop; a bounded
@@ -428,8 +419,6 @@ project the "mcp.zovo.one has zero Google impressions" finding for weeks.
 
 Note for any agent probing this: `wc -c` **cannot** detect a dataless file — it answers
 from `stat()`. Use `ls -lO <path> | grep dataless`, or a `cat` under a timeout.
-
-**Exact human step (one command, ~5 seconds, must be run by the operator):**
 
 ```
 mkdir -p ~/.config/gsc && cp ~/Desktop/keys/gsc-sa-key.json ~/.config/gsc/sa-key.json && chmod 600 ~/.config/gsc/sa-key.json
@@ -470,7 +459,7 @@ but returns `10000 Authentication error` on both `POST /zones/<id>/dns_records` 
 
 ## Glama listing for the four servers in awesome-mcp-servers PR 13473 (directory agent, loop 29, 2026-09-07)
 
-**Why this needs you:** every externally reachable Glama surface was tested this loop and
+every externally reachable Glama surface was tested this loop and
 there is no unauthenticated way in. The directory API returns HTTP 401 pointing at
 `https://glama.ai/settings/api-keys`; that path 302-redirects to `/sign-up`. The "Add Server"
 button on `https://glama.ai/mcp/servers` is a plain `<button type="button">` with no form
@@ -479,13 +468,13 @@ action, and the only auth modal the page serves an anonymous visitor is `SignUpM
 three repos, none of them the directory, so there is no issue queue to post into. Creating the
 account, and accepting Glama's Terms of Service, is a decision only you can make.
 
-**What is NOT blocked, so you know the scale of this:** `theluckystrike/mcp-statement-of-account`
+`theluckystrike/mcp-statement-of-account`
 is already listed on Glama with a live score badge, crawled 33 minutes after the repo was
 created, with no account and nobody submitting it — `https://glama.ai/mcp/servers/theluckystrike/mcp-statement-of-account`.
 So this is a "make it happen on demand" step, not a "make it possible" step. Full evidence in
 `docs/GLAMA_R1.md`.
 
-**Payoff if you do it:** it unblocks the last red label on
+it unblocks the last red label on
 `https://github.com/punkpeye/awesome-mcp-servers/pull/13473`, the highest-traffic free MCP
 directory this project can reach (13,000+ entries, ranks for "awesome mcp servers"). It also
 lets you *claim* the two listings that already exist, which Glama's own page says matters —
@@ -658,15 +647,14 @@ only if token rotation becomes a burden.
 
 ## mcp.directory — free web form, no account, but you click Submit (directory agent, loop 29, 2026-09-07)
 
-**Why this needs you:** nothing about this one is gated — no login, no account, no fee. It is
+nothing about this one is gated — no login, no account, no fee. It is
 here only because of the standing rule on this machine that the operator clicks Submit on
 external web forms. An agent could technically POST it; it will not.
 
-**Why it is worth your two minutes:** `https://mcp.directory/` ranks on the first page for
+`https://mcp.directory/` ranks on the first page for
 "mcp servers list" and "mcp server directory", carries 3,000+ servers, and the form's only
 required field is a GitHub repo URL — it scrapes everything else itself.
 
-**Verified 2026-09-07 by fetching `https://mcp.directory/submit`:**
 - form fields: **GitHub Repository URL (required)**, npm package (optional), PyPI package
   (optional), Short description (optional, `maxLength=100`), Your email (optional)
 - submit control: `<button type="submit">Submit for Review</button>`
@@ -702,7 +690,7 @@ https://github.com/theluckystrike/mcp-docx
 Do **not** submit `https://github.com/theluckystrike/mcp-servers` as the first one — it is a
 monorepo and the scraper will read it as a single server. Submit the per-server mirrors.
 
-**Verify it landed:** search `https://mcp.directory/` for `theluckystrike` after 24 hours, or
+search `https://mcp.directory/` for `theluckystrike` after 24 hours, or
 try `https://mcp.directory/servers/theluckystrike/mcp-invoice-generator`.
 
 ---
@@ -754,7 +742,7 @@ https://github.com/theluckystrike/mcp-invoice-generator                category:
 https://github.com/theluckystrike/mcp-office-suite           category: Workplace & Productivity
 ```
 
-**Verify it landed:** search `https://allmcps.com/` for `theluckystrike` after review.
+search `https://allmcps.com/` for `theluckystrike` after review.
 
 ---
 
@@ -763,16 +751,16 @@ https://github.com/theluckystrike/mcp-office-suite           category: Workplace
 Correction to the round 25 record, which said only `skipped: paid`. Both halves are now
 measured.
 
-**The web form is paid, confirmed verbatim.** `https://mcp.so/submit` redirects to
+`https://mcp.so/submit` redirects to
 `https://mcp.so/submit?type=server` and the page text reads *"Paid submission $39 one-time
 publishing fee / Publish immediately without review / Verified badge / Featured and priority
 placement / Dofollow project link"*. That stays `skipped: paid`.
 
-**There is also a free GitHub-issue queue, and it is open.** `chatmcp/mcpso` takes
+`chatmcp/mcpso` takes
 submissions as issues; the round-26 agent filed one for free:
 `https://github.com/chatmcp/mcpso/issues/3998`.
 
-**But measure before trusting it.** Of the 30 most recently closed issues on that repo,
+Of the 30 most recently closed issues on that repo,
 **30 of 30 were closed by their own author**, not by a maintainer:
 
 ```
@@ -835,21 +823,21 @@ This is the best-fit human action on the whole client surface. Anthropic's deskt
 directory takes **`.mcpb` bundles — our exact shipping format**. No repackaging, no npm, no
 rewrite. We ship 32 of them on every release.
 
-**URL:** `https://clau.de/desktop-extention-submission`
+`https://clau.de/desktop-extention-submission`
 (note Anthropic's own typo in "extention"; that is the real link)
 
 It 302s to a Google Form:
 `https://docs.google.com/forms/d/e/1FAIpQLScHtjkiCNjpqnWtFLIQStChXlvVcvX8NPXkMfjtYPDPymgang/viewform`
 
-**Why it needs you:** fetching it unauthenticated returns **HTTP 401** — Google sign-in is
+fetching it unauthenticated returns **HTTP 401** — Google sign-in is
 required. An agent cannot sign in, so the form was never opened and its exact fields are
 unverified. Expect the usual: extension name, description, repository URL, contact email, and
 the bundle or a link to it.
 
-**Click path:** open the link → sign in to Google → fill → Submit. Repeat per server, strongest
+open the link → sign in to Google → fill → Submit. Repeat per server, strongest
 first.
 
-**What to paste** (from the per-server table in section 0, plus):
+(from the per-server table in section 0, plus):
 
 - Repo: `https://github.com/theluckystrike/mcp-<server>`
 - Bundle: `https://github.com/theluckystrike/mcp-servers/releases/download/v0.21.0/<server>.mcpb`
@@ -858,10 +846,10 @@ first.
   bundle downloads and boots, the free tier binds with a clear upgrade path, checkout reaches a
   live Stripe page, and the zero-install hosted URL returns thirteen tools with no key.
 
-**Order to submit (highest value first):** `invoice`, `time-tracker`, `spreadsheet`,
+`invoice`, `time-tracker`, `spreadsheet`,
 `expense-tracker`, `pdf`, `docx`, `price-tracker`, `office-suite`.
 
-**Verify it landed:** watch `support@zovo.one` for the acknowledgement, then check the
+watch `support@zovo.one` for the acknowledgement, then check the
 connectors directory at `claude.com/connectors` after the stated review window.
 
 ---
@@ -873,20 +861,20 @@ Cursor 3.14.7 has **no in-app MCP gallery** (verified by grepping the shipped `p
 `cursor/mcp-servers`, is **archived** (last push 2026-03-19). So the only Cursor-adjacent
 surface left is the third-party community site.
 
-**URL:** `https://cursor.directory/plugins/new`
+`https://cursor.directory/plugins/new`
 
-**Why it needs you:** the automated probe returned **HTTP 429** (rate limited), so the page's
+the automated probe returned **HTTP 429** (rate limited), so the page's
 fields and its sign-in gate are genuinely unverified. It may well be open and take 60 seconds,
 or it may want a GitHub sign-in, in which case stop — that is out of bounds for the agents but
 your call to make.
 
-**Click path:** open it in a normal browser → if it asks you to sign in, decide; if not, fill
+open it in a normal browser → if it asks you to sign in, decide; if not, fill
 name, description, GitHub URL, category → Submit.
 
-**What to paste:** name `Zovo Invoice`; description from the section 0 table; GitHub
+name `Zovo Invoice`; description from the section 0 table; GitHub
 `https://github.com/theluckystrike/mcp-invoice-generator`; homepage `https://mcp.zovo.one/s/invoice`.
 
-**Verify it landed:** search `cursor.directory` for `zovo`.
+search `cursor.directory` for `zovo`.
 
 **If a fee, a featured slot or a paid tier appears anywhere on that page, stop and do not pay** —
 record it as `skipped: paid` and tell the loop. Nothing paid was seen on any client surface this
@@ -896,10 +884,10 @@ round and we would want to know if that changed.
 
 ### 12c. Claude connectors portal — only if a Team plan already exists
 
-**URL:** `https://claude.ai/admin-settings/directory/submissions/new`
-**Docs:** `https://claude.com/docs/connectors/building/submission`
+`https://claude.ai/admin-settings/directory/submissions/new`
+`https://claude.com/docs/connectors/building/submission`
 
-**Why it needs you, and why it is ranked last:** the docs state the requirement verbatim —
+the docs state the requirement verbatim —
 *"A Team or Enterprise organization. Organization settings aren't available on individual
 plans."* You also need the Owner role or a custom role carrying the Directory permission. There
 is **no listing fee**, but Team/Enterprise is a **paid plan**, so this is only worth opening if
@@ -912,8 +900,6 @@ policy URL, support contact, icon, permanent slug); Use cases; Company; Authenti
 (OAuth 2.0 for authenticated services); Data handling; Test & launch (reviewer test-account
 credentials, plus confirmation you ran every tool); Compliance (7 acknowledgments); Review.
 
-**What to paste:**
-
 - Connection URL: `https://mcp.zovo.one/mcp/invoice` (streamable HTTP; 30 servers have one)
 - Reviewer credentials: none needed — say so, and give them
   `https://mcp.zovo.one/mcp/connect`, which mints a free anonymous token in the browser with no
@@ -921,7 +907,7 @@ credentials, plus confirmation you ran every tool); Compliance (7 acknowledgment
 - Documentation: `https://mcp.zovo.one/s/invoice` · Support: `support@zovo.one` · Icon:
   `assets/invoice-logo.png` · Tagline and description: section 0 table
 
-**One hard blocker to fix before you start, and it is not fixed today:** the docs say
+the docs say
 *"Missing or incomplete privacy policies result in immediate rejection."* A privacy policy URL
 is a required field, and we do not have one. Probed 2026-09-08:
 
@@ -938,11 +924,11 @@ Escalations: `mcp-review@anthropic.com`.
 
 ## 13. Glama author verification — the last Maintenance line an agent cannot close (repository-signals, loop 31, 2026-09-09)
 
-**URL:** https://glama.ai/mcp/servers/theluckystrike/mcp-statement-of-account/score
-**Button:** "Claim", top of the page, next to `by theluckystrike`. The Author panel lower down
+https://glama.ai/mcp/servers/theluckystrike/mcp-statement-of-account/score
+"Claim", top of the page, next to `by theluckystrike`. The Author panel lower down
 spells out the same thing: *"If you are the author, simply authenticate using GitHub."*
 
-**Why it needs you, and why it is now the only thing left on that page.** Glama grades every
+Glama grades every
 indexed server and publishes the grading. Of its twelve Maintenance lines, three were fixable
 and are fixed as of this morning — CI, a stable release, and a real commit history (all measured
 in `docs/REPO_SIGNALS_R1.md`). Of the rest, six were already positive, two are true statements
@@ -950,7 +936,7 @@ about how this project is deliberately run, and one — **"Author not verified"*
 to sign in with GitHub once. It is not a form, not a fee, and not a submission: it is a single
 OAuth sign-in that binds the `theluckystrike` GitHub account to the listing.
 
-**Nothing needs preparing first.** The `glama.json` in every mirror is already byte-for-byte the
+The `glama.json` in every mirror is already byte-for-byte the
 shape Glama's own page prints as the requirement:
 
     {
@@ -963,15 +949,11 @@ shape Glama's own page prints as the requirement:
 Glama's checklist already agrees — the line reads "Has valid glama.json". It was verified this
 round and deliberately left untouched.
 
-**Exact click path, about one minute:**
-
 1. Open https://glama.ai/mcp/servers/theluckystrike/mcp-statement-of-account
 2. Click **Claim** (top right of the title block).
 3. Choose **authenticate using GitHub** and approve. Sign in as `theluckystrike` — the username
    in `glama.json` must match the account, or the claim will not bind.
 4. Nothing else. Do not add a paid plan, do not buy a listing.
-
-**What it unlocks beyond the one line**
 
 - **"No related servers"**, the other unchecked item in the 75% profile-completion panel. Once
   claimed, "Add related servers" becomes available; the 30 sibling mirrors are the obvious set.
@@ -982,16 +964,14 @@ round and deliberately left untouched.
 - **"Try in Browser"** on the server page, which is what Glama's tip names as the way to seed the
   "No recent usage" line. Clicking a tool there once is worth doing while you are signed in.
 
-**Verify it landed — no account needed for the check:**
-
-    curl -s -A "Mozilla/5.0" \
+curl -s -A "Mozilla/5.0" \
       https://glama.ai/mcp/servers/theluckystrike/mcp-statement-of-account/score \
       | grep -c "Author not verified"
 
 `1` means it is still unclaimed. `0` means it worked. The same check on the word `Claim` in the
 page header is a second instrument.
 
-**Do not do these while you are in there:** no API key is needed (the directory API at
+no API key is needed (the directory API at
 `https://glama.ai/api/mcp/v1/servers/...` returns 401 and asks for one, and its data licence
 requires visible attribution on every page that displays it — not worth taking on), and there is
 no paid tier to buy.
@@ -1002,7 +982,7 @@ no paid tier to buy.
 
 Measured this loop; details and commands in `docs/GLAMA_R2.md`, numbers in `data/glama_r2.json`.
 
-**The claim step is worth less than it looked, and something free is worth much more.**
+The claim step is worth less than it looked, and something free is worth much more.
 
 1. **Waiting will not do it.** Glama's own methodology page (`glama.ai/mcp/methodology` §1.1)
    documents open-source listing as a **GitHub OAuth submission only** — there is no crawler in
@@ -1022,16 +1002,16 @@ Measured this loop; details and commands in `docs/GLAMA_R2.md`, numbers in `data
    returns 200 instead of 401.
 4. **Correction to the "re-sync on 2026-09-08" note above.** The record's timestamp moves, but
    the server has not actually been re-run: the embedded `observedAt` is still
-   **2026-09-05T18:06:49Z** and `releaseVersion` still **0.14.0**, across seven releases and a
+   and `releaseVersion` still **0.14.0**, across seven releases and a
    force-push. The daily "sync" is not re-reading the tool schemas. That makes the manual
-   **Sync Server** button the single most useful thing behind the login — it is the only way to
+   button the single most useful thing behind the login — it is the only way to
    find out whether that field will ever move for an unclaimed-then-claimed server.
 
 **So the click is still worth making**, for the awesome-mcp-servers gate (its CI matches the
 literal string `glama.ai/mcp/servers/`, which a connector URL does not satisfy) and for the
 manual sync. It is no longer the only way to be measured on Glama.
 
-**Do not** click "Try in Browser" purely to clear the "No recent usage" line if you are not
+click "Try in Browser" purely to clear the "No recent usage" line if you are not
 actually trying the tool. That line is a claim about real adoption. Same reason this agent did
 not post to Glama's unauthenticated usage-telemetry endpoint, which would have cleared it in one
 request.

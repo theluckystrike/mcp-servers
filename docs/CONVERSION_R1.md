@@ -52,7 +52,7 @@ loop brief's mandated UA is the exact bypass.
 
 A second, independent tell: `data/kpi.json` (generated 2026-09-06T08:21:51Z) recorded
 `clicks_7d = 152`. `GET /stats/clicks` at 2026-09-07T01:06:24Z returned `clicks_7d = 293`.
-**+141 clicks in roughly 17 hours** on a site with zero search impressions and 22 human repo
+on a site with zero search impressions and 22 human repo
 visitors in a fortnight. Also note `total_clicks == clicks_7d == 293`: every click the
 instrument has ever recorded falls inside its own 7-day window, i.e. the instrument is younger
 than any claim made from it.
@@ -122,7 +122,6 @@ ranks below the instrument and the install path because it only binds on users w
 
 Concrete enough to implement without further analysis.
 
-**1. Make the click counter countable. (Agent A, `billing/src/index.js`.)**
 Three edits in the `/buy/` handler. (a) Replace the start-anchored scripted test at `:845`
 with a substring test that also catches spoofed automation — at minimum require that a
 counted request carry `accept: text/html` and a `sec-fetch-mode: navigate` header, which every
@@ -134,7 +133,7 @@ site omits `src`, so that value is definitionally not a storefront click; bucket
 distinct `dead:<id>` src, so the 503/404 leak becomes measurable instead of invisible. Then
 reset the KV `click:` prefix once, and restate the KPI's `how` field to say what is now true.
 
-**2. Stop printing an install command that does not exist. (Agent A, `billing/src/index.js`.)**
+2. Stop printing an install command that does not exist. (Agent A, `billing/src/index.js`.)
 On the home page and `/bundle`, reorder "Three ways to start" so **connect-by-URL is first and
 `npx` is last**, and add to the `npx` bullet the same sentence the `/s/` pages already carry:
 "npm publish is pending; use the .mcpb bundle or connect by URL until it lands." Change

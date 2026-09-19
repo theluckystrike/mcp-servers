@@ -73,8 +73,6 @@ workaround, or left the user a gap. 1 = partially wrong. 0 = failed.
 | t5 | "Give me this week's timesheet as a CSV I can download." | **3** | 1 | 17.3 | The model resolved the week to Mon 08-31..Sun 09-06 itself, one `export_csv`. `GET` the link: 200, `text/csv; charset=utf-8`, 378 B, `filename="time-entries-2026-09-04T06-11-09-445Z.csv"`, 13 columns, exactly the 3 entries, `2.00/7200`, `1.50/5400`, `0.00/10`, and `90.00,EUR,180.00` on the rated row |
 | t6 | "Show me everything I logged last month." | **2** | 1 | 10.9 | `entry_list {from: 2026-08-01, to: 2026-08-31}` -> "No entries found" plus the free-window note, both prices, both tenant-carrying links. Right, and the model refused to push the upsell. The gap is that "No entries found" and "the free tier shows the last 7 days" are two sentences that a caller has to combine to learn that **nothing about August was read at all** - the window was not empty, it was never opened |
 
-**Totals: 50 / 54, 32 tool calls, 235.7 s.**
-
 ## Independent verification
 
 Every number below was re-read from the endpoints by `curl tools/call` or from the downloaded
@@ -121,7 +119,7 @@ beneficiary wins and is not annotated; nothing anywhere names `business_set` and
 
 ### D-R65 (medium, barcode, hosted only) - FIXED
 
-**The hosted PNG gate asks for $19 and never says the PNG it sells has no digits under the bars.**
+The hosted PNG gate asks for $19 and never says the PNG it sells has no digits under the bars.
 `remote/build-vendor.mjs` drops the `jimp/fonts` import because it resolves a `.fnt` directory at
 module load and fails worker validation, so `linearPng` draws bars only - a documented,
 deliberate hosted limitation, stated in the `GET /mcp` entry and nowhere a paying caller looks. A
@@ -140,7 +138,7 @@ a QR code has no human-readable line to lose.
 
 ### D-R66 (medium, time-tracker) - FIXED, with a test
 
-**`timer_stop` told the caller to call `entry_update`, a tool that does not exist.** Verbatim from
+Verbatim from
 the hosted run: `No rate: this entry carries no currency and no amount. Set one with
 project_set_rate, or entry_update {rate, currency}.` The tool is `entry_edit`, and it needs `id`.
 A model relays that name, the caller pastes it, and there is nothing on the other end. Now
@@ -154,7 +152,7 @@ non-vacuity in both directions, so it cannot pass by finding nothing.
 
 ### D-R67 (medium, time-tracker) - FIXED, with a test
 
-**A timesheet row printed its day in one timezone and its clock in another.** `dayKey()` has been
+`dayKey()` has been
 zone-aware since D-R35; the clock beside it in `entry_list` was
 `new Date(e.start).toTimeString().slice(0, 5)`, the **host process** zone. On the worker that is
 UTC, so work the caller logged at 09:00 Warsaw - stored correctly as `07:00Z`, on the correct

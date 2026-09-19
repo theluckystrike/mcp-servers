@@ -1,7 +1,5 @@
 # T2 — Bing/bingbot delta: why 35/141 despite IndexNow
 
-**STATUS: in progress**
-
 Source of truth: `data/traffic.json` (generated_at 2026-09-09T09:09:47Z, crawl window ended ~2026-09-09; sitemap lastmod all 2026-09-17). Sitemap = 190 URLs; `sitemap_pages[]` tracks 141 of them.
 
 ## 1. Covered-set breakdown (bingbot's 35 vs the 141 tracked)
@@ -20,9 +18,9 @@ Command: `python3` over `traffic.json` `sitemap_pages[].crawlers` (`bingbot` mem
 
 bingbot's 35: root 1, compare 12, guides 11, setup 5, s 6. Full list captured in analysis.
 
-**Pattern affinity, not universal throttling:** bingbot is deep on `/setup` (62%) and `/compare` (60%) but nearly absent on `/guides` (14%) and `/s` (19%). /guides (77 pages) and /s (32) are the two largest buckets and drive the whole gap.
+bingbot is deep on `/setup` (62%) and `/compare` (60%) but nearly absent on `/guides` (14%) and `/s` (19%). /guides (77 pages) and /s (32) are the two largest buckets and drive the whole gap.
 
-**Recency (lastmod 2026-09-17 pages):** the entire sitemap carries lastmod 2026-09-17, so "recently added" == the /setup batch. bingbot DID crawl 5 of the 8 `/setup` pages (`/setup`, `/setup/claude-desktop`, `/setup/claude-web`, `/setup/cursor`, `/setup/windsurf`) but missed `/setup/claude-code`, `/setup/cline`, `/setup/vscode`. So bingbot reaches new setup pages but does not fan out into the body content (`/guides`, `/s`).
+the entire sitemap carries lastmod 2026-09-17, so "recently added" == the /setup batch. bingbot DID crawl 5 of the 8 `/setup` pages (`/setup`, `/setup/claude-desktop`, `/setup/claude-web`, `/setup/cursor`, `/setup/windsurf`) but missed `/setup/claude-code`, `/setup/cline`, `/setup/vscode`. So bingbot reaches new setup pages but does not fan out into the body content (`/guides`, `/s`).
 
 ## 2. bingbot(35) vs YandexBot(113) — same IndexNow feed, ~3.2x delta
 
@@ -34,12 +32,10 @@ bingbot's 35: root 1, compare 12, guides 11, setup 5, s 6. Full list captured in
 
 ## 3. IndexNow plumbing — end-to-end verified + resubmitted
 
-**Key-file key discrepancy found (do not use the wrong key):**
 - `data/indexnow.json` (the config the script reads) → key `db6dbf5cfdbc08d1cc9b5365d398145b`, `key_location` https://mcp.zovo.one/db6dbf5cfdbc08d1cc9b5365d398145b.txt
 - `data/indexnow.key` → `22fad93b71a88e2e60acae203c4288ae`
 - `~/tgbots/.indexnow.key` → `df00048c0bd6d68167bd35284b1ea77a`
 
-**Live key-file probe (curl each candidate at https://mcp.zovo.one/<key>.txt):**
 | Key (first 8) | HTTP status | body matches key? |
 |---------------|------------:|-------------------|
 | `db6dbf5c` (script's key) | **200** | ✅ yes |
@@ -48,7 +44,7 @@ bingbot's 35: root 1, compare 12, guides 11, setup 5, s 6. Full list captured in
 
 The key actually used by `scripts/indexnow.mjs` (`db6dbf5c…`, from `data/indexnow.json`) **serves 200 with the matching key body** — plumbing is live. The task-mentioned `~/tgbots/.indexnow.key` (`df00048c…`) is NOT served (404) and is NOT the key in use; that file is stale/unrelated.
 
-**Resubmission** — `node scripts/indexnow.mjs` (no `--all`; it reads sitemap.xml, 190 URLs, none matched the `/setup/x/y` permutation filter, so all 190 submitted in 2 batches):
+— `node scripts/indexnow.mjs` (no `--all`; it reads sitemap.xml, 190 URLs, none matched the `/setup/x/y` permutation filter, so all 190 submitted in 2 batches):
 ```
 key file OK at https://mcp.zovo.one/db6dbf5cfdbc08d1cc9b5365d398145b.txt
 sitemap 190 URLs -> submitting 190 (permutations excluded)

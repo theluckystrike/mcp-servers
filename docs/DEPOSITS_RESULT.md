@@ -36,7 +36,7 @@ locks, so two processes cannot each see room and both take it: ten concurrent EU
 applications against a EUR 500.00 deposit store exactly two and refuse exactly eight
 (`test/concurrency.test.mjs`).
 
-**A deposit is applied at its own currency and never converted.** A EUR deposit against a USD
+A EUR deposit against a USD
 invoice is refused by name, with the two currencies in the message and the way out (refund it
 and record it again in the invoice's currency). There is no exchange rate anywhere in this
 server, so there is no rate to be silently wrong.
@@ -46,24 +46,24 @@ from the caller: `held` while anything is still held, otherwise `applied` if any
 an invoice and `refunded` if it all went back. A stored status that disagrees with the movement
 list is how a deposit comes to look returned while the money is still on the books.
 
-**A refund does not touch the invoice server.** Giving a client their own money back is not a
+Giving a client their own money back is not a
 payment of a bill, and writing it as one would show an invoice paid that nobody paid.
 
-**One statement is in one currency.** A client holding EUR and USD has two balances; adding them
+A client holding EUR and USD has two balances; adding them
 would be a made-up number, so the currency is asked for rather than guessed, with both named.
 
-**Ids are `DEP-YYYY-NNNN`.** Same reasoning as `INV-YYYY-NNNN` and `CN-YYYY-NNNN`: a counter that
+Same reasoning as `INV-YYYY-NNNN` and `CN-YYYY-NNNN`: a counter that
 resets every January collides with last January's receipt. The counter is written before the row,
 so a crash burns an id rather than reusing one, and existing ids are scanned so a restored store
 cannot reissue one.
 
-**Amounts are taken in minor units and a decimal is refused** at the schema: `50000` is EUR
+at the schema: `50000` is EUR
 500.00 and `50000` is JPY 50,000, with the decimal count from the invoice engine's ISO 4217 table.
 
 **Locks: deposits first, then invoice**, in every path, the same order `servers/billing-docs`,
 `servers/quotes` and `servers/recurring` use, so no two processes in this repo can deadlock.
 
-**The free cap is on recording new deposits only.** Applying, refunding, listing, balances and
+Applying, refunding, listing, balances and
 the text statement are free and unlimited on every tier: a cap that trapped a client's deposit
 would be a limit on their money rather than on the user's usage.
 

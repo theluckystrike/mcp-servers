@@ -42,7 +42,7 @@ curl -A "<Chrome UA>" -o /dev/null -w '%{http_code}' \
 
 The badge is a real rendered score, not a placeholder: the SVG carries three grade glyphs,
 two filled `#37a169` (green) and one `#f5a623` (amber). The page itself shows
-**license A, maintenance A, quality "Not graded"** (TDQS not yet computed).
+(TDQS not yet computed).
 
 The listing is **Unclaimed** — the page says verbatim *"Unclaimed servers have limited
 discoverability"* and offers a "Looking for Admin?" claim flow. No Glama account was ever
@@ -56,8 +56,6 @@ gh api repos/theluckystrike/mcp-statement-of-account -q '.created_at, .stargazer
 -> 2026-09-05T17:10:18Z
 -> 0
 ```
-
-**Repo created 17:10:18Z, Glama record 17:43:09Z — 33 minutes, at zero stars.**
 
 ### The other one (different project, same account)
 
@@ -85,8 +83,6 @@ Loop over `gh repo list theluckystrike --limit 200 --json name -q '.[].name' | g
 | mcp-statement-of-account | **200** | 2026-09-05 |
 | the other 32 (mcp-servers, mcp-time-tracker, mcp-invoice, mcp-spreadsheet, mcp-price-tracker, mcp-expense-tracker, mcp-office-suite, mcp-currency, mcp-timezone, mcp-docx, mcp-resume, mcp-recurring, mcp-clauses, mcp-pdf, mcp-calendar, mcp-kanban, mcp-image, mcp-bank-statement, mcp-quotes, mcp-barcode, mcp-zip, mcp-billing-docs, mcp-deposits, mcp-per-diem, mcp-asset-register, mcp-cash-book, mcp-amortization, mcp-petty-cash, mcp-work-order, mcp-catalogue, mcp-change-order, mcp-registry) | 404 | 2026-09-02 .. 2026-09-06 |
 
-**1 of 33 = 3.0%.**
-
 ### The four servers in PR 13473, specifically
 
 ```
@@ -101,7 +97,7 @@ None of the four are on Glama. No honest badge can be added to those four entrie
 ### Connectors — a second Glama surface that we ARE already on, for free
 
 Searching Glama for `theluckystrike` returns, besides the two server records, four
-**remote connector** records under the `io.github.theluckystrike` namespace:
+records under the `io.github.theluckystrike` namespace:
 
 - `https://glama.ai/mcp/connectors/io.github.theluckystrike/bank-statement-csv-categorize-reconcile-ledger`
 - `https://glama.ai/mcp/connectors/io.github.theluckystrike/deposits`
@@ -120,7 +116,7 @@ curl "https://registry.modelcontextprotocol.io/v0/servers?search=theluckystrike&
 So Glama mirrors the official registry into `/mcp/connectors` with **no Glama account
 required**. That is a real, already-working, free Glama presence.
 
-**Defect found, not mine to fix:** every one of those four connectors renders a red dot with
+every one of those four connectors renders a red dot with
 `title="Server is not responding"`. Cause, measured:
 
 ```
@@ -166,7 +162,7 @@ curl https://raw.githubusercontent.com/theluckystrike/<repo>/main/Dockerfile
 -> 200 for all five
 ```
 
-**So the indexed repo and the four unindexed repos are configured identically.** Config is
+Config is
 not the discriminator. `glama.json` was NOT modified by this agent, because it is correct.
 
 Note on what `glama.json` actually does: the schema is only a maintainer-permission
@@ -180,7 +176,6 @@ does not.
 
 Four independent checks, all this loop:
 
-**a. The directory API is key-gated.**
 ```
 curl "https://glama.ai/api/mcp/v1/servers?query=theluckystrike"
 -> HTTP 401
@@ -201,7 +196,6 @@ grep -oE '/client/[A-Za-z0-9_.-]*Modal[A-Za-z0-9_.-]*\.js'
 There is no `AddServerModal` chunk served to an anonymous visitor. An anonymous click on
 "Add Server" gets the sign-up modal.
 
-**c. There is no public submit route.**
 ```
 /mcp/servers/new     301 -> /mcp/servers?query=author%3Anew   (just the search page)
 /mcp/servers/submit  301 -> /mcp/servers?query=author%3Asubmit
@@ -212,7 +206,6 @@ There is no `AddServerModal` chunk served to an anonymous visitor. An anonymous 
 /api                 404
 ```
 
-**d. There is no Glama issue tracker for server submissions.**
 ```
 gh repo list glama-ai --limit 30
 -> tool-definition-quality-score, lightport, rjsf-validator-cfworker
@@ -289,7 +282,7 @@ gh pr view 13473 --repo punkpeye/awesome-mcp-servers --json state,labels,statusC
 - bot comments: two, both dated 2026-09-02T13:19:09Z — `<!-- glama-check -->` and
   `<!-- emoji-check -->`
 
-**The emoji blocker is genuinely fixed.** The record said the PR carried `missing-emoji`;
+The record said the PR carried `missing-emoji`;
 it now carries `has-emoji`. `missing-glama` is the only red label left. No maintainer has
 commented; there is no human review activity on the PR at all.
 
@@ -316,8 +309,6 @@ added; no fifth entry was added.
 
 ## 5. Verdict: can PR 13473 ever pass without a human?
 
-**Yes in principle, no in practice on any schedule this project controls.**
-
 Broken into the three things that would have to be true:
 
 | Requirement | Human needed? | Evidence |
@@ -342,7 +333,7 @@ So:
   fully green PR sits until Frank Fiegel merges it. That part was never automatable and is not
   a Glama problem.
 
-**Practical recommendation:** treat this PR as a watch item, not a work item. Poll the four
+treat this PR as a watch item, not a work item. Poll the four
 badge URLs each loop; the moment one returns 200, push that badge and comment. Do not spend
 further loops trying to force Glama indexing from the outside — this loop tested every
 externally reachable surface Glama exposes and there is nothing left to try that does not
@@ -397,10 +388,10 @@ with `gh repo view` and `gh pr list --state merged`, and one high-ranking web fo
 
 None are archived. None charge anything. None require an account or a Glama badge. Every one
 was checked against the project's hard no-emoji rule before drafting, and all three carry
-**zero per-entry emoji** — the only glyph `abordage` renders per row is `☆` for the star
+— the only glyph `abordage` renders per row is `☆` for the star
 count, which is machine-appended by its build pipeline, not authored by the contributor.
 
-**1. `collabnix/awesome-mcp-lists` #112** — "A Curated List of containerised MCP Servers".
+— "A Curated List of containerised MCP Servers".
 One table row added as `| 23 |` at the end of **Containerised MCP Servers → Development
 Tools**, matching the section's existing `| N | **name** | description | [GitHub](url) |`
 format. Entry is `theluckystrike/mcp-office-suite`, chosen because this list is specifically
@@ -409,7 +400,7 @@ about containerised servers and that mirror repo has a root `Dockerfile` (verifi
 added, nothing else touched. This is the best of the three: collabnix has real domain
 authority and merged three external PRs the day before.
 
-**2. `habitoai/awesome-mcp-servers` #144** — three entries into **Finance**, each placed in
+— three entries into **Finance**, each placed in
 correct alphabetical position as its `CONTRIBUTING.md` requires, in the exact
 `- [Project Name](link) - Brief description` format it specifies:
 `mcp-bank-statement` before *Bankless Onchain MCP*, `mcp-expense-tracker` before
@@ -422,7 +413,7 @@ and writing with `newline=''` brought it back to a clean 3-line diff. **Any futu
 editing a third-party README must open with `newline=''` and check `git diff --stat` before
 committing.**
 
-**3. `abordage/awesome-mcp` #106** — six entries, YAML only. Its `CONTRIBUTING.md` says in
+— six entries, YAML only. Its `CONTRIBUTING.md` says in
 bold *"DO NOT edit the README.md directly"* because the README is generated daily, so only
 `repositories.yaml` was touched: three under Finance → Accounting & Budgeting
 (`mcp-invoice`, `mcp-expense-tracker`, `mcp-cash-book`), one under Finance → Payments &
@@ -432,7 +423,7 @@ Banking (`mcp-bank-statement`), two under Productivity → Documents (`mcp-pdf`,
 
 ### Human-gated, written into HUMAN_GATED_PACK.md
 
-**`https://mcp.directory/submit`** — the best-ranking surface found this round that is not
+— the best-ranking surface found this round that is not
 already tried. Free, and genuinely **needs no account**: the only required field is a GitHub
 repository URL, with optional npm package, PyPI package, a 100-character description and an
 email. Submit control is `<button type="submit">Submit for Review</button>`. No fee, pricing,

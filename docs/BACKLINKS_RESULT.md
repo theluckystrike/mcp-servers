@@ -140,7 +140,7 @@ traffic.
 
 ## Findings worth keeping
 
-**statewage does NOT deploy on push, and its own workflow comment says it does.** The header of
+The header of
 `.github/workflows/weekly-refresh.yml` reads "Cloudflare Pages (git-connected) rebuilds
 automatically on the push". That is stale and wrong. `362f2d8` was pushed to `main` and the live
 site stayed byte-identical to its pre-change checksum with zero mcp links. `wrangler.toml` is the
@@ -149,17 +149,17 @@ account is at the 100/100 Pages cap, and it ships only via `wrangler deploy`. Th
 corrected, otherwise every future push looks deployed and is not. ukmoneycalc, by contrast, really
 does deploy from CI on push.
 
-**`npm ci` cannot complete on this machine.** It hangs to timeout and dies on SIGTERM, because the
+It hangs to timeout and dies on SIGTERM, because the
 npm cache is configured at `~/Desktop/bugbounty/poc-verify/npm-cache`, which is on the
 iCloud-backed Desktop. Every `npm ci` therefore blocks on iCloud recall. `npx astro build` does
 work, but it exits 124 while having already written a complete and correct `dist/`, so the timeout
 is a false negative. Check for `dist/` before concluding a build failed here.
 
-**A pipe to `tail` hides a build failure.** `npm run build 2>&1 | tail -8` reported exit code 0 while
+`npm run build 2>&1 | tail -8` reported exit code 0 while
 the log said `sh: astro: command not found`. Only the unpiped run surfaced the real status. Never
 judge a build by the exit code of a pipeline.
 
-**Two commits appeared in the site clones that this session did not issue.** `1cab454` in
+`1cab454` in
 ukmoneycalc at 07:21:57 +0700 and `362f2d8` in statewage at 07:22:01 +0700, both authored
 `theluckystrike <support@zovo.one>`, both already pushed to `origin/main`, both containing this
 run's patch text character for character. This session's own commit attempt, made afterwards,

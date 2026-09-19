@@ -82,13 +82,13 @@ calendar event. All four gaps are stated as reasons to choose the other server.
 
 Two claims were measured rather than repeated.
 
-**ECB: 29.9% of dates have no rate.** Counted directly from `eurofxref-hist.csv`, downloaded from
+Counted directly from `eurofxref-hist.csv`, downloaded from
 www.ecb.europa.eu. The series runs 1999-01-04 to 2026-09-02: 10,104 calendar days, 7,084 published
 dates, so 29.9% carry no rate. Single years: 2025 published 255 of 365 and 2024 published 256 of 366,
 both 30.1% missing. This is the fact the nearest-previous-business-day rule exists for, and it is the
 lead section of the currency guide and a row on the compare page.
 
-**Warsaw and New York share 2 hours in September and 3 in March.** Computed with `Intl` longOffset
+Computed with `Intl` longOffset
 formatting for both zones on both dates, against 09:00-17:00 working days. On 2026-09-10 Warsaw is UTC+2
 and New York UTC-4, giving 13:00-15:00 UTC, 2 hours. On 2026-03-16 Warsaw is still UTC+1 while New York
 is already UTC-4, giving 13:00-16:00 UTC, 3 hours. The cause is the gap between the US change on

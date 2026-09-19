@@ -36,7 +36,7 @@ ls servers/ | wc -l
 
 So `glama` exists in this repo as `glama.json` (42 files, one per server — a
 `{"$schema":"https://glama.ai/mcp/schemas/server.json","maintainers":["theluckystrike"]}` manifest),
-**not** as a README badge. The prior "8" almost certainly conflates `glama.json` presence with
+as a README badge. The prior "8" almost certainly conflates `glama.json` presence with
 badges; the count of `glama.json` files is 42, not 8.
 
 ```
@@ -80,7 +80,7 @@ for d in $(ls servers/); do curl -s -o /dev/null -w '%{http_code}' -m 20 -A "$UA
 -> 12x 200, 30x 404; time-tracker = 404
 ```
 
-**Correction against an earlier pass in this same round:** a first probe logged time-tracker as
+a first probe logged time-tracker as
 200/383847 bytes. On re-probe it is 404 twice (page route and badge route). The 12-indexed figure
 is the reproduced one; the transient 200 was not reproducible and is discarded.
 
@@ -199,7 +199,7 @@ curl -s -m 20 -A "$UA" -L -o /tmp/glama_add2.html -w 'final=%{url_effective} sta
 -> final=https://glama.ai/mcp/servers?query=author%3Aadd status=200
 ```
 
-**HUMAN-GATED, exact URL: https://glama.ai/mcp/servers** — the "Add Server" control there
+— the "Add Server" control there
 requires GitHub OAuth sign-in. (Recorded and stop, per CLAUDE.md.)
 
 ### The lever that is not human-gated: the official MCP Registry

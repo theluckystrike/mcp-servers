@@ -7,9 +7,7 @@ next to its source doc in an HTML comment. Nothing here is auto-posted.
 
 ## 1. Show HN
 
-**Title:** Show HN: Five local MCP servers for freelancer work (time, invoices, expenses, spreadsheets, prices), one-time Pro
-
-**Body:**
+Show HN: Five local MCP servers for freelancer work (time, invoices, expenses, spreadsheets, prices), one-time Pro
 
 I built five Model Context Protocol servers that run on your own machine over stdio: time tracking,
 invoicing, expense/mileage tracking, spreadsheet read/query/convert, and price watching. A sixth,
@@ -46,34 +44,29 @@ Buy Pro / hosted endpoints: https://mcp.zovo.one
 
 ### Anticipated questions
 
-**Offline license keys, what stops someone from sharing one?**
 Nothing cryptographic stops copying a key file, the same as most one-time-purchase CLI tools.
 The keys are Ed25519-signed so they can't be forged, and verification never phones home, so there's
 no server-side revocation either. This is a tradeoff for privacy and no-account use, not an attempt
 at DRM. <!-- Ed25519 offline verify, no phone-home: README.md line 29 -->
 
-**Why one-time instead of a subscription?**
 These are utilities people run occasionally inside a chat client, not a service with ongoing hosting
 cost per user (the optional hosted endpoints are the exception and are metered separately). One-time
 pricing matches that shape. <!-- pricing model: data/facts.json pricing block, "one-time, lifetime" -->
 
-**Why local/stdio instead of just hosting it?**
 Local means your time entries, invoices, and receipts sit in a file on your disk, not in a database
 I operate. The hosted endpoints exist for clients that can't spawn a local process, and they say
 plainly what they retain and for how long (see below). <!-- README.md "Hosted endpoints" section -->
 
-**What happens on refund?**
 The license key still works after a refund is issued manually; there's no remote kill switch, since
 verification is offline by design. If you want a key deactivated you'd have to ask and I'd have to
 trust it, which is the same limitation as the piracy question above. <!-- inferred directly from README.md offline/no-phone-home design, no separate refund doc -->
 
-**Why do the registry listings use long, keyword-stuffed names instead of the plain names?**
+Why do the registry listings use long, keyword-stuffed names instead of the plain names?
 Registry search matches on whole words, and a name built only from `time-tracker` didn't turn up for
 searches like "timesheet" or "billable hours". The extra words in names like
 `time-tracker-timesheet-billable-hours` are all words the tool descriptions already use; the npm
 package names, directory names, and checkout URLs are unchanged. <!-- README.md "Registry names" section -->
 
-**What does the hosted version retain, and for how long?**
 A free anonymous token is 30-day KV TTL, refreshed on each request. Download links for generated
 files (invoice PDFs, CSV exports, converted spreadsheets) are valid for one hour. Spreadsheet data
 loaded remotely lives only in that request's virtual filesystem. <!-- README.md "Hosted endpoints" section -->
@@ -133,9 +126,9 @@ Repo: https://github.com/theluckystrike/mcp-servers
 
 ## 3. dev.to article outline
 
-**Title:** What five rounds of testing MCP servers through a real client taught us
+What five rounds of testing MCP servers through a real client taught us
 
-**Abstract (40 words):** Unit tests passed at 100% while a real Claude session still lost tool
+Unit tests passed at 100% while a real Claude session still lost tool
 calls to generic fetchers, abandoned a task rather than notice the right tool was sitting in its
 own allowlist, and hit a hard cap that taught it to route around a paywall instead of asking for
 one. Five rounds of prompts, not assertions, found all three.

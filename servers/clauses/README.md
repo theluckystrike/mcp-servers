@@ -1,22 +1,22 @@
 # mcp-clauses
 
-Say "draft a service agreement for Beta Corp, 4,500 EUR, 14-day terms" and get a real `.docx` built from your own clause library. This MCP server keeps the contract and proposal paragraphs you reuse -- scope, payment terms, late fees, IP assignment, confidentiality, termination, liability cap and twenty more -- as searchable clauses with `{{variables}}` in them. It ships with 25 generic freelance starters, finds the right ones by ranked search, fills the variables you supply, leaves every fact you did not supply as a visible bracketed prompt like `[late fee percent]`, and writes the assembled document to Word or markdown. Every document opens with the line that it is a generic template and not legal advice. Everything runs locally: no upload, no account, no native dependency.
+Say "draft a service agreement for Beta Corp, 4,500 EUR, 14-day terms" and get a real `.docx` built from your own clause library. This MCP server keeps the contract and proposal paragraphs you reuse, scope, payment terms, late fees, IP assignment, confidentiality, termination, liability cap and twenty more, as searchable clauses with `{{variables}}` in them. It ships with 25 generic freelance starters, finds the right ones by ranked search, fills the variables you supply, leaves every fact you did not supply as a visible bracketed prompt like `[late fee percent]`, and writes the assembled document to Word or markdown. Every document opens with the line that it is a generic template and not legal advice. Everything runs locally: no upload, no account, no native dependency.
 
 **In the [official MCP Registry](https://registry.modelcontextprotocol.io/v0.1/servers/io.github.theluckystrike%2Fcontract-clause-library-proposal-template-docx/versions/latest)** (`io.github.theluckystrike/contract-clause-library-proposal-template-docx`).
 
 ![clauses demo](../../assets/demo-clauses.gif)
 
-**Stop pasting last year's contract into a new file and hoping you changed every name.**
+Stop pasting last year's contract into a new file and hoping you changed every name.
 
 ## 60-second install
 
 npm publish for `@theluckystrike/mcp-clauses` is pending. Until then, the `.mcpb` one-click bundle or a clone+build
-is the working path -- both are verified below.
+is the working path, both are verified below.
 
-**One-click (.mcpb):** download `clauses.mcpb` from the latest release and double-click it in Claude Desktop:
+One-click (.mcpb): download `clauses.mcpb` from the latest release and double-click it in Claude Desktop:
 https://github.com/theluckystrike/mcp-servers/releases/latest
 
-**Claude Desktop** (`claude_desktop_config.json`):
+(`claude_desktop_config.json`):
 
 ```json
 {
@@ -29,13 +29,13 @@ https://github.com/theluckystrike/mcp-servers/releases/latest
 }
 ```
 
-**Claude Code:**
+Claude Code:
 
 ```sh
 claude mcp add clauses -- npx -y @theluckystrike/mcp-clauses
 ```
 
-**Cursor** (`.cursor/mcp.json`):
+(`.cursor/mcp.json`):
 
 ```json
 {
@@ -133,14 +133,14 @@ Call `variables_list` with the clauses you picked to see exactly which ones your
 | JSON import and export | no | yes |
 | Clause version history on `clause_update` | no | yes |
 
-**Get Pro:** https://mcp.zovo.one/buy/clauses -- $19 one-time, or $39 for the whole collection.
+Get Pro: https://mcp.zovo.one/buy/clauses, $19 one-time, or $39 for the whole collection.
 
 ## Pairs with
 
-- [mcp-docx](../docx) -- the document engine this server assembles through. Install both and the same conversation
+- [mcp-docx](../docx), the document engine this server assembles through. Install both and the same conversation
   that picks clauses can also write the covering letter and read the client's own `.docx` back.
-- [mcp-invoice](../invoice) -- the payment terms you agreed in the contract are the terms you bill on.
-- [mcp-recurring](../recurring) -- once a retainer clause is signed, the schedule that raises its invoices.
+- [mcp-invoice](../invoice), the payment terms you agreed in the contract are the terms you bill on.
+- [mcp-recurring](../recurring), once a retainer clause is signed, the schedule that raises its invoices.
 
 ## Privacy
 

@@ -77,7 +77,7 @@ remove tt --scope local`.
 | 3 | `tt: pending` | 0 | `ToolSearch`, `timer_start`, `timer_start`, `entry_delete` | 36.7 | PASS with noise — auto-stopped trial 2's timer, then cleaned up. |
 | 4 (workaround) | `tt: pending` | 0 | `ToolSearch`, `timer_start` | 12.3 | PASS — `claude mcp list` first printed `tt: https://mcp.zovo.one/mcp/time-tracker (HTTP) - Connected`. |
 
-**The round-3 diagnosis was wrong in its mechanism.** `status: pending` and `0 mcp__ tools` in the
+`status: pending` and `0 mcp__ tools` in the
 init line is now the *normal* state for an HTTP server in this client: the tools are deferred and the
 model reaches them through its own `ToolSearch`. All four trials showed `pending`; three of four
 worked anyway. The real failure is that a run sometimes does not issue the `ToolSearch` at all, and
@@ -98,7 +98,7 @@ not proof, and the honest framing is that it costs two seconds and cannot hurt.
 
 ## Defects still open
 
-**D-R5 (medium, downgraded from high; client/hosted) — one first run in three answers with no tools.**
+D-R5 (medium, downgraded from high; client/hosted) — one first run in three answers with no tools.
 Repro: `rm -rf /tmp/x && mkdir /tmp/x && cd /tmp/x && claude mcp add --transport http --scope local tt
 https://mcp.zovo.one/mcp/time-tracker --header "Authorization: Bearer <key>" && claude -p "Start a
 timer for Remote Co" --model sonnet --output-format stream-json --verbose --allowedTools
@@ -107,7 +107,7 @@ timer for Remote Co" --model sonnet --output-format stream-json --verbose --allo
 `initialize` is 1.05 s and correct. Either the client should not report `pending` for a server it has
 not tried yet, or the server list should be resolved before the first turn.
 
-**D-R9 (medium, price-tracker; D-4 reopened) — `price_check` is now skipped entirely.**
+D-R9 (medium, price-tracker; D-4 reopened) — `price_check` is now skipped entirely.
 Round 3 scored pt1 a 2 because `WebFetch` ran first and `price_check` second, with the server's answer
 being the one reported. Round 4, same prompt, same `/private/tmp/uv2/mcp.json`, same allowlist: the
 model called `WebFetch` once, answered GBP 51.77 from the HTML, and never touched the server. The
@@ -119,7 +119,7 @@ Fix direction: `price_check`'s description has to claim the URL case explicitly 
 fetching the page: it stores the point for history and alerts"), because on capability alone a
 generic fetcher wins.
 
-**D-R10 (low, harness, new) — without `WebFetch` in the allowlist, pt1 dies rather than falling back.**
+D-R10 (low, harness, new) — without `WebFetch` in the allowlist, pt1 dies rather than falling back.
 The first pt1 run used exactly round 3's allowlist (`allow_r3.txt`, MCP tools only). `WebFetch` was
 attempted, denied, and the turn ended `"you'll need to approve the WebFetch tool ... Want to grant
 it?"` with `price_check` sitting right there unused. 11.9 s, `out/r4_pt1.jsonl`. In round 3 the same
@@ -127,7 +127,7 @@ allowlist let `WebFetch` through, so the client's permission behaviour changed u
 pt1 above is the re-run with `WebFetch` appended, which reproduces round 3's conditions. Recorded so
 the round-3/round-4 pt1 comparison is not read as a code change.
 
-**D-R8 (low, hosted) — the download still serves `text/html` under a `.pdf` filename.**
+D-R8 (low, hosted) — the download still serves `text/html` under a `.pdf` filename.
 `content-type: text/html; charset=utf-8` with `content-disposition: inline; filename="INV-2026-0001.pdf"`.
 The tool text is now honest ("HTML invoice, print to PDF, valid 1 hour") and the model repeated it, so
 the user is no longer misled in conversation — but a browser save still writes HTML into a `.pdf`
@@ -136,10 +136,9 @@ issuer`, saying PDF about the artifact it just called HTML. Repro:
 `curl -sI https://mcp.zovo.one/mcp/download/<hash>`. Fix direction: set the disposition filename to
 `.html` on the HTML path, and reuse `documentLabel()` in the business-profile note.
 
-**D-E1 (low, expense-tracker, disclosed) — s1 unchanged.**
 `expense_add` with no rate named stores net = gross and says so. Still a 2, still by design.
 
-**D-R1 (medium, time-tracker) — not exercised this round.** a3 reached the invoice through
+a3 reached the invoice through
 `entry_list` rather than `invoice_summary`, so the blended-rate path never ran in flow. The fix and
 its test (`servers/time-tracker/test/smoke.test.mjs:202`) stand unverified end to end here.
 

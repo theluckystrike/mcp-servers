@@ -58,7 +58,7 @@ present: invoice
 ```
 Seven of the eight requested topics were already present. Only `productivity` was missing.
 
-**Description gap:** it said "Also hosted" but did not name the hosted URL, so the
+it said "Also hosted" but did not name the hosted URL, so the
 "mentions hosted URL" requirement was not satisfied.
 
 ### Change A — add `productivity` (required a swap)
@@ -148,7 +148,7 @@ present: productivity
 present: pdf
 present: invoice
 ```
-**All eight requested topics now present.** Verified independently via:
+Verified independently via:
 ```
 gh api repos/theluckystrike/mcp-servers/topics --jq '.names | index("productivity")'
 ```
@@ -177,7 +177,7 @@ set**. `opengraph.githubassets.com/1/theluckystrike/mcp-servers` returns HTTP 20
 but that endpoint auto-generates a fallback card for every repo regardless of
 whether a custom upload exists, so it proves nothing about a real upload.
 
-**Conclusion: cannot be determined via `gh`/REST. Must be checked manually** at
+at
 `https://github.com/theluckystrike/mcp-servers/settings` (Social preview section).
 Not fabricated.
 

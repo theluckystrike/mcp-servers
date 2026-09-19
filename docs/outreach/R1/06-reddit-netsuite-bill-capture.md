@@ -1,14 +1,14 @@
 # Draft 06 — Reddit r/Netsuite: Using MCP for Bill Capture (PDF vendor bills)
 
-**Surface:** Reddit r/Netsuite — `HUMAN-GATED` (Reddit account required)
-**Thread URL:** https://www.reddit.com/r/Netsuite/comments/1ozq0ox/using_mcp_for_bill_capture/
-**Thread title:** *Using MCP for Bill Capture* — "Anyone had any success getting MCP via Claude to
+Reddit r/Netsuite — `HUMAN-GATED` (Reddit account required)
+https://www.reddit.com/r/Netsuite/comments/1ozq0ox/using_mcp_for_bill_capture/
+*Using MCP for Bill Capture* — "Anyone had any success getting MCP via Claude to
 create vendor bills from pdfs?"
-**Fit:** The thread's existing answer says a bridge/middleware is needed to get clean vendor bills into
+The thread's existing answer says a bridge/middleware is needed to get clean vendor bills into
 NetSuite. The useful contribution is the shape that bridge should take and the fields that must be
 mapped, so the asker can scope it before committing.
 
-**Exact guide link to include:** https://mcp.zovo.one/guides/invoice-pdf-from-chat
+https://mcp.zovo.one/guides/invoice-pdf-from-chat
 
 ---
 

@@ -18,7 +18,7 @@ Cloudflare referer data for mcp.zovo.one over 2026-09-07 to 09-09:
 This is the first time Google has ever appeared as a referer for this host, and the
 user-agent breakdown on those requests is Chrome, Chrome Mobile, Edge and Mobile Safari.
 
-**That is not organic search traffic, and the first version of this document said it was.**
+That is not organic search traffic, and the first version of this document said it was.
 The claim was checked against Search Console's URL Inspection API and it does not hold:
 
     https://mcp.zovo.one/mcp/spreadsheet    URL is unknown to Google, lastCrawl never

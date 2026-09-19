@@ -16,14 +16,14 @@ needs to read quotes.
 
 ## Design decisions worth stating
 
-**Ids are `Q-YYYY-NNNN`, not `Q-NNNN`.** The brief said "ids like Q-0001 per year". A four-digit id whose
+The brief said "ids like Q-0001 per year". A four-digit id whose
 counter resets every January collides across years: 2026's `Q-0001` and 2027's `Q-0001` are two different
 documents, both sent to clients, and no later lookup can separate them. The year is in the id and the counter is
 keyed `Q-<year>`, exactly as the invoice engine numbers `INV-YYYY-NNNN`.
 
-**Accepting copies, it never recomputes.** See the measured insight at the end.
+See the measured insight at the end.
 
-**`quote_accept` creates the invoice directly when the invoice store is present.** "Present" is defined as
+"Present" is defined as
 `invoices.json` OR `clients.json` existing in `${XDG_DATA_HOME}/mcp-servers/invoice/`, OR a shared business
 profile with a name (`servers/quotes/src/store.ts`, `invoiceStorePresent()`). `create_invoice` overrides it:
 `"always"` creates regardless, `"never"` only marks the quote accepted. When no invoice is created the response
@@ -31,12 +31,12 @@ carries `invoice_create_args`, ready to forward to the invoice server's `invoice
 converted back to major units. This is documented in the tool description, in the README and in the response
 itself.
 
-**Accepting bypasses the invoice server's own free cap.** The invoice is written through the shared engine, the
+The invoice is written through the shared engine, the
 same path `servers/recurring` uses, so `FREE_INVOICES_PER_MONTH` (enforced in that server's tool handler, not in
 the engine) does not apply. The quotes free cap is the one in force. The accept response says this in one line
 rather than leaving it to be discovered.
 
-**Prices are taken in minor units and a decimal is refused.** `unit_price_minor: 9000` is EUR 90.00 and
+`unit_price_minor: 9000` is EUR 90.00 and
 `150000` is JPY 150,000. `computeTotals` takes major units, so the value is divided by `10^decimals` on the way
 in and every line is checked to have round-tripped to the same integer before anything is stored.
 
@@ -91,7 +91,7 @@ this unit's write scope and is noted here rather than changed.
 
 ### Defects fixed during the build
 
-**Text-export alignment.** The totals block in `quote_send_text` was padded against the description column
+The totals block in `quote_send_text` was padded against the description column
 width, so `VAT 23% on EUR 1800.00` pushed its amount 12 characters right of the line amounts in the pasteable
 email. Fixed by right-aligning the totals labels against a column computed from the line layout, so the amount
 column lands in the same place for any description width.

@@ -8,7 +8,7 @@ part 2 is the user's own subscription client, not a paid API key.
 
 ## Method
 
-**Part 1 harness** -- `/private/tmp/imgaudit/probe.mjs`, run twice (free lane, Pro lane with a key
+-- `/private/tmp/imgaudit/probe.mjs`, run twice (free lane, Pro lane with a key
 from `scripts/sign-license.mjs image`), driving `servers/image/dist/index.js` over stdio JSON-RPC
 through the repository's own `test/_client.mjs`, which **throws on any stdout line that does not
 parse as JSON**. Fresh `XDG_DATA_HOME` per lane, cwd set to the output directory. Fixtures are
@@ -29,10 +29,10 @@ built by `/private/tmp/imgaudit/fixtures.mjs`:
 | `four_mp.jpg` | 2000x2000, 7.1 MB, for the memory probe |
 | `notimage.png` | 21 bytes of text with an image extension |
 
-**Input integrity** -- sha256 of all 16 fixtures is taken before the first probe and after the last
+-- sha256 of all 16 fixtures is taken before the first probe and after the last
 one in every lane and diffed.
 
-**Part 2 harness** -- the real `claude` CLI as MCP client: `claude -p "<prompt>" --mcp-config
+-- the real `claude` CLI as MCP client: `claude -p "<prompt>" --mcp-config
 /private/tmp/uv70/mcp.json --strict-mcp-config --model sonnet --output-format json --max-turns 14
 --allowedTools "<12 tools written out by name>"`, one session (`--session-id` then five
 `--resume`). `image` is the only server registered. `MCP_LICENSE_KEY=""`, `XDG_DATA_HOME` and
@@ -93,7 +93,7 @@ alpha channel (a purple disc inside a gold ring on transparency), `avatar.jpg` 3
 
 ### Defects and fixes
 
-**D-I1 (critical): a decoder warning on stdout killed the connection.** `omggif` prints
+`omggif` prints
 `Warning, gif stream shorter than expected.` with `console.log` when a GIF's block stream ends
 early. `console.log` is stdout, stdout is the JSON-RPC transport, and the probe client -- which
 throws on any non-JSON stdout line, exactly as a strict MCP client would -- **died mid-run**:
@@ -110,7 +110,7 @@ that does not begin `{` or `[` to stderr, and `console.log/info/warn/debug` are 
 outright. The protocol still goes out through the original handle. `test/adversarial.test.mjs`
 feeds a truncated animated GIF through two calls and then asserts a third call still answers.
 
-**D-I2: an animated GIF lost every frame but the first, silently.** A 2-frame GIF returned
+A 2-frame GIF returned
 `"width": 4, "height": 4` from `image_info` with no mention of animation, and `image_convert`
 wrote a still and reported success. Fix: `gifFrameCount()` walks the GIF block stream and counts
 image descriptors; `image_info` reports `frames` and an `animation_note`, and resize, convert and
@@ -118,8 +118,8 @@ crop all print `anim.gif is an animated GIF with 2 frames. Only the first frame 
 output is a still. This server does not write animation.` The behaviour is unchanged -- first
 frame -- but it is now stated.
 
-**D-I3: EXIF orientation is applied, and nothing said so.** `orient6.jpg` has a SOF0 declaring
-**400x200** and Orientation 6. jimp applies the tag on read, so `image_info` answered `200x400`.
+`orient6.jpg` has a SOF0 declaring
+and Orientation 6. jimp applies the tag on read, so `image_info` answered `200x400`.
 That is the correct answer -- it is what the user sees -- but it contradicts every other tool that
 reads the header, and the copies this server writes carry no EXIF block, so the *second* question
 ("will it get turned again?") was unanswerable. Fix: `LoadedImage` carries the declared header
@@ -127,7 +127,7 @@ dimensions, and when they disagree `image_info` adds `declared_in_header: "400x2
 `orientation_note` saying the turn was applied on read and that a copy written here has no EXIF
 block and will not be turned a second time.
 
-**D-I4: an upscale was reported as a plain resize.** `image_resize {1x1 -> width: 4000}` answered
+`image_resize {1x1 -> width: 4000}` answered
 `Resized 1x1 to 4000x4000` and wrote a 65.7 KB file of one interpolated colour. Fix: any resize
 whose output exceeds the source on either side says `the extra pixels are interpolated, not new
 detail`, and `image_batch_resize` marks the affected rows `(ENLARGED past the source resolution)`.
@@ -145,14 +145,14 @@ the combining marks stripped for the rest), counts what it replaced, lists what 
 and the answer quotes **the text that went on the pixels**. Text with nothing renderable left is
 refused with the dropped characters named and nothing written.
 
-**D-I6: a 500-character watermark was drawn off the edge and reported as success.** The font
+The font
 ladder stops at the 8 px face, where 200 characters measure 1,000 px of text in 282 px of room.
 Fix: the measured width is compared against the room actually available and the overflow is
 named -- `measures 1000 pt at 8 px type, the smallest face this server has, in 282 px of room on a
 300x200 image, so it would be drawn off the right edge` -- with nothing written. The silent
 200-character truncation is now reported too.
 
-**D-I7 (from part 2, critical for the product): the free tier capped the wrong number.**
+D-I7 (from part 2, critical for the product): the free tier capped the wrong number.
 `FREE_MAX_PIXELS` was checked against the **source**, so a 12 MP phone photo was refused by every
 write tool -- including the one job this server exists for, taking a camera-sized file down to a
 page-sized one. Fix: the cap moved to the **output**. `image_resize`, `image_compress`,
@@ -167,7 +167,7 @@ photo.** It writes exactly the pixels it read, so an output cap on it is an inpu
 name, and part 2 s4 -- "strip the metadata from photo.jpg" -- was answered with an upsell. Fix: no
 size cap on that tool at any tier. The 50 MB / 10,000 px input guards still bound the cost.
 
-**D-I9: dominant colours were gated to nothing, and the model filled the gap by inventing them.**
+D-I9: dominant colours were gated to nothing, and the model filled the gap by inventing them.
 The free tier returned only the checkout line. In part 2 s5 the model relayed it correctly and
 then volunteered `#E8A93A` and `#5B3B8C` "from viewing the image earlier" -- it had never seen the
 image; the real values are `#e8b23a` and `#5b3e8a`. A refusal does not stop the caller wanting an
@@ -182,7 +182,7 @@ when the top colour is under 1% the payload says `No colour covers even 1% of th
 is a photograph or a gradient, not a palette - the hex codes above are the most common shades, not
 brand colours.`
 
-**D-I11 (from part 2): `image_compress` had no size target, so the caller brute-forced one.**
+D-I11 (from part 2): `image_compress` had no size target, so the caller brute-forced one.
 Asked for "under 250 KB", the model ran `image_compress` **five times** at quality 80, 75, 40, 20,
 12 and 9, left five intermediate files on disk, spent 15 turns, and finished by asking permission
 to clean up its own mess. Fix: `max_bytes`. The tool binary-searches JPEG quality down from
@@ -192,7 +192,7 @@ and refuses a target no quality can reach rather than writing something over it.
 same 20.4 MB photo: **one call, 8 encodes, 3.1 s**, `240.9 KB ... Method: JPEG quality 8 (searched
 down from 80 in 8 encodes to fit 250.0 KB) and a resize to 1600 px wide`.
 
-**Not defects, recorded so they are not re-litigated.** `out_path` traversal resolves against the
+`out_path` traversal resolves against the
 cwd and writes there, like any file tool given an absolute path. A 16-bit PNG is downsampled to 8
 bits by the decoder and nothing here can write 16-bit, so there is no precision to lose later. A
 CMYK JPEG decodes correctly. `image_thumbnails` writing `<name>-thumb.<ext>` is a fixed naming
@@ -236,7 +236,7 @@ number below is read off the files, not off the model's prose.
 | s5 | "What are the dominant colours of the logo?" | 2 | 3 | 14 | `image_dominant_colors` | The gate fired and was relayed exactly, with the checkout URL and a refusal to buy on the user's behalf -- that part is right. Then it offered `#E8A93A` and `#5B3B8C` "from viewing the image earlier", which it never did; the measured values are `#e8b23a` (23.2%) and `#5b3e8a` (74.5%). D-I9 |
 | s6 | "Batch resize all three to 800 wide into /private/tmp/uv70/web/." | 3 | 3 | 20 | `image_batch_resize` | `web/photo-800x600.jpg` **800x600**, `web/logo-800x800.png` **800x800**, `web/avatar-800x800.jpg` **800x800**, one call. It also flagged unprompted that the logo and the avatar were enlarged past their source resolution -- which the tool did not say at the time. D-I4 |
 
-**Totals: 40 tool calls, 217 s, 13 / 18.** All three sources sha256-identical before and after the
+All three sources sha256-identical before and after the
 whole conversation (`55a9fee8...` photo, `398dfdd1...` logo, `4faebef1...` avatar).
 
 ### Regression after the fixes

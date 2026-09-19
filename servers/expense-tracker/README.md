@@ -6,17 +6,17 @@
 
 Say "12.30 euros at Adobe, software, billable to Acme" and it is logged, categorised, VAT-split and ready to rebill. This MCP server keeps a local ledger of your business expenses: every amount is held in integer minor units in its own currency, `vat_rate` splits the gross on the receipt into net and VAT (set it once with `expense_settings` and every later expense is split without repeating it), merchant rules categorise new expenses on their own, receipts are attached by path and sha256 so an audit can prove the file has not changed, and business trips are priced from a built-in mileage table. Summaries group by category, project, month or merchant, always per currency and never mixed. It exports to CSV, xlsx or JSON, and `expense_to_invoice` hands the billable expenses of a project to `mcp-invoice` in exactly the line-item shape `invoice_create` expects. Everything is stored in a plain JSON file on your own machine; nothing is uploaded anywhere.
 
-**Log receipts and mileage in chat, split the VAT, and rebill them onto an invoice -- no expense SaaS required.**
+Log receipts and mileage in chat, split the VAT, and rebill them onto an invoice, no expense SaaS required.
 
 ## 60-second install
 
 npm publish for `@theluckystrike/mcp-expense-tracker` is pending. Until then, the `.mcpb` one-click bundle or a
-clone+build is the working path -- both are verified below.
+clone+build is the working path, both are verified below.
 
-**One-click (.mcpb):** download `expense-tracker.mcpb` from the latest release and double-click it in Claude Desktop:
+One-click (.mcpb): download `expense-tracker.mcpb` from the latest release and double-click it in Claude Desktop:
 https://github.com/theluckystrike/mcp-servers/releases/latest
 
-**Claude Desktop** (`claude_desktop_config.json`):
+(`claude_desktop_config.json`):
 
 ```json
 {
@@ -29,13 +29,13 @@ https://github.com/theluckystrike/mcp-servers/releases/latest
 }
 ```
 
-**Claude Code:**
+Claude Code:
 
 ```sh
 claude mcp add expense-tracker -- npx -y @theluckystrike/mcp-expense-tracker
 ```
 
-**Cursor** (`.cursor/mcp.json`):
+(`.cursor/mcp.json`):
 
 ```json
 {
@@ -135,8 +135,6 @@ A limit never writes a partial file and never silently truncates: the export is 
 
 Pro is a one-time $19, or $39 for every server in the collection, lifetime.
 
-**Get Pro: https://mcp.zovo.one/buy/expense-tracker**
-
 ## Numbers and money
 
 Every amount is an integer number of minor units in the expense's own currency, and every printed amount carries its currency code, for example `EUR 61.50`. How many minor units make one unit comes from an ISO 4217 table, not a guess: 2 for most currencies, 0 for JPY, KRW, VND, CLP, ISK and the rest of the zero-decimal list, 3 for BHD, IQD, JOD, KWD, LYD, OMR and TND, 4 for CLF and UYW. So `KWD 1.234` is 1234 minor units, not 123. The same table is used by [mcp-invoice](../invoice), because the two servers exchange amounts. HUF is 2 decimals here: ISO 4217 gives it two minor digits even though it is usually quoted without them.
@@ -145,7 +143,7 @@ The amount you record is the gross on the receipt. `vat_rate` splits it by round
 
 ## Privacy
 
-If `data.json` is ever unreadable or not valid JSON, it is not treated as "no expenses yet". The file is moved aside byte-for-byte as `data.json.corrupt-<timestamp>`, a `data.json.corrupt` marker is written, and every tool returns `data file is corrupt; moved to ...; nothing was written` until you restore a good copy and delete the marker -- so a truncated file can never be overwritten by an empty database.
+If `data.json` is ever unreadable or not valid JSON, it is not treated as "no expenses yet". The file is moved aside byte-for-byte as `data.json.corrupt-<timestamp>`, a `data.json.corrupt` marker is written, and every tool returns `data file is corrupt; moved to ...; nothing was written` until you restore a good copy and delete the marker, so a truncated file can never be overwritten by an empty database.
 
 All data stays local, in `${XDG_DATA_HOME:-~/.local/share}/mcp-servers/expense-tracker/`. There are no network calls: receipts are hashed on your machine, exports are written on your machine, and license keys are verified offline with a public key compiled into the package.
 

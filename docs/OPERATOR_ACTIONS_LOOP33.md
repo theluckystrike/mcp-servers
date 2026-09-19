@@ -12,13 +12,13 @@ currently **0 of 18**.
 
 ## 1. npm sign-in. One browser login, unblocks 33 packages.
 
-**Why it is first.** `npx` is the default install command in every MCP client's own
+`npx` is the default install command in every MCP client's own
 documentation and in most of the twenty competitor repositories an assistant actually cited
 this week. We publish zero npm packages, so every "how do I install this" answer about our
 servers has to reach for something less familiar. npm weekly downloads: 0, against a target
 of 100 per package.
 
-**Why an agent cannot do it.** Proven, not assumed. npm CLI 12.0.2 was upgraded and a real
+Proven, not assumed. npm CLI 12.0.2 was upgraded and a real
 GitHub Actions OIDC workflow was run twice against the live registry. It returns `ENEEDAUTH`:
 npm does not attempt an OIDC exchange unless a trusted publisher is already registered, and
 npmjs.com requires a package to EXIST before you can enable OIDC on it. So the first publish
@@ -30,7 +30,7 @@ of every package needs one browser sign-in. Verified again today:
 
 The scope is unclaimed: `https://registry.npmjs.org/@theluckystrike/mcp-invoice` returns 404.
 
-**A registry rule found this loop, stated precisely rather than dramatically.** Found on 2026-09-10 while republishing the
+Found on 2026-09-10 while republishing the
 catalogue: the MCP registry has started validating that a declared npm package actually
 exists, and refuses the manifest outright when it does not.
 
@@ -46,8 +46,6 @@ command in every client's own documentation.
 The mirror READMEs also had to stop printing `npx -y @theluckystrike/mcp-<name>` this loop,
 because that command returns 404 against a passing control: it was the headline install line
 on the estate's best-ranked front doors and it failed for everyone who tried it.
-
-**The step.**
 
 1. In this session's terminal, type: `! npm login --auth-type=web`
 2. Complete the sign-in in the browser that opens.
@@ -66,7 +64,7 @@ it was a configuration error.
 
 ## 2. Search Console: make the service account an Owner. One click, and it converts a human step into an autonomous one.
 
-**Why it is second.** It is the only item on this list that gives an agent a capability it does
+It is the only item on this list that gives an agent a capability it does
 not have. Google's Indexing API can request crawling directly instead of waiting for a ration,
 and it is currently refused:
 
@@ -75,17 +73,17 @@ and it is currently refused:
 The service account `zovo-gsc-cleanup@zovo-extensions.iam.gserviceaccount.com` is present on the
 property as `siteFullUser`, which can read, and the Indexing API needs `Owner`.
 
-**Why it matters right now.** A full 154-URL inspection census returns 1 indexed, 1 ever
+A full 154-URL inspection census returns 1 indexed, 1 ever
 crawled, 115 "Discovered, currently not indexed", and every one of those with
 `lastCrawlTime: null`. Google has fetched one page of the site. It has not judged the content
 and declined it; it has never looked. Meanwhile 129 of the 429 indexed `zovo.one` pages carry a
 followed link into the host and every single one points at the bare root, which is exactly the
 one URL that got crawled.
 
-**The step.** Search Console, property `sc-domain:zovo.one`, Settings, Users and permissions,
+Search Console, property `sc-domain:zovo.one`, Settings, Users and permissions,
 change that service account from Full to **Owner**.
 
-**Honest expectation.** This is not guaranteed to work. Three deep links placed a day earlier
+This is not guaranteed to work. Three deep links placed a day earlier
 have live targets that are still uncrawled, and a sibling subdomain shows the same rationing
 shape, so this looks like ordinary new-host behaviour rather than something specific that can
 be unlocked. The Indexing API is worth having because it is the only lever that asks directly
@@ -101,7 +99,7 @@ is **unmeasurable without a sign-in**. Scripted Bing queries cannot prove absenc
 `site:` and answers the head term only, so a zero from it means nothing and was correctly
 recorded as unmeasured rather than as absence.
 
-**The step.** `https://www.bing.com/webmasters/`, verify `mcp.zovo.one`, then Settings, API
+`https://www.bing.com/webmasters/`, verify `mcp.zovo.one`, then Settings, API
 access, API Key. With the key an agent can read the number without further help.
 
 154 URLs were submitted to IndexNow this loop and accepted, 200 from bing.com, yandex.com,
@@ -119,7 +117,7 @@ custody decision nobody but you can take, and decisively **no mainstream MCP cli
 larger human step than clicking a link. Median x402 price is a cent per call against a
 nineteen dollar one-time product.
 
-**No action recommended.** It is listed so the decision is recorded rather than rediscovered.
+It is listed so the decision is recorded rather than rediscovered.
 
 ---
 

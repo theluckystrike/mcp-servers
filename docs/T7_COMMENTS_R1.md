@@ -27,37 +27,37 @@ Index with posting instructions: `docs/outreach/R1/index.md`
 
 ## Rationale per target
 
-**01 — GitHub Discussions, startup failure.** `connect-mcp-servers-without-installing` is the exact
+`connect-mcp-servers-without-installing` is the exact
 remedy for a server that never launches: run it from a normal shell first, then add it. The discussion
 thread is the canonical place people land with that symptom. Highest-value target: a dev audience that
 will actually run the commands, and GitHub threads are indexed.
 
-**02 — GitHub Issues, incomplete tool list.** The thread reports "README lists more tools than my client
+The thread reports "README lists more tools than my client
 shows." The draft supplies the tool-ceiling explanation the thread lacks — the surfaced tools being a
 stable *prefix* of the declared list is the tell — plus the stdio reproduction to separate a client
 listing bug from a server crash. Directly matches our troubleshooting guide.
 
-**03 — r/ClaudeAI, empty `claude mcp list`.** Near-identical symptom class to 02 but the cause is scope
+Near-identical symptom class to 02 but the cause is scope
 (`--scope local` vs `user` vs project `.mcp.json`) and the `servers` vs `mcpServers` key split between
 clients. High-traffic subreddit, recurring question, and our guide covers all six checks in order.
 
-**04 — r/LocalLLaMA, reading PDFs.** Best *technical* fit in the set. The asker wants PDF reading for a
+Best *technical* fit in the set. The asker wants PDF reading for a
 text model; the answer explains the subset-font/CID trap — why decoder-less extractors return glyph
 indices as "text" and look successful while producing noise — and separates it from the scan/OCR case.
 This is the kind of answer that earns standing in that subreddit, with the guide link as a secondary.
 
-**05 — r/ollama, local invoice pipeline.** The thread asks which model to use. The draft reframes:
+The thread asks which model to use. The draft reframes:
 deterministic structured extraction + idempotent local storage is problem one; model choice is problem
 two and becomes easy once extraction is a tool call. Ends with a checklist (no network calls, locale
 number parsing, single sign convention, idempotent import) worth keeping even by someone who builds it
 themselves.
 
-**06 — r/Netsuite, PDF → vendor bill capture.** Existing replies agree a "bridge" is needed but not what
+Existing replies agree a "bridge" is needed but not what
 it should look like. Draft gives the four-step split (fixed-schema extract → validate net+tax=gross,
 vendor-unique invoice number, known currency → stage for review → post), and explains why staging gives
 both a correction loop and idempotency. Complements the existing replies rather than contradicting them.
 
-**07 — dev.to comment, Windows config.** Nearly every "connect Claude Desktop to MCP" tutorial is written
+Nearly every "connect Claude Desktop to MCP" tutorial is written
 on macOS. The draft supplies the Windows section: `%APPDATA%\Claude\claude_desktop_config.json`, escaped
 backslashes / forward slashes, `npx`/`uvx` missing from the inherited PATH, `cmd /c npx`, log file
 locations, and the full-restart requirement. Target thread selected at post time.

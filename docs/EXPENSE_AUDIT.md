@@ -125,7 +125,6 @@ Calls exclude the client's own schema lookups. Total wall time 104.0 s for seven
 
 ### Defects
 
-**D-E1 (high) — an expense-tracking server that never splits VAT.**
 `vat_rate` is a per-call optional and nothing supplies it, so in a realistic session every expense
 lands with `vat_rate` absent and `net == gross`, `vat == 0`. The exported CSV's `net` and `vat`
 columns are a copy of `gross`. Repro: the s1 prompt above; `data.json` has no `vat_rate` key and
@@ -140,7 +139,6 @@ Not fixed: the server still does not invent a rate from the merchant's country, 
 a fabricated tax rate on a real ledger is worse than a visible zero. After the fix the model's own s1
 answer surfaced the gap unprompted ("If this was a German receipt (likely 19%), let me know").
 
-**D-E2 (high) — the Pro wall on `markup_percent` produced a wrong invoice line.**
 Before the fix, s6 hit `markup_percent is a Pro feature`, and the model did not stop: it re-read the
 data with `expense_list` and emitted `unit_price 67.65, tax_rate 0%` computed as
 `61.50 (gross) x 1.10`. That is precisely the double-taxable shape `expense_to_invoice` was written to
@@ -152,7 +150,7 @@ Fixed: `markup_percent` is free. The free-tier limit on this tool is the 20-item
 volume limit; the arithmetic is not something to withhold. `servers/expense-tracker/src/index.ts`,
 `expense_to_invoice`; README free/pro table updated.
 
-**D-E3 (medium, not fixed) — `expense_to_invoice` marks every currency group rebilled at once.**
+D-E3 (medium, not fixed) — `expense_to_invoice` marks every currency group rebilled at once.
 A mixed-currency selection returns two groups, but the user can only pass one of them to
 `invoice_create`. `mark_rebilled` defaults to true and stamps all rows, including the group that was
 never invoiced. Repro: the "mixed currencies" test in `test/adversarial.test.mjs` with
@@ -161,11 +159,10 @@ a `currency` argument that both narrows the result to one group and scopes the m
 "all groups" only when the selection is single-currency. Left for the owner; it changes the tool's
 contract rather than patching a bug.
 
-**D-E4 (low, harness, not a server defect) — `--allowedTools "mcp__*"` grants nothing.**
+D-E4 (low, harness, not a server defect) — `--allowedTools "mcp__*"` grants nothing.
 Seven of seven scenarios returned a permission-request sentence and zero tool calls until the
 allowlist was written out per tool. `docs/USER_VALUE_R2.md` records the glob form; it no longer works.
 
-**D-E5 (low, not fixed) — `expense_summary` cannot be asked for "this month".**
 `from` and `to` are both required ISO dates, so "what did I spend this month" only works because the
 model computes the month boundaries itself. It got them right here. Fix direction: an optional
 `month: "YYYY-MM"` alternative, as the `monthly_close` prompt already constructs internally.

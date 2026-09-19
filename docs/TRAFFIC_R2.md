@@ -170,7 +170,7 @@ Over the curated 126 that the sitemap now advertises:
 | Applebot | 4 | 3.2% | 4 |
 | **Googlebot** | **2** | **1.6%** | 7 |
 
-**Googlebot did not move.** It is still exactly two URLs, `/` (5 fetches) and `/s/invoice`
+It is still exactly two URLs, `/` (5 fetches) and `/s/invoice`
 (1), 24 hours after the sitemap was cut to the curated set and the permutations were marked
 noindex. In the same window it fetched `/sitemap.xml` 8 times and `/robots.txt` 5 times. It
 is reading the file and still declining the pages. One day is far too short to call the
@@ -193,18 +193,18 @@ Minute-resolution query (`httpRequestsAdaptiveGroups`, dims `datetimeMinute user
 | 2026-09-07T03:41Z | 2 |
 | 2026-09-07T04:27Z | 22 |
 
-**YandexBot arrived 23 minutes after the ping** and swept the site, having sent nothing in
+and swept the site, having sent nothing in
 the preceding six hours. Over 09-07T00:00Z → 09-08T05:58Z it fetched **52 distinct sitemap
 URLs in 58 requests** (separate pull, `--start 2026-09-07T00:00:00Z`). Across the whole
 window Yandex now covers 112 of the 126 curated URLs, against 170 of 312 in R1. That is the
 clearest positive result of the day, and it is what the IndexNow channel exists to do.
 
-**bingbot shows no step change.** It was already crawling continuously before the ping and
+It was already crawling continuously before the ping and
 continued at the same rate through it — hourly requests on 09-06 (pre-ping) run 1–9 per
 hour, and on 09-07 (post-ping) 1–5 per hour. Coverage over the same 312 universe moved 102
 → 114 URLs, in line with the general drift, not with a submission event.
 
-**Seznam and Naver: zero.** No user-agent matching `seznam|naver|yeti` appears anywhere in
+No user-agent matching `seznam|naver|yeti` appears anywhere in
 the 361 distinct user-agent strings seen on this host in the window. IndexNow accepted the
 URLs for them; neither has fetched anything.
 
@@ -293,7 +293,7 @@ filter `edgeResponseStatus: 401`). Verified live:
 that generates the 401s is POST-shaped, and by design still requires auth. Nothing is
 broken; the metric simply does not measure what the change touched.
 
-**404s are dominated by discovery files that do not exist.** Top paths:
+Top paths:
 `/.well-known/oauth-protected-resource` 1,359, `/.well-known/oauth-authorization-server`
 919, `/favicon.ico` 560, `/.well-known/glama.json` 488,
 `/.well-known/mcp/server-card.json` 303, `/.well-known/openid-configuration` 293,
@@ -391,8 +391,6 @@ Recorded in `data/traffic.json` under `registry_referral_baseline`, both sides o
 2026-09-08, so that a week from now the namespace experiment in `docs/NAMESPACE_R1.md` can
 be judged on visits rather than on rank.
 
-**Baseline, 2026-09-08:**
-
 | Side | Measure | Value |
 |---|---|---|
 | GitHub (`gh api .../traffic/popular/referrers`, 14d rolling) | Views from `registry.modelcontextprotocol.io` | **21** |
@@ -407,7 +405,7 @@ be judged on visits rather than on rank.
 | | **Registry-ecosystem total** | **30 requests** |
 | Assistant side, same window | `Claude-User` / `ChatGPT-User` requests | 2 / 1 |
 
-**What would count as the experiment succeeding.** The registry rows all point at `/s/`
+The registry rows all point at `/s/`
 product pages, so a placement gain should show up in both places. Re-run
 `node scripts/traffic.mjs` on or after 2026-09-15 and compare:
 
@@ -457,6 +455,6 @@ missing credential, exits 2 if a sub-hour slice still saturates the row cap, and
 refuses to overwrite a good `data/gsc.json` or `data/indexation.json` with a DOWN one.
 Every GraphQL query it sent is stored verbatim under `queries` in `data/traffic.json`.
 
-**Durable risk, unchanged and hit again this session:** the GSC key at
+the GSC key at
 `~/Desktop/keys/gsc-sa-key.json` is on iCloud Desktop and went dataless mid-run. Recovery
 was `brctl download` plus several minutes of waiting. See `docs/HUMAN_GATED_PACK.md`.

@@ -51,7 +51,7 @@ Tool-call counts exclude the client's own `ToolSearch` schema lookups.
 | 9 | time-tracker | "Export my Nova time as CSV for last month." | **3** | 1 | 12.4 | `export_csv {from 2026-08-01, to 2026-08-31}` -> "Wrote 0 entries" + the 7-day free window. The model led with **"returned 0 entries"**, named the cause, and offered the 7-day export instead. Exactly the honesty this scenario was built to test. |
 | 10 | bundle / licence | "Activate my license MCPL1.garbage", then a real key | **3** | 1 + 1 | 17.5 / 13.7 | Garbage key: "5 of 5 servers did not accept the key" with a per-server FAILED table, model asked for the real one. Real key: "Activated on all 5 servers in the bundle", `license.json` written. |
 
-**Totals per server** (scenario scores only, extras excluded):
+(scenario scores only, extras excluded):
 
 | Server | Scenarios | Score |
 |---|---|---|
@@ -113,7 +113,7 @@ their own description — "use this on a CSV/XLSX path instead of reading the fi
 it parses quoted thousands separators, groups and aggregates in one call, and works on paths outside
 the session's working directory". On capability alone a generic file reader wins the first turn.
 
-**D-R12 (medium, spreadsheet) — `sheet_convert` writes any money value ending in `.00` as text.**
+D-R12 (medium, spreadsheet) — `sheet_convert` writes any money value ending in `.00` as text.
 `coerce()` in `servers/spreadsheet/src/csv.ts:72` accepts a number only when
 `String(n).length >= s.length - 1`. `"403.00"` -> `String(403)` is 3 chars vs `s.length` 6, so it
 stays a string; `"403.10"` -> `String(403.1)` is 5 vs 6, so it becomes a number. Direct probe:
@@ -182,7 +182,7 @@ are dead weight on this surface. Repro: `prompts/list` succeeds over raw JSON-RP
 never issues it. Fix direction: nothing to fix in the servers. Worth a line in the READMEs that
 prompts surface as slash commands in interactive clients only, so the value is not assumed.
 
-**D-R17 (low, client) — `ToolSearch` needs the `mcp__office__` prefix.** Scenario 5 wasted a turn:
+Scenario 5 wasted a turn:
 `ToolSearch {"query": "select:watch_add,price_check"}` -> "No matching deferred tools found", then
 the same query with the prefix succeeded. Cosmetic, recorded so the extra call in the s5a count is
 not read as server noise.

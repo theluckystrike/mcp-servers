@@ -6,14 +6,14 @@ number in it.
 
 ## What each one measured, separately
 
-**The blind recommendation test.** A subagent with no knowledge of this estate researched 18
+A subagent with no knowledge of this estate researched 18
 buyer-intent questions with web search and named the server it would recommend. It named 47
 distinct servers and not one was ours. Counting every URL it cited: github.com 21, glama.ai 7,
 ours 4, apify.com 4, mcpservers.org 3, and the official MCP registry 0. Twenty of the 21 GitHub
 citations are individual one-server repositories, and 6 of the 7 Glama citations are the
 servers directory rather than the connectors surface we are actually on.
 
-**The assistant-index measurement.** `mcp.zovo.one` IS present in Brave, the index Claude's web
+`mcp.zovo.one` IS present in Brave, the index Claude's web
 search retrieves from. That is the first evidence in 99 days of any live assistant-visible
 surface for this host, and nobody had checked because everyone was watching Google. But the
 depth is **1 URL of 154**, 0 of 14 buyer queries put us in the top ten, and the two appearances
@@ -21,7 +21,7 @@ sit at rank 16 and 21. The pages are not technically broken: canonicals, titles 
 all correct. This is authority, not markup. PerplexityBot has fetched 5 URLs, 3.5% of the
 sitemap, so Perplexity is not a channel either.
 
-**The GitHub search measurement.** Repository search indexes name, description and topics and
+Repository search indexes name, description and topics and
 nothing else, proved with a control pair: a word present only in a repo's topics matches, a
 word present only in its package.json does not. Query-term coverage is the gate, at 1.00 mean
 coverage for queries where we surfaced and 0.90 where we did not, with every sub-1.00 query

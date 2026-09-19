@@ -2,7 +2,7 @@
 
 Store your CV facts once. Then say "tailor my resume to this posting and write the cover letter" and get two real
 `.docx` files: a resume whose bullets are reordered by relevance to the posting, trimmed to fit the page count you
-asked for, with the posting's keywords in bold where you actually have them -- and a one-page cover letter that
+asked for, with the posting's keywords in bold where you actually have them, and a one-page cover letter that
 states nothing you did not put in your profile. Where a fact is missing, the letter leaves a bracketed prompt like
 `[add: metric]` instead of inventing a number. It also reads an existing resume `.docx` back into the profile shape,
 exports markdown for an ATS box, and writes printable HTML. Everything runs locally: no upload, no account, no
@@ -12,17 +12,15 @@ native dependency.
 
 ![resume demo](../../assets/demo-resume.gif)
 
-**A resume that fits the page and a cover letter that cannot lie about you.**
-
 ## 60-second install
 
 npm publish for `@theluckystrike/mcp-resume` is pending. Until then, the `.mcpb` one-click bundle or a clone+build
-is the working path -- both are verified below.
+is the working path, both are verified below.
 
-**One-click (.mcpb):** download `resume.mcpb` from the latest release and double-click it in Claude Desktop:
+One-click (.mcpb): download `resume.mcpb` from the latest release and double-click it in Claude Desktop:
 https://github.com/theluckystrike/mcp-servers/releases/latest
 
-**Claude Desktop** (`claude_desktop_config.json`):
+(`claude_desktop_config.json`):
 
 ```json
 {
@@ -35,13 +33,13 @@ https://github.com/theluckystrike/mcp-servers/releases/latest
 }
 ```
 
-**Claude Code:**
+Claude Code:
 
 ```sh
 claude mcp add resume -- npx -y @theluckystrike/mcp-resume
 ```
 
-**Cursor** (`.cursor/mcp.json`):
+(`.cursor/mcp.json`):
 
 ```json
 {
@@ -97,7 +95,7 @@ This is the part that matters, so it is enforced rather than requested:
 - A `highlights` entry you pass is checked against the profile first. If the profile does not support it, it is
   printed as `[add: "..." is not in your profile - add it there or drop it]`, not as a claim.
 - Before the file is written, every digit run in the letter is checked against your profile and the arguments you
-  passed. A number that traces to neither is a refusal, not a warning -- the tool returns an error and writes nothing.
+  passed. A number that traces to neither is a refusal, not a warning, the tool returns an error and writes nothing.
   The job description is deliberately **not** an allowed source: the employer's revenue, headcount and throughput
   figures are theirs, and the letter will never restate one as yours. Comparison is on whole numbers, so a profile
   holding `2012` does not license a letter claiming `12`.
@@ -154,7 +152,7 @@ bullet it dropped, so you can see the decision rather than discover it in Word.
 
 Recency is part of that score, and it is read off array order, not off `start`/`end` text. `profile_set` enforces
 the ordering that makes that safe: however you list roles when you call it, the stored profile always ends up
-newest-first -- an open role with no `end` first, then by `end` descending, then by `start` descending. Enter roles
+newest-first, an open role with no `end` first, then by `end` descending, then by `start` descending. Enter roles
 in any order; the stored order (and the cover-letter bullet ranking in `cover_letter_create`) is always correct.
 
 ## Free vs Pro
@@ -169,18 +167,18 @@ in any order; the stored order (and the cover-letter bullet ranking in `cover_le
 | Letterhead colour | Default | Your own `accent_color` |
 | Footer credit | "Generated with mcp-docx by theluckystrike" | Removed |
 
-**Get Pro:** https://mcp.zovo.one/buy/resume ($19 one-time, or $39 for the whole bundle).
+Get Pro: https://mcp.zovo.one/buy/resume ($19 one-time, or $39 for the whole bundle).
 
 ## Privacy
 
 All data stays local. Your CV never leaves the machine: the server reads and writes files on your computer, stores
-the profile under your data directory, and makes no network request of any kind -- not for licensing (keys are
+the profile under your data directory, and makes no network request of any kind, not for licensing (keys are
 verified offline), not for fonts, not for telemetry.
 
 ## Pairs with
 
-- [mcp-docx](../docx/README.md) -- this server imports its document engine (`@theluckystrike/mcp-docx/lib`); install docx too when you also want proposals, contracts and markdown-to-Word.
-- [office-suite](../office-suite/README.md) -- several servers behind one install, one config entry.
+- [mcp-docx](../docx/README.md), this server imports its document engine (`@theluckystrike/mcp-docx/lib`); install docx too when you also want proposals, contracts and markdown-to-Word.
+- [office-suite](../office-suite/README.md), several servers behind one install, one config entry.
 
 ## Troubleshooting
 
@@ -189,12 +187,12 @@ verified offline), not for fonts, not for telemetry.
 - **"no profile stored"**: run `profile_set` once, or `resume_read {path, save: true}` from an existing resume.
 - **The resume dropped a bullet I wanted**: raise `max_pages`, or pass the posting's words in `keywords` so the
   bullet outranks the others. `bullets_dropped` in the response names every one that did not fit.
-- **Short skill names**: `tailor_to_job` keeps two- and one-character skills -- `Go`, `C`, `R`, `C#`, `C++`, `F#`,
-  `Qt`, `UI`, `UX`, `QA`, `ML`, `AI`, `AR`, `VR`, `JS`, `TS`, `K8s`, `AWS`, `GCP`, `SQL`, `iOS` -- plus any short
+- **Short skill names**: `tailor_to_job` keeps two- and one-character skills, `Go`, `C`, `R`, `C#`, `C++`, `F#`,
+  `Qt`, `UI`, `UX`, `QA`, `ML`, `AI`, `AR`, `VR`, `JS`, `TS`, `K8s`, `AWS`, `GCP`, `SQL`, `iOS`, plus any short
   word that appears in your own `skills` list, and ranks a known skill above a longer word of the same frequency.
 - **A keyword I have is reported missing**: matching is on word boundaries, so `go` does not match `Google` and
   `k8s` does not match `Kubernetes`. Add the exact word to your skills if it is true.
-- **`resume_read` put a role in `unparsed`**: resumes have no schema. Nothing is dropped silently -- fix the fields
+- **`resume_read` put a role in `unparsed`**: resumes have no schema. Nothing is dropped silently, fix the fields
   and pass them to `profile_set`.
 - **There is no `resume_to_pdf`**: every pure-JavaScript route from Word to PDF needs a native dependency or a
   cloud API. `resume_to_html` writes semantic HTML with a print stylesheet; print that to PDF.

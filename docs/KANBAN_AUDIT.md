@@ -63,7 +63,6 @@ answer through the two servers. Machine day during the run: Friday 2026-09-04.
 
 ### The three that lost data
 
-**D-K2. A blank project name became a board that swallowed every later project.**
 `task_add {project: "   ", title: "pe"}` created a board whose `name` is `""` and whose slug is `TASK`.
 `resolveProject` then matched it against everything, because `q.startsWith(k)` is true for every `q` when
 `k` is the empty string. The very next probe, a 200,000-character project name, came back
@@ -72,14 +71,13 @@ landed on the blank board. Fix in two places: `task_add` refuses a blank project
 `resolveProject` never near-matches on an empty stored name, so an existing damaged store cannot keep
 doing it.
 
-**D-K4. `columns_set` collapsed a board to one column and every task on it silently read as done.**
+D-K4. `columns_set` collapsed a board to one column and every task on it silently read as done.
 `columns.min(2)` ran on the raw array; the blanks were dropped afterwards with `.filter(Boolean)`. So
 `["only", "   "]` left `columns: ["only"]`. That single column is what `doneColumn()` returns, so
 `isDone()` was true for every task on the board: `board` reported `1 task(s), 0 open` and `task_list`
 answered `No tasks match`. Nothing was deleted, but the board was empty from the user's side with no error.
 The validation now runs on the normalised list and names how many entries were blank.
 
-**D-K9. One `task_list` on a 5,000-task board returned 430 KB.**
 Timing was never the problem (13 ms). The problem is that a single tool result of 430,208 characters is
 roughly 110,000 tokens: it does not fit in a model's context, and the client that asked "what is on the
 board" gets nothing usable. `task_list`, `task_search` and `overdue` now print 200 rows by default, take a
@@ -88,7 +86,7 @@ or raise limit (max 2000).` The totals line still counts all 5,000, so no number
 
 ### The cross-server one
 
-**D-K10. The two servers resolve project names by the same rule, and that is what breaks them.**
+D-K10. The two servers resolve project names by the same rule, and that is what breaks them.
 `task_start_timer` hands `{project: <board name>, task: <title>}` to time-tracker's `timer_start`.
 time-tracker resolves an unknown name by unique prefix or containment (the D-7 rule this server also uses).
 With a kanban board called `Nova` and a time-tracker project called `Nova App`, the reply was

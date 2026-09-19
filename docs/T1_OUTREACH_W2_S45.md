@@ -35,17 +35,17 @@ paperwork, 30 also hosted. Frozen outreach policy applies unchanged (see §1).
 | — | `docs/T5_COMMUNITY_OUTREACH_R2.md` | Plan/index for the R2 trio | Read for the posted-target map; see §5. |
 | — | `docs/T5_SURFACES_R2.md`, `docs/T5_DIRS_R2.md` | Directory surfaces | Out of scope: directory listings are not outreach drafts. |
 
-**Gap found:** no wave-2 draft leads with the *free hosted endpoint* as a product fact, and no
+no wave-2 draft leads with the *free hosted endpoint* as a product fact, and no
 draft announces the 109-guide mesh as a resource. Sections 3 and 4 fill exactly that gap.
 
 ## 3. Draft A — Reddit / Hacker News-style value post
 
-**Working title:** The paperwork layer of an MCP setup is the part that still needs a server
-**Primary target surface:** r/mcp (value post, no question needed)
-**Alternate surfaces, in preference order:** r/ClaudeAI "built this" flair / weekly self-promo
+The paperwork layer of an MCP setup is the part that still needs a server
+r/mcp (value post, no question needed)
+r/ClaudeAI "built this" flair / weekly self-promo
 thread · r/LocalLLaMA (off-topic-shift risk, see risk) · Ask HN
-**Target URL to submit:** `https://mcp.zovo.one` (storefront, leads with the free tool value)
-**Single deep link to include in the body:** `https://mcp.zovo.one/guides/mcp-server-free-vs-pro`
+`https://mcp.zovo.one` (storefront, leads with the free tool value)
+`https://mcp.zovo.one/guides/mcp-server-free-vs-pro`
 
 ### Why this target
 - Reddit is crawler-visited and human-crowded in the one venue where MCP is currently a live
@@ -127,9 +127,9 @@ are the part I would keep even if you build your own — the servers are just th
 
 ## 4. Draft B — GitHub Discussions post announcing the guide mesh
 
-**Target:** `modelcontextprotocol/registry` — **Discussions provider verified enabled**
-**Target URL:** https://github.com/modelcontextprotocol/registry/discussions
-**Exact surface caveat:** the repository has Discussions enabled
+`modelcontextprotocol/registry` — **Discussions provider verified enabled**
+https://github.com/modelcontextprotocol/registry/discussions
+the repository has Discussions enabled
 (`has_discussions=true`), but a *category that fits a resource announcement* must be picked at
 post time from the live category list (Announcements / General / Show and tell / Q&A vary by
 repo, and the API call to enumerate categories is a **GraphQL** call which needs a token —
@@ -152,7 +152,7 @@ and fall back to Draft A's surface list.
 
 ### Draft (paste as-is; delete nothing, including the disclosure)
 
-**Title:** 109 free guides for the non-obvious parts of running MCP servers (auth on hosted
+109 free guides for the non-obvious parts of running MCP servers (auth on hosted
 endpoints, client config shape, Windows paths)
 
 A resource post rather than a question. Over the last months I have been running a set of MCP
@@ -202,13 +202,13 @@ a different server, the config-shape and PATH sections are unchanged.
 
 ## 5. Draft C — Reply-template addendum for the 3 held R2 drafts
 
-**Applies to:** `docs/outreach/R2/draft-01-kimai-invoice-pdf.md` ·
+`docs/outreach/R2/draft-01-kimai-invoice-pdf.md` ·
 `docs/outreach/R2/draft-02-tally-invoice-pdf.md` ·
 `docs/outreach/R2/draft-03-brandrei-expense-tracker.md`
-**All three are targets:** https://github.com/kimai/cli/issues/32 ·
+https://github.com/kimai/cli/issues/32 ·
 https://github.com/gasparyanvazgen/tally/issues/18 ·
 https://github.com/Brandrei/skills-integrate-mcp-with-copilot/issues/13
-**What this adds:** S45 proof points, so the drafts stop resting only on the argument. The
+S45 proof points, so the drafts stop resting only on the argument. The
 R2 drafts currently make a good design argument and cite nothing operational; the S45 data
 gives three countable facts a maintainer can check in one click each.
 
@@ -287,13 +287,13 @@ no sign-in, $0 spent, nothing posted, nothing committed.
 | E10 | R2 held drafts located | `search_files docs/outreach/*` | Exactly 3: `draft-01-kimai-invoice-pdf.md`, `draft-02-tally-invoice-pdf.md`, `draft-03-brandrei-expense-tracker.md` |
 | E11 | Freeze is still on | `docs/STRATEGY-45.md:26` | "Outreach posts: still frozen pending user green-light (drafts ready: kimai/tally/brandrei)" |
 
-**One correction for the operator:** `CLAUDE.md` says "30 of them also hosted". A live
+`CLAUDE.md` says "30 of them also hosted". A live
 `tools/list` sweep of all 40 server names in `servers/` shows **39 hosted and answering**, with
 `office-suite` the single local-only exception. Draft A's body deliberately avoids quoting a
 count, so nothing needs changing there — but any future post that says "30 hosted endpoints"
 would be understating the estate by nine.
 
-**Not verified in this run (documented as unknown rather than assumed):** GitHub Discussions
+GitHub Discussions
 category lists per repo (GraphQL, token); whether r/mcp has a weekly self-promo thread right
 now; whether the three R2 issues are still open on the posting day. All three are post-time
 checks listed in the approval sections above.

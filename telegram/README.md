@@ -87,7 +87,7 @@ paperwork positioning.
 | 41 | image | Image Toolbox | Low - file operations |
 | 42 | zip | Zip Toolkit | Low - file operations |
 
-**Reading:** the top 17 are strong self-serve Mini App products; the rest need
+the top 17 are strong self-serve Mini App products; the rest need
 document uploads, project context or an AI client, and are pushed through the
 picker only as secondary. The Mini App page and the bot picker surface the top
 17 first and the rest under "All 42 servers".

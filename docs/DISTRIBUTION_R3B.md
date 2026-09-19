@@ -97,7 +97,7 @@ Measured against the estate:
    declare ranges, and the mirrors are the repos a catalogue entry would point at.
 3. Compliant items, for the record: MIT license (`head -1 LICENSE` → "MIT License"), public source.
 
-**Exact gap to close before any PR:** (a) pin every dependency to an exact version in all 34
+(a) pin every dependency to an exact version in all 34
 `servers/*/package.json` and in the mirror templates that `scripts/sync-mirrors.sh` regenerates;
 (b) pin every workflow `uses:` to a full commit SHA in the monorepo and all 34 mirrors. Both are writes
 to theluckystrike's own repos, which this round may not perform — recorded, not fixed.

@@ -6,7 +6,7 @@
 
 Export the CSV from your bank, say "import this", and the month is readable. This MCP server turns a bank export into a local ledger: it finds the header row under whatever preamble the bank prints above it, works out which column is the date, which is the money and which way the money went, and reads amounts in the file's own locale, so `1 234,56` from mBank and `1,234.56` from a US bank both become the same number. A debit is stored negative and a credit positive, once, at import, so nothing downstream has to guess. Re-importing the same export adds nothing: every line carries a hash of its date, amount, currency and description, with an occurrence index, so two identical coffees on one day stay two transactions while a second import of the same file stays zero. Your rules categorise transactions as they arrive, summaries report money in, money out and the net per currency and never mix currencies, `recurring_detect` finds the subscriptions and what each costs per year, and `reconcile_expenses` matches bank debits against the receipts in `mcp-expense-tracker` so you can see which debits have no receipt and which receipts never reached the bank. Everything is a plain JSON file on your own machine; nothing is uploaded anywhere.
 
-**Turn a bank CSV into a categorised, reconciled month in chat -- no accounting SaaS required.**
+Turn a bank CSV into a categorised, reconciled month in chat, no accounting SaaS required.
 
 Bank profiles: Revolut, Wise, mBank, PKO BP, ING, N26, and a generic reader that works from the headers alone.
 
@@ -20,12 +20,12 @@ response instead of silently picking one.
 ## 60-second install
 
 npm publish for `@theluckystrike/mcp-bank-statement` is pending. Until then, the `.mcpb` one-click bundle or a
-clone+build is the working path -- both are verified below.
+clone+build is the working path, both are verified below.
 
-**One-click (.mcpb):** download `bank-statement.mcpb` from the latest release and double-click it in Claude Desktop:
+One-click (.mcpb): download `bank-statement.mcpb` from the latest release and double-click it in Claude Desktop:
 https://github.com/theluckystrike/mcp-servers/releases/latest
 
-**Claude Desktop** (`claude_desktop_config.json`):
+(`claude_desktop_config.json`):
 
 ```json
 {
@@ -38,13 +38,13 @@ https://github.com/theluckystrike/mcp-servers/releases/latest
 }
 ```
 
-**Claude Code:**
+Claude Code:
 
 ```sh
 claude mcp add bank-statement -- npx -y @theluckystrike/mcp-bank-statement
 ```
 
-**Cursor** (`.cursor/mcp.json`):
+(`.cursor/mcp.json`):
 
 ```json
 {
@@ -105,22 +105,22 @@ Prompt `monthly_review` drives the whole month-end pass: totals, uncategorised l
 Import always stores every row, whatever the tier: silently dropping lines on the way in would make the ledger
 disagree with the bank. The free limit is on what is read back.
 
-**Get Pro:** https://mcp.zovo.one/buy/bank-statement -- $19 one-time for this server, $39 for every server, lifetime.
+Get Pro: https://mcp.zovo.one/buy/bank-statement, $19 one-time for this server, $39 for every server, lifetime.
 Keys are verified offline; nothing is sent anywhere.
 
 ## Pairs with
 
-- **[mcp-expense-tracker](../expense-tracker)** -- log the receipts and the mileage; `reconcile_expenses` reads that
+- **[mcp-expense-tracker](../expense-tracker)**, log the receipts and the mileage; `reconcile_expenses` reads that
   ledger and tells you which bank debits have no receipt behind them.
-- **[mcp-spreadsheet](../spreadsheet)** -- this server parses your bank CSV with the spreadsheet server's own RFC 4180
+- **[mcp-spreadsheet](../spreadsheet)**, this server parses your bank CSV with the spreadsheet server's own RFC 4180
   reader and locale number parser, so `1 234,56` means the same thing in both. Use it to slice an exported range.
-- **[mcp-invoice](../invoice)** -- the income side: raise the invoice, then watch the payment land in
+- **[mcp-invoice](../invoice)**, the income side: raise the invoice, then watch the payment land in
   `statement_summary` grouped by counterparty.
 
 ## Privacy
 
 Everything stays on your machine. Statements are parsed locally and stored in a plain JSON file under
-`${XDG_DATA_HOME:-~/.local/share}/mcp-servers/bank-statement/`. The server makes no network calls at all -- not for
+`${XDG_DATA_HOME:-~/.local/share}/mcp-servers/bank-statement/`. The server makes no network calls at all, not for
 licensing, not for parsing, not for anything. Deleting that directory resets it.
 
 Built by [theluckystrike](https://github.com/theluckystrike). Support: support@zovo.one

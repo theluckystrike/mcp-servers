@@ -1,14 +1,14 @@
 # Draft 07 — dev.to: comments on a "Connect Claude Desktop to Local MCP Servers" tutorial
 
-**Surface:** dev.to — `OPEN` with a dev.to account; comments are a normal, welcome part of that platform.
-**Thread URL:** needs a live pick at post time — search dev.to for recent `mcp claude desktop`
+dev.to — `OPEN` with a dev.to account; comments are a normal, welcome part of that platform.
+needs a live pick at post time — search dev.to for recent `mcp claude desktop`
 tutorials and choose one with an active comment thread and no Windows section.
-**Thread title (target shape):** *Connect Claude Desktop to Local MCP Servers* / *Getting started with MCP*
-**Fit:** Most such tutorials are written on macOS and hand-wave Windows. The Windows/PATH section below
+*Connect Claude Desktop to Local MCP Servers* / *Getting started with MCP*
+Most such tutorials are written on macOS and hand-wave Windows. The Windows/PATH section below
 is the single most-requested comment on nearly every one of them, so it's a genuinely useful addition
 rather than a drive-by link.
 
-**Exact guide link to include:** https://mcp.zovo.one/guides/mcp-on-windows-paths-and-npx
+https://mcp.zovo.one/guides/mcp-on-windows-paths-and-npx
 
 ---
 
@@ -17,23 +17,22 @@ rather than a drive-by link.
 Great walkthrough — one thing worth adding for the Windows readers, because this is where the config
 came from and it bites nearly everyone:
 
-**The config file is in a different place and a different form than the macOS one.**
 `%APPDATA%\Claude\claude_desktop_config.json` — paste that into Explorer's address bar, because
 `%APPDATA%` is hidden by default. Create the `Claude` folder if it isn't there yet; the app doesn't
 always create it before your first edit.
 
-**JSON paths need escaped backslashes, or forward slashes.** Windows paths in JSON must be either
+Windows paths in JSON must be either
 `"C:\\Users\\you\\invoices"` (doubled) or `"C:/Users/you/invoices"` (forward slashes, which Windows
 accepts). A single `\U` is read as a unicode escape and the file fails to parse — which, because one bad
 byte kills the whole document, makes *all* your servers vanish at once rather than the one you edited.
 
-**`npx` and `uvx` are often not on the inherited PATH.** A stdio server launched by Claude Desktop gets a
+A stdio server launched by Claude Desktop gets a
 limited environment, not your terminal's. If Node or Python came from a version manager, the bare
 `npx`/`uvx` in the config won't resolve — the server exits instantly and the app shows nothing useful.
 Run `where npx`, then either paste the absolute path or point `command` at the resolved executable with
 the script as the first arg.
 
-**`cmd /c npx` is the reliable Windows form** for npm-distributed servers — it sidesteps the fact that
+for npm-distributed servers — it sidesteps the fact that
 `npx` on Windows is a shell script rather than an executable, which is a distinct failure from the PATH
 one above and produces the same "nothing happened" symptom.
 
