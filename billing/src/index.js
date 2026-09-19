@@ -470,7 +470,7 @@ code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
 footer{margin-top:48px;font-size:14px;opacity:.7}
 .copy-btn{display:inline-block;margin:-8px 0 4px;padding:3px 10px;font-size:12px;line-height:1.6;border:1px solid currentColor;border-radius:4px;background:transparent;color:inherit;cursor:pointer;font-family:inherit}
 </style></head><body>${body}
-<footer>Built by <a href="${REPO}">theluckystrike</a>. Support: support@zovo.one &middot; <a href="/changelog">Changelog</a></footer>
+<footer>Home: <a href="/">All servers</a> &middot; <a href="/guides">Guides</a> &middot; <a href="/setup">Setup</a> &middot; <a href="/compare">Compare</a> &middot; <a href="/changelog">Changelog</a> &middot; Support: support@zovo.one &middot; Built by <a href="${REPO}">theluckystrike</a></footer>
 ${COPY_BUTTON_SCRIPT}
 </body></html>`;
 }
