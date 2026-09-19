@@ -238,7 +238,7 @@ export const VALIDATION = { at: "2026-09-17", pass: 1192, total: 1192, servers: 
  * same way: test/checkout-r1.test.mjs counts the `test(` declarations on disk and fails
  * if this disagrees. The page said 25 when there were 99.
  */
-export const BILLING_TEST_COUNT = 151;
+export const BILLING_TEST_COUNT = 154;
 
 /**
  * The npm publish is pending: `npx -y @theluckystrike/mcp-<server>` returns E404 today,
@@ -289,6 +289,23 @@ const PRIORITY_GUIDES = [
   "expense-tracking-in-claude",
   "recurring-invoices-on-a-schedule",
   "resume-and-cover-letter-from-chat",
+];
+
+// T15 fix 4: featured-servers block rendered on guide pages. Guides take the crawler
+// and human traffic (measured: /s/spreadsheet 66, /s/invoice 23, /s/expense-tracker 21
+// human-verified 7d), but before this block a guide linked products only through a small
+// footer line. Featured pages are the top human-verified /s/ routes from
+// data/traffic.json; regenerate with node scripts/gen-featured-servers.mjs. GUIDE_ONLY
+// pages (no price of their own) still earn the link: they funnel into the bundle.
+const FEATURED_SERVERS = [
+  "spreadsheet",
+  "invoice",
+  "expense-tracker",
+  "recurring",
+  "docx",
+  "bill-of-sale",
+  "zip",
+  "job-card",
 ];
 
 /**
@@ -490,6 +507,7 @@ code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
 .key{font-size:15px;word-break:break-all;user-select:all}
 footer{margin-top:48px;font-size:14px;opacity:.7}
 nav.pg{font-size:12px;opacity:.6;margin:0 0 24px}
+p.feat{font-size:14px;background:rgba(128,128,128,.08);padding:10px 12px;border-radius:6px;margin:0 0 20px}
 .copy-btn{display:inline-block;margin:-8px 0 4px;padding:3px 10px;font-size:12px;line-height:1.6;border:1px solid currentColor;border-radius:4px;background:transparent;color:inherit;cursor:pointer;font-family:inherit}
 </style></head><body><nav class="pg" aria-label="Popular guides">${PRIORITY_GUIDES.filter((s) => GUIDES[s]).slice(0, 10).map((s) => `<a href="/guides/${s}">${esc(GUIDES[s].title)}</a>`).join(" &middot; ")}</nav>${body}
 <footer>Home: <a href="/">All servers</a> &middot; <a href="/guides">Guides</a> &middot; <a href="/setup">Setup</a> &middot; <a href="/compare">Compare</a> &middot; <a href="/changelog">Changelog</a> &middot; Support: support@zovo.one &middot; Built by <a href="${REPO}">theluckystrike</a></footer>
@@ -1370,12 +1388,22 @@ ${(() => {
       const crossHtml = cross.length
         ? `\n<p>Servers used in this guide: ${cross.map((s) => `<a href="/s/${esc(s)}">${esc(PAGES[s] ? PAGES[s].title : s)}</a>`).join(" &middot; ")}</p>`
         : "";
+      // T15 fix 4: featured-servers strip near the top of the guide article. Guides are
+      // the pages where search and AI-crawler traffic actually lands; this puts the
+      // measured top /s/ pages one hop from every guide without touching the article.
+      const featured = FEATURED_SERVERS.filter((s) => PRODUCTS[s] || PAGES[s])
+        .filter((s) => !cross.includes(s))
+        .slice(0, 8)
+        .map((s) => `<a href="/s/${esc(s)}">${esc(PAGES[s] ? PAGES[s].title.replace(/^MCP /, "").replace(/ Pro$/, "") : s)}</a>`)
+        .join(" &middot; ");
+      const featuredHtml = featured ? `\n<p class="feat">Popular servers: ${featured}</p>` : "";
       // Guide->guide topical mesh (GUIDE_RELATED, symmetric): crawl paths + session depth.
       const related = (GUIDE_RELATED[slug] || []).filter((s) => GUIDES[s]);
       const relatedHtml = related.length
         ? `\n<p>Related guides: ${related.map((s) => `<a href="/guides/${esc(s)}">${esc(GUIDES[s].title)}</a>`).join(" &middot; ")}</p>`
         : "";
       const body = `<p class="muted"><a href="/">Home</a> &middot; <a href="/guides">Guides</a></p>
+${featuredHtml}
 ${g.html}
 <h2>Questions</h2>
 ${faqHtml}
