@@ -238,7 +238,7 @@ export const VALIDATION = { at: "2026-09-17", pass: 1192, total: 1192, servers: 
  * same way: test/checkout-r1.test.mjs counts the `test(` declarations on disk and fails
  * if this disagrees. The page said 25 when there were 99.
  */
-export const BILLING_TEST_COUNT = 148;
+export const BILLING_TEST_COUNT = 151;
 
 /**
  * The npm publish is pending: `npx -y @theluckystrike/mcp-<server>` returns E404 today,
@@ -269,6 +269,27 @@ export const SITE_KEY_FILES = new Set([
 const GUIDE_LINKS = Object.entries(GUIDES)
   .map(([slug, g]) => `<a href="/guides/${slug}">${esc(g.title)}</a>`)
   .join(" &middot; ") + ` &middot; <a href="/guides">All guides</a>`;
+
+// T15 fix 1: a priority-guide block emitted immediately after <body> on every page.
+// T15 measured the crawl gap: 95 of 109 guides were never fetched by any major crawler
+// in 7d, yet every guide is linked from the homepage and /guides hub -- so the constraint
+// is crawl budget, not linkage. Crawlers weight links near the top of the DOM, and this
+// block puts 10 measured guides (top by 7d total visits in data/traffic.json, the same
+// file scripts/traffic.mjs writes) within the first bytes of every rendered page. Kept
+// visually small so it does not push real content down. Regenerate the list when
+// data/traffic.json is re-measured: node scripts/gen-priority-guides.mjs.
+const PRIORITY_GUIDES = [
+  "contract-clauses-library-assembly",
+  "zip-archives-safely-from-chat",
+  "read-excel-in-cursor",
+  "connect-mcp-servers-without-installing",
+  "invoice-pdf-from-chat",
+  "quotes-and-estimates-to-invoice-in-claude",
+  "image-resize-compress-watermark-from-chat",
+  "expense-tracking-in-claude",
+  "recurring-invoices-on-a-schedule",
+  "resume-and-cover-letter-from-chat",
+];
 
 /**
  * Pure fulfillment decision (review #3, #8). No I/O: the caller passes a Checkout
@@ -468,8 +489,9 @@ pre{background:rgba(128,128,128,.12);padding:12px;border-radius:6px;overflow-x:a
 code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
 .key{font-size:15px;word-break:break-all;user-select:all}
 footer{margin-top:48px;font-size:14px;opacity:.7}
+nav.pg{font-size:12px;opacity:.6;margin:0 0 24px}
 .copy-btn{display:inline-block;margin:-8px 0 4px;padding:3px 10px;font-size:12px;line-height:1.6;border:1px solid currentColor;border-radius:4px;background:transparent;color:inherit;cursor:pointer;font-family:inherit}
-</style></head><body>${body}
+</style></head><body><nav class="pg" aria-label="Popular guides">${PRIORITY_GUIDES.filter((s) => GUIDES[s]).slice(0, 10).map((s) => `<a href="/guides/${s}">${esc(GUIDES[s].title)}</a>`).join(" &middot; ")}</nav>${body}
 <footer>Home: <a href="/">All servers</a> &middot; <a href="/guides">Guides</a> &middot; <a href="/setup">Setup</a> &middot; <a href="/compare">Compare</a> &middot; <a href="/changelog">Changelog</a> &middot; Support: support@zovo.one &middot; Built by <a href="${REPO}">theluckystrike</a></footer>
 ${COPY_BUTTON_SCRIPT}
 </body></html>`;
