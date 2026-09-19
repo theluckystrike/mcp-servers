@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-09-19T00:10:00.000Z",
+  "updated_at": "2026-09-19T03:30:00.000Z",
   "surfaces": {
     "github": {
       "status": "published",
@@ -27,7 +27,7 @@
       "note": "CLI 4.11.1 + REST api.smithery.ai are scriptable with a bearer key, but obtaining one needs one browser login: run `npx -y @smithery/cli auth login` and open the printed https://smithery.ai/auth/cli?s=<session> URL. smithery.yaml validated against the CLI schema (name + target, loose)"
     },
     "glama": {
-      "status": "partially indexed: 1 of 33, unchanged",
+      "status": "partially indexed: 1 of 33 sampled (mcp-checklist 200; statement-of-account + invoice still 404) - weekly recheck continues",
       "url": "https://glama.ai/mcp/servers/theluckystrike/mcp-statement-of-account",
       "note": "T11 resolved: 13/42 listed, all pre-rename names; glama-side ingest lag behind registry renames; official registry 42/42 verified @0.22.0; weekly recheck (docs/T11_GLAMA_SLUGS_S45.md)"
     },
@@ -267,6 +267,15 @@
       "status": "published",
       "url": "https://mcpplaygroundonline.com",
       "note": "S45 w1+w2: all 42 servers submitted via POST /api/mcp-submit, no account/captcha; each double-confirmed 200 then 409 already-submitted (docs/submit_w2.mjs, docs/w2_results.log). Review-gated: recheck listings ~2026-09-25."
+    },
+    "mcpservers.com": {
+      "status": "candidate: live free directory, sign-in route /submit (200), NOT yet listed (positive control 2)"
+    },
+    "aiagentslist.com": {
+      "status": "blocked: login + paid tiers ($29 submit / $49 launch)"
+    },
+    "opentools.ai": {
+      "status": "blocked: Pro-gated submission, no free route found"
     }
   },
   "per_server": {

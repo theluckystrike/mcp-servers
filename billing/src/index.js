@@ -238,7 +238,7 @@ export const VALIDATION = { at: "2026-09-17", pass: 1192, total: 1192, servers: 
  * same way: test/checkout-r1.test.mjs counts the `test(` declarations on disk and fails
  * if this disagrees. The page said 25 when there were 99.
  */
-export const BILLING_TEST_COUNT = 142;
+export const BILLING_TEST_COUNT = 148;
 
 /**
  * The npm publish is pending: `npx -y @theluckystrike/mcp-<server>` returns E404 today,
@@ -355,7 +355,12 @@ function esc(s) {
  * "product" and article pages pass "article".
  */
 function og(title, description, url, type = "website") {
-  return `<meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(description).slice(0, 155)}"><meta property="og:url" content="${esc(url)}"><meta property="og:type" content="${type}"><meta property="og:site_name" content="MCP Servers by theluckystrike">`;
+  // Twitter Card mirrors the OG values so a shared link renders on X as well as on the
+  // OG-consuming networks. The site has no og:image anywhere (no per-page image asset;
+  // fabricating one would be worse than omitting it), so summary is the card type, never
+  // summary_large_image. Added additively in T13; the OG tags above are unchanged.
+  const tw = `<meta name="twitter:card" content="summary"><meta name="twitter:title" content="${esc(title)}"><meta name="twitter:description" content="${esc(description).slice(0, 155)}">`;
+  return `<meta property="og:title" content="${esc(title)}"><meta property="og:description" content="${esc(description).slice(0, 155)}"><meta property="og:url" content="${esc(url)}"><meta property="og:type" content="${type}"><meta property="og:site_name" content="MCP Servers by theluckystrike">${tw}`;
 }
 
 /**
@@ -446,6 +451,10 @@ function page(title, body) {
   return `<!doctype html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${esc(title)}</title>
+<!-- Twitter Card fallback so every rendered page carries a card; handlers that emit OG also
+emit a richer twitter:title + twitter:description via the og() helper, which simply repeats
+these two harmless values. card is summary: the site has no og:image asset. Added in T13. -->
+<meta name="twitter:card" content="summary"><meta name="twitter:title" content="${esc(title)}">
 <style>
 :root{color-scheme:light dark}
 body{font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;max-width:760px;margin:0 auto;padding:40px 20px}
@@ -519,6 +528,26 @@ function home() {
         url: `https://mcp.zovo.one/s/${id}`,
         name: PRODUCTS[id].name,
       })),
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      name: "MCP Servers by theluckystrike",
+      url: "https://mcp.zovo.one/",
+      sameAs: ["https://github.com/theluckystrike"],
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      name: "MCP servers for Claude",
+      url: "https://mcp.zovo.one/",
+      publisher: {
+        "@type": "Organization",
+        name: "theluckystrike",
+        url: "https://github.com/theluckystrike",
+      },
+      // No SearchAction: the worker has no /search route (checked T13), so pointing one at a
+      // search template that does not exist would be a broken signal for search engines.
     },
   ].map((o) => `<script type="application/ld+json">${JSON.stringify(o)}</script>`).join("");
   const meta = `<meta name="description" content="${esc(HOME_DESCRIPTION).slice(0, 155)}"><link rel="canonical" href="https://mcp.zovo.one/">${ld}`;
