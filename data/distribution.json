@@ -493,7 +493,15 @@
         "spreadsheet",
         "catalog"
       ],
-      "updated_at": "2026-09-20"
+      "updated_at": "2026-09-20",
+      "batch2_s62d2": [
+        "chart-of-accounts",
+        "bank-reconciliation",
+        "dunning-letters",
+        "expense-tracker",
+        "kanban"
+      ],
+      "total_submitted": 11
     }
   },
   "per_server": {
@@ -922,5 +930,12 @@
     "note": "7 early listings (S48 invoicing/leave + 1 prior + 4 unrecorded) not in per_server; 42 = report-trail running total",
     "mcpservers_org_reported": 52,
     "percall_accepted": 10
+  },
+  "outcomes": {
+    "agenticskills_s62d2": {
+      "submitted": 11,
+      "date": "2026-09-20",
+      "note": "batch2: coa, bankrec, dunning, expense, kanban + 6 flagships prior"
+    }
   }
 }

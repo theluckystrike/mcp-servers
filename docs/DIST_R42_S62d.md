@@ -6,3 +6,8 @@
 
 ## S62-d2 flagship batch (2026-09-20)
 6/6 submitted to agenticskills.io: invoice, quotes, pdf, time-tracker, spreadsheet, catalog. All free lane, 48h review. Client compat: Any MCP Client. Author Mike, hello@zovo.one, site https://mcp.zovo.one
+
+## batch2 (S62-d2)
+- chart-of-accounts, bank-reconciliation, dunning-letters, expense-tracker, kanban
+- 11/46 total submitted to agenticskills.io (free, 48h review)
+- pattern: form clear after submit = landed; refresh + refill needed between submits
