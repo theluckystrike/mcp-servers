@@ -41,3 +41,7 @@ Submit mechanics: click submit button then poll h1 for "Submission Successful!" 
 - llms.txt of index: 200, well-documented API. No manual submission needed for MCP catalog; optional win: register up to 10 product listings via 110kc3/seo issue form.
 
 Verdict: percall auto-mirror claim = TRUE for MCP catalog (30 servers), FALSE for product listings (0).
+
+## F. directory.llmstxt.cloud submission (T25 residual)
+Filled form (Zovo MCP Servers, mcp.zovo.one, Developer tools, hello@zovo.one, Standard free tier) → server response: "You recently submitted this website." → the estate was ALREADY submitted to this directory (prior sprint, likely R10).
+Conclusion: no duplicate submission needed. All three llms.txt surfaces accounted for: llmstxt.site (resubmitted, accepted), llms-txt-hub (PR #1677 open), directory.llmstxt.cloud (already in queue).
