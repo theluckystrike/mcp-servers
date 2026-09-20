@@ -547,7 +547,17 @@
    "protocol": "POST /api/submit-server {kind:'server', serverUrl, title, description, keywords[]} from page context; 500 on response = post-insert bug, landing verified via category counters + Recently added; batches of ~6-12 survive 45s eval timeout",
    "live": 46,
    "note": "46/46 estate (3 under legacy alias names). Invoice+quotes pilot via form; remaining 44 via API recipe. Verified: category counters jumped (Commerce & Finance 29->55) and Recently added populated with our servers.",
-   "submitted_at": "2026-09-20"
+   "submitted_at": "2026-09-20",
+   "amplify": {
+    "utc": "2026-09-20T14:33:46Z",
+    "channels": {
+     "mastodon": "https://mstdn.party/@llmengnotes/117303857601261632",
+     "bluesky": "https://bsky.app/profile/belikenative.bsky.social/post/3mvxg4ob3i52u",
+     "farcaster": "https://warpcast.com/~/conversations/0xff88b3e6ab4d29b804c0568f012b3e89c69f2d4c",
+     "telegram": "https://t.me/-1004487811073/68"
+    },
+    "bluesky_verified": true
+   }
   }
  },
  "per_server": {
