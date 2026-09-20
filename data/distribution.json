@@ -566,7 +566,7 @@
       "type": "directory",
       "paid": false,
       "human_review": true,
-      "status": "estate rollout in progress (10/46 submitted; human review pending)",
+      "status": "complete_46_46_submitted_pending_review",
       "submitted": [
         "invoice",
         "quotes",
@@ -606,7 +606,14 @@
         "payment-terms",
         "performance-review",
         "rental-agreement",
-        "rental-invoice"
+        "rental-invoice",
+        "amortization",
+        "asset-register",
+        "maintenance-log",
+        "per-diem",
+        "service-agreement",
+        "petty-cash",
+        "deposits"
       ],
       "verified_live": 0,
       "last_checked": "2026-09-20",
@@ -1056,7 +1063,7 @@
     "note": "7 early listings (S48 invoicing/leave + 1 prior + 4 unrecorded) not in per_server; 42 = report-trail running total",
     "mcpservers_org_reported": 52,
     "percall_accepted": 10,
-    "total_submitted": 178
+    "total_submitted": 187
   },
   "outcomes": {
     "agenticskills_s62d2": {
