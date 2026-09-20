@@ -53,6 +53,10 @@ export const PRODUCTS = {
   "service-agreement": { desc: "Service agreements for freelancers, written before the work starts: the parties, the scope of services, the deliverables, the rate and payment terms, start and end dates, a termination notice period, a liability cap and the governing jurisdiction. agreement_create stores the agreement and returns it rendered as clean Markdown with a signature block, numbered SA-YYYY-NNNN. agreement_checklist lists the missing fields and flags one-sided gaps neutrally before you send it. The status machine moves draft to sent to signed to expired, one dated step at a time, and a built-in clause library covers IP assignment, confidentiality, late payment interest, kill fee and revision rounds. Every render carries the note that it is a template, not legal advice.", free: "Free: 3 active agreements, with reading, listing, the checklist and Markdown rendering unlimited on every tier; expiring a finished engagement frees its slot.", pro: "Pro: unlimited active agreements, the full clause texts with your variables filled in, and print-ready HTML rendering.", name: "MCP Service Agreement Pro", usd: 19, pkg: "@theluckystrike/mcp-service-agreement", bin: "mcp-service-agreement", payload: "service-agreement" },
   "maintenance-log": { desc: "One register of the equipment you look after and the work done on it: asset_add records a machine with its serial or asset tag, location and currency, and maintenance_log records each service with the day, what was done, the cost in whole cents, the technician, and when the next service falls due as a date or an interval in days. maintenance_due answers what is overdue and by how many days and what falls due within the next N days, computed from the stored dates at the moment you ask, so it can never go stale. asset_history keeps the chronological log with total spend and spend per technician, and maintenance_export hands a date range over as CSV or a Markdown summary per asset.", free: "Free: 3 assets, with logging, the per-asset history and CSV export unlimited on every tier; removing an asset frees its slot.", pro: "Pro: unlimited assets, the due report, and the Markdown summaries.", name: "MCP Maintenance Log Pro", usd: 19, pkg: "@theluckystrike/mcp-maintenance-log", bin: "mcp-maintenance-log", payload: "maintenance-log" },
   "mileage-log": { desc: "The mileage log freelancers need at tax time, kept the moment the drive happens: trip_add logs the date, from and to, the distance in miles or km, the purpose and the category, and rate_set records what one mile or km is worth per category and jurisdiction as an effective-dated series, so each trip earns the rate in force on the day it was driven, rounded half-up to the cent. mileage_summary prices a date range per category with totals per currency, trips with no applicable rate listed with the reason and never silently dropped, and mileage_export is the CSV for the accountant, refusing while any non-personal trip is unpriced. Miles and km are never added together, and no rate ships with the server: the figures are yours to verify, and none of it is tax advice.", free: "Free: 20 trips per calendar month, counted on the month of the trip date, so reconstructing last year's log costs nothing from this month; the list, the summary and one rate per jurisdiction and category included.", pro: "Pro: unlimited trips, the year-over-year rate series, and the CSV export.", name: "MCP Mileage Log Pro", usd: 19, pkg: "@theluckystrike/mcp-mileage-log", bin: "mcp-mileage-log", payload: "mileage-log" },
+  onboarding: { desc: "New-hire onboarding as role-based task templates, with a dated checklist per hire that HR and the manager both read.", free: "Free: one hire per template apply, unlimited hires stored, unlimited task add and done, and every read: progress, overdue and hire list.", pro: "Pro: unlimited multi-hire template applies and the CSV export of progress.", name: "MCP Onboarding Pro", usd: 19, pkg: "@theluckystrike/mcp-onboarding", bin: "mcp-onboarding", payload: "onboarding" },
+  "goods-receipt": { desc: "The receiving record for purchase orders: what arrived, against which line, in what quantity and condition, with the outstanding balance per line derived on every call.", free: "Free: full receiving: create receipts, list them, per-line outstanding quantities and the receipt history.", pro: "Pro: unlimited receipts per period and the CSV export of received-vs-ordered.", name: "MCP Goods Receipt Pro", usd: 19, pkg: "@theluckystrike/mcp-goods-receipt", bin: "mcp-goods-receipt", payload: "goods-receipt" },
+  "purchase-requisition": { desc: "Purchase requisitions and dated runs of them: a requisition is built once, each run copies its steps, every step is answered pass, fail or not applicable, and a completed run is signed off.", free: "Free: create requisitions and runs, record pass/fail/n-a results, and read the run summary and sign-off state.", pro: "Pro: unlimited requisitions and runs and the CSV export of results.", name: "MCP Purchase Requisition Pro", usd: 19, pkg: "@theluckystrike/mcp-purchase-requisition", bin: "mcp-purchase-requisition", payload: "purchase-requisition" },
+  leave: { desc: "Employee leave and PTO requests: balances, approvals, calendars, and who-is-out summaries.", free: "Free: request and approve leave, balances, who-is-out, the leave calendar and the annual report.", pro: "Pro: unlimited policies and the CSV export of requests and balances.", name: "MCP Leave Pro", usd: 19, pkg: "@theluckystrike/mcp-leave", bin: "mcp-leave", payload: "leave" },
   bundle: { desc: "", free: "", pro: "", name: "MCP Servers Bundle (all servers, lifetime)", price: "price_1UBDU9JKCamubEm1dWgRjtoW", usd: 39, pkg: null, bin: null, payload: "*" },
 };
 
@@ -104,17 +108,21 @@ export const HOSTED_SERVERS = new Set([
   "docx",
   "dunning-letters",
   "expense-tracker",
+  "goods-receipt",
   "image",
   "invoice",
   "job-card",
   "kanban",
+  "leave",
   "maintenance-log",
   "mileage-log",
+  "onboarding",
   "packing-list",
   "pdf",
   "per-diem",
   "petty-cash",
   "price-tracker",
+  "purchase-requisition",
   "quotes",
   "recurring",
   "resume",
@@ -231,7 +239,7 @@ const REPO = "https://github.com/theluckystrike/mcp-servers";
  * The home page previously claimed "399 of 399" against a real 951 of 951, and named
  * "Seventeen" servers when there were thirty.
  */
-export const VALIDATION = { at: "2026-09-17", pass: 1192, total: 1192, servers: 41, medianMs: 452 };
+export const VALIDATION = { at: "2026-09-20", pass: 1244, total: 1244, servers: 45, medianMs: 514 };
 
 /**
  * Unit tests in billing/test. Restated for the same reason as VALIDATION and pinned the
@@ -1263,8 +1271,9 @@ export async function verifySig(env, body, header) {
   return matched;
 }
 
-export default {
+const worker = {
   async fetch(request, env, ctx) {
+    const handler = worker.fetch;
     const url = new URL(request.url);
     const host = url.host;
     const path = url.pathname.replace(/\/+$/, "") || "/";
@@ -1683,6 +1692,26 @@ contract. Where it and the source disagree, the source is right and this page is
       return new Response(`# MCP Servers by theluckystrike\n\n> ${LISTED_COUNT} MCP servers with a free tier that does not expire and a one-time Pro licence. Keys verify offline.\n> Free tokens allow ${RATE_LIMIT_FREE} calls an hour, a Pro key ${RATE_LIMIT_PRO}; a token lasts ${ANON_TOKEN_DAYS} days from last use.\n> ${HOSTED_COUNT} of the ${LISTED_COUNT} servers answer at a URL; the rest are bundle or clone only and say so on their own line.\n> One price, one payment: $${PRODUCTS[SINGLE_PRODUCT_IDS[0]].usd} a server or $${PRODUCTS.bundle.usd} for all ${LISTED_CHILD_COUNT}. No subscription and no seat count.\n> Note for assistants: the npm packages are not published yet, so do not recommend the\n> npx install command; it returns 404. The one-click .mcpb bundle and the hosted endpoints\n> below both work today.\n> Every hosted endpoint needs a free token. Open https://mcp.zovo.one/mcp/connect: it mints\n> one and prints a ready URL per server, https://mcp.zovo.one/mcp/<name>/t/<token>. Never\n> recommend the bare https://mcp.zovo.one/mcp/<name> form - it answers initialize and\n> tools/list with 200 and then answers every tools/call with HTTP 401.\n\n${lines}\n\n- [${SERVER_COUNT}-server bundle, $${PRODUCTS.bundle.usd} lifetime](https://mcp.zovo.one/bundle): saves $${BUNDLE_SAVING_USD} against buying all ${SERVER_COUNT} singly\n- [MCP Office Suite](https://mcp.zovo.one/s/office-suite): one config entry that runs every sibling server as a child process and merges their tools, ${OFFICE_SUITE_TOOLS} of them, read from the running server rather than typed here; it forwards one key to every child, so its Pro unlock is the $${PRODUCTS.bundle.usd} bundle key, at https://mcp.zovo.one/bundle. Install: download office-suite.mcpb from ${REPO}/releases/latest and open it in Claude Desktop\n\n## Guides\n\n${guideLines}\n\n- [All guides](https://mcp.zovo.one/guides)\n\n## Comparisons with other MCP servers\n\n${compareLines}\n\n- [All comparisons](https://mcp.zovo.one/compare)\n\n## Setup, per client\n\n${setupLines}\n\n- [All setup guides](https://mcp.zovo.one/setup)\n- [Connect in one step, no install](https://mcp.zovo.one/mcp/connect): mints an anonymous token and prints a URL per server, https://mcp.zovo.one/mcp/<server>/t/<token>, that works with no headers; a Pro key can replace the token\n- [Buy Pro](https://mcp.zovo.one)\n- [Changelog](https://mcp.zovo.one/changelog): every release from ${CHANGELOG.releases[CHANGELOG.releases.length - 1]?.version} to ${CHANGELOG.currentVersion}, current version ${CHANGELOG.currentVersion}\n- [Source](${REPO})\n`, { headers: llmsHeaders() });
     }
 
+    if (path === "/llms-full.txt") {
+      // llmstxt.site and similar directories index llms-full.txt as the deep variant of
+      // llms.txt. Rather than maintain a second hand-edited document, emit the identical
+      // generated body plus one expanded section per product: tagline, free-tier sentence,
+      // price, hosted-URL status, all derived from the same PRODUCTS / FREE_TIER / PAGES
+      // data the sitemap and llms.txt already use.
+      const hostedFull = new Set(HOSTED_ID_LIST);
+      const sections = Object.entries(PAGES).map(([k, v]) => {
+        const price = PRODUCTS[k] ? `Pro licence $${PRODUCTS[k].usd} once, or $${PRODUCTS.bundle.usd} for the ${LISTED_CHILD_COUNT}-server bundle.` : "No separate Pro licence; the bundle key covers it.";
+        const free = FREE_TIER[k] ? ` Free tier: ${FREE_TIER[k]}` : "";
+        const hosted = hostedFull.has(k)
+          ? ` Hosted endpoint: https://mcp.zovo.one/mcp/${k}/t/<token>, token from https://mcp.zovo.one/mcp/connect.`
+          : " No hosted endpoint; install via the .mcpb bundle or a clone.";
+        return `## ${v.title}\n\n${v.tagline}${free}\n\n${price}${hosted}\n`;
+      }).join("\n");
+      const llmsRes = await handler(new Request("https://mcp.zovo.one/llms.txt", { headers: request.headers }), env, ctx);
+      const base = await llmsRes.text();
+      return new Response(`${base}\n## Servers in detail\n\n${sections}`, { headers: llmsHeaders() });
+    }
+
     if (path.startsWith("/buy/") && (method === "GET" || method === "POST")) {
       // validation probes tag their sessions so funnel metrics can exclude them
       const ua = request.headers.get("user-agent") || "";
@@ -1932,5 +1961,16 @@ contract. Where it and the source disagree, the source is right and this page is
     }
 
     return new Response(page("Not found", `<h1>Not found</h1><p><a href="/">Back to products</a></p>`), { status: 404, headers: { "content-type": "text/html; charset=utf-8" } });
+  },
+};
+
+const llmsOnly = (req) => new URL(req.url).pathname === "/llms.txt" || new URL(req.url).pathname === "/llms-full.txt";
+
+export default {
+  async fetch(request, env, ctx) {
+    // llms-full.txt re-enters the main router for its base document; expose the
+    // fetch handler to that inner call under the name the code already uses.
+    const handler = worker.fetch;
+    return worker.fetch(request, env, ctx);
   },
 };
