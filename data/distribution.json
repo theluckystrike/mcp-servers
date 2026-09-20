@@ -432,7 +432,45 @@
         ],
         "count": 13,
         "status": "pending review"
-      }
+      },
+      "s62c": {
+        "submitted": [
+          "currency"
+        ]
+      },
+      "submitted_total": 25
+    },
+    "mcpfinder_s62c": {
+      "completed_2026_09_20": true,
+      "note": "b3 complete: full 46-server estate submitted to mcpfinder.org free lane",
+      "b3_landed": [
+        "deposits",
+        "docx",
+        "dunning-letters",
+        "expense-tracker",
+        "image",
+        "job-card",
+        "kanban",
+        "maintenance-log",
+        "mileage-log",
+        "per-diem",
+        "petty-cash",
+        "price-list",
+        "productivity",
+        "recurring-invoices",
+        "service-contract",
+        "time-entries",
+        "quotation",
+        "statement-of-work",
+        "work-order",
+        "office-suite",
+        "resume",
+        "service-agreement",
+        "statement-of-account",
+        "supplier-list",
+        "timezone",
+        "zip"
+      ]
     }
   },
   "per_server": {
@@ -849,7 +887,7 @@
       "updated": "2026-09-20"
     }
   },
-  "total_submitted": 55,
+  "total_submitted": 81,
   "totals": {
     "submitted": 42,
     "mcpservers_org": 42,
