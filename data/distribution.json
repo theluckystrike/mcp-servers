@@ -1065,7 +1065,8 @@
     "mcpservers_org_reported": 52,
     "percall_accepted": 10,
     "total_submitted": 187,
-    "session_s62h_scouting": "b6+b8 done 2026-09-20"
+    "session_s62h_scouting": "b6+b8 done 2026-09-20",
+    "sessions": 0
   },
   "outcomes": {
     "agenticskills_s62d2": {
@@ -1085,5 +1086,20 @@
       "openai_apps": "same remote requirement + org verification gate",
       "conclusion": "No new free instant-live directory found. Highest-impact move = stand up remote Streamable HTTP hosting (mcp.zovo.one already live) to unlock Anthropic/OpenAI review lanes."
     }
+  },
+  "remote_http": {
+    "endpoint": "https://mcp.zovo.one/mcp/{server}",
+    "servers_live": 45,
+    "servers_total_vendored": 45,
+    "tools_live": 529,
+    "tools_metadata_complete_estimate": "370+/529 (license pairs + upload tools patched in deploy 859c7f30, paced re-verify pending)",
+    "auth": "no-auth discovery; KV tenant tokens for data ops",
+    "annotations_codemod_commit": "e5ee1d28",
+    "worker_versions": [
+      "59a94aaf",
+      "859c7f30"
+    ],
+    "anthropic_directory_readiness": "metadata gate mostly green; missing vendored servers: lease-contract, loan-agreement, nondisclosure-agreement, non-compete-clause, payment-terms, performance-review (+office-suite,vat,payroll coverage check)",
+    "submission_blocker": "Anthropic Connectors Directory portal may require Claude Team/Enterprise org \u2014 needs Mike's account check"
   }
 }
