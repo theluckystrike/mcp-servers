@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-09-20",
+  "updated_at": "2026-09-20T05:55:00Z",
   "surfaces": {
     "github": {
       "status": "published",
@@ -276,6 +276,25 @@
     },
     "opentools.ai": {
       "status": "blocked: Pro-gated submission, no free route found"
+    },
+    "percall": {
+      "platform": "index.percall.dev (AI Product Index)",
+      "updated": "2026-09-20",
+      "accepted": [
+        "zovo-invoice",
+        "zovo-quotes",
+        "zovo-time-tracker",
+        "zovo-pdf",
+        "zovo-resume",
+        "zovo-spreadsheet",
+        "zovo-calendar",
+        "zovo-barcode",
+        "zovo-currency",
+        "zovo-image"
+      ],
+      "issues": "#41-#55 (5 retried after CI push race, spaced 100s)",
+      "cap": "10 listings per GitHub account - REACHED",
+      "verified": "all 10 /l/<slug>.html return 200; search?q=zovo total=10"
     }
   },
   "per_server": {
@@ -677,6 +696,7 @@
     "mcpservers_org": 42,
     "tracked_per_server": 35,
     "note": "7 early listings (S48 invoicing/leave + 1 prior + 4 unrecorded) not in per_server; 42 = report-trail running total",
-    "mcpservers_org_reported": 52
+    "mcpservers_org_reported": 52,
+    "percall_accepted": 10
   }
 }
