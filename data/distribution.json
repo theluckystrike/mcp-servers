@@ -592,7 +592,11 @@
         "purchase-requisition",
         "expense-claims",
         "mileage-tracker",
-        "vendor-management"
+        "vendor-management",
+        "bank-statement",
+        "bill-of-sale",
+        "cash-book",
+        "change-order"
       ],
       "verified_live": 0,
       "last_checked": "2026-09-20",
@@ -1042,7 +1046,7 @@
     "note": "7 early listings (S48 invoicing/leave + 1 prior + 4 unrecorded) not in per_server; 42 = report-trail running total",
     "mcpservers_org_reported": 52,
     "percall_accepted": 10,
-    "total_submitted": 164
+    "total_submitted": 168
   },
   "outcomes": {
     "agenticskills_s62d2": {
