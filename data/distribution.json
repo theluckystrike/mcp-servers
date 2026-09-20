@@ -735,10 +735,11 @@
       "updated": "2026-09-20"
     }
   },
-  "total_submitted": 36,
+  "total_submitted": 42,
   "totals": {
-    "submitted": 36,
-    "mcpservers_org": 36,
-    "note": "1 pre-S48 listing untracked"
+    "submitted": 42,
+    "mcpservers_org": 42,
+    "tracked_per_server": 35,
+    "note": "7 early listings (S48 invoicing/leave + 1 prior + 4 unrecorded) not in per_server; 42 = report-trail running total"
   }
 }
