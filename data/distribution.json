@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-09-20T05:55:00Z",
+  "updated_at": "2026-09-20T06:00:00Z",
   "surfaces": {
     "github": {
       "status": "published",
@@ -294,7 +294,17 @@
       ],
       "issues": "#41-#55 (5 retried after CI push race, spaced 100s)",
       "cap": "10 listings per GitHub account - REACHED",
-      "verified": "all 10 /l/<slug>.html return 200; search?q=zovo total=10"
+      "verified": "all 10 /l/<slug>.html return 200; search?q=zovo total=10",
+      "amplify_s55": {
+        "date": "2026-09-20",
+        "platforms": {
+          "bluesky": "https://bsky.app/profile/belikenative.bsky.social/post/3mvwj5qn5rf2u",
+          "mastodon": "https://mstdn.party/@llmengnotes/117301818942588331",
+          "telegram": "https://t.me/-1004487811073/48",
+          "farcaster": "https://warpcast.com/~/conversations/0x46738ea463e7bfbc224eef910e3c0835571ced9f"
+        },
+        "indexnow": 200
+      }
     }
   },
   "per_server": {
