@@ -713,43 +713,19 @@
       "registry-name": "pending 0.20.0 (io.github.theluckystrike/cash-float, io.github.theluckystrike/imprest-account)"
     },
     "work-order": {
-      "github": "published",
-      "registry": "pending",
-      "hosted": "published https://mcp.zovo.one/mcp/work-order",
-      "npm": "missing",
-      "smithery": "pending",
-      "glama": "pending",
-      "docker-mcp-catalog": "submitted",
-      "cline-marketplace": "submitted",
-      "mcpb": "pending: bundles/work-order.mcpb not built, server.mcpb.json fileSha256 is TBD",
-      "github-mirror": "pending",
-      "registry-name": "pending 0.20.0 (io.github.theluckystrike/job-card, io.github.theluckystrike/field-service-order)"
+      "target": "mcpservers.org",
+      "status": "accepted",
+      "sprint": "S51"
     },
     "catalogue": {
-      "github": "published",
-      "registry": "pending",
-      "hosted": "published https://mcp.zovo.one/mcp/catalogue",
-      "npm": "missing",
-      "smithery": "pending",
-      "glama": "pending",
-      "docker-mcp-catalog": "submitted",
-      "cline-marketplace": "submitted",
-      "mcpb": "pending: bundles/catalogue.mcpb not built, server.mcpb.json fileSha256 is TBD",
-      "github-mirror": "pending",
-      "registry-name": "pending 0.20.0 (io.github.theluckystrike/price-list, io.github.theluckystrike/rate-card)"
+      "target": "mcpservers.org",
+      "status": "accepted",
+      "sprint": "S51"
     },
     "change-order": {
-      "github": "published",
-      "registry": "pending",
-      "hosted": "published https://mcp.zovo.one/mcp/change-order",
-      "npm": "missing",
-      "smithery": "pending",
-      "glama": "pending",
-      "docker-mcp-catalog": "pending",
-      "cline-marketplace": "pending",
-      "mcpb": "pending: bundles/change-order.mcpb not built, server.mcpb.json fileSha256 is TBD",
-      "github-mirror": "pending",
-      "registry-name": "pending 0.20.0 (io.github.theluckystrike/variation-order, io.github.theluckystrike/scope-change)"
+      "target": "mcpservers.org",
+      "status": "accepted",
+      "sprint": "S51"
     },
     "packing-list": {
       "github": "published",
@@ -765,17 +741,9 @@
       "registry-name": "pending 0.21.0 (io.github.theluckystrike/packing-slip-cartons-shipment-weights, io.github.theluckystrike/carton-consignment-waybill-pack-list)"
     },
     "checklist": {
-      "github": "published",
-      "registry": "pending",
-      "hosted": "published https://mcp.zovo.one/mcp/checklist",
-      "npm": "missing",
-      "smithery": "pending",
-      "glama": "pending",
-      "docker-mcp-catalog": "pending",
-      "cline-marketplace": "pending",
-      "mcpb": "built: bundles/checklist.mcpb, 7067652 bytes, sha256 c004888c0418a0ddaa4c96a659e082551c3a00dbfd36f980456deb891c84a3d4, written into all three manifests by scripts/manifest-sha256.mjs; unpacked and verified to initialize and answer a tool call. Pending: the orchestrator attaches it to the existing v0.21.0 release.",
-      "github-mirror": "pending",
-      "registry-name": "pending 0.21.0 (io.github.theluckystrike/snag-list-defect-handover-signoff, io.github.theluckystrike/onboarding-checklist-inspection-runs)"
+      "target": "mcpservers.org",
+      "status": "accepted",
+      "sprint": "S51"
     },
     "bill-of-sale": {
       "github": "published",
@@ -791,17 +759,9 @@
       "registry-name": "pending 0.21.0 (io.github.theluckystrike/bill-of-sale-generator)"
     },
     "credit-note": {
-      "github": "published",
-      "registry": "pending",
-      "hosted": "published https://mcp.zovo.one/mcp/credit-note",
-      "npm": "missing",
-      "smithery": "pending",
-      "glama": "pending",
-      "docker-mcp-catalog": "pending",
-      "cline-marketplace": "pending",
-      "mcpb": "pending: bundles/credit-note.mcpb not built, server.mcpb.json fileSha256 is TBD",
-      "github-mirror": "pending",
-      "registry-name": "pending 0.21.0 (io.github.theluckystrike/credit-memo)"
+      "target": "mcpservers.org",
+      "status": "accepted",
+      "sprint": "S51"
     },
     "job-card": {
       "github": "published",
@@ -894,51 +854,56 @@
       "github-mirror": "pending",
       "registry-name": "pending 0.22.0 (io.github.theluckystrike/deliverable-tracker, io.github.theluckystrike/milestone-schedule)"
     },
-    "purchaseRequisition": {
-      "github": "published",
-      "registry": "pending",
-      "hosted": "pending deploy:",
-      "npm": "missing",
-      "smithery": "pending",
-      "glama": "pending",
-      "docker-mcp-catalog": "pending",
-      "cline-marketplace": "pending",
-      "mcpb": "pending build",
-      "github-mirror": "pending",
-      "registry-name": "pending"
-    },
-    "goodsReceipt": {
-      "github": "published",
-      "registry": "pending",
-      "hosted": "pending deploy:",
-      "npm": "missing",
-      "smithery": "pending",
-      "glama": "pending",
-      "docker-mcp-catalog": "pending",
-      "cline-marketplace": "pending",
-      "mcpb": "pending build",
-      "github-mirror": "pending",
-      "registry-name": "pending"
-    },
     "onboarding": {
-      "github": "published",
-      "registry": "pending",
-      "hosted": "published https://mcp.zovo.one/mcp/onboarding",
-      "npm": "missing",
-      "smithery": "pending",
-      "glama": "pending",
-      "docker-mcp-catalog": "pending",
-      "cline-marketplace": "pending",
-      "mcpb": "not built"
+      "target": "mcpservers.org",
+      "status": "accepted",
+      "sprint": "S51"
     },
     "goods-receipt": {
-      "hosted": "published https://mcp.zovo.one/mcp/goods-receipt"
+      "github": "published",
+      "registry": "pending",
+      "hosted": "pending deploy:",
+      "npm": "missing",
+      "smithery": "pending",
+      "glama": "pending",
+      "docker-mcp-catalog": "pending",
+      "cline-marketplace": "pending",
+      "mcpb": "pending build",
+      "github-mirror": "pending",
+      "registry-name": "pending"
     },
     "leave": {
-      "hosted": "published https://mcp.zovo.one/mcp/leave"
+      "target": "mcpservers.org",
+      "status": "accepted",
+      "sprint": "S51"
     },
     "purchase-requisition": {
-      "hosted": "published https://mcp.zovo.one/mcp/purchase-requisition"
+      "github": "published",
+      "registry": "pending",
+      "hosted": "pending deploy:",
+      "npm": "missing",
+      "smithery": "pending",
+      "glama": "pending",
+      "docker-mcp-catalog": "pending",
+      "cline-marketplace": "pending",
+      "mcpb": "pending build",
+      "github-mirror": "pending",
+      "registry-name": "pending"
+    },
+    "purchase-order": {
+      "target": "mcpservers.org",
+      "status": "accepted",
+      "sprint": "S51"
+    },
+    "service-catalog": {
+      "target": "mcpservers.org",
+      "status": "accepted",
+      "sprint": "S51"
+    },
+    "delivery-tracking": {
+      "target": "mcpservers.org",
+      "status": "accepted",
+      "sprint": "S51"
     }
   },
   "outreach": {
@@ -966,5 +931,6 @@
       "last_batch": "S50 batch E (10)",
       "updated": "2026-09-20"
     }
-  }
+  },
+  "total_submitted": 32
 }
