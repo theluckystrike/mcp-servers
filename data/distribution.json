@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-09-19T03:15:00.000Z",
+  "updated_at": "2026-09-20",
   "surfaces": {
     "github": {
       "status": "published",
@@ -397,7 +397,7 @@
       "mcp.so": "skipped: paid",
       "docker-mcp-catalog": "submitted",
       "cline-marketplace": "submitted",
-      "mcpservers.org": "n/a: not in that batch",
+      "mcpservers.org": "submitted",
       "mcpmarket.com": "n/a: not in that batch",
       "cursor.directory": "blocked: login",
       "pulsemcp": "blocked: intake paused",
@@ -419,7 +419,8 @@
       "registry": "published 0.20.0 (io.github.theluckystrike/office-suite-time-invoice-expense-excel-price)",
       "npm": "missing",
       "mcpb": "published v0.20.0 (office-suite.mcpb)",
-      "github-mirror": "synced https://github.com/theluckystrike/mcp-office-suite"
+      "github-mirror": "synced https://github.com/theluckystrike/mcp-office-suite",
+      "mcpservers.org": "submitted"
     },
     "currency": {
       "github": "published",
@@ -433,7 +434,8 @@
       "mcpb": "published v0.20.0 (currency.mcpb)",
       "github-mirror": "synced https://github.com/theluckystrike/mcp-currency",
       "registry-variant": "published 0.20.0 (io.github.theluckystrike/exchange-fx)",
-      "registry-name": "published 0.20.0 (io.github.theluckystrike/exchange-fx)"
+      "registry-name": "published 0.20.0 (io.github.theluckystrike/exchange-fx)",
+      "mcpservers.org": "submitted"
     },
     "timezone": {
       "github": "published",
@@ -447,7 +449,8 @@
       "mcpb": "published v0.20.0 (timezone.mcpb)",
       "github-mirror": "synced https://github.com/theluckystrike/mcp-timezone",
       "registry-variant": "published 0.20.0 (io.github.theluckystrike/calendar)",
-      "registry-name": "published 0.20.0 (io.github.theluckystrike/scheduling)"
+      "registry-name": "published 0.20.0 (io.github.theluckystrike/scheduling)",
+      "mcpservers.org": "submitted"
     },
     "docx": {
       "github": "published",
@@ -462,7 +465,8 @@
       "github-mirror": "synced https://github.com/theluckystrike/mcp-docx",
       "registry-variant": "published 0.20.0 (io.github.theluckystrike/documents)",
       "registry-templates": "published 0.20.0 (io.github.theluckystrike/templates)",
-      "registry-name": "published 0.20.0 (io.github.theluckystrike/letterhead)"
+      "registry-name": "published 0.20.0 (io.github.theluckystrike/letterhead)",
+      "mcpservers.org": "submitted"
     },
     "resume": {
       "docker-mcp-catalog": "submitted",
@@ -474,7 +478,8 @@
       "mcpb": "published v0.20.0 (resume.mcpb)",
       "github-mirror": "synced https://github.com/theluckystrike/mcp-resume",
       "registry-variant": "published 0.20.0 (io.github.theluckystrike/application)",
-      "registry-name": "published 0.20.0 (io.github.theluckystrike/career)"
+      "registry-name": "published 0.20.0 (io.github.theluckystrike/career)",
+      "mcpservers.org": "submitted"
     },
     "recurring": {
       "docker-mcp-catalog": "submitted",
@@ -486,7 +491,8 @@
       "mcpb": "published v0.20.0 (recurring.mcpb)",
       "github-mirror": "synced https://github.com/theluckystrike/mcp-recurring",
       "registry-variant": "published 0.20.0 (io.github.theluckystrike/retainer)",
-      "registry-name": "published 0.20.0 (io.github.theluckystrike/subscriptions)"
+      "registry-name": "published 0.20.0 (io.github.theluckystrike/subscriptions)",
+      "mcpservers.org": "submitted"
     },
     "clauses": {
       "docker-mcp-catalog": "submitted",
@@ -498,7 +504,8 @@
       "mcpb": "published v0.20.0 (clauses.mcpb)",
       "github-mirror": "synced https://github.com/theluckystrike/mcp-clauses",
       "registry-variant": "published 0.20.0 (io.github.theluckystrike/agreement)",
-      "registry-name": "published 0.20.0 (io.github.theluckystrike/terms)"
+      "registry-name": "published 0.20.0 (io.github.theluckystrike/terms)",
+      "mcpservers.org": "submitted"
     },
     "pdf": {
       "github": "published",
@@ -509,7 +516,8 @@
       "mcpb": "published v0.20.0 (pdf.mcpb)",
       "github-mirror": "synced https://github.com/theluckystrike/mcp-pdf",
       "registry-variant": "published 0.20.0 (io.github.theluckystrike/pdfs)",
-      "registry-name": "published 0.20.0 (io.github.theluckystrike/pdfs)"
+      "registry-name": "published 0.20.0 (io.github.theluckystrike/pdfs)",
+      "mcpservers.org": "submitted"
     },
     "calendar": {
       "github": "published",
@@ -520,7 +528,8 @@
       "mcpb": "published v0.20.0 (calendar.mcpb)",
       "github-mirror": "synced https://github.com/theluckystrike/mcp-calendar",
       "registry-variant": "published 0.20.0 (io.github.theluckystrike/availability)",
-      "registry-name": "published 0.20.0 (io.github.theluckystrike/appointment)"
+      "registry-name": "published 0.20.0 (io.github.theluckystrike/appointment)",
+      "mcpservers.org": "submitted"
     },
     "kanban": {
       "github": "published",
@@ -530,7 +539,8 @@
       "mcpb": "published v0.20.0 (kanban.mcpb)",
       "github-mirror": "synced https://github.com/theluckystrike/mcp-kanban",
       "hosted": "published https://mcp.zovo.one/mcp/kanban",
-      "registry-name": "published 0.20.0 (io.github.theluckystrike/standup)"
+      "registry-name": "published 0.20.0 (io.github.theluckystrike/standup)",
+      "mcpservers.org": "submitted"
     },
     "image": {
       "github": "published",
@@ -540,7 +550,8 @@
       "mcpb": "published v0.20.0 (image.mcpb)",
       "github-mirror": "synced https://github.com/theluckystrike/mcp-image",
       "hosted": "published https://mcp.zovo.one/mcp/image",
-      "registry-name": "published 0.20.0 (io.github.theluckystrike/thumbnails)"
+      "registry-name": "published 0.20.0 (io.github.theluckystrike/thumbnails)",
+      "mcpservers.org": "submitted"
     },
     "bank-statement": {
       "github": "published",
@@ -550,7 +561,8 @@
       "mcpb": "published v0.20.0 (bank-statement.mcpb)",
       "github-mirror": "synced https://github.com/theluckystrike/mcp-bank-statement",
       "hosted": "published https://mcp.zovo.one/mcp/bank-statement",
-      "registry-name": "published 0.20.0 (io.github.theluckystrike/cashflow)"
+      "registry-name": "published 0.20.0 (io.github.theluckystrike/cashflow)",
+      "mcpservers.org": "submitted"
     },
     "quotes": {
       "github": "published",
@@ -564,7 +576,8 @@
       "mcpb": "published v0.20.0 (quotes.mcpb)",
       "github-mirror": "synced https://github.com/theluckystrike/mcp-quotes",
       "registry-variant": "published 0.20.0 (io.github.theluckystrike/estimates)",
-      "registry-name": "published 0.20.0 (io.github.theluckystrike/freelance)"
+      "registry-name": "published 0.20.0 (io.github.theluckystrike/freelance)",
+      "mcpservers.org": "submitted"
     },
     "barcode": {
       "github": "published",
@@ -577,7 +590,8 @@
       "cline-marketplace": "submitted",
       "mcpb": "published v0.20.0 (barcode.mcpb)",
       "github-mirror": "synced https://github.com/theluckystrike/mcp-barcode",
-      "registry-name": "published 0.20.0 (io.github.theluckystrike/label)"
+      "registry-name": "published 0.20.0 (io.github.theluckystrike/label)",
+      "mcpservers.org": "submitted"
     },
     "zip": {
       "github": "published",
@@ -590,7 +604,8 @@
       "cline-marketplace": "submitted",
       "mcpb": "published v0.20.0 (zip.mcpb)",
       "github-mirror": "synced https://github.com/theluckystrike/mcp-zip",
-      "registry-name": "published 0.20.0 (io.github.theluckystrike/archive)"
+      "registry-name": "published 0.20.0 (io.github.theluckystrike/archive)",
+      "mcpservers.org": "submitted"
     },
     "billing-docs": {
       "github": "published",
@@ -603,7 +618,8 @@
       "cline-marketplace": "submitted",
       "mcpb": "pending: bundles/billing-docs.mcpb not built, server.mcpb.json fileSha256 is TBD",
       "github-mirror": "pending",
-      "registry-name": "pending 0.20.0 (io.github.theluckystrike/purchase-order)"
+      "registry-name": "pending 0.20.0 (io.github.theluckystrike/purchase-order)",
+      "mcpservers.org": "submitted"
     },
     "deposits": {
       "github": "published",
@@ -944,6 +960,11 @@
         "draft": "docs/outreach/R1/01 adapted (Windows)",
         "note": "draft 01 target discussion #325 closed; adapted to live issue 1469"
       }
-    ]
+    ],
+    "mcpservers.org": {
+      "total_submitted": 22,
+      "last_batch": "S50 batch E (10)",
+      "updated": "2026-09-20"
+    }
   }
 }
