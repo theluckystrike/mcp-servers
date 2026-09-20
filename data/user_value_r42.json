@@ -1,0 +1,42 @@
+{
+ "server": "onboarding",
+ "scenarios": [
+  {
+   "server": "onboarding",
+   "prompt": "Set up hire Anna Chen, Data Engineer, starts 2026-09-01",
+   "score": 3,
+   "note": "H-0001 created with real store isolation"
+  },
+  {
+   "server": "onboarding",
+   "prompt": "Add first-week checklist: laptop day 1, HR welcome day 3",
+   "score": 3,
+   "note": "two task_adds, K01/K02 assigned, due dates derived from start_date"
+  },
+  {
+   "server": "onboarding",
+   "prompt": "Mark laptop task done",
+   "score": 3,
+   "note": "task_done K01 -> done, percent_complete 50 recomputed"
+  },
+  {
+   "server": "onboarding",
+   "prompt": "Progress overall",
+   "score": 3,
+   "note": "progress shows done 1 / todo 1 / overdue 1 with outstanding list"
+  },
+  {
+   "server": "onboarding",
+   "prompt": "Anything overdue across all hires",
+   "score": 3,
+   "note": "overdue flags K02 HR welcome correctly"
+  }
+ ],
+ "totals": {
+  "score": 15,
+  "max": 15
+ },
+ "bottom_line": "Onboarding tracker fully functional on an isolated store: checklist, progress math, overdue detection all correct.",
+ "at": "2026-09-20T01:17:59Z",
+ "round": 42
+}

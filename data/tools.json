@@ -1676,5 +1676,111 @@
       "name": "license_activate",
       "description": "Activate a Pro key (MCPL1.xxx.yyy) from checkout: verified offline against a built-in public key, saved to your config file. A wrong, malformed or expired key is refused, unsaved. license_status reads it back."
     }
+  ],
+  "purchaseRequisition": [
+    {
+      "name": "purchase-requisition_create",
+      "description": "Create a reusable purchase requisition and return its CL-NNNN id: a name, a category and an optional description. Add the approval steps with purchase-requisition_item_add. Free tier: 3 requisitions, and unlimited runs of them."
+    },
+    {
+      "name": "purchase-requisition_item_add",
+      "description": "Add one approval step to a requisition and return its I01-style id: the text, an optional section heading, and whether it is required. A required step that is unanswered or failed blocks sign-off; an optional one does not."
+    },
+    {
+      "name": "purchase-requisition_item_remove",
+      "description": "Remove one step from a requisition by its I01-style id and bump the requisition version. Runs already under way keep the step they copied when they started."
+    },
+    {
+      "name": "purchase-requisition_show",
+      "description": "Show one requisition in full: its items in order, grouped by section, with the required count, the version and the category."
+    },
+    {
+      "name": "purchase-requisition_list",
+      "description": "List every requisition: id, name, category, item count, version, and how many runs each has."
+    },
+    {
+      "name": "purchase-requisition_delete",
+      "description": "Delete a requisition by id after a confirm flag. Runs already under way keep the copy they started with and stay readable and signable."
+    },
+    {
+      "name": "run_start",
+      "description": "Start a run of a requisition against a proposed order: copies every step at the version it started on, so later edits never change the run."
+    },
+    {
+      "name": "run_check",
+      "description": "Mark one step of a run pass, fail or not applicable, with who marked it and a note saying what was found."
+    },
+    {
+      "name": "run_show",
+      "description": "Show one run in full: the copied steps, who marked what, when, and what they found, with the requisition version it started from."
+    },
+    {
+      "name": "run_list",
+      "description": "List the runs of a requisition: title, reference, date, and whether each is under way, passed or signed off."
+    },
+    {
+      "name": "run_sign_off",
+      "description": "Sign off a run: records the name and date, blocks it from further edits, and refuses while any required step is unanswered or failed."
+    },
+    {
+      "name": "run_status",
+      "description": "One-line status of a run: how many steps passed, failed, are pending, and whether it can be signed off."
+    },
+    {
+      "name": "run_report",
+      "description": "Pro tier: write the signed approval record to a .txt file at a path you name, through a boundary-checked path before anything is written."
+    },
+    {
+      "name": "run_delete",
+      "description": "Delete an unsigned run by id after a confirm flag. Signed-off runs cannot be deleted."
+    }
+  ],
+  "onboarding": [
+    "onboarding_hire_add",
+    "onboarding_hire_list",
+    "onboarding_task_add",
+    "onboarding_task_done",
+    "onboarding_template_apply",
+    "onboarding_progress",
+    "onboarding_overdue"
+  ],
+  "goods-receipt": [
+    "po_add",
+    "grn_add",
+    "grn_line_add",
+    "grn_list",
+    "grn_get",
+    "grn_discrepancy",
+    "grn_close",
+    "grn_status_report",
+    "grn_export_csv"
+  ],
+  "leave": [
+    "leave_employee_add",
+    "leave_request",
+    "leave_approve",
+    "leave_reject",
+    "leave_balance",
+    "leave_out_range",
+    "leave_list",
+    "leave_import",
+    "leave_export_ics",
+    "leave_cancel"
+  ],
+  "purchase-requisition": [
+    "purchase-requisition_create",
+    "purchase-requisition_item_add",
+    "purchase-requisition_item_remove",
+    "purchase-requisition_show",
+    "purchase-requisition_list",
+    "purchase-requisition_delete",
+    "run_start",
+    "run_check",
+    "run_show",
+    "run_list",
+    "run_sign_off",
+    "run_status",
+    "run_report",
+    "run_delete"
   ]
 }

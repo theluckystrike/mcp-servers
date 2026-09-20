@@ -1,0 +1,42 @@
+{
+ "server": "goods-receipt",
+ "scenarios": [
+  {
+   "server": "goods-receipt",
+   "prompt": "Log purchase order PO-BUY-2026-041 (100 BOLT-M8) and first receipt of 40 with shortage surfaced",
+   "score": 3,
+   "note": "po_add + grn_add real RPC; shortage 60 computed by server, ids PO-0001/GRN-0001 returned"
+  },
+  {
+   "server": "goods-receipt",
+   "prompt": "Second delivery 50 cartons, 5 damaged — log and flag",
+   "score": 3,
+   "note": "grn_add accepted damaged:5 + damageNote; cumulative receiving correct"
+  },
+  {
+   "server": "goods-receipt",
+   "prompt": "Attempt to log 111 received against 100 ordered",
+   "score": 2,
+   "note": "server refused over 10% tolerance and wrote nothing — protective refusal, clear error message"
+  },
+  {
+   "server": "goods-receipt",
+   "prompt": "Status report for the PO",
+   "score": 3,
+   "note": "grn_status_report returned full PO line state including received/damaged/shortage"
+  },
+  {
+   "server": "goods-receipt",
+   "prompt": "List GRNs and export CSV",
+   "score": 2,
+   "note": "grn_list fine; grn_export_csv is Pro-gated with clear upsell message"
+  }
+ ],
+ "totals": {
+  "score": 13,
+  "max": 15
+ },
+ "bottom_line": "Goods receipt works end-to-end on real stdio RPC; discrepancies and tolerance rules enforced at the server.",
+ "at": "2026-09-20T01:17:59Z",
+ "round": 40
+}

@@ -1,17 +1,12 @@
 {
-  "at": "2026-09-17T13:47:58.496Z",
+  "at": "2026-09-19T16:12:38.709Z",
   "published": [],
   "duplicate": [],
   "failed": [
     {
-      "name": "io.github.theluckystrike/packing-list",
-      "version": "0.22.1",
-      "error": "Publishing to https://registry.modelcontextprotocol.io...\nError: publish failed: server returned status 400: {\"title\":\"Bad Request\",\"status\":400,\"detail\":\"Failed to publish server\",\"errors\":[{\"message\":\"remote URL https://mcp.zovo.one/mcp/packing-list is already used by server io.github.theluckystri"
-    },
-    {
-      "name": "io.github.theluckystrike/packing-list",
+      "name": "io.github.theluckystrike/aging",
       "version": "0.22.0",
-      "error": "Publishing to https://registry.modelcontextprotocol.io...\nError: publish failed: server returned status 400: {\"title\":\"Bad Request\",\"status\":400,\"detail\":\"Failed to publish server\",\"errors\":[{\"message\":\"remote URL https://mcp.zovo.one/mcp/packing-list is already used by server io.github.theluckystri"
+      "error": "Publishing to https://registry.modelcontextprotocol.io...\nError: publish failed: server returned status 400: {\"title\":\"Bad Request\",\"status\":400,\"detail\":\"Failed to publish server\",\"errors\":[{\"message\":\"remote URL https://mcp.zovo.one/mcp/statement-of-account is already used by server io.github.thel"
     }
   ]
 }

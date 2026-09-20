@@ -877,6 +877,52 @@
       "mcpb": "pending: the v0.22.0 bundle is rebuilt by the release chain and the sha re-stamped by scripts/manifest-sha256.mjs",
       "github-mirror": "pending",
       "registry-name": "pending 0.22.0 (io.github.theluckystrike/deliverable-tracker, io.github.theluckystrike/milestone-schedule)"
+    },
+    "purchaseRequisition": {
+      "github": "published",
+      "registry": "pending",
+      "hosted": "pending deploy:",
+      "npm": "missing",
+      "smithery": "pending",
+      "glama": "pending",
+      "docker-mcp-catalog": "pending",
+      "cline-marketplace": "pending",
+      "mcpb": "pending build",
+      "github-mirror": "pending",
+      "registry-name": "pending"
+    },
+    "goodsReceipt": {
+      "github": "published",
+      "registry": "pending",
+      "hosted": "pending deploy:",
+      "npm": "missing",
+      "smithery": "pending",
+      "glama": "pending",
+      "docker-mcp-catalog": "pending",
+      "cline-marketplace": "pending",
+      "mcpb": "pending build",
+      "github-mirror": "pending",
+      "registry-name": "pending"
+    },
+    "onboarding": {
+      "github": "published",
+      "registry": "pending",
+      "hosted": "published https://mcp.zovo.one/mcp/onboarding",
+      "npm": "missing",
+      "smithery": "pending",
+      "glama": "pending",
+      "docker-mcp-catalog": "pending",
+      "cline-marketplace": "pending",
+      "mcpb": "not built"
+    },
+    "goods-receipt": {
+      "hosted": "published https://mcp.zovo.one/mcp/goods-receipt"
+    },
+    "leave": {
+      "hosted": "published https://mcp.zovo.one/mcp/leave"
+    },
+    "purchase-requisition": {
+      "hosted": "published https://mcp.zovo.one/mcp/purchase-requisition"
     }
   },
   "outreach": {

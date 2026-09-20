@@ -1,0 +1,42 @@
+{
+ "server": "purchase-requisition",
+ "scenarios": [
+  {
+   "server": "purchase-requisition",
+   "prompt": "Create pre-delivery vehicle check template",
+   "score": 3,
+   "note": "CL-0001 created, free tier holds 3 templates"
+  },
+  {
+   "server": "purchase-requisition",
+   "prompt": "Add 3 required items across Load/Exterior sections",
+   "score": 3,
+   "note": "v2->v4 versioned edits, items/required counts tracked"
+  },
+  {
+   "server": "purchase-requisition",
+   "prompt": "Start Friday run for Van 7",
+   "score": 3,
+   "note": "run_start returned RUN-2026-0001 against template v4 — versioned snapshot"
+  },
+  {
+   "server": "purchase-requisition",
+   "prompt": "Log pass + fail checks as Sam",
+   "score": 3,
+   "note": "run_check I01 pass, I02 fail with note; run state updated"
+  },
+  {
+   "server": "purchase-requisition",
+   "prompt": "Show full run state",
+   "score": 3,
+   "note": "run_show returns items, pass/fail/pending, percent answered"
+  }
+ ],
+ "totals": {
+  "score": 15,
+  "max": 15
+ },
+ "bottom_line": "Requisition-to-run model works: versioned templates, per-run snapshots, checks recorded honestly.",
+ "at": "2026-09-20T01:17:59Z",
+ "round": 43
+}

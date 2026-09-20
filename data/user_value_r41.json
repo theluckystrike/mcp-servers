@@ -1,0 +1,42 @@
+{
+ "server": "leave",
+ "scenarios": [
+  {
+   "server": "leave",
+   "prompt": "Add employee Priya Raman 25+1 days, book 2-day vacation",
+   "score": 3,
+   "note": "EMP-0001 created, LV-0001 pending, balanceAfter 24 returned in one call"
+  },
+  {
+   "server": "leave",
+   "prompt": "Approve the request, show balance",
+   "score": 3,
+   "note": "leave_approve + leave_balance: 26 committed 2, remaining 24 — arithmetic checks out"
+  },
+  {
+   "server": "leave",
+   "prompt": "Christmas fortnight request",
+   "score": 3,
+   "note": "13 days charged, balance 11, pending — correct whole-day math"
+  },
+  {
+   "server": "leave",
+   "prompt": "Export team calendar and who-is-out",
+   "score": 2,
+   "note": "out_range gave 13 person-days per-day calendar; ics export is Pro-gated (clear message)"
+  },
+  {
+   "server": "leave",
+   "prompt": "Full list of records",
+   "score": 3,
+   "note": "leave_list returned employee + both requests with statuses"
+  }
+ ],
+ "totals": {
+  "score": 14,
+  "max": 15
+ },
+ "bottom_line": "Leave balances, approvals and conflict-free booking all correct on first run; calendar export is the Pro upsell.",
+ "at": "2026-09-20T01:17:59Z",
+ "round": 41
+}

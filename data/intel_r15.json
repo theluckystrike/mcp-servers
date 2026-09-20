@@ -1,0 +1,295 @@
+{
+  "round": 15,
+  "method": "GET https://registry.modelcontextprotocol.io/v0/servers?search=<token>&limit=100, cursor-followed to null; count=metadata.count",
+  "exclusion_set_size": 335,
+  "suite_size": 44,
+  "tokens_probed": [
+    {
+      "token": "purchase-requisition",
+      "count": 0,
+      "empty_slot_score": 100.0,
+      "fit": 0.9,
+      "buildability": 0.9,
+      "score": 81.0,
+      "gate_pass": true
+    },
+    {
+      "token": "goods-receipt",
+      "count": 0,
+      "empty_slot_score": 100.0,
+      "fit": 0.9,
+      "buildability": 0.9,
+      "score": 81.0,
+      "gate_pass": true
+    },
+    {
+      "token": "petty-cash-voucher",
+      "count": 0,
+      "empty_slot_score": 100.0,
+      "fit": 0.85,
+      "buildability": 0.9,
+      "score": 76.5,
+      "gate_pass": true
+    },
+    {
+      "token": "holiday-calendar",
+      "count": 0,
+      "empty_slot_score": 100.0,
+      "fit": 0.85,
+      "buildability": 0.9,
+      "score": 76.5,
+      "gate_pass": true
+    },
+    {
+      "token": "deposit-slip",
+      "count": 0,
+      "empty_slot_score": 100.0,
+      "fit": 0.85,
+      "buildability": 0.9,
+      "score": 76.5,
+      "gate_pass": true
+    },
+    {
+      "token": "cheque-register",
+      "count": 0,
+      "empty_slot_score": 100.0,
+      "fit": 0.85,
+      "buildability": 0.9,
+      "score": 76.5,
+      "gate_pass": true
+    },
+    {
+      "token": "expense-policy",
+      "count": 0,
+      "empty_slot_score": 100.0,
+      "fit": 0.8,
+      "buildability": 0.9,
+      "score": 72.0,
+      "gate_pass": true
+    },
+    {
+      "token": "employee-handbook",
+      "count": 0,
+      "empty_slot_score": 100.0,
+      "fit": 0.8,
+      "buildability": 0.9,
+      "score": 72.0,
+      "gate_pass": true
+    },
+    {
+      "token": "probation-review",
+      "count": 0,
+      "empty_slot_score": 100.0,
+      "fit": 0.8,
+      "buildability": 0.9,
+      "score": 72.0,
+      "gate_pass": true
+    },
+    {
+      "token": "stock-count",
+      "count": 0,
+      "empty_slot_score": 100.0,
+      "fit": 0.8,
+      "buildability": 0.9,
+      "score": 72.0,
+      "gate_pass": true
+    },
+    {
+      "token": "letter-of-intent",
+      "count": 0,
+      "empty_slot_score": 100.0,
+      "fit": 0.8,
+      "buildability": 0.9,
+      "score": 72.0,
+      "gate_pass": true
+    },
+    {
+      "token": "confidentiality",
+      "count": 0,
+      "empty_slot_score": 100.0,
+      "fit": 0.8,
+      "buildability": 0.9,
+      "score": 72.0,
+      "gate_pass": true
+    },
+    {
+      "token": "independent-contractor",
+      "count": 0,
+      "empty_slot_score": 100.0,
+      "fit": 0.8,
+      "buildability": 0.9,
+      "score": 72.0,
+      "gate_pass": true
+    },
+    {
+      "token": "master-service",
+      "count": 0,
+      "empty_slot_score": 100.0,
+      "fit": 0.8,
+      "buildability": 0.9,
+      "score": 72.0,
+      "gate_pass": true
+    },
+    {
+      "token": "payment-plan",
+      "count": 0,
+      "empty_slot_score": 100.0,
+      "fit": 0.8,
+      "buildability": 0.9,
+      "score": 72.0,
+      "gate_pass": true
+    },
+    {
+      "token": "installment",
+      "count": 0,
+      "empty_slot_score": 100.0,
+      "fit": 0.8,
+      "buildability": 0.9,
+      "score": 72.0,
+      "gate_pass": true
+    },
+    {
+      "token": "training-log",
+      "count": 0,
+      "empty_slot_score": 100.0,
+      "fit": 0.75,
+      "buildability": 0.9,
+      "score": 67.5,
+      "gate_pass": true
+    },
+    {
+      "token": "certificate-of-employment",
+      "count": 0,
+      "empty_slot_score": 100.0,
+      "fit": 0.75,
+      "buildability": 0.9,
+      "score": 67.5,
+      "gate_pass": true
+    },
+    {
+      "token": "terms-of-service",
+      "count": 0,
+      "empty_slot_score": 100.0,
+      "fit": 0.75,
+      "buildability": 0.9,
+      "score": 67.5,
+      "gate_pass": true
+    },
+    {
+      "token": "reorder-point",
+      "count": 0,
+      "empty_slot_score": 100.0,
+      "fit": 0.75,
+      "buildability": 0.85,
+      "score": 63.75,
+      "gate_pass": true
+    },
+    {
+      "token": "privacy-policy",
+      "count": 0,
+      "empty_slot_score": 100.0,
+      "fit": 0.7,
+      "buildability": 0.9,
+      "score": 63.0,
+      "gate_pass": true
+    },
+    {
+      "token": "self-assessment",
+      "count": 0,
+      "empty_slot_score": 100.0,
+      "fit": 0.7,
+      "buildability": 0.85,
+      "score": 59.5,
+      "gate_pass": true
+    },
+    {
+      "token": "performance-review",
+      "count": 1,
+      "empty_slot_score": 50.0,
+      "fit": 0.8,
+      "buildability": 0.9,
+      "score": 36.0,
+      "gate_pass": true
+    },
+    {
+      "token": "overtime",
+      "count": 1,
+      "empty_slot_score": 50.0,
+      "fit": 0.75,
+      "buildability": 0.9,
+      "score": 33.75,
+      "gate_pass": true
+    },
+    {
+      "token": "pension",
+      "count": 1,
+      "empty_slot_score": 50.0,
+      "fit": 0.7,
+      "buildability": 0.85,
+      "score": 29.75,
+      "gate_pass": true
+    },
+    {
+      "token": "payslip",
+      "count": 2,
+      "empty_slot_score": 33.33,
+      "fit": 0.8,
+      "buildability": 0.9,
+      "score": 24.0,
+      "gate_pass": true
+    },
+    {
+      "token": "consignment",
+      "count": 2,
+      "empty_slot_score": 33.33,
+      "fit": 0.7,
+      "buildability": 0.85,
+      "score": 19.83,
+      "gate_pass": true
+    },
+    {
+      "token": "job-description",
+      "count": 4,
+      "empty_slot_score": 20.0,
+      "fit": 0.8,
+      "buildability": 0.9,
+      "score": 14.4,
+      "gate_pass": true
+    },
+    {
+      "token": "warehouse",
+      "count": 5,
+      "empty_slot_score": 16.67,
+      "fit": 0.7,
+      "buildability": 0.85,
+      "score": 9.92,
+      "gate_pass": true
+    },
+    {
+      "token": "fixed-asset",
+      "count": 9,
+      "empty_slot_score": 10.0,
+      "fit": 0.8,
+      "buildability": 0.9,
+      "score": 7.2,
+      "gate_pass": true
+    }
+  ],
+  "top5": [
+    "purchase-requisition",
+    "goods-receipt",
+    "petty-cash-voucher",
+    "holiday-calendar",
+    "deposit-slip"
+  ],
+  "build_list": [
+    "purchase-requisition",
+    "goods-receipt",
+    "petty-cash-voucher",
+    "holiday-calendar",
+    "deposit-slip"
+  ],
+  "all_gate_pass": 30,
+  "external_calls": 30,
+  "failures": []
+}
