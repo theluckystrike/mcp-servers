@@ -587,7 +587,10 @@
         "delivery-schedule",
         "packing-list",
         "goods-receipt",
-        "leave"
+        "leave",
+        "onboarding",
+        "purchase-requisition",
+        "expense-claims"
       ],
       "verified_live": 0,
       "last_checked": "2026-09-20",
@@ -1037,7 +1040,7 @@
     "note": "7 early listings (S48 invoicing/leave + 1 prior + 4 unrecorded) not in per_server; 42 = report-trail running total",
     "mcpservers_org_reported": 52,
     "percall_accepted": 10,
-    "total_submitted": 158
+    "total_submitted": 161
   },
   "outcomes": {
     "agenticskills_s62d2": {
