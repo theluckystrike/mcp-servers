@@ -1,5 +1,8 @@
 # mcp-price-tracker
 
+**Featured on [Awesome MCP Servers](mcpservers.org)** — [directory listing](https://mcpservers.org/servers/github-com-theluckystrike-mcp-servers-tree-main-servers-price-tracker) | [live hosted endpoint](https://mcp.zovo.one/s/price-tracker), free tier, no signup.
+
+
 Ask your assistant what something costs right now. Point it at any product page and it reads the price off the page, remembers it, and tells you next time whether the price moved, how far, and whether it reached the number you were waiting for. It works on ordinary shop pages by reading the structured data most stores already publish (JSON-LD, Open Graph, microdata) and falling back to the visible price when they do not. When a large retailer blocks automated requests it says so plainly and lets you record the price yourself so the history stays intact. Everything is stored in a JSON file on your own machine.
 
 Built by [theluckystrike](https://github.com/theluckystrike).

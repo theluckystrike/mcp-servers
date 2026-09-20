@@ -2,6 +2,9 @@
 
 **Listed on the [AI Product Index](https://index.percall.dev/l/zovo-invoice.html)** — live remote endpoint at [mcp.zovo.one/s/invoice](https://mcp.zovo.one/s/invoice), free tier, no signup.
 
+**Featured on [Awesome MCP Servers](mcpservers.org)** — [directory listing](https://mcpservers.org/servers/github-com-theluckystrike-mcp-servers-tree-main-servers-invoice) | [live hosted endpoint](https://mcp.zovo.one/s/invoice), free tier, no signup.
+
+
 
 Say "make an invoice for Acme, 12 hours at 90 EUR, due in 14 days" and get a real PDF you can send. This MCP server stores your business profile and your clients, allocates a sequential invoice number that is never reused, computes the subtotal, any discount, one tax line per VAT rate and the total in integer minor units, and renders an A4 PDF with your issuer and payment details, a wrapping item table and a proper totals block. It also tracks payments and, on Pro, reports what is overdue and by how many days. Everything is stored in plain JSON files on your own machine; nothing is uploaded anywhere.
 

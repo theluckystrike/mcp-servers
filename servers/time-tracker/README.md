@@ -1,5 +1,8 @@
 # mcp-time-tracker
 
+**Featured on [Awesome MCP Servers](mcpservers.org)** — [directory listing](https://mcpservers.org/servers/github-com-theluckystrike-mcp-servers-tree-main-servers-time-tracker) | [live hosted endpoint](https://mcp.zovo.one/s/time-tracker), free tier, no signup.
+
+
 Track billable time without leaving your AI chat. Say "start a timer on the acme redesign", keep working, then
 ask for "my hours this week by project" or "invoice lines for acme in August". It keeps a running timer, lets you
 log time you forgot to track, applies your hourly rate per project, and turns the result into a report, a CSV file
