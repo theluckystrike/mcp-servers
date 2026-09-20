@@ -404,6 +404,13 @@
    "action": "rechecked S58 resubmitted slugs quotes+pdf",
    "result": "still 'Not Found' (listing pages 404); invoice listing confirmed LIVE with full docs",
    "interpretation": "2-week review window from S58 (2026-09-19) - recheck ~2026-10-03"
+  },
+  "amplify_s61b": {
+   "date": "2026-09-20",
+   "action": "amplified 4 servers newly published to official registry (goods-receipt, leave, onboarding, purchase-requisition)",
+   "site_pages": "all 4 verified 200 on mcp.zovo.one/s/{slug}",
+   "indexnow": "200 (4 URLs)",
+   "social": "4/4 sent: bluesky 3mvwqjjcyds, mastodon 117302338147262526, telegram t.me/-1004487811073/50, farcaster 0x0dd9c621138c835670c3ba01e"
   }
  },
  "per_server": {

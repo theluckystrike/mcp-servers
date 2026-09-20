@@ -25,5 +25,6 @@
 - npm: STILL the single biggest organic lever — blocked on user `npm login` (2 min). Every listing page ships an `npx @theluckystrike/mcp-*` block that activates the moment packages publish.
 
 ## Ledger
-- data/distribution.json → surfaces.mcpfinder_check_s61 + mcpservers_resubmit_check_s61
+- data/distribution.json → surfaces.mcpfinder_check_s61 + mcpservers_resubmit_check_s61 + amplify_s61b
 - Dashboard S112 row
+- Amplify follow-up: 4 new registry servers (goods-receipt, leave, onboarding, purchase-requisition) site pages 200; IndexNow 200; social wave 4/4 (bsky/mstdn/tg/farcaster)
