@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-09-20T06:30:00Z",
+  "updated_at": "2026-09-20T06:23:05.983456+00:00",
   "surfaces": {
     "github": {
       "status": "published",
@@ -64,7 +64,13 @@
     "mcpservers.org": {
       "status": "submitted",
       "url": "https://mcpservers.org/submit",
-      "note": "free web form (Premium $39 upgrade declined); 4 servers submitted, each returned 'Submission Successful! ... reviewed within 12 hours'; category productivity (time-tracker, spreadsheet) and finance (price-tracker, invoice); this is also the intake for the wong2/awesome-mcp-servers list, which refuses PRs | Round 24 (2026-09-07): attempted to re-verify listing status; the site's /servers and /api/servers endpoints both return a Cloudflare interactive challenge page to curl (no unauthenticated way to confirm approval from this shell). Left as submitted, unchanged."
+      "note": "free web form (Premium $39 upgrade declined); 4 servers submitted, each returned 'Submission Successful! ... reviewed within 12 hours'; category productivity (time-tracker, spreadsheet) and finance (price-tracker, invoice); this is also the intake for the wong2/awesome-mcp-servers list, which refuses PRs | Round 24 (2026-09-07): attempted to re-verify listing status; the site's /servers and /api/servers endpoints both return a Cloudflare interactive challenge page to curl (no unauthenticated way to confirm approval from this shell). Left as submitted, unchanged.",
+      "badge_s57": {
+        "date": "2026-09-20",
+        "action": "directory badges added to READMEs of 4 servers with VERIFIED-LIVE mcpservers.org listing pages (invoice, time-tracker, price-tracker, spreadsheet)",
+        "repos": "4 monorepo + 4 standalone mirrors, all pushed and verified via raw.githubusercontent.com",
+        "finding": "PROBE: only 4 of 46 estate slugs resolve 200 on listing pattern /servers/github-com-theluckystrike-mcp-servers-tree-main-servers-{slug}; other 42 accepted submissions have no public listing page (404)"
+      }
     },
     "mcpmarket.com": {
       "status": "submitted",
