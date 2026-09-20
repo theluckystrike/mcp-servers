@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-09-20T06:00:00Z",
+  "updated_at": "2026-09-20T06:30:00Z",
   "surfaces": {
     "github": {
       "status": "published",
@@ -304,6 +304,12 @@
           "farcaster": "https://warpcast.com/~/conversations/0x46738ea463e7bfbc224eef910e3c0835571ced9f"
         },
         "indexnow": 200
+      },
+      "readme_badges_s56": {
+        "date": "2026-09-20",
+        "monorepo_readmes": 10,
+        "standalone_repos": 10,
+        "verify": "raw.githubusercontent mcp-quotes shows badge (1 hit)"
       }
     }
   },
