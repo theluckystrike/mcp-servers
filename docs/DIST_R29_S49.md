@@ -34,3 +34,10 @@ Submit mechanics: click submit button then poll h1 for "Submission Successful!" 
 1. Continue mcpservers.org batches (~34 remaining) — mechanical, could be scripted via same form automation.
 2. llms-txt-hub PR #1677 follow-up / merge watch.
 3. Monitor impressions/referrers for the 12 listed servers; measure whether listings move bot coverage KPIs.
+
+## E. percall.dev / AI Product Index verification (post-sprint)
+- percall.dev product listings: 56 indexed, query zovo → 0 (we are NOT in the product registry — registration is via GitHub issue [register] on 110kc3/seo, max 10/account).
+- BUT the MCP catalog (normalized from official MCP registry) DOES mirror us: 30 zovo endpoints, e.g. mcp.zovo.one/mcp/amortization … calendar, cash-book etc. So 30+ estate servers are agent-discoverable there already, automatically.
+- llms.txt of index: 200, well-documented API. No manual submission needed for MCP catalog; optional win: register up to 10 product listings via 110kc3/seo issue form.
+
+Verdict: percall auto-mirror claim = TRUE for MCP catalog (30 servers), FALSE for product listings (0).
