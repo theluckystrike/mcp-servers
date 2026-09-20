@@ -438,7 +438,9 @@
           "currency"
         ]
       },
-      "submitted_total": 25
+      "submitted_total": 25,
+      "last_checked": "2026-09-20",
+      "verified_live": 0
     },
     "mcpfinder_s62c": {
       "completed_2026_09_20": true,
