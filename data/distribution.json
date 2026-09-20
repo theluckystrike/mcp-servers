@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-09-20T06:44:56.000Z",
+  "updated_at": "2026-09-20",
   "surfaces": {
     "github": {
       "status": "published",
@@ -352,6 +352,38 @@
         "standalone_repos": 10,
         "verify": "raw.githubusercontent mcp-quotes shows badge (1 hit)"
       }
+    },
+    "mcpfinder_s60": {
+      "submitted_at": "2026-09-20",
+      "lane": "https://www.mcpfinder.org/submit (free $0 tier, auto-approve if gates pass)",
+      "submitted": [
+        "invoice",
+        "quotes",
+        "pdf",
+        "time-tracker",
+        "spreadsheet",
+        "calendar",
+        "currency",
+        "image",
+        "resume",
+        "barcode",
+        "expense-tracker"
+      ],
+      "confirmed": 11,
+      "note": "11/11 submitted=1 confirmed; expense-tracker last, submit click OK but confirm text not captured; review pending"
+    },
+    "amplify_s60": {
+      "social": {
+        "bluesky": "bsky.app/profile/belikenative.bsky.social/post/3mvwntrp7sr2u",
+        "mastodon": "mstdn.party/@llmengnotes/117302149706602736",
+        "telegram": "t.me/-1004487811073/49",
+        "farcaster": "warpcast.com/~/conversations/0x250aa05812080fedbec89706e390fffaacb0e619"
+      },
+      "indexnow": 200,
+      "urls": 12
+    },
+    "resubmit_check_s60": {
+      "mcpservers_org": "quotes+pdf listings still Panel Not Found (2wk review window); invoice live; recheck S61"
     }
   },
   "per_server": {
