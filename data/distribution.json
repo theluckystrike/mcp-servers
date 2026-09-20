@@ -391,6 +391,19 @@
    "result": "43/46 estate entries verified live on official registry; 4 new published this session (goods-receipt, leave, onboarding, purchase-requisition v0.22.0)",
    "duplicates": "credit-note/delivery-schedule/packing-list already live under legacy alias names (credit-memo, deliverable-tracker, carton-consignment-waybill-pack-list) \u2014 same remotes, no action",
    "note": "prior '30 entries / 19 missing' estimate was wrong (pagination scan gap); true coverage is 43/46 = 93%"
+  },
+  "mcpfinder_check_s61": {
+   "date": "2026-09-20",
+   "action": "verified mcpfinder.org submissions liveness",
+   "method": "browser (search page + search-within filter)",
+   "result": "0/11 listings live; search for 'theluckystrike' and 'zovo' returns No results; directory shows 45 servers total",
+   "interpretation": "submissions pending review; mcpfinder claims daily reliability checks - recheck S63"
+  },
+  "mcpservers_resubmit_check_s61": {
+   "date": "2026-09-20",
+   "action": "rechecked S58 resubmitted slugs quotes+pdf",
+   "result": "still 'Not Found' (listing pages 404); invoice listing confirmed LIVE with full docs",
+   "interpretation": "2-week review window from S58 (2026-09-19) - recheck ~2026-10-03"
   }
  },
  "per_server": {
