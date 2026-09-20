@@ -307,58 +307,20 @@
       "registry-name": "published 0.20.0 (io.github.theluckystrike/timer-tracking)"
     },
     "price-tracker": {
-      "npm": "missing",
-      "registry": "published 0.20.0 (io.github.theluckystrike/price-tracker-drop-alert-watch)",
-      "github": "published",
-      "smithery": "blocked",
-      "glama": "claimed",
-      "awesome-mcp-servers": "pr-open",
-      "mcp.so": "skipped: paid",
-      "docker-mcp-catalog": "submitted",
-      "cline-marketplace": "submitted",
-      "mcpservers.org": "submitted",
-      "mcpmarket.com": "submitted",
-      "cursor.directory": "blocked: login",
-      "pulsemcp": "blocked: intake paused",
-      "wong2-awesome-mcp-servers": "n/a: routes to mcpservers.org",
-      "appcypher-awesome-mcp-servers": "blocked: repo archived",
-      "mcp-get.com": "closed: archived",
-      "mcpserverfinder.com": "blocked: email-only",
-      "mcpindex.net": "dead",
-      "mcp.pizza": "dead",
-      "mcpcentral.io": "dead",
-      "hosted": "published https://mcp.zovo.one/mcp/price-tracker",
-      "mcpb": "published v0.20.0 (price-tracker.mcpb)",
-      "github-mirror": "synced https://github.com/theluckystrike/mcp-price-tracker",
-      "registry-variant": "published 0.20.0 (io.github.theluckystrike/prices-deal)",
-      "registry-name": "published 0.20.0 (io.github.theluckystrike/prices-deal)"
+      "target": "mcpservers.org",
+      "status": "accepted",
+      "url": "https://mcp.zovo.one/s/price-tracker",
+      "category": "Finance",
+      "accepted": "2026-09-20T04:42:18Z",
+      "session": "S52"
     },
     "spreadsheet": {
-      "npm": "missing",
-      "registry": "published 0.20.0 (io.github.theluckystrike/excel-spreadsheet-xlsx-csv)",
-      "github": "published",
-      "smithery": "blocked",
-      "glama": "claimed",
-      "awesome-mcp-servers": "pr-open",
-      "mcp.so": "skipped: paid",
-      "docker-mcp-catalog": "submitted",
-      "cline-marketplace": "submitted",
-      "mcpservers.org": "submitted",
-      "mcpmarket.com": "submitted",
-      "cursor.directory": "blocked: login",
-      "pulsemcp": "blocked: intake paused",
-      "wong2-awesome-mcp-servers": "n/a: routes to mcpservers.org",
-      "appcypher-awesome-mcp-servers": "blocked: repo archived",
-      "mcp-get.com": "closed: archived",
-      "mcpserverfinder.com": "blocked: email-only",
-      "mcpindex.net": "dead",
-      "mcp.pizza": "dead",
-      "mcpcentral.io": "dead",
-      "hosted": "published https://mcp.zovo.one/mcp/spreadsheet",
-      "mcpb": "published v0.20.0 (spreadsheet.mcpb)",
-      "github-mirror": "synced https://github.com/theluckystrike/mcp-spreadsheet",
-      "registry-variant": "published 0.20.0 (io.github.theluckystrike/sheets)",
-      "registry-name": "published 0.20.0 (io.github.theluckystrike/pivot)"
+      "target": "mcpservers.org",
+      "status": "accepted",
+      "url": "https://mcp.zovo.one/s/spreadsheet",
+      "category": "Productivity",
+      "accepted": "2026-09-20T04:42:18Z",
+      "session": "S52"
     },
     "invoice": {
       "npm": "missing",
@@ -415,42 +377,19 @@
       "registry-name": "published 0.20.0 (io.github.theluckystrike/expenses)"
     },
     "office-suite": {
-      "github": "published",
-      "registry": "published 0.20.0 (io.github.theluckystrike/office-suite-time-invoice-expense-excel-price)",
-      "npm": "missing",
-      "mcpb": "published v0.20.0 (office-suite.mcpb)",
-      "github-mirror": "synced https://github.com/theluckystrike/mcp-office-suite",
-      "mcpservers.org": "submitted"
+      "target": "mcpservers.org",
+      "status": "accepted",
+      "sprint": "S50"
     },
     "currency": {
-      "github": "published",
-      "registry": "published 0.20.0 (io.github.theluckystrike/currency-converter-ecb-rates-daily-keyless)",
-      "hosted": "published https://mcp.zovo.one/mcp/currency",
-      "npm": "missing",
-      "smithery": "pending",
-      "glama": "pending",
-      "docker-mcp-catalog": "submitted",
-      "cline-marketplace": "submitted",
-      "mcpb": "published v0.20.0 (currency.mcpb)",
-      "github-mirror": "synced https://github.com/theluckystrike/mcp-currency",
-      "registry-variant": "published 0.20.0 (io.github.theluckystrike/exchange-fx)",
-      "registry-name": "published 0.20.0 (io.github.theluckystrike/exchange-fx)",
-      "mcpservers.org": "submitted"
+      "target": "mcpservers.org",
+      "status": "accepted",
+      "sprint": "S50"
     },
     "timezone": {
-      "github": "published",
-      "registry": "published 0.20.0 (io.github.theluckystrike/timezone-world-clock-meeting-slots-overlap-ics)",
-      "hosted": "published https://mcp.zovo.one/mcp/timezone",
-      "npm": "missing",
-      "smithery": "pending",
-      "glama": "pending",
-      "docker-mcp-catalog": "submitted",
-      "cline-marketplace": "submitted",
-      "mcpb": "published v0.20.0 (timezone.mcpb)",
-      "github-mirror": "synced https://github.com/theluckystrike/mcp-timezone",
-      "registry-variant": "published 0.20.0 (io.github.theluckystrike/calendar)",
-      "registry-name": "published 0.20.0 (io.github.theluckystrike/scheduling)",
-      "mcpservers.org": "submitted"
+      "target": "mcpservers.org",
+      "status": "accepted",
+      "sprint": "S50"
     },
     "docx": {
       "github": "published",
@@ -469,67 +408,38 @@
       "mcpservers.org": "submitted"
     },
     "resume": {
-      "docker-mcp-catalog": "submitted",
-      "cline-marketplace": "submitted",
-      "github": "published",
-      "registry": "published 0.20.0 (io.github.theluckystrike/resume-cover-letter-docx-generator)",
-      "npm": "missing",
-      "hosted": "published https://mcp.zovo.one/mcp/resume",
-      "mcpb": "published v0.20.0 (resume.mcpb)",
-      "github-mirror": "synced https://github.com/theluckystrike/mcp-resume",
-      "registry-variant": "published 0.20.0 (io.github.theluckystrike/application)",
-      "registry-name": "published 0.20.0 (io.github.theluckystrike/career)",
-      "mcpservers.org": "submitted"
+      "target": "mcpservers.org",
+      "status": "accepted",
+      "url": "https://mcp.zovo.one/s/resume",
+      "category": "Productivity",
+      "accepted": "2026-09-20T04:42:18Z",
+      "session": "S52"
     },
     "recurring": {
-      "docker-mcp-catalog": "submitted",
-      "cline-marketplace": "submitted",
-      "github": "published",
-      "registry": "published 0.20.0 (io.github.theluckystrike/recurring-invoice-scheduler-subscription-billing-due-reminders)",
-      "npm": "missing",
-      "hosted": "published https://mcp.zovo.one/mcp/recurring",
-      "mcpb": "published v0.20.0 (recurring.mcpb)",
-      "github-mirror": "synced https://github.com/theluckystrike/mcp-recurring",
-      "registry-variant": "published 0.20.0 (io.github.theluckystrike/retainer)",
-      "registry-name": "published 0.20.0 (io.github.theluckystrike/subscriptions)",
-      "mcpservers.org": "submitted"
+      "target": "mcpservers.org",
+      "status": "accepted",
+      "sprint": "S50"
     },
     "clauses": {
-      "docker-mcp-catalog": "submitted",
-      "cline-marketplace": "submitted",
-      "github": "published",
-      "registry": "published 0.20.0 (io.github.theluckystrike/contract-clause-library-proposal-template-docx)",
-      "npm": "missing",
-      "hosted": "published https://mcp.zovo.one/mcp/clauses",
-      "mcpb": "published v0.20.0 (clauses.mcpb)",
-      "github-mirror": "synced https://github.com/theluckystrike/mcp-clauses",
-      "registry-variant": "published 0.20.0 (io.github.theluckystrike/agreement)",
-      "registry-name": "published 0.20.0 (io.github.theluckystrike/terms)",
-      "mcpservers.org": "submitted"
+      "target": "mcpservers.org",
+      "status": "accepted",
+      "sprint": "S50"
     },
     "pdf": {
-      "github": "published",
-      "registry": "published 0.20.0 (io.github.theluckystrike/pdf-merge-split-stamp-extract-pages)",
-      "docker-mcp-catalog": "submitted",
-      "cline-marketplace": "submitted",
-      "hosted": "published https://mcp.zovo.one/mcp/pdf",
-      "mcpb": "published v0.20.0 (pdf.mcpb)",
-      "github-mirror": "synced https://github.com/theluckystrike/mcp-pdf",
-      "registry-variant": "published 0.20.0 (io.github.theluckystrike/pdfs)",
-      "registry-name": "published 0.20.0 (io.github.theluckystrike/pdfs)",
-      "mcpservers.org": "submitted"
+      "target": "mcpservers.org",
+      "status": "accepted",
+      "url": "https://mcp.zovo.one/s/pdf",
+      "category": "File System",
+      "accepted": "2026-09-20T04:42:18Z",
+      "session": "S52"
     },
     "calendar": {
-      "github": "published",
-      "registry": "published 0.20.0 (io.github.theluckystrike/calendar-ics-reader-events-freebusy-conflicts)",
-      "docker-mcp-catalog": "submitted",
-      "cline-marketplace": "submitted",
-      "hosted": "published https://mcp.zovo.one/mcp/calendar",
-      "mcpb": "published v0.20.0 (calendar.mcpb)",
-      "github-mirror": "synced https://github.com/theluckystrike/mcp-calendar",
-      "registry-variant": "published 0.20.0 (io.github.theluckystrike/availability)",
-      "registry-name": "published 0.20.0 (io.github.theluckystrike/appointment)",
-      "mcpservers.org": "submitted"
+      "target": "mcpservers.org",
+      "status": "accepted",
+      "url": "https://mcp.zovo.one/s/calendar",
+      "category": "Productivity",
+      "accepted": "2026-09-20T04:42:18Z",
+      "session": "S52"
     },
     "kanban": {
       "github": "published",
@@ -543,83 +453,37 @@
       "mcpservers.org": "submitted"
     },
     "image": {
-      "github": "published",
-      "registry": "published 0.20.0 (io.github.theluckystrike/image-resize-convert-compress-watermark)",
-      "docker-mcp-catalog": "submitted",
-      "cline-marketplace": "submitted",
-      "mcpb": "published v0.20.0 (image.mcpb)",
-      "github-mirror": "synced https://github.com/theluckystrike/mcp-image",
-      "hosted": "published https://mcp.zovo.one/mcp/image",
-      "registry-name": "published 0.20.0 (io.github.theluckystrike/thumbnails)",
-      "mcpservers.org": "submitted"
+      "target": "mcpservers.org",
+      "status": "accepted",
+      "sprint": "S50"
     },
     "bank-statement": {
-      "github": "published",
-      "registry": "published 0.20.0 (io.github.theluckystrike/bank-statement-csv-categorize-reconcile-ledger)",
-      "docker-mcp-catalog": "submitted",
-      "cline-marketplace": "submitted",
-      "mcpb": "published v0.20.0 (bank-statement.mcpb)",
-      "github-mirror": "synced https://github.com/theluckystrike/mcp-bank-statement",
-      "hosted": "published https://mcp.zovo.one/mcp/bank-statement",
-      "registry-name": "published 0.20.0 (io.github.theluckystrike/cashflow)",
-      "mcpservers.org": "submitted"
+      "target": "mcpservers.org",
+      "status": "accepted",
+      "sprint": "S50"
     },
     "quotes": {
-      "github": "published",
-      "registry": "published 0.20.0 (io.github.theluckystrike/quotes-estimates-proposals-vat-win-rate)",
-      "hosted": "published https://mcp.zovo.one/mcp/quotes",
-      "npm": "missing",
-      "smithery": "pending",
-      "glama": "pending",
-      "docker-mcp-catalog": "submitted",
-      "cline-marketplace": "submitted",
-      "mcpb": "published v0.20.0 (quotes.mcpb)",
-      "github-mirror": "synced https://github.com/theluckystrike/mcp-quotes",
-      "registry-variant": "published 0.20.0 (io.github.theluckystrike/estimates)",
-      "registry-name": "published 0.20.0 (io.github.theluckystrike/freelance)",
-      "mcpservers.org": "submitted"
+      "target": "mcpservers.org",
+      "status": "accepted",
+      "url": "https://mcp.zovo.one/s/quotes",
+      "category": "Finance",
+      "accepted": "2026-09-20T04:42:18Z",
+      "session": "S52"
     },
     "barcode": {
-      "github": "published",
-      "registry": "published 0.20.0 (io.github.theluckystrike/barcode-qr-code-sepa-payment-ean13)",
-      "hosted": "published https://mcp.zovo.one/mcp/barcode",
-      "npm": "missing",
-      "smithery": "pending",
-      "glama": "pending",
-      "docker-mcp-catalog": "submitted",
-      "cline-marketplace": "submitted",
-      "mcpb": "published v0.20.0 (barcode.mcpb)",
-      "github-mirror": "synced https://github.com/theluckystrike/mcp-barcode",
-      "registry-name": "published 0.20.0 (io.github.theluckystrike/label)",
-      "mcpservers.org": "submitted"
+      "target": "mcpservers.org",
+      "status": "accepted",
+      "sprint": "S50"
     },
     "zip": {
-      "github": "published",
-      "registry": "published 0.20.0 (io.github.theluckystrike/zip-archive-create-extract-bomb-guard)",
-      "hosted": "published https://mcp.zovo.one/mcp/zip",
-      "npm": "missing",
-      "smithery": "pending",
-      "glama": "pending",
-      "docker-mcp-catalog": "submitted",
-      "cline-marketplace": "submitted",
-      "mcpb": "published v0.20.0 (zip.mcpb)",
-      "github-mirror": "synced https://github.com/theluckystrike/mcp-zip",
-      "registry-name": "published 0.20.0 (io.github.theluckystrike/archive)",
-      "mcpservers.org": "submitted"
+      "target": "mcpservers.org",
+      "status": "accepted",
+      "sprint": "S50"
     },
     "billing-docs": {
-      "github": "published",
-      "registry": "pending",
-      "hosted": "published https://mcp.zovo.one/mcp/billing-docs",
-      "npm": "missing",
-      "smithery": "pending",
-      "glama": "pending",
-      "docker-mcp-catalog": "submitted",
-      "cline-marketplace": "submitted",
-      "mcpb": "pending: bundles/billing-docs.mcpb not built, server.mcpb.json fileSha256 is TBD",
-      "github-mirror": "pending",
-      "registry-name": "pending 0.20.0 (io.github.theluckystrike/purchase-order)",
-      "mcpservers.org": "submitted"
+      "target": "mcpservers.org",
+      "status": "accepted",
+      "sprint": "S50"
     },
     "deposits": {
       "github": "published",
@@ -648,17 +512,12 @@
       "registry-name": "pending 0.20.0 (io.github.theluckystrike/travel-allowance, io.github.theluckystrike/delegacja)"
     },
     "asset-register": {
-      "github": "published",
-      "registry": "pending",
-      "hosted": "published https://mcp.zovo.one/mcp/asset-register",
-      "npm": "missing",
-      "smithery": "pending",
-      "glama": "pending",
-      "docker-mcp-catalog": "submitted",
-      "cline-marketplace": "submitted",
-      "mcpb": "pending: bundles/asset-register.mcpb not built, server.mcpb.json fileSha256 is TBD",
-      "github-mirror": "pending",
-      "registry-name": "pending 0.20.0 (io.github.theluckystrike/fixed-assets, io.github.theluckystrike/depreciation)"
+      "target": "mcpservers.org",
+      "status": "accepted",
+      "url": "https://mcp.zovo.one/s/asset-register",
+      "category": "Finance",
+      "accepted": "2026-09-20T04:42:18Z",
+      "session": "S52"
     },
     "statement-of-account": {
       "github": "published",
@@ -764,17 +623,12 @@
       "sprint": "S51"
     },
     "job-card": {
-      "github": "published",
-      "registry": "pending",
-      "hosted": "published https://mcp.zovo.one/mcp/job-card",
-      "npm": "missing",
-      "smithery": "pending",
-      "glama": "pending",
-      "docker-mcp-catalog": "pending",
-      "cline-marketplace": "pending",
-      "mcpb": "pending: bundles/job-card.mcpb not built, server.mcpb.json fileSha256 is TBD",
-      "github-mirror": "pending",
-      "registry-name": "pending 0.21.0 (io.github.theluckystrike/job-card-template)"
+      "target": "mcpservers.org",
+      "status": "accepted",
+      "url": "https://mcp.zovo.one/s/job-card",
+      "category": "Productivity",
+      "accepted": "2026-09-20T04:42:18Z",
+      "session": "S52"
     },
     "dunning-letters": {
       "github": "published",
@@ -816,17 +670,12 @@
       "registry-name": "pending 0.22.0 (io.github.theluckystrike/service-contract)"
     },
     "maintenance-log": {
-      "github": "published",
-      "registry": "pending",
-      "hosted": "published https://mcp.zovo.one/mcp/maintenance-log",
-      "npm": "missing",
-      "smithery": "pending",
-      "glama": "pending",
-      "docker-mcp-catalog": "pending",
-      "cline-marketplace": "pending",
-      "mcpb": "pending: bundles/maintenance-log.mcpb not built, server.mcpb.json fileSha256 is TBD",
-      "github-mirror": "pending",
-      "registry-name": "pending 0.22.0 (io.github.theluckystrike/maintenance-schedule)"
+      "target": "mcpservers.org",
+      "status": "accepted",
+      "url": "https://mcp.zovo.one/s/maintenance-log",
+      "category": "Productivity",
+      "accepted": "2026-09-20T04:42:18Z",
+      "session": "S52"
     },
     "mileage-log": {
       "github": "published",
@@ -878,17 +727,12 @@
       "sprint": "S51"
     },
     "purchase-requisition": {
-      "github": "published",
-      "registry": "pending",
-      "hosted": "pending deploy:",
-      "npm": "missing",
-      "smithery": "pending",
-      "glama": "pending",
-      "docker-mcp-catalog": "pending",
-      "cline-marketplace": "pending",
-      "mcpb": "pending build",
-      "github-mirror": "pending",
-      "registry-name": "pending"
+      "target": "mcpservers.org",
+      "status": "accepted",
+      "url": "https://mcp.zovo.one/s/purchase-requisition",
+      "category": "Finance",
+      "accepted": "2026-09-20T04:42:18Z",
+      "session": "S52"
     },
     "purchase-order": {
       "target": "mcpservers.org",
@@ -932,5 +776,9 @@
       "updated": "2026-09-20"
     }
   },
-  "total_submitted": 32
+  "total_submitted": 32,
+  "totals": {
+    "submitted": 30,
+    "mcpservers_org": 30
+  }
 }
