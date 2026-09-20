@@ -10,6 +10,9 @@ native dependency.
 
 **In the [official MCP Registry](https://registry.modelcontextprotocol.io/v0.1/servers/io.github.theluckystrike%2Fresume-cover-letter-docx-generator/versions/latest)** (`io.github.theluckystrike/resume-cover-letter-docx-generator`).
 
+**Listed on the [AI Product Index](https://index.percall.dev/l/zovo-resume.html)** — live remote endpoint at [mcp.zovo.one/s/resume](https://mcp.zovo.one/s/resume), free tier, no signup.
+
+
 ![resume demo](../../assets/demo-resume.gif)
 
 ## 60-second install

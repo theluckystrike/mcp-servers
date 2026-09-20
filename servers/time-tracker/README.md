@@ -9,6 +9,9 @@ Built by [theluckystrike](https://github.com/theluckystrike).
 
 **In the [official MCP Registry](https://registry.modelcontextprotocol.io/v0.1/servers/io.github.theluckystrike%2Ftime-tracker-timesheet-billable-hours/versions/latest)** (`io.github.theluckystrike/time-tracker-timesheet-billable-hours`).
 
+**Listed on the [AI Product Index](https://index.percall.dev/l/zovo-time-tracker.html)** — live remote endpoint at [mcp.zovo.one/s/time-tracker](https://mcp.zovo.one/s/time-tracker), free tier, no signup.
+
+
 ![time-tracker demo](../../assets/demo-time-tracker.gif)
 
 Track billable time from chat and turn it straight into a report or invoice line items, zero setup, all local.

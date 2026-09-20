@@ -6,6 +6,9 @@ Built by [theluckystrike](https://github.com/theluckystrike).
 
 **In the [official MCP Registry](https://registry.modelcontextprotocol.io/v0.1/servers/io.github.theluckystrike%2Fcurrency-converter-ecb-rates-daily-keyless/versions/latest)** (`io.github.theluckystrike/currency-converter-ecb-rates-daily-keyless`).
 
+**Listed on the [AI Product Index](https://index.percall.dev/l/zovo-currency.html)** — live remote endpoint at [mcp.zovo.one/s/currency](https://mcp.zovo.one/s/currency), free tier, no signup.
+
+
 ![currency demo](../../assets/demo-currency.gif)
 
 ## 60-second install

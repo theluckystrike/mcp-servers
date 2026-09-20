@@ -4,6 +4,9 @@ Hand your AI assistant a spreadsheet and talk to it. Point it at any `.xlsx`, `.
 
 **In the [official MCP Registry](https://registry.modelcontextprotocol.io/v0.1/servers/io.github.theluckystrike%2Fexcel-spreadsheet-xlsx-csv/versions/latest)** (`io.github.theluckystrike/excel-spreadsheet-xlsx-csv`).
 
+**Listed on the [AI Product Index](https://index.percall.dev/l/zovo-spreadsheet.html)** — live remote endpoint at [mcp.zovo.one/s/spreadsheet](https://mcp.zovo.one/s/spreadsheet), free tier, no signup.
+
+
 ![spreadsheet demo](../../assets/demo-spreadsheet.gif)
 
 Read, query and extend real spreadsheets from chat without ever touching the original file.

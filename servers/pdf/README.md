@@ -4,6 +4,9 @@ Say "stamp PAID on that invoice and save a copy" or "pull pages 2 to 6 out of th
 
 **In the [official MCP Registry](https://registry.modelcontextprotocol.io/v0.1/servers/io.github.theluckystrike%2Fpdf-merge-split-stamp-extract-pages/versions/latest)** (`io.github.theluckystrike/pdf-merge-split-stamp-extract-pages`).
 
+**Listed on the [AI Product Index](https://index.percall.dev/l/zovo-pdf.html)** — live remote endpoint at [mcp.zovo.one/s/pdf](https://mcp.zovo.one/s/pdf), free tier, no signup.
+
+
 ![pdf demo](../../assets/demo-pdf.gif)
 
 The PDF chores of a freelance business, done from chat instead of from a browser tab you do not trust with an invoice.

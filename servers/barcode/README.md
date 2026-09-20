@@ -7,6 +7,9 @@ Everything is drawn on your machine: no upload, no account, no API key, and no n
 
 **In the [official MCP Registry](https://registry.modelcontextprotocol.io/v0.1/servers/io.github.theluckystrike%2Fbarcode-qr-code-sepa-payment-ean13/versions/latest)** (`io.github.theluckystrike/barcode-qr-code-sepa-payment-ean13`).
 
+**Listed on the [AI Product Index](https://index.percall.dev/l/zovo-barcode.html)** — live remote endpoint at [mcp.zovo.one/s/barcode](https://mcp.zovo.one/s/barcode), free tier, no signup.
+
+
 ![barcode demo](../../assets/demo-barcode.gif)
 
 npm publish for `@theluckystrike/mcp-barcode` is pending, so `npx -y @theluckystrike/mcp-barcode` returns 404 today. Until then, the `.mcpb` one-click bundle or a clone+build is the working path.
