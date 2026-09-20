@@ -566,7 +566,7 @@
       "type": "directory",
       "paid": false,
       "human_review": true,
-      "status": "pilot-submitted (invoice); recipe validated (Turnstile auto-solves in browser; pricing radio must be clicked via JS .click(); 'Submit another tool' = success)",
+      "status": "estate rollout in progress (10/46 submitted; human review pending)",
       "submitted": 1,
       "verified_live": 0,
       "last_checked": "2026-09-20",
@@ -577,10 +577,15 @@
         "payroll",
         "vat",
         "inventory",
-        "contracts"
+        "contracts",
+        "credit-memo",
+        "recurring-invoices",
+        "purchase-orders",
+        "expense-tracker"
       ],
-      "submitted_count": 6,
-      "batch_utc": "2026-09-20T15:24:48Z"
+      "submitted_count": 10,
+      "batch_utc": "2026-09-20T15:24:48Z",
+      "batch2_utc": "2026-09-20T16:20:00Z"
     }
   },
   "per_server": {
