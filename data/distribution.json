@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-09-20T06:40:01.000Z",
+  "updated_at": "2026-09-20T06:44:56.000Z",
   "surfaces": {
     "github": {
       "status": "published",
@@ -12,9 +12,10 @@
       "note": "Stripe LIVE, custom domain, webhook registered"
     },
     "npm": {
-      "status": "blocked",
-      "url": "https://www.npmjs.com/~theluckystrike",
-      "note": "npm token dead (401); run: npm login --auth-type=web | Round 24 (2026-09-07): re-verified independently, confirmed genuinely human-gated, not just a dead token. `npm view @theluckystrike/mcp-invoice` / mcp-time-tracker -> E404 (package never published, not a private/403). `npm whoami` -> E401. No .github/workflows directory exists anywhere in the repo (gh api contents/.github/workflows -> 404) so there is no CI publish job to trigger. `gh secret list -R theluckystrike/mcp-servers` is empty, no NPM_TOKEN anywhere. No npmjs.com session in any browser profile on this machine (Chrome Default, Brave, the CDP profile, Safari all show only npm_device/datadome bot-management cookies, zero session cookie), same finding as the CDP investigation in docs/NPM_AUTH_RESULT.md (2026-09-02), unchanged five days later. npm CLI is 10.9.8, below the 11.5.1 floor docs.npmjs.com states for trusted-publishing OIDC, and trusted publishing is configured per-package on a logged-in npmjs.com settings page that does not exist yet because no package has ever been published. Exact unblock, one human step: `npm login --auth-type=web`, approve in the browser tab it opens, then `npm whoami` must print theluckystrike. Reported to the loop coordinator; not re-attempting the CDP dance since nothing changed. Separately: the zero-auth git-install fallback (`npx github:theluckystrike/mcp-<name>`) was tested by the coordinator and fails today for a different reason (nested file: vendor dependency on @theluckystrike/mcp-license/mcp-timezone that npm's git installer cannot resolve); fix requires editing scripts/sync-mirrors.sh and servers/*/src, outside this round's file ownership, handed to the coordinator to route to the right agent."
+      "status": "blocked_token_expired",
+      "date": "2026-09-20T06:44:56.000Z",
+      "detail": "~/.npmrc token (40 chars) revoked/expired -> E401 whoami, publish PUT masked as 404. Dry-run OK. Unlocks: 46 @theluckystrike/mcp-* packages + mcpservers.org listing pages auto-populate npm install blocks",
+      "unblock": "user: npm login (2 min)"
     },
     "registry": {
       "status": "published",
@@ -88,6 +89,22 @@
         ],
         "note": "invoice resubmitted as 11th (already had live listing); publication of listing pages NOT yet verified - S57 probe showed only 4/46 pages live; recheck in S59",
         "baseline": "quotes listing URL 404 as of 2026-09-20 (pre-publication)"
+      },
+      "resubmit_check_s59": {
+        "date": "2026-09-20T06:44:56.000Z",
+        "checked": [
+          "quotes",
+          "pdf",
+          "invoice"
+        ],
+        "result": "quotes+pdf listing pages still Not Found (2wk review window); invoice still live 200",
+        "verdict": "resubmission wave S58 pending publication; recheck in S60"
+      },
+      "indexnow_s59": {
+        "date": "2026-09-20T06:44:56.000Z",
+        "urls": 11,
+        "status": 200,
+        "note": "10 flagship /s/ pages + invoice listing pinged via api.indexnow.org, key db6dbf...145b"
       }
     },
     "mcpmarket.com": {
