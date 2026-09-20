@@ -29,18 +29,22 @@ export const SERVER_IDS = [
   "docx",
   "dunning-letters",
   "expense-tracker",
+  "goods-receipt",
   "image",
   "invoice",
   "job-card",
   "kanban",
+  "leave",
   "maintenance-log",
   "mileage-log",
   "office-suite",
+  "onboarding",
   "packing-list",
   "pdf",
   "per-diem",
   "petty-cash",
   "price-tracker",
+  "purchase-requisition",
   "quotes",
   "recurring",
   "resume",
@@ -75,17 +79,21 @@ export const CHILD_IDS = [
   "docx",
   "dunning-letters",
   "expense-tracker",
+  "goods-receipt",
   "image",
   "invoice",
   "job-card",
   "kanban",
+  "leave",
   "maintenance-log",
   "mileage-log",
+  "onboarding",
   "packing-list",
   "pdf",
   "per-diem",
   "petty-cash",
   "price-tracker",
+  "purchase-requisition",
   "quotes",
   "recurring",
   "resume",
@@ -141,7 +149,11 @@ export const HOSTED_IDS = [
   "supplier-list",
   "service-agreement",
   "maintenance-log",
-  "mileage-log"
+  "mileage-log",
+  "goods-receipt",
+  "onboarding",
+  "leave",
+  "purchase-requisition"
 ];
 
 /** stdio tools each server registers, excluding the shared license pair. */
@@ -165,18 +177,22 @@ export const TOOLS = {
   "docx": 9,
   "dunning-letters": 9,
   "expense-tracker": 12,
+  "goods-receipt": 9,
   "image": 10,
   "invoice": 11,
   "job-card": 9,
   "kanban": 15,
+  "leave": 10,
   "maintenance-log": 6,
   "mileage-log": 7,
   "office-suite": 0,
+  "onboarding": 7,
   "packing-list": 12,
   "pdf": 10,
   "per-diem": 7,
   "petty-cash": 7,
   "price-tracker": 8,
+  "purchase-requisition": 14,
   "quotes": 10,
   "recurring": 12,
   "resume": 8,
@@ -194,12 +210,12 @@ export const TOOLS = {
 export const LICENSE_TOOLS = 2;
 
 /** Sum of TOOLS over CHILD_IDS. */
-export const OWN_TOOLS_TOTAL = 378;
+export const OWN_TOOLS_TOTAL = 418;
 
 /** Distinct tool names office-suite exposes: every child's own tools, plus the shared
  * license pair once. Reconciles with the independently measured OFFICE_SUITE_TOOLS in
  * billing/src/index.js, taken over stdio from the running bundle on 2026-09-07. */
-export const OFFICE_SUITE_TOOLS = 380;
+export const OFFICE_SUITE_TOOLS = 420;
 
 /** Servers the site actually lists, i.e. those with a README that becomes a /s/ page. */
 export const LISTED_IDS = [
@@ -222,18 +238,22 @@ export const LISTED_IDS = [
   "docx",
   "dunning-letters",
   "expense-tracker",
+  "goods-receipt",
   "image",
   "invoice",
   "job-card",
   "kanban",
+  "leave",
   "maintenance-log",
   "mileage-log",
   "office-suite",
+  "onboarding",
   "packing-list",
   "pdf",
   "per-diem",
   "petty-cash",
   "price-tracker",
+  "purchase-requisition",
   "quotes",
   "recurring",
   "resume",
@@ -266,17 +286,21 @@ export const LISTED_CHILD_IDS = [
   "docx",
   "dunning-letters",
   "expense-tracker",
+  "goods-receipt",
   "image",
   "invoice",
   "job-card",
   "kanban",
+  "leave",
   "maintenance-log",
   "mileage-log",
+  "onboarding",
   "packing-list",
   "pdf",
   "per-diem",
   "petty-cash",
   "price-tracker",
+  "purchase-requisition",
   "quotes",
   "recurring",
   "resume",
@@ -292,11 +316,11 @@ export const LISTED_CHILD_IDS = [
 
 /** Counts, computed so prose cannot go stale. LISTED_COUNT is the one a visitor should
  * ever see: SERVER_DIR_COUNT can be ahead of it while a new server is being built. */
-export const LISTED_COUNT = 42;
-export const LISTED_CHILD_COUNT = 41;
-export const SERVER_DIR_COUNT = 42;
-export const CHILD_COUNT = 41;
-export const HOSTED_COUNT = 41;
+export const LISTED_COUNT = 46;
+export const LISTED_CHILD_COUNT = 45;
+export const SERVER_DIR_COUNT = 46;
+export const CHILD_COUNT = 45;
+export const HOSTED_COUNT = 45;
 
 /** Hosted limits, read from remote/src/index.ts. */
 export const RATE_LIMIT_FREE = 600;
@@ -334,18 +358,22 @@ export const FREE = {
   "docx": "Create, convert and read documents without limit; 3 proposals or contracts per calendar month; templates up to 10 placeholders.",
   "dunning-letters": "Three unpaid invoices chased at once, with all three letters in both formats, the aging summary, the day's chase list and payment recording free on every tier. An invoice that gets paid frees its slot, because the cap is on how many chases run at once, never on the letters or the aging.",
   "expense-tracker": "Unlimited logging; list and summary cover the last 30 days; 3 projects; 5 rules; CSV export up to 200 rows, never partial.",
+  "goods-receipt": "Full receiving: create receipts, list them, per-line outstanding quantities and the receipt history are all free. Over-receipt needs the explicit flag on every tier.",
   "image": "Info, resize, convert, compress, crop, strip metadata on images up to 4 MP; batches of 5.",
   "invoice": "3 invoices per calendar month; overdue report free; PDF carries a small footer line.",
   "job-card": "Ten active job cards, with labor and material entries unlimited per card and the running totals, list, get, the printable card and the daily and weekly summaries all free on every tier. A card stops counting the moment it is archived, so the record is never metered.",
   "kanban": "3 projects, 200 open tasks, default columns.",
+  "leave": "Full CRUD, watermark-free: add employees, request, approve, reject, cancel, balances, who-is-out listings.",
   "maintenance-log": "Three assets on the register, with logging, the per-asset history with total spend and CSV export free and unlimited on every tier. Removing an asset frees its slot.",
   "mileage-log": "Twenty trips per calendar month, counted on the month of the trip date, so reconstructing last year's log does not consume this month's allowance. The list and the summary are never metered, and one rate per jurisdiction and category is free, overwriting included.",
   "office-suite": "Each child's free tier.",
+  "onboarding": "One hire per template apply on the free tier, unlimited hires stored, unlimited task add and task done, and every read: progress, overdue and hire list are all free. Deleting a template leaves applied hires intact because each hire carries its own copy of the tasks.",
   "packing-list": "Three OPEN packing lists, draft and packed, with unlimited cartons, packed lines and declared order lines on every tier. The cap counts shipments in flight rather than shipments ever made, so marking one shipped or cancelling it frees its slot, and deleting a draft is free on every tier, because a way back that only a Pro key can reach is not a way back. carton_report, packing_shortfall, packing_list_show and the packing slip TEXT are free on every tier: those are the questions this server exists to answer, and a free tier that withheld them would withhold the reason to install it.",
   "pdf": "Info, count, text, merge up to 5 files, edits on files up to 30 pages, PAID and DRAFT stamps.",
   "per-diem": "Rate lookups and calculations are unlimited on every tier: the tables are public regulation, and metering the reading of a regulation would be charging for the tax authority's work. 5 trips saved per calendar month, counted by start date, and unlimited trip lists.",
   "petty-cash": "reconcile is free and unlimited on every tier: whether the cash in the tin matches the paperwork is the question this server exists to answer, and a free tier that withholds the answer is a demo. voucher_delete and topup_record are free for the same reason -- a voucher typed in twice would otherwise cost a slot with no way back but a key. The meter is on the volume of record keeping: one float, and twenty vouchers a calendar month, which is a real one-tin office.",
   "price-tracker": "Unlimited price checks with extraction confidence; 3 watches with 30 observations each; alerts_pending free; redirects off product pages are refused.",
+  "purchase-requisition": "Three requisitions, and UNLIMITED RUNS of them on every tier, because capping the running of a requisition would cap the only thing it is for.",
   "quotes": "5 open quotes at a time, unlimited pasteable text quotes, accept, decline, revise, VAT, discounts and multi-currency, pipeline and win-rate report for the current calendar year to date.",
   "recurring": "3 active schedules, 30-day upcoming view, generate due invoices.",
   "resume": "Profile, modern-style resume, markdown and HTML exports, 3 cover letters per calendar month, tailoring on job posts up to 2,000 characters.",
@@ -380,18 +408,22 @@ export const PRO = {
   "docx": "Unlimited proposals and contracts, letterhead with logo and colours, unlimited template fills.",
   "dunning-letters": "Unlimited concurrent chases.",
   "expense-tracker": "Full history, unlimited projects and rules, xlsx export, unlimited rebill items with markup.",
+  "goods-receipt": "Unlimited receipts per period and the CSV export of received-vs-ordered for the supplier scorecard.",
   "image": "Unlimited size and batches, custom watermark text, dominant colours.",
   "invoice": "Unlimited invoices, no branding, logo, custom prefix.",
   "job-card": "Unlimited active job cards.",
   "kanban": "Unlimited projects and tasks, custom columns, weekly review history, estimates versus actuals.",
+  "leave": "Bulk CSV import of existing leave records and ICS calendar export, one-time $19 via MCP_LICENSE_KEY.",
   "maintenance-log": "Unlimited assets, the due report (overdue and due-within-N-days) and the Markdown summaries.",
   "mileage-log": "Unlimited trips, the year-over-year rate series, and the CSV export for the accountant.",
   "office-suite": "The $39 bundle key unlocks every child.",
+  "onboarding": "Unlimited template applies, including applying one template to many hires in a single call, and the CSV export of progress for the HR spreadsheet. A license key unlocks it in place; no reinstall.",
   "packing-list": "Unlimited open packing lists, and packing_slip writing the slip to a .txt file at a path you name. The path goes through a bounded ancestor walk rather than mkdirSync with recursive, so a caller-supplied path under /proc, /sys or /dev fails in milliseconds instead of retrying forever; a URL is refused by name before any resolution, so the refusal never leaks the server's working directory; and an existing file is refused unless overwrite is passed.",
   "pdf": "Unlimited files and pages, custom stamp text and colours, business watermark, page reorder.",
   "per-diem": "Unlimited trips saved, the expense-tracker export payloads (one per currency, ready for expense_add), and the report of totals per scheme and per calendar month.",
   "petty-cash": "Unlimited floats and vouchers, replenish_request with the amount that restores the imprest, the vouchers it reimburses, the per-category expense_add-ready payload and the balanced double entry, and float_report with the balance against the imprest, what is unreconciled, the last count and the history of every difference a count has found.",
   "price-tracker": "Unlimited watches, full history, refresh all.",
+  "purchase-requisition": "Unlimited requisitions, and run_report writing the approval record to a .txt file at a path you name. The path goes through a boundary check before anything is written.",
   "quotes": "Unlimited open quotes, A4 PDF with your logo and no footer credit, pipeline and win-rate report over any date range.",
   "recurring": "Unlimited schedules, 12-month forecast, audit history, end-of-month and anchor-day rules.",
   "resume": "All styles, unlimited cover letters and tailoring, profile variants, letterhead colours.",
