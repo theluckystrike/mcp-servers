@@ -526,14 +526,16 @@
     "service-agreement"
    ],
    "complete": true,
-   "note": "FULL ESTATE 46/46: 44 real servers submitted (42 unique + price-tracker + service-agreement in batch4_s62f), 4 legacy aliases skipped. Review 48h; landing unconfirmed (review repo private).",
+   "note": "FULL ESTATE 46/46: 44 real servers submitted (42 unique + price-tracker + service-agreement in batch4_s62f), 4 legacy aliases skipped. Review 48h; landing unconfirmed (review repo private). | S62-g check: 0/46 live yet \u2014 index still 193, none of our names in /mcp HTML; 48h window pending",
    "complete_date": "2026-09-20",
    "legacy_aliases_skipped": [
     "credit-note",
     "delivery-schedule",
     "packing-list",
     "recurring"
-   ]
+   ],
+   "verified_live": 0,
+   "last_checked": "2026-09-20"
   },
   "mcpserverdev": {
    "name": "mcpserver.dev (MCP Server Hub)",
