@@ -199,7 +199,7 @@ const educationSchema = z.object({
 
 /* ---------------------------------------------------------------- profile */
 
-server.registerTool("profile_set", {
+server.registerTool("profile_set", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Store your CV facts",
   description: "Store the profile every resume and cover letter is built from: contact details, summary, skills, roles with bullets, education, certifications and languages. Returns a count of what was stored.",
   inputSchema: {
@@ -279,7 +279,7 @@ server.registerTool("profile_set", {
   } catch (e) { return fail(String((e as Error).message ?? e)); }
 });
 
-server.registerTool("profile_get", {
+server.registerTool("profile_get", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "Show the stored profile",
   description: "Return the stored CV profile exactly as resume_create, cover_letter_create and tailor_to_job will use it, plus the variant read and every stored variant name. Call it before any rewrite.",
   inputSchema: { variant: z.string().optional() },
@@ -294,7 +294,7 @@ server.registerTool("profile_get", {
 
 /* ----------------------------------------------------------------- resume */
 
-server.registerTool("resume_create", {
+server.registerTool("resume_create", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Write a resume .docx",
   description: "Call this tool to write the stored profile to a Word .docx. Returns the output path, the estimated page count, which bullets were dropped to fit, and which keywords matched or are missing.",
   inputSchema: {
@@ -343,7 +343,7 @@ server.registerTool("resume_create", {
   } catch (e) { return fail(String((e as Error).message ?? e)); }
 });
 
-server.registerTool("resume_to_markdown", {
+server.registerTool("resume_to_markdown", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Resume as markdown",
   description: "Return the stored profile as markdown text inline, ready to paste into a form or an ATS box. Same page-budget trimming as resume_create for max_pages. Nothing is written to disk. Free.",
   inputSchema: { variant: z.string().optional(), target_role: z.string().optional(), max_pages: z.number().int().min(1).max(5).default(2) },
@@ -356,7 +356,7 @@ server.registerTool("resume_to_markdown", {
   } catch (e) { return fail(String((e as Error).message ?? e)); }
 });
 
-server.registerTool("resume_to_html", {
+server.registerTool("resume_to_html", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Printable resume HTML",
   description: "Call this tool to write the resume as semantic HTML with a print stylesheet and return where it went; print it to PDF from a browser, because there is no doc_to_pdf here. Bullets are trimmed to fit max_pages. Free.",
   inputSchema: {
@@ -377,7 +377,7 @@ server.registerTool("resume_to_html", {
   } catch (e) { return fail(String((e as Error).message ?? e)); }
 });
 
-server.registerTool("resume_read", {
+server.registerTool("resume_read", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "Read an existing resume .docx",
   description: "Call this tool to read an existing .docx resume into the profile shape, with the sections found and anything unplaced. It saves nothing unless save is true, so review it first. .doc and .rtf are refused.",
   inputSchema: {
@@ -409,7 +409,7 @@ server.registerTool("resume_read", {
 
 /* ----------------------------------------------------------- cover letter */
 
-server.registerTool("cover_letter_create", {
+server.registerTool("cover_letter_create", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Write a cover letter .docx",
   description: "Call this tool to write a one-page cover letter .docx from the stored profile and return the path, word count and bracketed prompts. Nothing from the posting is restated as yours. Free: 3 a month.",
   inputSchema: {
@@ -477,7 +477,7 @@ server.registerTool("cover_letter_create", {
 
 /* ----------------------------------------------------------------- tailor */
 
-server.registerTool("tailor_to_job", {
+server.registerTool("tailor_to_job", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Gap analysis against a posting",
   description: "READ-ONLY gap analysis against a posting: writes nothing, changes nothing. Returns matched keywords, missing ones, a coverage figure and orderings of facts you already stated. Act on it with resume_create.",
   inputSchema: {

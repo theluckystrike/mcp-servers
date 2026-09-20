@@ -170,7 +170,7 @@ const orderArg = str("change_order", MAX_NAME).describe("The change order id, e.
 const referenceArg = str("reference", 64).describe("The quote or work order this change order is against, by its id, e.g. Q-2026-0003 or WO-2026-0001");
 const currencyArg = z.string().regex(/^[A-Za-z]{3}$/, "currency must be a 3-letter ISO code such as EUR");
 
-server.registerTool("change_order_create", {
+server.registerTool("change_order_create", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Raise a change order",
   description: "Raise a change order against a quote or work order and return its CO-YYYY-NNNN number: the reference, the client, a title, the date, and the original contract value in minor units. Free tier: 5 open.",
   inputSchema: {
@@ -276,7 +276,7 @@ server.registerTool("change_order_create", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("change_order_add_line", {
+server.registerTool("change_order_add_line", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Add a changed line",
   description: "Add one line to a draft change order: added or removed with a quantity and a unit price in minor units, or changed with the old and the new quantity and price, each with a reason and a date. Free.",
   inputSchema: {
@@ -364,7 +364,7 @@ server.registerTool("change_order_add_line", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("change_order_status", {
+server.registerTool("change_order_status", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Move a change order along",
   description: "Move one change order along and stamp the date and note: draft to sent, sent to approved or rejected, either to void. Backwards steps, an unsent approval and a backdated move are all refused.",
   inputSchema: {
@@ -422,7 +422,7 @@ server.registerTool("change_order_status", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("change_order_get", {
+server.registerTool("change_order_get", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Show one change order",
   description: "Return one change order in full by CO number or client: every added, removed and changed line with its reason and delta, VAT, delta gross, the status history and the running value. change_order_list finds the id.",
   inputSchema: { change_order: orderArg },
@@ -432,7 +432,7 @@ server.registerTool("change_order_get", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("change_order_list", {
+server.registerTool("change_order_list", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "List change orders",
   description: "List change orders newest first with status, reference, client, currency and net delta, and above them the APPROVED and the pending delta per currency, kept apart. Filter by reference, status, client, date.",
   inputSchema: {
@@ -480,7 +480,7 @@ server.registerTool("change_order_list", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("change_order_delete", {
+server.registerTool("change_order_delete", { annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: false, openWorldHint: false },
   title: "Delete an empty draft",
   description: "Delete a DRAFT change order with no lines, freeing an open slot. One sent, approved, rejected or voided is refused, and so is one carrying lines: void it with change_order_status instead. The number is not reissued.",
   inputSchema: { change_order: orderArg },
@@ -516,7 +516,7 @@ server.registerTool("change_order_delete", {
 
 /* ------------------------------------------------------------ contract value */
 
-server.registerTool("contract_value", {
+server.registerTool("contract_value", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Running contract value",
   description: "The running value of one quote or work order: original, approved deltas and current value, with pending draft and sent deltas kept apart. Net of VAT. A reference with no change order is refused.",
   inputSchema: { reference: referenceArg },
@@ -607,7 +607,7 @@ function documentText(o: ChangeOrder, siblings: ChangeOrder[]): string {
   return out.join("\n");
 }
 
-server.registerTool("change_order_document", {
+server.registerTool("change_order_document", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Change order document",
   description: "Render one change order as a plain-text document for the client to approve: every line with its reason, the delta net and gross, the contract value before and after, and an approval block. The same text also comes back as a .txt download link valid for one hour. Pro.",
   inputSchema: { change_order: orderArg },
@@ -632,7 +632,7 @@ server.registerTool("change_order_document", {
 
 /* ----------------------------------------------------------- invoice payload */
 
-server.registerTool("change_order_invoice_payload", {
+server.registerTool("change_order_invoice_payload", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Invoice payload for an approved delta",
   description: "Build the approved delta as invoice_create-ready items in MAJOR units and quote_create-ready items in MINOR units, with VAT at the shared profile rate. Writes nothing and creates nothing. Pro.",
   inputSchema: {

@@ -105,7 +105,7 @@ const server = new McpServer(
   { capabilities: { tools: {}, resources: {}, prompts: {} } },
 );
 
-server.registerTool("invoice_register", {
+server.registerTool("invoice_register", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Register an unpaid invoice to chase",
   description: "Start chasing an unpaid invoice: register the client, the invoice reference, the amount in integer cents, the currency and the due date, and get the three-letter escalation schedule (reminder 1, reminder 2, final notice) with the date each falls due. Free tier: 3 unpaid invoices chased at once.",
   inputSchema: {
@@ -173,7 +173,7 @@ server.registerTool("invoice_register", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("payment_record", {
+server.registerTool("payment_record", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Record a payment received",
   description: "Record money received against a chased invoice, in whole MINOR units: a part payment lowers what is still chased, a payment that covers the balance closes the ladder and frees the free-tier slot. Returns the outstanding amount.",
   inputSchema: {
@@ -223,7 +223,7 @@ server.registerTool("payment_record", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("letter_render", {
+server.registerTool("letter_render", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Generate the chase letter for the current stage",
   description: "Chase an unpaid invoice: generate the letter for the current stage of the ladder -- reminder 1 (polite), reminder 2 (firm, with the late fees note) or the final notice (before-action wording) -- as Markdown or as self-contained printable HTML. Nothing is emailed or sent anywhere: this server produces the letter text, and sending it is your act. Record the sending with letter_sent so the ladder advances.",
   inputSchema: {
@@ -282,7 +282,7 @@ server.registerTool("letter_render", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("letter_sent", {
+server.registerTool("letter_sent", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Record that a letter was sent",
   description: "Record that a chase letter was actually sent, with its date, so the ladder advances to the next stage. Letters go out in order: reminder 2 cannot be recorded before reminder 1. Returns what is due next and when.",
   inputSchema: {
@@ -327,7 +327,7 @@ server.registerTool("letter_sent", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("overdue_list", {
+server.registerTool("overdue_list", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "List overdue invoices",
   description: "Every unpaid invoice past its due date: how many days late, what is still owed, which letters have gone out, and what is due next and when. Sorted by days late, worst first.",
   inputSchema: {
@@ -366,7 +366,7 @@ server.registerTool("overdue_list", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("aging_summary", {
+server.registerTool("aging_summary", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "Aging summary of what is owed",
   description: "The aging summary across every unpaid invoice: current, 1-30, 31-60, 61-90 and 91+ day buckets, with counts and totals in integer cents, per currency. This is the answer to \"how much am I owed, and how stale is it\".",
   inputSchema: {
@@ -407,7 +407,7 @@ server.registerTool("aging_summary", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("chase_today", {
+server.registerTool("chase_today", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "What to chase today",
   description: "The day's chase list: which invoices cross an escalation threshold today, which letter to send each and how long it has been waiting, what falls due in the next few days, and which invoices have had all three letters and need a decision outside this server.",
   inputSchema: {
@@ -454,7 +454,7 @@ server.registerTool("chase_today", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("invoice_status", {
+server.registerTool("invoice_status", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "The full state of one chased invoice",
   description: "One chased invoice in full: what was billed, what has been paid and what is still owed, every letter sent with its date, the escalation schedule with each stage's state, and what happens next and when.",
   inputSchema: {
@@ -479,7 +479,7 @@ server.registerTool("invoice_status", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("invoice_delete", {
+server.registerTool("invoice_delete", { annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: false, openWorldHint: false },
   title: "Delete an invoice from the register",
   description: "Delete an invoice entered wrongly, by id or reference: the record, its payments and its letter history. The id is not reissued, so a gap in the DUN series is the record that a deletion happened.",
   inputSchema: {

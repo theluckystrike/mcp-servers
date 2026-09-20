@@ -218,7 +218,7 @@ const server = new McpServer(
 
 /* ------------------------------------------------------------ statement_import */
 
-server.registerTool("statement_import", {
+server.registerTool("statement_import", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Import a bank CSV",
   description: "Call this tool to read a bank CSV into the local ledger. Columns detected from headers (date, description, amount, currency, balance); amounts use the file's locale; stored lines skipped. Returns detected/stored/skipped.",
   inputSchema: {
@@ -330,7 +330,7 @@ server.registerTool("statement_import", {
 
 /* ------------------------------------------------------------ transactions_list */
 
-server.registerTool("transactions_list", {
+server.registerTool("transactions_list", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "List transactions",
   description: "List stored transactions in a date range, optionally for one account or category, or only the ones no rule has categorised yet. Totals are reported per currency and never added across currencies.",
   inputSchema: {
@@ -362,7 +362,7 @@ server.registerTool("transactions_list", {
 
 /* ---------------------------------------------------------- transactions_search */
 
-server.registerTool("transactions_search", {
+server.registerTool("transactions_search", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "Search transactions",
   description: "Find transactions whose description, counterparty, category or account contains the query. Case-insensitive substring search, never a regex, so a query with brackets in it cannot hang the server.",
   inputSchema: {
@@ -393,7 +393,7 @@ server.registerTool("transactions_search", {
 
 /* ---------------------------------------------------------------- category_rules */
 
-server.registerTool("category_rules", {
+server.registerTool("category_rules", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Set or list category rules",
   description: "Read the category rules, or pass rules to REPLACE the whole list. A plain match is a substring; a regex compiles only if it cannot backtrack exponentially. An empty match is refused. Free: 5 rules.",
   inputSchema: {
@@ -448,7 +448,7 @@ server.registerTool("category_rules", {
 
 /* --------------------------------------------------------- transaction_categorize */
 
-server.registerTool("transaction_categorize", {
+server.registerTool("transaction_categorize", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Categorise transactions by id",
   description: "Set or clear the category on transactions by id, for a one-off no rule is worth writing for. Every id is checked first, so one unknown id refuses the whole call. category_rules matches by text instead.",
   inputSchema: {
@@ -473,7 +473,7 @@ server.registerTool("transaction_categorize", {
 
 /* ----------------------------------------------------------- statement_summary */
 
-server.registerTool("statement_summary", {
+server.registerTool("statement_summary", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "What I spent, from the bank account",
   description: "What was spent/received in a date range per the BANK ACCOUNT, grouped by category, month, account or counterparty. For \"what did I spend in August\" once imported. Totals are per currency, never summed or converted.",
   inputSchema: {
@@ -506,7 +506,7 @@ server.registerTool("statement_summary", {
 
 const DEFAULT_RECONCILE_WINDOW = 3;
 
-server.registerTool("reconcile_expenses", {
+server.registerTool("reconcile_expenses", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Reconcile against the expense ledger",
   description: "Match bank debits against mcp-expense-tracker entries: same currency and amount, date within a few days. Reports matches, unmatched bank lines, expenses never hitting the bank. Read-only. Free: 31 days; Pro: any range.",
   inputSchema: {
@@ -617,7 +617,7 @@ function median(ns: number[]): number {
   return s.length % 2 ? s[m] : Math.round((s[m - 1] + s[m]) / 2);
 }
 
-server.registerTool("recurring_detect", {
+server.registerTool("recurring_detect", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Subscriptions and recurring charges in the bank data",
   description: "Find charges that come back: debits grouped by counterparty and currency with a steady amount and interval, with cadence, typical amount, next due date and annual cost. Free: 3 months, 5 charges.",
   inputSchema: {
@@ -714,7 +714,7 @@ function csvEscapeCell(v: unknown): string {
   return /["\n\r,]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
 }
 
-server.registerTool("statement_export", {
+server.registerTool("statement_export", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "Export bank transactions to a file",
   description: "Call this tool to write BANK transactions of a date range to a .csv or .json file and return the path. For \"export September to <path>\" once imported. Written atomically: a failed export never leaves a half file.",
   inputSchema: {
@@ -778,7 +778,7 @@ server.registerTool("statement_export", {
 
 /* ---------------------------------------------------------------- accounts_list */
 
-server.registerTool("accounts_list", {
+server.registerTool("accounts_list", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "List accounts",
   description: "List the imported accounts: bank, currencies, transaction count, first and last date, and the closing balance when the file carried one. Start here for the account names transactions_list and statement_export take.",
   inputSchema: {},

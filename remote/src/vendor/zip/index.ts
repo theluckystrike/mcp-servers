@@ -251,7 +251,7 @@ const PASSWORD_NOTE =
   "no two tools agree on, so a \"password protected\" archive from here would be a false promise. Nothing was written. " +
   "Encrypt the file itself, or send it over a channel that is already encrypted.";
 
-server.registerTool("zip_create", {
+server.registerTool("zip_create", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Create a zip archive",
   description: "Call this tool to pack files uploaded with zip_upload into a new .zip and get a download link valid for one hour. Entry names are always relative, so the archive cannot write outside where it is unpacked.",
   inputSchema: {
@@ -325,7 +325,7 @@ server.registerTool("zip_create", {
   }
 }));
 
-server.registerTool("zip_list", {
+server.registerTool("zip_list", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "List a zip archive",
   description: "Call this tool to list an archive's entries with sizes and ratios and flag what is dangerous: absolute paths, .., symlinks, encrypted entries, duplicate names and bombs. Read-only. Run it before zip_extract.",
   inputSchema: {
@@ -371,7 +371,7 @@ server.registerTool("zip_list", {
   return ok(`${head}${listed}\n\n${rows}${flagged}`);
 }));
 
-server.registerTool("zip_extract", {
+server.registerTool("zip_extract", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Extract a zip archive",
   description: "Call this tool to unpack an archive; every entry comes back as its own download link valid for one hour. Traversal, absolute-path and symlink entries are refused, a size and ratio cap stops a zip bomb, and dry_run reports exactly what would be written.",
   inputSchema: {
@@ -485,7 +485,7 @@ server.registerTool("zip_extract", {
   );
 }));
 
-server.registerTool("zip_add", {
+server.registerTool("zip_add", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Add files to a zip",
   description: "Call this tool to add files to an existing archive under their own names, or under prefix. A name clash is refused unless replace. An archive holding unsafe entries is refused rather than rewritten.",
   inputSchema: {
@@ -560,7 +560,7 @@ server.registerTool("zip_add", {
   }
 }));
 
-server.registerTool("zip_extract_text", {
+server.registerTool("zip_extract_text", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Read one entry as text",
   description: "Call this tool to read one text entry out of an archive without unpacking anything: give the entry name and the text comes back inline. Binary entries are refused by name rather than printed as noise.",
   inputSchema: {
@@ -616,7 +616,7 @@ const BUNDLE_SOURCES: { server: string; sub: string; what: string }[] = [
   { server: "resume", sub: "documents", what: "generated resumes" },
 ];
 
-server.registerTool("zip_bundle_month", {
+server.registerTool("zip_bundle_month", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Bundle a month of documents",
   description: "Local (stdio) install only. On this hosted endpoint /mcp/invoice, /mcp/quotes, /mcp/expense-tracker, /mcp/docx and /mcp/resume return their documents as one-hour download links and keep no output folder to read, so there is nothing for this tool to bundle. Pack the files with zip_upload plus zip_create instead.",
   inputSchema: {
@@ -693,7 +693,7 @@ server.registerTool("zip_bundle_month", {
   }
 }));
 
-server.registerTool("zip_history", {
+server.registerTool("zip_history", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Archives created",
   description: "List the archives created for your token, newest first, with entry counts, sizes and names, plus how much of the free 20 a month is used. Each download link expires after an hour; the row keeps the name.",
   inputSchema: {

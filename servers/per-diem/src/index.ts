@@ -164,7 +164,7 @@ const server = new McpServer(
   { capabilities: { tools: {}, resources: {}, prompts: {} } },
 );
 
-server.registerTool("perdiem_rates", {
+server.registerTool("perdiem_rates", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "List the bundled per diem rates",
   description: "List a scheme's bundled daily allowance rates with the authority, instrument, source URL and effective date they came from. Filter by country or city. Free and unlimited.",
   inputSchema: {
@@ -236,7 +236,7 @@ function toCalcInput(a: Record<string, unknown>): CalcInput {
   };
 }
 
-server.registerTool("perdiem_calc", {
+server.registerTool("perdiem_calc", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "Calculate a travel allowance",
   description: "Calculate the daily travel allowance for one trip: the amount per day and the total in the scheme's currency, with the partial-day fraction and the meal deductions the scheme's own rule applies. Free and unlimited.",
   inputSchema: calcInput,
@@ -245,7 +245,7 @@ server.registerTool("perdiem_calc", {
   catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("trip_record", {
+server.registerTool("trip_record", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Save a calculated trip",
   description: "Calculate a trip and save it under a name, traveller taken from the shared business profile; returns the TRIP-YYYY-NNNN id. An identical record is refused and named, spending no slot. Free: 5 trips a calendar month.",
   inputSchema: {
@@ -303,7 +303,7 @@ server.registerTool("trip_record", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("trip_list", {
+server.registerTool("trip_list", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "List saved trips",
   description: "List saved trips with the scheme, destination, dates and total on each, and a total per currency. Filter by scheme, destination, traveller, project and start date range. Free and unlimited.",
   inputSchema: {
@@ -344,7 +344,7 @@ server.registerTool("trip_list", {
  * `dependents`), because the failure this prevents is worse than the one it allows: an
  * expense filed against a per diem that no longer exists is a claim nobody can evidence.
  */
-server.registerTool("trip_delete", {
+server.registerTool("trip_delete", { annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: false, openWorldHint: false },
   title: "Delete a saved trip",
   description: "Delete one saved trip and free the free-tier slot it held that month. A trip that has been exported or has an expense booked against it is refused with the blocker named, and nothing is written. Free and unlimited.",
   inputSchema: {
@@ -395,7 +395,7 @@ server.registerTool("trip_delete", {
  * `expense_add` takes one currency per call and adding a PLN diet to a EUR one would be a
  * made-up number.
  */
-server.registerTool("trip_export", {
+server.registerTool("trip_export", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "Export a trip as expenses",
   description: "Return the exact expense_add arguments for a saved trip: one payload for subsistence and, with split_lodging, one for lodging. It writes nothing in the expense-tracker server; only mark_exported changes this trip. Pro.",
   inputSchema: {
@@ -451,7 +451,7 @@ server.registerTool("trip_export", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("perdiem_report", {
+server.registerTool("perdiem_report", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "Totals per scheme and month",
   description: "Total saved trips per scheme and calendar month, bucketed by start date: trips, days, subsistence and lodging, each in the scheme's own currency, with the trip ids behind every figure. Pro.",
   inputSchema: {

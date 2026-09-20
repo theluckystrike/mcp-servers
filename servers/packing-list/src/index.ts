@@ -224,7 +224,7 @@ const divisorArg = z.number().int().refine((n) => (DIVISORS as readonly number[]
   .optional().describe(`Volumetric divisor in cm3 per kg: 5000 courier air (default), 6000 IATA air, 4000 some road tariffs`);
 const skuArg = str("sku", 64).optional().describe("Stock code, upper-cased and stripped of spaces. Lines with a SKU are matched on it, lines without on their description");
 
-server.registerTool("packing_list_create", {
+server.registerTool("packing_list_create", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Open a packing list",
   description: "Open a packing list against an order and return its PL-YYYY-NNNN number: the order reference, the consignee, where it ships to and the date. Free tier: 3 open at once; shipping or cancelling frees a slot.",
   inputSchema: {
@@ -270,7 +270,7 @@ server.registerTool("packing_list_create", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("packing_expect", {
+server.registerTool("packing_expect", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Declare what the order says should ship",
   description: "Add an ordered line to a packing list so the shortfall is real: a SKU, a description and a quantity. Nothing is read from the quotes, work order or invoice store; what the order says is stated here.",
   inputSchema: {
@@ -298,7 +298,7 @@ server.registerTool("packing_expect", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("carton_add", {
+server.registerTool("carton_add", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Add a carton",
   description: "Add a carton to a packing list and return its C01-style id: a label, the empty weight in WHOLE GRAMS, and optionally length, width and height in WHOLE CENTIMETRES. Dimensions are what make a chargeable weight possible.",
   inputSchema: {
@@ -337,7 +337,7 @@ server.registerTool("carton_add", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("pack_item", {
+server.registerTool("pack_item", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Pack goods into a carton",
   description: "Put a quantity of one item into a named carton: a description, how many, and the per-unit weight in WHOLE GRAMS. Leave unit_grams out when it was not weighed and the carton gross comes back as a lower bound.",
   inputSchema: {
@@ -378,7 +378,7 @@ server.registerTool("pack_item", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("unpack_item", {
+server.registerTool("unpack_item", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Take a packed line back out",
   description: "Remove one packed line from a packing list by its L01-style id and return the carton it came out of. The line is deleted, not zeroed, so the slip does not print an item nobody packed.",
   inputSchema: {
@@ -404,7 +404,7 @@ server.registerTool("unpack_item", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("packing_list_show", {
+server.registerTool("packing_list_show", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "Show one packing list",
   description: "The whole packing list: its cartons with contents and derived weights, the ordered lines, the shortfall, whether it is ready to ship and why not, and its status history. Nothing here is stored; it is computed.",
   inputSchema: { packing_list: listArg, divisor: divisorArg },
@@ -415,7 +415,7 @@ server.registerTool("packing_list_show", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("packing_list_list", {
+server.registerTool("packing_list_list", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "List packing lists",
   description: "Packing lists newest first, with cartons, units, gross weight and how many ordered lines are still short. Filter by status, by order reference or by consignee. Returns at most 500 rows.",
   inputSchema: {
@@ -447,7 +447,7 @@ server.registerTool("packing_list_list", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("carton_report", {
+server.registerTool("carton_report", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "Weigh the cartons",
   description: "Per carton and for the shipment: tare, net, gross, volume, volumetric weight and the chargeable weight, the greater of gross and volumetric. A carton with no dimensions makes the chargeable total null, never a guess.",
   inputSchema: { packing_list: listArg, divisor: divisorArg },
@@ -467,7 +467,7 @@ server.registerTool("carton_report", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("packing_shortfall", {
+server.registerTool("packing_shortfall", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "What is still to pack",
   description: "Ordered against packed, line by line: what is still short, what was over-packed, and what was packed that is not on the order at all. A packed line with no ordered line is reported, never dropped.",
   inputSchema: { packing_list: listArg },
@@ -490,7 +490,7 @@ server.registerTool("packing_shortfall", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("packing_list_status", {
+server.registerTool("packing_list_status", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "Move a packing list on",
   description: "Move a packing list draft to packed to shipped, or cancel it. Shipping records the carrier, the tracking number and the date, and freezes the list. A shipped list cannot be reopened or edited.",
   inputSchema: {
@@ -535,7 +535,7 @@ server.registerTool("packing_list_status", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("packing_slip", {
+server.registerTool("packing_slip", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Produce the packing slip",
   description: "The packing slip as plain text on every tier: cartons, contents, weights and a signature line, and no prices anywhere. Pro also writes it to out_path as a .txt file. Refuses a URL and refuses to overwrite unless told to.",
   inputSchema: {
@@ -564,7 +564,7 @@ server.registerTool("packing_slip", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("packing_list_delete", {
+server.registerTool("packing_list_delete", { annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: false, openWorldHint: false },
   title: "Delete a packing list",
   description: "Delete a packing list for good, with its cartons and packed lines. A shipped list is refused: it is the record of what left the building. Cancel a list you no longer want instead of deleting a real shipment.",
   inputSchema: {

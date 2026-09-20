@@ -70,7 +70,7 @@ function serializeGrn(store: Store, grn: GoodsReceiptNote): Record<string, unkno
   };
 }
 
-server.registerTool("po_add", {
+server.registerTool("po_add", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Add a purchase order",
   description: "Create a purchase order to receive goods against. Lines carry a sku, a description and an ordered whole-unit quantity. Over/under tolerances are whole percentages allowed above/below ordered before a GRN is flagged. Ids look like PO-0001. Free tier, full CRUD.",
   inputSchema: {
@@ -104,7 +104,7 @@ server.registerTool("po_add", {
   } catch (err) { return fail(err instanceof Error ? err.message : String(err)); }
 });
 
-server.registerTool("grn_add", {
+server.registerTool("grn_add", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Receive goods against a purchase order",
   description: "Create a goods-receipt note (GRN) against an open purchase order. Give one cell per PO line: the whole units received and/or damaged. received is checked against the line's ordered quantity and the PO's over tolerance; receiving past the over tolerance is refused unless declared damaged. Shortage is recorded automatically (ordered minus received, floored at zero) and shown as a discrepancy. Partial deliveries are fine: raise several GRNs against the same PO. Free tier, full CRUD.",
   inputSchema: {
@@ -152,7 +152,7 @@ server.registerTool("grn_add", {
   } catch (err) { return fail(err instanceof Error ? err.message : String(err)); }
 });
 
-server.registerTool("grn_line_add", {
+server.registerTool("grn_line_add", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Add a line to an open GRN",
   description: "Add another PO line (or more units on a line already open on this GRN) to an existing open goods-receipt note. Useful when one delivery arrives in batches. The over-tolerance gate still applies to the PO line's cumulative received count across every GRN. Free tier, full CRUD.",
   inputSchema: {
@@ -184,7 +184,7 @@ server.registerTool("grn_line_add", {
   } catch (err) { return fail(err instanceof Error ? err.message : String(err)); }
 });
 
-server.registerTool("grn_list", {
+server.registerTool("grn_list", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "List goods-receipt notes",
   description: "List goods-receipt notes, newest first, optionally filtered to one purchase order.",
   inputSchema: {
@@ -202,7 +202,7 @@ server.registerTool("grn_list", {
   } catch (err) { return fail(err instanceof Error ? err.message : String(err)); }
 });
 
-server.registerTool("grn_get", {
+server.registerTool("grn_get", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "Get one goods-receipt note",
   description: "Get a single goods-receipt note by id, with its lines, damage and shortage per line.",
   inputSchema: { grn: str("grn", 40).describe("GRN id, e.g. GRN-0001") },
@@ -212,7 +212,7 @@ server.registerTool("grn_get", {
   } catch (err) { return fail(err instanceof Error ? err.message : String(err)); }
 });
 
-server.registerTool("grn_discrepancy", {
+server.registerTool("grn_discrepancy", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "List discrepancies",
   description: "List lines that are not as ordered: damaged units, a declared shortage, or received below the PO line's under tolerance. Optionally filter to one PO.",
   inputSchema: {
@@ -239,7 +239,7 @@ server.registerTool("grn_discrepancy", {
   } catch (err) { return fail(err instanceof Error ? err.message : String(err)); }
 });
 
-server.registerTool("grn_close", {
+server.registerTool("grn_close", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Close a goods-receipt note",
   description: "Close an open GRN. A closed GRN can no longer take lines, and its discrepancies are treated as resolved. Closing is free-tier and never mutates the PO.",
   inputSchema: { grn: str("grn", 40).describe("Open GRN id, e.g. GRN-0001") },
@@ -255,7 +255,7 @@ server.registerTool("grn_close", {
   } catch (err) { return fail(err instanceof Error ? err.message : String(err)); }
 });
 
-server.registerTool("grn_status_report", {
+server.registerTool("grn_status_report", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Goods-receipt status report",
   description: "Reconcile every purchase order against every GRN: open POs (not yet fully received), POs fully received within tolerance, POs with at least one discrepancy, and per-line open/short/damaged counts. Nothing is written.",
   inputSchema: { includeOnlyDiscrepancies: z.boolean().default(false).describe("Only list POs with at least one discrepancy") },
@@ -285,7 +285,7 @@ function csvEscape(s: unknown): string {
   return /[",\n]/.test(t) ? `"${t.replace(/"/g, '""')}"` : t;
 }
 
-server.registerTool("grn_export_csv", {
+server.registerTool("grn_export_csv", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "Export goods receipts as CSV",
   description: "Pro. Export every GRN (or just one PO's GRNs) as CSV with a header row: grn,po,po_reference,received_at,carrier,status,line,sku,received,damaged,shortage,damage_note,shortage_note. Watermark-free and not truncated.",
   inputSchema: { po: str("po", 40).optional().describe("Export GRNs for one purchase order only") },

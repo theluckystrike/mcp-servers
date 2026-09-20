@@ -109,7 +109,7 @@ const server = new McpServer(
 const hireArg = str("hire", MAX_NAME).describe("The hire id, e.g. H-0001, or the name when only one carries it");
 const templateArg = str("template", MAX_NAME).describe("The template id, e.g. T-0001, or the role when only one carries it");
 
-server.registerTool("onboarding_hire_add", {
+server.registerTool("onboarding_hire_add", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Add a hire",
   description: "Add a new hire and return its H-NNNN id: a name, a role and the day they start. The role is a grouping key, lower-cased and hyphenated. Add tasks with onboarding_task_add, or apply a role template with onboarding_template_apply.",
   inputSchema: {
@@ -142,7 +142,7 @@ server.registerTool("onboarding_hire_add", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("onboarding_hire_list", {
+server.registerTool("onboarding_hire_list", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "List hires",
   description: "Every hire with their role, start date, task counts, percent complete and overdue count. Filter by role or by a word in the name. Returns at most 500 rows, newest change first.",
   inputSchema: {
@@ -166,7 +166,7 @@ server.registerTool("onboarding_hire_list", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("onboarding_task_add", {
+server.registerTool("onboarding_task_add", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Add a task to a hire",
   description: "Add one task to a hire's plan and return its K01-style id: the text, who owns it (hr, manager or it) and how many days after the start date it is due. The due date is counted from the hire's start date.",
   inputSchema: {
@@ -196,7 +196,7 @@ server.registerTool("onboarding_task_add", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("onboarding_task_done", {
+server.registerTool("onboarding_task_done", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Mark a task done or skipped",
   description: "Mark one task on a hire done or skipped, with the day it happened. done counts toward the percent complete; skipped is a deliberate dismissal and never counts as done. A task can be set back to todo to reopen it.",
   inputSchema: {
@@ -225,7 +225,7 @@ server.registerTool("onboarding_task_done", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("onboarding_template_apply", {
+server.registerTool("onboarding_template_apply", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Apply a role template to a hire",
   description: "Apply a role template to one hire (free) or many (Pro), copying the template's tasks into each hire with the template's version recorded. Editing the template afterwards never changes a hire already under way. If no template exists for the role, one is created from the tasks you pass.",
   inputSchema: {
@@ -282,7 +282,7 @@ server.registerTool("onboarding_template_apply", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("onboarding_progress", {
+server.registerTool("onboarding_progress", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Show a hire's progress",
   description: "One hire's whole plan: every task with its owner, due date and status, plus the percent complete, the overdue count and what is still outstanding. Pass as_csv for a Pro-only CSV export of the plan.",
   inputSchema: {
@@ -306,7 +306,7 @@ server.registerTool("onboarding_progress", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("onboarding_overdue", {
+server.registerTool("onboarding_overdue", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "List overdue tasks",
   description: "Every task that is still outstanding past its due date, across all hires or one hire, with how many days late. Returns at most 500 rows, most overdue first.",
   inputSchema: {

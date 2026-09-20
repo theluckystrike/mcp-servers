@@ -220,7 +220,7 @@ const server = new McpServer(
 const purchaseRequisitionArg = str("purchase-requisition", MAX_NAME).describe("The purchase-requisition id, e.g. CL-0001, or its name when only one carries it");
 const runArg = str("run", MAX_NAME).describe("The run id, e.g. RUN-2026-0001, or its title when only one carries it");
 
-server.registerTool("purchase-requisition_create", {
+server.registerTool("purchase-requisition_create", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Create a purchase-requisition",
   description: "Create a reusable purchase-requisition and return its CL-NNNN id: a name, a category and an optional description. Add steps with purchase-requisition_item_add. Free tier: 3 of them, runs unlimited.",
   inputSchema: {
@@ -254,7 +254,7 @@ server.registerTool("purchase-requisition_create", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("purchase-requisition_item_add", {
+server.registerTool("purchase-requisition_item_add", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Add a step to a purchase-requisition",
   description: "Add one step to a purchase-requisition and return its I01-style id: text, an optional section heading, and required flag. A required step left unanswered or failed blocks sign-off; an optional one does not.",
   inputSchema: {
@@ -289,7 +289,7 @@ server.registerTool("purchase-requisition_item_add", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("purchase-requisition_item_remove", {
+server.registerTool("purchase-requisition_item_remove", { annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: false, openWorldHint: false },
   title: "Remove a step from a purchase-requisition",
   description: "Remove one step from a purchase-requisition by its I01-style id and bump the purchase-requisition version. Runs already under way keep the step they started with, so nothing anybody already ticked is rewritten.",
   inputSchema: {
@@ -314,7 +314,7 @@ server.registerTool("purchase-requisition_item_remove", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("purchase-requisition_show", {
+server.registerTool("purchase-requisition_show", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Show one purchase-requisition",
   description: "One purchase-requisition with its steps in order, grouped by section, plus how many are required and how many runs have been started from it. Pass as_text for a blank printable copy with a box against each step.",
   inputSchema: {
@@ -332,7 +332,7 @@ server.registerTool("purchase-requisition_show", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("purchase-requisition_list", {
+server.registerTool("purchase-requisition_list", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "List purchase-requisitions",
   description: "Every purchase-requisition with its category, version, step count and how many runs came from it. Filter by category or by a word in the name. Returns at most 500 rows, newest change first.",
   inputSchema: {
@@ -358,7 +358,7 @@ server.registerTool("purchase-requisition_list", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("purchase-requisition_delete", {
+server.registerTool("purchase-requisition_delete", { annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: false, openWorldHint: false },
   title: "Delete a purchase-requisition",
   description: "Delete a purchase-requisition and its steps for good. Runs already started keep their own copy of the steps and stay readable: deleting the purchase-requisition erases nothing anybody signed.",
   inputSchema: {
@@ -377,7 +377,7 @@ server.registerTool("purchase-requisition_delete", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("run_start", {
+server.registerTool("run_start", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Start a run of a purchase-requisition",
   description: "Start a dated run of a purchase-requisition and return its RUN-YYYY-NNNN id. Steps are COPIED into the run, so editing the purchase-requisition later never changes a run under way. Runs are free, never capped.",
   inputSchema: {
@@ -413,7 +413,7 @@ server.registerTool("run_start", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("run_check", {
+server.registerTool("run_check", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Answer a step in a run",
   description: "Mark one step pass, fail or na, with who did it and when. na means the step did not apply; it counts as answered and never as passed. A step can be answered again while the run is open, and the last answer stands.",
   inputSchema: {
@@ -456,7 +456,7 @@ server.registerTool("run_check", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("run_show", {
+server.registerTool("run_show", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "Show one run",
   description: "The whole run: every step with its answer, who answered it and when, grouped by section, plus the pass, fail and outstanding counts, the failures in full, and whether it can be signed off and why not.",
   inputSchema: { run: runArg },
@@ -467,7 +467,7 @@ server.registerTool("run_show", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("run_list", {
+server.registerTool("run_list", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "List runs",
   description: "Runs newest first, with their purchaseRequisition, progress and sign-off state. Filter by purchaseRequisition, by status, by reference or to open runs only. Returns at most 500 rows.",
   inputSchema: {
@@ -496,7 +496,7 @@ server.registerTool("run_list", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("run_sign_off", {
+server.registerTool("run_sign_off", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Sign off a run",
   description: "Sign off a completed run with a name and a date, which freezes it. Refused while a required step is unanswered or failed, unless force is true, and either way the exceptions stay on the record and print on the report.",
   inputSchema: {
@@ -537,7 +537,7 @@ server.registerTool("run_sign_off", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("run_status", {
+server.registerTool("run_status", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "Reopen or abandon a run",
   description: "Move a run back to open so a step can be answered again, or abandon it when the job did not happen. A signed-off run is refused: a signature is the point at which a run stops moving.",
   inputSchema: {
@@ -564,7 +564,7 @@ server.registerTool("run_status", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("run_report", {
+server.registerTool("run_report", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "Produce the run report",
   description: "The run as plain text on every tier: every step with its mark, who answered it, the notes, the counts and a signature block or the recorded signature. Pro also writes it to out_path as a .txt file.",
   inputSchema: {
@@ -591,7 +591,7 @@ server.registerTool("run_report", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("run_delete", {
+server.registerTool("run_delete", { annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: false, openWorldHint: false },
   title: "Delete a run",
   description: "Delete a run for good, with every answer on it. A signed-off run is refused: it is the record of what somebody put their name to. Abandon a run you no longer want instead of deleting a signed one.",
   inputSchema: {

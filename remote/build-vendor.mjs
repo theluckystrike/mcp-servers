@@ -450,7 +450,7 @@ function patchExpenseIndex(src) {
   // hosted build failure. The hosted rewording is what actually differs (KV download,
   // no filesystem), so anchor on the tool name and replace whatever description is there.
   src = must(src,
-    /(registerTool\("expense_export",\s*\{\s*\n\s*title: "[^"]*",\s*\n\s*description: )"[^"]*"/,
+    /(registerTool\("expense_export",\s*\{\s*(?:annotations: \{[^}]*\},\s*)?title: "[^"]*",\s*description: )"[^"]*"/,
     '$1"Export the expenses in a date range as csv, xlsx or json and return a download link that is valid for one hour. Nothing partial is ever written: if a limit is hit no file is produced at all."',
     "expense export description");
   src = must(src,
@@ -1495,7 +1495,7 @@ function patchImageIndex(src) {
   const reservations: Reservation[] = [];
   try {`, "image watermark refusal");
   src = must(src,
-    /(registerTool\("image_watermark",\s*\{\s*\n\s*title: "[^"]*",\s*\n\s*description: )"(?:[^"\\]|\\.)*"/,
+    /(registerTool\("image_watermark",\s*\{\s*(?:annotations: \{[^}]*\},\s*)?title: "[^"]*",\s*description: )"(?:[^"\\]|\\.)*"/,
     '$1"Not available on this hosted endpoint: the watermark is drawn with bitmap font files loaded from a filesystem, which this endpoint does not have. Watermark on a local install instead - download image.mcpb from https://github.com/theluckystrike/mcp-servers/releases/latest and open it in Claude Desktop - or upload an image you have already watermarked."',
     "image watermark description");
 
@@ -1588,7 +1588,7 @@ function outputPath(p: string, ext: string): string {
     "    const existed = false;   // /out/ is transient here: an export is a fresh download every time",
     "bank statement_export target");
   src = must(src,
-    /(registerTool\("statement_export",\s*\{\s*\n\s*title: "[^"]*",\s*\n\s*description: )"(?:[^"\\]|\\.)*"/,
+    /(registerTool\("statement_export",\s*\{\s*(?:annotations: \{[^}]*\},\s*)?title: "[^"]*",\s*description: )"(?:[^"\\]|\\.)*"/,
     '$1"Export the BANK transactions of a date range (a month, a quarter, a year) as .csv or .json and return a download link valid for one hour. This is the tool for \\"export September\\" once a statement has been imported. Nothing partial is ever written."',
     "bank statement_export description");
 

@@ -469,7 +469,7 @@ const server = new McpServer(
   { capabilities: { tools: {}, resources: {}, prompts: {} } },
 );
 
-server.registerTool("credit_note_create", {
+server.registerTool("credit_note_create", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Credit an invoice",
   description: "Credit one invoice: the whole invoice, a GROSS amount_minor split over its VAT rates, or named lines. Amounts store negative, reusing the invoice's own rates. Free: 5 a month. Send it with credit_note_text.",
   inputSchema: {
@@ -668,7 +668,7 @@ function overCredit(inv: Invoice, already: number, remaining: number, asked: num
   );
 }
 
-server.registerTool("credit_note_list", {
+server.registerTool("credit_note_list", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "List credit notes",
   description: "List credit notes newest first: id, invoice, client, basis, reason, currency and the NEGATIVE total, with the amount credited per currency. Filter by invoice, client or issue date range.",
   inputSchema: {
@@ -701,7 +701,7 @@ server.registerTool("credit_note_list", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("credit_note_get", {
+server.registerTool("credit_note_get", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Show one credit note",
   description: "Return one credit note in full by id or exact client name: every negated line, VAT lines, totals, the reason, and the invoice number and date it reverses. Reads only. Use credit_note_list for the ids.",
   inputSchema: { id: z.string().describe("Credit note id such as CN-2026-0001, or an exact client name") },
@@ -713,7 +713,7 @@ server.registerTool("credit_note_get", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("credit_note_pdf", {
+server.registerTool("credit_note_pdf", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Render the credit note as a PDF",
   description: "Call this tool to render one credit note as an A4 print-ready document and return a download link valid for one hour: the invoice layout titled CREDIT NOTE, with the invoice it reverses. Pro.",
   inputSchema: {
@@ -755,7 +755,7 @@ server.registerTool("credit_note_pdf", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("credit_note_text", {
+server.registerTool("credit_note_text", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Plain-text credit note to paste into email",
   description: "Turn a credit note into a plain-text summary to paste into an email: the negated line table, VAT lines, total, reason, and what now comes off the invoice. Also a .txt download link valid one hour. Free; credit_note_pdf writes the A4 document.",
   inputSchema: {
@@ -792,7 +792,7 @@ server.registerTool("credit_note_text", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("credit_note_delete", {
+server.registerTool("credit_note_delete", { annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: false, openWorldHint: false },
   title: "Delete a credit note",
   description: "Remove one credit note never posted to its invoice and never rendered, freeing that month's slot; the invoice becomes creditable again. One with a dependent is refused: issue a fresh note to reverse a sent one.",
   inputSchema: { id: z.string().describe("Credit note id such as CN-2026-0001, or an exact client name") },
@@ -840,7 +840,7 @@ server.registerTool("credit_note_delete", {
 
 /* --------------------------------------------------------- purchase orders */
 
-server.registerTool("purchase_order_create", {
+server.registerTool("purchase_order_create", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Raise a purchase order",
   description: "Raise a purchase order to a supplier from items and return its PO number and totals. unit_price is in MAJOR units; currency, VAT and the buyer block come from the shared profile. Free: 5 documents a calendar month.",
   inputSchema: {
@@ -946,7 +946,7 @@ server.registerTool("purchase_order_create", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("purchase_order_list", {
+server.registerTool("purchase_order_list", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "List purchase orders",
   description: "List purchase orders newest first: id, supplier, order and expected delivery dates, status open, partially_received or received, currency, total and received date. Filter by status, supplier or date range.",
   inputSchema: {
@@ -970,7 +970,7 @@ server.registerTool("purchase_order_list", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("purchase_order_get", {
+server.registerTool("purchase_order_get", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Show one purchase order",
   description: "Return one purchase order in full by id or exact supplier name: buyer and supplier blocks, every line with unit price and VAT, totals, the delivery date, status and every receipt with its date and note.",
   inputSchema: { id: z.string().describe("Purchase order id such as PO-2026-0001, or an exact supplier name") },
@@ -982,7 +982,7 @@ server.registerTool("purchase_order_get", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("purchase_order_pdf", {
+server.registerTool("purchase_order_pdf", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Render the purchase order as a PDF",
   description: "Call this tool to render one purchase order as an A4 print-ready document and return a download link valid for one hour: the invoice layout titled PURCHASE ORDER, with the buyer and supplier. Pro.",
   inputSchema: {
@@ -1030,7 +1030,7 @@ server.registerTool("purchase_order_pdf", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("purchase_order_text", {
+server.registerTool("purchase_order_text", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Plain-text purchase order to paste into email",
   description: "Turn a purchase order into a plain-text order to paste into an email: the line table, VAT lines, total, and a line asking the supplier to deliver by the date and quote the PO number. Also a .txt download link valid one hour. Free on every tier.",
   inputSchema: {
@@ -1067,7 +1067,7 @@ server.registerTool("purchase_order_text", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("purchase_order_receive", {
+server.registerTool("purchase_order_receive", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Mark a purchase order received",
   description: "Record that an order arrived. partial keeps it open and can be repeated, each receipt kept with its date and note; a full receipt closes it. An order already received, or a date before the order date, is refused.",
   inputSchema: {
@@ -1109,7 +1109,7 @@ server.registerTool("purchase_order_receive", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("purchase_order_delete", {
+server.registerTool("purchase_order_delete", { annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: false, openWorldHint: false },
   title: "Delete a purchase order",
   description: "Remove one purchase order with nothing received and never rendered, freeing that month's slot. One with a receipt is refused, naming it. The PO number is never reissued. purchase_order_receive logs arrivals.",
   inputSchema: { id: z.string().describe("Purchase order id such as PO-2026-0001, or an exact supplier name") },
@@ -1144,7 +1144,7 @@ server.registerTool("purchase_order_delete", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("billing_docs_report", {
+server.registerTool("billing_docs_report", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Credited money and open orders",
   description: "Over a date range: what was credited back per currency and against how many invoices, what is still on order per currency, and every open order past its delivery date with days late. Pro; the list tools are free.",
   inputSchema: {

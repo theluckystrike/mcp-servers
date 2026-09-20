@@ -279,7 +279,7 @@ const server = new McpServer(
 
 gate.registerTools(server as unknown as { registerTool: Function });
 
-server.registerTool("task_add", {
+server.registerTool("task_add", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Add task",
   description: "Add one task to a board and return its id, board and column. The board is created on first use, so pass an existing project or leave it out. An identical open task is refused. Free: 3 boards, 200 open.",
   inputSchema: {
@@ -356,7 +356,7 @@ server.registerTool("task_add", {
   });
 }));
 
-server.registerTool("task_list", {
+server.registerTool("task_list", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "List tasks",
   description: "List tasks as a table of id, project, column, title, priority, due, estimate, actual and tags, sorted by due date, with the total estimate. Done tasks are left out unless include_done. 200 rows default.",
   inputSchema: {
@@ -390,7 +390,7 @@ server.registerTool("task_list", {
   return ok(`${table(TASK_HEADERS, shown.map(t => taskLine(t, today, columnsOf(db, t.project))))}\n\n${rows.length} task(s), estimate ${hm(est)}.${note}`);
 }));
 
-server.registerTool("task_move", {
+server.registerTool("task_move", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Move task",
   description: "Move one task to another column of its own board and report the old and new column. An unknown column is refused, listing the real ones. Entering the done column stamps completion; leaving it clears it.",
   inputSchema: {
@@ -415,7 +415,7 @@ server.registerTool("task_move", {
   });
 }));
 
-server.registerTool("task_update", {
+server.registerTool("task_update", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Update task",
   description: "Change a task by id: only the fields you pass are touched. tags REPLACES the whole list, due 'none' clears it, and project moves the task to a board that already exists. Returns the task's new row.",
   inputSchema: {
@@ -464,7 +464,7 @@ server.registerTool("task_update", {
   });
 }));
 
-server.registerTool("task_done", {
+server.registerTool("task_done", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Complete task",
   description: "Mark one task finished: it moves to the board's done column (named done, else the last) and is stamped, leaving task_list and the open counts. Returns estimate against actual when both are known.",
   inputSchema: { id: text(MAX_ID, 1).describe("Task id, e.g. NOVA-12") },
@@ -485,7 +485,7 @@ server.registerTool("task_done", {
   });
 }));
 
-server.registerTool("task_delete", {
+server.registerTool("task_delete", { annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: false, openWorldHint: false },
   title: "Delete task",
   description: "Delete one task by id, permanently; the id is never reused. The answer names any logged minutes lost. time-tracker entries are a separate store and are untouched. Use task_done to keep the record.",
   inputSchema: { id: text(MAX_ID, 1).describe("Task id, e.g. NOVA-12") },
@@ -508,7 +508,7 @@ server.registerTool("task_delete", {
   });
 }));
 
-server.registerTool("task_search", {
+server.registerTool("task_search", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "Search tasks",
   description: "Find tasks whose id, title, notes or tags contain the query, across every board, finished ones included. Plain case-insensitive substring, never a regex. Use task_list for structured filters.",
   inputSchema: {
@@ -529,7 +529,7 @@ server.registerTool("task_search", {
   return ok(`${table(TASK_HEADERS, shown.map(t => taskLine(t, today, columnsOf(db, t.project))))}\n\n${rows.length} match(es).${note}`);
 }));
 
-server.registerTool("board", {
+server.registerTool("board", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Show board",
   description: "Show one board column by column: tasks, estimate, actual and overdue count in each, then the board totals and the estimate still open. Defaults to your busiest board. Use project_list for every board.",
   inputSchema: { project: text(MAX_PROJECT).optional().describe("Which board; defaults to your busiest one") },
@@ -553,7 +553,7 @@ server.registerTool("board", {
   return ok(`${table(["column", "tasks", "estimate", "actual", "overdue"], rows)}\n\n${summary}`);
 }));
 
-server.registerTool("task_start_timer", {
+server.registerTool("task_start_timer", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Start a timer for a task",
   description: "Return the exact arguments to pass to the time-tracker's timer_start for one task, and record the link here. It starts nothing itself, and warns when the tracker's own project names would misfile the time.",
   inputSchema: { id: text(MAX_ID, 1).describe("Task id, e.g. NOVA-12") },
@@ -587,7 +587,7 @@ server.registerTool("task_start_timer", {
   });
 }));
 
-server.registerTool("task_log_time", {
+server.registerTool("task_log_time", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Log time on a task",
   description: "Add real minutes worked to one task so estimate and actual can be compared. Minutes ADD; a negative corrects an over-count. Below zero or past 100,000 is refused. This counter is the board's own.",
   inputSchema: {
@@ -612,7 +612,7 @@ server.registerTool("task_log_time", {
   });
 }));
 
-server.registerTool("project_list", {
+server.registerTool("project_list", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "List projects",
   description: "List every board with its task-id prefix, open and done counts, estimate still open and overdue count, plus free-tier use (3 boards, 200 open tasks). Use board for one board broken down by column.",
   inputSchema: {},
@@ -638,7 +638,7 @@ server.registerTool("project_list", {
  * way back. It only removes a board that owns nothing: a board's tasks are every row whose
  * project is its name, done ones included, and nothing else on this server belongs to a board.
  */
-server.registerTool("project_delete", {
+server.registerTool("project_delete", { annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: false, openWorldHint: false },
   title: "Delete project board",
   description: "Delete an empty board and give its free-tier slot back. A board still holding tasks, open or done, is refused with one named, because task_add creates boards as a side effect and the work would be lost.",
   inputSchema: { project: text(MAX_PROJECT, 1).describe("Board to remove, e.g. 'Nova Site'. It must hold no tasks at all.") },
@@ -665,7 +665,7 @@ server.registerTool("project_delete", {
   });
 }));
 
-server.registerTool("overdue", {
+server.registerTool("overdue", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "Overdue tasks",
   description: "List every task whose due day is already past, across all boards, oldest first, in the task_list table. as_of measures against a day you name. A finished task, or one with no due date, never counts.",
   inputSchema: {
@@ -683,7 +683,7 @@ server.registerTool("overdue", {
   return ok(`${table(TASK_HEADERS, shown.map(t => taskLine(t, day, columnsOf(db, t.project))))}\n\n${rows.length} overdue as of ${day}.${note}`);
 }));
 
-server.registerTool("weekly_review", {
+server.registerTool("weekly_review", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Weekly review",
   description: "Compare done against planned for one ISO week per project: how many were due, how many of those are finished, how many were completed, and estimate against actual minutes. Any week but this one is Pro.",
   inputSchema: { week: text(16).optional().describe("ISO week, e.g. '2026-W36'. Defaults to this week. Past weeks are a Pro feature.") },
@@ -714,7 +714,7 @@ server.registerTool("weekly_review", {
   return ok(`${head}\n${body}\n\n${doneThisWeek.length} completed, ${carried} still open from this week's plan.${delta}`);
 }));
 
-server.registerTool("columns_set", {
+server.registerTool("columns_set", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Set board columns",
   description: "Replace one board's columns, in order, with 2 to 12 unique names. Tasks in a removed column move to the FIRST column. Blanks are dropped first, so a list normalising below two names is refused. Pro.",
   inputSchema: {

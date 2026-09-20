@@ -313,10 +313,10 @@ export function createLicenseGate(opts: { product: string }): LicenseGate {
         }));
       }
       server.registerTool("license_status",
-        { title: "License status", description: "Report this endpoint's licence state for your token as JSON: the product, the tier free or pro, why it is not Pro, and the checkout URL. Call it to explain a free-tier refusal. No arguments, nothing changes.", inputSchema: {} },
+        { title: "License status", annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false }, description: "Report this endpoint's licence state for your token as JSON: the product, the tier free or pro, why it is not Pro, and the checkout URL. Call it to explain a free-tier refusal. No arguments, nothing changes.", inputSchema: {} },
         async () => ({ content: [{ type: "text", text: JSON.stringify(gate.status(), null, 2) }] }));
       server.registerTool("license_activate",
-        { title: "Activate license", description:
+        { title: "Activate license", annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false }, description:
           "Turn Pro on for this connection with key, an MCPL1.<payload>.<signature> issued at checkout for this server " +
           "or the bundle. Data under your token stays; a wrong or expired key changes nothing. license_status confirms it.",
           inputSchema: { key: z.string().describe("License key from checkout, MCPL1.<payload>.<signature>") } },

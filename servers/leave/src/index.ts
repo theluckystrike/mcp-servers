@@ -139,7 +139,7 @@ const reqRef = str("request", MAX_NAME).describe("The request id (e.g. LV-0001).
 
 function loadEmployee(employees: Employee[], ref: string): Employee { return findEmployee(employees, ref); }
 
-server.registerTool("leave_employee_add", {
+server.registerTool("leave_employee_add", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Add an employee",
   description: "Add an employee to the leave tracker and return their EMP-NNNN id. Give their annual paid-leave allowance in whole days and any days carried over from last year. Balances charge approved plus pending leave against allowance + carried-over. Free tier: unlimited.",
   inputSchema: {
@@ -169,7 +169,7 @@ server.registerTool("leave_employee_add", {
   } catch (err) { return fail(err instanceof Error ? err.message : String(err)); }
 });
 
-server.registerTool("leave_request", {
+server.registerTool("leave_request", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Request leave",
   description: "Create a leave or PTO request and return its LV-NNNN id. type is vacation, sick, unpaid or parental. start and end are inclusive YYYY-MM-DD dates; halfDay charges half a day for the whole span. A pending request is refussed if it would overlap another approved or pending request of the same employee. Free tier: unlimited requests.",
   inputSchema: {
@@ -211,7 +211,7 @@ server.registerTool("leave_request", {
   } catch (err) { return fail(err instanceof Error ? err.message : String(err)); }
 });
 
-server.registerTool("leave_approve", {
+server.registerTool("leave_approve", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Approve leave",
   description: "Approve a pending leave request by id. Also used to re-open a rejected one. Nothing to approve on an already-approved request.",
   inputSchema: { request: reqRef, comment: str("comment", MAX_REASON).optional().describe("Approval note") },
@@ -233,7 +233,7 @@ server.registerTool("leave_approve", {
   } catch (err) { return fail(err instanceof Error ? err.message : String(err)); }
 });
 
-server.registerTool("leave_reject", {
+server.registerTool("leave_reject", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Reject leave",
   description: "Reject or cancel a leave request by id. A pending or approved request becomes rejected; a rejected one can be reopened via leave_approve. Use leave_cancel (via reject with reason) for voluntary withdrawal.",
   inputSchema: { request: reqRef, reason: str("reason", MAX_REASON).optional().describe("Why") },
@@ -250,7 +250,7 @@ server.registerTool("leave_reject", {
   } catch (err) { return fail(err instanceof Error ? err.message : String(err)); }
 });
 
-server.registerTool("leave_balance", {
+server.registerTool("leave_balance", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Leave balance",
   description: "Show one employee's leave balance: allowance + carried-over, minus approved and pending, as whole days plus a possible half day. Remaining is rounded down to whole days on the report.",
   inputSchema: { employee: str("employee", MAX_NAME).describe("Employee id or name") },
@@ -286,7 +286,7 @@ function outReport(reqs: LeaveRequest[], employees: Employee[], start: string, e
   return { start, end, days: rows.length, personDays: total, calendar: rows };
 }
 
-server.registerTool("leave_out_range", {
+server.registerTool("leave_out_range", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Who is out?",
   description: "Who is out in a date range: start and end are inclusive YYYY-MM-DD. Each employee appears once per day; pending requests count as a plan. Use for coverage, calendars and absence summaries. Free tier: unlimited.",
   inputSchema: {
@@ -302,7 +302,7 @@ server.registerTool("leave_out_range", {
   } catch (err) { return fail(err instanceof Error ? err.message : String(err)); }
 });
 
-server.registerTool("leave_list", {
+server.registerTool("leave_list", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "List employees or requests",
   description: "List all employees, or all leave requests (optionally filtered by employee and/or status). Omit the filter to list requests.",
   inputSchema: {
@@ -341,7 +341,7 @@ function parseCsvRow(line: string): string[] {
   return out.map((s) => s.trim());
 }
 
-server.registerTool("leave_import", {
+server.registerTool("leave_import", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Bulk import requests (Pro)",
   description: "Pro. Bulk-create leave requests from a CSV/TSV. First row is a header: employee,type,start,end,halfDay,status,reason. status may be omitted (defaults to pending) or be approved/rejected. Each request is still checked for overlap conflicts; a conflicting row is reported, not applied. watermark-free, full CRUD.",
   inputSchema: {
@@ -391,7 +391,7 @@ server.registerTool("leave_import", {
   } catch (err) { return fail(err instanceof Error ? err.message : String(err)); }
 });
 
-server.registerTool("leave_export_ics", {
+server.registerTool("leave_export_ics", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "Export calendar (Pro)",
   description: "Pro. Export all APPROVED leave as an .ics calendar (RFC5545). Returns the calendar text; pass path to also write it to a local file. watermark-free.",
   inputSchema: { path: str("path", 500).optional().describe("Local .ics file to write") },
@@ -413,7 +413,7 @@ server.registerTool("leave_export_ics", {
 
 gate.registerTools(server);
 
-server.registerTool("leave_cancel", {
+server.registerTool("leave_cancel", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Cancel leave",
   description: "Cancel a pending or approved request by id, keeping its record with status cancelled. Differs from leave_reject in intent (voluntary withdrawal). Nothing happened if already cancelled.",
   inputSchema: { request: reqRef, reason: str("reason", MAX_REASON).optional().describe("Why") },

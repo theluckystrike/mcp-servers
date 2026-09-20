@@ -156,7 +156,7 @@ const pathArg = z.string().describe("Name of an image uploaded with image_upload
 const outArg = z.string().describe("Name for the file to write; it comes back as a download link valid for one hour. The extension decides the output format; without a known one the input's format is kept");
 const overwriteArg = z.boolean().optional().describe("Replace out_path if it already exists. Default false. Never allows an output to be one of the inputs");
 
-server.registerTool("image_info", {
+server.registerTool("image_info", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Inspect an image",
   description: "Call this tool to inspect an image: format, pixel dimensions, megapixels, file size in bytes, and whether it carries an alpha channel. Read-only, never modifies the file. Free tier: unlimited, any size.",
   inputSchema: { path: pathArg },
@@ -190,7 +190,7 @@ server.registerTool("image_info", {
   } catch (e) { return fail(String((e as Error).message ?? e)); }
 });
 
-server.registerTool("image_resize", {
+server.registerTool("image_resize", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Resize an image",
   description: "Call this tool to write a resized copy. fit inside keeps aspect; cover fills and crops; exact stretches. One of width/height alone keeps aspect. Input untouched. Free: sources up to 4 MP.",
   inputSchema: {
@@ -234,7 +234,7 @@ server.registerTool("image_resize", {
   } catch (e) { releaseReservations(reservations); return fail(String((e as Error).message ?? e)); }
 });
 
-server.registerTool("image_convert", {
+server.registerTool("image_convert", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Convert an image to another format",
   description: "Call this tool to re-encode an image as PNG, JPEG, BMP, GIF or TIFF. quality is JPEG-only. Transparency converted to JPEG flattens onto white; the answer says so. Free tier: sources up to 4 MP.",
   inputSchema: {
@@ -285,7 +285,7 @@ server.registerTool("image_convert", {
   } catch (e) { releaseReservations(reservations); return fail(String((e as Error).message ?? e)); }
 });
 
-server.registerTool("image_compress", {
+server.registerTool("image_compress", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Compress an image",
   description: "Call this tool to re-encode an image smaller and report byte counts before/after. quality (default 80) applies to JPEG; for PNG only max_width shrinks it, and the answer names which one worked. Free: sources up to 4 MP.",
   inputSchema: {
@@ -366,7 +366,7 @@ server.registerTool("image_compress", {
   } catch (e) { releaseReservations(reservations); return fail(String((e as Error).message ?? e)); }
 });
 
-server.registerTool("image_crop", {
+server.registerTool("image_crop", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Crop an image",
   description: "Call this tool to cut a rectangle out of an image. x, y are the top-left corner in pixels from the image's top-left. A rectangle past an edge is refused with the image's real size, not clamped. Free: sources up to 4 MP.",
   inputSchema: {
@@ -408,7 +408,7 @@ server.registerTool("image_crop", {
   } catch (e) { releaseReservations(reservations); return fail(String((e as Error).message ?? e)); }
 });
 
-server.registerTool("image_thumbnails", {
+server.registerTool("image_thumbnails", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Make thumbnails",
   description: "Call this tool to write one thumbnail per input into out_dir as <name>-thumb.<ext>, fit inside size by size, aspect kept. Paths are reserved before writing, so a collision leaves nothing half-done. Free: 5/call, 4 MP.",
   inputSchema: {
@@ -497,7 +497,7 @@ const POSITIONS = ["bottom-right", "bottom-left", "bottom-center", "top-right", 
 
 const FONTS: [number, string][] = [];   // jimp/fonts cannot be loaded here (see below)
 
-server.registerTool("image_watermark", {
+server.registerTool("image_watermark", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Watermark an image with text",
   description: "Not available on this hosted endpoint: the watermark is drawn with bitmap font files loaded from a filesystem, which this endpoint does not have. Watermark on a local install instead - download image.mcpb from https://github.com/theluckystrike/mcp-servers/releases/latest and open it in Claude Desktop - or upload an image you have already watermarked.",
   inputSchema: {
@@ -615,7 +615,7 @@ server.registerTool("image_watermark", {
   } catch (e) { releaseReservations(reservations); return fail(String((e as Error).message ?? e)); }
 });
 
-server.registerTool("image_strip_metadata", {
+server.registerTool("image_strip_metadata", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Strip metadata from an image",
   description: "Call this tool to write a copy carrying pixels and nothing else: it decodes and re-encodes from raw pixels, so EXIF, GPS, camera, capture time, XMP and colour-profile data are dropped. Free tier: sources up to 4 MP.",
   inputSchema: { path: pathArg, out_path: outArg, overwrite: overwriteArg },
@@ -646,7 +646,7 @@ server.registerTool("image_strip_metadata", {
   } catch (e) { releaseReservations(reservations); return fail(String((e as Error).message ?? e)); }
 });
 
-server.registerTool("image_batch_resize", {
+server.registerTool("image_batch_resize", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Resize several images at once",
   description: "Call this tool to resize every image in paths at once, keeping aspect ratio, each named <name>-<W>x<H>.<ext>. One of width/height lets the other follow; with both, each fits inside the box. Free: 5 files a call, 4 MP.",
   inputSchema: {
@@ -699,7 +699,7 @@ server.registerTool("image_batch_resize", {
   } catch (e) { releaseReservations(reservations); return fail(String((e as Error).message ?? e)); }
 });
 
-server.registerTool("image_dominant_colors", {
+server.registerTool("image_dominant_colors", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Read the dominant colours of an image",
   description: "Call this tool to read the colours covering most of an image, as hex codes with each one's pixel share. Sampled from a 200 px copy, so cost is fixed. Read-only. Free gives the top 3; Pro up to 16.",
   inputSchema: {

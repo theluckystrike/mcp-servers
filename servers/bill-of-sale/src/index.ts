@@ -147,7 +147,7 @@ const termsFields = {
   notes: str("notes", MAX_TEXT).optional().describe("Anything else the document should say, e.g. payment method or what is included in the sale"),
 };
 
-server.registerTool("sale_create", {
+server.registerTool("sale_create", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Record a sale",
   description: "Record a sale and generate the bill of sale: who sold, who bought, what item (with VIN, serial or IMEI where it has one), the price in minor units and the date. Returns the BOS-YYYY-NNNN number of the draft. The draft can still be changed with sale_update; sale_finalize freezes it into the signing copy and sale_render prints it. Free tier: 10 drafts.",
   inputSchema: {
@@ -251,7 +251,7 @@ server.registerTool("sale_create", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("sale_update", {
+server.registerTool("sale_update", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Change a bill of sale before signing",
   description: "Change anything on a bill of sale that is not finalized yet: price, buyer, seller, item details, identifiers, the as-is clause, warranty or notes. Pass an empty string to clear an optional field. A finalized document cannot be edited.",
   inputSchema: {
@@ -338,7 +338,7 @@ server.registerTool("sale_update", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("sale_finalize", {
+server.registerTool("sale_finalize", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Finalize the bill of sale for signing",
   description: "Finalize a bill of sale so it is ready to sign: the document is frozen from this call on, sale_update refuses it, and every later render is the signing copy without the DRAFT watermark. Free tier: 5 finalized documents.",
   inputSchema: { sale: saleArg },
@@ -370,7 +370,7 @@ server.registerTool("sale_finalize", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("sale_list", {
+server.registerTool("sale_list", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "List bills of sale",
   description: "List every bill of sale, drafts and finalized, newest first: id, status, date, item, buyer, seller and price. Filter to drafts or finalized documents with status.",
   inputSchema: {
@@ -394,7 +394,7 @@ server.registerTool("sale_list", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("sale_get", {
+server.registerTool("sale_get", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "Read one bill of sale",
   description: "Read one bill of sale in full by its BOS number: both parties, the item and its identifiers, price, terms, and whether it is still a draft or the finalized signing copy.",
   inputSchema: { sale: saleArg },
@@ -405,7 +405,7 @@ server.registerTool("sale_get", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("sale_delete", {
+server.registerTool("sale_delete", { annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: false, openWorldHint: false },
   title: "Delete a bill of sale",
   description: "Delete a bill of sale by its BOS number. A draft goes outright. A finalized document needs confirm_finalized true, because it is the local copy of a record the buyer may hold. The BOS number is never reissued, so a gap in the series is the record that a document was deleted.",
   inputSchema: {
@@ -435,7 +435,7 @@ server.registerTool("sale_delete", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("sale_render", {
+server.registerTool("sale_render", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Print the bill of sale",
   description: "Render a bill of sale as a clean printable document: Markdown, a self-contained HTML file ready for print-to-PDF, or both, with signature lines for seller and buyer. Drafts render with a DRAFT watermark so a review copy cannot be signed by mistake. Files default to the server's documents folder; pass out_path to choose. Free.",
   inputSchema: {
@@ -472,7 +472,7 @@ server.registerTool("sale_render", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("sale_summary", {
+server.registerTool("sale_summary", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "Summarize the sales book",
   description: "Summarize the book: how many drafts and finalized documents, and the total sold value per currency, drafts separate from finalized. Currencies are never added together. Free.",
   inputSchema: {},

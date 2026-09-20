@@ -330,7 +330,7 @@ gate.registerTools(server as unknown as { registerTool: Function });
 
 /* -------------------------------------------------------------- ics_import */
 
-server.registerTool("ics_import", {
+server.registerTool("ics_import", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Import a calendar (.ics)",
   description:
     "Call this tool to read a calendar export and keep it under a name. Give path (.ics file), text (contents), or url (public .ics/webcal feed; Pro). Google, Apple, Outlook exports read. Re-importing a name replaces it.",
@@ -418,7 +418,7 @@ server.registerTool("ics_import", {
 
 /* ------------------------------------------------------------ calendars_list */
 
-server.registerTool("calendars_list", {
+server.registerTool("calendars_list", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "List imported calendars",
   description: "List imported calendars: name, event-definition count, size, source, import time and free-tier use of the 2 slots. It also names stored .ics files with no calendar row. With none it prints the export steps.",
   inputSchema: {},
@@ -445,7 +445,7 @@ server.registerTool("calendars_list", {
 
 /* --------------------------------------------------------------- events_list */
 
-server.registerTool("events_list", {
+server.registerTool("events_list", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "List events in a window",
   description:
     "Every event between two dates, recurring expanded to occurrences, sorted by start. Times shown in your zone (profile's, else this machine's) unless zone passed. Each id works for event_export or event_to_time_entry.",
@@ -476,7 +476,7 @@ server.registerTool("events_list", {
 
 /* ------------------------------------------------------------- events_search */
 
-server.registerTool("events_search", {
+server.registerTool("events_search", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "Search events",
   description:
     "Find events whose title, description, location or attendees contain a phrase. Searches every imported calendar. " +
@@ -519,7 +519,7 @@ server.registerTool("events_search", {
 
 /* ----------------------------------------------------------------- free_busy */
 
-server.registerTool("free_busy", {
+server.registerTool("free_busy", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Busy blocks and free windows",
   description:
     "Merged busy blocks and the free gaps inside your working hours over a day range. Events marked free do not count; whole-day events block the day. Free: 31 days. Use conflicts for overlapping pairs.",
@@ -602,7 +602,7 @@ server.registerTool("free_busy", {
 
 /* ----------------------------------------------------------------- conflicts */
 
-server.registerTool("conflicts", {
+server.registerTool("conflicts", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Find double bookings",
   description:
     "Find double bookings: every PAIR of timed events that overlap, with the minutes they collide, across all calendars unless you name one. Whole-day events are reported apart. Free: 31 days. free_busy shows gaps.",
@@ -642,7 +642,7 @@ server.registerTool("conflicts", {
 
 /* ---------------------------------------------------------------- next_event */
 
-server.registerTool("next_event", {
+server.registerTool("next_event", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Next event",
   description: "The first event not yet started, within the next 366 days, across every imported calendar or one you name. Returns title, times in your zone, how long until it starts, location, attendees and its id.",
   inputSchema: {
@@ -788,7 +788,7 @@ function mergeVevents(parts: string[], count: number): string {
   return [...head, ...body, "END:VCALENDAR"].join("\r\n") + "\r\n";
 }
 
-server.registerTool("event_export", {
+server.registerTool("event_export", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "Export events to a .ics file",
   description:
     "Call this tool to write chosen events to a new .ics file you can send or import elsewhere. Pass either ids (from events_list) or a from/to window. Times are written in UTC so the file lands correctly in any client.",
@@ -872,7 +872,7 @@ server.registerTool("event_export", {
 
 /* ------------------------------------------------------ event_to_time_entry */
 
-server.registerTool("event_to_time_entry", {
+server.registerTool("event_to_time_entry", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Turn a meeting into a time entry",
   description:
     "Take one event and return the exact arguments for the time-tracker's entry_add, so a meeting that already happened becomes billable time without retyping it. Writes nothing: pass the JSON straight to entry_add.",
@@ -921,7 +921,7 @@ server.registerTool("event_to_time_entry", {
 
 /* ---------------------------------------------------------------- ics_forget */
 
-server.registerTool("ics_forget", {
+server.registerTool("ics_forget", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Forget a calendar",
   description: "Remove one imported calendar by name and delete this server's local copy of its .ics, freeing a slot. Your own calendar and the source file are untouched. ics_import replaces a name in place.",
   inputSchema: {

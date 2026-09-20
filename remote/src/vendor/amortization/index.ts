@@ -139,7 +139,7 @@ const server = new McpServer(
 const freqArg = z.enum(FREQUENCIES as [Frequency, ...Frequency[]]);
 const loanArg = str("loan", MAX_NAME).describe("The loan id, e.g. LOAN-2026-0001, or its exact name");
 
-server.registerTool("loan_create", {
+server.registerTool("loan_create", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Record a loan or lease",
   description: "Record a loan or lease and return its id, level payment and effective annual rate. principal_minor, fees and balloon are whole MINOR units; rate_bps is the nominal annual rate in basis points. Free: 3 agreements.",
   inputSchema: {
@@ -225,7 +225,7 @@ server.registerTool("loan_create", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("loan_schedule", {
+server.registerTool("loan_schedule", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Build the amortization schedule",
   description: "Build one loan's schedule: opening balance, payment, interest, principal and closing per period, with total interest. The last period absorbs rounding, landing exactly on the balloon or zero. loans_report totals it.",
   inputSchema: {
@@ -264,7 +264,7 @@ server.registerTool("loan_schedule", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("loan_repay_early", {
+server.registerTool("loan_repay_early", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Settle or overpay a loan early",
   description: "Work out what settling or overpaying costs as of a period: the outstanding balance, the penalty if one is given, the recalculated remaining schedule and the interest saved, stated gross and net of the penalty. Pro.",
   inputSchema: {
@@ -309,7 +309,7 @@ server.registerTool("loan_repay_early", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("loan_journal", {
+server.registerTool("loan_journal", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Journal a loan payment",
   description: "Return the double entry for one payment period or month: debit interest expense and loan liability, credit cash, in the cash book's account names, with an expense_add-ready payload. Give period or month, not both. Pro.",
   inputSchema: {
@@ -399,7 +399,7 @@ server.registerTool("loan_journal", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("loan_list", {
+server.registerTool("loan_list", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "List the loan register",
   description: "List the register with terms, level payment, effective annual rate and, at as_of, periods paid, balance outstanding, interest to date and the next payment, totalled per currency. Free; loans_report is the Pro roll-up.",
   inputSchema: {
@@ -443,7 +443,7 @@ server.registerTool("loan_list", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("loan_delete", {
+server.registerTool("loan_delete", { annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: false, openWorldHint: false },
   title: "Delete a loan from the register",
   description: "Remove one loan or lease from the register and give its free-tier slot back. Refused, with the entry named, if a journal has already been taken from it. Free.",
   inputSchema: {
@@ -482,7 +482,7 @@ server.registerTool("loan_delete", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("loans_report", {
+server.registerTool("loans_report", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "Report what is owed and what it costs",
   description: "The debt at as_of: per loan what is outstanding, whether it is settled, the next payment, and the interest and principal charged in a year, then totals per currency. Contractual balance, not cash paid. Pro.",
   inputSchema: {

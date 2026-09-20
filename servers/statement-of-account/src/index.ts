@@ -183,7 +183,7 @@ const clientArg = str("client", MAX_NAME).min(1, "client is required")
 const currencyArg = z.string().regex(/^[A-Za-z]{3}$/, "currency must be a 3-letter ISO code such as EUR").optional()
   .describe("Only needed when the client has documents in more than one currency. Currencies are never added together");
 
-server.registerTool("statement_build", {
+server.registerTool("statement_build", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Build a statement of account",
   description: "Build one client's statement for a period: opening, invoices, payments with deposits applied broken out, credit notes and closing, formatted and in minor units. Free: 5 a month; a rebuild is free.",
   inputSchema: {
@@ -204,7 +204,7 @@ server.registerTool("statement_build", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("statement_aging", {
+server.registerTool("statement_aging", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Age the open invoices",
   description: "Age open invoices into 0-30, 31-60, 61-90 and over 90 days past DUE date at a date, per client and currency, with the invoices themselves. Free. statements_report rolls up the whole book instead.",
   inputSchema: {
@@ -315,7 +315,7 @@ function statementLines(st: Statement, day: string, greeting?: string, signOff?:
   return out;
 }
 
-server.registerTool("statement_text", {
+server.registerTool("statement_text", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "Plain-text statement of account",
   description: "Turn one client's statement into a plain-text letter for an email: movements in date order, opening and closing balances, deposit held, a sign-off. It counts toward the 5 a month; statement_pdf writes the A4 page.",
   inputSchema: {
@@ -343,7 +343,7 @@ server.registerTool("statement_text", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("statement_pdf", {
+server.registerTool("statement_pdf", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "Render the statement of account as a PDF",
   description: "Call this tool to write one client's A4 statement of account and return the path. Titled STATEMENT OF ACCOUNT, movements in date order, BALANCE OUTSTANDING at the foot, and no VAT re-added. Pro.",
   inputSchema: {
@@ -466,7 +466,7 @@ function bankLines(): string[] {
   return out;
 }
 
-server.registerTool("dunning_text", {
+server.registerTool("dunning_text", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "Write a dunning letter",
   description: "Write a payment chaser at level 1 friendly, 2 firm or 3 final demand: every OVERDUE invoice with its age, the total and your bank details. Refused if nothing is overdue. No interest is stated. Level 3 is Pro.",
   inputSchema: {
@@ -539,7 +539,7 @@ server.registerTool("dunning_text", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("statements_report", {
+server.registerTool("statements_report", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "What every client owes",
   description: "Receivables across every client at a date: totals and aging per currency, clients ranked by how much is OVERDUE, and the oldest overdue invoice. Pro. statement_aging is the free per-client view.",
   inputSchema: {

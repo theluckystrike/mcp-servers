@@ -232,13 +232,13 @@ async function qrTool(text: string, a: QrShape, kind: string, feature: string, t
 
 const wrap = (fn: () => Promise<ReturnType<typeof ok>>) => fn().catch((e: unknown) => fail(String((e as Error)?.message ?? e)));
 
-server.registerTool("qr_create", {
+server.registerTool("qr_create", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "QR code",
   description: "Call this tool to turn text or a URL into a QR code: SVG inline, or a PNG at a pixel size to out_path (Pro). Returns version, module grid and payload size. Free: 20 codes a month on this server.",
   inputSchema: { text: z.string().describe("The text or URL the code carries"), ...qrShape },
 }, async (a: QrShape & { text: string }) => wrap(() => qrTool(a.text, a, "text", "qr_create PNG output", "qr_create")));
 
-server.registerTool("qr_wifi", {
+server.registerTool("qr_wifi", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "WiFi QR code",
   description: "Call this tool to make a QR code that joins a WiFi network when scanned: ssid, password and auth type, written to out_path or returned as SVG. Free: 20 codes a month. qr_create takes plain text or a URL.",
   inputSchema: {
@@ -251,7 +251,7 @@ server.registerTool("qr_wifi", {
 }, async (a: QrShape & { ssid: string; password?: string; auth?: "WPA" | "WEP" | "nopass"; hidden?: boolean }) =>
   wrap(() => qrTool(wifiPayload(a), a, "wifi", "qr_wifi PNG output", "qr_wifi", ` Network "${a.ssid}".`)));
 
-server.registerTool("qr_vcard", {
+server.registerTool("qr_vcard", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Contact QR code",
   description: "Call this tool to make a QR code that adds a contact when scanned (vCard 3.0). For your own card pass nothing: name, phone, email and address default to the shared business profile, never asked for.",
   inputSchema: {
@@ -289,7 +289,7 @@ server.registerTool("qr_vcard", {
   return qrTool(vcardPayload({ ...a, name, phone, email, address }), a, "vcard", "qr_vcard PNG output", "qr_vcard", ` Contact "${name}".${from}`);
 }));
 
-server.registerTool("qr_payment_sepa", {
+server.registerTool("qr_payment_sepa", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "SEPA payment QR code",
   description: "Call this tool for an EPC069-12 payment QR a euro banking app can scan. Amount and reference are enough: the beneficiary IBAN and name default to the shared business profile, never asked for.",
   inputSchema: {
@@ -349,7 +349,7 @@ function readInvoice(id: string): { number: string; total_minor: number; currenc
   } catch { return null; }
 }
 
-server.registerTool("invoice_payment_qr", {
+server.registerTool("invoice_payment_qr", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Payment QR for an invoice",
   description: "Call this tool for a SEPA payment QR from just an amount and reference: IBAN and name are read from the shared business profile, never asked for; pass invoice_id instead to take the amount from an invoice.",
   inputSchema: {
@@ -427,7 +427,7 @@ function linearOptions(a: LinearShape) {
   };
 }
 
-server.registerTool("barcode_create", {
+server.registerTool("barcode_create", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Barcode",
   description: "Call this tool to draw a linear barcode (code128, ean13, ean8, upca) as SVG, or PNG to out_path. A short EAN or UPC gets its check digit computed; a wrong one is refused, never redrawn. qr_create makes QR codes.",
   inputSchema: { symbology: symbologyArg, value: z.string().describe("The data to encode. Digits only for EAN and UPC"), ...linearShape },
@@ -461,7 +461,7 @@ server.registerTool("barcode_create", {
   );
 }));
 
-server.registerTool("barcode_batch", {
+server.registerTool("barcode_batch", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Barcodes in bulk",
   description: "Call this tool to draw many barcodes or QR codes at once from a list of rows, each with its own value and file name. Every row comes back as its own download link valid for one hour. Pro; the free tier does one code per call.",
   inputSchema: {
@@ -523,7 +523,7 @@ server.registerTool("barcode_batch", {
   return ok(head + body + bad);
 }));
 
-server.registerTool("code_list", {
+server.registerTool("code_list", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "Codes generated",
   description: "List the codes this server generated, newest first, with what each carried and where it went, plus how much of the free 20 a month is used. Filter by kind. It reads the register, not the files.",
   inputSchema: {

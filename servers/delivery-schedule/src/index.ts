@@ -187,7 +187,7 @@ const deliverableArg = str("deliverable", MAX_NAME).describe("The deliverable id
 const asOfArg = str("as_of", 10).optional().describe("Read the schedule as at this date, YYYY-MM-DD. Defaults to today");
 const currencyArg = z.string().regex(/^[A-Za-z]{3}$/, "currency must be a 3-letter ISO code such as EUR");
 
-server.registerTool("delivery_schedule_create", {
+server.registerTool("delivery_schedule_create", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Open a delivery schedule",
   description: "Open a delivery schedule against a quote, work order or change order and return its DS-YYYY-NNNN number: the reference, its own date, the client, a title and the currency. Free tier: 3 open.",
   inputSchema: {
@@ -256,7 +256,7 @@ server.registerTool("delivery_schedule_create", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("deliverable_add", {
+server.registerTool("deliverable_add", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Add a dated deliverable",
   description: "Add one dated deliverable and return its D number and the new counts. value_minor is NET of VAT in whole MINOR units. A due date before the reference document's own date is refused. It starts as planned.",
   inputSchema: {
@@ -324,7 +324,7 @@ server.registerTool("deliverable_add", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("deliverable_status", {
+server.registerTool("deliverable_status", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Move a deliverable along",
   description: "Record a dated move on one deliverable: planned, in_progress, delivered, then accepted with a note. An out-of-order move, or a date before the reference document, is refused. The date drives lateness.",
   inputSchema: {
@@ -395,7 +395,7 @@ server.registerTool("deliverable_status", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("deliverable_delete", {
+server.registerTool("deliverable_delete", { annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: false, openWorldHint: false },
   title: "Delete a planned deliverable",
   description: "Delete one deliverable still planned with no history. One started, delivered or accepted is refused, naming when: add a corrected deliverable instead. The D number on a schedule is never reissued.",
   inputSchema: { schedule: scheduleArg, deliverable: deliverableArg },
@@ -425,7 +425,7 @@ server.registerTool("deliverable_delete", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("delivery_schedule_get", {
+server.registerTool("delivery_schedule_get", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Show one delivery schedule",
   description: "Return one schedule in full as at a date: every deliverable with due date, status, delivered and accepted dates, note and value, plus what is late and the totals. The answer names the as_of it used.",
   inputSchema: { schedule: scheduleArg, as_of: asOfArg },
@@ -442,7 +442,7 @@ server.registerTool("delivery_schedule_get", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("delivery_schedule_list", {
+server.registerTool("delivery_schedule_list", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "List delivery schedules",
   description: "List schedules oldest reference first with client, currency and counts as at a date: late, still owed, accepted. Filter by client, reference and state open or complete. Free.",
   inputSchema: {
@@ -487,7 +487,7 @@ server.registerTool("delivery_schedule_list", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("delivery_schedule_delete", {
+server.registerTool("delivery_schedule_delete", { annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: false, openWorldHint: false },
   title: "Delete an empty schedule",
   description: "Delete a schedule carrying no deliverables, freeing an open slot. One holding any is refused, naming them, since they record what was owed. The DS number is never reissued. Free on every tier.",
   inputSchema: { schedule: scheduleArg },
@@ -517,7 +517,7 @@ server.registerTool("delivery_schedule_delete", {
 
 /* ------------------------------------------------------------- late report */
 
-server.registerTool("late_report", {
+server.registerTool("late_report", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "What is late as at a date",
   description: "What has slipped as at a date: every deliverable still owed past its due date, worst first, with value at risk per currency, and what was delivered late kept apart. A reference with no schedule is refused.",
   inputSchema: {
@@ -652,7 +652,7 @@ function documentText(s: Schedule, asOf: string): string {
   return out.join("\n");
 }
 
-server.registerTool("delivery_schedule_document", {
+server.registerTool("delivery_schedule_document", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Delivery schedule document",
   description: "Render one schedule as a plain-text document for the client: every deliverable with its due date, status, delivered and accepted dates and value, the counts as at a date, and a sign-off block. Pro.",
   inputSchema: { schedule: scheduleArg, as_of: asOfArg },
@@ -675,7 +675,7 @@ server.registerTool("delivery_schedule_document", {
 
 /* --------------------------------------------------------- milestone payload */
 
-server.registerTool("milestone_payload", {
+server.registerTool("milestone_payload", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Invoice payload for accepted milestones",
   description: "Build the delivered-and-accepted deliverables as invoice_create-ready items in MAJOR units and quote_create-ready items in MINOR units, with VAT at the shared profile rate. Writes nothing. Pro.",
   inputSchema: {

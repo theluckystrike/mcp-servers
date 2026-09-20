@@ -149,7 +149,7 @@ const server = new McpServer(
 
 const cardArg = str("card", MAX_NAME).describe("The job card id, e.g. JC-2026-0003, or the client name when only one card has it");
 
-server.registerTool("job_card_create", {
+server.registerTool("job_card_create", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Open a job card",
   description: "Open a job card for a job your crew is taking on and return its JC-YYYY-NNNN number: the client, the site, what the job is, the currency and when it is scheduled. Free tier: 10 active cards; archiving a finished job frees its slot.",
   inputSchema: {
@@ -198,7 +198,7 @@ server.registerTool("job_card_create", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("job_card_log_labor", {
+server.registerTool("job_card_log_labor", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Log hours on a job card",
   description: "Log hours worked on a job card: who did the work, the day, the hours and the hourly rate in whole cents, with a note on what was done. The line value is hours times rate, rounded half-up to the cent, fixed the moment it is logged.",
   inputSchema: {
@@ -235,7 +235,7 @@ server.registerTool("job_card_log_labor", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("job_card_log_material", {
+server.registerTool("job_card_log_material", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Log materials used on a job card",
   description: "Log materials used on a job card: the item, the day it went in, the quantity and the unit cost in whole cents. The line value is quantity times unit cost, rounded half-up to the cent, fixed the moment it is logged.",
   inputSchema: {
@@ -269,7 +269,7 @@ server.registerTool("job_card_log_material", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("job_card_update_status", {
+server.registerTool("job_card_update_status", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Move a job card one step",
   description: "Move one job card exactly one step: open, in_progress, done, invoiced, archived, stamping the date and an optional note into its history. A skipped or backwards step is refused and nothing is written. Archiving a finished job frees a free-tier slot.",
   inputSchema: {
@@ -313,7 +313,7 @@ server.registerTool("job_card_update_status", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("job_card_list", {
+server.registerTool("job_card_list", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "List job cards",
   description: "List job cards newest first: client, site, status, hours logged, and the labor, materials and grand totals in cents. Filter by status and by client. Totals are kept per currency, never mixed.",
   inputSchema: {
@@ -347,7 +347,7 @@ server.registerTool("job_card_list", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("job_card_get", {
+server.registerTool("job_card_get", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Read one job card with its running totals",
   description: "Read one job card in full by JC number or client: every labor entry and every material used, the hours per worker, and the running totals -- labor, materials and grand total -- as integer cents with formatted amounts. Reads only.",
   inputSchema: {
@@ -368,7 +368,7 @@ server.registerTool("job_card_get", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("job_card_print", {
+server.registerTool("job_card_print", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Render the card for the client to sign",
   description: "Render a job card ready to print and hand to the client: the labor, the materials, the totals and a signature line for client sign-off. Markdown, or self-contained HTML that needs nothing from the network. Writes nothing.",
   inputSchema: {
@@ -487,7 +487,7 @@ ${materialRows}
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("job_card_delete", {
+server.registerTool("job_card_delete", { annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: false, openWorldHint: false },
   title: "Delete an empty job card",
   description: "Delete a job card entered by mistake. One with labor or materials logged is refused, naming what it holds, because deleting it would lose the record of work done: archive it instead. The JC number is never reissued.",
   inputSchema: {
@@ -519,7 +519,7 @@ server.registerTool("job_card_delete", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("job_card_summary", {
+server.registerTool("job_card_summary", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Summarize a day or a week",
   description: "Hours and value for a day or a week: the job cards touched, the hours per worker, and the labor, materials and total value, kept per currency. A week runs Monday to Sunday. Touched means a labor or material entry dated inside the window.",
   inputSchema: {

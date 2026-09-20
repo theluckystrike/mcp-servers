@@ -179,7 +179,7 @@ const server = new McpServer(
 const skuArg = str("sku", MAX_NAME).describe("The SKU code, e.g. WEB-AUDIT, or the product name when only one product carries it");
 const currencyArg = z.string().regex(/^[A-Za-z]{3}$/, "currency must be a 3-letter ISO code such as EUR");
 
-server.registerTool("sku_set", {
+server.registerTool("sku_set", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Add or reprice a SKU",
   description: "Add a catalogue line or reprice one: a code, a name, a unit, an optional VAT rate, and price_minor in whole minor units for one currency, tier and valid_from. A repriced line keeps its old rows. Free: 25 SKUs, one tier.",
   inputSchema: {
@@ -289,7 +289,7 @@ server.registerTool("sku_set", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("sku_get", {
+server.registerTool("sku_get", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "The price of one SKU on a date",
   description: "Show the price of one SKU as of a date, in one currency and tier: the row picked is the latest valid_from at or before that date, and the answer names the row and any later one already booked. Free.",
   inputSchema: {
@@ -330,7 +330,7 @@ server.registerTool("sku_get", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("sku_list", {
+server.registerTool("sku_list", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "List the catalogue",
   description: "List catalogue lines with the price in force today, filtered by code prefix, by currency and by tier. A SKU with no price in that currency and tier is listed and said to have none. Free.",
   inputSchema: {
@@ -364,7 +364,7 @@ server.registerTool("sku_list", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("sku_delete", {
+server.registerTool("sku_delete", { annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: false, openWorldHint: false },
   title: "Delete an unused SKU",
   description: "Delete a catalogue line no rate card points at and that never priced a resolved line, freeing a free-tier slot. Otherwise it is refused, naming what depends on it: reprice it to withdraw it instead.",
   inputSchema: { sku: skuArg },
@@ -402,7 +402,7 @@ server.registerTool("sku_delete", {
 
 /* -------------------------------------------------------------- rate cards */
 
-server.registerTool("rate_set", {
+server.registerTool("rate_set", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Set a labour rate",
   description: "Set the hourly charge-out rate on a labour card: role, currency, hourly_minor in whole MINOR units and the day it starts. The same role, currency and date REPLACES that row rather than adding one. Free.",
   inputSchema: {
@@ -460,7 +460,7 @@ server.registerTool("rate_set", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("rate_get", {
+server.registerTool("rate_get", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "The hourly rate on a date",
   description: "Show the hourly rate for a role as of a date and currency: the row picked is the latest valid_from at or before that date, and the answer names it. With no role given, lists every card. Free.",
   inputSchema: {
@@ -516,7 +516,7 @@ const lineSchema = z.object({
   description: str("description", MAX_TEXT).optional().describe("Override the catalogue name on the customer's document"),
 });
 
-server.registerTool("lines_resolve", {
+server.registerTool("lines_resolve", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "Price lines from the catalogue",
   description: "Turn a list of sku or role lines into invoice_create-ready and quote_create-ready items priced from the catalogue as of each line's date. An unknown code is refused by name and never priced. Free.",
   inputSchema: {
@@ -707,7 +707,7 @@ function priceListText(date: string, currency: string, tiers: string[]): string 
   return out.join("\n");
 }
 
-server.registerTool("price_list_text", {
+server.registerTool("price_list_text", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "The price list as plain text",
   description: "Print the price list as plain text: every SKU with its unit, the price in force on a date and any later price booked, then the labour rate cards, under your business name. Free; price_list_pdf writes the A4 page.",
   inputSchema: {
@@ -734,7 +734,7 @@ server.registerTool("price_list_text", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("price_list_pdf", {
+server.registerTool("price_list_pdf", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "The price list as a PDF",
   description: "Call this tool to write the A4 price list for one currency and tier and return the file path: every SKU with its unit, its price in force and the day that price started. Pro.",
   inputSchema: {
@@ -816,7 +816,7 @@ server.registerTool("price_list_pdf", {
 
 /* ------------------------------------------------------------------- report */
 
-server.registerTool("catalogue_report", {
+server.registerTool("catalogue_report", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "Report the catalogue",
   description: "Report the catalogue as at date: how many SKUs there are, how many price rows are in force, which rows a later row already replaces, and which SKUs carry no price in the profile's default currency. Reads only. Pro.",
   inputSchema: {

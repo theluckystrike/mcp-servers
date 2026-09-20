@@ -168,7 +168,7 @@ const server = new McpServer(
 
 /* ------------------------------------------------------------------ business */
 
-server.registerTool("business_set", {
+server.registerTool("business_set", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Set your business details",
   description: "Store the sender details printed on every proposal, contract and letter, plus the currency, VAT, terms and prefix defaults. It writes the SAME shared profile as the invoice server's business_set.",
   inputSchema: z.object({
@@ -333,7 +333,7 @@ async function writeDoc(
   return { path, note: stored + removedNote(count.removed) };
 }
 
-server.registerTool("doc_create", {
+server.registerTool("doc_create", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Create a Word document",
   description: "Call this tool to write a real .docx file from structured sections. Returns the file path, the number of blocks written and the layout used. Free and unlimited.",
   inputSchema: {
@@ -358,7 +358,7 @@ server.registerTool("doc_create", {
   } catch (e) { return fail(String((e as Error).message ?? e)); }
 });
 
-server.registerTool("doc_from_markdown", {
+server.registerTool("doc_from_markdown", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Markdown to Word",
   description: "Call this tool to turn markdown into a .docx, returning the file and a count of blocks by type. Headings, lists, GFM tables and code fences are honoured. Empty markdown is refused, and so is overwriting without the flag.",
   inputSchema: {
@@ -385,7 +385,7 @@ server.registerTool("doc_from_markdown", {
   } catch (e) { return fail(String((e as Error).message ?? e)); }
 });
 
-server.registerTool("doc_read", {
+server.registerTool("doc_read", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "Read a Word document",
   description: "Call this tool to extract the text of an existing .docx. Returns an outline of the headings and the full text in document order, or the block structure. Free and unlimited.",
   inputSchema: {
@@ -411,7 +411,7 @@ server.registerTool("doc_read", {
   } catch (e) { return fail(String((e as Error).message ?? e)); }
 });
 
-server.registerTool("doc_to_html", {
+server.registerTool("doc_to_html", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Word document to HTML",
   description: "Call this tool to convert a .docx to semantic HTML you can open in a browser and print to PDF. Returns the path of the .html file. This is the supported PDF route; no PDF is rendered here. Free and unlimited.",
   inputSchema: {
@@ -436,7 +436,7 @@ server.registerTool("doc_to_html", {
   } catch (e) { return fail(String((e as Error).message ?? e)); }
 });
 
-server.registerTool("doc_fill_template", {
+server.registerTool("doc_fill_template", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Fill a Word template",
   description: "Call this tool to replace {{placeholders}} in a .docx and write a new file, reporting what was filled, unfilled or ignored. Call it with no values to list them. Free: templates up to 10 placeholders.",
   inputSchema: {
@@ -543,7 +543,7 @@ function proposalBody(a: ProposalInput): { blocks: Block[]; total: string; terms
   return { blocks, total, terms, omitted };
 }
 
-server.registerTool("proposal_create", {
+server.registerTool("proposal_create", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Create a proposal",
   description: "Call this tool to produce a client-ready .docx proposal from summary, scope, deliverables, timeline, price and terms. Returns the reference, the total and the file path. Free tier: 3 proposals or contracts per month.",
   inputSchema: {
@@ -606,7 +606,7 @@ server.registerTool("proposal_create", {
   } catch (e) { return fail(String((e as Error).message ?? e)); }
 });
 
-server.registerTool("proposal_update", {
+server.registerTool("proposal_update", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Update a proposal",
   description: "Rewrite an existing proposal in place from its reference. Only the fields you pass change; the rest comes from the data stored at creation. Returns the fields that changed and the file path.",
   inputSchema: {
@@ -665,7 +665,7 @@ server.registerTool("proposal_update", {
   } catch (e) { return fail(String((e as Error).message ?? e)); }
 });
 
-server.registerTool("contract_create", {
+server.registerTool("contract_create", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Create a service agreement",
   description: "Call this tool to produce a freelance service agreement .docx. Returns the reference, the fee and the file path. It is a template skeleton for a lawyer to review, not legal advice. Free tier: 3 agreements per month.",
   inputSchema: {

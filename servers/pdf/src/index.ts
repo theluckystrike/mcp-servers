@@ -175,7 +175,7 @@ const server = new McpServer(
 
 /* --------------------------------------------------------------------- info */
 
-server.registerTool("pdf_info", {
+server.registerTool("pdf_info", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Inspect a PDF",
   description: "Call this tool to inspect a PDF: page count, page sizes in points/mm, paper name, metadata (title, author, producer, dates) and whether it is encrypted. Read-only, never modifies the file. Free tier: unlimited.",
   inputSchema: {
@@ -218,7 +218,7 @@ server.registerTool("pdf_info", {
   } catch (e) { return fail(String((e as Error).message ?? e)); }
 });
 
-server.registerTool("pdf_count", {
+server.registerTool("pdf_count", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Count pages in several PDFs",
   description: "Page count per file plus the total, for any number of PDFs, with how many were readable. A file that cannot be read is reported on its own row and the others still count. Read-only. Free and unlimited.",
   inputSchema: {
@@ -243,7 +243,7 @@ server.registerTool("pdf_count", {
 
 /* -------------------------------------------------------------------- merge */
 
-server.registerTool("pdf_merge", {
+server.registerTool("pdf_merge", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Merge PDFs into one file",
   description: "Call this tool to join several PDFs into one, in the order given. Page sizes are kept as-is, so a merged file may have mixed sizes, and the answer says so. Inputs are never modified. Free tier: up to 5 files per merge.",
   inputSchema: {
@@ -308,7 +308,7 @@ function reserveNameOnly(p: string): string {
 
 /* -------------------------------------------------------------------- split */
 
-server.registerTool("pdf_split", {
+server.registerTool("pdf_split", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Split a PDF into several files",
   description: "Call this tool to write one new PDF per range. Ranges are 1-based and may be open-ended: \"1-3,5,7-\" gives pages 1-3, page 5, and 7 to the end. The input is never modified. Free tier: files up to 30 pages.",
   inputSchema: {
@@ -384,7 +384,7 @@ function freePageText(tool: string, pageCount: number): string {
 
 /* -------------------------------------------------------------------- pages */
 
-server.registerTool("pdf_pages", {
+server.registerTool("pdf_pages", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Extract pages into a new PDF",
   description: "Call this tool to pull selected pages into one new PDF, in the order written: \"2,4-6\" gives four pages. Asking for a page twice copies it twice. The input is never modified. Free tier: files up to 30 pages.",
   inputSchema: {
@@ -424,7 +424,7 @@ server.registerTool("pdf_pages", {
 
 /* ------------------------------------------------------------------- rotate */
 
-server.registerTool("pdf_rotate", {
+server.registerTool("pdf_rotate", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Rotate pages",
   description: "Call this tool to turn pages by a multiple of 90 degrees, clockwise for positive. Rotation is added to whatever the page already had, for a sideways scan. Writes a new file. Free tier: files up to 30 pages.",
   inputSchema: {
@@ -566,7 +566,7 @@ function autoSize(text: string, pageWidth: number, position: Position, font: PDF
   return size;
 }
 
-server.registerTool("pdf_stamp", {
+server.registerTool("pdf_stamp", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Stamp text on a PDF",
   description: "Call this tool to draw a word such as PAID or DRAFT across the pages, in a colour and position you choose. Writes a new file; input untouched. Free tier: the PAID and DRAFT presets in their preset colours.",
   inputSchema: {
@@ -582,7 +582,7 @@ server.registerTool("pdf_stamp", {
   },
 }, async (a) => stamp(a as StampArgs, false));
 
-server.registerTool("pdf_watermark_business", {
+server.registerTool("pdf_watermark_business", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Stamp your business details in the footer",
   description: "Call this tool to put your business name and VAT id in the footer of every page, from the shared profile mcp-invoice and mcp-docx write. Use it before sending a document out. Pro.",
   inputSchema: {
@@ -624,7 +624,7 @@ server.registerTool("pdf_watermark_business", {
 
 /* ------------------------------------------------------------------ reorder */
 
-server.registerTool("pdf_reorder", {
+server.registerTool("pdf_reorder", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Reorder the pages of a PDF",
   description: "Call this tool to write a new PDF with pages in the order you give. The order must name every page exactly once, so nothing drops by accident; use pdf_pages for a subset. Pro.",
   inputSchema: {
@@ -681,7 +681,7 @@ server.registerTool("pdf_reorder", {
 
 /* --------------------------------------------------------------------- text */
 
-server.registerTool("pdf_text", {
+server.registerTool("pdf_text", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "Read the text of a PDF",
   description: "Call this tool for best-effort text extraction from standard-font PDFs. Returns nothing for a scan (no OCR), or glyph indices for a custom-encoded font, and says which case applies. Read-only. Free tier: unlimited.",
   inputSchema: {

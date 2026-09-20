@@ -118,7 +118,7 @@ const server = new McpServer(
   { capabilities: { tools: {} } },
 );
 
-server.registerTool("credit_note_create", {
+server.registerTool("credit_note_create", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Issue a credit note",
   description: "Issue a credit note against an invoice, or standalone: the recipient, the reason (returned goods, overcharge, discount correction, service issue, other), line items with quantity, unit price and tax rate, and the currency. Returns a draft you can still revise; credit_note_finalize burns the final CN number.",
   inputSchema: {
@@ -179,7 +179,7 @@ server.registerTool("credit_note_create", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("credit_note_update", {
+server.registerTool("credit_note_update", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Revise a draft credit note",
   description: "Change a draft credit note while it is still a draft: recipient, reason, lines, currency, invoice reference, issue date or notes. Pass only what changes; new lines replace all old ones. A finalized note is immutable and is refused by name.",
   inputSchema: {
@@ -233,7 +233,7 @@ server.registerTool("credit_note_update", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("credit_note_finalize", {
+server.registerTool("credit_note_finalize", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Finalize a credit note",
   description: "Finalize a draft: burn the final CN-YYYY-NNNN number and freeze the note. From here it cannot be edited or deleted, only rendered and listed, because it is now the document the client sees. Free tier: 10 finalized credit notes; Pro removes the limit.",
   inputSchema: {
@@ -273,7 +273,7 @@ server.registerTool("credit_note_finalize", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("credit_note_list", {
+server.registerTool("credit_note_list", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "List credit notes",
   description: "List credit notes: number or draft id, recipient, reason, status, issue date and total. Filter by recipient (a part of the name is enough), by reason, by status draft or final, and by issue-date period with from and to.",
   inputSchema: {
@@ -309,7 +309,7 @@ server.registerTool("credit_note_list", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("credit_note_get", {
+server.registerTool("credit_note_get", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Read one credit note in full",
   description: "Return one credit note by its CN number or draft id: every line with quantity, unit price and tax, the totals per tax rate, the reason, the invoice it credits, and the notes. Reads only; use credit_note_list for the ids.",
   inputSchema: {
@@ -323,7 +323,7 @@ server.registerTool("credit_note_get", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("credit_note_delete", {
+server.registerTool("credit_note_delete", { annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: false, openWorldHint: false },
   title: "Delete a draft credit note",
   description: "Delete a draft credit note entered wrongly, by its draft id. A finalized note is refused by name: it is a document the client may have seen, and deleting it would leave their copy pointing at nothing.",
   inputSchema: {
@@ -352,7 +352,7 @@ server.registerTool("credit_note_delete", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("credit_note_render", {
+server.registerTool("credit_note_render", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Render a credit note as Markdown or printable HTML",
   description: "Turn a credit note into the document: Markdown to paste into an email or ticket, or a self-contained printable HTML page with every style inline. Drafts render with a DRAFT banner so a half-finished credit cannot be sent by mistake. Writes nothing. Free; the free tier stamps a one-line footer.",
   inputSchema: {
@@ -370,7 +370,7 @@ server.registerTool("credit_note_render", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("credit_note_summary", {
+server.registerTool("credit_note_summary", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Total credited by period, currency and reason",
   description: "How much you have credited: totals per currency over finalized credit notes, broken down by reason and by month, in an optional issue-date period. Drafts count for nothing until they are finalized. Currencies are never added together.",
   inputSchema: {

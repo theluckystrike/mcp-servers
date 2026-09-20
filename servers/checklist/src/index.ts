@@ -220,7 +220,7 @@ const server = new McpServer(
 const checklistArg = str("checklist", MAX_NAME).describe("The checklist id, e.g. CL-0001, or its name when only one carries it");
 const runArg = str("run", MAX_NAME).describe("The run id, e.g. RUN-2026-0001, or its title when only one carries it");
 
-server.registerTool("checklist_create", {
+server.registerTool("checklist_create", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Create a checklist",
   description: "Create a reusable checklist and return its CL-NNNN id: a name, a category and an optional description. Add the steps with checklist_item_add. Free tier: 3 checklists, and unlimited runs of them.",
   inputSchema: {
@@ -254,7 +254,7 @@ server.registerTool("checklist_create", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("checklist_item_add", {
+server.registerTool("checklist_item_add", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Add a step to a checklist",
   description: "Add one step to a checklist and return its I01-style id: the text, an optional section heading, and whether it is required. A required step that is unanswered or failed blocks sign-off; an optional one does not.",
   inputSchema: {
@@ -289,7 +289,7 @@ server.registerTool("checklist_item_add", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("checklist_item_remove", {
+server.registerTool("checklist_item_remove", { annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: false, openWorldHint: false },
   title: "Remove a step from a checklist",
   description: "Remove one step from a checklist by its I01-style id and bump the checklist version. Runs already under way keep the step they started with, so nothing anybody already ticked is rewritten.",
   inputSchema: {
@@ -314,7 +314,7 @@ server.registerTool("checklist_item_remove", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("checklist_show", {
+server.registerTool("checklist_show", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "Show one checklist",
   description: "One checklist with its steps in order, grouped by section, plus how many are required and how many runs have been started from it. Pass as_text for a blank printable copy with a box against each step.",
   inputSchema: {
@@ -332,7 +332,7 @@ server.registerTool("checklist_show", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("checklist_list", {
+server.registerTool("checklist_list", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "List checklists",
   description: "Every checklist with its category, version, step count and how many runs came from it. Filter by category or by a word in the name. Returns at most 500 rows, newest change first.",
   inputSchema: {
@@ -358,7 +358,7 @@ server.registerTool("checklist_list", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("checklist_delete", {
+server.registerTool("checklist_delete", { annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: false, openWorldHint: false },
   title: "Delete a checklist",
   description: "Delete a checklist and its steps for good. Runs already started from it are untouched and stay readable: a run carries its own copy of the steps, so deleting the checklist does not erase what anybody signed.",
   inputSchema: {
@@ -377,7 +377,7 @@ server.registerTool("checklist_delete", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("run_start", {
+server.registerTool("run_start", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Start a run of a checklist",
   description: "Start a dated run of a checklist and return its RUN-YYYY-NNNN id. The steps are COPIED into the run, so editing the checklist afterwards never changes a run already under way. Runs are free and never capped.",
   inputSchema: {
@@ -413,7 +413,7 @@ server.registerTool("run_start", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("run_check", {
+server.registerTool("run_check", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Answer a step in a run",
   description: "Mark one step pass, fail or na, with who did it and when. na means the step did not apply; it counts as answered and never as passed. A step can be answered again while the run is open, and the last answer stands.",
   inputSchema: {
@@ -456,7 +456,7 @@ server.registerTool("run_check", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("run_show", {
+server.registerTool("run_show", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "Show one run",
   description: "The whole run: every step with its answer, who answered it and when, grouped by section, plus the pass, fail and outstanding counts, the failures in full, and whether it can be signed off and why not.",
   inputSchema: { run: runArg },
@@ -467,7 +467,7 @@ server.registerTool("run_show", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("run_list", {
+server.registerTool("run_list", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "List runs",
   description: "Runs newest first, with their checklist, progress and sign-off state. Filter by checklist, by status, by reference or to open runs only. Returns at most 500 rows.",
   inputSchema: {
@@ -496,7 +496,7 @@ server.registerTool("run_list", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("run_sign_off", {
+server.registerTool("run_sign_off", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Sign off a run",
   description: "Sign off a completed run with a name and a date, which freezes it. Refused while a required step is unanswered or failed, unless force is true, and either way the exceptions stay on the record and print on the report.",
   inputSchema: {
@@ -537,7 +537,7 @@ server.registerTool("run_sign_off", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("run_status", {
+server.registerTool("run_status", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "Reopen or abandon a run",
   description: "Move a run back to open so a step can be answered again, or abandon it when the job did not happen. A signed-off run is refused: a signature is the point at which a run stops moving.",
   inputSchema: {
@@ -564,7 +564,7 @@ server.registerTool("run_status", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("run_report", {
+server.registerTool("run_report", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "Produce the run report",
   description: "The run as plain text on every tier: every step with its mark, who answered it, the notes, the counts and a signature block or the recorded signature. Pro also writes it to out_path as a .txt file.",
   inputSchema: {
@@ -591,7 +591,7 @@ server.registerTool("run_report", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("run_delete", {
+server.registerTool("run_delete", { annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: false, openWorldHint: false },
   title: "Delete a run",
   description: "Delete a run for good, with every answer on it. A signed-off run is refused: it is the record of what somebody put their name to. Abandon a run you no longer want instead of deleting a signed one.",
   inputSchema: {

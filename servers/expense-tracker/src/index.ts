@@ -175,7 +175,7 @@ const server = new McpServer(
 
 const amount = (name: string) => z.number().finite().refine((n) => n >= 0, `${name} must be zero or positive`);
 
-server.registerTool("expense_add", {
+server.registerTool("expense_add", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Add an expense",
   description: "Record one expense and return its id, its net/VAT split and its billable flag. The response states every default that was applied, so the caller can see what was assumed rather than having to guess.",
   inputSchema: {
@@ -276,7 +276,7 @@ server.registerTool("expense_add", {
 
 /* --------------------------------------------------------------- expense_list */
 
-server.registerTool("expense_list", {
+server.registerTool("expense_list", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "List expenses",
   description: "List expenses in a date range with each one's net/VAT split, category, merchant, project and billable flag, plus a total per currency. Free reads the last 30 days and says when your range predates it.",
   inputSchema: {
@@ -308,7 +308,7 @@ server.registerTool("expense_list", {
 
 /* ------------------------------------------------------- update / delete */
 
-server.registerTool("expense_update", {
+server.registerTool("expense_update", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Update an expense",
   description: "Change one expense by id; only the fields you pass move. amount is in MAJOR units. A rebilled expense refuses an amount, currency or vat_rate edit unless unlink_rebill drops the invoice link.",
   inputSchema: {
@@ -368,7 +368,7 @@ server.registerTool("expense_update", {
   } catch (e) { return fail(String((e as Error).message ?? e)); }
 });
 
-server.registerTool("expense_delete", {
+server.registerTool("expense_delete", { annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: false, openWorldHint: false },
   title: "Delete an expense",
   description: "Delete one expense by id and report what went. The receipt FILE stays on disk. Deleting a rebilled expense loses the record of what an invoice charged, so correct it with expense_update instead.",
   inputSchema: { id: text(64) },
@@ -387,7 +387,7 @@ server.registerTool("expense_delete", {
 
 /* -------------------------------------------------------------- receipt_attach */
 
-server.registerTool("receipt_attach", {
+server.registerTool("receipt_attach", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Attach a receipt",
   description: "Call this tool to attach a receipt file to a stored expense. Returns the stored path and sha256. The file must exist; it is hashed so a later audit can prove the file has not changed.",
   inputSchema: { id: text(64).describe("Expense id from expense_add or expense_list"), path: text(4096).describe("Path to the receipt file. It must already exist; a leading ~ is expanded. The path and its sha256 are stored on the expense") },
@@ -410,7 +410,7 @@ server.registerTool("receipt_attach", {
 
 /* -------------------------------------------------------------- category_rules */
 
-server.registerTool("category_rules", {
+server.registerTool("category_rules", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Category rules",
   description: "Replace the merchant-to-category rules, or call with no rules to list them. Returns the stored rule list. The rules are applied by expense_add whenever a call gives no category of its own.",
   inputSchema: {
@@ -449,7 +449,7 @@ server.registerTool("category_rules", {
 
 /* ------------------------------------------------------------ expense_settings */
 
-server.registerTool("expense_settings", {
+server.registerTool("expense_settings", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Expense defaults",
   description: "Read or set the defaults expense_add uses when a call does not name them: default_vat_rate and default_currency. Returns the stored defaults. Call with no arguments to read them without changing anything.",
   inputSchema: {
@@ -532,7 +532,7 @@ function summarise(rows: Expense[], by: GroupBy) {
   }).sort((a, b) => a.currency.localeCompare(b.currency));
 }
 
-server.registerTool("expense_summary", {
+server.registerTool("expense_summary", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "Summarise expenses",
   description: "Totals for a date range grouped by category, project, month or merchant, per currency with gross, net and VAT, never mixed. Receipts only; bank transactions are totalled by bank-statement's statement_summary.",
   inputSchema: {
@@ -555,7 +555,7 @@ server.registerTool("expense_summary", {
 
 /* ---------------------------------------------------------------- mileage_add */
 
-server.registerTool("mileage_add", {
+server.registerTool("mileage_add", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Add a mileage claim",
   description: "Record a business trip as an expense, priced as distance x rate. Give exactly one of km or miles. Returns the saved id with the rate used, where that rate came from and the money, in the rate's own currency.",
   inputSchema: {
@@ -661,7 +661,7 @@ function csvCell(v: unknown): string {
   return /[",\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
 }
 
-server.registerTool("expense_export", {
+server.registerTool("expense_export", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "Export expenses",
   description: "Call this tool to write manually logged receipts to a csv, xlsx or json file. Returns the path. Bank transactions for the period are exported by bank-statement's statement_export tool, not this one.",
   inputSchema: {
@@ -734,7 +734,7 @@ server.registerTool("expense_export", {
 
 /* ---------------------------------------------------------- expense_to_invoice */
 
-server.registerTool("expense_to_invoice", {
+server.registerTool("expense_to_invoice", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Rebill expenses to an invoice",
   description: "Preview the unbilled billable expenses of one project as invoice_create line items (description, quantity, unit_price, tax_rate), grouped per currency. Read-only: nothing is marked rebilled here.",
   inputSchema: {
@@ -948,7 +948,7 @@ server.registerTool("expense_to_invoice", {
 
 /* ------------------------------------------------------ expense_mark_rebilled */
 
-server.registerTool("expense_mark_rebilled", {
+server.registerTool("expense_mark_rebilled", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Mark expenses as rebilled",
   description: "Mark expenses as rebilled once the invoice that carries them actually exists. Pass the expense_ids of one currency group from expense_to_invoice, or that project, date range and currency. Returns what was marked.",
   inputSchema: {

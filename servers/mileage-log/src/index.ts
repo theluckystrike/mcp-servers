@@ -155,7 +155,7 @@ const server = new McpServer(
 
 const unitArg = str("unit", 20).describe("miles or km; spellings like mi and kilometre are accepted");
 
-server.registerTool("trip_add", {
+server.registerTool("trip_add", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Log a trip",
   description: "Log one drive in the mileage log: the date, where from and to, the distance in miles or km, the purpose, and the category (business, medical, moving, charitable, personal). Returns its TR-YYYY-NNNN id. Free tier: 20 trips per calendar month, counted on the month of the trip date.",
   inputSchema: {
@@ -226,7 +226,7 @@ server.registerTool("trip_add", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("trip_list", {
+server.registerTool("trip_list", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "List trips",
   description: "List trips in the mileage log, oldest first: date, from, to, distance, category, and the amount each earns under the rate in force on its day (or the plain reason it is unpriced). Filter by date range and category. Reads only.",
   inputSchema: {
@@ -259,7 +259,7 @@ server.registerTool("trip_list", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("trip_remove", {
+server.registerTool("trip_remove", { annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: false, openWorldHint: false },
   title: "Remove a trip",
   description: "Remove one trip from the mileage log by its exact TR-YYYY-NNNN id, for entries made by mistake. The id is not reissued: a gap in the TR series is the record that a trip was removed.",
   inputSchema: {
@@ -281,7 +281,7 @@ server.registerTool("trip_remove", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("rate_set", {
+server.registerTool("rate_set", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Set a mileage rate",
   description: "Set what one mile or km is worth for one category in one jurisdiction from a date forward: the jurisdiction label, the category, the rate per unit, the currency, and the date it takes effect. Rates form a series per jurisdiction and category, and each trip earns the rate in force on the day it was driven. No rate ships with this server; the figures are yours to verify. Free tier: one rate per jurisdiction and category; the year-over-year series is Pro.",
   inputSchema: {
@@ -344,7 +344,7 @@ server.registerTool("rate_set", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("rate_list", {
+server.registerTool("rate_list", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "List the rates on file",
   description: "List every mileage rate on file, grouped by jurisdiction and category with the effective-from dates in order: the series each trip is priced from. Reads only.",
   inputSchema: {},
@@ -365,7 +365,7 @@ server.registerTool("rate_list", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("mileage_summary", {
+server.registerTool("mileage_summary", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "Summarize a date range",
   description: "The deductible mileage for a date range, per category: trips, distance kept per unit, the rate each trip earned (the one in force on its day), and the deductible amount, totalled per currency. Trips with no applicable rate are listed with the reason, not silently dropped. Defaults to the current calendar year. Never metered.",
   inputSchema: {
@@ -405,7 +405,7 @@ server.registerTool("mileage_summary", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("mileage_export", {
+server.registerTool("mileage_export", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "Export the log as CSV for an accountant",
   description: "The mileage log as CSV, one row per trip, oldest first: date, from, to, distance, unit, category, the rate applied (the one in force on the trip's day), the currency and the amount, plus purpose, jurisdiction, effective_from and id. The amount column is a bare number a spreadsheet reads. Refuses while any non-personal trip in the window is unpriced, so an accountant never receives a log with silent gaps. Pro.",
   inputSchema: {

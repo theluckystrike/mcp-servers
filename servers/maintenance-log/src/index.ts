@@ -92,7 +92,7 @@ const server = new McpServer(
 
 const assetArg = str("asset", MAX_NAME).describe("The asset id, e.g. AST-2026-0003, its serial or asset tag, or its name when only one asset has it");
 
-server.registerTool("asset_add", {
+server.registerTool("asset_add", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Add an asset to the register",
   description: "Add one piece of equipment to the maintenance register: its name, its serial or asset tag, where it lives, and the currency its costs are in. Returns the AST-YYYY-NNNN id. Free tier: 3 assets; logging work on the assets you have is never metered.",
   inputSchema: {
@@ -144,7 +144,7 @@ server.registerTool("asset_add", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("maintenance_log", {
+server.registerTool("maintenance_log", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Log maintenance on an asset",
   description: "Log work done on an asset: the day, what was done, the cost in whole cents, who did it, and when the next service falls due -- as a date (next_due) or as an interval in days (interval_days), never both. A repair that sets no schedule takes neither. A future work date is refused.",
   inputSchema: {
@@ -196,7 +196,7 @@ server.registerTool("maintenance_log", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("maintenance_due", {
+server.registerTool("maintenance_due", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Report what is overdue and what is coming due",
   description: "The due report across every asset: what is overdue and by how many days, what falls due within the next N days (default 30), what is scheduled later, and what has no schedule at all. Computed from the stored next-due dates against today, at call time. Pro feature.",
   inputSchema: {
@@ -248,7 +248,7 @@ server.registerTool("maintenance_due", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("asset_history", {
+server.registerTool("asset_history", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Read one asset's log and total spend",
   description: "Read one asset in full by id, tag or name: every log entry in chronological order, the total spend as integer cents with a formatted amount, the last service date, and the next-due date the asset currently lives under. Reads only.",
   inputSchema: {
@@ -279,7 +279,7 @@ server.registerTool("asset_history", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("maintenance_export", {
+server.registerTool("maintenance_export", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "Export the log as CSV or Markdown",
   description: "Export maintenance entries dated inside a range. CSV (free): one row per entry, ready for a spreadsheet. Markdown (Pro): one section per asset with its entries, total spend and next due date, ready to paste into notes or a report. Writes nothing.",
   inputSchema: {
@@ -346,7 +346,7 @@ server.registerTool("maintenance_export", {
   } catch (e) { return fail((e as Error).message); }
 });
 
-server.registerTool("asset_remove", {
+server.registerTool("asset_remove", { annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: false, openWorldHint: false },
   title: "Remove an asset from the register",
   description: "Remove an asset entered by mistake or sold off. One that carries a maintenance log is refused unless confirm is true, naming what would be lost, because removing it loses the record of work done. The AST number is never reissued.",
   inputSchema: {
