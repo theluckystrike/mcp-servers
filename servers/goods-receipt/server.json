@@ -1,7 +1,7 @@
 {
  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
  "name": "io.github.theluckystrike/goods-receipt",
- "description": "Goods receipt notes against purchase orders: over/under tolerances, damaged and short units, discrepancies, and CSV export.",
+ "description": "Goods receipt notes vs purchase orders: tolerances, damaged/short units, CSV export.",
  "version": "0.22.0",
  "repository": {
   "url": "https://github.com/theluckystrike/mcp-servers",
