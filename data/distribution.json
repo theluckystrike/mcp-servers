@@ -617,7 +617,7 @@
       ],
       "verified_live": 0,
       "last_checked": "2026-09-20",
-      "note": "~3M visits/mo. Form: futuretools.io/submit-a-tool. Category Finance; pilot: Invoice MCP.",
+      "note": "46/46 submitted; earliest slugs (invoice, quotes, payroll, vat, inventory, contracts) still 404 on futuretools.io/tools \u2014 review pending",
       "submitted_servers": [
         "invoice",
         "quotes",
@@ -634,7 +634,8 @@
       "batch_utc": "2026-09-20T15:24:48Z",
       "batch2_utc": "2026-09-20T16:20:00Z",
       "last_updated": "2026-09-20",
-      "accepted": 16
+      "accepted": 16,
+      "live_checked_at": "2026-09-20"
     }
   },
   "per_server": {
@@ -1063,13 +1064,26 @@
     "note": "7 early listings (S48 invoicing/leave + 1 prior + 4 unrecorded) not in per_server; 42 = report-trail running total",
     "mcpservers_org_reported": 52,
     "percall_accepted": 10,
-    "total_submitted": 187
+    "total_submitted": 187,
+    "session_s62h_scouting": "b6+b8 done 2026-09-20"
   },
   "outcomes": {
     "agenticskills_s62d2": {
       "submitted": 11,
       "date": "2026-09-20",
       "note": "batch2: coa, bankrec, dunning, expense, kanban + 6 flagships prior"
+    }
+  },
+  "lane_scouting": {
+    "2026-09-20": {
+      "mcprepository.com": "monorepo \"already indexed\", no per-server search results \u2014 dead lane",
+      "pulsemcp": "403 all endpoints; submissions paused (browser-checked 2026-09-20)",
+      "mcp.so": "paid $39 or GitHub-issue; skipped",
+      "cline_mcp_marketplace": "30 issues already open from theluckystrike (2026-09-02..06), 0 closed \u2014 review queue not moving; submission #2400 (invoice) still open; NOT re-submitting",
+      "mcp-marketplace.io": "FOR-CREATORS monetization lane found \u2014 candidate for payment options",
+      "anthropic_connectors": "free review pipeline; requires remote Streamable HTTP + OAuth + privacy policy + demo account \u2014 strategic gap: estate is stdio-only",
+      "openai_apps": "same remote requirement + org verification gate",
+      "conclusion": "No new free instant-live directory found. Highest-impact move = stand up remote Streamable HTTP hosting (mcp.zovo.one already live) to unlock Anthropic/OpenAI review lanes."
     }
   }
 }
