@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-09-20T06:23:05.983456+00:00",
+  "updated_at": "2026-09-20T06:40:01.000Z",
   "surfaces": {
     "github": {
       "status": "published",
@@ -70,6 +70,24 @@
         "action": "directory badges added to READMEs of 4 servers with VERIFIED-LIVE mcpservers.org listing pages (invoice, time-tracker, price-tracker, spreadsheet)",
         "repos": "4 monorepo + 4 standalone mirrors, all pushed and verified via raw.githubusercontent.com",
         "finding": "PROBE: only 4 of 46 estate slugs resolve 200 on listing pattern /servers/github-com-theluckystrike-mcp-servers-tree-main-servers-{slug}; other 42 accepted submissions have no public listing page (404)"
+      },
+      "resubmit_s58": {
+        "date": "2026-09-20",
+        "action": "resubmitted 10 flagship servers via /submit form (free lane); each verified 'Submission Successful'",
+        "servers": [
+          "quotes",
+          "calendar",
+          "expense-tracker",
+          "pdf",
+          "resume",
+          "barcode",
+          "currency",
+          "image",
+          "spreadsheet",
+          "time-tracker"
+        ],
+        "note": "invoice resubmitted as 11th (already had live listing); publication of listing pages NOT yet verified - S57 probe showed only 4/46 pages live; recheck in S59",
+        "baseline": "quotes listing URL 404 as of 2026-09-20 (pre-publication)"
       }
     },
     "mcpmarket.com": {
