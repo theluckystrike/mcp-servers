@@ -520,7 +520,13 @@
         "timezone",
         "work-order",
         "zip"
-      ]
+      ],
+      "batch4_s62f": [
+        "price-tracker",
+        "service-agreement"
+      ],
+      "complete": true,
+      "note": "FULL LANE 46/46 (42 real + 4 legacy-alias skips): batches flagships_s62d, batch2_s62d2, batch3_s62e, batch4_s62f"
     }
   },
   "per_server": {
@@ -941,7 +947,7 @@
       "note": "new free lane discovered; invoice submitted; 5-10 more flagships queued"
     }
   },
-  "total_submitted": 97,
+  "total_submitted": 99,
   "totals": {
     "submitted": 42,
     "mcpservers_org": 42,
