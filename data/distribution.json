@@ -1101,5 +1101,13 @@
     ],
     "anthropic_directory_readiness": "metadata gate mostly green; missing vendored servers: lease-contract, loan-agreement, nondisclosure-agreement, non-compete-clause, payment-terms, performance-review (+office-suite,vat,payroll coverage check)",
     "submission_blocker": "Anthropic Connectors Directory portal may require Claude Team/Enterprise org \u2014 needs Mike's account check"
+  },
+  "mcpmarketplace": {
+    "site": "https://mcp-marketplace.io",
+    "kind": "monetization lane (b10)",
+    "status": "account created 2026-09-20 (hello@zovo.one, creator mode) \u2014 email verification + login pending",
+    "model": "Stripe checkout, one-time or subscription, creator keeps large share; automated security scan, minutes-to-approve; remote HTTP servers supported (fits mcp.zovo.one/mcp/*)",
+    "next": "verify email \u2192 sign in \u2192 submit remote invoice server as pilot (free tier) \u2192 then pro-priced rollouts",
+    "payment_fit": "directly serves the monetize-with-payment-options goal"
   }
 }
