@@ -41,7 +41,7 @@ mkdir -p "$BUNDLES"
 MCPB="npx -y @anthropic-ai/mcpb"
 LIC_SRC="$ROOT/packages/mcp-license"
 
-SERVERS="time-tracker price-tracker spreadsheet invoice expense-tracker currency timezone docx resume recurring clauses pdf calendar kanban image bank-statement quotes barcode zip billing-docs deposits per-diem asset-register statement-of-account cash-book amortization petty-cash work-order catalogue change-order delivery-schedule packing-list checklist bill-of-sale credit-note job-card dunning-letters supplier-list service-agreement maintenance-log mileage-log"
+SERVERS="time-tracker price-tracker spreadsheet invoice expense-tracker currency timezone docx resume recurring clauses pdf calendar kanban image bank-statement quotes barcode zip billing-docs deposits per-diem asset-register statement-of-account cash-book amortization petty-cash work-order catalogue change-order delivery-schedule packing-list checklist bill-of-sale credit-note job-card dunning-letters supplier-list service-agreement maintenance-log mileage-log purchase-requisition goods-receipt onboarding leave"
 
 declare -A DISPLAY_NAME=(
   [time-tracker]="Time Tracker"
@@ -85,6 +85,10 @@ declare -A DISPLAY_NAME=(
   [service-agreement]="Service Agreement"
   [maintenance-log]="Maintenance Log"
   [mileage-log]="Mileage Log"
+  [purchase-requisition]="Purchase Requisition"
+  [goods-receipt]="Goods Receipt"
+  [onboarding]="Onboarding"
+  [leave]="Leave"
 )
 
 declare -A KEYWORDS=(
@@ -129,6 +133,10 @@ declare -A KEYWORDS=(
   [service-agreement]='["mcp","model-context-protocol","service-agreement","service-contract","freelance","contract","liability"]'
   [maintenance-log]='["mcp","model-context-protocol","maintenance-log","maintenance-schedule","equipment","service-log"]'
   [mileage-log]='["mcp","model-context-protocol","mileage-log","mileage-logbook","mileage-tracker","tax-deduction","expenses"]'
+  [purchase-requisition]='["mcp","model-context-protocol","purchase-requisition","purchase-order","requisition","approval","procurement"]'
+  [goods-receipt]='["mcp","model-context-protocol","goods-receipt","grn","delivery","receiving","warehouse"]'
+  [onboarding]='["mcp","model-context-protocol","onboarding","new-hire","hr","checklist","employee"]'
+  [leave]='["mcp","model-context-protocol","leave","leave-management","pto","absence","hr"]'
 )
 
 # ------------------------------------------------------------------ helpers

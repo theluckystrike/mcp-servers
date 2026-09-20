@@ -1,0 +1,315 @@
+#!/usr/bin/env node
+import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { z } from "zod";
+import { createLicenseGate, withFileLock } from "@theluckystrike/mcp-license";
+import {
+  DEFAULT_OVER_TOLERANCE, DEFAULT_UNDER_TOLERANCE, GoodsReceiptNote, GrnCell, GrnLine,
+  MAX_DESC, MAX_GRN_LINES, MAX_GRNS, MAX_LINES, MAX_NOTE, MAX_POS, MAX_QTY, MAX_REF, MAX_SKU,
+  MAX_TOLERANCE, PoLine, PurchaseOrder, isIsoDate, lineId, normaliseText, skuNo, tolerance,
+} from "./lib.js";
+import { VERSION } from "./version.js";
+import {
+  Store, getStore, setStore, lockPath, nextPoId, nextGrnId, findPo, findGrn,
+  receivedForLine, reconcile, reportLine,
+} from "./store.js";
+
+const gate = createLicenseGate({ product: "goods-receipt" });
+
+const ok = (text: string) => ({ content: [{ type: "text" as const, text }] });
+const json = (v: unknown) => ok(JSON.stringify(v));
+const fail = (text: string) => ({ content: [{ type: "text" as const, text: `Error: ${text}` }], isError: true as const });
+
+/** Every mutation runs under the store's file lock, so two processes reconcile. */
+function locked<T>(fn: () => T): Promise<T> {
+  return withFileLock(lockPath(), () => fn(), { timeoutMs: 20000 });
+}
+
+function requirePro(feature: string, toolName: string) {
+  if (!gate.isPro()) throw new Error(`${feature} is Pro. ${gate.upgradeText(feature, toolName)}`);
+}
+
+const str = (field: string, max: number) => z.string().max(max, `${field} must be ${max} characters or fewer`);
+
+const server = new McpServer({ name: "goods-receipt", version: VERSION });
+
+const soLine = z.object({
+  sku: str("sku", MAX_SKU).describe("Stock-keeping unit / model code"),
+  description: str("description", MAX_DESC).describe("What it is"),
+  ordered: z.number().int().min(1).max(MAX_QTY).describe("Whole units ordered"),
+});
+
+function buildGrnLine(c: GrnCell, grnLineId: string, poRow: PoLine): GrnLine {
+  const received = c.received ?? 0;
+  const damaged = c.damaged ?? 0;
+  if (received <= 0 && damaged <= 0) throw new Error("a GRN line must receive or damage at least one unit. Nothing was written.");
+  return {
+    id: grnLineId, line: c.line, received, damaged,
+    shortage: c.shortage ?? Math.max(0, poRow.ordered - received),
+    damageNote: c.damageNote ? normaliseText(c.damageNote) : undefined,
+    shortageNote: c.shortageNote ? normaliseText(c.shortageNote) : undefined,
+    status: "open",
+  };
+}
+
+function poLineRef(po: PurchaseOrder, ref: string): PoLine {
+  const l = po.lines.find((x) => x.id.toLowerCase() === ref.trim().toLowerCase() || x.id.toLowerCase() === `${po.id.toLowerCase()}-${ref.trim().toLowerCase()}`);
+  if (!l) throw new Error(`line "${ref}" does not exist on ${po.id}. Lines: ${po.lines.map((x) => x.id).join(", ")}. Nothing was written.`);
+  return l;
+}
+
+function serializeGrn(store: Store, grn: GoodsReceiptNote): Record<string, unknown> {
+  const po = store.pos.find((p) => p.id === grn.po);
+  return {
+    id: grn.id, po: grn.po, poReference: po?.reference, receivedAt: grn.receivedAt,
+    carrier: grn.carrier, note: grn.note, status: grn.status,
+    lines: grn.lines.map((l) => {
+      const poLine = po?.lines.find((p) => p.id === l.line);
+      return { id: l.id, line: l.line, sku: poLine?.sku, received: l.received, damaged: l.damaged, shortage: l.shortage, damageNote: l.damageNote, shortageNote: l.shortageNote };
+    }),
+  };
+}
+
+server.registerTool("po_add", {
+  title: "Add a purchase order",
+  description: "Create a purchase order to receive goods against. Lines carry a sku, a description and an ordered whole-unit quantity. Over/under tolerances are whole percentages allowed above/below ordered before a GRN is flagged. Ids look like PO-0001. Free tier, full CRUD.",
+  inputSchema: {
+    reference: str("reference", MAX_REF).describe("Your own purchase-order number"),
+    supplier: str("supplier", MAX_REF).describe("Who you ordered from"),
+    overTolerancePct: z.number().int().min(0).max(MAX_TOLERANCE).default(DEFAULT_OVER_TOLERANCE).describe("Whole % extra allowed above ordered (default 10)"),
+    underTolerancePct: z.number().int().min(0).max(MAX_TOLERANCE).default(DEFAULT_UNDER_TOLERANCE).describe("Whole % short allowed below ordered (default 10)"),
+    lines: z.array(soLine).min(1).max(MAX_LINES).describe("Lines on this purchase order"),
+  },
+}, async (a: { reference: string; supplier: string; overTolerancePct?: number; underTolerancePct?: number; lines: { sku: string; description: string; ordered: number }[] }) => {
+  try {
+    const reference = normaliseText(a.reference);
+    const supplier = normaliseText(a.supplier);
+    if (!reference) throw new Error("reference is required. Nothing was written.");
+    if (!supplier) throw new Error("supplier is required. Nothing was written.");
+    return json(await locked(() => {
+      const store = getStore();
+      if (store.pos.length >= MAX_POS) throw new Error(`this store is full at ${MAX_POS} purchase orders. Nothing was written.`);
+      const id = nextPoId(store.pos.map((p) => p.id));
+      const po: PurchaseOrder = {
+        id, reference, supplier,
+        overTolerancePct: Math.floor(a.overTolerancePct ?? DEFAULT_OVER_TOLERANCE),
+        underTolerancePct: Math.floor(a.underTolerancePct ?? DEFAULT_UNDER_TOLERANCE),
+        lines: a.lines.map((l, i) => ({ id: `${id}-L${String(i + 1).padStart(2, "0")}`, sku: skuNo(l.sku), description: normaliseText(l.description), ordered: Math.floor(l.ordered) })),
+        status: "open",
+        createdAt: new Date().toISOString().slice(0, 10),
+      };
+      setStore({ ...store, pos: [...store.pos, po] });
+      return { id, reference, supplier, lines: po.lines.length };
+    }));
+  } catch (err) { return fail(err instanceof Error ? err.message : String(err)); }
+});
+
+server.registerTool("grn_add", {
+  title: "Receive goods against a purchase order",
+  description: "Create a goods-receipt note (GRN) against an open purchase order. Give one cell per PO line: the whole units received and/or damaged. received is checked against the line's ordered quantity and the PO's over tolerance; receiving past the over tolerance is refused unless declared damaged. Shortage is recorded automatically (ordered minus received, floored at zero) and shown as a discrepancy. Partial deliveries are fine: raise several GRNs against the same PO. Free tier, full CRUD.",
+  inputSchema: {
+    po: str("po", 40).describe("Purchase-order id or reference, e.g. PO-0001"),
+    receivedAt: str("receivedAt", 10).optional().describe("ISO date of physical receipt (default today)"),
+    carrier: str("carrier", MAX_REF).optional().describe("Delivered by"),
+    note: str("note", MAX_NOTE).optional().describe("Memo for the whole GRN"),
+    lines: z.array(z.object({
+      line: str("line", 40).describe("PO line to receive, e.g. L01"),
+      received: z.number().int().min(0).max(MAX_QTY).describe("Whole units of good stock"),
+      damaged: z.number().int().min(0).max(MAX_QTY).optional().describe("Whole units received but damaged"),
+      shortage: z.number().int().min(0).max(MAX_QTY).optional().describe("Whole units short; when you know the count"),
+      damageNote: str("damageNote", MAX_NOTE).optional().describe("What was damaged"),
+      shortageNote: str("shortageNote", MAX_NOTE).optional().describe("Why it is short"),
+    })).min(1).max(MAX_GRN_LINES).describe("Which PO lines you are receiving now"),
+  },
+}, async (a: { po: string; receivedAt?: string; carrier?: string; note?: string; lines: GrnCell[] }) => {
+  try {
+    return json(await locked(() => {
+      const store = getStore();
+      const po = findPo(store.pos, a.po);
+      if (po.status === "closed") throw new Error(`${po.id} is closed. Nothing was written.`);
+      if (store.grns.length >= MAX_GRNS) throw new Error(`this store is full at ${MAX_GRNS} goods-receipt notes. Nothing was written.`);
+      const receivedAt = a.receivedAt ?? new Date().toISOString().slice(0, 10);
+      if (!isIsoDate(receivedAt)) throw new Error(`receivedAt "${receivedAt}" is not an ISO date (YYYY-MM-DD). Nothing was written.`);
+      const id = nextGrnId(store.grns.map((g) => g.id));
+      const grn: GoodsReceiptNote = { id, po: po.id, receivedAt, carrier: a.carrier ? normaliseText(a.carrier) : undefined, note: a.note ? normaliseText(a.note) : undefined, lines: [], status: "open", createdAt: new Date().toISOString().slice(0, 10) };
+      const byLine: Record<string, { taken: number; poLine: PoLine }> = {};
+      a.lines.forEach((c, i) => {
+        const poLine = poLineRef(po, c.line);
+        const gl = buildGrnLine({ ...c, line: poLine.id }, `${id}-L${String(i + 1).padStart(2, "0")}`, poLine);
+        grn.lines.push(gl);
+        const prev = byLine[poLine.id];
+        byLine[poLine.id] = { taken: (prev?.taken ?? 0) + gl.received + gl.damaged, poLine };
+      });
+      for (const [poLineId, { taken, poLine }] of Object.entries(byLine)) {
+        const cumulative = receivedForLine(store, po, poLineId) + taken;
+        if (tolerance(cumulative, poLine.ordered, po.overTolerancePct, po.underTolerancePct) === "over") {
+          throw new Error(`${poLineId}: receiving ${cumulative} of ${poLine.ordered} breaks the ${po.overTolerancePct}% over tolerance. Nothing was written.`);
+        }
+      }
+      setStore({ ...store, grns: [...store.grns, grn] });
+      return serializeGrn({ ...store, grns: [...store.grns, grn] }, grn);
+    }));
+  } catch (err) { return fail(err instanceof Error ? err.message : String(err)); }
+});
+
+server.registerTool("grn_line_add", {
+  title: "Add a line to an open GRN",
+  description: "Add another PO line (or more units on a line already open on this GRN) to an existing open goods-receipt note. Useful when one delivery arrives in batches. The over-tolerance gate still applies to the PO line's cumulative received count across every GRN. Free tier, full CRUD.",
+  inputSchema: {
+    grn: str("grn", 40).describe("Open GRN id, e.g. GRN-0001"),
+    line: str("line", 40).describe("PO line to receive, e.g. L01"),
+    received: z.number().int().min(0).max(MAX_QTY).describe("Whole units of good stock"),
+    damaged: z.number().int().min(0).max(MAX_QTY).optional().describe("Whole units received but damaged"),
+    damageNote: str("damageNote", MAX_NOTE).optional().describe("What was damaged"),
+    shortageNote: str("shortageNote", MAX_NOTE).optional().describe("Why it is short"),
+  },
+}, async (a: { grn: string; line: string; received: number; damaged?: number; damageNote?: string; shortageNote?: string }) => {
+  try {
+    return json(await locked(() => {
+      const store = getStore();
+      const grn = findGrn(store.grns, a.grn);
+      if (grn.status === "closed") throw new Error(`${grn.id} is closed. Nothing was written.`);
+      if (grn.lines.length >= MAX_GRN_LINES) throw new Error(`${grn.id} already has ${MAX_GRN_LINES} lines. Nothing was written.`);
+      const po = findPo(store.pos, grn.po);
+      const poLine = poLineRef(po, a.line);
+      const gl = buildGrnLine({ line: poLine.id, received: a.received, damaged: a.damaged, damageNote: a.damageNote, shortageNote: a.shortageNote }, `${grn.id}-L${String(grn.lines.length + 1).padStart(2, "0")}`, poLine);
+      const cumulative = receivedForLine(store, po, poLine.id) + gl.received + gl.damaged;
+      if (tolerance(cumulative, poLine.ordered, po.overTolerancePct, po.underTolerancePct) === "over") {
+        throw new Error(`${poLine.id}: receiving ${cumulative} of ${poLine.ordered} breaks the ${po.overTolerancePct}% over tolerance. Nothing was written.`);
+      }
+      const updated = { ...grn, lines: [...grn.lines, gl] };
+      setStore({ ...store, grns: store.grns.map((g) => g.id === grn.id ? updated : g) });
+      return serializeGrn(store, updated);
+    }));
+  } catch (err) { return fail(err instanceof Error ? err.message : String(err)); }
+});
+
+server.registerTool("grn_list", {
+  title: "List goods-receipt notes",
+  description: "List goods-receipt notes, newest first, optionally filtered to one purchase order.",
+  inputSchema: {
+    po: str("po", 40).optional().describe("Only GRNs against this purchase order"),
+    includeLines: z.boolean().default(false).describe("Include line detail"),
+  },
+}, async (a: { po?: string; includeLines?: boolean }) => {
+  try {
+    return json(await locked(() => {
+      const store = getStore();
+      let list = [...store.grns].reverse();
+      if (a.po) { const po = findPo(store.pos, a.po); list = list.filter((g) => g.po === po.id); }
+      return a.includeLines ? list.map((g) => serializeGrn(store, g)) : list.map((g) => ({ id: g.id, po: g.po, receivedAt: g.receivedAt, status: g.status, lines: g.lines.length }));
+    }));
+  } catch (err) { return fail(err instanceof Error ? err.message : String(err)); }
+});
+
+server.registerTool("grn_get", {
+  title: "Get one goods-receipt note",
+  description: "Get a single goods-receipt note by id, with its lines, damage and shortage per line.",
+  inputSchema: { grn: str("grn", 40).describe("GRN id, e.g. GRN-0001") },
+}, async (a: { grn: string }) => {
+  try {
+    return json(await locked(() => serializeGrn(getStore(), findGrn(getStore().grns, a.grn))));
+  } catch (err) { return fail(err instanceof Error ? err.message : String(err)); }
+});
+
+server.registerTool("grn_discrepancy", {
+  title: "List discrepancies",
+  description: "List lines that are not as ordered: damaged units, a declared shortage, or received below the PO line's under tolerance. Optionally filter to one PO.",
+  inputSchema: {
+    po: str("po", 40).optional().describe("Only discrepancies on this purchase order"),
+    includeResolved: z.boolean().default(false).describe("Include GRNs that are closed (resolved)"),
+  },
+}, async (a: { po?: string; includeResolved?: boolean }) => {
+  try {
+    return json(await locked(() => {
+      const store = getStore();
+      const out: Record<string, unknown>[] = [];
+      for (const grn of store.grns) {
+        if (grn.status === "closed" && !a.includeResolved) continue;
+        if (a.po) { const po = findPo(store.pos, a.po); if (grn.po !== po.id) continue; }
+        for (const l of grn.lines) {
+          const poLine = findPo(store.pos, grn.po).lines.find((p) => p.id === l.line);
+          if (l.damaged > 0 || l.shortage > 0) {
+            out.push({ grn: grn.id, line: l.id, sku: poLine?.sku, received: l.received, damaged: l.damaged, shortage: l.shortage, damageNote: l.damageNote, shortageNote: l.shortageNote });
+          }
+        }
+      }
+      return out;
+    }));
+  } catch (err) { return fail(err instanceof Error ? err.message : String(err)); }
+});
+
+server.registerTool("grn_close", {
+  title: "Close a goods-receipt note",
+  description: "Close an open GRN. A closed GRN can no longer take lines, and its discrepancies are treated as resolved. Closing is free-tier and never mutates the PO.",
+  inputSchema: { grn: str("grn", 40).describe("Open GRN id, e.g. GRN-0001") },
+}, async (a: { grn: string }) => {
+  try {
+    return json(await locked(() => {
+      const store = getStore();
+      const grn = findGrn(store.grns, a.grn);
+      if (grn.status === "closed") throw new Error(`${grn.id} is already closed.`);
+      setStore({ ...store, grns: store.grns.map((g) => g.id === grn.id ? { ...g, status: "closed", lines: g.lines.map((l) => ({ ...l, status: "closed" })) } : g) });
+      return { id: grn.id, status: "closed" };
+    }));
+  } catch (err) { return fail(err instanceof Error ? err.message : String(err)); }
+});
+
+server.registerTool("grn_status_report", {
+  title: "Goods-receipt status report",
+  description: "Reconcile every purchase order against every GRN: open POs (not yet fully received), POs fully received within tolerance, POs with at least one discrepancy, and per-line open/short/damaged counts. Nothing is written.",
+  inputSchema: { includeOnlyDiscrepancies: z.boolean().default(false).describe("Only list POs with at least one discrepancy") },
+}, async (a: { includeOnlyDiscrepancies?: boolean }) => {
+  try {
+    return json(await locked(() => {
+      const store = getStore();
+      const rows = store.pos.map((po) => ({
+        id: po.id, reference: po.reference, supplier: po.supplier, status: po.status, createdAt: po.createdAt,
+        lines: po.lines.map((l) => reportLine(reconcile(store, po)[l.id])),
+      }));
+      const withMeta = rows.map((po) => {
+        const fullyReceived = po.lines.every((l) => l.discrepancy === false && l.open === 0);
+        const anyDiscrepancy = po.lines.some((l) => l.discrepancy);
+        const open = po.lines.reduce((acc, l) => acc + l.open, 0);
+        const damaged = po.lines.reduce((acc, l) => acc + l.damaged, 0);
+        const short = po.lines.reduce((acc, l) => acc + l.shortage, 0);
+        return { ...po, fullyReceived, anyDiscrepancy, open, damaged, short };
+      });
+      return { at: new Date().toISOString(), purchaseOrders: a.includeOnlyDiscrepancies ? withMeta.filter((p) => p.anyDiscrepancy) : withMeta };
+    }));
+  } catch (err) { return fail(err instanceof Error ? err.message : String(err)); }
+});
+
+function csvEscape(s: unknown): string {
+  const t = s === undefined || s === null ? "" : String(s);
+  return /[",\n]/.test(t) ? `"${t.replace(/"/g, '""')}"` : t;
+}
+
+server.registerTool("grn_export_csv", {
+  title: "Export goods receipts as CSV",
+  description: "Pro. Export every GRN (or just one PO's GRNs) as CSV with a header row: grn,po,po_reference,received_at,carrier,status,line,sku,received,damaged,shortage,damage_note,shortage_note. Watermark-free and not truncated.",
+  inputSchema: { po: str("po", 40).optional().describe("Export GRNs for one purchase order only") },
+}, async (a: { po?: string }) => {
+  try {
+    requirePro("CSV export", "grn_export_csv");
+    return ok(await locked(() => {
+      const store = getStore();
+      let grns = [...store.grns].sort((x, y) => x.id.localeCompare(y.id));
+      if (a.po) { const po = findPo(store.pos, a.po); grns = grns.filter((g) => g.po === po.id); }
+      const header = ["grn", "po", "po_reference", "received_at", "carrier", "status", "line", "sku", "received", "damaged", "shortage", "damage_note", "shortage_note"];
+      const rows = grns.flatMap((g) => {
+        const po = store.pos.find((p) => p.id === g.po);
+        return g.lines.map((l) => {
+          const poLine = po?.lines.find((p) => p.id === l.line);
+          return [g.id, g.po, po?.reference ?? "", g.receivedAt, g.carrier ?? "", g.status, l.line, poLine?.sku ?? "", l.received, l.damaged, l.shortage, l.damageNote ?? "", l.shortageNote ?? ""];
+        });
+      });
+      return [header.map(csvEscape).join(","), ...rows.map((r) => r.map(csvEscape).join(","))].join("\n");
+    }));
+  } catch (err) { return fail(err instanceof Error ? err.message : String(err)); }
+});
+
+gate.registerTools(server);
+
+const transport = new StdioServerTransport();
+await server.connect(transport);

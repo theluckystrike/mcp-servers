@@ -294,6 +294,12 @@ const SERVERS = {
   // is trips.json, rates.json and counter.json under the homedir shim, tmp + rename, with
   // its own corrupt-store quarantine inside store.ts.
   "mileage-log": ["index.ts", "version.ts", "log.ts", "store.ts"],
+  // S48: newest four. Every source file; no sibling engine imports. Each writes only its
+  // own store under the homedir shim. purchase_requisition.ts keeps its underscore name.
+  "goods-receipt": ["index.ts", "version.ts", "lib.ts", "store.ts"],
+  "onboarding": ["index.ts", "version.ts", "lib.ts", "onboarding.ts", "store.ts"],
+  "leave": ["index.ts", "version.ts", "lib.ts", "leave.ts", "store.ts"],
+  "purchase-requisition": ["index.ts", "version.ts", "lib.ts", "purchase_requisition.ts", "store.ts"],
 };
 
 /**

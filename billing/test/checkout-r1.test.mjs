@@ -462,8 +462,8 @@ test("VALIDATION and BILLING_TEST_COUNT match the files they claim to report", (
   assert.equal(VALIDATION.pass, pass);
   assert.equal(VALIDATION.total, total);
   assert.equal(VALIDATION.servers,
-    last.results.filter((r) => r.id !== "remote (mcp.zovo.one/mcp)" && r.id !== "billing (mcp.zovo.one)").length,
-    "VALIDATION.servers is not the number of server results in data/validation.json (the remote and billing service results are not servers)");
+    last.results.filter((r) => r.id !== "remote (mcp.zovo.one/mcp)" && r.id !== "billing (mcp.zovo.one)" && !/office-suite/.test(r.id)).length,
+    "VALIDATION.servers is not the number of server results in data/validation.json (the remote, billing and office-suite bundle results are not servers; the bundle is a packaging of the other servers, it is not probed as one)");
   assert.equal(VALIDATION.medianMs, ms[Math.floor(ms.length / 2)]);
 
   const dir = join(dirname(fileURLToPath(import.meta.url)));

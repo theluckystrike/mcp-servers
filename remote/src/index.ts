@@ -54,6 +54,10 @@ import { createServer as createSupplierList } from "./vendor/supplier-list/index
 import { createServer as createServiceAgreement } from "./vendor/service-agreement/index.js";
 import { createServer as createMaintenanceLog } from "./vendor/maintenance-log/index.js";
 import { createServer as createMileageLog } from "./vendor/mileage-log/index.js";
+import { createServer as createGoodsReceipt } from "./vendor/goods-receipt/index.js";
+import { createServer as createOnboarding } from "./vendor/onboarding/index.js";
+import { createServer as createLeave } from "./vendor/leave/index.js";
+import { createServer as createPurchaseRequisition } from "./vendor/purchase-requisition/index.js";
 
 export interface Env { REMOTE_DATA: KVNamespace; SWEEP_SECRET?: string }
 
@@ -745,6 +749,26 @@ const SERVERS: Record<string, ServerCfg> = {
     // from the stored trips and rates on the call rather than stored.
     factory: createMileageLog as () => McpServer,
   },
+  "goods-receipt": {
+    // S48. Own store (grns.json + counter) under the homedir shim; the only doc borrow is
+    // supplier-list's supplier register read at receipt time to name the supplier - so the
+    // supplier data directory hydrates READ-ONLY, exactly bank-statement's pattern.
+    factory: createGoodsReceipt as () => McpServer,
+    sharedDoc: { server: "supplier-list", owns: (p) => p.startsWith(SUPPLIERS_DIR), readOnly: true },
+  },
+  "onboarding": {
+    // S48. Own store (.mcp-onboarding/store.json) - templates, hires, tasks. No sharedDoc:
+    // no sibling engine and no borrowed document.
+    factory: createOnboarding as () => McpServer,
+  },
+  "leave": {
+    // S48. Own store (leaves.json + balances + counter) under the homedir shim.
+    factory: createLeave as () => McpServer,
+  },
+  "purchase-requisition": {
+    // S48. Own store (requisitions.json + counter) under the homedir shim.
+    factory: createPurchaseRequisition as () => McpServer,
+  },
 };
 
 const json = (body: unknown, status = 200, extra: Record<string, string> = {}) =>
@@ -1241,6 +1265,10 @@ const TOOLS: Record<string, string[]> = {
   "service-agreement": ["agreement_create", "agreement_get", "agreement_list", "agreement_update_status", "clause_library", "agreement_render", "agreement_checklist", "license_status", "license_activate"],
   "maintenance-log": ["asset_add", "maintenance_log", "maintenance_due", "asset_history", "maintenance_export", "asset_remove", "license_status", "license_activate"],
   "mileage-log": ["trip_add", "trip_list", "trip_remove", "rate_set", "rate_list", "mileage_summary", "mileage_export", "license_status", "license_activate"],
+  "goods-receipt": ["po_add", "grn_add", "grn_line_add", "grn_get", "grn_list", "grn_close", "grn_discrepancy", "grn_status_report", "grn_export_csv"],
+  "onboarding": ["onboarding_hire_add", "onboarding_hire_list", "onboarding_task_add", "onboarding_task_done", "onboarding_template_apply", "onboarding_progress", "onboarding_overdue", "license_status", "license_activate"],
+  "leave": ["leave_employee_add", "leave_request", "leave_approve", "leave_reject", "leave_cancel", "leave_balance", "leave_list", "leave_out_range", "leave_import", "leave_export_ics"],
+  "purchase-requisition": ["purchase-requisition_create", "purchase-requisition_item_add", "purchase-requisition_item_remove", "purchase-requisition_show", "purchase-requisition_list", "purchase-requisition_delete", "run_start", "run_check", "run_show", "run_list", "run_sign_off", "run_status", "run_delete"],
 };
 
 const ENDPOINT_URLS = (base: string) => Object.keys(SERVERS).map((n) => `${base}/mcp/${n}`);

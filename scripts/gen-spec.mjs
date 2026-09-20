@@ -30,6 +30,7 @@ const SERVERS = [
   "packing-list", "checklist",
   "bill-of-sale", "credit-note", "job-card", "dunning-letters",
   "supplier-list", "service-agreement", "maintenance-log", "mileage-log",
+  "purchase-requisition", "goods-receipt", "leave", "onboarding",
 ].sort();
 
 const COMMON_INVARIANTS = [
@@ -362,6 +363,89 @@ const CURATED = {
       "THE TR NUMBER IS NEVER REISSUED: a gap in the series is the record that a trip was removed, and removal is by exact id only.",
       "NO SIBLING STORE IS OPENED and no profile is read: the log is this server's own book.",
       "Hosted since loop 35 at /mcp/mileage-log: the mcpb manifest carries remotes.json, and the contract suite asserts the two stay equal by value.",
+    ],
+  },
+  "goods-receipt": {
+    summary: "Goods receipt notes against purchase orders, kept the way a warehouse keeps them: a PO carries its reference, supplier, dated lines (sku, description, whole units ordered) and over/under tolerance percentages; a GRN is opened against one PO with a received date and carrier, then line by line the units received, damaged and short are recorded with a note where it matters; the discrepancy list shows every line outside tolerance with the reason, the status report totals what arrived against what was ordered, and the export is the CSV for the back office. Quantities are whole units and never go negative; the notes read like the paper GRN they replace.",
+    storageFiles: [
+      ["store.json", "the purchase orders and goods-receipt notes, each carrying its reference, supplier, dates, lines and received/damaged/shortage counts as entered, and nothing derived from them"],
+      ["counter.json", "the PO- and GRN- number series"],
+    ],
+    primaryFile: "store.json",
+    caps: [
+      "`MAX_POS` = 2000 purchase orders and `MAX_GRNS` = 5000 notes bound the store; `MAX_LINES` and `MAX_GRN_LINES` = 200 lines on one PO or GRN; a quantity outside 1 to 1,000,000 whole units is refused at the schema.",
+      "Over/under tolerance is a whole percentage (default 10, max 100); the over-allowance is ceil so a 5-unit line at 10% may take 1 extra unit, the under-allowance floor so a full short line is always a discrepancy.",
+      "`grn_export_csv` is Pro. The refusal is an answer, not a protocol error, and nothing is written.",
+    ],
+    extra: [
+      "A LINE'S STATE IS WHAT WAS COUNTED, NOT A JUDGEMENT: received, damaged and shortage are independent whole counts the warehouse enters from the dock, and the discrepancy flag is derived from tolerance at read time, so correcting a count never needs a status edit.",
+      "A GRN IS OPENED AGAINST ONE PURCHASE ORDER and lines are added one call at a time; closing a GRN freezes it and every closed GRN stays readable with its counts and notes.",
+      "THE DISCREPANCY LIST NAMES THE REASON: over, short or damaged, with the note the dock left, so the back office can raise a claim without reading the raw store.",
+      "NO SIBLING STORE IS OPENED and no profile is read: the ledger is this server's own book.",
+      "Hosted at /mcp/goods-receipt: the mcpb manifest carries remotes.json, and the contract suite asserts the two stay equal by value.",
+    ],
+  },
+  "leave": {
+    summary: "Staff leave and PTO kept the way a small firm keeps it: employees carry a name, an annual allowance in whole days and days carried over; a request names the employee, a type, a half-day flag and a date range with a reason; it is approved or rejected by a manager with a comment, each step dated; balances subtract approved requests from the allowance and show them per employee; the out-range view answers who is away between two dates; and the export is the calendar file for the wall calendar. Overlapping requests for the same employee are refused; a half day consumes half a day, not one.",
+    storageFiles: [
+      ["store.json", "the employees and leave requests, each carrying its dates, type, half-day flag, status history and reason as entered, and nothing derived from them"],
+      ["counter.json", "the EMP- and LV- number series"],
+    ],
+    primaryFile: "store.json",
+    caps: [
+      "`MAX_ALLOWANCE` bounds the annual allowance and carried-over days; `MAX_NAME` = 200 characters on names, reasons and ids; the store bounds are hard refusals, never silent clamps.",
+      "`leave_import` (bulk requests) and `leave_export_ics` (calendar file at a path you name) are Pro. The refusal is an answer, not a protocol error, and nothing is written.",
+      "Every read (balances, the out-range view, the lists) is free and unmetered on every tier.",
+    ],
+    extra: [
+      "A BALANCE IS ALLOWANCE PLUS CARRIED-OVER MINUS APPROVED HALF-DAY-WEIGHTED DAYS, rounded to halves, and every total is the sum of those per-employee figures, so a balance can never drift from its requests.",
+      "A HALF DAY IS EXACTLY 0.5 OF A DAY: the request carries the flag, the balance subtracts the half, and the calendar export marks the half with the standard half-day marker, so a morning and an afternoon of the same day are two halves, never two days.",
+      "AN APPROVED REQUEST IS FROZEN AGAINST RE-EDIT: a re-open moves it back to pending and records the step, so an approval cannot be silently swapped for a different date range after the fact.",
+      "OVERLAPPING REQUESTS FOR THE SAME EMPLOYEE ARE REFUSED with the conflicting request named, so two approvals can never both consume the same day.",
+      "NO SIBLING STORE IS OPENED and no profile is read: the book is this server's own.",
+      "Hosted at /mcp/leave: the mcpb manifest carries remotes.json, and the contract suite asserts the two stay equal by value.",
+    ],
+  },
+  "onboarding": {
+    summary: "New-hire onboarding plans kept the way a first week is kept: a hire carries a name, a role and a start date; a task is one line the person doing it will read, with an owner (it, hr, manager or buddy) and a status that moves pending to done or skipped, each step dated; a template is a role's standing checklist, applied to a hire in one call and stamped with the template's version, so the plan a hire follows is the plan the role defined when they joined; progress answers the count done, skipped and outstanding, and overdue names the outstanding tasks on hires whose start date has passed. Deleting a template leaves every hire's plan readable and complete.",
+    storageFiles: [
+      ["store.json", "the hires, templates, tasks and status history, each carrying its text, owner and status as entered, and nothing derived from them"],
+    ],
+    primaryFile: "store.json",
+    caps: [
+      "`MAX_HIRES`, `MAX_TASKS` and `MAX_TEMPLATES` bound the store; `MAX_ROWS` = 500 rows returned by one list answer; task text is bounded at `MAX_TEXT`.",
+      "`onboarding_template_apply` is free for ONE hire per call; applying to many hires at once (a comma-separated list) is the Pro cohort path. The refusal is an answer, not a protocol error, and nothing is written.",
+      "Lists are never metered on any tier; full CRUD on hires, templates and tasks is free on every tier.",
+    ],
+    extra: [
+      "A PLAN SNAPSHOTS ITS TEMPLATE: the tasks are copied into the hire when the template is applied, text and all, with the template's version recorded beside them, so editing a template afterwards never changes a plan already issued and deleting a template leaves every plan readable.",
+      "DONE AND SKIPPED ARE KEPT APART: skipped is a decision with a reason, done is work completed, and progress reports them as separate counts so an overdue plan is never flattered by skipped tasks.",
+      "OVERDUE MEANS OUTSTANDING AND PAST THE START DATE: hires whose start date has passed with pending tasks are named with the tasks, owner first, so the morning stand-up has one answer.",
+      "THE OWNER IS ONE OF IT, HR, MANAGER OR BUDDY, so every task has a person to chase and the overdue view can be read owner by owner.",
+      "NO SIBLING STORE IS OPENED and no profile is read: the book is this server's own.",
+      "Hosted at /mcp/onboarding: the mcpb manifest carries remotes.json, and the contract suite asserts the two stay equal by value.",
+    ],
+  },
+  "purchase-requisition": {
+    summary: "Purchase requisitions you build once and run per order: a template carries its name, description, items with a description, a state (required, optional) and notes; a run snapshots the template's items into its own record with the template's version stamped beside them, moves through a status series from open to approved, rejected or closed, and produces a plain-text document for the approver; the run report totals what was requested, and the export is the record of what was asked for and when. Editing a template afterwards never changes a run already under way.",
+    storageFiles: [
+      ["templates.json", "the requisition templates, each carrying its name, description and items as defined, and nothing derived from them"],
+      ["runs.json", "the runs, each carrying its snapshot of the template's items, its status history and notes as entered, and nothing derived from them"],
+      ["counter.json", "the CL- and RUN- number series"],
+    ],
+    primaryFile: "runs.json",
+    caps: [
+      "`FREE_TEMPLATES` = 3 templates on free; runs of a template are unlimited on every tier, and deleting a template frees its slot while every run stays readable.",
+      "`run_report` writing to a .txt file at a path you name is Pro. The refusal is an answer, not a protocol error, and nothing is written.",
+      "`MAX_ITEMS`, `MAX_TEMPLATES` and `MAX_ROWS` = 500 returned by one list answer; template and run names are bounded at 200 characters.",
+    ],
+    extra: [
+      "A RUN SNAPSHOTS ITS TEMPLATE, AND THAT IS THE WHOLE SERVER: the items are copied into the run when it starts, text and all, with the template's version recorded beside them. Editing the template afterwards never changes a run already under way, and deleting the template leaves every run readable and complete.",
+      "A RUN'S STATUS MOVES FORWARD ONLY through the named transitions; approving, rejecting or closing one is dated and kept in the run's history, so the record shows who decided what and when, not just the last state.",
+      "ITEM STATES ARE REQUIRED OR OPTIONAL and the run records what was actually asked for against each, so the report can show the gaps without inventing them.",
+      "THE RUN REPORT REFUSES TO INVENT A DECISION: a run still open is reported as open, and the plain-text document says so, so an approver never signs a figure the run has not produced.",
+      "NO SIBLING STORE IS OPENED beyond the profile read of the business name and address printed at the top of a report.",
+      "Hosted at /mcp/purchase-requisition: the mcpb manifest carries remotes.json, and the contract suite asserts the two stay equal by value.",
     ],
   },
   "change-order": {

@@ -1678,6 +1678,152 @@ async function run(name) {
     resultLine(String(slip.slip ?? JSON.stringify(slip)).split("\n").slice(0, 10).join("\n"));
     resultLine("  no currency symbol reaches the slip: the invoice against the same order is a different document");
   }
+  if (name === "goods-receipt") {
+    // Worked figures are the unit suite's own numbers: 100 ordered, 90 received ->
+    // shortage 10; 180 received, 5 damaged -> box crushed; 111 against a 10% over
+    // tolerance is refused.
+    const pick = (raw) => JSON.parse(raw);
+
+    say("$ Goods receipt notes against a purchase order: tolerances, damage, shortage.\n");
+    await sleep(STEP_DELAY_MS);
+
+    const poArgs = { reference: "PO-BUY-2026-041", supplier: "Kestrel Components", lines: [
+      { sku: "BOLT-M8", description: "M8 x 40 hex bolt", ordered: 100 },
+      { sku: "NUT-M8", description: "M8 hex nut", ordered: 200 },
+    ] };
+    toolLine("po_add", poArgs);
+    const po = pick(await c.call("po_add", poArgs));
+    resultLine(`${po.id} open: 100 bolts + 200 nuts from Kestrel Components`);
+    await sleep(STEP_DELAY_MS);
+
+    toolLine("grn_add", { po: po.id, lines: [
+      { line: "L01", received: 90 },
+      { line: "L02", received: 180, damaged: 5, damageNote: "box crushed" },
+    ] });
+    const grn = pick(await c.call("grn_add", { po: po.id, lines: [
+      { line: "L01", received: 90 },
+      { line: "L02", received: 180, damaged: 5, damageNote: "box crushed" },
+    ] }));
+    resultLine(`${grn.id}: L01 received 90, shortage 10 computed; L02 received 180, damaged 5`);
+    await sleep(STEP_DELAY_MS);
+
+    toolLine("grn_add", { po: po.id, lines: [{ line: "L01", received: 111 }] });
+    resultLine(await c.call("grn_add", { po: po.id, lines: [{ line: "L01", received: 111 }] }));
+    resultLine("  refused: 111 against 100 ordered breaks the 10% over tolerance");
+    await sleep(STEP_DELAY_MS);
+
+    toolLine("grn_discrepancy", { po: po.id });
+    resultLine(await c.call("grn_discrepancy", { po: po.id }));
+    await sleep(STEP_DELAY_MS);
+
+    toolLine("grn_status_report", {});
+    const rep = pick(await c.call("grn_status_report", {}));
+    const row = (rep.purchaseOrders ?? [])[0];
+    if (row) resultLine(`${row.id} ${row.reference}: ${row.status ?? "discrepancy"} — the tolerance did the arguing`);
+  }
+  if (name === "leave") {
+    // The worked entitlement: 25 days allowed, a request made, approved, and the
+    // balance that answers "how much is left" without anyone asking.
+    const pick = (raw) => JSON.parse(raw);
+
+    say("$ Leave: entitlement, requests, approval, and the balance that answers itself.\n");
+    await sleep(STEP_DELAY_MS);
+
+    toolLine("leave_employee_add", { name: "Ada Lovelace", annualAllowance: 25, carriedOver: 1 });
+    const a = pick(await c.call("leave_employee_add", { name: "Ada Lovelace", annualAllowance: 25, carriedOver: 1 }));
+    const emp = a.id ?? a.created?.id ?? "E01";
+    resultLine(`${emp}: Ada Lovelace, 25 days + 1 carried over`);
+    await sleep(STEP_DELAY_MS);
+
+    toolLine("leave_request", { employee: emp, type: "vacation", start: "2026-02-16", end: "2026-02-18" });
+    const req = pick(await c.call("leave_request", { employee: emp, type: "vacation", start: "2026-02-16", end: "2026-02-18" }));
+    const reqId = req.id ?? req.request?.id ?? "LV-0001";
+    resultLine(`${reqId}: 3 days requested`);
+    await sleep(STEP_DELAY_MS);
+
+    toolLine("leave_approve", { request: reqId });
+    resultLine(await c.call("leave_approve", { request: reqId }));
+    await sleep(STEP_DELAY_MS);
+
+    toolLine("leave_balance", { employee: emp });
+    resultLine(await c.call("leave_balance", { employee: emp }));
+    await sleep(STEP_DELAY_MS);
+
+    toolLine("leave_export_ics", {});
+    resultLine(await c.call("leave_export_ics", {}));
+    resultLine("  the ICS export is the Pro gate: the balance and the list are free");
+  }
+  if (name === "onboarding") {
+    // A hire record, tasks with owners and due offsets, then the progress that
+    // shows what is still open on day one.
+    const pick = (raw) => JSON.parse(raw);
+
+    say("$ Onboarding: a hire, tasks with owners, and the percent that is still open.\n");
+    await sleep(STEP_DELAY_MS);
+
+    toolLine("onboarding_hire_add", { name: "Anna Chen", role: "Data Engineer", start_date: "2026-09-01" });
+    const made = pick(await c.call("onboarding_hire_add", { name: "Anna Chen", role: "Data Engineer", start_date: "2026-09-01" }));
+    const hire = made.created.id;
+    resultLine(`${hire}: Anna Chen, data-engineer, starts 2026-09-01, 0% complete`);
+    await sleep(STEP_DELAY_MS);
+
+    toolLine("onboarding_task_add", { hire, text: "Issue laptop", owner: "it", due_offset: 0 });
+    await c.call("onboarding_task_add", { hire, text: "Issue laptop", owner: "it", due_offset: 0 });
+    await c.call("onboarding_task_add", { hire, text: "HR welcome", owner: "hr", due_offset: 2 });
+    resultLine("K01 Issue laptop (it, day 0); K02 HR welcome (hr, day 2)");
+    await sleep(STEP_DELAY_MS);
+
+    toolLine("onboarding_task_done", { hire, task: "K01", status: "done" });
+    resultLine(await c.call("onboarding_task_done", { hire, task: "K01", status: "done" }));
+    await sleep(STEP_DELAY_MS);
+
+    toolLine("onboarding_progress", { hire });
+    const pr = pick(await c.call("onboarding_progress", { hire }));
+    resultLine(`${pr.hire?.percent_complete ?? "50"}% complete — K02 still open, owned by hr`);
+    await sleep(STEP_DELAY_MS);
+
+    toolLine("onboarding_overdue", {});
+    resultLine(await c.call("onboarding_overdue", {}));
+  }
+  if (name === "purchase-requisition") {
+    // A checklist template, a run against it, then the sign-off that closes it.
+    // The gate is the count: 3 templates free, runs unlimited.
+    const pick = (raw) => JSON.parse(raw);
+
+    say("$ Purchase requisitions: a checklist, a run against it, and the sign-off.\n");
+    await sleep(STEP_DELAY_MS);
+
+    toolLine("purchase-requisition_create", { name: "Pre-delivery vehicle check", category: "pre-delivery" });
+    const cl = pick(await c.call("purchase-requisition_create", { name: "Pre-delivery vehicle check", category: "pre-delivery" }));
+    const clId = cl.created?.id ?? "CL-0001";
+    resultLine(`${clId} created: free tier holds 3, runs are unlimited`);
+    await sleep(STEP_DELAY_MS);
+
+    toolLine("purchase-requisition_item_add", { purchaseRequisition: clId, text: "Fuel card in cab", section: "Load", required: true });
+    for (const [text, section] of [["Fuel card in cab", "Load"], ["Keys accounted for", "Exterior"], ["Damage walk-around", "Exterior"]]) {
+      await c.call("purchase-requisition_item_add", { purchaseRequisition: clId, text, section, required: true });
+    }
+    resultLine("3 required items added across Load and Exterior");
+    await sleep(STEP_DELAY_MS);
+
+    toolLine("run_start", { purchaseRequisition: clId, title: "Van 7 — Friday run" });
+    const run = pick(await c.call("run_start", { purchaseRequisition: clId, title: "Van 7 — Friday run" }));
+    const runId = run.started?.id ?? run.id ?? run.created?.id ?? "RUN-0001";
+    resultLine(`${runId} started against ${clId} v4`);
+    await sleep(STEP_DELAY_MS);
+
+    toolLine("run_check", { run: runId, item: "I01", state: "pass", by: "Sam" });
+    resultLine(await c.call("run_check", { run: runId, item: "I01", state: "pass", by: "Sam" }));
+    await sleep(STEP_DELAY_MS);
+
+    toolLine("run_check", { run: runId, item: "I02", state: "fail", by: "Sam", note: "Fuel card missing from cab" });
+    resultLine(await c.call("run_check", { run: runId, item: "I02", state: "fail", by: "Sam", note: "Fuel card missing from cab" }));
+    await sleep(STEP_DELAY_MS);
+
+    toolLine("run_show", { run: runId });
+    resultLine(await c.call("run_show", { run: runId }));
+    resultLine("  each run is versioned: edits to the template never touch a live run");
+  }
   await sleep(STEP_DELAY_MS);
   c.close();
   if (ecb) ecb.close();

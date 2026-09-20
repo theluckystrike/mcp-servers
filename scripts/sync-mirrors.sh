@@ -48,7 +48,7 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 OWNER="theluckystrike"
 MONOREPO="https://github.com/${OWNER}/mcp-servers"
 RAW="https://raw.githubusercontent.com/${OWNER}/mcp-servers/main"
-ALL_SERVERS="time-tracker price-tracker spreadsheet invoice expense-tracker currency timezone docx resume recurring clauses pdf calendar kanban image bank-statement quotes barcode zip billing-docs deposits per-diem asset-register statement-of-account cash-book amortization petty-cash work-order catalogue change-order delivery-schedule checklist packing-list bill-of-sale credit-note job-card dunning-letters supplier-list service-agreement maintenance-log mileage-log office-suite"
+ALL_SERVERS="time-tracker price-tracker spreadsheet invoice expense-tracker currency timezone docx resume recurring clauses pdf calendar kanban image bank-statement quotes barcode zip billing-docs deposits per-diem asset-register statement-of-account cash-book amortization petty-cash work-order catalogue change-order delivery-schedule checklist packing-list bill-of-sale credit-note job-card dunning-letters supplier-list service-agreement maintenance-log mileage-log purchase-requisition goods-receipt leave office-suite onboarding"
 DRY_RUN="${DRY_RUN:-0}"
 SQUASH="${SQUASH:-0}"
 NO_RELEASE="${NO_RELEASE:-0}"
@@ -366,7 +366,7 @@ subfolder, so it carries the monorepo's name. This mirror gives it its own.
 
 \`@theluckystrike/mcp-license\` is not published on npm. To keep this mirror buildable on
 its own, the built package is vendored into \`vendor/mcp-license/\` and \`package.json\`
-depends on it through a \`file:\` path. $( [ "$NAME" = "office-suite" ] && printf 'The ten servers this bundle proxies, and any @theluckystrike package they depend on, are vendored the same way under vendor/mcp-*. ' )So a fresh clone works with no extra setup:
+depends on it through a \`file:\` path. $( [ "$NAME" = "office-suite onboarding" ] && printf 'The ten servers this bundle proxies, and any @theluckystrike package they depend on, are vendored the same way under vendor/mcp-*. ' )So a fresh clone works with no extra setup:
 
 \`\`\`sh
 git clone https://github.com/${OWNER}/${REPO}.git

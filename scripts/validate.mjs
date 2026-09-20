@@ -23,10 +23,11 @@ function client(dir, env = {}) {
   const proc = spawn("node", [join(ROOT, "servers", dir, "dist/index.js")], { env: { ...process.env, ...env }, stdio: ["pipe", "pipe", "pipe"] });
   let buf = ""; const waiters = new Map(); let id = 0; const stderr = [];
   proc.stdout.on("data", (d) => { buf += d; let i; while ((i = buf.indexOf("\n")) >= 0) { const line = buf.slice(0, i); buf = buf.slice(i + 1); if (!line.trim()) continue; try { const m = JSON.parse(line); if (m.id && waiters.has(m.id)) { waiters.get(m.id)(m); waiters.delete(m.id); } } catch { stderr.push("NON-JSON STDOUT: " + line.slice(0, 120)); } } });
-  proc.stderr.on("data", (d) => stderr.push(String(d).trim()));
+  proc.stderr.on("data", (d) => stderr.push(String(d).trim()));;
   const call = (method, params = {}) => new Promise((res, rej) => { const i = ++id; const t = setTimeout(() => rej(new Error(`timeout ${method}`)), callTimeout); t.unref(); waiters.set(i, (m) => { clearTimeout(t); res(m); }); proc.stdin.write(JSON.stringify({ jsonrpc: "2.0", id: i, method, params }) + "\n"); });
   const tool = async (name, args = {}) => { const r = await call("tools/call", { name, arguments: args }); const text = r.result?.content?.map((c) => c.text).join("\n") ?? JSON.stringify(r.error); return { text, isError: !!r.result?.isError || !!r.error }; };
-  return { call, tool, stderr, close: () => proc.kill() };
+  const json = async (name, args = {}) => { const t = await tool(name, args); if (t.isError) throw new Error(`${name}: ${t.text.slice(0, 160)}`); return JSON.parse(t.text); };
+  return { call, tool, json, stderr, close: () => proc.kill() };
 }
 
 async function runServer(id, probes) {
@@ -37,7 +38,8 @@ async function runServer(id, probes) {
     const tmp = mkdtempSync(join(tmpdir(), `val-${id}-${tier}-`));
     const env = { XDG_DATA_HOME: join(tmp, "data"), XDG_CONFIG_HOME: join(tmp, "cfg") };
     if (tier === "pro") env.MCP_LICENSE_KEY = sign(id);
-    const c = client(id, env);
+    if (id === "onboarding") env.MCP_ONBOARDING_HOME = join(tmp, "data");
+    const c = client(id.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase(), env);
     try {
       const ts = Date.now();
       const init = await c.call("initialize", { protocolVersion: "2025-06-18", capabilities: {}, clientInfo: { name: "validator", version: "1" } });
@@ -829,7 +831,7 @@ const PROBES = {
     ok(`${tier}: six steps, four required, two sections, version 7, and a blank copy with six boxes`,
       !shown.isError && /"items": 6/.test(shown.text) && /"required": 4/.test(shown.text) && /"sections": 2/.test(shown.text)
       && /"version": 7/.test(shown.text) && (shown.text.match(/\[ \]/g) || []).length === 6,
-      shown.text.replace(/\s+/g, " ").slice(0, 120));
+      JSON.stringify(shown).slice(0, 120));
     const empty = await c.tool("run_start", { checklist: "CL-0002", title: "Nothing" });
     ok(`${tier}: a run of a checklist that does not exist is refused by name`, empty.isError && /no checklist matches/.test(empty.text), empty.text.slice(0, 90));
 
@@ -956,6 +958,56 @@ const PROBES = {
         .every((f) => ["counter.json", "runs.json", "templates.json"].includes(f) || /^\.lock/.test(f))
       && readdirSync(join(tmp, "data", "mcp-servers", "profile")).join(",") === "business.json",
       `${dirs.join(",")} | ${readdirSync(join(tmp, "data", "mcp-servers", "checklist")).sort().join(",")}`);
+  },
+
+  "purchase-requisition": async (c, tmp, tier, ok) => {
+    // STDIO ONLY, for the reason packing-list is: no hosted endpoint, no remotes block, and
+    // deliberately absent from remote(). It reads the shared business profile. Counts here
+    // match servers/purchase-requisition/test/unit.test.mjs.
+    mkdirSync(join(tmp, "data", "mcp-servers", "profile"), { recursive: true });
+    writeFileSync(join(tmp, "data", "mcp-servers", "profile", "business.json"), JSON.stringify({
+      name: "Nova Studio", address: "ul. Prosta 1, Warsaw", default_currency: "EUR",
+      default_tax_rate: 23, payment_terms_days: 14, timezone: "Europe/Warsaw",
+    }));
+
+    const made = await c.tool("purchase-requisition_create", { name: "Site purchase approval", category: "Procurement", description: "Approval before any order is placed." });
+    if (made.isError) throw new Error(`purchase-requisition_create: ${made.text}`);
+    const id = JSON.parse(made.text).created.id;
+    for (const s of ["Steel fixings approved by site engineer", "Delivery to compound", "Signed delivery note returned", "PO number quoted on invoice", "Budget line checked", "Two quotes attached"])
+      await c.tool("purchase-requisition_item_add", { purchaseRequisition: id, text: s, required: true });
+    const run = await c.json("run_start", { purchaseRequisition: id, title: "Batch 44" });
+    ok(`${tier}: the requisition run copies all six required steps and starts pending`,
+      run.started.items === 6 && run.started.purchaseRequisition_version === 7,
+      JSON.stringify(run.started).slice(0, 120));
+    await c.tool("run_check", { run: run.started.id, item: "I01", state: "pass", by: "Ada" });
+    const shown = await c.json("run_show", { run: run.started.id });
+    ok(`${tier}: run_show reflects the recorded step and the outstanding count`,
+      shown.pending === 5,
+      JSON.stringify(shown).slice(0, 120));
+  },
+  onboarding: async (c, tmp, tier, ok) => {
+    // MCP_ONBOARDING_HOME set per-tier above. Counts here match
+    // servers/onboarding/test/contract.test.mjs so this probe fails if the
+    // arithmetic moves and not only if the shape does.
+    const hire = await c.tool("onboarding_hire_add", { name: "Rhea van der Meer", role: "engineer", start_date: "2026-09-09" });
+    if (hire.isError) throw new Error(`onboarding_hire_add: ${hire.text}`);
+    const hid = JSON.parse(hire.text).created.id;
+    for (const t of [["Workspace and laptop issued", "it", 0], ["Accounts and access provisioned", "it", 1], ["Team introduction round", "hr", 1], ["Security training assigned", "hr", 2], ["First-week goals agreed", "manager", 3], ["Thirty-day review scheduled", "manager", 30]])
+      await c.tool("onboarding_task_add", { hire: hid, text: t[0], owner: t[1], due_offset: t[2] });
+    await c.tool("onboarding_task_done", { hire: hid, task: "K01", status: "done" });
+    const p = await c.tool("onboarding_progress", { hire: hid });
+    ok(`${tier}: six seeded tasks, one done, progress sums and derives on call`,
+      !p.isError && /"done": 1/.test(p.text) && /"tasks": 6/.test(p.text) && /"todo": 5/.test(p.text),
+      p.text.replace(/\s+/g, " ").slice(0, 120));
+    const w = await c.tool("onboarding_template_apply", { hire: `${hid},${hid}`, tasks: [{ text: "Badge issued", owner: "it", due_offset: 0 }] });
+    ok(`${tier}: applying a template to two hires at once is Pro with the buy link`,
+      tier === "pro" ? !w.isError : w.isError && /Applying a template to 2 hires at once is Pro/.test(w.text)
+        && /mcp\.zovo\.one\/buy\/onboarding/.test(w.text),
+      w.text.replace(/\s+/g, " ").slice(0, 120));
+    const od = await c.tool("onboarding_overdue", {});
+    ok(`${tier}: overdue lists past-due tasks for the backdated hire`,
+      !od.isError && /"task": "K/.test(od.text) && !od.isError,
+      od.text.replace(/\s+/g, " ").slice(0, 100));
   },
   "change-order": async (c, tmp, tier, ok) => {
     // This server reads no sibling STORE: it reads the shared business profile, read-only
@@ -2167,7 +2219,7 @@ async function remote() {
   // The deployed worker's checkout-intent gate accepts a browser-navigation POST from curl but undici's
   // fetch gets 400 (header-order/HTTP2 fingerprint difference, diagnosed 2026-09-17). curl is the
   // proven-good transport, so the buy probes go through execFileSync curl instead of fetch.
-  const curlBuy = (url) => {
+  const curlGet = (url) => {
     const out = execFileSync("curl", ["-sS", "-o", "/dev/null", "-D", "-",
       "-H", "accept: text/html", "-H", "sec-fetch-mode: navigate", "-H", "sec-fetch-site: same-origin",
       "-H", "sec-fetch-dest: document",
@@ -2175,8 +2227,25 @@ async function remote() {
       url], { encoding: "utf8", timeout: 30000 });
     const status = Number((out.match(/^HTTP\/[\d.]+ (\d{3})/m) || [])[1] || 0);
     const loc = (out.match(/^location: (.*)$/mi) || [])[1] || "";
+    const gate = (out.match(/^x-mcp-buy: (.*)$/mi) || [])[1] || "";
+    return { status, loc, gate };
+  };
+  const curlPost = (url) => {
+    const out = execFileSync("curl", ["-sS", "-o", "/dev/null", "-D", "-",
+      "-X", "POST",
+      "-H", "accept: text/html", "-H", "sec-fetch-mode: navigate", "-H", "sec-fetch-site: same-origin",
+      "-H", "sec-fetch-dest: document", "-H", "content-type: application/x-www-form-urlencoded",
+      "-H", `origin: https://mcp.zovo.one`, "-H", `referer: ${url}`,
+      "-A", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36",
+      "--data", "intent=checkout", url], { encoding: "utf8", timeout: 30000 });
+    const status = Number((out.match(/^HTTP\/[\d.]+ (\d{3})/m) || [])[1] || 0);
+    const loc = (out.match(/^location: (.*)$/mi) || [])[1] || "";
     return { status, loc };
   };
+    // "purchaseRequisition" is STDIO ONLY like packing-list/checklist: no hosted endpoint yet
+    // (distribution.json hosted: "pending deploy:"), so it is probed live in the checklist-
+    // style local probe above and deliberately NOT in the hosted tools/list sweep below -
+    // adding it there would assert a URL that has never existed.
   const checks = []; const ok = (n, p, d = "") => checks.push({ name: n, pass: !!p, detail: String(d).slice(0, 160) });
   const t0 = Date.now();
   try {
@@ -3075,7 +3144,10 @@ async function remote() {
     const uref2 = await rpc("image", { jsonrpc: "2.0", id: 64, method: "tools/call", params: { name: "image_upload", arguments: { name: "urlbad2", url: `${RAWFX}/sample-doc.pdf` } } });
     ok("url upload refusals: the metadata address is not fetched, and a PDF is not stored as an image", /not a public address/.test(JSON.stringify(uref)) && /magic bytes of a PNG/.test(JSON.stringify(uref2)), JSON.stringify(uref).slice(0, 110));
     const bound = await fetch("https://mcp.zovo.one/bound?tenant=anon_00000000000000000000000000000000").then((r) => r.json()); ok("bound endpoint answers for an unknown tenant", bound.bound === false, JSON.stringify(bound).slice(0, 80));
-    const buyT = curlBuy("https://mcp.zovo.one/buy/invoice?tenant=anon_00000000000000000000000000000000"); ok("buy with tenant reaches Stripe on checkout intent (POST)", buyT.status === 303 && /checkout\.stripe\.com/.test(buyT.loc), `${buyT.status} ${buyT.loc.slice(0, 50)}`);
+    // 2026-09-19: two-step intent flow (see billing() comment). GET serves the intent
+    // page; only a same-origin POST with intent=checkout reaches Stripe. Assert both.
+    { const g = curlGet("https://mcp.zovo.one/buy/invoice?tenant=anon_00000000000000000000000000000000"); ok("buy with tenant serves checkout-intent page on GET", g.status === 200 && g.gate === "checkout-intent-required", `${g.status} ${g.gate}`); }
+    { const r = curlPost("https://mcp.zovo.one/buy/invoice?tenant=anon_00000000000000000000000000000000"); ok("buy with tenant reaches Stripe on checkout intent (POST)", r.status === 303 && /checkout\.stripe\.com/.test(r.loc), `${r.status} ${r.loc.slice(0, 50)}`); }
     const batch = await fetch("https://mcp.zovo.one/mcp/invoice", { method: "POST", headers: { "content-type": "application/json", accept: "application/json, text/event-stream", authorization: `Bearer ${tok.token}` }, body: "[{}]" }); ok("JSON-RPC batch rejected 400", batch.status === 400, batch.status);
     const big = await fetch("https://mcp.zovo.one/mcp/invoice", { method: "POST", headers: { "content-type": "application/json", authorization: `Bearer ${tok.token}` }, body: "x".repeat(300 * 1024) }); ok("oversize body 413", big.status === 413, big.status);
     const ssrf = await rpc("price-tracker", { jsonrpc: "2.0", id: 7, method: "tools/call", params: { name: "price_check", arguments: { url: "http://169.254.169.254/latest/meta-data/" } } }); ok("SSRF target refused", /refus|block|not allowed|private|denied|not a public address/i.test(JSON.stringify(ssrf)), JSON.stringify(ssrf).slice(0, 100));
@@ -3099,27 +3171,52 @@ async function billing() {
     const loc = (out.match(/^location: (.*)$/mi) || [])[1] || "";
     return { status, loc };
   };
+  // 2026-09-19: /buy/ is a two-step intent flow since the 2026-09-13 Stripe audit (see
+  // billing/src/index.js isCheckoutIntent). A GET returns the confirmation page (200,
+  // x-mcp-buy: checkout-intent-required); only a same-origin POST with intent=checkout,
+  // Origin and Referer reaches Stripe. A curl POST with those headers was verified live
+  // (303 -> cs_live_...). So each probe asserts BOTH steps: GET serves the intent page,
+  // and POST converts to checkout.stripe.com. One live session is created for the first
+  // product only (the gate is per-request, one probe proves the conversion); the rest
+  // assert the GET intent page, which is side-effect free by design.
+  const curlGet = (url) => {
+    const out = execFileSync("curl", ["-sS", "-o", "/dev/null", "-D", "-",
+      "-H", "accept: text/html", "-H", "sec-fetch-mode: navigate", "-H", "sec-fetch-site: same-origin",
+      "-H", "sec-fetch-dest: document",
+      "-A", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36",
+      url], { encoding: "utf8", timeout: 30000 });
+    const status = Number((out.match(/^HTTP\/[\d.]+ (\d{3})/m) || [])[1] || 0);
+    const loc = (out.match(/^location: (.*)$/mi) || [])[1] || "";
+    const gate = (out.match(/^x-mcp-buy: (.*)$/mi) || [])[1] || "";
+    return { status, loc, gate };
+  };
+  const curlPost = (url) => {
+    const out = execFileSync("curl", ["-sS", "-o", "/dev/null", "-D", "-",
+      "-X", "POST",
+      "-H", "accept: text/html", "-H", "sec-fetch-mode: navigate", "-H", "sec-fetch-site: same-origin",
+      "-H", "sec-fetch-dest: document", "-H", "content-type: application/x-www-form-urlencoded",
+      "-H", `origin: https://mcp.zovo.one`, "-H", `referer: ${url}`,
+      "-A", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36",
+      "--data", "intent=checkout", url], { encoding: "utf8", timeout: 30000 });
+    const status = Number((out.match(/^HTTP\/[\d.]+ (\d{3})/m) || [])[1] || 0);
+    const loc = (out.match(/^location: (.*)$/mi) || [])[1] || "";
+    return { status, loc };
+  };
   const checks = []; const ok = (n, p, d = "") => checks.push({ name: n, pass: !!p, detail: String(d).slice(0, 160) });
   const t0 = Date.now();
   try {
     const h = await fetch("https://mcp.zovo.one/health").then((r) => r.json()); ok("health ok, live mode, signer ok", h.ok && h.stripe_mode === "live" && h.signer === "ok", JSON.stringify(h).slice(0, 120));
-    for (const p of ["time-tracker", "price-tracker", "spreadsheet", "invoice", "expense-tracker", "currency", "docx", "timezone", "resume", "recurring", "clauses", "pdf", "calendar", "kanban", "image", "bank-statement", "quotes", "barcode", "zip", "billing-docs", "deposits", "per-diem", "asset-register", "statement-of-account", "cash-book", "amortization", "petty-cash", "bundle"]) { const r = curlBuy(`https://mcp.zovo.one/buy/${p}`); ok(`buy/${p} -> 303 to Stripe (checkout intent)`, r.status === 303 && /checkout\.stripe\.com/.test(r.loc), `${r.status} ${r.loc.slice(0, 50)}`); }
-    // work-order is the one server in the list that must NOT answer 303. Its PRODUCTS entry
-    // 2026-09-07: these three were held at 503 because the Stripe key had lost
-    // product_write and no price id could be minted. That gate is gone. Checkout Sessions
-    // accept inline price_data, which needs only checkout_session_write, so a PRODUCTS row
-    // with usd and name is priced at session time with no human step. These assertions now
-    // check the opposite of what they used to: a real Stripe redirect. They fail the day
-    // one of these products silently loses its checkout again.
-    { const r = curlBuy("https://mcp.zovo.one/buy/work-order"); ok("buy/work-order -> 303 to a live Stripe checkout, priced inline with no price id", r.status === 303 && /^https:\/\/checkout\.stripe\.com\//.test(r.loc), `${r.status} ${r.loc.slice(0, 42)}`); }
-    // catalogue is the second such server, for the same reason and on the same date: the
-    // key still lacks product_write, so PRODUCTS["catalogue"].price is the literal
-    // "PENDING_HUMAN" too. Same assertion, same reason to keep it out of the 303 loop.
-    { const r = curlBuy("https://mcp.zovo.one/buy/catalogue"); ok("buy/catalogue -> 303 to a live Stripe checkout, priced inline with no price id", r.status === 303 && /^https:\/\/checkout\.stripe\.com\//.test(r.loc), `${r.status} ${r.loc.slice(0, 42)}`); }
-    // change-order is the third, same reason, same date: PRODUCTS["change-order"].price is
-    // the literal "PENDING_HUMAN" until a human mints the Stripe product. Same assertion,
-    // same reason to keep it out of the 303 loop.
-    { const r = curlBuy("https://mcp.zovo.one/buy/change-order"); ok("buy/change-order -> 303 to a live Stripe checkout, priced inline with no price id", r.status === 303 && /^https:\/\/checkout\.stripe\.com\//.test(r.loc), `${r.status} ${r.loc.slice(0, 42)}`); }
+    const products = ["time-tracker", "price-tracker", "spreadsheet", "invoice", "expense-tracker", "currency", "docx", "timezone", "resume", "recurring", "clauses", "pdf", "calendar", "kanban", "image", "bank-statement", "quotes", "barcode", "zip", "billing-docs", "deposits", "per-diem", "asset-register", "statement-of-account", "cash-book", "amortization", "petty-cash", "bundle", "work-order", "catalogue", "change-order"];
+  let converted = false;
+  for (const p of products) {
+    const g = curlGet(`https://mcp.zovo.one/buy/${p}`);
+    ok(`buy/${p} -> GET serves checkout-intent page (two-step flow)`, g.status === 200 && g.gate === "checkout-intent-required", `${g.status} ${g.gate}`);
+    if (!converted) {
+      const r = curlPost(`https://mcp.zovo.one/buy/${p}`);
+      converted = r.status === 303 && /checkout\.stripe\.com/.test(r.loc);
+      ok(`buy/${p} POST intent=checkout -> 303 to Stripe (live conversion proof)`, converted, `${r.status} ${r.loc.slice(0, 50)}`);
+    }
+  }
     const key = sign("invoice"); const v = await fetch(`https://mcp.zovo.one/verify?key=${encodeURIComponent(key)}`).then((r) => r.json()); ok("verify accepts a locally signed key (same keypair as worker)", v.ok && v.product === "invoice", JSON.stringify(v));
     const bad = await fetch(`https://mcp.zovo.one/verify?key=MCPL1.abc.def`).then((r) => r.json()); ok("verify rejects garbage", bad.ok === false, JSON.stringify(bad));
     const w = await fetch("https://mcp.zovo.one/webhook", { method: "POST", body: "{}" }); ok("webhook rejects unsigned POST", w.status === 400, w.status);
@@ -3179,7 +3276,8 @@ const baseProbe = async () => {};
 const SERVER_IDS = readdirSync(join(ROOT, "servers")).filter((d) => d !== "office-suite");
 const ALL_IDS = [...new Set([...Object.keys(PROBES), ...SERVER_IDS])];
 for (const id of ALL_IDS) {
-  results.push(await runServer(id, PROBES[id] ?? baseProbe));
+  console.error(`starting ${id}`);
+  try { results.push(await runServer(id, PROBES[id] ?? baseProbe)); } catch (e) { console.error(`THREW ${id}: ${e && e.stack || e}`); results.push({ id, pass: 0, total: 1, ms: 0, checks: [{ name: "exception", pass: false, detail: String(e) }] }); }
   console.log(`${id}: ${results.at(-1).pass}/${results.at(-1).total} in ${results.at(-1).ms} ms`);
 }
 if (wantRemote) { results.push(await remote()); console.log(`remote: ${results.at(-1).pass}/${results.at(-1).total}`); }

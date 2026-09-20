@@ -1,0 +1,390 @@
+#!/usr/bin/env node
+/**
+ * mcp-onboarding: new-hire onboarding, from day one through day ninety.
+ *
+ * The central rule is in src/onboarding.ts: a hire SNAPSHOTS its template's tasks when the
+ * template is applied. Editing a template afterwards never rewrites a hire already under way,
+ * because a day-one checklist a manager is working from has to be the list they were given.
+ */
+import { homedir } from "node:os";
+import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { createLicenseGate, withFileLock } from "@theluckystrike/mcp-license";
+import { isIsoDate, today } from "@theluckystrike/mcp-quotes/lib";
+import { z } from "zod";
+import { VERSION } from "./version.js";
+import {
+  MAX_HIRES, MAX_ROWS, MAX_TASKS, MAX_TEMPLATES, MAX_TEXT, OWNERS, TASK_STATUSES,
+  dueDate, normaliseText, progress, slugRole,
+  type Hire, type HireTask, type Owner, type TaskStatus, type Template, type TemplateTask,
+} from "./onboarding.js";
+import {
+  dataDir, findHire, findTemplate, lockPath, nextId, nextTaskId, readStore, resolveHire,
+  resolveTemplate, storePath, writeStore,
+} from "./store.js";
+
+/**
+ * Free tier: full CRUD on hires, templates and tasks, and the progress and overdue reads.
+ *
+ * What is metered is how MANY hires a single call can touch at once, and whether the plan can
+ * be exported. A team onboarding one or two people at a time runs its whole year inside the
+ * free tier; a firm that brings on a cohort of twenty is a firm that gets value from twenty.
+ *
+ * What Pro adds is applying a template to MANY hires in one call, and exporting a hire's plan
+ * as CSV.
+ */
+const FREE_HIRES_PER_APPLY = 1;
+const MAX_NAME = 200;
+
+const gate = createLicenseGate({ product: "onboarding" });
+
+const ok = (text: string) => ({ content: [{ type: "text" as const, text }] });
+const fail = (text: string) => ({ content: [{ type: "text" as const, text: `Error: ${text}` }], isError: true as const });
+const json = (v: unknown) => ok(JSON.stringify(v, null, 2));
+
+const str = (field: string, max: number) => z.string().max(max, `${field} must be ${max} characters or fewer`);
+
+/** Only this server's own store is written, so there is one lock and it is this one. */
+function locked<T>(fn: () => T | Promise<T>): Promise<T> {
+  return withFileLock(lockPath(), fn, { timeoutMs: 20000 });
+}
+
+function checkDate(value: string, field: string): string {
+  if (!isIsoDate(value)) throw new Error(`cannot read a date: ${field} "${value}" is not a real date in YYYY-MM-DD form. Nothing was written.`);
+  return value;
+}
+
+function requirePro(feature: string, toolName: string): void {
+  if (!gate.isPro()) throw new Error(`${feature} is Pro. Nothing was written. ${gate.upgradeText(feature, toolName)}`);
+}
+
+/* ------------------------------------------------------------------ shaping */
+
+function hireSummary(h: Hire, todayIso: string) {
+  const p = progress(h, todayIso);
+  return {
+    id: h.id, name: h.name, role: h.role, start_date: h.start_date,
+    template: h.template ?? null, template_name: h.template_name ?? null,
+    tasks: p.tasks, done: p.done, skipped: p.skipped, todo: p.todo,
+    percent_complete: p.percent_complete, overdue: p.overdue,
+    updated: h.updated,
+  };
+}
+
+function hireDetail(h: Hire, todayIso: string) {
+  return {
+    ...hireSummary(h, todayIso),
+    progress: progress(h, todayIso),
+    tasks_detail: h.tasks.map((t) => ({
+      id: t.id, text: t.text, owner: t.owner, due: dueDate(h.start_date, t.due_offset),
+      status: t.status, completed_date: t.completed_date ?? null,
+    })),
+    created: h.created,
+  };
+}
+
+function templateSummary(t: Template) {
+  return {
+    id: t.id, role: t.role, name: t.name, version: t.version,
+    tasks: t.tasks.length, updated: t.updated,
+  };
+}
+
+function templateDetail(t: Template) {
+  return {
+    ...templateSummary(t),
+    description: t.description ?? null,
+    tasks_detail: t.tasks.map((x) => ({ id: x.id, text: x.text, owner: x.owner, due_offset: x.due_offset })),
+    created: t.created,
+  };
+}
+
+/* ------------------------------------------------------------------- server */
+
+const server = new McpServer(
+  { name: "mcp-onboarding", version: VERSION },
+  { capabilities: { tools: {}, resources: {}, prompts: {} } },
+);
+
+const hireArg = str("hire", MAX_NAME).describe("The hire id, e.g. H-0001, or the name when only one carries it");
+const templateArg = str("template", MAX_NAME).describe("The template id, e.g. T-0001, or the role when only one carries it");
+
+server.registerTool("onboarding_hire_add", {
+  title: "Add a hire",
+  description: "Add a new hire and return its H-NNNN id: a name, a role and the day they start. The role is a grouping key, lower-cased and hyphenated. Add tasks with onboarding_task_add, or apply a role template with onboarding_template_apply.",
+  inputSchema: {
+    name: str("name", MAX_NAME).describe("The hire's name, e.g. Ada Lovelace"),
+    role: str("role", 60).describe("The role, e.g. engineer or sales. Lower-cased and hyphenated"),
+    start_date: str("start_date", 10).describe("The day they start, YYYY-MM-DD. Task due dates are counted from here"),
+  },
+}, async (a) => {
+  try {
+    const name = normaliseText(a.name);
+    if (!name) throw new Error("name is empty. A hire nobody can name is a hire nobody will find. Nothing was written.");
+    const start_date = checkDate(a.start_date, "start_date");
+    const rec = await locked(() => {
+      const store = readStore();
+      if (store.hires.some((h) => h.name.toLowerCase() === name.toLowerCase())) {
+        throw new Error(`a hire named "${name}" already exists. Use them, or give this one a different name. Nothing was written.`);
+      }
+      if (store.hires.length >= MAX_HIRES) throw new Error(`${MAX_HIRES} hires is the maximum. Nothing was written.`);
+      const now = new Date().toISOString();
+      const h: Hire = {
+        id: nextId("H", 4, store.hires.map((x) => x.id)),
+        name, role: slugRole(a.role), start_date,
+        tasks: [], created: now, updated: now,
+      };
+      store.hires.push(h);
+      writeStore(store);
+      return h;
+    });
+    return json({ created: hireSummary(rec, today()), next: "add tasks with onboarding_task_add, or apply a role template with onboarding_template_apply" });
+  } catch (e) { return fail((e as Error).message); }
+});
+
+server.registerTool("onboarding_hire_list", {
+  title: "List hires",
+  description: "Every hire with their role, start date, task counts, percent complete and overdue count. Filter by role or by a word in the name. Returns at most 500 rows, newest change first.",
+  inputSchema: {
+    role: str("role", 60).optional().describe("Only hires in this role, matched after the same lower-case hyphenation applied on add"),
+    contains: str("contains", MAX_NAME).optional().describe("Only hires whose name contains this text, matched case-insensitively"),
+  },
+}, async (a) => {
+  try {
+    const t = today();
+    let rows = readStore().hires;
+    if (a.role) { const r = slugRole(a.role); rows = rows.filter((h) => h.role === r); }
+    if (a.contains) { const n = normaliseText(a.contains).toLowerCase(); rows = rows.filter((h) => h.name.toLowerCase().includes(n)); }
+    rows = [...rows].sort((x, y) => y.updated.localeCompare(x.updated));
+    const total = rows.length;
+    rows = rows.slice(0, MAX_ROWS);
+    return json({
+      hires: rows.map((h) => hireSummary(h, t)), returned: rows.length, total,
+      ...(total > rows.length ? { truncated: `showing ${MAX_ROWS} of ${total}; narrow with role or contains` } : {}),
+      basis: "progress is derived on every call; nothing is stored",
+    });
+  } catch (e) { return fail((e as Error).message); }
+});
+
+server.registerTool("onboarding_task_add", {
+  title: "Add a task to a hire",
+  description: "Add one task to a hire's plan and return its K01-style id: the text, who owns it (hr, manager or it) and how many days after the start date it is due. The due date is counted from the hire's start date.",
+  inputSchema: {
+    hire: hireArg,
+    text: str("text", MAX_TEXT).describe("The task, as the person doing it will read it, e.g. Issue laptop and security badge"),
+    owner: z.enum(OWNERS).describe("Who owns the task: hr, manager or it"),
+    due_offset: z.number().int().min(0).max(365).describe("Days after the hire's start date the task is due. 0 is day one"),
+  },
+}, async (a) => {
+  try {
+    const text = normaliseText(a.text);
+    if (!text) throw new Error("text is empty. Nothing was written.");
+    const rec = await locked(() => {
+      const store = readStore();
+      const h = resolveHire(store.hires, a.hire);
+      if (h.tasks.length >= MAX_TASKS) throw new Error(`${h.id} already has ${MAX_TASKS} tasks, the maximum. Nothing was written.`);
+      const task: HireTask = {
+        id: nextTaskId(h.tasks.map((x) => x.id)),
+        text, owner: a.owner as Owner, due_offset: a.due_offset, status: "todo",
+      };
+      h.tasks.push(task);
+      h.updated = new Date().toISOString();
+      writeStore(store);
+      return { h, task };
+    });
+    return json({ hire: hireSummary(rec.h, today()), added: { id: rec.task.id, text: rec.task.text, owner: rec.task.owner, due: dueDate(rec.h.start_date, rec.task.due_offset) } });
+  } catch (e) { return fail((e as Error).message); }
+});
+
+server.registerTool("onboarding_task_done", {
+  title: "Mark a task done or skipped",
+  description: "Mark one task on a hire done or skipped, with the day it happened. done counts toward the percent complete; skipped is a deliberate dismissal and never counts as done. A task can be set back to todo to reopen it.",
+  inputSchema: {
+    hire: hireArg,
+    task: str("task", 16).describe("The task id, e.g. K03, as shown by onboarding_progress"),
+    status: z.enum(TASK_STATUSES).describe("done, skipped, or todo to put it back to outstanding"),
+    date: str("date", 10).optional().describe("The day it was completed, YYYY-MM-DD. Default today"),
+  },
+}, async (a) => {
+  try {
+    const date = a.date ? checkDate(a.date, "date") : today();
+    const rec = await locked(() => {
+      const store = readStore();
+      const h = resolveHire(store.hires, a.hire);
+      const needle = normaliseText(a.task).toLowerCase();
+      const task = h.tasks.find((x) => x.id.toLowerCase() === needle);
+      if (!task) throw new Error(`${h.id} has no task "${a.task}". Tasks: ${h.tasks.map((x) => x.id).join(", ") || "none"}. Nothing was written.`);
+      task.status = a.status as TaskStatus;
+      if (a.status === "todo") delete task.completed_date;
+      else task.completed_date = date;
+      h.updated = new Date().toISOString();
+      writeStore(store);
+      return { h, task };
+    });
+    return json({ hire: hireSummary(rec.h, today()), task: { id: rec.task.id, status: rec.task.status, completed_date: rec.task.completed_date ?? null } });
+  } catch (e) { return fail((e as Error).message); }
+});
+
+server.registerTool("onboarding_template_apply", {
+  title: "Apply a role template to a hire",
+  description: "Apply a role template to one hire (free) or many (Pro), copying the template's tasks into each hire with the template's version recorded. Editing the template afterwards never changes a hire already under way. If no template exists for the role, one is created from the tasks you pass.",
+  inputSchema: {
+    hire: hireArg.describe("The hire to apply the template to. Pro: pass a comma-separated list of hire ids or names to apply to many at once"),
+    role: str("role", 60).optional().describe("The role template to apply, by id (T-0001) or role. If omitted, the hire's own role is used"),
+    tasks: z.array(z.object({
+      text: str("text", MAX_TEXT),
+      owner: z.enum(OWNERS).default("manager"),
+      due_offset: z.number().int().min(0).max(365).default(0),
+    })).max(MAX_TASKS).optional().describe("When no template exists for the role, create one from these tasks and apply it. Pro only when applying to more than one hire"),
+  },
+}, async (a) => {
+  try {
+    const rec = await locked(() => {
+      const store = readStore();
+      const refs = a.hire.split(",").map((s) => s.trim()).filter(Boolean);
+      if (refs.length > FREE_HIRES_PER_APPLY) {
+        requirePro(`Applying a template to ${refs.length} hires at once`, "onboarding_template_apply");
+      }
+      const hires = refs.map((r) => resolveHire(store.hires, r));
+      const role = a.role ? slugRole(a.role) : hires[0].role;
+      let template = findTemplate(store.templates, role);
+      if (!template) {
+        if (!a.tasks || !a.tasks.length) {
+          throw new Error(`no template exists for role "${role}". Pass tasks to create one, or add tasks to the hire with onboarding_task_add. Nothing was written.`);
+        }
+        const now = new Date().toISOString();
+        template = {
+          id: nextId("T", 4, store.templates.map((x) => x.id)),
+          role, name: `${role} onboarding`, tasks: [], version: 1, created: now, updated: now,
+        };
+        for (const t of a.tasks) {
+          template.tasks.push({ id: nextTaskId(template.tasks.map((x) => x.id)), text: normaliseText(t.text), owner: t.owner as Owner, due_offset: t.due_offset });
+        }
+        store.templates.push(template);
+      }
+      for (const h of hires) {
+        h.tasks = template.tasks.map((t: TemplateTask): HireTask => ({
+          id: t.id, text: t.text, owner: t.owner, due_offset: t.due_offset, status: "todo",
+        }));
+        h.template = template.id;
+        h.template_name = template.name;
+        h.template_version = template.version;
+        h.updated = new Date().toISOString();
+      }
+      writeStore(store);
+      return { template, hires };
+    });
+    return json({
+      applied: rec.hires.map((h) => ({ id: h.id, name: h.name, tasks: h.tasks.length })),
+      template: templateSummary(rec.template),
+      basis: "each hire copied the template's tasks at apply; editing the template now will not change them",
+    });
+  } catch (e) { return fail((e as Error).message); }
+});
+
+server.registerTool("onboarding_progress", {
+  title: "Show a hire's progress",
+  description: "One hire's whole plan: every task with its owner, due date and status, plus the percent complete, the overdue count and what is still outstanding. Pass as_csv for a Pro-only CSV export of the plan.",
+  inputSchema: {
+    hire: hireArg,
+    as_csv: z.boolean().optional().describe("Return the plan as CSV. Pro only. Default false"),
+  },
+}, async (a) => {
+  try {
+    const t = today();
+    const h = resolveHire(readStore().hires, a.hire);
+    if (a.as_csv) {
+      requirePro("Exporting a hire's plan as CSV", "onboarding_progress");
+      const rows = [
+        ["id", "text", "owner", "due", "status", "completed_date"],
+        ...h.tasks.map((x) => [x.id, x.text, x.owner, dueDate(h.start_date, x.due_offset), x.status, x.completed_date ?? ""]),
+      ];
+      const csv = rows.map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(",")).join("\n");
+      return json({ hire: hireSummary(h, t), csv, written: false, basis: "progress is derived on every call" });
+    }
+    return json({ hire: hireDetail(h, t), basis: "progress is derived on every call; nothing is stored" });
+  } catch (e) { return fail((e as Error).message); }
+});
+
+server.registerTool("onboarding_overdue", {
+  title: "List overdue tasks",
+  description: "Every task that is still outstanding past its due date, across all hires or one hire, with how many days late. Returns at most 500 rows, most overdue first.",
+  inputSchema: {
+    hire: hireArg.optional().describe("Only this hire's overdue tasks. Omit for every hire"),
+  },
+}, async (a) => {
+  try {
+    const t = today();
+    const store = readStore();
+    const hires = a.hire ? [resolveHire(store.hires, a.hire)] : store.hires;
+    const rows: { hire: string; hire_id: string; task: string; text: string; owner: Owner; due: string; days_late: number }[] = [];
+    for (const h of hires) {
+      for (const x of h.tasks) {
+        if (x.status !== "todo") continue;
+        const due = dueDate(h.start_date, x.due_offset);
+        if (due >= t) continue;
+        rows.push({ hire: h.name, hire_id: h.id, task: x.id, text: x.text, owner: x.owner, due, days_late: Math.round((Date.parse(t) - Date.parse(due)) / 86400000) });
+      }
+    }
+    rows.sort((x, y) => y.days_late - x.days_late || x.due.localeCompare(y.due));
+    const total = rows.length;
+    const shown = rows.slice(0, MAX_ROWS);
+    return json({
+      overdue: shown, returned: shown.length, total,
+      ...(total > shown.length ? { truncated: `showing the ${MAX_ROWS} most overdue of ${total}` } : {}),
+      basis: "overdue is derived on every call from each task's due date and today",
+    });
+  } catch (e) { return fail((e as Error).message); }
+});
+
+server.registerResource("contract", "onboarding://contract", {
+  title: "The snapshot rule, the task states, the free tier and where this server writes",
+  description: "Why a hire copies its template, the three task states and what skipped means, the free-tier limits and the one file this server writes.",
+  mimeType: "application/json",
+}, async () => ({
+  contents: [{
+    uri: "onboarding://contract", mimeType: "application/json",
+    text: JSON.stringify({
+      snapshot_rule: "a hire copies its template's tasks when the template is applied, with the template version recorded; editing the template afterwards never changes a hire already under way",
+      task_states: TASK_STATUSES,
+      skipped_means: "the task was deliberately dismissed. It counts as neither done nor outstanding, and never toward the percent complete",
+      due_dates: "counted in days from the hire's start date; a task is overdue when it is still todo and its due date is before today",
+      progress_is_derived: "percent complete and overdue are computed on every call; nothing derived is stored",
+      free_tier: {
+        hires_per_apply: FREE_HIRES_PER_APPLY,
+        free_tools: ["onboarding_hire_add", "onboarding_hire_list", "onboarding_task_add", "onboarding_task_done", "onboarding_template_apply", "onboarding_progress", "onboarding_overdue"],
+        pro_tools: ["onboarding_template_apply to many hires at once", "onboarding_progress with as_csv"],
+        note: "full CRUD on hires, templates and tasks is free on every tier",
+      },
+      writes: [{ store: "onboarding", file: storePath() }],
+      opens_sibling_stores: false,
+      today: today(),
+      version: VERSION,
+    }, null, 2),
+  }],
+}));
+
+server.registerPrompt("onboard_a_hire", {
+  title: "Onboard a new hire from day one through day ninety",
+  description: "Add the hire, build or apply a role template, mark tasks done as they happen, and watch progress and overdue.",
+  argsSchema: { name: z.string().describe("The new hire's name"), role: z.string().describe("The role, e.g. engineer or sales") },
+}, ({ name, role }) => ({
+  messages: [{
+    role: "user" as const,
+    content: {
+      type: "text" as const,
+      text: `Onboard ${name} as a ${role}.\n\n` +
+        `1. Call onboarding_hire_add with ${name}, role ${role} and their start date. Ask the user for the start date if you do not have it.\n` +
+        `2. Call onboarding_template_apply for the hire. If no template exists for the role, pass tasks (text, owner, due_offset) to create one. The hire copies the template's tasks at apply.\n` +
+        `3. Call onboarding_progress to see the plan and what is due.\n` +
+        `4. As tasks are completed, call onboarding_task_done with done or skipped. skipped means the task was deliberately dismissed and never counts toward the percent complete.\n` +
+        `5. Call onboarding_overdue to see what is past due, and onboarding_progress to report the percent complete.`,
+    },
+  }],
+}));
+
+gate.registerTools(server);
+
+const transport = new StdioServerTransport();
+await server.connect(transport);
+process.stderr.write(`mcp-onboarding ${VERSION} ready; store at ${dataDir()}\n`);

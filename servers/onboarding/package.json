@@ -1,0 +1,63 @@
+{
+  "name": "@theluckystrike/mcp-onboarding",
+  "version": "0.22.0",
+  "description": "New-hire onboarding: task templates per role, day-one to day-ninety plans.",
+  "type": "module",
+  "bin": {
+    "mcp-onboarding": "dist/index.js"
+  },
+  "main": "dist/index.js",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./lib": {
+      "types": "./dist/lib.d.ts",
+      "default": "./dist/lib.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "server.json"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json --declaration && node -e \"import('node:fs').then(f=>f.chmodSync('dist/index.js',0o755))\"",
+    "test": "node --test test/*.test.mjs"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "onboarding",
+    "hiring",
+    "hr",
+    "new-hire",
+    "tasks",
+    "checklist"
+  ],
+  "license": "MIT",
+  "author": "theluckystrike",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/theluckystrike/mcp-servers",
+    "directory": "servers/onboarding"
+  },
+  "homepage": "https://github.com/theluckystrike/mcp-servers/tree/main/servers/onboarding",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.30.0",
+    "@theluckystrike/mcp-license": "^0.22.0",
+    "@theluckystrike/mcp-quotes": "^0.22.0",
+    "@theluckystrike/mcp-timezone": "^0.22.0",
+    "zod": "^3.25.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.0",
+    "@types/node": "^22.0.0"
+  }
+}

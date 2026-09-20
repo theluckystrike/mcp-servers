@@ -1565,6 +1565,196 @@ ${ours("mileage-log")}
     ],
   },
 
+
+  "goods-receipt": {
+    title: "MCP Goods Receipt vs Sortly and Zoho Inventory: which receiving tool to pick",
+    description: "A local goods-receipt ledger against two inventory suites. What each records on delivery, discrepancy handling, network use, install path, price and licence, read from each product's own material.",
+    html: `<h1>MCP Goods Receipt vs Sortly and Zoho Inventory: which receiving tool to pick</h1>
+<p>All three answer "did what we ordered actually arrive, and in what state". Sortly and Zoho Inventory are cloud inventory
+suites where receiving is one step inside a wider stock system; ours is a local MCP server that pairs a purchase order with a
+goods receipt note, records line-level differences and keeps a ledger you can export. The tradeoff is the usual one: a suite
+gives you stock levels and purchasing in one place but holds your data in a cloud account, while ours keeps everything on your
+machine and needs no account, no key and no network call.</p>
+
+<h2>The facts, read from each product</h2>
+<table>
+<thead><tr><th>Fact</th><th>Ours</th><th>Sortly</th><th>Zoho Inventory</th></tr></thead>
+<tbody>
+<tr><td>What it records</td><td>Purchase orders, GRNs with per-line quantity and condition, a discrepancy list, a per-order status report and a CSV export</td><td>Inventory items with photos, quantities and locations across sites; receiving is tracked as part of stock movement</td><td>Purchase orders with goods-receipt tracking against shipments; inventory, orders and shipping in one suite</td></tr>
+<tr><td>Discrepancy handling</td><td>grn_discrepancy lists every line where received differs from ordered, with the reason you recorded</td><td>Differences are handled by editing item quantities; no dedicated received-vs-ordered report</td><td>Receipts adjust stock against the PO; over/short handling lives in order management</td></tr>
+<tr><td>Network</td><td>No network. Everything is local files under your data directory</td><td>Cloud account; web and mobile apps</td><td>Cloud account; part of the Zoho suite</td></tr>
+<tr><td>Install/entry path</td><td>One-click <code>goods-receipt.mcpb</code> bundle or a hosted URL from <code>/mcp/connect</code>. No account, no key</td><td>Cloud sign-up at app.sortly.com; mobile app</td><td>Cloud sign-up at zoho.com/inventory</td></tr>
+<tr><td>Price</td><td>Receiving, discrepancies, status report and lists free and unlimited; Pro $19 once for the CSV export</td><td>Free plan 100 unique items, 1 user; Advanced $24 USD/mo (annual, listed $49)</td><td>Free plan 50 orders/mo, 1 user, 2 locations; paid from $29 per organisation/mo annual</td></tr>
+<tr><td>Licence</td><td>MIT</td><td>Proprietary</td><td>Proprietary</td></tr>
+</tbody>
+</table>
+
+<h2>When to pick Sortly or Zoho Inventory</h2>
+<p>Pick them when receiving is one part of a bigger job: you also want live stock levels, multiple locations, barcodes and
+photos of items, or you already run purchasing and shipping there. Zoho Inventory's free plan (50 orders a month, one user)
+and Sortly's free plan (100 unique items, one user) both cover a small operation, and their paid tiers ($24/mo Sortly
+Advanced, from $29/mo Zoho) add the users and volume a growing team needs.</p>
+
+<h2>When to pick ours</h2>
+<p>Pick ours when the delivery itself is the record you care about: what was ordered, what arrived, what was damaged and what
+never came, line by line, with a discrepancy list you can hand to the supplier and a CSV you can file. Everything a warehouse
+needs day to day is free and unlimited, there is no account and no data leaves your machine, and the one-time $19 Pro is only
+for writing the ledger out to a file. It also works from any MCP client you already have open, which beats signing into a
+cloud suite mid-delivery.</p>
+
+<h2>Install lines</h2>
+${ours("goods-receipt")}
+
+<p>Exact config file paths per client are on the <a href="/setup">setup pages</a>.</p>`,
+    faq: [
+      { q: "Do Sortly or Zoho Inventory work offline?", a: "No: both are cloud products, so receiving is recorded in their cloud account and needs a connection. Ours is local files only; a receipt is recorded whether or not you have network." },
+      { q: "Which one is free?", a: "All three have free tiers. Sortly's free plan holds 100 unique items for one user; Zoho Inventory's free plan allows 50 orders a month for one user at two locations. Ours is free and unlimited for receiving, discrepancies and the status report; Pro $19 once adds only the CSV export." },
+      { q: "Do any of them produce a discrepancy report?", a: "Not as a first-class report. In Sortly differences are absorbed by editing item quantities, and Zoho handles over/short inside order management. Ours has grn_discrepancy, which lists every line where received differs from ordered with the recorded reason." },
+      { q: "Where can I read the competitor facts myself?", a: "Sortly pricing is at sortly.com/pricing and its free-plan limits are published there; Zoho Inventory pricing and its free plan are at zoho.com/us/inventory/pricing. All read on 2026-09-19." },
+    ],
+  },
+
+  "leave": {
+    title: "MCP Leave vs Vacation Tracker and BambooHR: which PTO tracker to pick",
+    description: "A local leave ledger against a Slack-native PTO app and a full HR suite. What each tracks, approval flow, balances, calendar export, network use, install path, price and licence, read from each product's own material.",
+    html: `<h1>MCP Leave vs Vacation Tracker and BambooHR: which PTO tracker to pick</h1>
+<p>All three answer "who is off, since when, and how many days do they have left". Vacation Tracker is a Slack-native PTO app;
+BambooHR is a full HR suite where leave is one module among time-off, payroll and records; ours is a local MCP server where an
+employee requests leave and a manager approves it, and balances, the who-is-out view and a calendar export are computed from
+the same ledger. The suite and the Slack app live in the cloud and reach the whole team; ours keeps the ledger on your machine
+and answers in the client you already have open.</p>
+
+<h2>The facts, read from each product</h2>
+<table>
+<thead><tr><th>Fact</th><th>Ours</th><th>Vacation Tracker</th><th>BambooHR</th></tr></thead>
+<tbody>
+<tr><td>What it tracks</td><td>Employees, leave requests with half-days, approve/reject with a note, per-type balances, an out-range view and lists</td><td>PTO requests and approvals in Slack, leave types, per-department calendars and Slack reminders</td><td>Time-off requests with policies and accruals inside a full HR record (payroll, benefits, files)</td></tr>
+<tr><td>Approval flow</td><td>Requests pending until leave_approve or leave_reject; a balance snapshot is frozen at approval</td><td>Approvals happen in Slack with configurable approvers and notifications</td><td>Multi-level approvals routed per policy in the HR system</td></tr>
+<tr><td>Balances</td><td>leave_balance per employee per leave type, integer days, computed from the ledger</td><td>Automatic per leave type, visible in Slack</td><td>Accrual policies compute balances per policy year</td></tr>
+<tr><td>Network</td><td>No network. Local files under your data directory</td><td>Cloud; Slack integration</td><td>Cloud</td></tr>
+<tr><td>Install/entry path</td><td>One-click <code>leave.mcpb</code> bundle or a hosted URL from <code>/mcp/connect</code>. No account, no key</td><td>Install from the Slack Marketplace; free plan for unlimited team sizes</td><td>Cloud sign-up; flat monthly rate up to 25 employees</td></tr>
+<tr><td>Price</td><td>Requests, approvals, balances, out view and lists free and unlimited; Pro $19 once for import and the .ics export</td><td>Free plan (unlimited team size); paid Core and Complete tiers above it</td><td>Core $10, Pro $17, Elite $25 USD per employee/month; flat rate at 25 employees or fewer</td></tr>
+<tr><td>Licence</td><td>MIT</td><td>Proprietary</td><td>Proprietary</td></tr>
+</tbody>
+</table>
+
+<h2>When to pick Vacation Tracker or BambooHR</h2>
+<p>Pick Vacation Tracker if your team already lives in Slack and you want requests and reminders to happen where they chat; its
+free plan covers unlimited team sizes and its paid tiers add leave types and reporting. Pick BambooHR when leave must sit in
+the same system as payroll, benefits and employee records, with per-policy accruals; pricing is per employee per month
+($10 Core, $17 Pro, $25 Elite), with a flat rate for 25 employees or fewer.</p>
+
+<h2>When to pick ours</h2>
+<p>Pick ours when you want the leave ledger where the work happens and no employee data in another cloud account. A request,
+an approval with a note, a balance and a who-is-out answer are all one tool call from any MCP client, free and unlimited, and
+the .ics calendar export on Pro feeds the calendar you already keep. It suits a single operator or a small firm that has
+decided against per-employee HR pricing: $19 once, not $10 per head per month.</p>
+
+<h2>Install lines</h2>
+${ours("leave")}
+
+<p>Exact config file paths per client are on the <a href="/setup">setup pages</a>.</p>`,
+    faq: [
+      { q: "Do Vacation Tracker or BambooHR work outside Slack or the browser?", a: "Vacation Tracker is designed around Slack; BambooHR is a web product. Ours runs in any MCP client, including ones with no UI at all, and keeps the ledger local." },
+      { q: "Which one is free?", a: "Vacation Tracker has a free plan for unlimited team sizes, with paid Core and Complete tiers above it. BambooHR has no free tier. Ours is free and unlimited for the whole request/approve/balance flow; Pro $19 once adds only bulk import and the calendar export." },
+      { q: "Do they handle half days?", a: "Vacation Tracker supports partial days per its own material; BambooHR handles partial-day time off inside its time-off module. Ours models a half day as date plus half (am or pm) on the request itself." },
+      { q: "Where can I read the competitor facts myself?", a: "Vacation Tracker's plans are at vacationtracker.io/pricing and its Slack listing is on the Slack Marketplace; BambooHR pricing is at bamboohr.com/pricing. All read on 2026-09-19." },
+    ],
+  },
+
+  "onboarding": {
+    title: "MCP Onboarding vs Tango and Trainual: which onboarding tracker to pick",
+    description: "A local onboarding-plan tracker against two onboarding-software products. What each runs, template use, progress and overdue views, network use, install path, price and licence, read from each product's own material.",
+    html: `<h1>MCP Onboarding vs Tango and Trainual: which onboarding tracker to pick</h1>
+<p>All three turn "we hired someone, now do these twelve things" into a tracked plan. Tango and Trainual are dedicated
+onboarding products: Tango builds step-by-step guides with screenshots, Trainual documents processes and trains people
+through them. Ours is a local MCP server that applies a role template to a hire, tracks which tasks are done and which are
+overdue, and reports progress per hire. The dedicated products excel at authoring and delivering training content; ours is a
+checklist ledger with no account and no network call.</p>
+
+<h2>The facts, read from each product</h2>
+<table>
+<thead><tr><th>Fact</th><th>Ours</th><th>Tango</th><th>Trainual</th></tr></thead>
+<tbody>
+<tr><td>What it runs</td><td>Onboarding plans per hire, task completion, one-hire or cohort template apply, progress and overdue views</td><td>Step-by-step how-to guides captured as you work, organized for onboarding playbooks</td><td>Documented processes and role training with assigned subjects and completion tracking</td></tr>
+<tr><td>Templates</td><td>Role templates applied to one hire free; applying to a whole cohort at once is Pro</td><td>Guide/playbook templates inside its library</td><td>Role and process templates with assignments</td></tr>
+<tr><td>Progress / overdue</td><td>onboarding_progress and onboarding_overdue straight from the ledger, done/skipped split included</td><td>Guide completion viewed in the product</td><td>Completion tracked per assigned subject</td></tr>
+<tr><td>Network</td><td>No network. Local files under your data directory</td><td>Cloud; browser extension and web app</td><td>Cloud</td></tr>
+<tr><td>Install/entry path</td><td>One-click <code>onboarding.mcpb</code> bundle or a hosted URL from <code>/mcp/connect</code>. No account, no key</td><td>Cloud sign-up; free plan available</td><td>Cloud sign-up; pricing is quote-only (figures removed from its site)</td></tr>
+<tr><td>Price</td><td>Every tool free for one hire at a time; Pro $19 once for cohort applies</td><td>Free plan; Pro $15/user/mo annual per its own listings</td><td>Quote-only; no published rates</td></tr>
+<tr><td>Licence</td><td>MIT</td><td>Proprietary</td><td>Proprietary</td></tr>
+</tbody>
+</table>
+
+<h2>When to pick Tango or Trainual</h2>
+<p>Pick them when onboarding is content: you want click-by-click guides with screenshots (Tango's capture-as-you-work is the
+fastest way to produce them) or a searchable process manual new hires study and complete (Trainual's model). Tango has a free
+plan and a Pro tier at $15 per user per month annual; Trainual moved to quote-only pricing.</p>
+
+<h2>When to pick ours</h2>
+<p>Pick ours when onboarding is a checklist you must actually run: who has the plan, which tasks are done, what is overdue.
+Every tool is free for one hire at a time, so a founder onboarding their first employee pays nothing, and the $19 once Pro is
+only for stamping the same role template onto twenty hires at once. The ledger is local files, the answers come back in chat,
+and nothing about your hiring lands in a vendor's cloud.</p>
+
+<h2>Install lines</h2>
+${ours("onboarding")}
+
+<p>Exact config file paths per client are on the <a href="/setup">setup pages</a>.</p>`,
+    faq: [
+      { q: "Do Tango or Trainual track task completion like a checklist?", a: "Both track completion of their own content (guides or subjects). Ours tracks any checklist you define, per hire, with an explicit overdue view computed from due dates." },
+      { q: "Which one is free?", a: "Tango has a free plan and Pro at $15/user/mo annual. Trainual publishes no rates (quote-only). Ours is free for one hire at a time across every tool; Pro $19 once adds only cohort template applies." },
+      { q: "Can I onboard several hires at once?", a: "In ours, yes: onboarding_template_apply takes a comma-separated list of hire ids or names, which is the Pro path. Tango and Trainual assign content to people through their own user management." },
+      { q: "Where can I read the competitor facts myself?", a: "Tango's plan figures and Trainual's quote-only model are summarized in published 2026 onboarding-software comparisons (effy.ai, minicoursegenerator.com); Trainual's own site no longer lists figures. All read on 2026-09-19." },
+    ],
+  },
+
+  "purchase-requisition": {
+    title: "MCP Purchase Requisition vs Coupa and Procurify: which requisition tool to pick",
+    description: "A local requisition ledger against two enterprise procurement suites. What each runs, approval records, reporting, network use, install path, price and licence, read from each product's own material.",
+    html: `<h1>MCP Purchase Requisition vs Coupa and Procurify: which requisition tool to pick</h1>
+<p>All three answer "who asked to buy what, who approved it, and what did it cost". Coupa and Procurify are enterprise
+procurement suites: approval routing, budgets, catalogs, vendor management and spend analytics for a purchasing team. Ours is a
+local MCP server where you define a requisition once (lines, limits, approver) and run it per order, keeping a signed record of
+every run. The suites govern an organization's spend; ours is the same core discipline for a single operator who wants the
+paper trail without the platform.</p>
+
+<h2>The facts, read from each product</h2>
+<table>
+<thead><tr><th>Fact</th><th>Ours</th><th>Coupa</th><th>Procurify</th></tr></thead>
+<tbody>
+<tr><td>What it runs</td><td>Requisition definitions run per order: lines with quantities and limits, an approver, and a signed run record each time</td><td>Full procure-to-pay: requisitions, approvals, POs, invoicing, spend AI across modules</td><td>Order requests, approval routing, budgets, catalogs, purchase orders and a mobile app</td></tr>
+<tr><td>Approval record</td><td>Each run is signed and stays readable even after the requisition is deleted</td><td>Approval chains configured per amount and org; audit inside the suite</td><td>Approval routing with budgets and account codes, audited in the platform</td></tr>
+<tr><td>Reporting</td><td>run_report per requisition; writing it to a .txt file is Pro</td><td>Spend analytics across modules</td><td>Spend insights and budget dashboards</td></tr>
+<tr><td>Network</td><td>No network. Local files under your data directory</td><td>Cloud platform</td><td>Cloud platform</td></tr>
+<tr><td>Install/entry path</td><td>One-click <code>purchase-requisition.mcpb</code> bundle or a hosted URL from <code>/mcp/connect</code>. No account, no key</td><td>Enterprise sales; quote-based</td><td>Enterprise sales; no published rates (quote-request form)</td></tr>
+<tr><td>Price</td><td>3 requisitions with unlimited runs free; Pro $19 once for unlimited requisitions and file reports</td><td>Quote-based; sized on procurement users and transaction volume</td><td>Quote-based; modular, scoped per organization</td></tr>
+<tr><td>Licence</td><td>MIT</td><td>Proprietary</td><td>Proprietary</td></tr>
+</tbody>
+</table>
+
+<h2>When to pick Coupa or Procurify</h2>
+<p>Pick them when purchasing is a team function: many requesters, routed approvals by amount, budgets enforced against
+accounting, catalogs of preferred vendors. Neither publishes prices (Coupa is sized on users and volume, Procurify quotes
+per organization), so expect an enterprise sales cycle, and expect the platform to hold your spend data.</p>
+
+<h2>When to pick ours</h2>
+<p>Pick ours when the discipline you want is the record, not the platform: define the standing requisition once, run it per
+order, and know every run is signed and readable forever, even if you later delete the requisition. Three requisitions with
+unlimited runs are free because capping runs would cap the only thing a requisition is for; $19 once lifts the cap and adds
+file reports. No sales call, no seat count, no spend data in anyone's cloud.</p>
+
+<h2>Install lines</h2>
+${ours("purchase-requisition")}
+
+<p>Exact config file paths per client are on the <a href="/setup">setup pages</a>.</p>`,
+    faq: [
+      { q: "Can Coupa or Procurify work for a single operator?", a: "They are built for organizations with many requesters and routed approvals; both are quote-only enterprise sales. Ours is the single-operator version of the same record-keeping, and the free tier needs no sales conversation." },
+      { q: "Which one is free?", a: "Neither suite publishes a free tier; both are quote-based. Ours gives 3 requisitions with unlimited runs free, and Pro $19 once for unlimited requisitions plus writing reports to a file." },
+      { q: "What happens to run records if I delete a requisition?", a: "In ours the runs stay readable: deleting a requisition frees its slot but every signed run record remains. Deletion in the suites is governed by their own retention rules inside the platform." },
+      { q: "Where can I read the competitor facts myself?", a: "Coupa's procurement module is described at coupa.com and its pricing model (users plus transaction volume, quote-based) is documented by Vendr; Procurify states at procurify.com/pricing that it publishes no standard rates. All read on 2026-09-19." },
+    ],
+  },
   "maintenance-log": {
     title: "MCP Maintenance Log vs UpKeep and Snipe-IT: which maintenance tracker to pick",
     description: "A local maintenance log against a CMMS suite and a self-hosted IT asset tracker. What each tracks, due-date handling, network use, install path, price and licence, read from each project's own material.",
