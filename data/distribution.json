@@ -495,13 +495,32 @@
       ],
       "updated_at": "2026-09-20",
       "batch2_s62d2": [
-        "chart-of-accounts",
         "bank-reconciliation",
+        "chart-of-accounts",
         "dunning-letters",
         "expense-tracker",
-        "kanban"
+        "kanban",
+        "maintenance-log"
       ],
-      "total_submitted": 11
+      "total_submitted": 11,
+      "batch3_s62e": [
+        "currency",
+        "docx",
+        "image",
+        "job-card",
+        "mileage-log",
+        "office-suite",
+        "per-diem",
+        "petty-cash",
+        "price-list",
+        "recurring-invoices",
+        "resume",
+        "service-contract",
+        "supplier-list",
+        "timezone",
+        "work-order",
+        "zip"
+      ]
     }
   },
   "per_server": {
@@ -922,7 +941,7 @@
       "note": "new free lane discovered; invoice submitted; 5-10 more flagships queued"
     }
   },
-  "total_submitted": 81,
+  "total_submitted": 97,
   "totals": {
     "submitted": 42,
     "mcpservers_org": 42,
