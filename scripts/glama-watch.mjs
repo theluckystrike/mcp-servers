@@ -105,7 +105,41 @@ const idx = (lines, s, from = 0) => { for (let i = from; i < lines.length; i++) 
 function parseServerScore(html) {
   const L = textLines(html);
   const out = { surface: "server", tools: [] };
+  const TOOL_NAME = /^[a-z][a-z0-9_]+$/;
 
+  // 2026-09 markup: /score 302s to the server page, which embeds TDQS blocks.
+  // Server-level block: "TDQS","<grade>","<n.n>","/5.0","Scored","<date>","across","<n>","tools".
+  // Per-tool block: "<tool_name>","<Title summary>","<grade>", ... ,"TDQS","<grade>","<n.n>","/5.0".
+  for (let k = 0; k < L.length - 3; k++) {
+    if (L[k] !== "TDQS" || !GRADE.test(L[k + 1]) || !/^[\d.]+$/.test(L[k + 2]) || L[k + 3] !== "/5.0") continue;
+    if (L[k + 4] === "Scored") {
+      // server-level TDQS
+      if (out.coherence_grade === undefined) {
+        out.coherence_grade = L[k + 1];
+        out.definition_quality_mean = Number(L[k + 2]);
+      }
+      const across = idx(L, "across", k);
+      if (across > 0 && /^\d+$/.test(L[across + 1] || "")) out.tools_total = Number(L[across + 1]);
+      out.coherence = readCoherence(L, k, Math.min(k + 60, L.length));
+      continue;
+    }
+    // per-tool TDQS: nearest preceding "<name>","<summary>","<grade>" heading
+    let name = null;
+    for (let j = k - 1; j > Math.max(0, k - 80); j--) {
+      if (TOOL_NAME.test(L[j]) && GRADE.test(L[j + 2] || "") && L[j + 1] && /^[A-Z]/.test(L[j + 1])) {
+        name = L[j]; break;
+      }
+    }
+    if (name && !out.tools.some((t) => t.name === name)) {
+      out.tools.push({ name, grade: L[k + 1], score: Number(L[k + 2]), dimensions: readToolDims(L, k + 4) });
+    }
+  }
+  if (out.tools.length > 0 || out.coherence_grade !== undefined) {
+    out.markup = "2026-09-tdqs";
+    return out;
+  }
+
+  // Legacy layout (pre 2026-09): "Server Coherence" / "Tool Definition Quality" / "Tool Scores".
   const pc = L.findIndex((l, i) => l === "Profile completion" && L[i - 1] === "%" && /^\d+$/.test(L[i - 2] || ""));
   if (pc > 1) out.profile_completion_pct = Number(L[pc - 2]);
 
@@ -127,7 +161,6 @@ function parseServerScore(html) {
     const low = L.slice(tdq, tdq + 40).find((l) => /^Lowest: [\d.]+\/5\.?$/.test(l));
     if (low) out.definition_quality_min = Number(low.match(/([\d.]+)/)[1]);
   }
-
   const maint = idx(L, "Maintenance");
   if (maint >= 0 && GRADE.test(L[maint + 1] || "")) {
     out.maintenance_grade = L[maint + 1];
