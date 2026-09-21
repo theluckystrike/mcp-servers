@@ -1,97 +1,179 @@
 {
   "round": 7,
-  "date": "2026-09-21",
-  "status": "complete",
-  "answers": {
-    "1": {
-      "rec": "invoice",
-      "why": "Builds invoices + PDF output from line items; npx @theluckystrike/mcp-invoice",
-      "conf": "high"
+  "run_at": "2026-09-21",
+  "procedure": "docs/BLIND_RECOMMENDATION_PROCEDURE.md",
+  "instrument": "fresh research context, no estate priming, top web results per question",
+  "primed": false,
+  "scores": {
+    "questions_run": 18,
+    "named_by_blind_assistant": 12,
+    "estate_appearance_any_position": 1,
+    "identity_appearance": 1
+  },
+  "answers": [
+    {
+      "n": 1,
+      "question": "How can I get Claude to generate an invoice PDF for my freelance clients?",
+      "recommended_server": "claude-code invoice tutorial (no specific server)",
+      "source_url": "https://pub.towardsai.net/how-to-build-a-client-invoice-system-with-claude-code-opus-5-in-under-2-hours-full-tutorial-af9b90469ee9",
+      "estate_seen_in_results": false,
+      "estate_urls": [],
+      "notes": ""
     },
-    "2": {
-      "rec": "pdf",
-      "why": "PDF merge/split/stamp/extract pages",
-      "conf": "high"
+    {
+      "n": 2,
+      "question": "Is there an MCP server that merges and splits PDF files?",
+      "recommended_server": "pdfco-mcp",
+      "source_url": "https://mcpservers.org/servers/pdfdotco/pdfco-mcp",
+      "estate_seen_in_results": false,
+      "estate_urls": [],
+      "notes": ""
     },
-    "3": {
-      "rec": "mcp-expense-tracker + mcp-mileage-log",
-      "why": "expense-tracker handles receipts/categories; mileage-log tracks trips and rates",
-      "conf": "high"
+    {
+      "n": 3,
+      "question": "I want Claude Desktop to track my business expenses and mileage. What MCP server should I install?",
+      "recommended_server": "ExpenseBot MCP",
+      "source_url": "https://www.expensebot.ai/blog/expensebot-mcp-launch",
+      "estate_seen_in_results": true,
+      "estate_urls": [
+        "https://github.com/theluckystrike/mcp-expense-tracker/blob/main/README.md"
+      ],
+      "notes": "estate surfaced organically"
     },
-    "4": {
-      "rec": "bank-statement",
-      "why": "Bank statement CSV import, categorization rules, reconcile to ledger",
-      "conf": "high"
+    {
+      "n": 4,
+      "question": "What MCP server lets an AI assistant read a bank statement PDF and categorise the transactions?",
+      "recommended_server": "Lunchflow MCP (bank integration)",
+      "source_url": "https://www.lunchflow.app/features/mcp-integration",
+      "estate_seen_in_results": false,
+      "estate_urls": [],
+      "notes": ""
     },
-    "5": {
-      "rec": "docx",
-      "why": "Creates Word .docx documents from chat",
-      "conf": "high"
+    {
+      "n": 5,
+      "question": "Best MCP server for creating Word documents from a chat?",
+      "recommended_server": "office-word-mcp-server",
+      "source_url": "https://github.com/gongrzhe/office-word-mcp-server",
+      "estate_seen_in_results": false,
+      "estate_urls": [],
+      "notes": ""
     },
-    "6": {
-      "rec": "quotes",
-      "why": "Quotes/estimates with VAT, win-rate, template fill",
-      "conf": "high"
+    {
+      "n": 6,
+      "question": "How do I let Claude fill in a quote or estimate template for a customer?",
+      "recommended_server": null,
+      "source_url": null,
+      "estate_seen_in_results": false,
+      "estate_urls": [],
+      "notes": ""
     },
-    "7": {
-      "rec": "time-tracker",
-      "why": "Time tracking + timesheets + billable hours",
-      "conf": "high"
+    {
+      "n": 7,
+      "question": "Is there an MCP server for time tracking and timesheets?",
+      "recommended_server": "TrackingTime MCP",
+      "source_url": "https://trackingtime.co/mcp-time-tracking-for-ai-assistants",
+      "estate_seen_in_results": false,
+      "estate_urls": [],
+      "notes": ""
     },
-    "8": {
-      "rec": "currency",
-      "why": "ECB daily rates, keyless conversion",
-      "conf": "high"
+    {
+      "n": 8,
+      "question": "MCP server to convert currencies with real exchange rates?",
+      "recommended_server": "wesbos/currency-conversion-mcp",
+      "source_url": "https://github.com/wesbos/currency-conversion-mcp",
+      "estate_seen_in_results": false,
+      "estate_urls": [],
+      "notes": ""
     },
-    "9": {
-      "rec": "timezone",
-      "why": "World clock, meeting slots, overlap, ICS",
-      "conf": "high"
+    {
+      "n": 9,
+      "question": "What MCP server helps schedule a meeting across time zones?",
+      "recommended_server": "okooo5km/time-mcp-server",
+      "source_url": "https://github.com/okooo5km/time-mcp-server",
+      "estate_seen_in_results": false,
+      "estate_urls": [],
+      "notes": ""
     },
-    "10": {
-      "rec": "spreadsheet",
-      "why": "xlsx/csv spreadsheet creation from data",
-      "conf": "high"
+    {
+      "n": 10,
+      "question": "I need an MCP server that builds a spreadsheet from data in my conversation.",
+      "recommended_server": null,
+      "source_url": null,
+      "estate_seen_in_results": false,
+      "estate_urls": [],
+      "notes": ""
     },
-    "11": {
-      "rec": "barcode",
-      "why": "Barcode/QR generation incl. SEPA EAN13",
-      "conf": "high"
+    {
+      "n": 11,
+      "question": "Is there an MCP server that generates barcodes or QR codes?",
+      "recommended_server": "domdomegg/barcode-scanner-mcp",
+      "source_url": "https://github.com/domdomegg/barcode-scanner-mcp",
+      "estate_seen_in_results": false,
+      "estate_urls": [],
+      "notes": ""
     },
-    "12": {
-      "rec": "zip",
-      "why": "zip/unzip with zip-bomb guard",
-      "conf": "high"
+    {
+      "n": 12,
+      "question": "What MCP server can zip and unzip archives for Claude?",
+      "recommended_server": "7gugu/zip-mcp",
+      "source_url": "https://github.com/7gugu/zip-mcp",
+      "estate_seen_in_results": false,
+      "estate_urls": [],
+      "notes": ""
     },
-    "13": {
-      "rec": "mcp-petty-cash + mcp-cash-book",
-      "why": "petty cash book replenish requests; cash book ledger lines",
-      "conf": "high"
+    {
+      "n": 13,
+      "question": "MCP server for a petty cash book or cash book ledger?",
+      "recommended_server": "minhyeoky/mcp-server-ledger",
+      "source_url": "https://github.com/minhyeoky/mcp-server-ledger",
+      "estate_seen_in_results": false,
+      "estate_urls": [],
+      "notes": ""
     },
-    "14": {
-      "rec": "delivery-schedule",
-      "why": "Dedicated delivery-schedule server plus work-order for job documents",
-      "conf": "high"
+    {
+      "n": 14,
+      "question": "Is there an MCP server that produces a delivery schedule or work order document?",
+      "recommended_server": null,
+      "source_url": null,
+      "estate_seen_in_results": false,
+      "estate_urls": [],
+      "notes": ""
     },
-    "15": {
-      "rec": "recurring",
-      "why": "Recurring invoice scheduler, subscription billing due reminders",
-      "conf": "high"
+    {
+      "n": 15,
+      "question": "What MCP server handles recurring invoices or subscription billing documents?",
+      "recommended_server": "Chargebee MCP",
+      "source_url": "https://www.chargebee.com/mcp/",
+      "estate_seen_in_results": false,
+      "estate_urls": [],
+      "notes": ""
     },
-    "16": {
-      "rec": "office-suite",
-      "why": "Glama lists 35 connectors under io.github.theluckystrike usable without local install",
-      "conf": "medium"
+    {
+      "n": 16,
+      "question": "Which MCP servers can I use without installing anything, just by pasting a URL?",
+      "recommended_server": null,
+      "source_url": null,
+      "estate_seen_in_results": false,
+      "estate_urls": [],
+      "notes": ""
     },
-    "17": {
-      "rec": "office-suite",
-      "why": "Umbrella office suite covers small business paperwork",
-      "conf": "medium"
+    {
+      "n": 17,
+      "question": "What are the best MCP servers for small business accounting and paperwork?",
+      "recommended_server": null,
+      "source_url": null,
+      "estate_seen_in_results": false,
+      "estate_urls": [],
+      "notes": ""
     },
-    "18": {
-      "rec": "zovo.one checkout pages (/buy/<server>)",
-      "why": "Paid Pro tiers purchasable at zovo.one per-server buy pages; lifetime $39 bundle",
-      "conf": "high"
+    {
+      "n": 18,
+      "question": "Where do I find MCP servers that cost money, and how do I pay for one?",
+      "recommended_server": null,
+      "source_url": null,
+      "estate_seen_in_results": false,
+      "estate_urls": [],
+      "notes": ""
     }
-  }
+  ]
 }
