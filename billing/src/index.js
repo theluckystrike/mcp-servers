@@ -533,7 +533,7 @@ a.grid{display:inline-block;width:31%;min-width:200px;margin:0 1% 6px 0;font-siz
 .det{font-size:13px;color:var(--mut);margin:.3em 0 0;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 @media(max-width:640px){a.grid{width:100%}}
 </style></head><body><nav class="pg" aria-label="Popular guides">${PRIORITY_GUIDES.filter((s) => GUIDES[s]).slice(0, 10).map((s) => `<a href="/guides/${s}">${esc(GUIDES[s].title)}</a>`).join(" &middot; ")}</nav>${body}
-<footer>Home: <a href="/">All servers</a> &middot; <a href="/guides">Guides</a> &middot; <a href="/setup">Setup</a> &middot; <a href="/compare">Compare</a> &middot; <a href="/changelog">Changelog</a> &middot; Support: support@zovo.one &middot; Built by <a href="${REPO}">theluckystrike</a></footer>
+<footer>Home: <a href="/">All servers</a> &middot; <a href="/guides">Guides</a> &middot; <a href="/setup">Setup</a> &middot; <a href="/compare">Compare</a> &middot; <a href="/changelog">Changelog</a> &middot; <a href="https://tg.zovo.one">Tiny Telegram Tools</a> &middot; Support: support@zovo.one &middot; Built by <a href="${REPO}">theluckystrike</a></footer>
 ${COPY_BUTTON_SCRIPT}
 </body></html>`;
 }
