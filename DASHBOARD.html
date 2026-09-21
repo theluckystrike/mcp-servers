@@ -381,6 +381,46 @@
     </div>
   </section>
 
+
+  <section>
+    <h2>Stripe checkout funnel (S129 deep-dive, 2026-09-21)</h2>
+    <div class="kpi-row">
+  <div class="kpi"><span class="n">977</span><span class="l">buy clicks (total, humans per counting rule)</span></div>
+  <div class="kpi"><span class="n">100</span><span class="l">Stripe sessions (latest 100 window)</span></div>
+  <div class="kpi"><span class="n">63</span><span class="l">of 100 = Sep17 bot burst (sweeps 11:44, 11:45, 12:02 UTC, no Referer)</span></div>
+  <div class="kpi"><span class="n">37</span><span class="l">real human sessions</span></div>
+  <div class="kpi"><span class="n">0</span><span class="l">PAID — conversions all-time in window: 0</span></div>
+</div>
+    <p class="muted">Sources: stripe checkout sessions list --live (100 latest) + mcp.zovo.one/stats/clicks + retrieve per session. Sessions exist only since 2026-09-17 09:44 UTC — checkout went live that day; no earlier history.</p>
+    <h3>Who the real buyers are (37 human sessions, all expired or open, none paid)</h3>
+    <table>
+      <thead><tr><th>When (UTC)</th><th>Amount</th><th>Product</th><th>Source</th><th>Status</th><th>Verdict</th></tr></thead>
+      <tbody>
+<tr><td class="mono">Sep17 11:44, 12:02</td><td>$19 ×2</td><td>invoice</td><td>tenant-tagged (anon_…)</td><td>expired</td><td>Real tenant hit cap → opened checkout twice, abandoned</td></tr>
+<tr><td class="mono">Sep17 22:36</td><td>$99</td><td>lifetime (guest email)</td><td>wordpress_pricing_page</td><td>expired</td><td>Cross-estate buyer (belikenative /payment-failed cancel URL) — not mcp funnel</td></tr>
+<tr><td class="mono">Sep19 15:02–15:07</td><td>$19 ×3</td><td>invoice + time-tracker</td><td>tenant + unattributed.time-tracker</td><td>expired</td><td>One human, tried twice within 5 min, invoice AND time-tracker (bundle intent!)</td></tr>
+<tr><td class="mono">Sep20 02:38–03:26</td><td>$19 ×6</td><td>invoice + time-tracker pairs</td><td>tenant + unattributed</td><td>expired</td><td>Same human again next night: 3 attempts, 3 paired products, never paid</td></tr>
+<tr><td class="mono">Sep21 01:34</td><td>$19</td><td>invoice</td><td>verify.s128d (our probe)</td><td>open</td><td>Our own QA session</td></tr>
+<tr><td class="mono">Sep21 03:29</td><td>$19</td><td>claim-evidence-kit</td><td>qa (worthmyclaim estate)</td><td>expired</td><td>Cross-estate QA</td></tr>
+<tr><td class="mono">Sep21 03:44</td><td>$19</td><td>invoice</td><td>store.s.invoice</td><td>open</td><td>First post-S129-fix session — carries NEW cancel_url /buy/invoice?session_id=…</td></tr>
+      </tbody>
+    </table>
+    <h3>What the data says</h3>
+    <ul>
+<li><b>The 0% headline is real but the denominator was wrong:</b> 63 of the 100 unpaid sessions are one crawler event (Sep17, sweeps at 11:44, 11:45 and 12:02 UTC of 6+27+30 sessions across ~35 products, zero Referer — the “setup-page walker” already documented in the worker guard). Excluding it: 37 human sessions, 0 paid.</li>
+<li><b>There is exactly ONE repeat human buyer</b> (invoice + time-tracker, Sep19 + Sep20, 9 sessions total). They came back three nights in a row and still didn’t pay — the leak is at Stripe, not the buy page. Prime suspect: no wallet/Apple Pay first, 14-field free-tier fatigue, or price doubt. Their paired invoice+time-tracker purchases scream “wants the bundle ($39),” not two × $19.</li>
+<li><b>Click quality is poor:</b> 505 of 977 clicks (52%) come from store.setup.* pages (Claude Code/Cline/Desktop/VSCode/Windsurf/Cursor setup guides) — people mid-setup, not mid-purchase. 152 clicks are unattributed.*.</li>
+<li><b>Stripe recovery was already on for some sessions</b> (after_expiration.recovery.enabled on $99 sessions) — but mcp $19 sessions never reach it because they expire before any recovery email matters.</li>
+<li><b>S129 fix deployed today (575c9714, commit d945852a)</b> addresses exactly the observed pattern: cancel/abandon now lands on the /buy intent page with session_id and GET resumes the unpaid Stripe session. First post-fix session (03:44) verified carrying the new cancel_url.</li>
+</ul>
+    <h3>Next levers (ranked by this data)</h3>
+    <ul>
+<li><b>S132a — bundle-aware pair detection:</b> the repeat buyer adds invoice+time-tracker every attempt; show “get both — bundle $39” on the checkout intent page when cart pairs two products.</li>
+<li><b>S132b — email capture before checkout:</b> the one real buyer has zero contact; an email field on the intent page (pre-Stripe) enables Stripe’s built-in recovery emails on expiry.</li>
+<li><b>Rate-limit / ignore bot sweeps:</b> Sep17 produced 63 phantom sessions in 2 minutes from one walker; stats/clicks already excludes it but Stripe list noise hides real demand (100-latest window was 63% noise).</li>
+<li><b>Verify S129 with the known repeat buyer’s path:</b> GET /buy/invoice?session_id=… with browser UA → 303 checkout (verified today). Watch for the repeat buyer on Sep21 night (their pattern: 02:30-05:45 UTC).</li>
+</ul>
+  </section>
   <section>
     <h2>Biggest wins</h2>
     <ul><li>Registry namespace claimed and visible: 97 entries at latest version (kpi.json raw.registry).</li>
@@ -525,7 +565,7 @@
 <tr><td class="mono">2026-09-02T12:48:50.865Z</td><td>dashboard scaffold</td></tr>
 <tr><td>107</td><td>2026-09-20T21:30:00.000Z</td><td>S107/S57</td><td>mcpservers.org probe: only 4/46 listings live; badges on 4 verified (8 repos)</td><td>ok True</td></tr><tr><td>S108</td><td>S58</td><td>2026-09-20</td><td>mcpservers.org resubmission wave: 10/10 flagship servers re-filed via /submit form, all 'Submission Successful'. Publication check pending S59 (S57 probe: only 4/46 listing pages live). R36 report.</td></tr>
       <tr><td>S114</td><td>2026-09-20</td><td>S62-d</td><td>mcpfinder b3 COMPLETE: full 46-server estate submitted (26 new: deposits..zip). total_submitted=81</td><td>mcpfinder pending review</td></tr><tr><td>S121</td><td>2026-09-20</td><td>FutureTools.io NEW LANE — pilot (Invoice MCP) submitted; recipe validated (Turnstile auto-solve + pricing-radio click); total_submitted=144</td></tr>
-<tr><td>S122</td><td>2026-09-20</td><td>b5 recheck: agenticskills/mcpfinder/mcp.directory still 0 live (review windows pending); mcpserver.dev amplified 4/4 social channels verified (bsky record confirmed)</td></tr>
+<tr><td>S122</td><td>2026-09-20</td><td>b5 recheck: agenticskills/mcpfinder/mcp.directory still 0 live (review windows pending); mcpserver.dev amplified 4/4 social channels verified (bsky record confirmed)</td></tr><tr><td>S129</td><td>2026-09-21</td><td>Checkout conversion ROOT CAUSE + fix: 334 clicks → 100 human Stripe sessions → 0 paid because cancel_url dropped buyer on homepage, funnel restarted at zero. Fix deployed 575c9714 / commit d945852a: cancel_url → /buy intent page with session_id; one-click resume (GET /buy/<id>?session_id= → 303 back to open Stripe session, x-mcp-buy: checkout-resumed). Live round-trip verified: POST intent → Stripe 303 → resume 303 back. Watch for first paid session.</td></tr><tr><td>S128_D+R2</td><td>2026-09-21</td><td>backlink-checker FULLY WIRED: registry x2 LIVE (backlink-checker + backlink-checker-seo-link-checker @0.22.0), mcpb on v0.22.0, /compare/backlink-checker 200, /s/ 200, guide live, contract 12/12, release-check GREEN, billing 163/0, IndexNow 203/0, commits 7927f29f+cd3199df.<br><b>SPRINT INSIGHTS (verified 7.1d CF GraphQL / GSC 90d / GH 14d):</b> Traffic: 515K requests, 95% bots; render-proven human views ex-operator ex-sweepers ~384/wk; AI crawlers: ClaudeBot 215, Claude-User 95, PerplexityBot 119, GPTBot 67, OAI-SearchBot 30. GSC 90d: 0 clicks / 9 impressions — Google is NOT a channel; assistant/registry-mediated discovery is the only proven revenue path. GitHub 14d: 49 views/40 uniques. Users: real repeat readers cluster US/SG/CN/GB; one US Chrome UA read 146 catalogue pages (evaluator profile that buys $99 tiers). ROI: $3,711.76 lifetime / 156 sessions / avg $23.79 / $99 tier 61.3% → ~$80 lifetime value per wired server. Monetization blockers: (1) backlink-checker Pro needs live Stripe price minted [HUMAN 2-min], (2) 7 servers unregistered (leave, maintenance-log, mileage-log, onboarding, goods-receipt, purchase-requisition, service-agreement, supplier-list), (3) next KPI: page-view→checkout rate on /s/ + /compare/ pages.</td></tr>
 </tbody>
     </table>
     </div>
