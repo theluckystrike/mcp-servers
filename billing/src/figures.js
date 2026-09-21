@@ -12,6 +12,7 @@
 export const SERVER_IDS = [
   "amortization",
   "asset-register",
+  "backlink-checker",
   "bank-statement",
   "barcode",
   "bill-of-sale",
@@ -62,6 +63,7 @@ export const SERVER_IDS = [
 export const CHILD_IDS = [
   "amortization",
   "asset-register",
+  "backlink-checker",
   "bank-statement",
   "barcode",
   "bill-of-sale",
@@ -160,6 +162,7 @@ export const HOSTED_IDS = [
 export const TOOLS = {
   "amortization": 7,
   "asset-register": 7,
+  "backlink-checker": 3,
   "bank-statement": 10,
   "barcode": 8,
   "bill-of-sale": 8,
@@ -210,17 +213,18 @@ export const TOOLS = {
 export const LICENSE_TOOLS = 2;
 
 /** Sum of TOOLS over CHILD_IDS. */
-export const OWN_TOOLS_TOTAL = 418;
+export const OWN_TOOLS_TOTAL = 421;
 
 /** Distinct tool names office-suite exposes: every child's own tools, plus the shared
  * license pair once. Reconciles with the independently measured OFFICE_SUITE_TOOLS in
  * billing/src/index.js, taken over stdio from the running bundle on 2026-09-07. */
-export const OFFICE_SUITE_TOOLS = 420;
+export const OFFICE_SUITE_TOOLS = 423;
 
 /** Servers the site actually lists, i.e. those with a README that becomes a /s/ page. */
 export const LISTED_IDS = [
   "amortization",
   "asset-register",
+  "backlink-checker",
   "bank-statement",
   "barcode",
   "bill-of-sale",
@@ -269,6 +273,7 @@ export const LISTED_IDS = [
 export const LISTED_CHILD_IDS = [
   "amortization",
   "asset-register",
+  "backlink-checker",
   "bank-statement",
   "barcode",
   "bill-of-sale",
@@ -316,10 +321,10 @@ export const LISTED_CHILD_IDS = [
 
 /** Counts, computed so prose cannot go stale. LISTED_COUNT is the one a visitor should
  * ever see: SERVER_DIR_COUNT can be ahead of it while a new server is being built. */
-export const LISTED_COUNT = 46;
-export const LISTED_CHILD_COUNT = 45;
-export const SERVER_DIR_COUNT = 46;
-export const CHILD_COUNT = 45;
+export const LISTED_COUNT = 47;
+export const LISTED_CHILD_COUNT = 46;
+export const SERVER_DIR_COUNT = 47;
+export const CHILD_COUNT = 46;
 export const HOSTED_COUNT = 45;
 
 /** Hosted limits, read from remote/src/index.ts. */
@@ -341,6 +346,7 @@ export const VERSION = "0.22.0";
 export const FREE = {
   "amortization": "loan_schedule is free and unlimited on every tier: the payment and the interest are the question this server exists to answer, and a free tier that hides the answer is a demo. The meter is on the number of agreements held, three loans in the register, which is the unit of work.",
   "asset-register": "Depreciation schedules are unlimited on every tier: the rates are public information a tax authority published, and metering the reading of a regulation would be charging for the government's work. The cap is on the SIZE of the register, 10 assets, plus unlimited asset_list and asset_dispose.",
+  "backlink-checker": "link_check and robots_guard_check: full single-page checking, no per-day limits. Pro adds batch link_audit.",
   "bank-statement": "2 accounts, 12 months of transactions, 5 rules, summary and search, reconciliation 31 days at a time, recurring detection over the last 3 months (5 charges).",
   "barcode": "20 codes per calendar month, SVG output at any size, every symbology, EPC SEPA payment codes, WiFi and vCard codes, and the local register.",
   "bill-of-sale": "Ten open drafts and five finalized documents, with rendering to Markdown and HTML unlimited on every tier: the document itself is never metered, because whether you hold a signed record of the sale is the question this server exists to answer. Read, list, summary and delete are free, so a draft typed in twice costs nothing to remove.",

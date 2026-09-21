@@ -671,6 +671,12 @@
       "free": "Three requisitions, and UNLIMITED RUNS of them on every tier, because capping the running of a requisition would cap the only thing it is for.",
       "pro": "Unlimited requisitions, and run_report writing the approval record to a .txt file at a path you name. The path goes through a boundary check before anything is written.",
       "storage": "~/.local/share/mcp-servers/purchase-requisition/"
+    },
+    "backlink-checker": {
+      "title": "MCP Backlink Checker",
+      "tagline": "Backlink checks from Claude or Cursor: dofollow or nofollow, anchor text, HTTP status and robots guards.",
+      "does": "Checks whether a page links to your domain and how: dofollow or nofollow, the anchor text used, the HTTP status the link returns, and the robots rules that guard the page. link_check handles one page at a time and reports live, so a verdict is always about the page as it is now; link_audit runs a whole batch in one call and returns one verdict row per page; robots_guard_check reads the robots rules first so an audit stays polite. Nothing is stored - every call fetches the page fresh, parses the anchor, applies the guards and reports. Single-page checks are free and watermark-free; Pro adds the batch audit.",
+      "free": "link_check and robots_guard_check: full single-page checking, no per-day limits. Pro adds batch link_audit."
     }
   },
   "version": "0.1.1",
