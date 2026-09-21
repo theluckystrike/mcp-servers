@@ -1637,6 +1637,57 @@ contract. Where it and the source disagree, the source is right and this page is
       return new Response(html, { headers: await contentHeaders(html) });
     }
 
+// S128_C: live tool names per hosted server, captured 2026-09-21 via tools/list with a fresh
+// anon token against each /mcp/<server>/t/<token> (45/45 answered 200). llms-full.txt prints
+// these in each server section so assistant crawlers see the tool surface without a fetch.
+const LIVE_TOOLS = {
+  "amortization": ["loan_create", "loan_schedule", "loan_repay_early", "loan_journal", "loan_list", "loan_delete", "loans_report", "license_status", "license_activate"],
+  "asset-register": ["asset_add", "asset_list", "asset_schedule", "asset_journal", "asset_dispose", "asset_delete", "asset_report", "license_status", "license_activate"],
+  "bank-statement": ["statement_import", "transactions_list", "transactions_search", "category_rules", "transaction_categorize", "statement_summary", "reconcile_expenses", "recurring_detect", "statement_export", "accounts_list", "license_status", "license_activate", "bank_upload", "bank_files", "bank_delete_upload"],
+  "barcode": ["license_status", "license_activate", "qr_create", "qr_wifi", "qr_vcard", "qr_payment_sepa", "invoice_payment_qr", "barcode_create", "barcode_batch", "code_list"],
+  "bill-of-sale": ["sale_create", "sale_update", "sale_finalize", "sale_list", "sale_get", "sale_delete", "sale_render", "sale_summary", "license_status", "license_activate"],
+  "billing-docs": ["credit_note_create", "credit_note_list", "credit_note_get", "credit_note_pdf", "credit_note_text", "credit_note_delete", "purchase_order_create", "purchase_order_list", "purchase_order_get", "purchase_order_pdf", "purchase_order_text", "purchase_order_receive", "purchase_order_delete", "billing_docs_report", "license_status", "license_activate"],
+  "calendar": ["license_status", "license_activate", "ics_import", "calendars_list", "events_list", "events_search", "free_busy", "conflicts", "next_event", "event_export", "event_to_time_entry", "ics_forget"],
+  "cash-book": ["ledger_build", "period_delete", "trial_balance", "ledger_lines", "month_close", "ledger_export_csv", "ledger_report", "license_status", "license_activate"],
+  "catalogue": ["sku_set", "sku_get", "sku_list", "sku_delete", "rate_set", "rate_get", "lines_resolve", "price_list_text", "price_list_pdf", "catalogue_report", "license_status", "license_activate"],
+  "change-order": ["change_order_create", "change_order_add_line", "change_order_status", "change_order_get", "change_order_list", "change_order_delete", "contract_value", "change_order_document", "change_order_invoice_payload", "license_status", "license_activate"],
+  "checklist": ["checklist_create", "checklist_item_add", "checklist_item_remove", "checklist_show", "checklist_list", "checklist_delete", "run_start", "run_check", "run_show", "run_list", "run_sign_off", "run_status", "run_report", "run_delete", "license_status", "license_activate"],
+  "clauses": ["clause_add", "clause_get", "clause_update", "clause_delete", "clause_list", "clause_search", "clause_import", "clause_export", "contract_assemble", "variables_list", "license_status", "license_activate"],
+  "credit-note": ["credit_note_create", "credit_note_update", "credit_note_finalize", "credit_note_list", "credit_note_get", "credit_note_delete", "credit_note_render", "credit_note_summary", "license_status", "license_activate"],
+  "currency": ["rates_latest", "convert", "convert_many", "fx_rates_for", "rate_history", "rate_on", "currencies_list", "cache_status", "license_status", "license_activate"],
+  "delivery-schedule": ["delivery_schedule_create", "deliverable_add", "deliverable_status", "deliverable_delete", "delivery_schedule_get", "delivery_schedule_list", "delivery_schedule_delete", "late_report", "delivery_schedule_document", "milestone_payload", "license_status", "license_activate"],
+  "deposits": ["deposit_record", "deposit_list", "deposit_apply", "deposit_refund", "deposit_delete", "deposit_balance", "deposit_statement_text", "deposit_statement_pdf", "deposits_report", "license_status", "license_activate"],
+  "docx": ["business_set", "doc_create", "doc_from_markdown", "doc_read", "doc_to_html", "doc_fill_template", "proposal_create", "proposal_update", "contract_create", "license_status", "license_activate", "doc_upload", "doc_files", "doc_delete_upload"],
+  "dunning-letters": ["invoice_register", "payment_record", "letter_render", "letter_sent", "overdue_list", "aging_summary", "chase_today", "invoice_status", "invoice_delete", "license_status", "license_activate"],
+  "expense-tracker": ["expense_add", "expense_list", "expense_update", "expense_delete", "receipt_attach", "category_rules", "expense_settings", "expense_summary", "mileage_add", "expense_export", "expense_to_invoice", "expense_mark_rebilled", "license_status", "license_activate"],
+  "goods-receipt": ["po_add", "grn_add", "grn_line_add", "grn_list", "grn_get", "grn_discrepancy", "grn_close", "grn_status_report", "grn_export_csv", "license_status", "license_activate"],
+  "image": ["image_info", "image_resize", "image_convert", "image_compress", "image_crop", "image_thumbnails", "image_watermark", "image_strip_metadata", "image_batch_resize", "image_dominant_colors", "license_status", "license_activate", "image_upload", "image_files", "image_delete_upload"],
+  "invoice": ["business_set", "client_add", "client_delete", "client_list", "invoice_create", "invoice_from_hours", "invoice_list", "invoice_get", "invoice_mark_paid", "invoice_pdf", "overdue_report", "license_status", "license_activate"],
+  "job-card": ["job_card_create", "job_card_log_labor", "job_card_log_material", "job_card_update_status", "job_card_list", "job_card_get", "job_card_print", "job_card_delete", "job_card_summary", "license_status", "license_activate"],
+  "kanban": ["license_status", "license_activate", "task_add", "task_list", "task_move", "task_update", "task_done", "task_delete", "task_search", "board", "task_start_timer", "task_log_time", "project_list", "project_delete", "overdue", "weekly_review", "columns_set"],
+  "leave": ["leave_employee_add", "leave_request", "leave_approve", "leave_reject", "leave_balance", "leave_out_range", "leave_list", "leave_import", "leave_export_ics", "license_status", "license_activate", "leave_cancel"],
+  "maintenance-log": ["asset_add", "maintenance_log", "maintenance_due", "asset_history", "maintenance_export", "asset_remove", "license_status", "license_activate"],
+  "mileage-log": ["trip_add", "trip_list", "trip_remove", "rate_set", "rate_list", "mileage_summary", "mileage_export", "license_status", "license_activate"],
+  "onboarding": ["onboarding_hire_add", "onboarding_hire_list", "onboarding_task_add", "onboarding_task_done", "onboarding_template_apply", "onboarding_progress", "onboarding_overdue", "license_status", "license_activate"],
+  "packing-list": ["packing_list_create", "packing_expect", "carton_add", "pack_item", "unpack_item", "packing_list_show", "packing_list_list", "carton_report", "packing_shortfall", "packing_list_status", "packing_slip", "packing_list_delete", "license_status", "license_activate"],
+  "pdf": ["pdf_info", "pdf_count", "pdf_merge", "pdf_split", "pdf_pages", "pdf_rotate", "pdf_stamp", "pdf_watermark_business", "pdf_reorder", "pdf_text", "license_status", "license_activate", "pdf_upload", "pdf_files", "pdf_delete_upload"],
+  "per-diem": ["perdiem_rates", "perdiem_calc", "trip_record", "trip_list", "trip_delete", "trip_export", "perdiem_report", "license_status", "license_activate"],
+  "petty-cash": ["float_open", "topup_record", "voucher_add", "voucher_delete", "reconcile", "replenish_request", "float_report", "license_status", "license_activate"],
+  "price-tracker": ["price_check", "watch_add", "watch_list", "watch_remove", "watch_refresh", "price_history", "price_add_manual", "alerts_pending", "license_status", "license_activate"],
+  "purchase-requisition": ["purchase-requisition_create", "purchase-requisition_item_add", "purchase-requisition_item_remove", "purchase-requisition_show", "purchase-requisition_list", "purchase-requisition_delete", "run_start", "run_check", "run_show", "run_list", "run_sign_off", "run_status", "run_report", "run_delete", "license_status", "license_activate"],
+  "quotes": ["quote_create", "quote_list", "quote_get", "quote_update", "quote_send_text", "quote_accept", "quote_decline", "quote_delete", "quote_pdf", "quote_report", "license_status", "license_activate"],
+  "recurring": ["schedule_create", "schedule_list", "schedule_get", "schedule_update", "schedule_pause", "schedule_resume", "schedule_delete", "schedule_skip", "schedule_upcoming", "invoice_generate_due", "schedule_history", "forecast", "license_status", "license_activate"],
+  "resume": ["profile_set", "profile_get", "resume_create", "resume_to_markdown", "resume_to_html", "resume_read", "cover_letter_create", "tailor_to_job", "license_status", "license_activate", "doc_upload", "doc_files", "doc_delete_upload"],
+  "service-agreement": ["agreement_create", "agreement_get", "agreement_list", "agreement_update_status", "clause_library", "agreement_render", "agreement_checklist", "license_status", "license_activate"],
+  "spreadsheet": ["license_status", "license_activate", "sheet_load", "sheet_files", "sheet_unload", "sheet_info", "sheet_read", "sheet_query", "sheet_stats", "sheet_find", "sheet_write", "sheet_add_column", "sheet_convert"],
+  "statement-of-account": ["statement_build", "statement_aging", "statement_text", "statement_pdf", "dunning_text", "statements_report", "license_status", "license_activate"],
+  "supplier-list": ["supplier_add", "supplier_list", "supplier_get", "supplier_update", "supplier_remove", "supplier_mark_reviewed", "supplier_due_review", "supplier_export", "license_status", "license_activate"],
+  "time-tracker": ["license_status", "license_activate", "timer_start", "timer_stop", "timer_status", "entry_add", "entry_list", "entry_delete", "entry_edit", "project_set_rate", "report", "export_csv", "entry_mark_billed", "invoice_summary"],
+  "timezone": ["license_status", "license_activate", "now", "convert_time", "overlap", "find_meeting_slots", "dst_changes", "business_days", "contacts_set", "contacts_list", "ics_create"],
+  "work-order": ["work_order_create", "work_order_add_line", "work_order_status", "work_order_get", "work_order_list", "work_order_delete", "completion_report_text", "completion_report_pdf", "work_order_invoice_payload", "work_orders_report", "license_status", "license_activate"],
+  "zip": ["license_status", "license_activate", "zip_upload", "zip_files", "zip_delete_upload", "zip_create", "zip_list", "zip_extract", "zip_add", "zip_extract_text", "zip_bundle_month", "zip_history"],
+};
+
     if (path === "/llms.txt") {
       // Every install line here used to print `npx -y @theluckystrike/mcp-<name>`, which
       // returns E404 because nothing has been published to npm. This file is the artifact
@@ -1705,7 +1756,9 @@ contract. Where it and the source disagree, the source is right and this page is
         const hosted = hostedFull.has(k)
           ? ` Hosted endpoint: https://mcp.zovo.one/mcp/${k}/t/<token>, token from https://mcp.zovo.one/mcp/connect.`
           : " No hosted endpoint; install via the .mcpb bundle or a clone.";
-        return `## ${v.title}\n\n${v.tagline}${free}\n\n${price}${hosted}\n`;
+        const tools = LIVE_TOOLS[k];
+        const toolsLine = tools ? `\n\nTools: ${tools.join(", ")}.` : "";
+        return `## ${v.title}\n\n${v.tagline}${free}\n\n${price}${hosted}${toolsLine}\n`;
       }).join("\n");
       const llmsRes = await handler(new Request("https://mcp.zovo.one/llms.txt", { headers: request.headers }), env, ctx);
       const base = await llmsRes.text();
