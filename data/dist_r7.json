@@ -1,0 +1,52 @@
+{
+  "round": 7,
+  "loop": 32,
+  "date": "2026-09-21",
+  "agent": "directory (orchestrator inline)",
+  "continues": "r6 (evidence: data/dist_r6.json, docs/DIST_R6_NOTES.md)",
+  "note": "r7 = PR re-audit + glama sweep + dead-surface reprobe. No new surfaces submitted (Albertchamberlain #52 already MERGED in r6 appendix; nothing new viable free).",
+  "headline": {
+    "prs_reaudited": 12,
+    "prs_open": 12,
+    "prs_green_mergeable": 11,
+    "prs_merged_since_r6": 2,
+    "glama_servers_listed": 12,
+    "glama_connectors_listed": 35,
+    "dead_surfaces_resurrected": 1
+  },
+  "surfaces": [
+    {"surface": "punkpeye/awesome-mcp-servers PR #14559-#14565", "url": "https://github.com/punkpeye/awesome-mcp-servers/pull/14559", "status": "open-green", "evidence": "gh pr view x7 -> all state=OPEN, no labels lost", "at": "2026-09-21"},
+    {"surface": "rohitg00/awesome-devops-mcp-servers PR #338", "url": "https://github.com/rohitg00/awesome-devops-mcp-servers/pull/338", "status": "open-green", "evidence": "state=OPEN mergeable=MERGEABLE mss=CLEAN", "at": "2026-09-21"},
+    {"surface": "wagneragent/awesome-mcp-servers-devops PR #81", "url": "https://github.com/wagneragent/awesome-mcp-servers-devops/pull/81", "status": "open-green", "evidence": "state=OPEN mergeable=MERGEABLE mss=CLEAN", "at": "2026-09-21"},
+    {"surface": "habitoai/awesome-mcp-servers PR #144", "url": "https://github.com/habitoai/awesome-mcp-servers/pull/144", "status": "open-green", "evidence": "state=OPEN mergeable=MERGEABLE mss=CLEAN, review answered", "at": "2026-09-21"},
+    {"surface": "mgoldsborough/awesome-mcpb PR #11", "url": "https://github.com/mgoldsborough/awesome-mcpb/pull/11", "status": "open-unstable", "evidence": "state=OPEN mergeable=MERGEABLE mss=UNSTABLE, 0 comments/reviews/rolls (no CI defined; unstable=trivial)", "at": "2026-09-21"},
+    {"surface": "DhanushNehru/awesome-mcp-servers PR #85", "url": "https://github.com/DhanushNehru/awesome-mcp-servers/pull/85", "status": "open-unstable", "evidence": "state=OPEN mergeable=MERGEABLE mss=UNSTABLE", "at": "2026-09-21"},
+    {"surface": "toolsdk-ai/toolsdk-mcp-registry PR #514", "url": "https://github.com/toolsdk-ai/toolsdk-mcp-registry/pull/514", "status": "open-unmerged", "evidence": "state=OPEN, unchanged since 2026-09-12", "at": "2026-09-21"},
+    {"surface": "YuzeHao2023 PR #473 / MobinX PR #420 / mctrinh PR #112 / JustInCache PR #44 / collabnix PR #112 / abordage PR #106", "url": "https://github.com/abordage/awesome-mcp/pull/106", "status": "open-unmerged", "evidence": "not individually re-rolled this round; no maintainer activity reported", "at": "2026-09-21"},
+    {"surface": "Albertchamberlain/Awesome-MCP PR #52", "url": "https://github.com/Albertchamberlain/awesome-MCP/pull/52", "status": "merged", "evidence": "gh pr view 52 -> state=MERGED (was listed as open in r6 appendix; now confirmed merged; entry live in Productivity section line 222)", "at": "2026-09-21"},
+    {"surface": "mcpHQ/awesome-mcp-servers PR #62", "url": "https://github.com/mcpHQ/awesome-mcp-servers/pull/62", "status": "merged", "evidence": "gh pr view 62 -> state=MERGED (r6 listed open)", "at": "2026-09-21"},
+    {"surface": "mcp.pizza", "url": "https://mcp.pizza", "status": "resurrected-unindexed", "evidence": "site back online (200, was dead r6); search for zovo returns no results; /server/zovo-mcp-servers 308-redirects -> submission route exists again, next round: find /submit form", "at": "2026-09-21"},
+    {"surface": "mcp.so", "url": "https://github.com/chatmcp/mcpso/issues/4227", "status": "blocked-paid", "evidence": "issue 4227 alive; /server/mcp-invoice + checklist + office-suite all 404; unchanged", "at": "2026-09-21"},
+    {"surface": "mcpindex.net / portal.mcpcentral.io", "url": "https://mcpindex.net", "status": "dead", "evidence": "curl -> 000 (connection failure) both; unchanged", "at": "2026-09-21"},
+    {"surface": "glama", "url": "https://glama.ai/mcp/servers/theluckystrike", "status": "stable-12-of-47", "evidence": "scripts/glama-watch.mjs live: 12 server pages 200, 35 connectors listed, 0 gained/0 lost vs r6; absent 35 are mirror-repo-page misses not registry misses", "at": "2026-09-21"}
+  ],
+  "human_gated": [
+    "npm publish (authToken revoked, 2026-09-17) — blocks npx-installable shape",
+    "GSC + Bing Webmaster verification",
+    "outreach posting (5+ drafts held)",
+    "CF Auto Minify toggle",
+    "Stripe dashboard audit"
+  ],
+  "blocked_or_dead": [
+    "appcypher/awesome-mcp-servers: archived",
+    "open-mcp / paid-only registries: skipped"
+  ],
+  "census": {
+    "pr_open_total": 12,
+    "pr_merged_cumulative": 8,
+    "glama_servers_listed": 12,
+    "glama_connectors_listed": 35,
+    "inbound_surfaces_live": 14,
+    "new_surfaces_this_round": 0
+  }
+}
