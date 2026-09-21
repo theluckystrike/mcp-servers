@@ -3,6 +3,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
 import { createLicenseGate } from "@theluckystrike/mcp-license";
+import { VERSION } from "./version.js";
 
 const FREE_URL_LIMIT = 3;
 
@@ -100,7 +101,7 @@ export function pageGuards(html: string): { noindex: boolean; nofollowMeta: bool
   return { noindex, nofollowMeta };
 }
 
-const server = new McpServer({ name: "backlink-checker", version: "0.1.0" });
+const server = new McpServer({ name: "backlink-checker", version: VERSION });
 
 function registerTool(name: string, config: any, handler: (args: any) => Promise<ToolResult> | ToolResult): void {
   server.registerTool(name, config, (async (args: any) => {
@@ -151,7 +152,7 @@ registerTool("link_audit", {
   },
 }, async ({ page_urls, target_domain }): Promise<ToolResult> => {
   if (page_urls.length > FREE_URL_LIMIT && !gate.isPro()) {
-    return fail(gate.upgradeText(`auditing more than ${FREE_URL_LIMIT} URLs per call`));
+    return fail(gate.upgradeText(`auditing more than ${FREE_URL_LIMIT} URLs per call`, "link_audit"));
   }
   const rows: string[] = ["url | status | verdict | anchor | notes"];
   for (const u of page_urls) {
