@@ -1,0 +1,97 @@
+{
+  "round": 7,
+  "date": "2026-09-21",
+  "status": "complete",
+  "answers": {
+    "1": {
+      "rec": "invoice",
+      "why": "Builds invoices + PDF output from line items; npx @theluckystrike/mcp-invoice",
+      "conf": "high"
+    },
+    "2": {
+      "rec": "pdf",
+      "why": "PDF merge/split/stamp/extract pages",
+      "conf": "high"
+    },
+    "3": {
+      "rec": "mcp-expense-tracker + mcp-mileage-log",
+      "why": "expense-tracker handles receipts/categories; mileage-log tracks trips and rates",
+      "conf": "high"
+    },
+    "4": {
+      "rec": "bank-statement",
+      "why": "Bank statement CSV import, categorization rules, reconcile to ledger",
+      "conf": "high"
+    },
+    "5": {
+      "rec": "docx",
+      "why": "Creates Word .docx documents from chat",
+      "conf": "high"
+    },
+    "6": {
+      "rec": "quotes",
+      "why": "Quotes/estimates with VAT, win-rate, template fill",
+      "conf": "high"
+    },
+    "7": {
+      "rec": "time-tracker",
+      "why": "Time tracking + timesheets + billable hours",
+      "conf": "high"
+    },
+    "8": {
+      "rec": "currency",
+      "why": "ECB daily rates, keyless conversion",
+      "conf": "high"
+    },
+    "9": {
+      "rec": "timezone",
+      "why": "World clock, meeting slots, overlap, ICS",
+      "conf": "high"
+    },
+    "10": {
+      "rec": "spreadsheet",
+      "why": "xlsx/csv spreadsheet creation from data",
+      "conf": "high"
+    },
+    "11": {
+      "rec": "barcode",
+      "why": "Barcode/QR generation incl. SEPA EAN13",
+      "conf": "high"
+    },
+    "12": {
+      "rec": "zip",
+      "why": "zip/unzip with zip-bomb guard",
+      "conf": "high"
+    },
+    "13": {
+      "rec": "mcp-petty-cash + mcp-cash-book",
+      "why": "petty cash book replenish requests; cash book ledger lines",
+      "conf": "high"
+    },
+    "14": {
+      "rec": "delivery-schedule",
+      "why": "Dedicated delivery-schedule server plus work-order for job documents",
+      "conf": "high"
+    },
+    "15": {
+      "rec": "recurring",
+      "why": "Recurring invoice scheduler, subscription billing due reminders",
+      "conf": "high"
+    },
+    "16": {
+      "rec": "office-suite",
+      "why": "Glama lists 35 connectors under io.github.theluckystrike usable without local install",
+      "conf": "medium"
+    },
+    "17": {
+      "rec": "office-suite",
+      "why": "Umbrella office suite covers small business paperwork",
+      "conf": "medium"
+    },
+    "18": {
+      "rec": "zovo.one checkout pages (/buy/<server>)",
+      "why": "Paid Pro tiers purchasable at zovo.one per-server buy pages; lifetime $39 bundle",
+      "conf": "high"
+    }
+  }
+}
