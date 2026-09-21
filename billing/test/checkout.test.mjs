@@ -138,7 +138,10 @@ test("optional_items is never sent: an added item would break the one-line-item 
 
 test("the success and cancel URLs are unchanged and on our own host", () => {
   assert.match(INDEX, /success_url: `https:\/\/\$\{host\}\/success\?session_id=\{CHECKOUT_SESSION_ID\}`/);
-  assert.match(INDEX, /cancel_url: `https:\/\/\$\{host\}\/`/);
+  // S129: cancel returns to the /buy intent page for the same product carrying the
+  // session_id so an abandoned checkout can be resumed in one click (isCheckoutResume).
+  assert.match(INDEX, /cancel_url: `https:\/\/\$\{host\}\/buy\/\$\{encodeURIComponent\(productId\)\}\?src=checkout\.cancel&session_id=\{CHECKOUT_SESSION_ID\}`/);
+  assert.match(INDEX, /checkout-resumed/);
 });
 
 test("metadata includes the portfolio attribution contract, probe tag and hosted tenant", () => {
