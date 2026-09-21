@@ -367,7 +367,7 @@ function stopRunning(db, endDate, note) {
     db.running = null;
     return entry;
 }
-server.registerTool("timer_start", {
+server.registerTool("timer_start", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
     title: "Start timer",
     description: "Start a stopwatch for work on a project and return the start time. Only one runs at a time: a new one stops and logs the previous, naming it. rate is an hourly rate in MAJOR units for this timer only.",
     inputSchema: {
@@ -406,7 +406,7 @@ server.registerTool("timer_start", {
         return ok(lines.join("\n"));
     });
 }));
-server.registerTool("timer_stop", {
+server.registerTool("timer_stop", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
     title: "Stop timer",
     description: "Stop the running timer and log it as one entry. Returns the duration, the money at the rate in force and the new entry id. With no timer running it says so and writes nothing.",
     inputSchema: { note: z.string().optional().describe("Optional note stored with the entry") },
@@ -425,7 +425,7 @@ server.registerTool("timer_stop", {
         return ok(`Stopped "${e.project}"${e.task ? ` - ${e.task}` : ""}. Duration ${hms(e.seconds)} (${hours(e.seconds)} h).${amount}\nEntry id ${e.id}.`);
     });
 }));
-server.registerTool("timer_status", {
+server.registerTool("timer_status", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     title: "Timer status",
     description: "Report the running timer and today's total hours. Today is the local calendar day, so a timer started at 23:30 yesterday contributes only the minutes since midnight. No arguments, and it writes nothing.",
     inputSchema: {},
@@ -453,7 +453,7 @@ server.registerTool("timer_status", {
     lines.push(`Today: ${hms(todaySec)} (${hours(todaySec)} h) across ${todayEntries.length} logged entries.`);
     return ok(lines.join("\n"));
 }));
-server.registerTool("entry_add", {
+server.registerTool("entry_add", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
     title: "Add time entry",
     description: "Log time already worked as one entry and return its id, duration and amount. Give start plus end or minutes. rate is hourly in MAJOR units and is frozen on the entry, so a later rate change never moves it.",
     inputSchema: {
@@ -507,7 +507,7 @@ server.registerTool("entry_add", {
         return ok(lines.join("\n"));
     });
 }));
-server.registerTool("entry_list", {
+server.registerTool("entry_list", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     title: "List time entries",
     description: "List logged entries as a table of id, day, start, project, task, hours, billable, tags and note, newest first, with total hours. Free reads the last 7 days and says so; Pro reads the whole history.",
     inputSchema: {
@@ -549,7 +549,7 @@ server.registerTool("entry_list", {
     const tail = `\n\n${rows.length} entries, ${hours(totalSec)} h total.`;
     return ok(body + tail + windowTail(w, pro));
 }));
-server.registerTool("entry_delete", {
+server.registerTool("entry_delete", { annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: false, openWorldHint: false },
     title: "Delete time entry",
     description: "Delete one logged entry by id and report the project and hours removed. It never touches a running timer. A billed entry goes too, losing the invoice record, so correct one with entry_edit instead.",
     inputSchema: { id: z.string().describe("Entry id from entry_list") },
@@ -564,7 +564,7 @@ server.registerTool("entry_delete", {
         return ok(`Deleted entry ${id} ("${e.project}", ${hours(e.seconds)} h).`);
     });
 }));
-server.registerTool("entry_edit", {
+server.registerTool("entry_edit", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
     title: "Edit time entry",
     description: "Change one logged entry by id; only the fields you pass move. minutes keeps start and moves end, an end at or before start is refused, tags REPLACES the list, and rate is hourly in MAJOR units.",
     inputSchema: {
@@ -622,7 +622,7 @@ server.registerTool("entry_edit", {
         return ok(`Updated entry ${e.id}: "${e.project}"${e.task ? ` - ${e.task}` : ""}, ${hours(e.seconds)} h, ${e.billable ? "billable" : "non-billable"}.`);
     });
 }));
-server.registerTool("project_set_rate", {
+server.registerTool("project_set_rate", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
     title: "Set project rate",
     description: "Set the hourly rate and currency used to turn tracked hours into money for a project or client. Returns the new rate and, when re-rating is asked for, how many already logged entries changed.",
     inputSchema: {
@@ -754,7 +754,7 @@ function totalsOf(db, entries) {
     return { seconds, billableSeconds, amounts };
 }
 const TAG_OVERLAP_NOTE = "Tag rows can overlap: an entry tagged twice appears in both rows. The total counts every entry once.";
-server.registerTool("report", {
+server.registerTool("report", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     title: "Time report",
     description: "Timesheet report: total tracked hours and billable money for a period, optionally grouped by (group by) project, day, task or tag - hours per project, how much to bill. Omit group_by for the plain total per currency.",
     inputSchema: {
@@ -845,7 +845,7 @@ server.registerTool("report", {
     const overlap = a.group_by === "tag" ? `\n${TAG_OVERLAP_NOTE}` : "";
     return ok(`${body}\n\nTotal ${hours(totalSec)} h, ${moneyOf(totals.amounts)}.${mixed}${overlap}${note}`);
 }));
-server.registerTool("export_csv", {
+server.registerTool("export_csv", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
     title: "Export entries to CSV",
     description: "Call this tool to export the timesheet to a CSV file (excel-friendly) you can hand to a bookkeeper: one row per entry with hours, billable, rate, currency and amount. Returns the file path written.",
     inputSchema: {
@@ -888,7 +888,7 @@ server.registerTool("export_csv", {
     const note = windowTail(w, pro);
     return ok(`Wrote ${entries.length} entries to ${target}${note}`);
 }));
-server.registerTool("entry_mark_billed", {
+server.registerTool("entry_mark_billed", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
     title: "Mark time entries as billed",
     description: "Close the loop after an invoice is issued: stamp the tracked hours that went on it with the invoice number, so report and invoice_summary stop offering them and the same hours are never billed twice.",
     inputSchema: {
@@ -950,7 +950,7 @@ server.registerTool("entry_mark_billed", {
         return ok(lines.join("\n"));
     });
 }));
-server.registerTool("invoice_summary", {
+server.registerTool("invoice_summary", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     title: "Invoice summary",
     description: "Turn tracked billable time into invoice lines for one project: hours, hourly rate, amount per task and the total, one line per rate so two rates never average. Hours already marked billed are left out. Free: last 7 days.",
     inputSchema: {

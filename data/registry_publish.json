@@ -1,12 +1,8 @@
 {
-  "at": "2026-09-19T16:12:38.709Z",
-  "published": [],
+  "at": "2026-09-21T02:54:02.986Z",
+  "published": [
+    "io.github.theluckystrike/backlink-checker-seo-link-checker@0.22.0"
+  ],
   "duplicate": [],
-  "failed": [
-    {
-      "name": "io.github.theluckystrike/aging",
-      "version": "0.22.0",
-      "error": "Publishing to https://registry.modelcontextprotocol.io...\nError: publish failed: server returned status 400: {\"title\":\"Bad Request\",\"status\":400,\"detail\":\"Failed to publish server\",\"errors\":[{\"message\":\"remote URL https://mcp.zovo.one/mcp/statement-of-account is already used by server io.github.thel"
-    }
-  ]
+  "failed": []
 }

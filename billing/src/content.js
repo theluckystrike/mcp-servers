@@ -422,6 +422,9 @@ paying rather than after.</p>
 <tr><td><a href="/s/spreadsheet">Spreadsheet</a></td>
 <td>Every tool. Reads files up to 5 MB and 5,000 rows. Writes up to 500 rows per file; over that nothing is written and the tool says so.</td>
 <td>No row or size limits, up to a 50 MB file ceiling.</td></tr>
+<tr><td><a href="/s/backlink-checker">Backlink Checker</a></td>
+<td>Unlimited single-URL checks and robots guard checks. <code>link_audit</code> up to 3 URLs per call. Nothing is stored: every check is a fresh fetch.</td>
+<td>Unlimited URLs per <code>link_audit</code> call.</td></tr>
 <tr><td><a href="/s/invoice">Invoice</a></td>
 <td>3 invoices per calendar month, small footer line on the PDF. Overdue report free.</td>
 <td>Unlimited invoices, no footer, logo, custom invoice number prefix.</td></tr>

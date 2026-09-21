@@ -1488,6 +1488,134 @@
     {
       "name": "mileage_export",
       "description": "The mileage log as CSV, one row per trip, oldest first: date, from, to, distance, unit, category, the rate applied (the one in force on the trip's day), the currency and the amount, plus purpose, jurisdiction, effective_from and id. The amount column is a bare number a spreadsheet reads. Refuses while any non-personal trip in the window is unpriced, so an accountant never receives a log with silent gaps. Pro."
+    },
+    {
+      "name": "purchase-requisition_create",
+      "description": "Create a reusable purchase-requisition and return its CL-NNNN id: a name, a category and an optional description. Add steps with purchase-requisition_item_add. Free tier: 3 of them, runs unlimited."
+    },
+    {
+      "name": "purchase-requisition_item_add",
+      "description": "Add one step to a purchase-requisition and return its I01-style id: text, an optional section heading, and required flag. A required step left unanswered or failed blocks sign-off; an optional one does not."
+    },
+    {
+      "name": "purchase-requisition_item_remove",
+      "description": "Remove one step from a purchase-requisition by its I01-style id and bump the purchase-requisition version. Runs already under way keep the step they started with, so nothing anybody already ticked is rewritten."
+    },
+    {
+      "name": "purchase-requisition_show",
+      "description": "One purchase-requisition with its steps in order, grouped by section, plus how many are required and how many runs have been started from it. Pass as_text for a blank printable copy with a box against each step."
+    },
+    {
+      "name": "purchase-requisition_list",
+      "description": "Every purchase-requisition with its category, version, step count and how many runs came from it. Filter by category or by a word in the name. Returns at most 500 rows, newest change first."
+    },
+    {
+      "name": "purchase-requisition_delete",
+      "description": "Delete a purchase-requisition and its steps for good. Runs already started keep their own copy of the steps and stay readable: deleting the purchase-requisition erases nothing anybody signed."
+    },
+    {
+      "name": "po_add",
+      "description": "Create a purchase order to receive goods against. Lines carry a sku, a description and an ordered whole-unit quantity. Over/under tolerances are whole percentages allowed above/below ordered before a GRN is flagged. Ids look like PO-0001. Free tier, full CRUD."
+    },
+    {
+      "name": "grn_add",
+      "description": "Create a goods-receipt note (GRN) against an open purchase order. Give one cell per PO line: the whole units received and/or damaged. received is checked against the line's ordered quantity and the PO's over tolerance; receiving past the over tolerance is refused unless declared damaged. Shortage is recorded automatically (ordered minus received, floored at zero) and shown as a discrepancy. Partial deliveries are fine: raise several GRNs against the same PO. Free tier, full CRUD."
+    },
+    {
+      "name": "grn_line_add",
+      "description": "Add another PO line (or more units on a line already open on this GRN) to an existing open goods-receipt note. Useful when one delivery arrives in batches. The over-tolerance gate still applies to the PO line's cumulative received count across every GRN. Free tier, full CRUD."
+    },
+    {
+      "name": "grn_list",
+      "description": "List goods-receipt notes, newest first, optionally filtered to one purchase order."
+    },
+    {
+      "name": "grn_get",
+      "description": "Get a single goods-receipt note by id, with its lines, damage and shortage per line."
+    },
+    {
+      "name": "grn_discrepancy",
+      "description": "List lines that are not as ordered: damaged units, a declared shortage, or received below the PO line's under tolerance. Optionally filter to one PO."
+    },
+    {
+      "name": "grn_close",
+      "description": "Close an open GRN. A closed GRN can no longer take lines, and its discrepancies are treated as resolved. Closing is free-tier and never mutates the PO."
+    },
+    {
+      "name": "grn_status_report",
+      "description": "Reconcile every purchase order against every GRN: open POs (not yet fully received), POs fully received within tolerance, POs with at least one discrepancy, and per-line open/short/damaged counts. Nothing is written."
+    },
+    {
+      "name": "grn_export_csv",
+      "description": "Pro. Export every GRN (or just one PO's GRNs) as CSV with a header row: grn,po,po_reference,received_at,carrier,status,line,sku,received,damaged,shortage,damage_note,shortage_note. Watermark-free and not truncated."
+    },
+    {
+      "name": "onboarding_hire_add",
+      "description": "Add a new hire and return its H-NNNN id: a name, a role and the day they start. The role is a grouping key, lower-cased and hyphenated. Add tasks with onboarding_task_add, or apply a role template with onboarding_template_apply."
+    },
+    {
+      "name": "onboarding_hire_list",
+      "description": "Every hire with their role, start date, task counts, percent complete and overdue count. Filter by role or by a word in the name. Returns at most 500 rows, newest change first."
+    },
+    {
+      "name": "onboarding_task_add",
+      "description": "Add one task to a hire's plan and return its K01-style id: the text, who owns it (hr, manager or it) and how many days after the start date it is due. The due date is counted from the hire's start date."
+    },
+    {
+      "name": "onboarding_task_done",
+      "description": "Mark one task on a hire done or skipped, with the day it happened. done counts toward the percent complete; skipped is a deliberate dismissal and never counts as done. A task can be set back to todo to reopen it."
+    },
+    {
+      "name": "onboarding_template_apply",
+      "description": "Apply a role template to one hire (free) or many (Pro), copying the template's tasks into each hire with the template's version recorded. Editing the template afterwards never changes a hire already under way. If no template exists for the role, one is created from the tasks you pass."
+    },
+    {
+      "name": "onboarding_progress",
+      "description": "One hire's whole plan: every task with its owner, due date and status, plus the percent complete, the overdue count and what is still outstanding. Pass as_csv for a Pro-only CSV export of the plan."
+    },
+    {
+      "name": "onboarding_overdue",
+      "description": "Every task that is still outstanding past its due date, across all hires or one hire, with how many days late. Returns at most 500 rows, most overdue first."
+    },
+    {
+      "name": "leave_employee_add",
+      "description": "Add an employee to the leave tracker and return their EMP-NNNN id. Give their annual paid-leave allowance in whole days and any days carried over from last year. Balances charge approved plus pending leave against allowance + carried-over. Free tier: unlimited."
+    },
+    {
+      "name": "leave_request",
+      "description": "Create a leave or PTO request and return its LV-NNNN id. type is vacation, sick, unpaid or parental. start and end are inclusive YYYY-MM-DD dates; halfDay charges half a day for the whole span. A pending request is refussed if it would overlap another approved or pending request of the same employee. Free tier: unlimited requests."
+    },
+    {
+      "name": "leave_approve",
+      "description": "Approve a pending leave request by id. Also used to re-open a rejected one. Nothing to approve on an already-approved request."
+    },
+    {
+      "name": "leave_reject",
+      "description": "Reject or cancel a leave request by id. A pending or approved request becomes rejected; a rejected one can be reopened via leave_approve. Use leave_cancel (via reject with reason) for voluntary withdrawal."
+    },
+    {
+      "name": "leave_balance",
+      "description": "Show one employee's leave balance: allowance + carried-over, minus approved and pending, as whole days plus a possible half day. Remaining is rounded down to whole days on the report."
+    },
+    {
+      "name": "leave_out_range",
+      "description": "Who is out in a date range: start and end are inclusive YYYY-MM-DD. Each employee appears once per day; pending requests count as a plan. Use for coverage, calendars and absence summaries. Free tier: unlimited."
+    },
+    {
+      "name": "leave_list",
+      "description": "List all employees, or all leave requests (optionally filtered by employee and/or status). Omit the filter to list requests."
+    },
+    {
+      "name": "leave_import",
+      "description": "Pro. Bulk-create leave requests from a CSV/TSV. First row is a header: employee,type,start,end,halfDay,status,reason. status may be omitted (defaults to pending) or be approved/rejected. Each request is still checked for overlap conflicts; a conflicting row is reported, not applied. watermark-free, full CRUD."
+    },
+    {
+      "name": "leave_export_ics",
+      "description": "Pro. Export all APPROVED leave as an .ics calendar (RFC5545). Returns the calendar text; pass path to also write it to a local file. watermark-free."
+    },
+    {
+      "name": "leave_cancel",
+      "description": "Cancel a pending or approved request by id, keeping its record with status cancelled. Differs from leave_reject in intent (voluntary withdrawal). Nothing happened if already cancelled."
     }
   ],
   "keywords": [

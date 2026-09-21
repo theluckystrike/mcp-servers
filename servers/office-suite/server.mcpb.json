@@ -1,31 +1,31 @@
 {
- "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
- "name": "io.github.theluckystrike/office-suite-time-invoice-expense-excel-price",
- "description": "One MCP server for the whole freelancer office: time tracking, price watching, spreadsheets, PDF.",
- "version": "0.22.0",
- "repository": {
-  "url": "https://github.com/theluckystrike/mcp-servers",
-  "source": "github",
-  "subfolder": "servers/office-suite"
- },
- "websiteUrl": "https://mcp.zovo.one/bundle",
- "packages": [
-  {
-   "registryType": "mcpb",
-   "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.22.0/office-suite.mcpb",
-   "version": "0.22.0",
-   "transport": {
-    "type": "stdio"
-   },
-   "environmentVariables": [
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.theluckystrike/office-suite-time-invoice-expense-excel-price",
+  "description": "One MCP server for the whole freelancer office: time tracking, price watching, spreadsheets, PDF.",
+  "version": "0.22.0",
+  "repository": {
+    "url": "https://github.com/theluckystrike/mcp-servers",
+    "source": "github",
+    "subfolder": "servers/office-suite"
+  },
+  "websiteUrl": "https://mcp.zovo.one/bundle",
+  "packages": [
     {
-     "name": "MCP_LICENSE_KEY",
-     "description": "Optional Pro license key (MCPL1....) applied to every server in the bundle. Verified offline.",
-     "isRequired": false,
-     "isSecret": true
+      "registryType": "mcpb",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.22.0/office-suite.mcpb",
+      "version": "0.22.0",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "MCP_LICENSE_KEY",
+          "description": "Optional Pro license key (MCPL1....) applied to every server in the bundle. Verified offline.",
+          "isRequired": false,
+          "isSecret": true
+        }
+      ],
+      "fileSha256": "78110f17089c4e1ab515b09065d63463e288650340f6da743658305860c3d074"
     }
-   ],
-   "fileSha256": "94665fef62c845f3c43af607cc256b570c739259016de321d301e54cb1ab2e91"
-  }
- ]
+  ]
 }

@@ -1,45 +1,45 @@
 {
- "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
- "name": "io.github.theluckystrike/maintenance-log",
- "description": "Equipment maintenance log: assets, service entries with costs, and a due report from stored dates.",
- "version": "0.22.0",
- "repository": {
-  "url": "https://github.com/theluckystrike/mcp-servers",
-  "source": "github",
-  "subfolder": "servers/maintenance-log"
- },
- "websiteUrl": "https://mcp.zovo.one/s/maintenance-log",
- "packages": [
-  {
-   "registryType": "mcpb",
-   "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.22.0/maintenance-log.mcpb",
-   "version": "0.22.0",
-   "transport": {
-    "type": "stdio"
-   },
-   "environmentVariables": [
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.theluckystrike/maintenance-log",
+  "description": "Equipment maintenance log: assets, service entries with costs, and a due report from stored dates.",
+  "version": "0.22.0",
+  "repository": {
+    "url": "https://github.com/theluckystrike/mcp-servers",
+    "source": "github",
+    "subfolder": "servers/maintenance-log"
+  },
+  "websiteUrl": "https://mcp.zovo.one/s/maintenance-log",
+  "packages": [
     {
-     "name": "MCP_LICENSE_KEY",
-     "description": "Optional Pro license key (MCPL1....). Verified offline.",
-     "isRequired": false,
-     "isSecret": true
+      "registryType": "mcpb",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.22.0/maintenance-log.mcpb",
+      "version": "0.22.0",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "MCP_LICENSE_KEY",
+          "description": "Optional Pro license key (MCPL1....). Verified offline.",
+          "isRequired": false,
+          "isSecret": true
+        }
+      ],
+      "fileSha256": "4548349adab35740fc5cc17c2bd0e2c5c115c40bf7d1242e264500ab8b1a106e"
     }
-   ],
-   "fileSha256": "6e4e8ab0924939be97c7f50e9f26807184a8201517c99242fc1cce33920a40eb"
-  }
- ],
- "remotes": [
-  {
-   "type": "streamable-http",
-   "url": "https://mcp.zovo.one/mcp/maintenance-log",
-   "headers": [
+  ],
+  "remotes": [
     {
-     "name": "Authorization",
-     "description": "Bearer <Pro license key or anonymous token from GET https://mcp.zovo.one/mcp/token>",
-     "isRequired": true,
-     "isSecret": true
+      "type": "streamable-http",
+      "url": "https://mcp.zovo.one/mcp/maintenance-log",
+      "headers": [
+        {
+          "name": "Authorization",
+          "description": "Bearer <Pro license key or anonymous token from GET https://mcp.zovo.one/mcp/token>",
+          "isRequired": true,
+          "isSecret": true
+        }
+      ]
     }
-   ]
-  }
- ]
+  ]
 }

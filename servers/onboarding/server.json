@@ -1,45 +1,45 @@
 {
- "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
- "name": "io.github.theluckystrike/onboarding",
- "description": "New-hire onboarding: role-based task templates, day-one to day-ninety checklists, completion.",
- "version": "0.22.0",
- "repository": {
-  "url": "https://github.com/theluckystrike/mcp-servers",
-  "source": "github",
-  "subfolder": "servers/onboarding"
- },
- "websiteUrl": "https://mcp.zovo.one/s/onboarding",
- "packages": [
-  {
-   "registryType": "mcpb",
-   "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.22.0/onboarding.mcpb",
-   "version": "0.22.0",
-   "transport": {
-    "type": "stdio"
-   },
-   "environmentVariables": [
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.theluckystrike/onboarding",
+  "description": "New-hire onboarding: role-based task templates, day-one to day-ninety checklists, completion.",
+  "version": "0.22.0",
+  "repository": {
+    "url": "https://github.com/theluckystrike/mcp-servers",
+    "source": "github",
+    "subfolder": "servers/onboarding"
+  },
+  "websiteUrl": "https://mcp.zovo.one/s/onboarding",
+  "packages": [
     {
-     "name": "MCP_LICENSE_KEY",
-     "description": "Optional Pro license key (MCPL1....). Verified offline.",
-     "isRequired": false,
-     "isSecret": true
+      "registryType": "mcpb",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.22.0/onboarding.mcpb",
+      "version": "0.22.0",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "MCP_LICENSE_KEY",
+          "description": "Optional Pro license key (MCPL1....). Verified offline.",
+          "isRequired": false,
+          "isSecret": true
+        }
+      ],
+      "fileSha256": "5f45391f0606350b2a108ef5da5cfeff6a75277e45bf61262cd3f85d5e96853f"
     }
-   ],
-   "fileSha256": "0000000000000000000000000000000000000000000000000000000000000000"
-  }
- ],
- "remotes": [
-  {
-   "type": "streamable-http",
-   "url": "https://mcp.zovo.one/mcp/onboarding",
-   "headers": [
+  ],
+  "remotes": [
     {
-     "name": "Authorization",
-     "description": "Bearer <Pro license key or anonymous token from GET https://mcp.zovo.one/mcp/token>",
-     "isRequired": true,
-     "isSecret": true
+      "type": "streamable-http",
+      "url": "https://mcp.zovo.one/mcp/onboarding",
+      "headers": [
+        {
+          "name": "Authorization",
+          "description": "Bearer <Pro license key or anonymous token from GET https://mcp.zovo.one/mcp/token>",
+          "isRequired": true,
+          "isSecret": true
+        }
+      ]
     }
-   ]
-  }
- ]
+  ]
 }

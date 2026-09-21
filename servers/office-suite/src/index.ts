@@ -76,6 +76,7 @@ const CHILDREN: ChildDef[] = [
   { id: "goods-receipt", pkg: "@theluckystrike/mcp-goods-receipt", optional: true },
   { id: "leave", pkg: "@theluckystrike/mcp-leave", optional: true },
   { id: "onboarding", pkg: "@theluckystrike/mcp-onboarding", optional: true },
+  { id: "backlink-checker", pkg: "@theluckystrike/mcp-backlink-checker", optional: true },
   { id: "purchase-requisition", pkg: "@theluckystrike/mcp-purchase-requisition", optional: true },
 ];
 

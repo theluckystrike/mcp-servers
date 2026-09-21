@@ -1614,6 +1614,54 @@ ${ours("goods-receipt")}
     ],
   },
 
+  "backlink-checker": {
+    title: "MCP Backlink Checker vs BacklinkMCP and OpenSEO: which link tool to pick",
+    description: "A fetch-and-verify link checker against two SEO-data MCP servers. What each actually verifies, where the data comes from, network use, install path, price and licence, read from each product's own material.",
+    html: `<h1>MCP Backlink Checker vs BacklinkMCP and OpenSEO: which link tool to pick</h1>
+<p>All three answer backlink questions from an AI agent, but they verify different things. BacklinkMCP and OpenSEO report
+<a href="https://mcpmarket.com/server/backlinkmcp">domain-level stats from a proprietary link index</a>: referring domains,
+authority scores, backlink-gap opportunities. Ours fetches the actual page and reports what is on it right now: whether it
+links to your domain, dofollow or nofollow, the anchor text, and the page-level robots guards. A link index tells you a page
+linked to you last crawl; fetching tells you whether it still does today.</p>
+
+<h2>The facts, read from each product</h2>
+<table>
+<thead><tr><th>Fact</th><th>Ours</th><th>BacklinkMCP</th><th>OpenSEO</th></tr></thead>
+<tbody>
+<tr><td>What it verifies</td><td>Live page fetch: link presence, rel attribute, anchor text, HTTP status, meta robots and X-Robots-Tag guards</td><td>Domain authority, referring domains, toxic-link candidates from a proprietary web-scale index</td><td>Backlink and referring-domain overview stats, plus keywords, SERPs and Search Console</td></tr>
+<tr><td>Data source</td><td>The page itself, fetched at call time</td><td>Proprietary link index</td><td>OpenSEO project data and third-party SEO data</td></tr>
+<tr><td>Network</td><td>One outbound GET per URL checked; nothing stored</td><td>Hosted API; free tier 10 lookups/day</td><td>Hosted service; project account and credits</td></tr>
+<tr><td>Install/entry path</td><td>One-click <code>backlink-checker.mcpb</code> bundle, npx, or hosted URL. No account, no key</td><td>Remote MCP/REST, no signup on free tier</td><td>OpenSEO account, project setup, hosted connector</td></tr>
+<tr><td>Price</td><td>link_check and robots_guard_check free and unlimited; link_audit 3 URLs per call free, Pro $19 once for larger batches</td><td>Free tier, 10 daily lookups</td><td>Freemium; credits for data calls</td></tr>
+<tr><td>Licence</td><td>MIT</td><td>Proprietary service</td><td>Open source code, hosted data service</td></tr>
+</tbody>
+</table>
+
+<h2>When to pick BacklinkMCP or OpenSEO</h2>
+<p>Pick them when the question is portfolio-shaped: how many referring domains do we have, who links to the competitor but
+not to us, which links look toxic. That needs a web-scale crawl index, which neither we nor anyone running one fetch at a
+time can offer. BacklinkMCP's free tier (10 lookups a day, no signup) covers casual checks; OpenSEO bundles backlinks with
+keyword and Search Console tooling if you want one server for all of SEO.</p>
+
+<h2>When to pick ours</h2>
+<p>Pick ours when the question is page-shaped: does THIS guest-post page still link to us, is that placement dofollow, what
+anchor did they use, is the page even indexable. Those are facts a link index gets wrong whenever its crawl is stale, and
+they are exactly the facts you need before paying an invoice for a placement or renewing an outreach deal. Every tool is a
+read, nothing is stored, link_check is free and unlimited, and the one-time $19 Pro only matters when you audit batches
+larger than three URLs per call.</p>
+
+<h2>Install lines</h2>
+${ours("backlink-checker")}
+
+<p>Exact config file paths per client are on the <a href="/setup">setup pages</a>.</p>`,
+    faq: [
+      { q: "Which one shows domain authority?", a: "BacklinkMCP does, from its proprietary link index; OpenSEO shows backlink overview stats. Ours deliberately does not: we fetch the page and report what is on it, so there is no authority score, only verifiable per-page facts." },
+      { q: "Which one is free?", a: "All three have free tiers. BacklinkMCP allows 10 lookups a day with no signup. Ours is free and unlimited for link_check and robots_guard_check, with link_audit up to 3 URLs per call; Pro $19 once lifts that cap." },
+      { q: "Can these replace Ahrefs or Semrush?", a: "No, and none of the three claim to. A web-scale index is what answers portfolio questions; these MCP servers answer mid-conversation questions. Ours is the only one of the three that verifies a specific page live at call time." },
+      { q: "Where can I read the competitor facts myself?", a: "BacklinkMCP's features and free-tier limit are published at mcpmarket.com/server/backlinkmcp; OpenSEO's tool groups and model are at openseo.so/features/mcp. All read on 2026-09-21." },
+    ],
+  },
+
   "leave": {
     title: "MCP Leave vs Vacation Tracker and BambooHR: which PTO tracker to pick",
     description: "A local leave ledger against a Slack-native PTO app and a full HR suite. What each tracks, approval flow, balances, calendar export, network use, install path, price and licence, read from each product's own material.",

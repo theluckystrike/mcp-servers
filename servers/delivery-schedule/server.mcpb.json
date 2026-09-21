@@ -1,45 +1,45 @@
 {
- "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
- "name": "io.github.theluckystrike/delivery-schedule",
- "description": "Dated deliverables against a quote or work order: due dates, sign-off, what is late, milestones.",
- "version": "0.22.0",
- "repository": {
-  "url": "https://github.com/theluckystrike/mcp-servers",
-  "source": "github",
-  "subfolder": "servers/delivery-schedule"
- },
- "websiteUrl": "https://mcp.zovo.one/s/delivery-schedule",
- "packages": [
-  {
-   "registryType": "mcpb",
-   "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.22.0/delivery-schedule.mcpb",
-   "version": "0.22.0",
-   "transport": {
-    "type": "stdio"
-   },
-   "environmentVariables": [
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.theluckystrike/delivery-schedule",
+  "description": "Dated deliverables against a quote or work order: due dates, sign-off, what is late, milestones.",
+  "version": "0.22.0",
+  "repository": {
+    "url": "https://github.com/theluckystrike/mcp-servers",
+    "source": "github",
+    "subfolder": "servers/delivery-schedule"
+  },
+  "websiteUrl": "https://mcp.zovo.one/s/delivery-schedule",
+  "packages": [
     {
-     "name": "MCP_LICENSE_KEY",
-     "description": "Optional Pro license key (MCPL1....). Verified offline.",
-     "isRequired": false,
-     "isSecret": true
+      "registryType": "mcpb",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.22.0/delivery-schedule.mcpb",
+      "version": "0.22.0",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "MCP_LICENSE_KEY",
+          "description": "Optional Pro license key (MCPL1....). Verified offline.",
+          "isRequired": false,
+          "isSecret": true
+        }
+      ],
+      "fileSha256": "3892be4ae19a8159509b7a2591aa020afd12e439f7c73f666a0fec95a27dd191"
     }
-   ],
-   "fileSha256": "59c7ac8ddc682a218e33b9446c3d8a41da99726400c82e74b04f42353ae9853e"
-  }
- ],
- "remotes": [
-  {
-   "type": "streamable-http",
-   "url": "https://mcp.zovo.one/mcp/delivery-schedule",
-   "headers": [
+  ],
+  "remotes": [
     {
-     "name": "Authorization",
-     "description": "Bearer <Pro license key or anonymous token from GET https://mcp.zovo.one/mcp/token>",
-     "isRequired": true,
-     "isSecret": true
+      "type": "streamable-http",
+      "url": "https://mcp.zovo.one/mcp/delivery-schedule",
+      "headers": [
+        {
+          "name": "Authorization",
+          "description": "Bearer <Pro license key or anonymous token from GET https://mcp.zovo.one/mcp/token>",
+          "isRequired": true,
+          "isSecret": true
+        }
+      ]
     }
-   ]
-  }
- ]
+  ]
 }

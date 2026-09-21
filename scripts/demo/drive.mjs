@@ -82,6 +82,25 @@ function client(entry, env, opts = {}) {
   };
 }
 
+function startLinkPages() {
+  const PAGES = {
+    "/dofollow": `<!doctype html><html><head><title>Ref A</title></head><body>
+      <p>See <a href="https://target.example">best widgets</a> for more.</p></body></html>`,
+    "/nofollow": `<!doctype html><html><head><title>Ref B</title></head><body>
+      <a href="https://target.example" rel="nofollow sponsored">sponsored widgets</a></body></html>`,
+    "/noindex": `<!doctype html><html><head><meta name="robots" content="noindex, follow"></head><body>
+      <a href="https://target.example">widgets</a></body></html>`,
+    "/nolink": `<!doctype html><html><head><title>Ref D</title></head><body><p>nothing here</p></body></html>`,
+  };
+  const srv = createServer((req, res) => {
+    const body = PAGES[req.url];
+    if (!body) { res.writeHead(404, { "content-type": "text/html" }); res.end("<h1>404</h1>"); return; }
+    res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
+    res.end(body);
+  });
+  return new Promise((resolve) => srv.listen(0, "127.0.0.1", () => resolve({ base: `http://127.0.0.1:${srv.address().port}`, close: () => srv.close() })));
+}
+
 function startFixtureShop() {
   const FIXTURE = `<!doctype html><html><head><meta charset="utf-8">
 <title>Aurora Desk Lamp - Northlight Home</title>
@@ -1720,6 +1739,29 @@ async function run(name) {
     const rep = pick(await c.call("grn_status_report", {}));
     const row = (rep.purchaseOrders ?? [])[0];
     if (row) resultLine(`${row.id} ${row.reference}: ${row.status ?? "discrepancy"} — the tolerance did the arguing`);
+  }
+  if (name === "backlink-checker") {
+    const pages = await startLinkPages();
+    const BASE = pages.base;
+    const pick = (raw) => JSON.parse(raw);
+
+    say("$ Backlinks, checked live: does a page link to your domain, and how?\n");
+    await sleep(STEP_DELAY_MS);
+
+    toolLine("link_check", { page_url: `${BASE}/dofollow`, target_domain: "target.example" });
+    resultLine(await c.call("link_check", { page_url: `${BASE}/dofollow`, target_domain: "target.example" }));
+    await sleep(STEP_DELAY_MS);
+
+    toolLine("link_check", { page_url: `${BASE}/nofollow`, target_domain: "target.example" });
+    resultLine(await c.call("link_check", { page_url: `${BASE}/nofollow`, target_domain: "target.example" }));
+    await sleep(STEP_DELAY_MS);
+
+    toolLine("robots_guard_check", { url: `${BASE}/noindex` });
+    resultLine(await c.call("robots_guard_check", { url: `${BASE}/noindex` }));
+    await sleep(STEP_DELAY_MS);
+
+    toolLine("link_audit", { page_urls: [`${BASE}/dofollow`, `${BASE}/nofollow`, `${BASE}/nolink`], target_domain: "target.example" });
+    resultLine(await c.call("link_audit", { page_urls: [`${BASE}/dofollow`, `${BASE}/nofollow`, `${BASE}/nolink`], target_domain: "target.example" }));
   }
   if (name === "leave") {
     // The worked entitlement: 25 days allowed, a request made, approved, and the

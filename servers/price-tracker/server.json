@@ -1,45 +1,45 @@
 {
- "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
- "name": "io.github.theluckystrike/price-tracker-drop-alert-watch",
- "description": "Check a shop page price now, keep a watch list, see history and target alerts. All data stays local.",
- "version": "0.22.0",
- "repository": {
-  "url": "https://github.com/theluckystrike/mcp-servers",
-  "source": "github",
-  "subfolder": "servers/price-tracker"
- },
- "websiteUrl": "https://mcp.zovo.one/s/price-tracker",
- "packages": [
-  {
-   "registryType": "mcpb",
-   "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.22.0/price-tracker.mcpb",
-   "version": "0.22.0",
-   "transport": {
-    "type": "stdio"
-   },
-   "environmentVariables": [
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.theluckystrike/price-tracker-drop-alert-watch",
+  "description": "Check a shop page price now, keep a watch list, see history and target alerts. All data stays local.",
+  "version": "0.22.0",
+  "repository": {
+    "url": "https://github.com/theluckystrike/mcp-servers",
+    "source": "github",
+    "subfolder": "servers/price-tracker"
+  },
+  "websiteUrl": "https://mcp.zovo.one/s/price-tracker",
+  "packages": [
     {
-     "name": "MCP_LICENSE_KEY",
-     "description": "Optional Pro license key (MCPL1....). Verified offline.",
-     "isRequired": false,
-     "isSecret": true
+      "registryType": "mcpb",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.22.0/price-tracker.mcpb",
+      "version": "0.22.0",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "MCP_LICENSE_KEY",
+          "description": "Optional Pro license key (MCPL1....). Verified offline.",
+          "isRequired": false,
+          "isSecret": true
+        }
+      ],
+      "fileSha256": "2c6f2be12dcc08178f2f9f0e75d30672f484dda19d383464039e694304383c35"
     }
-   ],
-   "fileSha256": "5813f7e1d1d072525a05c1575a7520a22cf2426bb4e62cae7eb1b084e334af23"
-  }
- ],
- "remotes": [
-  {
-   "type": "streamable-http",
-   "url": "https://mcp.zovo.one/mcp/price-tracker",
-   "headers": [
+  ],
+  "remotes": [
     {
-     "name": "Authorization",
-     "description": "Bearer <Pro license key or anonymous token from GET https://mcp.zovo.one/mcp/token>",
-     "isRequired": true,
-     "isSecret": true
+      "type": "streamable-http",
+      "url": "https://mcp.zovo.one/mcp/price-tracker",
+      "headers": [
+        {
+          "name": "Authorization",
+          "description": "Bearer <Pro license key or anonymous token from GET https://mcp.zovo.one/mcp/token>",
+          "isRequired": true,
+          "isSecret": true
+        }
+      ]
     }
-   ]
-  }
- ]
+  ]
 }

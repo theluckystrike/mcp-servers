@@ -1,6 +1,6 @@
 {
   "name": "@theluckystrike/mcp-backlink-checker",
-  "version": "0.1.0",
+  "version": "0.22.0",
   "description": "Check backlinks from Claude or Cursor: does a page link to your domain, dofollow or nofollow, with anchor text, HTTP status and robots guards. All checks run on demand, nothing stored.",
   "type": "module",
   "bin": {

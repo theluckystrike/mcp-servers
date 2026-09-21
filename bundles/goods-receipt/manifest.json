@@ -1,0 +1,94 @@
+{
+  "manifest_version": "0.2",
+  "name": "mcp-goods-receipt",
+  "display_name": "Goods Receipt",
+  "version": "0.22.0",
+  "description": "Goods receipt notes against purchase orders: over/under tolerances, damaged and short units, discrepancies, and CSV export.",
+  "author": {
+    "name": "theluckystrike",
+    "url": "https://github.com/theluckystrike"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/theluckystrike/mcp-servers"
+  },
+  "homepage": "https://mcp.zovo.one",
+  "license": "MIT",
+  "server": {
+    "type": "node",
+    "entry_point": "server/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": [
+        "${__dirname}/server/index.js"
+      ],
+      "env": {
+        "MCP_LICENSE_KEY": "${user_config.license_key}"
+      }
+    }
+  },
+  "user_config": {
+    "license_key": {
+      "type": "string",
+      "title": "License key",
+      "description": "Optional Pro license key (format MCPL1.xxx.yyy). Leave blank to use the free tier.",
+      "sensitive": true,
+      "required": false
+    }
+  },
+  "tools": [
+    {
+      "name": "po_add",
+      "description": "Create a purchase order to receive goods against. Lines carry a sku, a description and an ordered whole-unit quantity. Over/under tolerances are whole percentages allowed above/below ordered before a GRN is flagged. Ids look like PO-0001. Free tier, full CRUD."
+    },
+    {
+      "name": "grn_add",
+      "description": "Create a goods-receipt note (GRN) against an open purchase order. Give one cell per PO line: the whole units received and/or damaged. received is checked against the line's ordered quantity and the PO's over tolerance; receiving past the over tolerance is refused unless declared damaged. Shortage is recorded automatically (ordered minus received, floored at zero) and shown as a discrepancy. Partial deliveries are fine: raise several GRNs against the same PO. Free tier, full CRUD."
+    },
+    {
+      "name": "grn_line_add",
+      "description": "Add another PO line (or more units on a line already open on this GRN) to an existing open goods-receipt note. Useful when one delivery arrives in batches. The over-tolerance gate still applies to the PO line's cumulative received count across every GRN. Free tier, full CRUD."
+    },
+    {
+      "name": "grn_list",
+      "description": "List goods-receipt notes, newest first, optionally filtered to one purchase order."
+    },
+    {
+      "name": "grn_get",
+      "description": "Get a single goods-receipt note by id, with its lines, damage and shortage per line."
+    },
+    {
+      "name": "grn_discrepancy",
+      "description": "List lines that are not as ordered: damaged units, a declared shortage, or received below the PO line's under tolerance. Optionally filter to one PO."
+    },
+    {
+      "name": "grn_close",
+      "description": "Close an open GRN. A closed GRN can no longer take lines, and its discrepancies are treated as resolved. Closing is free-tier and never mutates the PO."
+    },
+    {
+      "name": "grn_status_report",
+      "description": "Reconcile every purchase order against every GRN: open POs (not yet fully received), POs fully received within tolerance, POs with at least one discrepancy, and per-line open/short/damaged counts. Nothing is written."
+    },
+    {
+      "name": "grn_export_csv",
+      "description": "Pro. Export every GRN (or just one PO's GRNs) as CSV with a header row: grn,po,po_reference,received_at,carrier,status,line,sku,received,damaged,shortage,damage_note,shortage_note. Watermark-free and not truncated."
+    },
+    {
+      "name": "license_status",
+      "description": "Report this server's licence state: product, tier free or pro, licence id, expiry, the key source and the upgrade URL. No arguments, no network. Explains a free-tier refusal; license_activate installs a key."
+    },
+    {
+      "name": "license_activate",
+      "description": "Activate a Pro key (MCPL1.xxx.yyy) from checkout: verified offline against a built-in public key, saved to your config file. A wrong, malformed or expired key is refused, unsaved. license_status reads it back."
+    }
+  ],
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "goods-receipt",
+    "grn",
+    "delivery",
+    "receiving",
+    "warehouse"
+  ]
+}

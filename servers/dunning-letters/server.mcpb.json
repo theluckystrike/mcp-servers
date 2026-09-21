@@ -1,45 +1,45 @@
 {
- "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
- "name": "io.github.theluckystrike/dunning-letters",
- "description": "Chase overdue invoices: reminder 1, reminder 2, final notice, escalation dates, aging.",
- "version": "0.22.0",
- "repository": {
-  "url": "https://github.com/theluckystrike/mcp-servers",
-  "source": "github",
-  "subfolder": "servers/dunning-letters"
- },
- "websiteUrl": "https://mcp.zovo.one/s/dunning-letters",
- "packages": [
-  {
-   "registryType": "mcpb",
-   "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.22.0/dunning-letters.mcpb",
-   "version": "0.22.0",
-   "transport": {
-    "type": "stdio"
-   },
-   "environmentVariables": [
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.theluckystrike/dunning-letters",
+  "description": "Chase overdue invoices: reminder 1, reminder 2, final notice, escalation dates, aging.",
+  "version": "0.22.0",
+  "repository": {
+    "url": "https://github.com/theluckystrike/mcp-servers",
+    "source": "github",
+    "subfolder": "servers/dunning-letters"
+  },
+  "websiteUrl": "https://mcp.zovo.one/s/dunning-letters",
+  "packages": [
     {
-     "name": "MCP_LICENSE_KEY",
-     "description": "Optional Pro license key (MCPL1....). Verified offline.",
-     "isRequired": false,
-     "isSecret": true
+      "registryType": "mcpb",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.22.0/dunning-letters.mcpb",
+      "version": "0.22.0",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "MCP_LICENSE_KEY",
+          "description": "Optional Pro license key (MCPL1....). Verified offline.",
+          "isRequired": false,
+          "isSecret": true
+        }
+      ],
+      "fileSha256": "51147c598e448b6d546aaa1b88a2c6bb07a93d660c514d675fbc55ddbe7a3d26"
     }
-   ],
-   "fileSha256": "8dd5a1efcde2679f953e326a52ab147682cb55d620d9987beca3460bd7159f99"
-  }
- ],
- "remotes": [
-  {
-   "type": "streamable-http",
-   "url": "https://mcp.zovo.one/mcp/dunning-letters",
-   "headers": [
+  ],
+  "remotes": [
     {
-     "name": "Authorization",
-     "description": "Bearer <Pro license key or anonymous token from GET https://mcp.zovo.one/mcp/token>",
-     "isRequired": true,
-     "isSecret": true
+      "type": "streamable-http",
+      "url": "https://mcp.zovo.one/mcp/dunning-letters",
+      "headers": [
+        {
+          "name": "Authorization",
+          "description": "Bearer <Pro license key or anonymous token from GET https://mcp.zovo.one/mcp/token>",
+          "isRequired": true,
+          "isSecret": true
+        }
+      ]
     }
-   ]
-  }
- ]
+  ]
 }

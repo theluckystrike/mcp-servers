@@ -1,0 +1,86 @@
+{
+  "manifest_version": "0.2",
+  "name": "mcp-onboarding",
+  "display_name": "Onboarding",
+  "version": "0.22.0",
+  "description": "New-hire onboarding: task templates per role, day-one to day-ninety plans.",
+  "author": {
+    "name": "theluckystrike",
+    "url": "https://github.com/theluckystrike"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/theluckystrike/mcp-servers"
+  },
+  "homepage": "https://mcp.zovo.one",
+  "license": "MIT",
+  "server": {
+    "type": "node",
+    "entry_point": "server/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": [
+        "${__dirname}/server/index.js"
+      ],
+      "env": {
+        "MCP_LICENSE_KEY": "${user_config.license_key}"
+      }
+    }
+  },
+  "user_config": {
+    "license_key": {
+      "type": "string",
+      "title": "License key",
+      "description": "Optional Pro license key (format MCPL1.xxx.yyy). Leave blank to use the free tier.",
+      "sensitive": true,
+      "required": false
+    }
+  },
+  "tools": [
+    {
+      "name": "onboarding_hire_add",
+      "description": "Add a new hire and return its H-NNNN id: a name, a role and the day they start. The role is a grouping key, lower-cased and hyphenated. Add tasks with onboarding_task_add, or apply a role template with onboarding_template_apply."
+    },
+    {
+      "name": "onboarding_hire_list",
+      "description": "Every hire with their role, start date, task counts, percent complete and overdue count. Filter by role or by a word in the name. Returns at most 500 rows, newest change first."
+    },
+    {
+      "name": "onboarding_task_add",
+      "description": "Add one task to a hire's plan and return its K01-style id: the text, who owns it (hr, manager or it) and how many days after the start date it is due. The due date is counted from the hire's start date."
+    },
+    {
+      "name": "onboarding_task_done",
+      "description": "Mark one task on a hire done or skipped, with the day it happened. done counts toward the percent complete; skipped is a deliberate dismissal and never counts as done. A task can be set back to todo to reopen it."
+    },
+    {
+      "name": "onboarding_template_apply",
+      "description": "Apply a role template to one hire (free) or many (Pro), copying the template's tasks into each hire with the template's version recorded. Editing the template afterwards never changes a hire already under way. If no template exists for the role, one is created from the tasks you pass."
+    },
+    {
+      "name": "onboarding_progress",
+      "description": "One hire's whole plan: every task with its owner, due date and status, plus the percent complete, the overdue count and what is still outstanding. Pass as_csv for a Pro-only CSV export of the plan."
+    },
+    {
+      "name": "onboarding_overdue",
+      "description": "Every task that is still outstanding past its due date, across all hires or one hire, with how many days late. Returns at most 500 rows, most overdue first."
+    },
+    {
+      "name": "license_status",
+      "description": "Report this server's licence state: product, tier free or pro, licence id, expiry, the key source and the upgrade URL. No arguments, no network. Explains a free-tier refusal; license_activate installs a key."
+    },
+    {
+      "name": "license_activate",
+      "description": "Activate a Pro key (MCPL1.xxx.yyy) from checkout: verified offline against a built-in public key, saved to your config file. A wrong, malformed or expired key is refused, unsaved. license_status reads it back."
+    }
+  ],
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "onboarding",
+    "new-hire",
+    "hr",
+    "checklist",
+    "employee"
+  ]
+}

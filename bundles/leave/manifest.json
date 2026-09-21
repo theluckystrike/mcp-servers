@@ -1,0 +1,98 @@
+{
+  "manifest_version": "0.2",
+  "name": "mcp-leave",
+  "display_name": "Leave",
+  "version": "0.22.0",
+  "description": "Employee leave and PTO requests: balances, approvals, calendars, and who-is-out summaries.",
+  "author": {
+    "name": "theluckystrike",
+    "url": "https://github.com/theluckystrike"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/theluckystrike/mcp-servers"
+  },
+  "homepage": "https://mcp.zovo.one",
+  "license": "MIT",
+  "server": {
+    "type": "node",
+    "entry_point": "server/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": [
+        "${__dirname}/server/index.js"
+      ],
+      "env": {
+        "MCP_LICENSE_KEY": "${user_config.license_key}"
+      }
+    }
+  },
+  "user_config": {
+    "license_key": {
+      "type": "string",
+      "title": "License key",
+      "description": "Optional Pro license key (format MCPL1.xxx.yyy). Leave blank to use the free tier.",
+      "sensitive": true,
+      "required": false
+    }
+  },
+  "tools": [
+    {
+      "name": "leave_employee_add",
+      "description": "Add an employee to the leave tracker and return their EMP-NNNN id. Give their annual paid-leave allowance in whole days and any days carried over from last year. Balances charge approved plus pending leave against allowance + carried-over. Free tier: unlimited."
+    },
+    {
+      "name": "leave_request",
+      "description": "Create a leave or PTO request and return its LV-NNNN id. type is vacation, sick, unpaid or parental. start and end are inclusive YYYY-MM-DD dates; halfDay charges half a day for the whole span. A pending request is refussed if it would overlap another approved or pending request of the same employee. Free tier: unlimited requests."
+    },
+    {
+      "name": "leave_approve",
+      "description": "Approve a pending leave request by id. Also used to re-open a rejected one. Nothing to approve on an already-approved request."
+    },
+    {
+      "name": "leave_reject",
+      "description": "Reject or cancel a leave request by id. A pending or approved request becomes rejected; a rejected one can be reopened via leave_approve. Use leave_cancel (via reject with reason) for voluntary withdrawal."
+    },
+    {
+      "name": "leave_balance",
+      "description": "Show one employee's leave balance: allowance + carried-over, minus approved and pending, as whole days plus a possible half day. Remaining is rounded down to whole days on the report."
+    },
+    {
+      "name": "leave_out_range",
+      "description": "Who is out in a date range: start and end are inclusive YYYY-MM-DD. Each employee appears once per day; pending requests count as a plan. Use for coverage, calendars and absence summaries. Free tier: unlimited."
+    },
+    {
+      "name": "leave_list",
+      "description": "List all employees, or all leave requests (optionally filtered by employee and/or status). Omit the filter to list requests."
+    },
+    {
+      "name": "leave_import",
+      "description": "Pro. Bulk-create leave requests from a CSV/TSV. First row is a header: employee,type,start,end,halfDay,status,reason. status may be omitted (defaults to pending) or be approved/rejected. Each request is still checked for overlap conflicts; a conflicting row is reported, not applied. watermark-free, full CRUD."
+    },
+    {
+      "name": "leave_export_ics",
+      "description": "Pro. Export all APPROVED leave as an .ics calendar (RFC5545). Returns the calendar text; pass path to also write it to a local file. watermark-free."
+    },
+    {
+      "name": "leave_cancel",
+      "description": "Cancel a pending or approved request by id, keeping its record with status cancelled. Differs from leave_reject in intent (voluntary withdrawal). Nothing happened if already cancelled."
+    },
+    {
+      "name": "license_status",
+      "description": "Report this server's licence state: product, tier free or pro, licence id, expiry, the key source and the upgrade URL. No arguments, no network. Explains a free-tier refusal; license_activate installs a key."
+    },
+    {
+      "name": "license_activate",
+      "description": "Activate a Pro key (MCPL1.xxx.yyy) from checkout: verified offline against a built-in public key, saved to your config file. A wrong, malformed or expired key is refused, unsaved. license_status reads it back."
+    }
+  ],
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "leave",
+    "leave-management",
+    "pto",
+    "absence",
+    "hr"
+  ]
+}

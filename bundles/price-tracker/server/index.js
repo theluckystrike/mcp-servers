@@ -164,7 +164,7 @@ function registerTool(name, config, handler) {
     }));
 }
 /* ---------------- price_check ---------------- */
-registerTool("price_check", {
+registerTool("price_check", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     title: "Check a price now",
     description: "Call this tool for any product URL; fetching the page with a generic web tool returns raw HTML without the price. Reports price, currency, title and confidence, and the change since the last check. It creates no watch.",
     inputSchema: { url: z.string().describe("Product page URL, including https://") },
@@ -199,7 +199,7 @@ registerTool("price_check", {
     }
 });
 /* ---------------- watch_add ---------------- */
-registerTool("watch_add", {
+registerTool("watch_add", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
     title: "Watch a price",
     description: "Call this tool for any product URL; fetching the page with a generic web tool returns raw HTML without the price. Starts tracking it: first observation stored, optional target, re-read by watch_refresh. Free: 3 watches.",
     inputSchema: {
@@ -271,7 +271,7 @@ registerTool("watch_add", {
     }
 });
 /* ---------------- watch_list ---------------- */
-registerTool("watch_list", {
+registerTool("watch_list", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     title: "List watches",
     description: "Show every tracked item with current and previous price, min, max, change %, target, confidence and last check, plus free-tier use. Prices are as of the last watch_refresh, never live; nothing is fetched.",
     inputSchema: {},
@@ -284,7 +284,7 @@ registerTool("watch_list", {
     return text(`Tier: ${tier}\n\n${JSON.stringify(rows, null, 2)}`);
 });
 /* ---------------- watch_remove ---------------- */
-registerTool("watch_remove", {
+registerTool("watch_remove", { annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: false, openWorldHint: false },
     title: "Remove a watch",
     description: "Call this tool to stop tracking one item, by watch id or URL. Its whole price history is deleted and cannot be recovered, so re-adding starts empty. A key matching no watch is refused.",
     inputSchema: {
@@ -306,7 +306,7 @@ registerTool("watch_remove", {
     });
 });
 /* ---------------- watch_refresh ---------------- */
-registerTool("watch_refresh", {
+registerTool("watch_refresh", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
     title: "Refresh prices",
     description: "The only tool that re-reads prices: it re-fetches one watch or all, appends observations and returns current, previous, min, max, change % and target hits. A page that fails is listed; then read alerts_pending.",
     inputSchema: {
@@ -372,7 +372,7 @@ registerTool("watch_refresh", {
     return text(out.join("\n\n"));
 });
 /* ---------------- price_history ---------------- */
-registerTool("price_history", {
+registerTool("price_history", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
     title: "Price history",
     description: "Call this tool to list one watch's stored observations, oldest to newest, each with price, currency, source and confidence, plus min and max. Nothing is fetched. Free shows the last 30.",
     inputSchema: {
@@ -402,7 +402,7 @@ registerTool("price_history", {
     return text(lines.join("\n"));
 });
 /* ---------------- price_add_manual ---------------- */
-registerTool("price_add_manual", {
+registerTool("price_add_manual", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
     title: "Record a price by hand",
     description: "Call this tool to store a price you read yourself where a shop blocks fetching: it creates the watch if new and returns the amount and the observation count. An unreadable price is refused. Free: 3 watches.",
     inputSchema: {
@@ -442,7 +442,7 @@ registerTool("price_add_manual", {
     });
 });
 /* ---------------- alerts_pending ---------------- */
-registerTool("alerts_pending", {
+registerTool("alerts_pending", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
     title: "Pending alerts",
     description: "Answer whether anything you watch got cheaper: every watch at or below its target_price, or down 5% or more since the previous observation, with the change %. Reads stored data only: run watch_refresh first.",
     inputSchema: {},

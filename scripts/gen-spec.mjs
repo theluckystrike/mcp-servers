@@ -30,7 +30,7 @@ const SERVERS = [
   "packing-list", "checklist",
   "bill-of-sale", "credit-note", "job-card", "dunning-letters",
   "supplier-list", "service-agreement", "maintenance-log", "mileage-log",
-  "purchase-requisition", "goods-receipt", "leave", "onboarding",
+  "purchase-requisition", "goods-receipt", "leave", "onboarding", "backlink-checker",
 ].sort();
 
 const COMMON_INVARIANTS = [
@@ -363,6 +363,19 @@ const CURATED = {
       "THE TR NUMBER IS NEVER REISSUED: a gap in the series is the record that a trip was removed, and removal is by exact id only.",
       "NO SIBLING STORE IS OPENED and no profile is read: the log is this server's own book.",
       "Hosted since loop 35 at /mcp/mileage-log: the mcpb manifest carries remotes.json, and the contract suite asserts the two stay equal by value.",
+    ],
+  },
+  "backlink-checker": {
+    summary: "Backlink checks run live at call time: a referring page is fetched and read for links to a target domain, each link reported with its rel attribute (dofollow, nofollow, sponsored, ugc), anchor text and HTTP status; page-level robots guards (meta robots and X-Robots-Tag noindex/nofollow) are read and reported because a link on a noindexed page passes no value; link_audit runs a list of referring pages against one target and returns a per-URL table; robots_guard_check reads the guards alone. Nothing is stored: every check is a fresh fetch, and the only network call is the one URL per check it was asked for.",
+    storageFiles: [],
+    noStore: true,
+    caps: [
+      "NO STORE IS OPENED and no file is written: every check is a fresh fetch of the URL given. There is nothing to quarantine, nothing to lock.",
+      "`FREE_URL_LIMIT` = 3 URLs per link_audit call on the free tier; a Pro key lifts the cap. link_check and robots_guard_check are unlimited on both tiers.",
+      "Subdomains count as the target domain: www.target.example satisfies target.example; a different registrable domain does not.",
+      "A fetch timeout (10s) or non-HTML content type is reported per URL as a row with the reason, never as a thrown error and never silently dropped.",
+      "rel tokens are reported exactly as the page states them, including combined values (nofollow sponsored); the dofollow/nofollow verdict follows the nofollow family of tokens.",
+      "Hosted since loop S128_D at /mcp/backlink-checker: the mcpb manifest carries remotes.json.",
     ],
   },
   "goods-receipt": {

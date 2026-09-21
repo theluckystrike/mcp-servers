@@ -1,0 +1,43 @@
+{
+ "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/mcpb.manifest.schema.json",
+ "name": "backlink-checker",
+ "display_name": "Backlink Checker",
+ "version": "0.22.0",
+ "description": "Does a page link to your domain? Dofollow/nofollow, anchor, status, robots guards. Live, no store.",
+ "long_description": "Fetches a referring page live and reports whether it links to a target domain: dofollow or nofollow, anchor text, HTTP status and page-level robots guards (meta robots / X-Robots-Tag). link_check covers one URL, link_audit a list with a per-URL table (free tier: 3 URLs per call), robots_guard_check the guards alone. Every check is a fresh fetch; nothing is stored, nothing is sent anywhere except the URL you asked about.",
+ "server": {
+  "type": "node",
+  "entry_point": "servers/backlink-checker/dist/index.js",
+  "mcp_config": {
+   "command": "node",
+   "args": [
+    "${__dirname}/servers/backlink-checker/dist/index.js"
+   ]
+  },
+  "environment_variables": {
+   "MCP_LICENSE_KEY": {
+    "description": "Optional Pro license key (MCPL1....). Verified offline.",
+    "required": false
+   }
+  }
+ },
+ "tools": [
+  "link_check",
+  "link_audit",
+  "robots_guard_check",
+  "license_activate",
+  "license_status"
+ ],
+ "keywords": [
+  "backlinks",
+  "seo",
+  "link-building",
+  "dofollow",
+  "nofollow",
+  "link-audit"
+ ],
+ "license": "MIT",
+ "author": {
+  "name": "theluckystrike"
+ }
+}
