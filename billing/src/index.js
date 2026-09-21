@@ -848,7 +848,11 @@ async function createCheckout(env, host, productId, probeTag = "", tenant = "", 
     mode: "payment",
     ...checkoutLineItem(p),
     success_url: `https://${host}/success?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `https://${host}/`,
+    // S129: cancelling returns to the /buy intent page for the same product with the
+    // session id, so the buyer who abandons at the card step lands one button away from
+    // resuming the same Stripe session instead of on the storefront homepage (the old
+    // cancel_url), where the funnel restarted from zero and every session ended unpaid.
+    cancel_url: `https://${host}/buy/${encodeURIComponent(productId)}?src=checkout.cancel&session_id={CHECKOUT_SESSION_ID}`,
     // Off (audit): a discount field on a $19 one-time page invites the buyer to leave and
     // hunt for a code that does not exist. fulfillmentAllowed keeps its 100%-discount
     // branch for any code issued from the Dashboard against an older session.
@@ -1833,6 +1837,19 @@ const LIVE_TOOLS = {
         return new Response(null, { status: 303, headers: { Location: `https://${host}/s/${encodeURIComponent(PAGES[asked] ? asked : id)}`, "cache-control": "no-store", "x-mcp-buy": "scripted-ua-no-session" } });
       }
       if (method === "GET") {
+        // S129 resume: a buyer arriving from a Stripe cancel (or a bookmarked session
+        // link) carries session_id. If that session is still open and unpaid and belongs
+        // to this product, drop them straight back on Stripe's checkout - one step, no
+        // re-confirmation form - instead of making them restart the decision.
+        const resumeId = url.searchParams.get("session_id") || "";
+        if (resumeId.startsWith("cs_live_") || resumeId.startsWith("cs_test_")) {
+          try {
+            const s = await retrieveSession(env, resumeId);
+            if (s && s.metadata?.product === id && s.payment_status === "unpaid" && s.status === "open" && s.url) {
+              return new Response(null, { status: 303, headers: { Location: s.url, "cache-control": "no-store", "x-mcp-buy": "checkout-resumed" } });
+            }
+          } catch { /* stale/foreign session id: fall through to the intent page */ }
+        }
         return new Response(checkoutIntentPage(url, id, asked, tenant), {
           status: 200,
           headers: {
