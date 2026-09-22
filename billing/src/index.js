@@ -1408,6 +1408,28 @@ const worker = {
       return new Response(body, { headers: await contentHeaders(body) });
     }
 
+    if (path === "/suites/freelancer" && method === "GET") {
+      // positions_sweep.md #9: "free MCP servers for freelancers" has only thin directory
+      // rows competing — a dedicated hub page with the exact phrase owns it. Links the 8
+      // per-server pages from the R9 query-matched set so crawl equity flows to them.
+      const HUB_SERVERS = ["invoice", "time-tracker", "expense-tracker", "pdf", "docx", "kanban", "dunning-letters", "petty-cash"];
+      const rows = HUB_SERVERS.map((id) => {
+        const pg = PAGES[id];
+        return `<tr><td><a href="/s/${id}">${esc(pg ? pg.title : id)}</a></td><td>${esc(pg ? pg.description : "")}</td><td><a class="buy" href="/buy/${id}?src=store.suites.freelancer">$${PRODUCTS[resolveProductId(id)] ? PRODUCTS[resolveProductId(id)].usd : PRODUCTS.bundle.usd}</a></td></tr>`;
+      }).join("");
+      const hubBody = `<h1>Free MCP Servers for Freelancers — Invoices, Time Tracking, Expenses</h1>
+<p>Nine-plus tools for running a one-person business, every one a free remote MCP server you connect by URL — no install, no account. Works in Claude Desktop, Claude Code, Cursor, VS Code and any MCP client. ${SERVER_COUNT} servers in the full suite.</p>
+<table><thead><tr><th>Server</th><th>What it does</th><th>Pro</th></tr></thead><tbody>${rows}</tbody></table>
+<h2>Why free?</h2>
+<p>Every server has a free tier that is useful on its own — real limits, not a crippled demo. Pro keys are one-time payments, not subscriptions, when you outgrow them.</p>
+<h2>Connect one in 60 seconds</h2>
+<p>Open <a href="/mcp/connect">mcp.zovo.one/mcp/connect</a>, pick a server, paste its URL into your client's MCP config. That is the whole setup.</p>
+${relatedGuidesBlock("invoice")}`;
+      const hubMeta = `<meta name="description" content="Free remote MCP servers for freelancers: invoicing, time tracking, expenses, PDF, Word, kanban and more. Connect by URL in Claude, Cursor or any MCP client — no install."><link rel="canonical" href="https://mcp.zovo.one/suites/freelancer">${og("Free MCP Servers for Freelancers", "Invoicing, time tracking, expenses, PDF and more — free remote MCP servers, connect by URL, no install.", "https://mcp.zovo.one/suites/freelancer", "website")}`;
+      const hubHtml = page("Free MCP Servers for Freelancers | zovo.one", hubBody).replace("</title>", "</title>" + hubMeta);
+      return new Response(hubHtml, { headers: await contentHeaders(hubHtml) });
+    }
+
     if (path === "/changelog" && method === "GET") {
       const body = changelogPage();
       return new Response(body, { headers: await contentHeaders(body) });
@@ -1463,7 +1485,7 @@ ${(() => {
   const sib = Array.from({ length: Math.min(8, ids.length) }, (_, k) => ids[(start + k) % ids.length]);
   return `<h2>More servers</h2>\n<p>${sib.map((s) => `<a href="/s/${esc(s)}">${esc(PAGES[s] ? PAGES[s].title : s)}</a>`).join(" &middot; ")}</p>`;
 })()}`;
-      const html = page(pg.title + " for Claude, Cursor and any MCP client", body).replace("</title>", "</title>" + meta);
+      const html = page(pg.title + " | zovo.one", body).replace("</title>", "</title>" + meta);
       return new Response(html, { headers: await contentHeaders(html) });
     }
 
@@ -1616,7 +1638,7 @@ ${relatedGuidesBlock(slug)}`;
       // and it moves on its own each release instead of going stale like a constant. If no
       // release has a valid date, lastmod is omitted rather than fabricated.
       const siteDate = ((CHANGELOG && CHANGELOG.releases) || []).map((r) => r && r.date).find((d) => /^\d{4}-\d{2}-\d{2}$/.test(d || ""));
-      const urls = ["/", "/servers", "/mcp/connect", "/bundle", "/changelog", "/guides", "/compare", "/privacy", ...Object.keys(PAGES).map((k) => `/s/${k}`), ...Object.keys(GUIDES).map((k) => `/guides/${k}`), ...Object.keys(COMPARE).map((k) => `/compare/${k}`), ...setupUrls().filter((u) => u.split("/").filter(Boolean).length <= 2)].map((u) => `<url><loc>https://mcp.zovo.one${u}</loc>${siteDate ? `<lastmod>${siteDate}</lastmod>` : ""}</url>`).join("");
+      const urls = ["/", "/servers", "/mcp/connect", "/bundle", "/changelog", "/guides", "/compare", "/privacy", "/suites/freelancer", ...Object.keys(PAGES).map((k) => `/s/${k}`), ...Object.keys(GUIDES).map((k) => `/guides/${k}`), ...Object.keys(COMPARE).map((k) => `/compare/${k}`), ...setupUrls().filter((u) => u.split("/").filter(Boolean).length <= 2)].map((u) => `<url><loc>https://mcp.zovo.one${u}</loc>${siteDate ? `<lastmod>${siteDate}</lastmod>` : ""}</url>`).join("");
       return new Response(`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls}</urlset>`, { headers: { "content-type": "application/xml" } });
     }
     // MCP registry domain verification. The registry fetches
