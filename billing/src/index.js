@@ -714,6 +714,7 @@ function home() {
 <li>Install from a clone: <code>git clone</code>, <code>npm install</code>, <code>npm run build -w packages/mcp-license -w servers/&lt;server&gt;</code>, then point your client's <code>command</code> at <code>node</code> and its one argument at the built <code>dist/index.js</code>; exact steps for six clients are on the <a href="/setup">setup pages</a>.</li>
 <li>Install with npx, not yet: <code>npx -y @theluckystrike/mcp-&lt;server&gt;</code> is the line the day the npm publish lands. It returns 404 today, so do not paste it into a config expecting a server to start.</li>
 </ol>
+<p class="muted"><a href="/suites/freelancer">Freelancer suite hub</a>: invoicing, time tracking and expenses as one connected set.</p>
 <p class="muted">${NPM_PENDING_NOTE} The first three paths above need no npm.</p>
 <p>A Pro key removes the free-tier limits on any of these three paths: run <code>license_activate</code> with the key in Claude, set <code>MCP_LICENSE_KEY</code>, or paste the key where the connect-by-URL token goes. Keys verify offline; nothing is sent anywhere after checkout. Refunds within 14 days: support@zovo.one.</p>
 <h2>Measured, not claimed</h2>
@@ -815,6 +816,7 @@ export function bundlePage() {
 <li>Install from a clone: build once with <code>npm run build</code> and point each client entry's <code>command</code> at <code>node</code> and its one argument at that server's built <code>dist/index.js</code>; exact steps for six clients are on the <a href="/setup">setup pages</a>.</li>
 <li>Install with npx, not yet: <code>npx -y @theluckystrike/mcp-&lt;server&gt;</code> is the line the day the npm publish lands. It returns 404 today, so do not paste it into a config expecting a server to start.</li>
 </ol>
+<p class="muted"><a href="/suites/freelancer">Freelancer suite hub</a>: invoicing, time tracking and expenses as one connected set.</p>
 <p class="muted">${NPM_PENDING_NOTE} The first three paths above need no npm.</p>
 <h2>How the key arrives</h2>
 <p>Nothing is emailed. The key is rendered once, on the <code>/success</code> page right after payment; reloading that URL always shows the same key, and <code>/recover?session_id=...</code> gets it back from a lost tab. If you bought while connected through a hosted <code>mcp.zovo.one</code> endpoint, that endpoint's token is bound to Pro automatically, with nothing to paste there (docs/CHECKOUT_AUDIT.md).</p>
