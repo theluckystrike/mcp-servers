@@ -1,5 +1,5 @@
 {
-  "at": "2026-09-22T15:22:02.981Z",
+  "at": "2026-09-22T16:07:22.658Z",
   "published": [],
   "duplicate": [
     "io.github.theluckystrike/amortization@0.22.0",
@@ -27,6 +27,7 @@
     "io.github.theluckystrike/job-card@0.22.0",
     "io.github.theluckystrike/kanban-todo-tasks-projects-board@0.22.0",
     "io.github.theluckystrike/leave@0.22.0",
+    "io.github.theluckystrike/maintenance-log@0.22.0",
     "io.github.theluckystrike/mileage-log@0.22.0",
     "io.github.theluckystrike/office-suite-time-invoice-expense-excel-price@0.22.0",
     "io.github.theluckystrike/onboarding@0.22.0",
@@ -43,7 +44,8 @@
     "io.github.theluckystrike/supplier-list@0.22.0",
     "io.github.theluckystrike/time-tracker-timesheet-billable-hours@0.22.0",
     "io.github.theluckystrike/timezone-world-clock-meeting-slots-overlap-ics@0.22.0",
-    "io.github.theluckystrike/work-order@0.22.0"
+    "io.github.theluckystrike/work-order@0.22.0",
+    "io.github.theluckystrike/zip-archive-create-extract-bomb-guard@0.22.0"
   ],
   "failed": [
     {
@@ -57,19 +59,9 @@
       "error": "Publishing to https://registry.modelcontextprotocol.io...\nError: publish failed: server returned status 400: {\"title\":\"Bad Request\",\"status\":400,\"detail\":\"Failed to publish server\",\"errors\":[{\"message\":\"remote URL https://mcp.zovo.one/mcp/delivery-schedule is already used by server io.github.theluck"
     },
     {
-      "name": "io.github.theluckystrike/maintenance-log",
-      "version": "0.22.0",
-      "error": "Publishing to https://registry.modelcontextprotocol.io...\nError: publish failed: server returned status 400: {\"title\":\"Bad Request\",\"status\":400,\"detail\":\"Failed to publish server\",\"errors\":[{\"message\":\"failed to begin transaction: failed to connect to `user=app database=app`:\\n\\t34.118.233.51:5432 "
-    },
-    {
       "name": "io.github.theluckystrike/packing-list",
       "version": "0.22.0",
       "error": "Publishing to https://registry.modelcontextprotocol.io...\nError: publish failed: server returned status 400: {\"title\":\"Bad Request\",\"status\":400,\"detail\":\"Failed to publish server\",\"errors\":[{\"message\":\"remote URL https://mcp.zovo.one/mcp/packing-list is already used by server io.github.theluckystri"
-    },
-    {
-      "name": "io.github.theluckystrike/zip-archive-create-extract-bomb-guard",
-      "version": "0.22.0",
-      "error": "Publishing to https://registry.modelcontextprotocol.io...\nError: publish failed: server returned status 400: {\"title\":\"Bad Request\",\"status\":400,\"detail\":\"Failed to publish server\",\"errors\":[{\"message\":\"failed to begin transaction: failed to connect to `user=app database=app`:\\n\\t34.118.233.51:5432 "
     }
   ]
 }

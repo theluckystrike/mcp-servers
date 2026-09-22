@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-09-22T15:43:16.359Z",
+  "generated_at": "2026-09-22T16:12:40.689Z",
   "kpis": [
     {
       "cat": "Discovery",
       "name": "Registry entries at latest version",
-      "value": 36,
+      "value": 46,
       "target": 131,
       "unit": "of all published names",
       "how": "one exact GET /v0.1/servers/<name>/versions/latest per manifest name, compared with the release version. NOT a substring search: with 30,395 servers in the registry a search can push the exact match off page one, which is how this read 41 of 91 while a direct sample of 12 returned 12 of 12 present",
@@ -177,7 +177,7 @@
       "value": 31,
       "target": 200,
       "unit": "files (1h TTL)",
-      "how": "previous value; wrangler timed out at 2026-09-22T15:28:58.579Z",
+      "how": "previous value; wrangler timed out at 2026-09-22T16:09:48.733Z",
       "why": "A produced document is a completed job, not just a call.",
       "stale": true,
       "status": "progress"
@@ -245,7 +245,7 @@
     {
       "cat": "Reliability",
       "name": "Hosted tools/list latency p50",
-      "value": 90,
+      "value": 177,
       "target": 800,
       "unit": "ms",
       "lower_is_better": true,
@@ -342,7 +342,7 @@
     },
     "sales_charges_seen": 0,
     "remote_kv": {
-      "total": 7101,
+      "total": 7097,
       "by": {
         "anon": 134,
         "bind": 2,
@@ -351,7 +351,7 @@
         "meta": 403,
         "mint": 2,
         "oauth_client": 1,
-        "rl": 38,
+        "rl": 34,
         "shared": 2,
         "tok": 917
       },
@@ -6500,41 +6500,37 @@
         "mint:103.146.57.46:497246",
         "mint:79.98.32.35:497246",
         "oauth_client:59b7f877144e59d517f5d54bf1bacb85",
-        "rl:discovery:15.204.10.2:497245",
         "rl:discovery:15.204.10.2:497246",
         "rl:discovery:15.204.10.2:497247",
-        "rl:discovery:152.55.176.23:497245",
+        "rl:discovery:15.204.10.2:497248",
         "rl:discovery:152.55.176.23:497246",
         "rl:discovery:152.55.176.23:497247",
-        "rl:discovery:152.55.185.127:497245",
+        "rl:discovery:152.55.176.23:497248",
         "rl:discovery:152.55.185.127:497246",
         "rl:discovery:152.55.185.127:497247",
-        "rl:discovery:169.58.147.63:497245",
-        "rl:discovery:178.105.40.244:497245",
         "rl:discovery:178.105.40.244:497246",
-        "rl:discovery:185.43.233.32:497245",
-        "rl:discovery:20.187.56.229:497245",
-        "rl:discovery:20.36.27.247:497245",
+        "rl:discovery:178.105.40.244:497247",
+        "rl:discovery:185.43.233.32:497247",
+        "rl:discovery:2600:1f18:5a5b:3400:2f1e:c9d2:567b:76bc:497248",
         "rl:discovery:2607:5300:205:200::98ce:497246",
-        "rl:discovery:2a01:4f8:1c18:b3bf::1:497245",
         "rl:discovery:2a01:4f8:1c18:b3bf::1:497246",
-        "rl:discovery:2a01:4f9:3b:451d::2:497245",
+        "rl:discovery:2a01:4f8:1c18:b3bf::1:497247",
         "rl:discovery:2a01:4f9:3b:451d::2:497246",
         "rl:discovery:2a01:4f9:3b:451d::2:497247",
-        "rl:discovery:2a02:c207:2348:3823::1:497245",
+        "rl:discovery:2a01:4f9:3b:451d::2:497248",
         "rl:discovery:2a06:98c0:3600::103:497246",
         "rl:discovery:2a06:98c0:3600::103:497247",
+        "rl:discovery:37.27.190.158:497247",
         "rl:discovery:4.155.57.163:497247",
         "rl:discovery:40.125.79.190:497247",
-        "rl:discovery:40.160.65.14:497245",
         "rl:discovery:40.160.65.14:497246",
         "rl:discovery:40.160.65.14:497247",
-        "rl:discovery:40.65.113.141:497245",
+        "rl:discovery:40.160.65.14:497248",
         "rl:discovery:46.62.238.162:497246",
         "rl:discovery:46.62.238.162:497247",
-        "rl:discovery:52.151.21.25:497245",
         "rl:discovery:52.151.21.25:497247",
         "rl:discovery:54.166.145.172:497246",
+        "rl:lic:1b8b908b7f2c:497247",
         "rl:lic:8d4a3f9f7c15:497247",
         "rl:lic:c576bb2f1837:497247",
         "rl:lic:dc77ef13ddb7:497247",
@@ -7474,19 +7470,19 @@
       "probe_ids_excluded": 297
     },
     "latency": {
-      "p50_ms": 90,
+      "p50_ms": 177,
       "samples": [
-        1213,
-        90,
-        81
+        1271,
+        160,
+        177
       ]
     },
     "registry": {
-      "entries": 36,
+      "entries": 46,
       "names": 131,
       "release": "0.22.0",
-      "hosted": 34,
-      "unreachable": 35
+      "hosted": 43,
+      "unreachable": 2
     },
     "sitemap_urls": 207
   }
