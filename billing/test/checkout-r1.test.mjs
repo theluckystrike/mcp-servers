@@ -372,6 +372,31 @@ test("robots.txt keeps every crawler allowed", async () => {
   assert.match(txt, /Sitemap: https:\/\/mcp\.zovo\.one\/sitemap\.xml/);
 });
 
+test("GSC + Bing verification routes serve a code when one is supplied, and 404 when unset", async () => {
+  // The routes are deliberately gated on secrets because an engine only mints a code
+  // after a human starts the flow in its console. Default env (no codes) must 404 so the
+  // crawl path stays clean and engines fall back to DNS/meta; with a code they must serve.
+  const gscCode = "google1234567890abcdef";
+  const gscPage = await worker.fetch(new Request("https://mcp.zovo.one/google1234567890abcdef.html"), testEnv(), ctx);
+  assert.notEqual(gscPage.status, 200, "GSC route must 404 when no code is set");
+  const bingUnset = await worker.fetch(new Request("https://mcp.zovo.one/BingSiteAuth.xml"), testEnv(), ctx);
+  assert.notEqual(bingUnset.status, 200, "Bing route must 404 when no code is set");
+
+  const env2 = Object.assign(testEnv(), { GSC_VERIFY_HTML: gscCode, BING_VERIFY_CODE: "BING-CODE-ABC123" });
+  const gscOk = await worker.fetch(new Request("https://mcp.zovo.one/google1234567890abcdef.html"), env2, ctx);
+  assert.equal(gscOk.status, 200);
+  assert.match(gscOk.headers.get("content-type"), /text\/html/);
+  assert.match(await gscOk.text(), /1234567890abcdef/);
+  const bingOk = await worker.fetch(new Request("https://mcp.zovo.one/BingSiteAuth.xml"), env2, ctx);
+  assert.equal(bingOk.status, 200);
+  assert.match(bingOk.headers.get("content-type"), /application\/xml/);
+  assert.match(await bingOk.text(), /BING-CODE-ABC123/);
+  // A pending-/placeholder value must never be served as a real code.
+  const pending = Object.assign(testEnv(), { BING_VERIFY_CODE: "pending-human-set-it" });
+  const p = await worker.fetch(new Request("https://mcp.zovo.one/BingSiteAuth.xml"), pending, ctx);
+  assert.notEqual(p.status, 200, "a pending- placeholder must not serve");
+});
+
 test("llms.txt lists every product with a URL and a description", async () => {
   const res = await worker.fetch(new Request("https://mcp.zovo.one/llms.txt"), testEnv(), ctx);
   const txt = await res.text();

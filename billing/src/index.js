@@ -543,6 +543,77 @@ const HOME_DESCRIPTION =
 
 const SERVER_IDS = Object.keys(PRODUCTS).filter((id) => id !== "bundle");
 
+// One-line descriptions pulled from each server's README (servers/*/README.md), used by the
+// /servers landing page. Kept in sync with the fleet; each entry is the first descriptive
+// sentence of the README, trimmed to a single line. SEO_R1.
+const SERVER_DESCS = {
+  amortization: "Loan and lease schedules for an AI assistant.",
+  "asset-register": "Keep a fixed asset register and depreciate it on the rates the tax authorities actually publish.",
+  "backlink-checker": "Backlink checking for solopreneurs and small studios: does a page link to your domain, dofollow or nofollow, with anchor text and HTTP status.",
+  "bank-statement": "Export the CSV from your bank, say \"import this\", and the month is readable.",
+  barcode: "Make a QR code or a barcode in the conversation you are already in.",
+  "bill-of-sale": "Record a sale and get a signed-paper-ready bill of sale.",
+  "billing-docs": "Credit notes and purchase orders, on the same engine as your invoices.",
+  calendar: "Your calendar app can show you next Tuesday; this server tells you where your week actually went.",
+  "cash-book": "One double-entry ledger over the books you already keep.",
+  catalogue: "One price list and one rate card, kept where the invoice and the quote can both read them.",
+  "change-order": "Change orders against a quote or a work order, kept the way a variation is kept on site.",
+  checklist: "Checklists you build once and run many times, with the dated record of each run that somebody signs.",
+  clauses: "Say \"draft a service agreement for Beta Corp, 4,500 EUR, 14-day terms\" and get a real .docx built from your own clause library.",
+  "credit-note": "Credit notes (credit memos) for freelancers and small businesses, kept the way the paperwork keeps them.",
+  currency: "Ask your assistant what something is worth in another currency and get a real answer with a date on it.",
+  "delivery-schedule": "Dated deliverables against a quote, a work order or a change order.",
+  deposits: "Security and retainer deposits, held per client, on the same engine as your invoices.",
+  docx: "Say \"write a proposal for Beta Corp, checkout rebuild, 4,500 EUR, three phases\" and get a real .docx you can send.",
+  "dunning-letters": "Chase overdue invoices without losing the thread.",
+  "expense-tracker": "Say \"12.30 euros at Adobe, software, billable to Acme\" and it is logged, categorised, VAT-split and ready to rebill.",
+  "goods-receipt": "Purchase orders and the goods-receipt notes that receive them.",
+  image: "Say \"make these five photos 1200 pixels wide\" or \"shrink this screenshot and strip the GPS out of it\" and it happens, on your machine, in a second.",
+  invoice: "Create numbered invoices with tax lines and a real PDF from chat, no invoicing SaaS required.",
+  "job-card": "One card per job, the way the paper one on the dashboard works.",
+  kanban: "A task board for each of your projects, driven from your AI chat.",
+  leave: "Employee leave/PTO tracking for solopreneurs and small studios: who is off, when, and how many days each person has left.",
+  "maintenance-log": "A maintenance log for the workshop, rental flats, van fleet or studio: one local register of every piece of equipment and the work done on it.",
+  "mileage-log": "A mileage tracker that keeps the log freelancers need at tax time, the moment the drive happens instead of reconstructed from memory in April.",
+  "office-suite": "One install for the whole freelancer office.",
+  onboarding: "New-hire onboarding as role-based task templates, with a dated checklist per hire.",
+  "packing-list": "The packing slip for a shipment, and the answer to the only two questions anybody asks while packing one: what is in which box, and what is still to pack.",
+  pdf: "Small PDF jobs done in chat: merge, split, rotate, stamp PAID, add a footer, count pages and read text back.",
+  "per-diem": "Work out the daily travel allowance for a business trip on the rate tables the tax authorities actually publish, and keep the trips you priced.",
+  "petty-cash": "A petty cash float, kept the way the paperwork keeps it.",
+  "price-tracker": "Ask your assistant what something costs right now.",
+  "purchase-requisition": "Purchase requisitions you build once and run many times, with the dated record of each run that somebody signs.",
+  quotes: "Say \"quote Acme for 12 hours at 90 EUR plus a 300 EUR setup, 23% VAT, good for 14 days\" and get a numbered quote you can send today.",
+  recurring: "Say \"bill Acme 12 hours at 90 EUR on the 1st of every month\" once, and stop remembering it.",
+  resume: "Store your CV facts once, then tailor your resume to a posting and write the cover letter.",
+  "service-agreement": "An mcp service agreement writer for freelancers who are about to start client work and do not want to copy a rotting template off the internet again.",
+  spreadsheet: "Hand your AI assistant a spreadsheet and talk to it.",
+  "statement-of-account": "Send a client the one document that answers \"what do I actually owe you\".",
+  "supplier-list": "This is the mcp supplier list server: a supplier directory inside your MCP client that does not rot the way the spreadsheet does.",
+  "time-tracker": "Track billable time without leaving your AI chat.",
+  timezone: "Work with clients in other countries without doing time zone arithmetic in your head.",
+  "work-order": "Job orders for trades and field work, kept the way a job card is kept.",
+  zip: "Make a zip, look inside one, and unpack one, in the conversation you are already in.",
+};
+
+// Human-readable landing page listing every server with a one-line description from its README.
+// Served at /servers (SEO_R1). The root / homepage remains the commercial entry point; this page
+// is the crawlable, description-rich index of the whole fleet.
+function serversPage() {
+  const rows = Object.keys(SERVER_DESCS).sort().map((id) =>
+    `<tr><td><a href="/s/${id}">${esc(id)}</a></td><td>${esc(SERVER_DESCS[id])}</td></tr>`
+  ).join("");
+  const body = `
+<h1>All ${Object.keys(SERVER_DESCS).length} MCP servers</h1>
+<p class="muted">Every server in the mcp.zovo.one fleet, with a one-line description from its README. Each has a free tier that needs no key — connect by URL in under a minute.</p>
+<table>
+<thead><tr><th>Server</th><th>What it does</th></tr></thead>
+<tbody>${rows}</tbody>
+</table>
+<p><a href="/">Back to the homepage</a></p>`;
+  return page("All MCP servers on mcp.zovo.one", body);
+}
+
 function home() {
   // One row per server directory, not per priced product: office-suite is a server with no
   // price of its own and it belongs in a list of what you get. The URL column carries the
@@ -1325,6 +1396,13 @@ const worker = {
       return new Response(body, { headers: await contentHeaders(body) });
     }
 
+    if (path === "/servers" && method === "GET") {
+      // SEO_R1: crawlable, description-rich index of the whole fleet. Additive route; does
+      // not touch /mcp* (served by the remote worker) or any MCP protocol path.
+      const body = serversPage();
+      return new Response(body, { headers: await contentHeaders(body) });
+    }
+
     if (path === "/bundle" && method === "GET") {
       const body = bundlePage();
       return new Response(body, { headers: await contentHeaders(body) });
@@ -1538,7 +1616,7 @@ ${relatedGuidesBlock(slug)}`;
       // and it moves on its own each release instead of going stale like a constant. If no
       // release has a valid date, lastmod is omitted rather than fabricated.
       const siteDate = ((CHANGELOG && CHANGELOG.releases) || []).map((r) => r && r.date).find((d) => /^\d{4}-\d{2}-\d{2}$/.test(d || ""));
-      const urls = ["/", "/mcp/connect", "/bundle", "/changelog", "/guides", "/compare", "/privacy", ...Object.keys(PAGES).map((k) => `/s/${k}`), ...Object.keys(GUIDES).map((k) => `/guides/${k}`), ...Object.keys(COMPARE).map((k) => `/compare/${k}`), ...setupUrls().filter((u) => u.split("/").filter(Boolean).length <= 2)].map((u) => `<url><loc>https://mcp.zovo.one${u}</loc>${siteDate ? `<lastmod>${siteDate}</lastmod>` : ""}</url>`).join("");
+      const urls = ["/", "/servers", "/mcp/connect", "/bundle", "/changelog", "/guides", "/compare", "/privacy", ...Object.keys(PAGES).map((k) => `/s/${k}`), ...Object.keys(GUIDES).map((k) => `/guides/${k}`), ...Object.keys(COMPARE).map((k) => `/compare/${k}`), ...setupUrls().filter((u) => u.split("/").filter(Boolean).length <= 2)].map((u) => `<url><loc>https://mcp.zovo.one${u}</loc>${siteDate ? `<lastmod>${siteDate}</lastmod>` : ""}</url>`).join("");
       return new Response(`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls}</urlset>`, { headers: { "content-type": "application/xml" } });
     }
     // MCP registry domain verification. The registry fetches
@@ -1558,6 +1636,23 @@ ${relatedGuidesBlock(slug)}`;
     const keyFile = path.match(/^\/([0-9a-f]{32})\.txt$/);
     if (keyFile && SITE_KEY_FILES.has(keyFile[1])) {
       return new Response(keyFile[1], { headers: { "content-type": "text/plain; charset=utf-8", "cache-control": "public, max-age=3600" } });
+    }
+    // GSC + Bing domain verification, served engine-shaped. GSC offers HTML-file
+    // verification: the assigned code is the filename (google<code>.html) and the
+    // body is a single HTML comment; Googlebot reads it byte for byte. Bing offers
+    // BingSiteAuth.xml (root element `<meta name="msvalidate.01">`) or a meta tag.
+    // Neither engine mints a code until a human logs into the console and starts the
+    // flow, so this is deliberately gated. Codes are supplied as secrets
+    // (GSC_VERIFY_HTML, BING_VERIFY_CODE); until a human sets them these routes 404,
+    // which keeps the crawl path clean and lets engines fall back to DNS/meta.
+    // A "pending-" placeholder never leaks: the guard rejects it.
+    if ((env.GSC_VERIFY_HTML || "").startsWith("google") && env.GSC_VERIFY_HTML !== "google" && path === "/google" + env.GSC_VERIFY_HTML.slice("google".length) + ".html") {
+      return new Response(`google-site-verification: google${env.GSC_VERIFY_HTML.slice("google".length)}\n`, { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=3600" } });
+    }
+    if ((env.BING_VERIFY_CODE || "").length && !(env.BING_VERIFY_CODE || "").startsWith("pending-") && path === "/BingSiteAuth.xml") {
+      // The accepted minimal Bing root: an <appSpecific><meta name="msvalidate.01"
+      // content="<CODE>"/></appSpecific> document. Exact shape is locked at click-through.
+      return new Response(`<appSpecific><meta name="msvalidate.01" content="${env.BING_VERIFY_CODE}"/></appSpecific>`, { headers: { "content-type": "application/xml", "cache-control": "public, max-age=3600" } });
     }
     if (path === "/robots.txt") {
       return new Response("User-agent: *\nAllow: /\nDisallow: /buy/\nDisallow: /success\nDisallow: /recover\nDisallow: /verify\nDisallow: /bound\nSitemap: https://mcp.zovo.one/sitemap.xml\n", { headers: { "content-type": "text/plain" } });

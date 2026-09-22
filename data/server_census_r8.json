@@ -1,0 +1,284 @@
+[
+  {
+    "name": "amortization",
+    "description": "Loan and lease schedules: payment, interest, early settlement and the journal, to the minor unit.",
+    "tools": 7,
+    "path": "/Users/mike/mcp-servers/servers/amortization"
+  },
+  {
+    "name": "asset-register",
+    "description": "Fixed assets and depreciation from bundled Polish KST, HMRC and IRS MACRS tables.",
+    "tools": 7,
+    "path": "/Users/mike/mcp-servers/servers/asset-register"
+  },
+  {
+    "name": "backlink-checker",
+    "description": "Does a page link to your domain? Dofollow/nofollow, anchor, status, robots guards. Live, no store.",
+    "tools": 5,
+    "path": "/Users/mike/mcp-servers/servers/backlink-checker"
+  },
+  {
+    "name": "bank-statement",
+    "description": "Import a bank CSV, categorise it, summarise it per currency and reconcile it against your expenses.",
+    "tools": 10,
+    "path": "/Users/mike/mcp-servers/servers/bank-statement"
+  },
+  {
+    "name": "barcode",
+    "description": "QR codes and barcodes offline: WiFi, vCards, SEPA payment codes, Code 128, EAN-13, SVG or PNG.",
+    "tools": 8,
+    "path": "/Users/mike/mcp-servers/servers/barcode"
+  },
+  {
+    "name": "bill-of-sale",
+    "description": "Bills of sale for equipment, vehicles and stock: draft, finalize, print with signature lines.",
+    "tools": 8,
+    "path": "/Users/mike/mcp-servers/servers/bill-of-sale"
+  },
+  {
+    "name": "billing-docs",
+    "description": "Credit notes against your invoices and purchase orders to suppliers, with VAT and A4 PDFs.",
+    "tools": 14,
+    "path": "/Users/mike/mcp-servers/servers/billing-docs"
+  },
+  {
+    "name": "calendar",
+    "description": "Read the .ics your calendar exports: events in a window, free-busy, double bookings, export.",
+    "tools": 10,
+    "path": "/Users/mike/mcp-servers/servers/calendar"
+  },
+  {
+    "name": "cash-book",
+    "description": "One double-entry ledger derived from your invoices, bank, expenses, deposits and assets.",
+    "tools": 7,
+    "path": "/Users/mike/mcp-servers/servers/cash-book"
+  },
+  {
+    "name": "catalogue",
+    "description": "A price list and rate card the quotes and invoice servers read by SKU.",
+    "tools": 10,
+    "path": "/Users/mike/mcp-servers/servers/catalogue"
+  },
+  {
+    "name": "change-order",
+    "description": "Change orders against a quote or work order: deltas, approval, running contract value.",
+    "tools": 9,
+    "path": "/Users/mike/mcp-servers/servers/change-order"
+  },
+  {
+    "name": "checklist",
+    "description": "Reusable checklists and dated runs of them: pass, fail, not applicable, and a sign-off.",
+    "tools": 14,
+    "path": "/Users/mike/mcp-servers/servers/checklist"
+  },
+  {
+    "name": "clauses",
+    "description": "A personal library of reusable contract and proposal clauses, assembled into a real Word .docx.",
+    "tools": 10,
+    "path": "/Users/mike/mcp-servers/servers/clauses"
+  },
+  {
+    "name": "credit-note",
+    "description": "Credit notes against an invoice or standalone: drafts, finalization, rendering, totals.",
+    "tools": 8,
+    "path": "/Users/mike/mcp-servers/servers/credit-note"
+  },
+  {
+    "name": "currency",
+    "description": "Convert currencies on the daily European Central Bank reference rates. No API key, no signup.",
+    "tools": 8,
+    "path": "/Users/mike/mcp-servers/servers/currency"
+  },
+  {
+    "name": "delivery-schedule",
+    "description": "Dated deliverables against a quote or work order: due dates, sign-off, what is late, milestones.",
+    "tools": 10,
+    "path": "/Users/mike/mcp-servers/servers/delivery-schedule"
+  },
+  {
+    "name": "deposits",
+    "description": "Security and retainer deposits per client: hold, apply to an invoice, refund, statement.",
+    "tools": 9,
+    "path": "/Users/mike/mcp-servers/servers/deposits"
+  },
+  {
+    "name": "docx",
+    "description": "Create real Word .docx files from your AI chat: proposals, quotes, contracts, statements of work.",
+    "tools": 9,
+    "path": "/Users/mike/mcp-servers/servers/docx"
+  },
+  {
+    "name": "dunning-letters",
+    "description": "Chase overdue invoices: reminder 1, reminder 2, final notice, escalation dates, aging.",
+    "tools": 9,
+    "path": "/Users/mike/mcp-servers/servers/dunning-letters"
+  },
+  {
+    "name": "expense-tracker",
+    "description": "Log expenses, receipts and mileage from chat: auto-categorise, split VAT, summarise, export, rebill.",
+    "tools": 12,
+    "path": "/Users/mike/mcp-servers/servers/expense-tracker"
+  },
+  {
+    "name": "goods-receipt",
+    "description": "Goods receipt notes vs purchase orders: tolerances, damaged/short units, CSV export.",
+    "tools": 9,
+    "path": "/Users/mike/mcp-servers/servers/goods-receipt"
+  },
+  {
+    "name": "image",
+    "description": "Resize, convert, compress, crop, thumbnail and watermark images from your AI chat.",
+    "tools": 10,
+    "path": "/Users/mike/mcp-servers/servers/image"
+  },
+  {
+    "name": "invoice",
+    "description": "Create PDF invoices from your AI chat: clients, numbering, VAT, overdue reports. All data is local.",
+    "tools": 11,
+    "path": "/Users/mike/mcp-servers/servers/invoice"
+  },
+  {
+    "name": "job-card",
+    "description": "Job cards for trades and field service: hours and materials per job, open to invoiced.",
+    "tools": 9,
+    "path": "/Users/mike/mcp-servers/servers/job-card"
+  },
+  {
+    "name": "kanban",
+    "description": "A local task board per project: columns, due dates, estimates, priorities, overdue, weekly review.",
+    "tools": 15,
+    "path": "/Users/mike/mcp-servers/servers/kanban"
+  },
+  {
+    "name": "leave",
+    "description": "Employee leave and PTO requests: balances, approvals, calendars, and who-is-out summaries.",
+    "tools": 10,
+    "path": "/Users/mike/mcp-servers/servers/leave"
+  },
+  {
+    "name": "maintenance-log",
+    "description": "Equipment maintenance log: assets, service entries with costs, and a due report from stored dates.",
+    "tools": 6,
+    "path": "/Users/mike/mcp-servers/servers/maintenance-log"
+  },
+  {
+    "name": "mileage-log",
+    "description": "Mileage log for deductible driving: trips, effective-dated rates, summaries and CSV export.",
+    "tools": 7,
+    "path": "/Users/mike/mcp-servers/servers/mileage-log"
+  },
+  {
+    "name": "office-suite",
+    "description": "One MCP server for the whole freelancer office: time tracking, price watching, spreadsheets and PDF invoicing. Proxies four servers behind one install.",
+    "tools": 0,
+    "path": "/Users/mike/mcp-servers/servers/office-suite"
+  },
+  {
+    "name": "onboarding",
+    "description": "New-hire onboarding: role-based task templates, day-one to day-ninety checklists, completion.",
+    "tools": 7,
+    "path": "/Users/mike/mcp-servers/servers/onboarding"
+  },
+  {
+    "name": "packing-list",
+    "description": "Packing slips: cartons, contents, weights, chargeable weight and what is still to pack.",
+    "tools": 12,
+    "path": "/Users/mike/mcp-servers/servers/packing-list"
+  },
+  {
+    "name": "pdf",
+    "description": "Merge, split, extract, rotate, reorder and stamp PDF pages from your AI chat, all offline.",
+    "tools": 10,
+    "path": "/Users/mike/mcp-servers/servers/pdf"
+  },
+  {
+    "name": "per-diem",
+    "description": "Daily travel allowances from bundled public rate tables: Poland, HMRC and GSA CONUS.",
+    "tools": 7,
+    "path": "/Users/mike/mcp-servers/servers/per-diem"
+  },
+  {
+    "name": "petty-cash",
+    "description": "A petty cash float on the imprest system: vouchers, reconciliation and the replenishment.",
+    "tools": 7,
+    "path": "/Users/mike/mcp-servers/servers/petty-cash"
+  },
+  {
+    "name": "price-tracker",
+    "description": "Check a shop page price now, keep a watch list, see history and target alerts. All data stays local.",
+    "tools": 10,
+    "path": "/Users/mike/mcp-servers/servers/price-tracker"
+  },
+  {
+    "name": "purchase-requisition",
+    "description": "Reusable purchase-requisitions and dated runs of them: pass, fail, not applicable, and a sign-off.",
+    "tools": 14,
+    "path": "/Users/mike/mcp-servers/servers/purchase-requisition"
+  },
+  {
+    "name": "quotes",
+    "description": "Quotes and estimates: VAT line items, a validity date, an A4 PDF, accept makes an invoice.",
+    "tools": 10,
+    "path": "/Users/mike/mcp-servers/servers/quotes"
+  },
+  {
+    "name": "recurring",
+    "description": "Recurring invoices on a schedule: define once, generate the due PDFs, forecast revenue.",
+    "tools": 12,
+    "path": "/Users/mike/mcp-servers/servers/recurring"
+  },
+  {
+    "name": "resume",
+    "description": "Tailor a resume and write a cover letter as real Word .docx files from facts you stored once.",
+    "tools": 8,
+    "path": "/Users/mike/mcp-servers/servers/resume"
+  },
+  {
+    "name": "service-agreement",
+    "description": "Service agreements for freelancers: scope, deliverables, rate, termination and liability caps.",
+    "tools": 7,
+    "path": "/Users/mike/mcp-servers/servers/service-agreement"
+  },
+  {
+    "name": "spreadsheet",
+    "description": "Open, inspect, filter, edit and convert xlsx and csv files from your AI chat. Processing is local.",
+    "tools": 8,
+    "path": "/Users/mike/mcp-servers/servers/spreadsheet"
+  },
+  {
+    "name": "statement-of-account",
+    "description": "Statements of account, aging buckets and dunning letters from your invoices.",
+    "tools": 6,
+    "path": "/Users/mike/mcp-servers/servers/statement-of-account"
+  },
+  {
+    "name": "supplier-list",
+    "description": "A supplier directory that does not rot: contacts, terms, lead times, review dates.",
+    "tools": 8,
+    "path": "/Users/mike/mcp-servers/servers/supplier-list"
+  },
+  {
+    "name": "time-tracker",
+    "description": "Track billable time from your AI chat: timers, entries, reports, CSV export. All data stays local.",
+    "tools": 12,
+    "path": "/Users/mike/mcp-servers/servers/time-tracker"
+  },
+  {
+    "name": "timezone",
+    "description": "Time zone conversion, meeting-slot finding across countries, DST checks and .ics invites. All.",
+    "tools": 9,
+    "path": "/Users/mike/mcp-servers/servers/timezone"
+  },
+  {
+    "name": "work-order",
+    "description": "Job orders for trades and field work: parts, labour, status, completion report, invoice payload.",
+    "tools": 10,
+    "path": "/Users/mike/mcp-servers/servers/work-order"
+  },
+  {
+    "name": "zip",
+    "description": "Create, inspect and extract zip archives offline, with traversal, symlink and zip-bomb guards.",
+    "tools": 7,
+    "path": "/Users/mike/mcp-servers/servers/zip"
+  }
+]
