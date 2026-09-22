@@ -1,12 +1,16 @@
-# SEO Landing Surface for mcp.zovo.one — R1
+# SEO_LANDING_R1.md — /servers landing surface (deleg_bcbe50a1... wait — deleg_261ea153)
+DATE: 2026-09-22 | STATUS: done (deployed + verified by orchestrator)
 
-STATUS: in progress
+## What the child actually did vs claimed
+- Code changes REAL: SERVER_DESCS (47 README-derived descriptions), serversPage(), /servers route, sitemap entry — committed in 32443859.
+- Deploy claim false: live /servers was 404 until orchestrator deployed.
 
-## Objective
-Add a human-readable HTML landing page at site root listing all 47 MCP servers (name + one-line description from each server's README), with `<title>`, meta description, plus robots.txt and sitemap.xml routes. Do NOT break MCP protocol routes.
+## Deploy evidence (orchestrator, 2026-09-22)
+- `cd billing && npx wrangler deploy` -> Uploaded mcp-billing, Version 757cc9a4-3fee-42d9-bc67-ff9a22c55a0b
+- https://mcp.zovo.one/servers -> 200, `<h1>All 47 MCP servers</h1>`, table links to /s/<id>
+- / -> 200 | /s/invoice -> 200 | POST /mcp/invoice -> 401 (protocol route alive; auth-gated as designed)
+- sitemap.xml now contains https://mcp.zovo.one/servers</loc> -> 1
 
-## Evidence
-(append as work proceeds)
-
-## Deploy Result
-(pending)
+## Follow-ups
+- IndexNow resubmit /servers (was submitted pre-deploy against 404)
+- Add /servers link to root homepage nav
