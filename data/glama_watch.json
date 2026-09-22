@@ -1,5 +1,5 @@
 {
-  "at": "2026-09-22T09:52:02.292Z",
+  "at": "2026-09-22T15:46:53.993Z",
   "checked": 51,
   "listed": [
     "mcp-bill-of-sale",
@@ -103,9 +103,9 @@
     },
     "mcp-leave": {
       "status": 200,
-      "bytes": 2880,
-      "is_placeholder": true,
-      "safe_to_publish": false,
+      "bytes": 4526,
+      "is_placeholder": false,
+      "safe_to_publish": true,
       "url": "https://glama.ai/mcp/servers/theluckystrike/mcp-leave/badges/score.svg"
     },
     "mcp-maintenance-log": {
@@ -145,9 +145,9 @@
     },
     "mcp-purchase-requisition": {
       "status": 200,
-      "bytes": 2880,
-      "is_placeholder": true,
-      "safe_to_publish": false,
+      "bytes": 4556,
+      "is_placeholder": false,
+      "safe_to_publish": true,
       "url": "https://glama.ai/mcp/servers/theluckystrike/mcp-purchase-requisition/badges/score.svg"
     },
     "mcp-service-agreement": {
@@ -176,7 +176,7 @@
   "negative_control": "glama-watch-negative-control-does-not-exist",
   "negative_control_badge_bytes": 2880,
   "connector_namespace": "io.github.theluckystrike",
-  "connector_count": 40,
+  "connector_count": 41,
   "connector_count_note": "Cumulative across runs. The anonymous listing page renders at most 20 rows and rotates which 20, so a single page is a floor, not a total.",
   "connectors_on_listing_page": 20,
   "connectors_listed": [
@@ -200,6 +200,7 @@
     "expense-tracker-receipts-mileage",
     "goods-receipt",
     "image-resize-convert-compress-watermark",
+    "invoice-pdf-billing-generator",
     "job-card",
     "kanban-todo-tasks-projects-board",
     "leave",
@@ -374,7 +375,7 @@
       "markup": "2026-09-tdqs",
       "observed_at": "2026-09-12T03:31:50.267880Z",
       "observed_release_version": "0.21.0",
-      "record_touched_at": "2026-09-22T07:40:18.873911Z",
+      "record_touched_at": "2026-09-22T11:30:31.599152Z",
       "claimed": true,
       "derived": {
         "tool_mean": 4.16,
@@ -768,7 +769,7 @@
       "markup": "2026-09-tdqs",
       "observed_at": "2026-09-12T03:31:53.419946Z",
       "observed_release_version": "0.21.0",
-      "record_touched_at": "2026-09-22T07:40:18.873911Z",
+      "record_touched_at": "2026-09-22T14:30:24.645900Z",
       "claimed": true,
       "derived": {
         "tool_mean": 4.25,
@@ -1132,7 +1133,7 @@
     "mcp-leave": {
       "surface": "server",
       "tools": [],
-      "record_touched_at": "2026-09-22T07:35:09.267803Z",
+      "record_touched_at": "2026-09-22T10:00:57.896764Z",
       "claimed": true,
       "derived": {}
     },
@@ -2924,7 +2925,7 @@
       "markup": "2026-09-tdqs",
       "observed_at": "2026-09-09T10:57:35.511131Z",
       "observed_release_version": "0.20.0",
-      "record_touched_at": "2026-09-21T07:25:14.046469Z",
+      "record_touched_at": "2026-09-22T12:55:06.681253Z",
       "claimed": true,
       "derived": {
         "tool_mean": 4.1,
@@ -3069,7 +3070,7 @@
       "markup": "2026-09-tdqs",
       "observed_at": "2026-09-22T07:41:50.628522Z",
       "observed_release_version": "0.22.0",
-      "record_touched_at": "2026-09-22T07:45:54.441749Z",
+      "record_touched_at": "2026-09-22T13:45:33.038581Z",
       "claimed": true,
       "derived": {
         "tool_mean": 4.144,
