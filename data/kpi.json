@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-22T17:31:52.145Z",
+  "generated_at": "2026-09-22T17:57:51.869Z",
   "kpis": [
     {
       "cat": "Discovery",
@@ -177,7 +177,7 @@
       "value": 31,
       "target": 200,
       "unit": "files (1h TTL)",
-      "how": "previous value; wrangler timed out at 2026-09-22T17:30:47.968Z",
+      "how": "previous value; wrangler timed out at 2026-09-22T17:56:55.259Z",
       "why": "A produced document is a completed job, not just a call.",
       "stale": true,
       "status": "progress"
@@ -245,7 +245,7 @@
     {
       "cat": "Reliability",
       "name": "Hosted tools/list latency p50",
-      "value": 199,
+      "value": 81,
       "target": 800,
       "unit": "ms",
       "lower_is_better": true,
@@ -342,7 +342,7 @@
     },
     "sales_charges_seen": 0,
     "remote_kv": {
-      "total": 7101,
+      "total": 7099,
       "by": {
         "anon": 134,
         "bind": 2,
@@ -350,7 +350,7 @@
         "lic": 4024,
         "meta": 403,
         "oauth_client": 1,
-        "rl": 40,
+        "rl": 38,
         "shared": 2,
         "tok": 917
       },
@@ -6500,30 +6500,27 @@
         "rl:discovery:128.85.81.45:497248",
         "rl:discovery:15.204.10.2:497248",
         "rl:discovery:15.204.10.2:497249",
-        "rl:discovery:152.55.176.23:497247",
         "rl:discovery:152.55.176.23:497248",
         "rl:discovery:152.55.176.23:497249",
         "rl:discovery:152.55.184.250:497249",
-        "rl:discovery:178.105.40.244:497247",
-        "rl:discovery:185.43.233.32:497247",
+        "rl:discovery:163.180.160.171:497249",
+        "rl:discovery:185.43.233.32:497249",
         "rl:discovery:20.187.56.229:497249",
         "rl:discovery:20.191.96.63:497248",
+        "rl:discovery:20.36.12.108:497249",
+        "rl:discovery:2400:8500:2002:3169:160:251:184:91:497249",
         "rl:discovery:2600:1f18:5a5b:3400:2f1e:c9d2:567b:76bc:497248",
         "rl:discovery:2607:5300:205:200::98ce:497249",
-        "rl:discovery:2a01:4f8:1c18:b3bf::1:497247",
-        "rl:discovery:2a01:4f9:3b:451d::2:497247",
         "rl:discovery:2a01:4f9:3b:451d::2:497248",
         "rl:discovery:2a01:4f9:3b:451d::2:497249",
         "rl:discovery:2a02:c207:2348:3823::1:497248",
-        "rl:discovery:2a06:98c0:3600::103:497247",
         "rl:discovery:2a06:98c0:3600::103:497248",
-        "rl:discovery:37.27.190.158:497247",
+        "rl:discovery:2a06:98c0:3600::103:497249",
         "rl:discovery:37.27.190.158:497249",
         "rl:discovery:4.155.106.156:497248",
         "rl:discovery:4.155.57.163:497248",
         "rl:discovery:4.155.57.163:497249",
         "rl:discovery:4.155.83.56:497248",
-        "rl:discovery:40.160.65.14:497247",
         "rl:discovery:40.160.65.14:497248",
         "rl:discovery:40.160.65.14:497249",
         "rl:discovery:40.65.100.215:497249",
@@ -6536,6 +6533,7 @@
         "rl:discovery:82.157.131.225:497248",
         "rl:lic:01955a93fc8b:497248",
         "rl:lic:2d7ff15fe890:497248",
+        "rl:lic:37bfaaa47f50:497249",
         "rl:lic:5f7bafaa3e6b:497249",
         "shared:ecb:daily",
         "shared:ecb:history",
@@ -7473,11 +7471,11 @@
       "probe_ids_excluded": 297
     },
     "latency": {
-      "p50_ms": 199,
+      "p50_ms": 81,
       "samples": [
-        835,
-        199,
-        76
+        1074,
+        81,
+        80
       ]
     },
     "registry": {
