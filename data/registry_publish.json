@@ -1,8 +1,75 @@
 {
-  "at": "2026-09-22T09:47:49.478Z",
+  "at": "2026-09-22T15:22:02.981Z",
   "published": [],
   "duplicate": [
-    "io.github.theluckystrike/time-tracker-timesheet-billable-hours@0.22.0"
+    "io.github.theluckystrike/amortization@0.22.0",
+    "io.github.theluckystrike/asset-register@0.22.0",
+    "io.github.theluckystrike/backlink-checker@0.22.0",
+    "io.github.theluckystrike/bank-statement-csv-categorize-reconcile-ledger@0.22.0",
+    "io.github.theluckystrike/barcode-qr-code-sepa-payment-ean13@0.22.0",
+    "io.github.theluckystrike/bill-of-sale@0.22.0",
+    "io.github.theluckystrike/billing-docs-credit-notes-purchase-orders@0.22.0",
+    "io.github.theluckystrike/calendar-ics-reader-events-freebusy-conflicts@0.22.0",
+    "io.github.theluckystrike/cash-book@0.22.0",
+    "io.github.theluckystrike/catalogue@0.22.0",
+    "io.github.theluckystrike/change-order@0.22.0",
+    "io.github.theluckystrike/checklist@0.22.0",
+    "io.github.theluckystrike/contract-clause-library-proposal-template-docx@0.22.0",
+    "io.github.theluckystrike/currency-converter-ecb-rates-daily-keyless@0.22.0",
+    "io.github.theluckystrike/deposits@0.22.0",
+    "io.github.theluckystrike/docx-document-generator-proposal-contract-markdown@0.22.0",
+    "io.github.theluckystrike/dunning-letters@0.22.0",
+    "io.github.theluckystrike/excel-spreadsheet-xlsx-csv@0.22.0",
+    "io.github.theluckystrike/expense-tracker-receipts-mileage@0.22.0",
+    "io.github.theluckystrike/goods-receipt@0.22.0",
+    "io.github.theluckystrike/image-resize-convert-compress-watermark@0.22.0",
+    "io.github.theluckystrike/invoice-pdf-billing-generator@0.22.0",
+    "io.github.theluckystrike/job-card@0.22.0",
+    "io.github.theluckystrike/kanban-todo-tasks-projects-board@0.22.0",
+    "io.github.theluckystrike/leave@0.22.0",
+    "io.github.theluckystrike/mileage-log@0.22.0",
+    "io.github.theluckystrike/office-suite-time-invoice-expense-excel-price@0.22.0",
+    "io.github.theluckystrike/onboarding@0.22.0",
+    "io.github.theluckystrike/pdf-merge-split-stamp-extract-pages@0.22.0",
+    "io.github.theluckystrike/per-diem@0.22.0",
+    "io.github.theluckystrike/petty-cash@0.22.0",
+    "io.github.theluckystrike/price-tracker-drop-alert-watch@0.22.0",
+    "io.github.theluckystrike/purchase-requisition@0.22.0",
+    "io.github.theluckystrike/quotes-estimates-proposals-vat-win-rate@0.22.0",
+    "io.github.theluckystrike/recurring-invoice-scheduler-subscription-billing-due-reminders@0.22.0",
+    "io.github.theluckystrike/resume-cover-letter-docx-generator@0.22.0",
+    "io.github.theluckystrike/service-agreement@0.22.0",
+    "io.github.theluckystrike/statement-of-account@0.22.0",
+    "io.github.theluckystrike/supplier-list@0.22.0",
+    "io.github.theluckystrike/time-tracker-timesheet-billable-hours@0.22.0",
+    "io.github.theluckystrike/timezone-world-clock-meeting-slots-overlap-ics@0.22.0",
+    "io.github.theluckystrike/work-order@0.22.0"
   ],
-  "failed": []
+  "failed": [
+    {
+      "name": "io.github.theluckystrike/credit-note",
+      "version": "0.22.0",
+      "error": "Publishing to https://registry.modelcontextprotocol.io...\nError: publish failed: server returned status 400: {\"title\":\"Bad Request\",\"status\":400,\"detail\":\"Failed to publish server\",\"errors\":[{\"message\":\"remote URL https://mcp.zovo.one/mcp/credit-note is already used by server io.github.theluckystrik"
+    },
+    {
+      "name": "io.github.theluckystrike/delivery-schedule",
+      "version": "0.22.0",
+      "error": "Publishing to https://registry.modelcontextprotocol.io...\nError: publish failed: server returned status 400: {\"title\":\"Bad Request\",\"status\":400,\"detail\":\"Failed to publish server\",\"errors\":[{\"message\":\"remote URL https://mcp.zovo.one/mcp/delivery-schedule is already used by server io.github.theluck"
+    },
+    {
+      "name": "io.github.theluckystrike/maintenance-log",
+      "version": "0.22.0",
+      "error": "Publishing to https://registry.modelcontextprotocol.io...\nError: publish failed: server returned status 400: {\"title\":\"Bad Request\",\"status\":400,\"detail\":\"Failed to publish server\",\"errors\":[{\"message\":\"failed to begin transaction: failed to connect to `user=app database=app`:\\n\\t34.118.233.51:5432 "
+    },
+    {
+      "name": "io.github.theluckystrike/packing-list",
+      "version": "0.22.0",
+      "error": "Publishing to https://registry.modelcontextprotocol.io...\nError: publish failed: server returned status 400: {\"title\":\"Bad Request\",\"status\":400,\"detail\":\"Failed to publish server\",\"errors\":[{\"message\":\"remote URL https://mcp.zovo.one/mcp/packing-list is already used by server io.github.theluckystri"
+    },
+    {
+      "name": "io.github.theluckystrike/zip-archive-create-extract-bomb-guard",
+      "version": "0.22.0",
+      "error": "Publishing to https://registry.modelcontextprotocol.io...\nError: publish failed: server returned status 400: {\"title\":\"Bad Request\",\"status\":400,\"detail\":\"Failed to publish server\",\"errors\":[{\"message\":\"failed to begin transaction: failed to connect to `user=app database=app`:\\n\\t34.118.233.51:5432 "
+    }
+  ]
 }
