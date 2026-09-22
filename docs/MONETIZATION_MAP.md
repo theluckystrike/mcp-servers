@@ -7,7 +7,7 @@ STATUS: complete (shippable)
 
 ## Executive summary
 
-The estate is **already monetized end-to-end** — this is not a cold start. A live Stripe Checkout rail, a license-key flow (MCPL1), per-server free-tier caps enforced in code via `gate.isPro()`, and a rate-limit tier (600 free / 6000 pro calls/hour) are all in production. **41 of 47 servers are billable** (the bundle `SERVER_COUNT = 41`); 6 are free/unbundled. Pricing is **$19 one-time per server, lifetime**, or **$39 for the whole bundle**. The fastest revenue lever is not building a paywall — it is **enrolling the 6 unbundled servers into the bundle** and **raising the bundle price / adding a subscription tier**, both of which touch only config constants.
+The estate is **already monetized end-to-end** — this is not a cold start. A live Stripe Checkout rail, a license-key flow (MCPL1), per-server free-tier caps enforced in code via `gate.isPro()`, and a rate-limit tier (600 free / 6000 pro calls/hour) are all in production. **41 of 47 servers are billable** (the bundle `SERVER_COUNT = 46`, updated R8); 1 is free/unbundled — count 46 vs 47 dirs still needs reconciliation. Pricing is **$19 one-time per server, lifetime**, or **$39 for the whole bundle**. The fastest revenue lever is not building a paywall — it is **enrolling the 6 unbundled servers into the bundle** and **raising the bundle price / adding a subscription tier**, both of which touch only config constants.
 
 ---
 
@@ -87,7 +87,7 @@ The paywall, checkout, and license rails all exist. The fastest revenue upgrades
 
 ### 3a. Enroll the 6 unbundled servers into the bundle (highest ROI, ~1 file)
 - **File:** `remote/src/shims/license.ts`
-- **Change:** `SERVER_COUNT = 41` → `47` (line 16). This immediately makes the $39 bundle cover all 47 servers and raises the bundle's perceived value.
+- **Status R8:** `SERVER_COUNT` already 41 → 46 (deployed R8, tests green). Enrolling remaining gated unbundled servers requires the 46↔47 reconciliation first and raises the bundle's perceived value.
 - **Verify:** the 4 vendor servers (goods-receipt, leave, onboarding, purchase-requisition) and backlink-checker already have `gate.isPro()`; only `office-suite` needs a gate added (see 3c).
 
 ### 3b. Raise bundle price / add a subscription tier (config + one checkout route)
