@@ -7,7 +7,13 @@ workers_dev = true
 
 # mcp-billing owns mcp.zovo.one as a custom domain; a route pattern is more
 # specific than a custom domain, so /mcp* lands here and everything else there.
-routes = [{ pattern = "mcp.zovo.one/mcp*", zone_name = "zovo.one" }]
+# The OAuth discovery/flow paths must also land here (RFC 9728 says the protected-resource
+# metadata lives on the resource server itself), so they get their own patterns.
+routes = [
+  { pattern = "mcp.zovo.one/mcp*", zone_name = "zovo.one" },
+  { pattern = "mcp.zovo.one/.well-known/*", zone_name = "zovo.one" },
+  { pattern = "mcp.zovo.one/oauth*", zone_name = "zovo.one" },
+]
 
 [[kv_namespaces]]
 binding = "REMOTE_DATA"
