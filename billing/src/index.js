@@ -410,6 +410,28 @@ function og(title, description, url, type = "website") {
 }
 
 /**
+ * ItemList JSON-LD for suite hub pages. Each list item names a per-server page with
+ * its own URL, so search engines see the hub as a structured collection pointing at
+ * the pages that actually rank. Added in R13 — the three /suites/* pages previously
+ * shipped with zero structured data while every /s/<id> page already carried
+ * SoftwareApplication schema.
+ */
+function hubItemList(name, url, serverIds) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name,
+    url,
+    itemListElement: serverIds.map((id, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      url: `https://mcp.zovo.one/s/${id}`,
+      name: PAGES[id] ? PAGES[id].title : id,
+    })),
+  };
+}
+
+/**
  * Progressive copy button for every `<pre class="prompt">` block (guide pages, the
  * bundle page and the /s/<id> "First five minutes" sections). No CSP header is set
  * on this service (grepped: none), so a plain inline script is fine; if one is ever
@@ -1411,9 +1433,7 @@ const worker = {
     }
 
     if (path === "/suites/documents" && method === "GET") {
-      // positions_sweep follow-up: "free MCP servers for documents / docx / pdf" cluster.
-      // Same hub pattern as /suites/freelancer: one crawlable page linking the per-server
-      // pages so crawl equity flows to them.
+      // positions_sweep follow-up: "free MCP servers for documents" cluster.
       const HUB_SERVERS = ["docx", "pdf", "spreadsheet", "resume", "clauses", "zip", "image", "barcode"];
       const rows = HUB_SERVERS.map((id) => {
         const pg = PAGES[id];
@@ -1427,7 +1447,8 @@ const worker = {
 <h2>Connect one in 60 seconds</h2>
 <p>Open <a href="/mcp/connect">mcp.zovo.one/mcp/connect</a>, pick a server, paste its URL into your client's MCP config. That is the whole setup.</p>
 ${relatedGuidesBlock("docx")}`;
-      const hubMeta = `<meta name="description" content="Free remote MCP servers for documents: Word .docx, PDF merge and split, spreadsheets, resumes and more. Connect by URL in Claude, Cursor or any MCP client — no install."><link rel="canonical" href="https://mcp.zovo.one/suites/documents">${og("Free MCP Servers for Documents", "Word, PDF, spreadsheets and more — free remote MCP servers, connect by URL, no install.", "https://mcp.zovo.one/suites/documents", "website")}`;
+      const hubMeta = `<meta name="description" content="Free remote MCP servers for documents: Word .docx, PDF merge and split, spreadsheets, resumes and more. Connect by URL in Claude, Cursor or any MCP client — no install."><link rel="canonical" href="https://mcp.zovo.one/suites/documents">${og("Free MCP Servers for Documents", "Word, PDF, spreadsheets and more — free remote MCP servers, connect by URL, no install.", "https://mcp.zovo.one/suites/documents", "website")}
+<script type="application/ld+json">${JSON.stringify(hubItemList("Free MCP servers for documents", "https://mcp.zovo.one/suites/documents", HUB_SERVERS))}</script>`;
       const hubHtml = page("Free MCP Servers for Documents | zovo.one", hubBody).replace("</title>", "</title>" + hubMeta);
       return new Response(hubHtml, { headers: await contentHeaders(hubHtml) });
     }
@@ -1448,13 +1469,13 @@ ${relatedGuidesBlock("docx")}`;
 <h2>Connect one in 60 seconds</h2>
 <p>Open <a href="/mcp/connect">mcp.zovo.one/mcp/connect</a>, pick a server, paste its URL into your client's MCP config. That is the whole setup.</p>
 ${relatedGuidesBlock("job-card")}`;
-      const hubMeta = `<meta name="description" content="Free remote MCP servers for field operations: job cards, work orders, delivery schedules, goods receipts, maintenance logs. Connect by URL in Claude, Cursor or any MCP client — no install."><link rel="canonical" href="https://mcp.zovo.one/suites/field-ops">${og("Free MCP Servers for Field Ops", "Job cards, work orders, deliveries, maintenance logs — free remote MCP servers, connect by URL, no install.", "https://mcp.zovo.one/suites/field-ops", "website")}`;
+      const hubMeta = `<meta name="description" content="Free remote MCP servers for field operations: job cards, work orders, delivery schedules, goods receipts, maintenance logs. Connect by URL in Claude, Cursor or any MCP client — no install."><link rel="canonical" href="https://mcp.zovo.one/suites/field-ops">${og("Free MCP Servers for Field Ops", "Job cards, work orders, deliveries, maintenance logs — free remote MCP servers, connect by URL, no install.", "https://mcp.zovo.one/suites/field-ops", "website")}
+<script type="application/ld+json">${JSON.stringify(hubItemList("Free MCP servers for field operations", "https://mcp.zovo.one/suites/field-ops", HUB_SERVERS))}</script>`;
       const hubHtml = page("Free MCP Servers for Field Ops | zovo.one", hubBody).replace("</title>", "</title>" + hubMeta);
       return new Response(hubHtml, { headers: await contentHeaders(hubHtml) });
     }
 
     if (path === "/suites/freelancer" && method === "GET") {
-      // positions_sweep.md #9: "free MCP servers for freelancers" has only thin directory
       // rows competing — a dedicated hub page with the exact phrase owns it. Links the 8
       // per-server pages from the R9 query-matched set so crawl equity flows to them.
       const HUB_SERVERS = ["invoice", "time-tracker", "expense-tracker", "pdf", "docx", "kanban", "dunning-letters", "petty-cash"];
@@ -1470,7 +1491,8 @@ ${relatedGuidesBlock("job-card")}`;
 <h2>Connect one in 60 seconds</h2>
 <p>Open <a href="/mcp/connect">mcp.zovo.one/mcp/connect</a>, pick a server, paste its URL into your client's MCP config. That is the whole setup.</p>
 ${relatedGuidesBlock("invoice")}`;
-      const hubMeta = `<meta name="description" content="Free remote MCP servers for freelancers: invoicing, time tracking, expenses, PDF, Word, kanban and more. Connect by URL in Claude, Cursor or any MCP client — no install."><link rel="canonical" href="https://mcp.zovo.one/suites/freelancer">${og("Free MCP Servers for Freelancers", "Invoicing, time tracking, expenses, PDF and more — free remote MCP servers, connect by URL, no install.", "https://mcp.zovo.one/suites/freelancer", "website")}`;
+      const hubMeta = `<meta name="description" content="Free remote MCP servers for freelancers: invoicing, time tracking, expenses, PDF, Word, kanban and more. Connect by URL in Claude, Cursor or any MCP client — no install."><link rel="canonical" href="https://mcp.zovo.one/suites/freelancer">${og("Free MCP Servers for Freelancers", "Invoicing, time tracking, expenses, PDF and more — free remote MCP servers, connect by URL, no install.", "https://mcp.zovo.one/suites/freelancer", "website")}
+<script type="application/ld+json">${JSON.stringify(hubItemList("Free MCP servers for freelancers", "https://mcp.zovo.one/suites/freelancer", HUB_SERVERS))}</script>`;
       const hubHtml = page("Free MCP Servers for Freelancers | zovo.one", hubBody).replace("</title>", "</title>" + hubMeta);
       return new Response(hubHtml, { headers: await contentHeaders(hubHtml) });
     }
