@@ -1,4 +1,4 @@
-# mcp-kanban
+# Run task boards from Claude with a free MCP kanban server
 
 A task board for each of your projects, driven from your AI chat. Say "add a task to the nova site board: write the
 launch email, due Friday, 90 minutes", then ask "what's on the nova board?", "what's overdue?" or "plan my week".
@@ -135,3 +135,13 @@ needed, and licence keys are verified offline.
 ## License
 
 MIT. Support: support@zovo.one
+
+## Frequently asked questions
+
+### Is there an MCP kanban server?
+
+Yes. The kanban server at mcp.zovo.one gives Claude a hosted kanban board: create boards, columns and cards, move cards between columns, all from any MCP client. Unlike the local-only GitHub repos it is hosted and free to start — nothing to clone or run.
+
+### How do I manage a kanban board from Claude?
+
+Connect https://mcp.zovo.one/mcp/kanban and say: 'Create a board with To do, Doing, Done and add a card Design the landing page to To do.'

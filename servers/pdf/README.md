@@ -1,4 +1,4 @@
-# mcp-pdf
+# Merge, split and fill PDF forms from Claude
 
 Say "stamp PAID on that invoice and save a copy" or "pull pages 2 to 6 out of this scan and merge them with the contract" and it happens, on your machine, in a second. This MCP server does the small PDF jobs that otherwise send you to a web uploader: merge, split by page range, extract or reorder pages, rotate a sideways scan, stamp `PAID` or `DRAFT` or any text you like, put your business name and VAT id in the footer, count pages across a folder of files, and read a PDF's text back as text. No upload, no account, no native dependency, no office install.
 
@@ -254,3 +254,13 @@ anywhere, which is the entire reason this exists.
 MIT licensed. Support: support@zovo.one
 
 Built by [theluckystrike](https://github.com/theluckystrike).
+
+## Frequently asked questions
+
+### Is there an MCP server to merge and split PDFs?
+
+Yes. The pdf server at mcp.zovo.one merges, splits, rotates and fills PDF forms while preserving form fields. Free tier of 30 pages per file on split/pages/rotate operations, hosted remote endpoint, no install.
+
+### Can Claude fill PDF forms with an MCP server?
+
+Yes — connect https://mcp.zovo.one/mcp/pdf and ask Claude to fill a form's fields or merge several PDFs. Output stays form-preserving, so filled fields remain editable.

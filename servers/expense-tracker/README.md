@@ -1,4 +1,4 @@
-# mcp-expense-tracker
+# Log expenses from Claude with a free MCP server
 
 **In the [official MCP Registry](https://registry.modelcontextprotocol.io/v0.1/servers/io.github.theluckystrike%2Fexpense-tracker-receipts-mileage/versions/latest)** (`io.github.theluckystrike/expense-tracker-receipts-mileage`).
 
@@ -158,3 +158,13 @@ resume and contract letterheads. Set it once with `business_set` (invoice or doc
 repeat it anywhere else. An email address is only ever taken from that profile or from an explicit
 argument; when none is stored, documents show `[add: email]` and the tool says so rather than
 letting anyone improvise an address.
+
+## Frequently asked questions
+
+### Is there a free MCP expense tracker?
+
+Yes. The expense-tracker server at mcp.zovo.one is a free MCP expense tracker: log expenses from Claude or any MCP client with categories, amounts and dates, then list or export them. Free tier, remote hosted endpoint, nothing to install.
+
+### How do I log an expense from Claude?
+
+Connect https://mcp.zovo.one/mcp/expense-tracker (tokenized URL from mcp.zovo.one/mcp/connect) and say: 'Log 42.50 EUR for client lunch, category meals.' The entry is stored locally-first on your machine.

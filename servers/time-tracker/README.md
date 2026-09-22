@@ -1,4 +1,4 @@
-# mcp-time-tracker
+# Track time from Claude with a free, no-install server
 
 **Featured on [Awesome MCP Servers](mcpservers.org)** — [directory listing](https://mcpservers.org/servers/github-com-theluckystrike-mcp-servers-tree-main-servers-time-tracker) | [live hosted endpoint](https://mcp.zovo.one/s/time-tracker), free tier, no signup.
 
@@ -292,3 +292,13 @@ resume and contract letterheads. Set it once with `business_set` (invoice or doc
 repeat it anywhere else. An email address is only ever taken from that profile or from an explicit
 argument; when none is stored, documents show `[add: email]` and the tool says so rather than
 letting anyone improvise an address.
+
+## Frequently asked questions
+
+### Is there a free MCP time tracking server?
+
+Yes. The time-tracker server at mcp.zovo.one is a free MCP time tracking server with no install: start and stop timers in chat, keep per-client totals, and produce weekly reports. Unlike SaaS trackers (WebWork, TrackingTime) it needs no account — paste the hosted URL and go.
+
+### How do I track time from Claude?
+
+Connect https://mcp.zovo.one/mcp/time-tracker (tokenized URL from mcp.zovo.one/mcp/connect) and say: 'Start a timer for the Acme project.' Stop it later the same way; weekly summaries are one ask away.

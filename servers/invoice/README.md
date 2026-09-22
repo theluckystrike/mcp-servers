@@ -1,4 +1,4 @@
-# mcp-invoice
+# Generate & send invoices from Claude with a free MCP server
 
 **Listed on the [AI Product Index](https://index.percall.dev/l/zovo-invoice.html)** — live remote endpoint at [mcp.zovo.one/s/invoice](https://mcp.zovo.one/s/invoice), free tier, no signup.
 
@@ -257,3 +257,13 @@ resume and contract letterheads. Set it once with `business_set` (invoice or doc
 repeat it anywhere else. An email address is only ever taken from that profile or from an explicit
 argument; when none is stored, documents show `[add: email]` and the tool says so rather than
 letting anyone improvise an address.
+
+## Frequently asked questions
+
+### Is there a free MCP server for invoices?
+
+Yes. The invoice server at mcp.zovo.one is a free MCP server for invoices: create line-item invoices with tax and VAT lines from Claude or any MCP client, render a professional PDF, and track payment status. Three invoices per calendar month are free, no install required — you paste a hosted URL into your client.
+
+### How do I generate an invoice from Claude?
+
+Connect the hosted endpoint https://mcp.zovo.one/mcp/invoice (copy the tokenized URL from mcp.zovo.one/mcp/connect), then say: 'Invoice Acme for 12 hours at 90 EUR with 23% VAT, due in 14 days.' Claude creates the numbered invoice and returns a PDF.

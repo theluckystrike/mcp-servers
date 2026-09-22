@@ -1,4 +1,4 @@
-# mcp-docx
+# Create .docx Word documents from Claude
 
 Say "write a proposal for Beta Corp, checkout rebuild, 4,500 EUR, three phases" and get a real `.docx` you can send. This MCP server writes Word documents from chat, proposals, quotes, service agreements, statements of work and letters, with your letterhead, headings, bullet and numbered lists and tables. It also turns markdown into `.docx`, reads an existing `.docx` back as text and outline, and fills `{{placeholders}}` in a template you already use, keeping every style, table, header and image of the original. Everything runs locally: no upload, no account, no native dependency.
 
@@ -242,3 +242,13 @@ resume and contract letterheads. Set it once with `business_set` (invoice or doc
 repeat it anywhere else. An email address is only ever taken from that profile or from an explicit
 argument; when none is stored, documents show `[add: email]` and the tool says so rather than
 letting anyone improvise an address.
+
+## Frequently asked questions
+
+### Is there an MCP server for Word documents (.docx)?
+
+Yes. The docx server at mcp.zovo.one creates .docx files from Claude: template-based documents, headings, tables and formatting, batch generation. Free tier, hosted endpoint or one-click .mcpb install.
+
+### How do I create a .docx from Claude?
+
+Connect https://mcp.zovo.one/mcp/docx and describe the document — 'Create a proposal.docx with these three sections and a pricing table.' The file is written to your local storage directory.
