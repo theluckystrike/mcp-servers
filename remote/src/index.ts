@@ -89,6 +89,22 @@ const CASH_BOOK_MAX_BYTES = 2 * 1024 * 1024;
 const MAX_BODY_BYTES = 256 * 1024;               // request body ceiling
 const TOKEN_MINTS_PER_IP = 10;                   // anonymous tokens per hour per client IP
 
+/* ------------------------------------------------------------- oauth (MCP 2025-06-18) */
+// The MCP authorization spec (2025-06-18) is OAuth 2.1 with dynamic client registration
+// (RFC 7591), PKCE (RFC 7636) and the two discovery documents (RFC 8414, RFC 9728). The
+// resource server here IS its own authorization server and issuer, so every endpoint is on
+// the same host. The access token is the existing anonymous token, so authenticate() works
+// unchanged: a client that completes this flow gets a bearer that is indistinguishable from
+// one minted at GET /mcp/token.
+const OAUTH_RESOURCE = "https://mcp.zovo.one";
+const OAUTH_AUTHZ = "https://mcp.zovo.one/oauth/authorize";
+const OAUTH_CONSENT = "https://mcp.zovo.one/oauth/authorize/consent";
+const OAUTH_TOKEN = "https://mcp.zovo.one/oauth/token";
+const OAUTH_REGISTER = "https://mcp.zovo.one/oauth/register";
+const OAUTH_RESOURCE_META = "https://mcp.zovo.one/.well-known/oauth-protected-resource";
+const OAUTH_ACCESS_TTL = 60 * 60 * 24 * 30;     // access token lives as long as an anon token
+const OAUTH_CODE_TTL = 10 * 60;                 // authorization code, 10 minutes per the spec
+
 /**
  * Bumped whenever a tool set or a description changes. It is the invalidation key of the
  * module-scope tools/list cache below: an isolate started before a deploy is replaced by
@@ -940,7 +956,10 @@ async function authenticate(req: Request, env: Env, product: string, urlToken = 
   const token = fromHeader || urlToken.trim();
   const via: Auth["via"] = fromHeader ? "Authorization: Bearer" : urlTokenForm;
   if (!token) {
-    return json(unauthorizedBody(product), 401, { "www-authenticate": `Bearer realm="mcp.zovo.one", error="invalid_token"` });
+    // RFC 9728 §4: a protected resource advertises its OAuth metadata via
+    // `WWW-Authenticate: Bearer resource_metadata=...`, so an MCP client that gets a 401
+    // here can discover the authorization server (the same host) and start the PKCE dance.
+    return json(unauthorizedBody(product), 401, { "www-authenticate": `Bearer realm="mcp.zovo.one", error="invalid_token", resource_metadata="${OAUTH_RESOURCE_META}"` });
   }
   if (token.startsWith("MCPL1.")) {
     const r = await verifyLicense(token, product);
@@ -1050,6 +1069,95 @@ async function secretEquals(a: string, b: string): Promise<boolean> {
   let diff = xa.length ^ ya.length;
   for (let i = 0; i < xa.length; i++) diff |= xa[i] ^ ya[i % ya.length];
   return diff === 0;
+}
+
+/* --------------------------------------------------------------- oauth helpers */
+
+/** RFC 9728 protected-resource metadata: tells an MCP client where the OAuth dance lives. */
+export function oauthProtectedResourceDoc() {
+  return {
+    resource: OAUTH_RESOURCE,
+    authorization_servers: [OAUTH_RESOURCE],
+    // "mcp:connect" is the only scope the MCP spec defines; a server that needs no narrower
+    // permission grants just this one, and anything else is rejected at registration.
+    scopes_supported: ["mcp:connect"],
+    resource_documentation: GUIDE,
+  };
+}
+
+/** RFC 8414 authorization-server metadata, for dynamic discovery by Anthropic/Claude. */
+export function oauthAuthorizationServerDoc() {
+  return {
+    issuer: OAUTH_RESOURCE,
+    authorization_endpoint: OAUTH_AUTHZ,
+    token_endpoint: OAUTH_TOKEN,
+    registration_endpoint: OAUTH_REGISTER,
+    response_types_supported: ["code"],
+    grant_types_supported: ["authorization_code"],
+    code_challenge_methods_supported: ["S256"],
+    // No token_endpoint_auth_methods_supported: a public client (RFC 6749 §2.3.1) presents
+    // no secret, so the default plain client_secret_basic would be wrong to advertise.
+    token_endpoint_auth_methods_supported: ["none"],
+    scopes_supported: ["mcp:connect"],
+    response_modes_supported: ["query"],
+  };
+}
+
+/**
+ * Derive a client_id deterministically from the registered metadata. RFC 7591 lets the
+ * server assign the id; using a stable hash of the metadata keeps the id reproducible and
+ * blocks collisions better than a counter, and there is no secret to store for a public
+ * client. The id is the first 16 bytes of a SHA-256 over the canonical JSON.
+ */
+export async function oauthClientId(metadata: Record<string, unknown>): Promise<string> {
+  // Sort keys so the same metadata in a different key order hashes identically; clients
+  // re-registering with an equivalent JSON body must get the same client_id back.
+  const canonical = JSON.stringify(metadata, Object.keys(metadata).sort());
+  const digest = await crypto.subtle.digest(
+    "SHA-256", new TextEncoder().encode(canonical));
+  return Array.from(new Uint8Array(digest).slice(0, 16), (x) => x.toString(16).padStart(2, "0")).join("");
+}
+
+/** RFC 7636 §4.6 check: verifier's S256 challenge must equal the one given at authorize. */
+export async function s256Challenge(verifier: string): Promise<string> {
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(verifier));
+  return btoa(String.fromCharCode(...new Uint8Array(digest)))
+    .replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
+/** Constant-time compare of two S256 challenges, mirroring secretEquals above. */
+export async function verifyPkce(verifier: string, challenge: string): Promise<boolean> {
+  return secretEquals(await s256Challenge(verifier), challenge);
+}
+
+/** Minimal consent page: plain HTML, no branding framework, one form per RFC 6749 §3.1. */
+export function oauthConsentPage(base: string, params: URLSearchParams): string {
+  const esc = (x: unknown) => String(x ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  return `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Authorize MCP access</title></head><body>
+<h1>Authorize this tool to use your data space</h1>
+<p>Signing in creates a free anonymous access token and hands it to the tool that asked.
+There is no account and nothing to fill in. The token works for 30 days and is refreshed on every use.</p>
+<form method="get" action="${esc(base)}/oauth/authorize/consent">
+<input type="hidden" name="client_id" value="${esc(params.get("client_id"))}">
+<input type="hidden" name="redirect_uri" value="${esc(params.get("redirect_uri"))}">
+<input type="hidden" name="code_challenge" value="${esc(params.get("code_challenge"))}">
+<input type="hidden" name="state" value="${esc(params.get("state"))}">
+<button type="submit">Allow</button>
+</form>
+</body></html>`;
+}
+
+/** A terse error page for a bad /oauth/authorize request (nothing to sign in for). */
+export function oauthAuthorizeErrorPage(message: string): string {
+  const esc = (x: unknown) => String(x ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  return `<!doctype html><html><head><meta charset="utf-8"><title>Authorization error</title></head><body>
+<h1>Cannot authorize</h1><p>${esc(message)}</p></body></html>`;
+}
+
+/** Wrap an OAuth HTML fragment in a full Response (text/html, no-store). */
+function htmlPage(html: string): Response {
+  return new Response(html, { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" } });
 }
 
 /* --------------------------------------------------------------- storage */
@@ -2175,6 +2283,106 @@ export default {
         endpoints: ENDPOINT_URLS(base),
         pro: `${base}/buy/bundle`,
         guide: GUIDE,
+      });
+    }
+
+    /* ---------------------------------------------------------- oauth 2.1 (MCP 2025-06-18) */
+    // Discovery documents first: an MCP client that received the RFC 9728 WWW-Authenticate
+    // header fetches these before it can even show the user a consent screen.
+    if (path === "/.well-known/oauth-protected-resource") {
+      return json(oauthProtectedResourceDoc());
+    }
+    if (path === "/.well-known/oauth-authorization-server") {
+      return json(oauthAuthorizationServerDoc());
+    }
+
+    // RFC 7591 dynamic client registration. A public client sends metadata, gets back an
+    // id and nothing secret. The id is a hash of the metadata, so re-registering the same
+    // client yields the same id and the KV write can be skipped.
+    if (path === "/oauth/register" && req.method === "POST") {
+      let metadata: Record<string, unknown>;
+      try {
+        metadata = await req.json() as Record<string, unknown>;
+      } catch {
+        return json({ error: "invalid_client_metadata" }, 400);
+      }
+      const redirectUris = Array.isArray(metadata.redirect_uris) ? metadata.redirect_uris.map(String) : [];
+      if (redirectUris.length === 0 || redirectUris.some((u) => !/^https?:\/\//.test(u))) {
+        return json({ error: "invalid_redirect_uri", message: "redirect_uris must be http(s) URLs." }, 400);
+      }
+      const clientId = await oauthClientId(metadata);
+      await env.REMOTE_DATA.put(`oauth_client:${clientId}`, JSON.stringify({ metadata, at: Date.now() }), { expirationTtl: 60 * 60 * 24 * 365 });
+      return json({
+        client_id: clientId,
+        client_id_issued_at: Math.floor(Date.now() / 1000),
+        redirect_uris: redirectUris,
+        token_endpoint_auth_method: "none",
+        grant_types: ["authorization_code"],
+        response_types: ["code"],
+      });
+    }
+
+    // RFC 6749 §3.1 authorization endpoint. Everything is validated before any state is
+    // spent; the consent page re-submits the same params to /oauth/authorize/consent.
+    if (path === "/oauth/authorize" && req.method === "GET") {
+      const clientId = url.searchParams.get("client_id") ?? "";
+      const redirectUri = url.searchParams.get("redirect_uri") ?? "";
+      const challenge = url.searchParams.get("code_challenge") ?? "";
+      const client = clientId ? await env.REMOTE_DATA.get(`oauth_client:${clientId}`) : null;
+      if (!client) return htmlPage(oauthAuthorizeErrorPage("Unknown client. Register first via POST /oauth/register."));
+      const registered = (JSON.parse(client) as { metadata: { redirect_uris?: string[] } }).metadata.redirect_uris ?? [];
+      // Exact-match redirect URI per RFC 6749 §3.1.2.3 - no prefix or wildcard matching.
+      if (!registered.includes(redirectUri)) return htmlPage(oauthAuthorizeErrorPage("redirect_uri is not registered for this client."));
+      if (!/^[A-Za-z0-9_-]{43,128}$/.test(challenge)) return htmlPage(oauthAuthorizeErrorPage("code_challenge must be an S256 (base64url, 43-128 char) value."));
+      const html = oauthConsentPage(base, url.searchParams);
+      return new Response(html, { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" } });
+    }
+
+    // The consent form's action. The user has clicked Allow: mint an anon token (same
+    // machinery and same rate limit as /mcp/token), bind an authorization code to it, and
+    // send the browser back to the client with code + state.
+    if (path === "/oauth/authorize/consent" && req.method === "GET") {
+      const clientId = url.searchParams.get("client_id") ?? "";
+      const redirectUri = url.searchParams.get("redirect_uri") ?? "";
+      const challenge = url.searchParams.get("code_challenge") ?? "";
+      const state = url.searchParams.get("state") ?? "";
+      const client = clientId ? await env.REMOTE_DATA.get(`oauth_client:${clientId}`) : null;
+      if (!client) return htmlPage(oauthAuthorizeErrorPage("Unknown client."));
+      const registered = (JSON.parse(client) as { metadata: { redirect_uris?: string[] } }).metadata.redirect_uris ?? [];
+      if (!registered.includes(redirectUri)) return htmlPage(oauthAuthorizeErrorPage("redirect_uri is not registered for this client."));
+      if (!/^[A-Za-z0-9_-]{43,128}$/.test(challenge)) return htmlPage(oauthAuthorizeErrorPage("Bad code_challenge."));
+      const minted = await mintAnonToken(req, env);
+      if (typeof minted !== "string") return minted; // rate-limited Response
+      const code = crypto.randomUUID().replace(/-/g, "");
+      await env.REMOTE_DATA.put(
+        `oauth_code:${code}`,
+        JSON.stringify({ token: minted, client_id: clientId, redirect_uri: redirectUri, challenge }),
+        { expirationTtl: OAUTH_CODE_TTL },
+      );
+      const back = new URL(redirectUri);
+      back.searchParams.set("code", code);
+      if (state) back.searchParams.set("state", state);
+      return Response.redirect(back.toString(), 302);
+    }
+
+    // RFC 6749 §3.2 token endpoint. Public client: no secret, PKCE S256 proof instead.
+    if (path === "/oauth/token" && req.method === "POST") {
+      const form = await req.formData().catch(() => null);
+      if (!form) return json({ error: "invalid_request" }, 400);
+      const code = String(form.get("code") ?? "");
+      const verifier = String(form.get("code_verifier") ?? "");
+      const clientId = String(form.get("client_id") ?? "");
+      const stored = code ? await env.REMOTE_DATA.get(`oauth_code:${code}`) : null;
+      if (!stored) return json({ error: "invalid_grant", message: "Code is unknown, used or expired." }, 400);
+      const grant = JSON.parse(stored) as { token: string; client_id: string; redirect_uri: string; challenge: string };
+      if (clientId && clientId !== grant.client_id) return json({ error: "invalid_grant", message: "client_id mismatch." }, 400);
+      if (!(await verifyPkce(verifier, grant.challenge))) return json({ error: "invalid_grant", message: "PKCE verification failed." }, 400);
+      // One-time use: delete before responding so a replay gets invalid_grant.
+      await env.REMOTE_DATA.delete(`oauth_code:${code}`);
+      return json({
+        access_token: grant.token,
+        token_type: "Bearer",
+        expires_in: OAUTH_ACCESS_TTL,
       });
     }
 
