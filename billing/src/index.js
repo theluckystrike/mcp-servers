@@ -714,7 +714,7 @@ function home() {
 <li>Install from a clone: <code>git clone</code>, <code>npm install</code>, <code>npm run build -w packages/mcp-license -w servers/&lt;server&gt;</code>, then point your client's <code>command</code> at <code>node</code> and its one argument at the built <code>dist/index.js</code>; exact steps for six clients are on the <a href="/setup">setup pages</a>.</li>
 <li>Install with npx, not yet: <code>npx -y @theluckystrike/mcp-&lt;server&gt;</code> is the line the day the npm publish lands. It returns 404 today, so do not paste it into a config expecting a server to start.</li>
 </ol>
-<p class="muted"><a href="/suites/freelancer">Freelancer suite hub</a>: invoicing, time tracking and expenses as one connected set.</p>
+<p class="muted">Suite hubs: <a href="/suites/freelancer">freelancer</a>, <a href="/suites/documents">documents</a>, <a href="/suites/field-ops">field ops</a>.</p>
 <p class="muted">${NPM_PENDING_NOTE} The first three paths above need no npm.</p>
 <p>A Pro key removes the free-tier limits on any of these three paths: run <code>license_activate</code> with the key in Claude, set <code>MCP_LICENSE_KEY</code>, or paste the key where the connect-by-URL token goes. Keys verify offline; nothing is sent anywhere after checkout. Refunds within 14 days: support@zovo.one.</p>
 <h2>Measured, not claimed</h2>
@@ -816,7 +816,7 @@ export function bundlePage() {
 <li>Install from a clone: build once with <code>npm run build</code> and point each client entry's <code>command</code> at <code>node</code> and its one argument at that server's built <code>dist/index.js</code>; exact steps for six clients are on the <a href="/setup">setup pages</a>.</li>
 <li>Install with npx, not yet: <code>npx -y @theluckystrike/mcp-&lt;server&gt;</code> is the line the day the npm publish lands. It returns 404 today, so do not paste it into a config expecting a server to start.</li>
 </ol>
-<p class="muted"><a href="/suites/freelancer">Freelancer suite hub</a>: invoicing, time tracking and expenses as one connected set.</p>
+<p class="muted">Suite hubs: <a href="/suites/freelancer">freelancer</a>, <a href="/suites/documents">documents</a>, <a href="/suites/field-ops">field ops</a>.</p>
 <p class="muted">${NPM_PENDING_NOTE} The first three paths above need no npm.</p>
 <h2>How the key arrives</h2>
 <p>Nothing is emailed. The key is rendered once, on the <code>/success</code> page right after payment; reloading that URL always shows the same key, and <code>/recover?session_id=...</code> gets it back from a lost tab. If you bought while connected through a hosted <code>mcp.zovo.one</code> endpoint, that endpoint's token is bound to Pro automatically, with nothing to paste there (docs/CHECKOUT_AUDIT.md).</p>
@@ -1410,6 +1410,49 @@ const worker = {
       return new Response(body, { headers: await contentHeaders(body) });
     }
 
+    if (path === "/suites/documents" && method === "GET") {
+      // positions_sweep follow-up: "free MCP servers for documents / docx / pdf" cluster.
+      // Same hub pattern as /suites/freelancer: one crawlable page linking the per-server
+      // pages so crawl equity flows to them.
+      const HUB_SERVERS = ["docx", "pdf", "spreadsheet", "resume", "clauses", "zip", "image", "barcode"];
+      const rows = HUB_SERVERS.map((id) => {
+        const pg = PAGES[id];
+        return `<tr><td><a href="/s/${id}">${esc(pg ? pg.title : id)}</a></td><td>${esc(pg ? pg.description : "")}</td><td><a class="buy" href="/buy/${id}?src=store.suites.documents">$${PRODUCTS[resolveProductId(id)] ? PRODUCTS[resolveProductId(id)].usd : PRODUCTS.bundle.usd}</a></td></tr>`;
+      }).join("");
+      const hubBody = `<h1>Free MCP Servers for Documents — Word, PDF, Spreadsheets</h1>
+<p>Create and edit Word documents, merge and split PDFs, query spreadsheets, all from Claude or any MCP client. Every server is a free remote endpoint you connect by URL: no install, no account. ${SERVER_COUNT} servers in the full suite.</p>
+<table><thead><tr><th>Server</th><th>What it does</th><th>Pro</th></tr></thead><tbody>${rows}</tbody></table>
+<h2>Why free?</h2>
+<p>Every server has a free tier that is useful on its own — real limits, not a crippled demo. Pro keys are one-time payments, not subscriptions, when you outgrow them.</p>
+<h2>Connect one in 60 seconds</h2>
+<p>Open <a href="/mcp/connect">mcp.zovo.one/mcp/connect</a>, pick a server, paste its URL into your client's MCP config. That is the whole setup.</p>
+${relatedGuidesBlock("docx")}`;
+      const hubMeta = `<meta name="description" content="Free remote MCP servers for documents: Word .docx, PDF merge and split, spreadsheets, resumes and more. Connect by URL in Claude, Cursor or any MCP client — no install."><link rel="canonical" href="https://mcp.zovo.one/suites/documents">${og("Free MCP Servers for Documents", "Word, PDF, spreadsheets and more — free remote MCP servers, connect by URL, no install.", "https://mcp.zovo.one/suites/documents", "website")}`;
+      const hubHtml = page("Free MCP Servers for Documents | zovo.one", hubBody).replace("</title>", "</title>" + hubMeta);
+      return new Response(hubHtml, { headers: await contentHeaders(hubHtml) });
+    }
+
+    if (path === "/suites/field-ops" && method === "GET") {
+      // positions_sweep follow-up: trades/field-service cluster (job cards, work orders,
+      // delivery, receipts). Same hub pattern.
+      const HUB_SERVERS = ["job-card", "work-order", "delivery-schedule", "packing-list", "goods-receipt", "maintenance-log", "checklist", "change-order"];
+      const rows = HUB_SERVERS.map((id) => {
+        const pg = PAGES[id];
+        return `<tr><td><a href="/s/${id}">${esc(pg ? pg.title : id)}</a></td><td>${esc(pg ? pg.description : "")}</td><td><a class="buy" href="/buy/${id}?src=store.suites.field-ops">$${PRODUCTS[resolveProductId(id)] ? PRODUCTS[resolveProductId(id)].usd : PRODUCTS.bundle.usd}</a></td></tr>`;
+      }).join("");
+      const hubBody = `<h1>Free MCP Servers for Field Ops and Trades</h1>
+<p>Job cards, work orders, delivery schedules, goods receipts and maintenance logs, every one a free remote MCP server you connect by URL: no install, no account. ${SERVER_COUNT} servers in the full suite.</p>
+<table><thead><tr><th>Server</th><th>What it does</th><th>Pro</th></tr></thead><tbody>${rows}</tbody></table>
+<h2>Why free?</h2>
+<p>Every server has a free tier that is useful on its own — real limits, not a crippled demo. Pro keys are one-time payments, not subscriptions, when you outgrow them.</p>
+<h2>Connect one in 60 seconds</h2>
+<p>Open <a href="/mcp/connect">mcp.zovo.one/mcp/connect</a>, pick a server, paste its URL into your client's MCP config. That is the whole setup.</p>
+${relatedGuidesBlock("job-card")}`;
+      const hubMeta = `<meta name="description" content="Free remote MCP servers for field operations: job cards, work orders, delivery schedules, goods receipts, maintenance logs. Connect by URL in Claude, Cursor or any MCP client — no install."><link rel="canonical" href="https://mcp.zovo.one/suites/field-ops">${og("Free MCP Servers for Field Ops", "Job cards, work orders, deliveries, maintenance logs — free remote MCP servers, connect by URL, no install.", "https://mcp.zovo.one/suites/field-ops", "website")}`;
+      const hubHtml = page("Free MCP Servers for Field Ops | zovo.one", hubBody).replace("</title>", "</title>" + hubMeta);
+      return new Response(hubHtml, { headers: await contentHeaders(hubHtml) });
+    }
+
     if (path === "/suites/freelancer" && method === "GET") {
       // positions_sweep.md #9: "free MCP servers for freelancers" has only thin directory
       // rows competing — a dedicated hub page with the exact phrase owns it. Links the 8
@@ -1640,7 +1683,7 @@ ${relatedGuidesBlock(slug)}`;
       // and it moves on its own each release instead of going stale like a constant. If no
       // release has a valid date, lastmod is omitted rather than fabricated.
       const siteDate = ((CHANGELOG && CHANGELOG.releases) || []).map((r) => r && r.date).find((d) => /^\d{4}-\d{2}-\d{2}$/.test(d || ""));
-      const urls = ["/", "/servers", "/mcp/connect", "/bundle", "/changelog", "/guides", "/compare", "/privacy", "/suites/freelancer", ...Object.keys(PAGES).map((k) => `/s/${k}`), ...Object.keys(GUIDES).map((k) => `/guides/${k}`), ...Object.keys(COMPARE).map((k) => `/compare/${k}`), ...setupUrls().filter((u) => u.split("/").filter(Boolean).length <= 2)].map((u) => `<url><loc>https://mcp.zovo.one${u}</loc>${siteDate ? `<lastmod>${siteDate}</lastmod>` : ""}</url>`).join("");
+      const urls = ["/", "/servers", "/mcp/connect", "/bundle", "/changelog", "/guides", "/compare", "/privacy", "/suites/freelancer", "/suites/documents", "/suites/field-ops", ...Object.keys(PAGES).map((k) => `/s/${k}`), ...Object.keys(GUIDES).map((k) => `/guides/${k}`), ...Object.keys(COMPARE).map((k) => `/compare/${k}`), ...setupUrls().filter((u) => u.split("/").filter(Boolean).length <= 2)].map((u) => `<url><loc>https://mcp.zovo.one${u}</loc>${siteDate ? `<lastmod>${siteDate}</lastmod>` : ""}</url>`).join("");
       return new Response(`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls}</urlset>`, { headers: { "content-type": "application/xml" } });
     }
     // MCP registry domain verification. The registry fetches
