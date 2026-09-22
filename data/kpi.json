@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-09-22T15:42:57.385Z",
+  "generated_at": "2026-09-22T15:43:16.359Z",
   "kpis": [
     {
       "cat": "Discovery",
       "name": "Registry entries at latest version",
-      "value": 33,
+      "value": 36,
       "target": 131,
       "unit": "of all published names",
       "how": "one exact GET /v0.1/servers/<name>/versions/latest per manifest name, compared with the release version. NOT a substring search: with 30,395 servers in the registry a search can push the exact match off page one, which is how this read 41 of 91 while a direct sample of 12 returned 12 of 12 present",
@@ -177,7 +177,7 @@
       "value": 31,
       "target": 200,
       "unit": "files (1h TTL)",
-      "how": "previous value; wrangler timed out at 2026-09-22T15:27:48.024Z",
+      "how": "previous value; wrangler timed out at 2026-09-22T15:28:58.579Z",
       "why": "A produced document is a completed job, not just a call.",
       "stale": true,
       "status": "progress"
@@ -245,7 +245,7 @@
     {
       "cat": "Reliability",
       "name": "Hosted tools/list latency p50",
-      "value": 75,
+      "value": 90,
       "target": 800,
       "unit": "ms",
       "lower_is_better": true,
@@ -342,7 +342,7 @@
     },
     "sales_charges_seen": 0,
     "remote_kv": {
-      "total": 7099,
+      "total": 7101,
       "by": {
         "anon": 134,
         "bind": 2,
@@ -351,7 +351,7 @@
         "meta": 403,
         "mint": 2,
         "oauth_client": 1,
-        "rl": 36,
+        "rl": 38,
         "shared": 2,
         "tok": 917
       },
@@ -6508,6 +6508,7 @@
         "rl:discovery:152.55.176.23:497247",
         "rl:discovery:152.55.185.127:497245",
         "rl:discovery:152.55.185.127:497246",
+        "rl:discovery:152.55.185.127:497247",
         "rl:discovery:169.58.147.63:497245",
         "rl:discovery:178.105.40.244:497245",
         "rl:discovery:178.105.40.244:497246",
@@ -6535,6 +6536,7 @@
         "rl:discovery:52.151.21.25:497247",
         "rl:discovery:54.166.145.172:497246",
         "rl:lic:8d4a3f9f7c15:497247",
+        "rl:lic:c576bb2f1837:497247",
         "rl:lic:dc77ef13ddb7:497247",
         "shared:ecb:daily",
         "shared:ecb:history",
@@ -7472,19 +7474,19 @@
       "probe_ids_excluded": 297
     },
     "latency": {
-      "p50_ms": 75,
+      "p50_ms": 90,
       "samples": [
-        443,
-        75,
-        73
+        1213,
+        90,
+        81
       ]
     },
     "registry": {
-      "entries": 33,
+      "entries": 36,
       "names": 131,
       "release": "0.22.0",
-      "hosted": 31,
-      "unreachable": 39
+      "hosted": 34,
+      "unreachable": 35
     },
     "sitemap_urls": 207
   }
