@@ -47,6 +47,13 @@ for (const d of readdirSync(join(ROOT, "servers"))) {
   for (const f of readdirSync(dir)) {
     if (!/^server(\.[a-z0-9-]+)?\.json$/.test(f)) continue;
     if (f === "server.npm-package.json") continue;
+    // Alias manifests share the primary entry's remote URL; the registry enforces one
+    // remote URL per server, so publishing them always 400s. Skip them up front.
+    if (f.endsWith(".snag.json")) continue;
+    // Variant/alias manifests (server.<alias>.json, server.variant.json) rebrand the same
+    // backend under a different name but share the primary entry's remote URL. The registry
+    // enforces one remote URL per server, so all 68 always 400 on publish. Skip them.
+    if (f !== "server.json") continue;
     const path = join(dir, f);
     let m; try { m = JSON.parse(readFileSync(path, "utf8")); } catch { continue; }
     if (!m.name || !m.version) continue;
