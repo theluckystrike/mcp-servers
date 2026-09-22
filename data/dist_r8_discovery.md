@@ -31,5 +31,14 @@ Previous delegation (deleg_dc4e571a) produced nothing — this file was rebuilt 
 
 **mcpservers.org / mcpfinder.org form fields:** same as above; category "Files & Docs" or "Payments & Commerce"; transport http; docs https://mcp.zovo.one/servers.
 
-## 5. Note
+## 5. R8 addendum (verified after deleg_d670930c returned)
+| Surface | Verified? | Method | Cost | Rank |
+|---|---|---|---|---|
+| cline/mcp-marketplace | YES — repo live, 23 existing issues | GitHub issue per README ("millions of developers" reach) | FREE | #1 actionable — file issue next sprint |
+| mcp.directory | YES — site 200 | free form | FREE | #2 (pending-review like influzer) |
+| Gemini CLI extensions | PARTIAL — manifest is command/args-based; remote http transport support unconfirmed | gemini-extension.json in repo | FREE | defer until http transport confirmed |
+
+Note: deleg_d670930c (124s, 11 calls) was the only child with real work, but it never wrote the deliverable file — its findings folded in here after spot-verification.
+
+## 6. Note
 Punkpeye/rohitg00/wagneragent/habitoai PRs unchanged this round (12 open, 8 merged cumulative) — no new activity detected.
