@@ -112,6 +112,7 @@ const SOURCES = [
   "data/facts.json",
   "docs/BLIND_RECOMMENDATION_R1.md",
   "docs/CONTENT_R3.md",
+  "servers/packing-list/SPEC.md",
 ];
 
 const haystack = SOURCES.map(read).join("\n").replace(/,(?=\d)/g, "");
