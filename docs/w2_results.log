@@ -64,3 +64,18 @@ dunning-letters -> HTTP 409 {"error":"This server name has already been submitte
 maintenance-log -> HTTP 200 {"success":true}
 supplier-list -> HTTP 409 {"error":"This server name has already been submitted and is pending review."}
 mileage-log -> HTTP 200 {"success":true}
+goods-receipt -> HTTP 200 {"success":true}
+leave -> HTTP 200 {"success":true}
+onboarding -> HTTP 200 {"success":true}
+purchase-requisition -> HTTP 200 {"success":true}
+office-suite-time-invoice-expense-excel-price -> HTTP 200 {"success":true}
+backlink-checker -> HTTP 200 {"success":true}
+bank-statement-csv-categorize-reconcile-ledger -> HTTP 200 {"success":true}
+bill-of-sale -> HTTP 409 {"error":"This server name has already been submitted and is pending review."}
+expense-tracker-receipts-mileage -> HTTP 200 {"success":true}
+invoice-pdf-billing-generator -> HTTP 200 {"success":true}
+recurring-invoice-scheduler-subscription-billing-due-reminders -> HTTP 200 {"success":true}
+quotes-estimates-proposals-vat-win-rate -> HTTP 200 {"success":true}
+service-agreement -> HTTP 409 {"error":"This server name has already been submitted and is pending review."}
+statement-of-account -> HTTP 409 {"error":"This server name has already been submitted and is pending review."}
+time-tracker-timesheet-billable-hours -> HTTP 200 {"success":true}
