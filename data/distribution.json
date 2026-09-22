@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-09-20",
+  "updated_at": "2026-09-22",
   "surfaces": {
     "github": {
       "status": "published",
@@ -1009,16 +1009,16 @@
     },
     "goods-receipt": {
       "github": "published",
-      "registry": "pending",
+      "registry": "published io.github.theluckystrike/goods-receipt @0.22.0 (2026-09-22, MCPB 404 fixed by uploading bundles to release v0.22.0)",
       "hosted": "published https://mcp.zovo.one/mcp/goods-receipt",
       "npm": "missing",
       "smithery": "pending",
       "glama": "pending",
       "docker-mcp-catalog": "pending",
       "cline-marketplace": "pending",
-      "mcpb": "pending build",
-      "github-mirror": "pending",
-      "registry-name": "pending"
+      "mcpb": "published release v0.22.0",
+      "github-mirror": "published theluckystrike/mcp-goods-receipt",
+      "registry-name": "io.github.theluckystrike/goods-receipt"
     },
     "leave": {
       "target": "mcpservers.org",
