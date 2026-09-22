@@ -1563,7 +1563,7 @@ ${(() => {
 <p>${esc(GUIDE_INDEX.description)} Every server runs locally over stdio, has a free tier that is useful on its own, and a Pro key that is a one-time payment.</p>
 <ul>${items}</ul>
 <p><a href="/">All servers and prices</a></p>`;
-      const meta = `<meta name="description" content="${esc(GUIDE_INDEX.description).slice(0, 155)}"><link rel="canonical" href="https://mcp.zovo.one/guides">${og(GUIDE_INDEX.title, GUIDE_INDEX.description, "https://mcp.zovo.one/guides", "website")}`;
+      const meta = `<meta name="description" content="${esc(GUIDE_INDEX.description).slice(0, 155)}"><link rel="canonical" href="https://mcp.zovo.one/guides">${og(GUIDE_INDEX.title, GUIDE_INDEX.description, "https://mcp.zovo.one/guides", "website")}<script type="application/ld+json">${JSON.stringify({ "@context": "https://schema.org", "@type": "ItemList", name: GUIDE_INDEX.title, url: "https://mcp.zovo.one/guides", itemListElement: Object.entries(GUIDES).map(([slug, g], i) => ({ "@type": "ListItem", position: i + 1, url: `https://mcp.zovo.one/guides/${slug}`, name: g.title })) })}</script>`;
       const html = page(GUIDE_INDEX.title, body).replace("</title>", "</title>" + meta);
       return new Response(html, { headers: await contentHeaders(html) });
     }
