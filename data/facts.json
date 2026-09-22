@@ -211,9 +211,9 @@
   ],
   "servers": {
     "time-tracker": {
-      "title": "MCP Time Tracker",
+      "title": "MCP Time Tracking Server — Free, No Install",
       "tagline": "Track billable time without leaving the chat.",
-      "does": "Starts and stops timers, records manual entries, sets hourly rates per project, and turns the log into reports grouped by project, day, task or tag, CSV exports and invoice-ready line items. Money is computed from seconds and integer cents in one rounding step so totals always add up.",
+      "does": "Track billable time from Claude with a free, no-install MCP server. Start and stop timers in chat, weekly reports and client billing.",
       "for": "Freelancers, consultants and developers who already work inside Claude Code, Cursor or Claude Desktop and bill by the hour.",
       "example": "\"Start a timer for Acme, task: API refactor\" ... \"Stop it and show me this week's hours per project with amounts.\"",
       "free": "Unlimited timers and entries; reports, lists and CSV cover the last 7 days; 2 projects with rates. Currency per entry (EUR, USD, GBP, PLN).",
@@ -241,9 +241,9 @@
       "storage": "Works on the user's own files; nothing else stored."
     },
     "invoice": {
-      "title": "MCP Invoice",
+      "title": "MCP Server for Invoices — Generate Invoices from Claude",
       "tagline": "Numbered invoices with tax lines, rendered to a professional PDF.",
-      "does": "Stores the issuer profile and clients, allocates invoice numbers that never repeat (INV-YYYY-NNNN), computes per-line rounding, multiple VAT rates and discounts in integer minor units, renders an A4 PDF with pdfkit (multi-page tables, totals, payment details), tracks paid status and reports overdue invoices. Pairs with the time tracker: hours become an invoice in the same chat.",
+      "does": "Generate and send invoices from Claude with a free MCP server. Create line-item invoices in chat with PDF output, taxes and VAT, plus payment tracking. No install.",
       "for": "Freelancers and small businesses that want to say: make an invoice for Acme, 12 hours at 90 EUR, due in 14 days.",
       "example": "\"Invoice Acme for 12 h at 90 EUR with 23% VAT, due in 14 days, and give me the PDF.\"",
       "free": "3 invoices per calendar month; overdue report free; PDF carries a small footer line.",
@@ -251,9 +251,9 @@
       "storage": "~/.local/share/mcp-servers/invoice/"
     },
     "expense-tracker": {
-      "title": "MCP Expense Tracker",
+      "title": "MCP Expense Tracker — Log Expenses from Claude",
       "tagline": "Receipts, mileage and expenses that turn into invoice lines.",
-      "does": "Logs expenses with per-expense currency, VAT split and receipt attachment (path + sha256), auto-categorises merchants by rules, records mileage with country rate tables, summarises by category, project, month or merchant per currency, exports CSV or xlsx, and emits invoice-ready line items (net + tax rate, so nothing is taxed twice) for rebilling a project with optional markup.",
+      "does": "Log expenses from Claude with a free MCP server. Quick entry, categories, mileage, receipts and CSV export, ready to repbill with markup. No install.",
       "for": "Freelancers and small businesses who already track time and invoice from chat and want the receipts side closed in the same place.",
       "example": "\"I paid 61.50 EUR at Media Markt for a USB hub, Acme project, billable\" ... \"Give me the invoice lines to rebill Acme this month with 10% markup.\"",
       "free": "Unlimited logging; list and summary cover the last 30 days; 3 projects; 5 rules; CSV export up to 200 rows, never partial.",
@@ -281,9 +281,9 @@
       "storage": "~/.local/share/mcp-servers/currency/ (rate cache)"
     },
     "docx": {
-      "title": "MCP Docx",
+      "title": "MCP Word Document Server — Create .docx from Claude",
       "tagline": "Real Word documents from chat: proposals, contracts, quotes.",
-      "does": "Creates .docx files from structured sections or markdown (headings, lists, tables, bold and italic), reads text back from existing Word files, fills {{placeholders}} in templates while keeping formatting, and generates structured proposals and freelance service agreements from the business profile, with an HTML export for printing.",
+      "does": "Create .docx Word documents from Claude with a free MCP server. Template-based docs, formatted sections, proposals and batch generation. No install.",
       "for": "Freelancers who send proposals and contracts and want them as editable Word files, not PDFs.",
       "example": "\"Write a proposal for Acme: redesign, 3 phases, 4,500 EUR, valid two weeks.\" ... \"Fill my NDA template with these names.\"",
       "free": "Create, convert and read documents without limit; 3 proposals or contracts per calendar month; templates up to 10 placeholders.",
@@ -341,9 +341,9 @@
       "storage": "~/.local/share/mcp-servers/calendar/"
     },
     "pdf": {
-      "title": "MCP PDF Tools",
+      "title": "MCP PDF Server — Merge, Split, Fill Forms",
       "tagline": "Merge, split, stamp and read PDFs, pure JavaScript.",
-      "does": "Merges and splits PDFs, extracts and reorders pages, rotates, stamps PAID or DRAFT or any text at a chosen position, watermarks the business name and VAT id from the shared profile, extracts text best effort, and reports page counts and metadata. Never edits inputs in place and refuses encrypted files with a clear message.",
+      "does": "Merge, split and fill PDF forms from Claude with a free MCP server. Form-preserving operations, text extraction, stamps and batch jobs. No install.",
       "for": "Anyone who sends invoices, proposals and contracts as PDFs and needs to mark, combine or split them without a desktop app.",
       "example": "\"Merge these three invoices into one PDF and stamp it PAID.\" ... \"Split the contract into signature pages.\"",
       "free": "Info, count, text, merge up to 5 files, edits on files up to 30 pages, PAID and DRAFT stamps.",
@@ -371,9 +371,9 @@
       "storage": "~/.local/share/mcp-servers/bank-statement/"
     },
     "kanban": {
-      "title": "MCP Kanban",
+      "title": "MCP Kanban Server — Boards from Claude",
       "tagline": "A task board per project that hands off to the time tracker.",
-      "does": "Keeps tasks per project in columns (backlog, todo, doing, review, done) with due dates, estimates, priorities and tags; shows the board, overdue items and a weekly review of planned versus done and estimates versus actuals; starts a time-tracker timer from a task and records the link. Local dates in your home time zone.",
+      "does": "Run kanban boards from Claude with a free hosted MCP server. Create cards and move them between columns by chat, with due dates and estimates.",
       "for": "Freelancers who plan the week in a board and bill the hours from the same tasks.",
       "example": "\"Add: Nova API design, due Friday, 3 hours.\" ... \"What is overdue, and start the timer on the API task.\"",
       "free": "3 projects, 200 open tasks, default columns.",
@@ -431,9 +431,9 @@
       "storage": "~/.local/share/mcp-servers/deposits/"
     },
     "per-diem": {
-      "title": "MCP Per Diem",
+      "title": "MCP Per Diem Calculator — Employee Travel Allowances from Claude",
       "tagline": "Statutory travel allowances on the rate tables the tax authorities publish, and the trips you priced with them.",
-      "does": "Prices one business trip against a bundled rate table and shows the arithmetic: the allowance per day, the partial-day fraction the scheme's own ladder produced, every deduction for a meal somebody else paid for, and the total in the scheme's own currency. Three schemes ship with it: the Polish delegation regulation at home and per country, the HMRC benchmark scale rates for travel inside the UK, and the US GSA CONUS standard M&IE with the lodging cap. Start and end are instants rather than wall clocks, so a trip across a clock change is 23 or 25 hours and the Polish 24-hour period and the US calendar day give different, correct answers to the same trip. Trips can be saved under a name with a TRIP-YYYY-NNNN id, listed with a total per currency, reported per scheme and per month, and handed to the expense tracker as ready-made expense_add arguments. The tables are files inside the package, not a feed, so the same trip priced twice gives the same answer, and every rate carries its authority, instrument, source URL and effective date.",
+      "does": "Per diem allowance calculator for employee travel claims — Polish delegation, HMRC scale rates, US GSA M&IE. Free MCP server, not GSA federal rates lookup.",
       "for": "Anyone who claims or pays a statutory travel allowance: Polish contractors and employers on delegacja and diety, UK sole traders and companies on the HMRC benchmark rates, and US federal or corporate travellers on the GSA standard.",
       "example": "\"What is the per diem for 58 hours in Krakow, leaving Tuesday 8am, with breakfast on the first day and two nights in a hotel?\" ... \"Same trip under the HMRC rates.\" ... \"Save it as the Krakow audit trip.\" ... \"Total my per diems this quarter per scheme.\"",
       "free": "Rate lookups and calculations are unlimited on every tier: the tables are public regulation, and metering the reading of a regulation would be charging for the tax authority's work. 5 trips saved per calendar month, counted by start date, and unlimited trip lists.",
@@ -501,9 +501,9 @@
       "storage": "~/.local/share/mcp-servers/catalogue/"
     },
     "petty-cash": {
-      "title": "MCP Petty Cash",
+      "title": "MCP Petty Cash Server — Track a Petty Cash Float from Claude",
       "tagline": "A petty cash float on the imprest system, reconciled to the minor unit.",
-      "does": "Opens a tin with an imprest amount and a custodian, records one voucher for every receipt paid out of it -- amount in whole minor units, date, category, description, payee and receipt reference -- and counts the cash whenever you ask, returning the expected balance, the difference to the minor unit and every voucher that count covers, all marked reconciled. A count is a FACT, so it moves the book balance: the difference is carried forward as an over or short rather than re-reported at every later count, which is what makes a tin that is short by a little every month visible as a run rather than as one number. The replenishment is imprest minus balance and never the sum of the vouchers: the two differ by exactly what the counts found over or short, and reimbursing the voucher total instead restores the float short by that difference every cycle while every reconciliation still reports clean. The difference comes back as its own cash_over_short journal line rather than folded into an expense category where it would look like postage. Under the imprest system the petty_cash account does not move at a replenishment at all: the journal credits cash and debits the expenses, per category, in the cash book's own account ids, so a category spelled three ways is one account and not three. A voucher larger than the balance on its own date is refused, and so is a back-dated one that would make any LATER day negative. A reconciled voucher cannot be deleted, because the cash it took out was counted. No balance is stored: every balance is derived on the call from the imprest, the top-ups, the vouchers and what each count found.",
+      "does": "Track a petty cash float from Claude with a free MCP server. Imprest system, vouchers, reconciliations and cash-over-short. No install.",
       "for": "Anyone who holds cash for the small things and has to prove what happened to it: a one-tin office, a workshop, a site hut, a shop, a charity with a float, and the bookkeepers who have to turn a shoebox of receipts into a replenishment cheque and a journal that balances.",
       "example": "\"Open a EUR 500 office float, Anna holds it.\" ... \"Stamps, 12.50, 2 March.\" ... \"Taxi 34.80 on the 5th, receipt 4471.\" ... \"I counted 297.95 in the tin on the 31st.\" ... \"What does the replenishment cheque have to be, and what is the journal?\"",
       "free": "reconcile is free and unlimited on every tier: whether the cash in the tin matches the paperwork is the question this server exists to answer, and a free tier that withholds the answer is a demo. voucher_delete and topup_record are free for the same reason -- a voucher typed in twice would otherwise cost a slot with no way back but a key. The meter is on the volume of record keeping: one float, and twenty vouchers a calendar month, which is a real one-tin office.",
@@ -521,9 +521,9 @@
       "storage": "~/.local/share/mcp-servers/change-order/"
     },
     "delivery-schedule": {
-      "title": "MCP Delivery Schedule",
+      "title": "MCP Server for Delivery Schedules — Late Deliverables from Claude",
       "tagline": "Dated deliverables against a quote or a work order, and what is late as at any date you name.",
-      "does": "Opens a delivery schedule against a quote, a work order or a change order, and holds the dated deliverables on it: what is being handed over, the day it is due, its value in whole minor units when it is separately priced, and a status history that runs planned to in progress to delivered to accepted, each move carrying the day it actually happened and the client's acceptance note on the accepted one. LATE IS NOT A STATUS HERE, IT IS A READING: a stored late flag is a fact about the afternoon somebody last ran the report and goes on being reported long after the work lands, so nothing derived is stored and late, due today, not yet due, delivered on time and delivered late are all worked out on the call against the as_of the CALLER passes. The same deliverable due 2026-04-20 and delivered 2026-04-24 reads not yet due at 2026-04-19, late by two days at 2026-04-22 and delivered late by four days at 2026-05-01, from one unchanged store, and the unit suite asserts all three. A deliverable is late only once as_of is PAST its due date, so one due on as_of sits in due_today, which is the same rule the statement server ages an invoice by. Every comparison is between two YYYY-MM-DD strings and every day count is the difference of two UTC midnights, and a suite replays every call under four timezones fourteen hours apart and asserts the responses are byte-identical, so a laptop that travelled cannot move a client's deadline. Nothing may predate the reference document: its own date is stated once on the schedule, and a due date or a status move before it is refused, because nothing can be owed, or delivered, before the document that ordered it exists. Accepting something that was never delivered is refused by name, because acceptance is the client's answer to a handover and there would be no delivered date to bill from. A deliverable with no value is NOT worth zero: it is counted apart wherever a total is printed and excluded by name from the milestone payload, because a price this server invented would be printed on a document a customer pays from. Once milestones are signed off, milestone_payload returns them as invoice_create-ready items in MAJOR units and quote_create-ready items in MINOR units at once, with the scale printed against each, and the unit suite feeds the MINOR figure into the invoice engine as though it were MAJOR and asserts the net is exactly 100x. It reads exactly one file it does not own, the shared business profile, read-only and best-effort, and writes into no store but its own.",
+      "does": "Hold dated deliverables against a quote or work order and see what is late, from Claude. Free MCP server, no install.",
       "for": "Agencies, studios, consultancies and trades who quote a job in phases and then have to say, months later and on a date somebody else chose, which deliverables slipped, by how many days, and which ones the client has actually signed off and can therefore be invoiced.",
       "example": "\"Open a delivery schedule against WO-2026-0011 for Harbour Cafe, dated 1 April: wireframes due the 10th at 900, page copy due the 20th at 479.88, the built site due 1 May at 2100, handover training on the 8th.\" ... \"Wireframes went out on the 9th, signed off on the 12th.\" ... \"What was late as at 22 April?\" ... \"And as at 5 May?\" ... \"Build the invoice for everything they have accepted.\"",
       "free": "Three OPEN delivery schedules, and 200 deliverables on each on every tier. The cap counts the jobs that still owe something rather than the jobs ever run, so accepting the last deliverable completes a schedule and frees its slot without deleting the record, and delivery_schedule_delete on an empty one is free on every tier, because a way back that only a Pro key can reach is not a way back. late_report is free on every tier: what is late is the question the server exists for, and withholding it would withhold the one answer the client is going to ask for. A second schedule against a reference that already has one is refused BEFORE the cap is consulted, so the refusal names the id already stored rather than selling an upgrade.",
@@ -581,9 +581,9 @@
       "storage": "~/.local/share/mcp-servers/job-card/"
     },
     "dunning-letters": {
-      "title": "MCP Dunning Letters",
+      "title": "MCP Dunning Letters Server — Automated Payment Reminders",
       "tagline": "Chase overdue invoices on a ladder anchored to the due date: reminder 1, reminder 2, the final notice, with the aging and the day's chase list.",
-      "does": "Registers an unpaid invoice (client, reference, amount in integer minor units, currency, due date) and runs the escalation ladder: reminder 1 at due + 7 days, reminder 2 at due + 14 and the final notice at due + 21, the gaps configurable per invoice. The ladder is anchored to the due date, not to the last letter: a reminder that actually goes out twelve days late does not push the final notice back, because the client's obligation was fixed by the due date, and recording a sending moves only which stage is next, never the schedule. The letters go out strictly in order, so an invoice 60 days late with nothing sent is still owed reminder 1, because a final notice that no polite letter preceded reads as a threat, not a chase. The late fee is simple interest, pro-rata on a 30-day month, on the amount outstanding on the day the letter is written, rounded once to the minor unit. letter_render generates the letter for the current stage as Markdown or self-contained printable HTML; letter_sent records that it actually went out; payment_record lowers what the next letter asks for, and covering the balance closes the ladder. overdue_list is every unpaid invoice past due, worst first; aging_summary buckets the register current, 1-30, 31-60, 61-90, 91+; chase_today answers what has to go out today. Nothing is emailed or sent anywhere: the server produces the letter text and sending it is the user's act.",
+      "does": "Automated payment reminders for overdue invoices. Tiered dunning-letter sequences, PDF letters and accounts-receivable follow-up from Claude.",
       "for": "Freelancers and small businesses with late payers: the polite reminder, the firm one and the final notice, each dated, each recorded, so the paper trail is complete before a collections agency or a court ever sees it.",
       "example": "\"Register INV-1042 to Acme Ltd, USD 1,250.00, due 2026-06-01, issued 2026-05-15, late fees at 2% a month.\" ... \"What do I need to send today?\" ... \"Render the reminder for Acme.\" ... \"They paid 500 on the 20th; record it and show me the final notice when it falls due.\"",
       "free": "Three unpaid invoices chased at once, with all three letters in both formats, the aging summary, the day's chase list and payment recording free on every tier. An invoice that gets paid frees its slot, because the cap is on how many chases run at once, never on the letters or the aging.",
@@ -663,9 +663,9 @@
       "pkg": "@theluckystrike/mcp-leave"
     },
     "purchase-requisition": {
-      "title": "MCP Purchase Requisition",
+      "title": "MCP Server for Purchase Requisitions — Approvals from Claude",
       "tagline": "Purchase requisitions you build once and approve per order, with the signed record of each approval.",
-      "does": "Holds a purchase requisition as a named list of approval steps, optionally grouped into sections, each required or optional, and runs it against a proposed order as many times as you like. A run marks every step pass, fail or not applicable, with who marked it, on what day, and a note saying what was found, and run_sign_off puts a name and a date on it and freezes it. A run copies its requisition when it starts, so editing the requisition afterwards never changes a run already under way. run_report writes the approval record to a .txt file on the Pro tier.",
+      "does": "Run purchase requisition approvals from Claude with a free MCP server. Named approval steps, pass/fail runs, signed sign-off record. No install.",
       "for": "Procurement, site management and finance teams: approve-before-order gates, two-quote checks, budget-line sign-off, PO-number verification.",
       "example": "\"Make a site purchase approval: steel fixings approved by site engineer, delivery to compound, signed delivery note returned, PO number quoted on invoice, budget line checked, two quotes attached\", then run it for batch 44, fail the two-quote step with a note, and sign it off.",
       "free": "Three requisitions, and UNLIMITED RUNS of them on every tier, because capping the running of a requisition would cap the only thing it is for.",
@@ -947,7 +947,7 @@
     },
     "supplier-list": {
       "date": "2026-09-17",
-      "probe": "npm registry search 'mcp <capability>' size=5 \u2014 no direct competitor found in results",
+      "probe": "npm registry search 'mcp <capability>' size=5 — no direct competitor found in results",
       "tokens": [
         "supplier",
         "supplier-list",
@@ -959,7 +959,7 @@
     },
     "service-agreement": {
       "date": "2026-09-17",
-      "probe": "npm registry search 'mcp <capability>' size=5 \u2014 no direct competitor found in results",
+      "probe": "npm registry search 'mcp <capability>' size=5 — no direct competitor found in results",
       "tokens": [
         "service-agreement",
         "service-contract",
@@ -970,7 +970,7 @@
     },
     "maintenance-log": {
       "date": "2026-09-17",
-      "probe": "npm registry search 'mcp <capability>' size=5 \u2014 no direct competitor found in results",
+      "probe": "npm registry search 'mcp <capability>' size=5 — no direct competitor found in results",
       "tokens": [
         "maintenance-log",
         "maintenance-schedule",
@@ -981,7 +981,7 @@
     },
     "mileage-log": {
       "date": "2026-09-17",
-      "probe": "npm registry search 'mcp <capability>' size=5 \u2014 no direct competitor found in results",
+      "probe": "npm registry search 'mcp <capability>' size=5 — no direct competitor found in results",
       "tokens": [
         "mileage-log",
         "mileage-logbook",
