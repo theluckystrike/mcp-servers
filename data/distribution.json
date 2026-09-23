@@ -28,7 +28,7 @@
       "note": "CLI 4.11.1 + REST api.smithery.ai are scriptable with a bearer key, but obtaining one needs one browser login: run `npx -y @smithery/cli auth login` and open the printed https://smithery.ai/auth/cli?s=<session> URL. smithery.yaml validated against the CLI schema (name + target, loose)"
     },
     "glama": {
-      "status": "partially indexed: 1 of 33 sampled (mcp-checklist 200; statement-of-account + invoice still 404) - weekly recheck continues",
+      "status": "partially indexed: 3 of 10 sampled 200 (checklist, statement-of-account, office-suite); weekly recheck continues",
       "url": "https://glama.ai/mcp/servers/theluckystrike/mcp-statement-of-account",
       "note": "T11 resolved: 13/42 listed, all pre-rename names; glama-side ingest lag behind registry renames; official registry 42/42 verified @0.22.0; weekly recheck (docs/T11_GLAMA_SLUGS_S45.md)"
     },
@@ -39,7 +39,7 @@
       "last_checked": "2026-09-21"
     },
     "awesome-mcp-servers": {
-      "status": "submitted: 4 single-server PRs, 1 all-green",
+      "status": "open: 12 PRs open, 2 closed unmerged (13473, 5768); repo backlog ~2220 open PRs",
       "url": "https://github.com/punkpeye/awesome-mcp-servers",
       "note": "Round 29 (2026-09-07), read fresh with gh, not from the record. PR 13473 state OPEN. Labels are now missing-glama + has-emoji + valid-name -- the emoji blocker recorded in earlier rounds is FIXED, only missing-glama remains. check-submission reports conclusion SUCCESS (2026-09-07T01:08:05Z); the workflow only applies labels, it does not fail the PR. Two bot comments, both 2026-09-02T13:19:09Z; no maintainer has ever commented. READ THE CHECK FROM SOURCE (.github/workflows/check-glama.yml): the entire Glama gate is `newAddedLines.some(line => line.includes('glama.ai/mcp/servers/') && line.includes('/badges/score.svg'))`. It is .some() not .every(), so ONE badged line among four unbadged ones flips the label, and it makes NO HTTP request -- it never checks the badge resolves. That makes it trivially spoofable. Deliberately NOT spoofed: no badge was added for any of the four servers, which are all 404 on Glama, and the genuinely listed sibling mcp-statement-of-account was deliberately NOT added as a fifth entry either, because a green has-glama label over four unbadged entries misrepresents the state and the maintainer, Frank Fiegel, is Glama's own founder. Action taken this round: ONE comment, https://github.com/punkpeye/awesome-mcp-servers/pull/13473#issuecomment-5564754541 , correcting this project's own earlier comment which had wrongly said a Glama login was required. It gives the maintainer the indexed sibling URL and its live badge, the curl evidence that all four PR repos carry identical glama.json and Dockerfile, the four 404s, and asks him to choose between holding the PR open until the crawler reaches them or splitting into one PR per server. No files in the PR were touched. VERDICT: the PR can pass without a human -- emoji and name labels are already green, and an agent can push the four badges itself the moment any of the four badge URLs returns 200 -- but nothing this project can do from outside will CAUSE that indexing, and merging always needs the maintainer since no workflow automerges. Treat as a watch item: poll glama.ai/mcp/servers/theluckystrike/mcp-<name>/badges/score.svg each loop. | Round 26 (2026-09-08): PR 13473 CLOSED by punkpeye 2026-09-07T14:47:53Z, reason verbatim 'this PR adds multiple servers. Please submit one server per PR ... Feel free to open separate PRs'. Reopened as one server per PR, four PRs, one-line diff each, appended at the end of the target section (which is what merged PRs actually do; the section is NOT alphabetical in practice). Titles carry the repo's documented agent opt-in suffix. #13963 mcp-statement-of-account Finance & Fintech -> labels has-glama,has-emoji,valid-name, check-submission SUCCESS. FIRST all-green entry this project has put in front of this maintainer; it carries the real badge, verified 200 image/svg+xml 4560 bytes. #13964 mcp-spreadsheet Data Science Tools, #13965 mcp-pdf Other Tools, #13966 mcp-barcode Other Tools -> all check-submission SUCCESS, all missing-glama, which is stated in one line in each PR body. NO fabricated badge was pasted; the 12 candidate badge URLs were probed and all returned 404. No maintainer comment on any of the four."
     },
@@ -210,7 +210,7 @@
       "note": "20 stars; Community Extensions section is a placeholder (\"Looking for contributions!\"), no existing per-entry format to match, only category descriptions with example bullet-point ideas, not real entries"
     },
     "mobinx-awesome-mcp-list": {
-      "status": "submitted",
+      "status": "live (PR 420 merged 2026-09-14T11:10Z)",
       "url": "https://github.com/MobinX/awesome-mcp-list/pull/420",
       "note": "Round 12: plain bullet list, decorative emoji only on category headings (same convention as TensorBlock/YuzeHao2023). Forked to theluckystrike/awesome-mcp-list, branch add-office-suite, one entry added to Utilities next to Markgatcha/universal-mcp-toolkit. PR open. | Round 26 (2026-09-08): re-checked: OPEN, MERGEABLE/CLEAN, no maintainer comment. Nothing to fix. Not bumped."
     },
@@ -251,7 +251,7 @@
       "last_checked": "2026-09-21"
     },
     "abordage-awesome-mcp": {
-      "status": "submitted",
+      "status": "live (PR 106 merged 2026-09-14T06:52Z)",
       "url": "https://github.com/abordage/awesome-mcp/pull/106",
       "note": "PR 106 adds six entries to repositories.yaml only, since the README is generated. Both CI checks pass. (2026-09-07) | Round 26 (2026-09-08): re-checked: OPEN, MERGEABLE/CLEAN, 'Validate changed files' and 'validate' both SUCCESS, no maintainer comment. Nothing to fix. Not bumped."
     },
@@ -1154,5 +1154,17 @@
     "model": "Stripe checkout, one-time or subscription, creator keeps large share; automated security scan, minutes-to-approve; remote HTTP servers supported (fits mcp.zovo.one/mcp/*)",
     "next": "verify email \u2192 sign in \u2192 submit remote invoice server as pilot (free tier) \u2192 then pro-priced rollouts",
     "payment_fit": "directly serves the monetize-with-payment-options goal"
-  }
+  },
+  "add_surfaces_r3": [
+    {
+      "surface": "ever-works/awesome-mcp-servers",
+      "stars": 107,
+      "note": "README-only plain list on master, no CONTRIBUTING; pushed 2026-08-04"
+    },
+    {
+      "surface": "agenticdevops/awesome-devops-mcp",
+      "stars": 41,
+      "note": "PRs welcome per README; DevOps focus; CONTRIBUTING.md 404"
+    }
+  ]
 }
