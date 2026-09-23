@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/glossary-terms-definitions-library",
   "description": "A personal glossary of terms and definitions, assembled into a real Word docx, variables filled.",
-  "version": "0.22.0",
+  "version": "0.22.1",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
@@ -26,6 +26,12 @@
         }
       ],
       "fileSha256": "95359cd7ce95fb2d45385c04d9923e2257c62402257b7bf520f7bd17f96f298b"
+    }
+  ],
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.zovo.one/mcp/glossary-terms-definitions-library"
     }
   ]
 }

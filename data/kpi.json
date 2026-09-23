@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-09-23T10:04:27.966Z",
+  "generated_at": "2026-09-23T10:11:25.013Z",
   "kpis": [
     {
       "cat": "Discovery",
       "name": "Registry entries at latest version",
-      "value": 56,
+      "value": 54,
       "target": 133,
       "unit": "of all published names",
       "how": "one exact GET /v0.1/servers/<name>/versions/latest per manifest name, compared with the release version. NOT a substring search: with 30,395 servers in the registry a search can push the exact match off page one, which is how this read 41 of 91 while a direct sample of 12 returned 12 of 12 present",
@@ -177,7 +177,7 @@
       "value": 31,
       "target": 200,
       "unit": "files (1h TTL)",
-      "how": "previous value; wrangler timed out at 2026-09-23T10:03:12.810Z",
+      "how": "previous value; wrangler timed out at 2026-09-23T10:09:31.415Z",
       "why": "A produced document is a completed job, not just a call.",
       "stale": true,
       "status": "progress"
@@ -245,7 +245,7 @@
     {
       "cat": "Reliability",
       "name": "Hosted tools/list latency p50",
-      "value": 177,
+      "value": 555,
       "target": 800,
       "unit": "ms",
       "lower_is_better": true,
@@ -342,16 +342,16 @@
     },
     "sales_charges_seen": 0,
     "remote_kv": {
-      "total": 7133,
+      "total": 7132,
       "by": {
         "anon": 134,
         "bind": 2,
         "click": 1578,
         "lic": 4024,
         "meta": 404,
-        "mint": 5,
+        "mint": 3,
         "oauth_client": 1,
-        "rl": 54,
+        "rl": 55,
         "shared": 2,
         "tok": 929
       },
@@ -6499,10 +6499,8 @@
         "meta:lic:fdc7ec858003",
         "meta:lic:ok_id-1",
         "mint:175.12.226.190:497264",
-        "mint:2001:8f8:1227:3811:d94d:201e:b561:d1a:497264",
         "mint:240d:c010:13b:1::26:497264",
         "mint:240d:c010:195:1::2c:497264",
-        "mint:5.195.173.137:497264",
         "oauth_client:59b7f877144e59d517f5d54bf1bacb85",
         "rl:anon:4182e7991dd30facfded947df5c9fb5b:497265",
         "rl:anon:4182e7991dd30facfded947df5c9fb5b:497266",
@@ -6547,6 +6545,7 @@
         "rl:discovery:2a02:c207:2348:3823::1:497266",
         "rl:discovery:2a06:98c0:3600::103:497264",
         "rl:discovery:2a06:98c0:3600::103:497265",
+        "rl:discovery:2a06:98c0:3600::103:497266",
         "rl:discovery:40.160.65.14:497264",
         "rl:discovery:40.160.65.14:497265",
         "rl:discovery:40.160.65.14:497266",
@@ -6554,8 +6553,8 @@
         "rl:discovery:52.30.255.187:497265",
         "rl:discovery:64.236.144.100:497265",
         "rl:discovery:74.235.117.102:497265",
-        "rl:discovery:94.186.90.82:497264",
         "rl:discovery:95.86.94.132:497265",
+        "rl:lic:8785a8b065ad:497266",
         "rl:lic:a4474dddbf68:497265",
         "rl:lic:cae2eab3eb1b:497265",
         "shared:ecb:daily",
@@ -7506,18 +7505,18 @@
       "probe_ids_excluded": 297
     },
     "latency": {
-      "p50_ms": 177,
+      "p50_ms": 555,
       "samples": [
-        1118,
-        153,
-        177
+        990,
+        555,
+        84
       ]
     },
     "registry": {
-      "entries": 56,
+      "entries": 54,
       "names": 133,
       "release": "0.22.0",
-      "hosted": 52,
+      "hosted": 54,
       "unreachable": 0
     },
     "sitemap_urls": 208

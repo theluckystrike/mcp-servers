@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/itinerary-travel-plan-schedule-events",
   "description": "Trip itinerary planner: events, free-busy, double bookings, schedule export.",
-  "version": "0.22.0",
+  "version": "0.22.1",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
@@ -26,6 +26,12 @@
         }
       ],
       "fileSha256": "4af4dc56d5ca639d2965b7518e4d54e8ab43542e7f4b7386446874a40ad93c57"
+    }
+  ],
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.zovo.one/mcp/itinerary-travel-plan-schedule-events"
     }
   ]
 }
