@@ -1329,6 +1329,15 @@ const VARIANT_ALIASES: Record<string, string> = {
   "estimate-template": "quotes",
   "bank-statement-pdf": "bank-statement",
   "categorize-transactions": "bank-statement",
+  "onboarding-goods-receipt-inspection-runs": "goods-receipt",
+  "label": "barcode",
+  "new-hire-onboarding-tasks": "onboarding",
+  "leave-pto-requests-approvals": "leave",
+  "docx-editor": "docx",
+  "maintenance-schedule": "maintenance-log",
+  "supplier-directory": "supplier-list",
+  "mileage-logbook": "mileage-log",
+  "service-contract": "service-agreement",
 };
 
 const TOOLS: Record<string, string[]> = {

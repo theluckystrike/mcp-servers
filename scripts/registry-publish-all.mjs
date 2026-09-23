@@ -50,10 +50,11 @@ for (const d of readdirSync(join(ROOT, "servers"))) {
     // Alias manifests share the primary entry's remote URL; the registry enforces one
     // remote URL per server, so publishing them always 400s. Skip them up front.
     if (f.endsWith(".snag.json")) continue;
-    // Variant/alias manifests (server.<alias>.json, server.variant.json) rebrand the same
-    // backend under a different name but share the primary entry's remote URL. The registry
-    // enforces one remote URL per server, so all 68 always 400 on publish. Skip them.
-    if (f !== "server.json") continue;
+    // Variant manifests (server.<variant>.json) rebrand the same backend under a
+    // discoverable registry name, pointing at the same .mcpb release asset. These publish
+    // fine (S131: itinerary + glossary proved it). server.variant.json stays skipped
+    // (it is the variant *spec*, not a registry entry).
+    if (f === "server.variant.json" || f === "server.npm-package.json") continue;
     const path = join(dir, f);
     let m; try { m = JSON.parse(readFileSync(path, "utf8")); } catch { continue; }
     if (!m.name || !m.version) continue;
