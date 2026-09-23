@@ -1335,6 +1335,7 @@ const VARIANT_ALIASES: Record<string, string> = {
   "leave-pto-requests-approvals": "leave",
   "docx-editor": "docx",
   "itinerary-travel-plan-schedule-events": "calendar",
+  "service-report": "work-order",
   "glossary-terms-definitions-library": "clauses",
   "maintenance-schedule": "maintenance-log",
   "supplier-directory": "supplier-list",
