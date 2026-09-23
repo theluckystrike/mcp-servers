@@ -1,5 +1,5 @@
 {
-  "at": "2026-09-23T11:14:38.441Z",
+  "at": "2026-09-23T11:20:44.283Z",
   "published": [],
   "duplicate": [
     "io.github.theluckystrike/amortization@0.22.0",
@@ -99,6 +99,7 @@
     "io.github.theluckystrike/resume-cover-letter-docx-generator@0.22.0",
     "io.github.theluckystrike/service-agreement@0.22.0",
     "io.github.theluckystrike/service-agreement@0.22.0",
+    "io.github.theluckystrike/service-report@0.22.2",
     "io.github.theluckystrike/statement-of-account@0.22.0",
     "io.github.theluckystrike/statement-of-account@0.22.0",
     "io.github.theluckystrike/supplier-list@0.22.0",
@@ -244,11 +245,6 @@
       "name": "io.github.theluckystrike/scope-change",
       "version": "0.22.0",
       "error": "Publishing to https://registry.modelcontextprotocol.io...\nError: publish failed: server returned status 400: {\"title\":\"Bad Request\",\"status\":400,\"detail\":\"Failed to publish server\",\"errors\":[{\"message\":\"remote URL https://mcp.zovo.one/mcp/change-order is already used by server io.github.theluckystri"
-    },
-    {
-      "name": "io.github.theluckystrike/service-report",
-      "version": "0.22.0",
-      "error": "Publishing to https://registry.modelcontextprotocol.io...\nError: publish failed: server returned status 400: {\"title\":\"Bad Request\",\"status\":400,\"detail\":\"Failed to publish server\",\"errors\":[{\"message\":\"remote URL https://mcp.zovo.one/mcp/work-order is already used by server io.github.theluckystrike"
     },
     {
       "name": "io.github.theluckystrike/sow",
