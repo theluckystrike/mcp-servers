@@ -1369,6 +1369,14 @@ const VARIANT_ALIASES: Record<string, string> = {
   "supplier-directory": "supplier-list",
   "mileage-logbook": "mileage-log",
   "service-contract": "service-agreement",
+  "pdf-merger": "pdf",
+  "pdf-splitter": "pdf",
+  "expenses-tracker": "expense-tracker",
+  "invoice-maker": "invoice",
+  "receipt-scanner": "expense-tracker",
+  "budget-tracker": "expense-tracker",
+  "gantt-chart": "spreadsheet",
+  "pomodoro-timer": "time-tracker",
 };
 
 const TOOLS: Record<string, string[]> = {
