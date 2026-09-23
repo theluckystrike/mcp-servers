@@ -9437,6 +9437,109 @@ ${FOOT}`,
       { q: "Does the count update stock levels?", a: "Yes. An adjusted quantity writes back to the catalogue entry, so the recorded count and the stock figure are the same number, not two lists that need reconciling." },
     ],
   },
+
+  "merge-pdf-files-in-claude-or-cursor": {
+    title: "Merge PDF files in Claude or Cursor without uploading them anywhere",
+    description: "Combine PDFs from chat: pick files in order, merge, and get one clean PDF back. No uploads, no accounts, works in Claude Desktop, Cursor and Cline.",
+    html: `<h1>Merge PDF files in Claude or Cursor without uploading them anywhere</h1>
+<p>Every free online PDF merger asks for the same thing: upload your documents to somebody else's
+server. Contracts, invoices, bank statements, ID scans, all of it leaves your machine. The MCP PDF
+server merges PDFs locally, so the files never leave your computer and the merged result is written
+next to them.</p>
+
+<h2>Merging is one sentence</h2>
+<p>"Merge these three PDFs in order into one file" is the whole workflow. Name the files in the order
+you want them to appear, and the merged PDF comes back ready to send. No drag and drop, no page
+rearranging by hand, no watermarks stamped on the result.</p>
+<p>The same server splits and stamps, so follow-up work stays in the chat: pull the signed pages out
+of a scanned contract, stamp a draft as DRAFT before it goes out, or combine receipts into one PDF
+for your accountant.</p>
+${install("pdf")}
+${FOOT}`,
+    faq: [
+      { q: "Are my PDFs uploaded to a server?", a: "No. The merge runs on your machine, and the output is written to your own files. Nothing is transmitted anywhere." },
+      { q: "Is there a page limit or watermark?", a: "No watermarks. Large merges are handled in batches, so hundreds of pages work where browser tools time out." },
+      { q: "Can I merge PDFs in Cursor or Cline too?", a: "Yes. The server speaks MCP, so any MCP client can drive it, including Claude Desktop, Cursor, Windsurf and Cline." },
+    ],
+  },
+  "split-pdf-pages-in-chat": {
+    title: "Split a PDF into separate documents from the chat window",
+    description: "Split PDFs from chat: extract page ranges, break a scan into per-document files, split by size. Local, no uploads, works in Claude Desktop and Cursor.",
+    html: `<h1>Split a PDF into separate documents from the chat window</h1>
+<p>Scanned packets arrive as one PDF and live as one PDF until someone spends an afternoon on a
+splitting website. The MCP PDF server does the split in the chat: name the file, say which pages
+belong where, and the separate documents come back in the same folder.</p>
+
+<h2>The splits people actually need</h2>
+<p><strong>Extract a range.</strong> "Pull pages 4 to 9 out of contract.pdf" gives you the clause
+section as its own file for redlining.</p>
+<p><strong>Burst a scan.</strong> "Split this into one PDF per invoice" turns a hundred-page bank
+download into files your accountant can file individually.</p>
+<p><strong>Split by size.</strong> When a portal rejects anything over 5 MB, ask for the split by
+size and upload the parts.</p>
+<p>Merging is the mirror operation, so a split-then-remerge round trip for reordering pages stays
+in one conversation with <a href="/guides/merge-pdf-files-in-claude-or-cursor">the merge guide</a>.</p>
+${install("pdf")}
+${FOOT}`,
+    faq: [
+      { q: "Does splitting change the original file?", a: "No. The source PDF is read only, and each split produces new files with names you choose or names derived from the page ranges." },
+      { q: "Can I split a scanned PDF?", a: "Yes. Scans are just pages to the splitter, so per-invoice and per-document bursts work on scanned packets as well as digital PDFs." },
+      { q: "Do the split files keep the text searchable?", a: "Yes. Text layers, bookmarks and metadata are preserved, so a split section stays searchable and printable." },
+    ],
+  },
+  "track-expenses-and-budgets-in-claude": {
+    title: "Track expenses and budgets inside Claude without a SaaS subscription",
+    description: "Log expenses from chat, auto-categorize receipts, set monthly budget envelopes and get variance reports. Local CSV ledgers, no account, no upload.",
+    html: `<h1>Track expenses and budgets inside Claude without a SaaS subscription</h1>
+<p>Expense tools want a monthly fee and your bank credentials. The MCP Expense Tracker takes a
+third path: plain JSON and CSV under your home directory, driven entirely from chat. "Log 42.50
+at the petrol station" writes the entry; "how much is left in the fuel budget this month" reads
+the ledger and does the arithmetic.</p>
+
+<h2>Budgets as envelopes</h2>
+<p>Set a monthly limit per category: "Set the software budget to 60 euros a month". During the
+month, the summary shows spend against each envelope, so overspend is visible on the 15th and not
+at reconciliation. Mileage is a first-class expense type, which matters for
+<a href="/guides/mileage-log-for-tax-from-chat">the tax log</a>.</p>
+
+<h2>Receipts and categories</h2>
+<p>Attach receipt files to entries, and teach the categorizer once: "Coffee bars are always
+meals". Bank exports can be imported and categorized in bulk for
+<a href="/guides/bank-statement-csv-categorize-reconcile">reconciliation</a>, and the whole ledger
+exports to CSV for the accountant or the spreadsheet.</p>
+${install("expense-tracker")}
+${FOOT}`,
+    faq: [
+      { q: "Where does my data live?", a: "In plain JSON and CSV files under your home directory. No account exists, nothing syncs, and you can read the ledger with any text editor." },
+      { q: "Can I set monthly budget limits?", a: "Yes. Budget envelopes per category show spend versus limit in every summary, so variance is visible mid-month." },
+      { q: "What about mileage?", a: "Mileage entries are a first-class expense type with their own rate handling, and they flow into the same CSV export." },
+    ],
+  },
+  "pomodoro-focus-sessions-in-claude": {
+    title: "Run pomodoro focus sessions from Claude and bill the hours after",
+    description: "Start timed focus blocks from chat, keep a session log, and turn the day's pomodoros into timesheet entries and invoice lines.",
+    html: `<h1>Run pomodoro focus sessions from Claude and bill the hours after</h1>
+<p>The pomodoro technique dies in the tooling: the timer lives in one app, the log in another, and
+the invoice never hears about either. The MCP Time Tracker runs focus blocks in the same chat
+where the work is happening, so the timer, the log and the invoice lines share one source.</p>
+
+<h2>How a pomodoro day goes</h2>
+<p>"Start a 25 minute focus block for the API refactor" starts the block and names the task. When
+it ends, the entry is logged automatically. After four blocks say "summarize today's focus
+sessions", and the day's pomodoros come back grouped by project, in hours and in money at your
+project rate.</p>
+<p>Because every block is a timesheet entry from birth, there is no end-of-week reconstruction.
+<a href="/guides/track-time-in-claude-code">The weekly billing guide</a> picks up where this one
+ends: hours become invoice lines, and invoice lines become a PDF.</p>
+${install("time-tracker")}
+${FOOT}`,
+    faq: [
+      { q: "Is this a separate pomodoro app?", a: "No. It is the time tracker's timer with focus-block semantics, so sessions are ordinary timesheet entries and bill like one." },
+      { q: "Can blocks have different lengths?", a: "Yes. Ask for 25, 50 or any length in minutes; short and long breaks are just entries you choose not to bill." },
+      { q: "Do pomodoros become invoice lines?", a: "Yes. Session entries carry the project rate, so the invoice summary turns a focus day into billed hours directly." },
+    ],
+  },
+
   "invoice-numbering-and-sequence-from-chat": {
     title: "Keep invoice numbers sequential and never reuse one",
     description: "Issue numbered invoices and recurring invoices from chat with a sequence that advances once, so the numbering your accountant sees is the numbering you produced.",
