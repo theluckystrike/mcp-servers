@@ -9096,6 +9096,39 @@ claude mcp add --transport http petty-cash \\
       { q: "Can I keep a petty cash log from chat instead of a spreadsheet?", a: "Yes. Log each voucher in one line of chat and the petty-cash MCP server keeps the running balance and prints the month-end sheet: https://mcp.zovo.one/mcp/petty-cash. Pair it with the cash-book server for the ledger side." },
     ],
   },
+  "ask-a-spreadsheet-questions-in-chat": {
+    title: "Ask questions about a spreadsheet in chat, no formulas needed",
+    description: "Point an MCP server at an Excel or CSV file and ask what it contains, what changed, or what a column adds up to. Reads up to 5 MB free, writes edits back.",
+    html: `<h1>Ask questions about a spreadsheet in chat, no formulas needed</h1>
+<p>Most spreadsheet work is not writing formulas, it is asking questions: what does this column add up to,
+which rows are missing a value, what changed between last month and this one. An MCP server puts the
+spreadsheet in the chat window so you ask in plain language and get an answer, and when you do need an
+edit, it writes the change back to the file.</p>
+
+<h2>Read and answer</h2>
+<p><a href="/s/spreadsheet">MCP Spreadsheet</a> reads Excel and CSV files and answers questions about them
+without you writing a formula. The free tier reads files up to 5 MB and 5,000 rows, which covers a
+typical small-business workbook. Over the cap it returns the rows it is allowed to and says how many were
+left out, rather than failing silently.</p>
+
+<h2>Edit and write back</h2>
+<p>When the answer is a change, the same server writes it back to the file. The free tier writes up to 500
+rows per file; over that nothing is written and the tool says so. A Pro key removes the row and size
+limits up to a 50 MB file ceiling.</p>
+
+<h2>Install it</h2>
+${install("spreadsheet")}
+<p>There is no account and no API key. The hosted URL works with nothing installed, and the local install
+keeps the file on your own machine. For the deeper walkthroughs see
+<a href="/guides/read-excel-in-cursor">reading Excel in Cursor</a> and
+<a href="/guides/answer-questions-about-a-spreadsheet-without-formulas">answering spreadsheet questions</a>.</p>
+${FOOT}`,
+    faq: [
+      { q: "Can I ask a spreadsheet questions in plain language?", a: "Yes. MCP Spreadsheet reads an Excel or CSV file and answers questions about it without you writing a formula, and writes edits back to the file." },
+      { q: "What are the free limits?", a: "The free tier reads files up to 5 MB and 5,000 rows and writes up to 500 rows per file. Over a cap the tool says so instead of failing silently." },
+      { q: "Does it work without installing anything?", a: "Yes. Spreadsheet is hosted at mcp.zovo.one, so you can add it by URL with a free anonymous token and nothing installed locally." },
+    ],
+  },
 };
 
 export const GUIDE_PRODUCT_LINKS = {
@@ -9315,39 +9348,6 @@ ${FOOT}`,
       { q: "Can an MCP server write a quote or estimate?", a: "Yes. MCP Quotes prices a quote from a sentence with line items, quantity, unit price, VAT and a discount, and keeps a running list you can revise and mark accepted." },
       { q: "Does the accepted quote become the invoice automatically?", a: "The invoice server takes the accepted quote's line items at the prices the quote carried, so the numbers carry over instead of being retyped. You still send the invoice yourself." },
       { q: "Do I need to install anything to try it?", a: "No. Both servers are hosted at mcp.zovo.one, so you can add them by URL with a free anonymous token and nothing installed locally." },
-    ],
-  },
-  "ask-a-spreadsheet-questions-in-chat": {
-    title: "Ask questions about a spreadsheet in chat, no formulas needed",
-    description: "Point an MCP server at an Excel or CSV file and ask what it contains, what changed, or what a column adds up to. Reads up to 5 MB free, writes edits back.",
-    html: `<h1>Ask questions about a spreadsheet in chat, no formulas needed</h1>
-<p>Most spreadsheet work is not writing formulas, it is asking questions: what does this column add up to,
-which rows are missing a value, what changed between last month and this one. An MCP server puts the
-spreadsheet in the chat window so you ask in plain language and get an answer, and when you do need an
-edit, it writes the change back to the file.</p>
-
-<h2>Read and answer</h2>
-<p><a href="/s/spreadsheet">MCP Spreadsheet</a> reads Excel and CSV files and answers questions about them
-without you writing a formula. The free tier reads files up to 5 MB and 5,000 rows, which covers a
-typical small-business workbook. Over the cap it returns the rows it is allowed to and says how many were
-left out, rather than failing silently.</p>
-
-<h2>Edit and write back</h2>
-<p>When the answer is a change, the same server writes it back to the file. The free tier writes up to 500
-rows per file; over that nothing is written and the tool says so. A Pro key removes the row and size
-limits up to a 50 MB file ceiling.</p>
-
-<h2>Install it</h2>
-${install("spreadsheet")}
-<p>There is no account and no API key. The hosted URL works with nothing installed, and the local install
-keeps the file on your own machine. For the deeper walkthroughs see
-<a href="/guides/read-excel-in-cursor">reading Excel in Cursor</a> and
-<a href="/guides/answer-questions-about-a-spreadsheet-without-formulas">answering spreadsheet questions</a>.</p>
-${FOOT}`,
-    faq: [
-      { q: "Can I ask a spreadsheet questions in plain language?", a: "Yes. MCP Spreadsheet reads an Excel or CSV file and answers questions about it without you writing a formula, and writes edits back to the file." },
-      { q: "What are the free limits?", a: "The free tier reads files up to 5 MB and 5,000 rows and writes up to 500 rows per file. Over a cap the tool says so instead of failing silently." },
-      { q: "Does it work without installing anything?", a: "Yes. Spreadsheet is hosted at mcp.zovo.one, so you can add it by URL with a free anonymous token and nothing installed locally." },
     ],
   },
   "delivery-schedule-and-work-order-from-chat": {
