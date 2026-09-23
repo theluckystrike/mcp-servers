@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-23T10:11:25.013Z",
+  "generated_at": "2026-09-23T10:43:41.807Z",
   "kpis": [
     {
       "cat": "Discovery",
@@ -24,7 +24,7 @@
     {
       "cat": "Discovery",
       "name": "Distribution surfaces live",
-      "value": 15,
+      "value": 17,
       "target": 70,
       "unit": "of 70",
       "how": "data/distribution.json",
@@ -34,7 +34,7 @@
     {
       "cat": "Discovery",
       "name": "URLs offered in the sitemap",
-      "value": 208,
+      "value": 213,
       "target": null,
       "unit": "URLs",
       "how": "curl mcp.zovo.one/sitemap.xml",
@@ -85,7 +85,7 @@
       "cat": "Discovery",
       "name": "Googlebot URL coverage",
       "value": 24,
-      "target": 208,
+      "target": 213,
       "unit": "of the sitemap, 7d",
       "how": "data/traffic.json crawler_url_coverage, Cloudflare GraphQL by user agent",
       "why": "Googlebot fetched robots.txt 4x and sitemap.xml 7x in the same window and then crawled 2 pages. It is declining, not blocked.",
@@ -95,7 +95,7 @@
       "cat": "Discovery",
       "name": "ClaudeBot URL coverage",
       "value": 34,
-      "target": 208,
+      "target": 213,
       "unit": "of the sitemap, 7d",
       "how": "data/traffic.json crawler_url_coverage",
       "why": "Assistant crawlers have this catalogue even though Google does not. This is the discovery channel that is actually working.",
@@ -177,7 +177,7 @@
       "value": 31,
       "target": 200,
       "unit": "files (1h TTL)",
-      "how": "previous value; wrangler timed out at 2026-09-23T10:09:31.415Z",
+      "how": "previous value; wrangler timed out at 2026-09-23T10:41:03.373Z",
       "why": "A produced document is a completed job, not just a call.",
       "stale": true,
       "status": "progress"
@@ -245,7 +245,7 @@
     {
       "cat": "Reliability",
       "name": "Hosted tools/list latency p50",
-      "value": 555,
+      "value": 654,
       "target": 800,
       "unit": "ms",
       "lower_is_better": true,
@@ -342,16 +342,15 @@
     },
     "sales_charges_seen": 0,
     "remote_kv": {
-      "total": 7132,
+      "total": 7140,
       "by": {
         "anon": 134,
         "bind": 2,
         "click": 1578,
         "lic": 4024,
         "meta": 404,
-        "mint": 3,
         "oauth_client": 1,
-        "rl": 55,
+        "rl": 66,
         "shared": 2,
         "tok": 929
       },
@@ -6498,13 +6497,9 @@
         "meta:lic:fcdf8b7f53a8",
         "meta:lic:fdc7ec858003",
         "meta:lic:ok_id-1",
-        "mint:175.12.226.190:497264",
-        "mint:240d:c010:13b:1::26:497264",
-        "mint:240d:c010:195:1::2c:497264",
         "oauth_client:59b7f877144e59d517f5d54bf1bacb85",
         "rl:anon:4182e7991dd30facfded947df5c9fb5b:497265",
         "rl:anon:4182e7991dd30facfded947df5c9fb5b:497266",
-        "rl:anon:5fa0f7f6332f7e453de647eb29bf416b:497264",
         "rl:discovery:13.83.166.226:497265",
         "rl:discovery:132.196.6.75:497265",
         "rl:discovery:135.232.232.83:497265",
@@ -6512,11 +6507,13 @@
         "rl:discovery:15.204.10.2:497264",
         "rl:discovery:15.204.10.2:497265",
         "rl:discovery:15.204.10.2:497266",
+        "rl:discovery:152.55.176.144:497266",
         "rl:discovery:152.55.176.23:497264",
         "rl:discovery:152.55.176.23:497265",
         "rl:discovery:152.55.176.23:497266",
-        "rl:discovery:152.55.184.206:497264",
         "rl:discovery:152.55.184.206:497265",
+        "rl:discovery:152.55.185.66:497266",
+        "rl:discovery:162.156.153.138:497266",
         "rl:discovery:162.35.183.198:497265",
         "rl:discovery:162.35.183.198:497266",
         "rl:discovery:172.171.6.115:497265",
@@ -6525,16 +6522,22 @@
         "rl:discovery:178.105.141.81:497265",
         "rl:discovery:178.105.142.83:497265",
         "rl:discovery:178.105.40.244:497265",
+        "rl:discovery:178.105.40.244:497266",
         "rl:discovery:185.43.233.32:497265",
-        "rl:discovery:187.77.97.131:497264",
         "rl:discovery:187.77.97.131:497265",
         "rl:discovery:187.77.97.131:497266",
+        "rl:discovery:188.122.20.85:497266",
         "rl:discovery:20.118.246.156:497265",
         "rl:discovery:20.169.101.192:497265",
         "rl:discovery:2001:41d0:303:e959::1:497265",
+        "rl:discovery:2001:41d0:303:e959::1:497266",
+        "rl:discovery:2406:7400:56:8652:60ad:55de:40d:ad96:497266",
+        "rl:discovery:2600:1f18:5a5b:3400:2f1e:c9d2:567b:76bc:497266",
         "rl:discovery:2607:5300:205:200::98ce:497264",
         "rl:discovery:2607:5300:205:200::98ce:497265",
-        "rl:discovery:2a01:4f8:1c18:b3bf::1:497264",
+        "rl:discovery:2607:5300:205:200::98ce:497266",
+        "rl:discovery:2a01:4f8:1c16:6920::1:497266",
+        "rl:discovery:2a01:4f8:1c18:b3bf::1:497266",
         "rl:discovery:2a01:4f9:3b:451d::2:497264",
         "rl:discovery:2a01:4f9:3b:451d::2:497265",
         "rl:discovery:2a01:4f9:3b:451d::2:497266",
@@ -6546,17 +6549,21 @@
         "rl:discovery:2a06:98c0:3600::103:497264",
         "rl:discovery:2a06:98c0:3600::103:497265",
         "rl:discovery:2a06:98c0:3600::103:497266",
-        "rl:discovery:40.160.65.14:497264",
         "rl:discovery:40.160.65.14:497265",
         "rl:discovery:40.160.65.14:497266",
         "rl:discovery:46.62.238.162:497265",
         "rl:discovery:52.30.255.187:497265",
+        "rl:discovery:52.30.255.187:497266",
         "rl:discovery:64.236.144.100:497265",
         "rl:discovery:74.235.117.102:497265",
         "rl:discovery:95.86.94.132:497265",
+        "rl:discovery:95.86.94.132:497266",
+        "rl:lic:393f90042755:497266",
+        "rl:lic:823408de48ae:497266",
         "rl:lic:8785a8b065ad:497266",
         "rl:lic:a4474dddbf68:497265",
         "rl:lic:cae2eab3eb1b:497265",
+        "rl:lic:ec233ca9b02c:497266",
         "shared:ecb:daily",
         "shared:ecb:history",
         "tok:anon_00003f7c304510e354000177ded0d697",
@@ -7505,11 +7512,11 @@
       "probe_ids_excluded": 297
     },
     "latency": {
-      "p50_ms": 555,
+      "p50_ms": 654,
       "samples": [
-        990,
-        555,
-        84
+        940,
+        654,
+        72
       ]
     },
     "registry": {
@@ -7517,8 +7524,8 @@
       "names": 133,
       "release": "0.22.0",
       "hosted": 54,
-      "unreachable": 0
+      "unreachable": 1
     },
-    "sitemap_urls": 208
+    "sitemap_urls": 213
   }
 }
