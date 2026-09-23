@@ -9295,6 +9295,177 @@ ${FOOT}`,
       { q: "Is the free tier a trial?", a: "No. The free tier is the whole product for light use and does not expire. A Pro key removes limits rather than downloading anything." },
     ],
   },
+  "timesheet-hour-tracking": {
+    title: "Track billable hours as timesheet entries instead of a wall-clock timer",
+    description: "Log hours project by project, in the currency it should be billed in, and get the detail back as a timesheet you can hand to accounting or turn into invoice lines.",
+    html: `<h1>Timesheet entries for billable hours, kept in the chat</h1>
+<p>A timesheet is not the same thing as a stopwatch. It is a list of hours already attributed to a
+project and a task, at a rate and in a currency, that your accountant or your client can read as a
+record. <a href="/s/time-tracker">MCP Time Tracker</a> keeps that list so you can grow it by talking
+rather than by editing a spreadsheet of starter rows.</p>
+
+<h2>Attributed entries, not a running clock</h2>
+<p>Say what happened and for whom: "log 2.5 hours yesterday for Acme, design review, at 90 euros an
+hour". The entry stores project, task, duration, rate and currency together, so a row is self
+contained. That is the property a timesheet needs: whoever reads it later can tell what the time was
+for without you narrating.</p>
+<p>A timer is still available when the work is happening now. Starting one for a project and task stops
+any timer already running, and stopping it writes a complete entry. The two paths land in the same
+list, so a day that starts as a timer and is finished by logging forgotten hours is one consistent
+timesheet.</p>
+
+<h2>Read it back the way a client does</h2>
+<p>"How many hours did I put into Acme this week, grouped by task" returns totals by project, and
+"give me invoice lines for Acme in August" produces one line per project ready for billing. If you run
+the invoice server too, the same hours become an
+<a href="/s/invoice">MCP Invoice</a> PDF without retyping a figure.</p>
+${install("time-tracker")}
+${FOOT}`,
+    faq: [
+      { q: "Is a timesheet just a timer?", a: "No. The useful part is the attributed record: project, task, duration, rate and currency on one row. The timer is one way to create those rows; logging hours you forgot is another, and both land in the same timesheet list." },
+      { q: "Can I bill the same week in two currencies?", a: "Yes. Currency is per entry and per project. A rate given as words such as 'euros' is stored as that currency, and entries with no explicit currency fall back to the project currency and then to USD." },
+      { q: "Where do my hours live?", a: "In plain JSON on your own machine. Nothing is uploaded and there is no account; Pro keys are verified locally, so it works offline." },
+    ],
+  },
+  "csv-to-json-conversion": {
+    title: "Convert a CSV into JSON for an API import or a dev tool",
+    description: "Turn a spreadsheet export into clean JSON, handle messy delimiters and header rows, and hand the result to whatever wants JSON rather than rows.",
+    html: `<h1>CSV to JSON for the tools that do not read rows</h1>
+<p>CSV is the format people are sent; JSON is the format code wants. Migrations, dev tools, webhook
+testers and dashboards all ask for objects, so converting is a recurring need.
+<a href="/s/spreadsheet">MCP Spreadsheet</a> reads the CSV and writes JSON, and the same server keeps
+the Excel skills for the round trip and for the edits in between.</p>
+
+<h2>One call, human-checked</h2>
+<p>Ask for the conversion in plain language and inspect what it decided before you trust it. "Convert
+~/Downloads/orders.csv to JSON and save it next to the original" is one call. Because exports out of
+accounting and bank portals are rarely clean, the server sniffs the delimiter and guesses the header
+row, so a semicolon-separated European export with a title line above the real headers lands right
+instead of as one column. A quick <code>sheet_info</code> check confirms the header it detected.</p>
+
+<h2>JSON to, then JSON out</h2>
+<p>If what you were sent is already JSON, the same tool converts it the other way, and a converter in
+the middle can filter, sort and add a computed column before writing the file you actually name. That
+keeps the transform and the format change in one step instead of across two. When the end product is a
+document for a client rather than a feed for code, <a href="/s/pdf">MCP PDF</a> turns the finished
+data into a printable file in the same chat.</p>
+${install("spreadsheet")}
+${FOOT}`,
+    faq: [
+      { q: "Why not just open the CSV in a text editor?", a: "For a tidy hundred-row file you can, but real exports have guessed delimiters and header rows, and JSON needs nested objects and correct types. The server sniffs both and flags what it detected so a large conversion is not silently offset by one row." },
+      { q: "Can it convert JSON back to CSV?", a: "Yes, the same call with the formats swapped. It is the direction most SaaS imports actually need, since many tools accept a CSV you would rather generate from JSON." },
+      { q: "Does conversion run locally?", a: "The server parses and writes both formats in JavaScript with nothing else installed, so the file never leaves your machine." },
+    ],
+  },
+  "nda-agreement-templates": {
+    title: "Build an NDA or mutual confidentiality agreement from clauses",
+    description: "Assemble a non-disclosure agreement from standard clauses in chat, then render the signed-ready document without switching to a docs editor.",
+    html: `<h1>NDA and confidentiality agreements from a clause library</h1>
+<p>A non-disclosure agreement is mostly standard clauses with your names and a term dropped in. An
+<a href="/s/clauses">MCP Clause Library</a> keeps those clauses so you assemble one by describing the
+deal: "an NDA for Acme, mutual, twelve months, covering our pricing and roadmap".</p>
+
+<h2>A one-sided NDA or a mutual one</h2>
+<p>State the direction and the server picks the clauses: a one-way NDA keeps the language to the
+disclosing side, a mutual one mirrors the obligations, and both take the names, a term and the scope
+of the confidential information from your sentence. Because the source is a library, a revised term
+or a narrowed scope is a re-worded clause rather than a whole new document, which is what makes the
+round trip useful when a counterpart sends back edits.</p>
+
+<h2>From clauses to a document in the same chat</h2>
+<p>NDAs get signed as documents, not as chat transcripts. When the clause set is agreed, the contract
+engine hands the structured terms to <a href="/s/service-agreement">MCP Service Agreement</a>, which
+renders the final agreement so you can send, print or e-sign it without moving to a separate editor.
+The clause set and the rendered document both live in the same conversation.</p>
+${install(["clauses", "service-agreement"])}
+${FOOT}`,
+    faq: [
+      { q: "Does this write legal advice?", a: "No. It assembles the standard clauses you pick from a library. For any deal with real money or exposure, review the result with a lawyer before signing, the same as you would any template." },
+      { q: "Can I mix a one-way NDA with a mutual agreement?", a: "Each agreement is assembled from a chosen direction; describe the deal and the server picks the matching clause set. Revising a term re-words that clause rather than rebuilding the whole document." },
+      { q: "Do I need a docs editor installed?", a: "No. The service-agreement server renders the final document directly, so the NDA is ready to send or e-sign from the same chat." },
+    ],
+  },
+  "packing-list-and-delivery-note-from-chat": {
+    title: "Make a packing list or delivery note from the order in chat",
+    description: "Turn line items into the document that travels with the goods, number and date it, and carry the same totals into the invoice that follows.",
+    html: `<h1>Packing lists and delivery notes straight from the sale</h1>
+<p>An order is line items; a packing list is those items with a date, a number and the quantities that
+physically left. <a href="/s/packing-list">MCP Packing List</a> builds the document from the order you
+describe in chat, so the dispatch paperwork and the sale agreement cannot drift apart.</p>
+
+<h2>Numbered, dated, itemised</h2>
+<p>"Make a packing list for order PO-104 with two enclosures" produces the itemised list with its own
+number and date, so the goods you sent are the goods on paper. Because the list is generated rather
+than typed, a correction to a quantity recalculates rather than leaving a stale row behind.</p>
+
+<h2>The invoice that follows</h2>
+<p>Dispatch paperwork is the front half of fulfilment. When the goods go out, the same line items
+become the <a href="/s/invoice">MCP Invoice</a> for the customer, so quantities and totals carry over
+instead of being re-entered. The pair keeps packing, delivery and billing describing the same sale.</p>
+${install("packing-list")}
+${FOOT}`,
+    faq: [
+      { q: "Is a packing list the same as an invoice?", a: "No. A packing list travels with the goods and lists quantities shipped. The invoice comes after and adds pricing and totals. The same server-side line items feed both, which is what keeps them consistent." },
+      { q: "Can I reuse one order for several dispatches?", a: "Yes. Describe the line items again with the new quantities and the list is regenerated with a fresh number and date, rather than a copy that had to be hand-edited." },
+    ],
+  },
+  "barcode-inventory-count-from-chat": {
+    title: "Run a stock count with barcodes and update the catalogue in chat",
+    description: "Scan, read the catalogue entry, and adjust stock levels by talking through the count instead of retyping rows into a spreadsheet.",
+    html: `<h1>A stock count you talk through, barcode by barcode</h1>
+<p>A physical count produces a list of codes and quantities, and the useful output is a tidy catalogue
+whose levels reflect what you actually have.
+<a href="/s/barcode">MCP Barcode</a> resolves the codes and
+<a href="/s/catalogue">MCP Catalogue</a> holds the items, so the count updates stock rather than
+creating a second record you later reconcile.</p>
+
+<h2>Resolve the code, read the item</h2>
+<p>Hand it the codes you scanned and it looks the item up in the catalogue, so a list of numbers
+becomes item names, units and current levels. "These 40 codes are the after-hours count; report the
+ones that differ from the book" surfaces the discrepancies while they are cheap to fix, instead of
+burying them in a reconciled spreadsheet two weeks later.</p>
+
+<h2>The count is the update</h2>
+<p>Adjusted quantities write back to the catalogue entries, so the stock level moving is the same
+action as recording the count. There is no intermediate file to lose. When the count confirms the
+registers, you are done; when it finds a hole, the same chat starts the replacement order.</p>
+${install("barcode")}
+${FOOT}`,
+    faq: [
+      { q: "Do I need a hardware scanner?", a: "No. Pass in the codes however you captured them, whether a scanner, a label photo import or a typed list, and the server resolves them against the catalogue." },
+      { q: "What happens to items not in the catalogue?", a: "They are reported as unknown so you can add them or tell the server and it notes them separately; the count never silently merges an unknown code into an existing item." },
+      { q: "Does the count update stock levels?", a: "Yes. An adjusted quantity writes back to the catalogue entry, so the recorded count and the stock figure are the same number, not two lists that need reconciling." },
+    ],
+  },
+  "invoice-numbering-and-sequence-from-chat": {
+    title: "Keep invoice numbers sequential and never reuse one",
+    description: "Issue numbered invoices and recurring invoices from chat with a sequence that advances once, so the numbering your accountant sees is the numbering you produced.",
+    html: `<h1>Invoice numbers that advance in order, issued from chat</h1>
+<p>An invoice needs a number that has not been used before, and next month it needs a number that
+still has not been used. <a href="/s/invoice">MCP Invoice</a> issues invoices with a sequence that
+advances once, and <a href="/s/recurring">MCP Recurring Invoices</a> keeps the repeat billing on the
+same orderly track, so the numbering on your side is the numbering a client sees.</p>
+
+<h2>One number per invoice</h2>
+<p>"Invoice Acme for the retainer, next number" issues the invoice and advances the counter, so you
+never risk a duplicate or a gap by hand-typing the next figure. Because the sequence lives in the
+server and not in your head, the number on a revised or credited invoice stays consistent with every
+other document.</p>
+
+<h2>The same track for recurring work</h2>
+<p>Monthly retainers are where numbering quietly breaks, because a template re-issued by hand tends to
+repeat a number or skip one. The recurring server invoices on the schedule and numbers each issue in
+the sequence, so a year of monthly billing is a numbered spine an accountant can trace. Every numbered
+document stays in the chat for the audit trail.</p>
+${install("invoice")}
+${FOOT}`,
+    faq: [
+      { q: "Will the sequence ever reuse a number?", a: "No. Issuing an invoice advances the counter once, so the next number has not been produced before. Reversals reference the original without reusing its number." },
+      { q: "Can I start the sequence at my own number?", a: "Yes. Set the starting point to match your existing books, and every invoice after continues from there in order." },
+      { q: "Do recurring invoices keep numbering consistent?", a: "Yes. Each scheduled issue is numbered in the same sequence, so monthly billing stays traceable rather than repeating a template number." },
+    ],
+  },
+
 };
 
 export const GUIDE_PRODUCT_LINKS = {
