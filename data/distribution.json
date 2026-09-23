@@ -202,7 +202,7 @@
     "yuzehao2023-awesome-mcp-servers": {
       "status": "submitted",
       "url": "https://github.com/YuzeHao2023/Awesome-MCP-Servers/pull/473",
-      "note": "Round 10b: forked to theluckystrike/Awesome-MCP-Servers-3, branch add-zovo-office-servers, 20 plain \"- Name \u2014 url (description)\" bullets (19 servers + office-suite bundle) added under the existing Finance and Development Tools sections in README.md, one commit, PR body links mcp.zovo.one and the mcp-servers repo. PR open, awaiting review. | Round 26 (2026-09-08): re-checked: OPEN, MERGEABLE/CLEAN, no maintainer comment. Nothing to fix. Not bumped."
+      "note": "Round 10b: forked to theluckystrike/Awesome-MCP-Servers-3, branch add-zovo-office-servers, 20 plain \"- Name — url (description)\" bullets (19 servers + office-suite bundle) added under the existing Finance and Development Tools sections in README.md, one commit, PR body links mcp.zovo.one and the mcp-servers repo. PR open, awaiting review. | Round 26 (2026-09-08): re-checked: OPEN, MERGEABLE/CLEAN, no maintainer comment. Nothing to fix. Not bumped."
     },
     "mcpstar-awesome-dxt-mcp": {
       "status": "skipped: no populated list to append to",
@@ -392,9 +392,9 @@
     },
     "official_registry_s61": {
       "date": "2026-09-20",
-      "action": "mcp-publisher login github --token (non-interactive, gh CLI token) \u2014 device-OAuth blocker ELIMINATED",
+      "action": "mcp-publisher login github --token (non-interactive, gh CLI token) — device-OAuth blocker ELIMINATED",
       "result": "43/46 estate entries verified live on official registry; 4 new published this session (goods-receipt, leave, onboarding, purchase-requisition v0.22.0)",
-      "duplicates": "credit-note/delivery-schedule/packing-list already live under legacy alias names (credit-memo, deliverable-tracker, carton-consignment-waybill-pack-list) \u2014 same remotes, no action",
+      "duplicates": "credit-note/delivery-schedule/packing-list already live under legacy alias names (credit-memo, deliverable-tracker, carton-consignment-waybill-pack-list) — same remotes, no action",
       "note": "prior '30 entries / 19 missing' estimate was wrong (pagination scan gap); true coverage is 43/46 = 93%"
     },
     "mcpfinder_check_s61": {
@@ -533,7 +533,7 @@
         "service-agreement"
       ],
       "complete": true,
-      "note": "FULL ESTATE 46/46: 44 real servers submitted (42 unique + price-tracker + service-agreement in batch4_s62f), 4 legacy aliases skipped. Review 48h; landing unconfirmed (review repo private). | S62-g check: 0/46 live yet \u2014 index still 193, none of our names in /mcp HTML; 48h window pending",
+      "note": "FULL ESTATE 46/46: 44 real servers submitted (42 unique + price-tracker + service-agreement in batch4_s62f), 4 legacy aliases skipped. Review 48h; landing unconfirmed (review repo private). | S62-g check: 0/46 live yet — index still 193, none of our names in /mcp HTML; 48h window pending",
       "complete_date": "2026-09-20",
       "legacy_aliases_skipped": [
         "credit-note",
@@ -622,7 +622,7 @@
       ],
       "verified_live": 0,
       "last_checked": "2026-09-20",
-      "note": "46/46 submitted; earliest slugs (invoice, quotes, payroll, vat, inventory, contracts) still 404 on futuretools.io/tools \u2014 review pending",
+      "note": "46/46 submitted; earliest slugs (invoice, quotes, payroll, vat, inventory, contracts) still 404 on futuretools.io/tools — review pending",
       "submitted_servers": [
         "invoice",
         "quotes",
@@ -641,6 +641,26 @@
       "last_updated": "2026-09-20",
       "accepted": 16,
       "live_checked_at": "2026-09-20"
+    },
+    "mcphq-awesome-mcp-servers": {
+      "status": "pr-open",
+      "url": "https://github.com/mcpHQ/awesome-mcp-servers/pull/72",
+      "note": "PR 72 opened 2026-09-23: Zovo Invoice Generator + E-commerce Suite in data/servers.json (finance-commerce-and-business-apps); prior PRs 61/62 merged"
+    },
+    "dhanushnehru-awesome-mcp-servers": {
+      "status": "pr-open",
+      "url": "https://github.com/DhanushNehru/awesome-mcp-servers/pull/95",
+      "note": "PR 95 opened 2026-09-23: Zovo Invoice Generator + E-commerce Suite in E-commerce & Retail; PR 85 (Office Suite) still open"
+    },
+    "ever-works-awesome-mcp-servers": {
+      "status": "pr-open",
+      "url": "https://github.com/ever-works/awesome-mcp-servers/pull/181",
+      "note": "PR 181 opened 2026-09-23: 2 servers + details pages in Business & Commerce; 107 stars"
+    },
+    "agenticdevops-awesome-devops-mcp": {
+      "status": "pr-open",
+      "url": "https://github.com/agenticdevops/awesome-devops-mcp/pull/45",
+      "note": "PR 45 opened 2026-09-23: Zovo Office Suite in DevOps Productivity; 41 stars, PRs welcome"
     }
   },
   "per_server": {
@@ -1122,12 +1142,12 @@
   },
   "lane_scouting": {
     "2026-09-20": {
-      "mcprepository.com": "monorepo \"already indexed\", no per-server search results \u2014 dead lane",
+      "mcprepository.com": "monorepo \"already indexed\", no per-server search results — dead lane",
       "pulsemcp": "403 all endpoints; submissions paused (browser-checked 2026-09-20)",
       "mcp.so": "paid $39 or GitHub-issue; skipped",
-      "cline_mcp_marketplace": "30 issues already open from theluckystrike (2026-09-02..06), 0 closed \u2014 review queue not moving; submission #2400 (invoice) still open; NOT re-submitting",
-      "mcp-marketplace.io": "FOR-CREATORS monetization lane found \u2014 candidate for payment options",
-      "anthropic_connectors": "free review pipeline; requires remote Streamable HTTP + OAuth + privacy policy + demo account \u2014 strategic gap: estate is stdio-only",
+      "cline_mcp_marketplace": "30 issues already open from theluckystrike (2026-09-02..06), 0 closed — review queue not moving; submission #2400 (invoice) still open; NOT re-submitting",
+      "mcp-marketplace.io": "FOR-CREATORS monetization lane found — candidate for payment options",
+      "anthropic_connectors": "free review pipeline; requires remote Streamable HTTP + OAuth + privacy policy + demo account — strategic gap: estate is stdio-only",
       "openai_apps": "same remote requirement + org verification gate",
       "conclusion": "No new free instant-live directory found. Highest-impact move = stand up remote Streamable HTTP hosting (mcp.zovo.one already live) to unlock Anthropic/OpenAI review lanes."
     }
@@ -1145,14 +1165,14 @@
       "859c7f30"
     ],
     "anthropic_directory_readiness": "metadata gate mostly green; missing vendored servers: lease-contract, loan-agreement, nondisclosure-agreement, non-compete-clause, payment-terms, performance-review (+office-suite,vat,payroll coverage check)",
-    "submission_blocker": "Anthropic Connectors Directory portal may require Claude Team/Enterprise org \u2014 needs Mike's account check"
+    "submission_blocker": "Anthropic Connectors Directory portal may require Claude Team/Enterprise org — needs Mike's account check"
   },
   "mcpmarketplace": {
     "site": "https://mcp-marketplace.io",
     "kind": "monetization lane (b10)",
-    "status": "account created 2026-09-20 (hello@zovo.one, creator mode) \u2014 email verification + login pending",
+    "status": "account created 2026-09-20 (hello@zovo.one, creator mode) — email verification + login pending",
     "model": "Stripe checkout, one-time or subscription, creator keeps large share; automated security scan, minutes-to-approve; remote HTTP servers supported (fits mcp.zovo.one/mcp/*)",
-    "next": "verify email \u2192 sign in \u2192 submit remote invoice server as pilot (free tier) \u2192 then pro-priced rollouts",
+    "next": "verify email → sign in → submit remote invoice server as pilot (free tier) → then pro-priced rollouts",
     "payment_fit": "directly serves the monetize-with-payment-options goal"
   },
   "add_surfaces_r3": [
