@@ -247,7 +247,7 @@ export const VALIDATION = { at: "2026-09-20", pass: 1244, total: 1244, servers: 
  * same way: test/checkout-r1.test.mjs counts the `test(` declarations on disk and fails
  * if this disagrees. The page said 25 when there were 99.
  */
-export const BILLING_TEST_COUNT = 155;
+export const BILLING_TEST_COUNT = 156;
 /**
  * The npm publish is pending: `npx -y @theluckystrike/mcp-<server>` returns E404 today,
  * and publishing needs an operator browser login (docs/HUMAN_GATED_PACK.md section 1).
@@ -1070,7 +1070,14 @@ export function isHumanNavigation(headers) {
   // without Referer is the shape of curl, a script or a prefetcher -- the setup-page walker
   // of 2026-09-17 sent none -- so it is not counted as demand.
   const ref = headers.get("referer");
-  return typeof ref === "string" && ref.length > 0;
+  if (typeof ref !== "string" || ref.length === 0) return false;
+  // Instrument v4 (S137): the 2026-09-23 cycle measured 146 "7d clicks" of which the
+  // entire tail (3 each on ~40 srcs) was curl walking /buy/ pages with a browser UA and
+  // only these two Sec-Fetch headers — no Sec-Fetch-Site. Every browser navigation sets
+  // Sec-Fetch-Site (same-origin, none, or cross-site); curl and scripts omit it. Requiring
+  // it closes the last scripted-UA hole without turning away any real browser.
+  if (!get("sec-fetch-site")) return false;
+  return true;
 }
 
 /**

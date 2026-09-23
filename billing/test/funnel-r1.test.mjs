@@ -177,6 +177,17 @@ test("instrument v3: no Referer means not counted, any-origin Referer counts", (
   assert.equal(isHumanNavigation(h({ ...HUMAN, referer: "https://mcpservers.org/" })), true);
 });
 
+test("instrument v4 (S137): no Sec-Fetch-Site means not counted — the curl walker of 2026-09-23", () => {
+  const h = (o) => new Headers(o);
+  // curl with a spoofed Chrome UA, a Referer, and only Sec-Fetch-Mode/Dest: no
+  // Sec-Fetch-Site. Every real browser navigation sends it; curl and scripts omit it.
+  const { "sec-fetch-site": site, ...noSite } = HUMAN;
+  assert.equal(isHumanNavigation(h(noSite)), false);
+  // Each Sec-Fetch-Site value a real browser can send still counts.
+  assert.equal(isHumanNavigation(h({ ...HUMAN, "sec-fetch-site": "none" })), true);
+  assert.equal(isHumanNavigation(h({ ...HUMAN, "sec-fetch-site": "cross-site" })), true);
+});
+
 test("no page tells anyone to paste a hosted URL that answers every tool call with 401", async () => {
   // Measured live on 2026-09-10, 8 of 8 hosted servers: POST {tools/list} -> 200, POST
   // {tools/call} -> 401 with a body carrying no `jsonrpc` key at all, so an MCP client
