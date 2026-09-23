@@ -9129,6 +9129,172 @@ ${FOOT}`,
       { q: "Does it work without installing anything?", a: "Yes. Spreadsheet is hosted at mcp.zovo.one, so you can add it by URL with a free anonymous token and nothing installed locally." },
     ],
   },
+  "quotes-and-estimates-to-invoices": {
+    title: "Turn a quote or estimate into an invoice without retyping it",
+    description: "Price a quote in chat with VAT and discounts, then turn the accepted quote into a numbered invoice. Two MCP servers, one sentence each, no retyping.",
+    html: `<h1>Turn a quote or estimate into an invoice without retyping it</h1>
+<p>The question that usually starts this is "can an MCP server write my quotes and estimates?" and the
+answer is yes, and the useful part is what happens after: the accepted quote becomes the invoice, so the
+price, the line items and the VAT are carried over instead of retyped. Two servers do this together, and
+both run locally or over a hosted URL.</p>
+
+<h2>Price the quote in chat</h2>
+<p><a href="/s/quotes">MCP Quotes</a> prices a quote from a sentence: line items, quantity, unit price,
+VAT and a discount, with the totals computed in chat. It keeps a running list of quotes so you can pull
+one back up, revise it, and mark it accepted. The accepted quote is the hand-off point.</p>
+
+<h2>Turn the accepted quote into an invoice</h2>
+<p><a href="/s/invoice">MCP Invoice</a> allocates an invoice number that never repeats, computes the VAT
+lines and renders an A4 PDF from one sentence. Feed it the accepted quote and the line items carry over
+at the prices the quote carried, so nothing is retyped and nothing drifts between the two documents.</p>
+
+<h2>Install both</h2>
+${install(["quotes", "invoice"])}
+<p>There is no account and no API key. The free tier of each is real and does not expire, so you can run a
+quote-to-cash loop for light use before deciding whether to buy a key. See the longer walkthrough in
+<a href="/guides/quote-to-cash-in-claude">quote to cash in Claude</a>.</p>
+${FOOT}`,
+    faq: [
+      { q: "Can an MCP server write a quote or estimate?", a: "Yes. MCP Quotes prices a quote from a sentence with line items, quantity, unit price, VAT and a discount, and keeps a running list you can revise and mark accepted." },
+      { q: "Does the accepted quote become the invoice automatically?", a: "The invoice server takes the accepted quote's line items at the prices the quote carried, so the numbers carry over instead of being retyped. You still send the invoice yourself." },
+      { q: "Do I need to install anything to try it?", a: "No. Both servers are hosted at mcp.zovo.one, so you can add them by URL with a free anonymous token and nothing installed locally." },
+    ],
+  },
+  "delivery-schedule-and-work-order-from-chat": {
+    title: "Produce a delivery schedule and a work order from a chat",
+    description: "A work order says what will be done and at what price; a delivery schedule says what is owed and when. Two MCP servers raise one and track the other from a sentence.",
+    html: `<h1>Produce a delivery schedule and a work order from a chat</h1>
+<p>A trade business raises a work order and tracks a delivery schedule, and people usually ask for both at
+once. They are not the same document: a work order says what will be done, by whom and at what price, and
+a delivery schedule says what is owed and when, with its whole job being answering what is late. Two MCP
+servers cover the pair.</p>
+
+<h2>The work order server</h2>
+<p><a href="/s/work-order">MCP Work Order</a> registers a work order from a sentence, applies markup at the
+unit cost rather than the line total, and hands the finished job to the invoice server at the prices the
+work order carried, so nothing is retyped.</p>
+
+<h2>The delivery schedule server</h2>
+<p><a href="/s/delivery-schedule">MCP Delivery Schedule</a> records what is owed and when, and answers
+what is late. It is the tracking half of the pair, the record you check rather than the document you send.</p>
+
+<h2>Install both</h2>
+${install(["work-order", "delivery-schedule"])}
+<p>There is no account and no API key. For the full walkthrough of the two documents and their pricing
+see <a href="/guides/delivery-schedule-and-work-order-documents-from-mcp">delivery schedules and work
+orders from MCP</a>.</p>
+${FOOT}`,
+    faq: [
+      { q: "Can an MCP server produce a work order?", a: "Yes. MCP Work Order registers a work order from a sentence, applies markup at the unit cost, and hands the finished job to the invoice server at the prices the work order carried." },
+      { q: "What is the difference between a work order and a delivery schedule?", a: "A work order says what will be done, by whom and at what price. A delivery schedule says what is owed and when, and its whole job is answering what is late." },
+      { q: "Do I need to install anything?", a: "No. Both servers are hosted at mcp.zovo.one, so you can add them by URL with a free anonymous token and nothing installed locally." },
+    ],
+  },
+  "use-mcp-servers-without-installing-anything": {
+    title: "Use MCP servers without installing anything, by pasting a URL",
+    description: "Add an MCP server to Claude or Cursor by URL with a free anonymous token. No npm, no node, no local process. The hosted route at mcp.zovo.one.",
+    html: `<h1>Use MCP servers without installing anything, by pasting a URL</h1>
+<p>An MCP server does not have to run as a local process over stdio. It can run as an HTTP endpoint, and
+then "installing" it is just adding a URL to your client. That is the whole no-install route: no npm, no
+node version to match, no local process to keep running. You paste a URL, get a free anonymous token, and
+the server answers over the network.</p>
+
+<h2>How the hosted route works</h2>
+<p>Every hosted server answers at <code>https://mcp.zovo.one/mcp/&lt;name&gt;/t/&lt;token&gt;</code>.
+<a href="/mcp/connect">/mcp/connect</a> mints a free anonymous token and prints the ready line for your
+client. The token is anonymous, so there is no account and no sign-up. Files a hosted call generates, such
+as an invoice PDF or a filled Word document, come back as a download link that expires after an hour,
+because the hosted route has no filesystem to write to.</p>
+
+<h2>What the hosted route is not</h2>
+<p>It is not a like-for-like replacement for a local install. A hosted call reads and returns data in the
+response rather than writing a converted file back to a path on disk, and anything it generates is handed
+back as an expiring link. For a local file you want to keep, install the server on your own machine. The
+two routes are the same server, so you can start hosted and move local without changing your data.</p>
+
+<h2>Try it with a server</h2>
+${install("quotes")}
+<p>For the fuller comparison of local versus hosted, see
+<a href="/guides/local-mcp-servers-versus-hosted-connectors">local servers versus hosted connectors</a>
+and <a href="/guides/which-mcp-servers-work-by-pasting-a-url">which servers work by pasting a URL</a>.</p>
+${FOOT}`,
+    faq: [
+      { q: "Can I use an MCP server without installing anything?", a: "Yes. Hosted servers answer at mcp.zovo.one by URL. /mcp/connect mints a free anonymous token and prints the ready line, so there is no npm, no node and no local process." },
+      { q: "What happens to files a hosted call generates?", a: "The hosted route has no filesystem, so a generated file such as an invoice PDF comes back as a download link that expires after an hour rather than a path on disk." },
+      { q: "Is the hosted route the same as a local install?", a: "It is the same server, so you can start hosted and move local without changing your data. The difference is where files land: a link that expires versus a path on your own disk." },
+    ],
+  },
+  "small-business-accounting-mcp-roundup": {
+    title: "MCP servers for small business accounting: the roundup",
+    description: "Invoices, quotes, expenses, bank reconciliation, cash book, statements and petty cash as MCP servers that run offline in Claude or Cursor. Which one does what, and the honest free limits.",
+    html: `<h1>MCP servers for small business accounting: the roundup</h1>
+<p>For a small freelance practice or a one-person trade, the accounting work is paperwork: invoices,
+quotes, expenses, bank reconciliation, statements and petty cash. Each of those is a separate MCP server
+here, and together they cover the books end to end, run offline, and each has a free tier that does not
+expire. This is the roundup of which one does what.</p>
+
+<h2>Invoices and quotes</h2>
+<p><a href="/s/invoice">MCP Invoice</a> allocates a number that never repeats, computes VAT lines and
+renders an A4 PDF from one sentence. <a href="/s/quotes">MCP Quotes</a> prices a quote in chat with VAT
+and discounts, and the accepted quote turns into the invoice.</p>
+
+<h2>Expenses, mileage and petty cash</h2>
+<p><a href="/s/expense-tracker">MCP Expense Tracker</a> logs receipts and expenses and attaches a SHA-256
+hash of the receipt file as proof. <a href="/s/mileage-log">MCP Mileage Log</a> records trips per
+jurisdiction. <a href="/s/petty-cash">MCP Petty Cash</a> tracks the small cash float and its
+reconciliation.</p>
+
+<h2>Bank statements and the books</h2>
+<p><a href="/s/bank-statement">MCP Bank Statement</a> categorises a bank CSV export with rules you teach
+it and reconciles it against your invoices and expenses. <a href="/s/cash-book">MCP Cash Book</a> derives
+a double-entry ledger from the books you already keep and proves it to the minor unit.</p>
+
+<h2>One bundle, one price</h2>
+<p>All of these are part of the $${BUNDLE_USD} once bundle of ${LISTED_CHILD_COUNT} servers, lifetime, no
+subscription. The full accounting walkthrough is in
+<a href="/guides/best-mcp-servers-for-small-business-accounting">best MCP servers for small business
+accounting</a>.</p>
+${FOOT}`,
+    faq: [
+      { q: "Which MCP servers cover small business accounting?", a: "Invoice, Quotes, Expense Tracker, Mileage Log, Petty Cash, Bank Statement and Cash Book cover the paperwork end to end, run offline, and each has a free tier that does not expire." },
+      { q: "Is there a bundle?", a: "Yes. All of them are part of the one-time bundle of all servers, lifetime, no subscription. The free tier of each is real and does not expire." },
+      { q: "Do they need an account?", a: "No. There is no account and no API key. Servers run locally or over a hosted URL at mcp.zovo.one." },
+    ],
+  },
+  "how-to-find-and-pay-for-mcp-servers": {
+    title: "How to find and pay for MCP servers",
+    description: "Where paid MCP servers are listed, how one-time pricing works, and how a key activates without phoning home. The free tier is real and does not expire.",
+    html: `<h1>How to find and pay for MCP servers</h1>
+<p>Paid MCP servers are a young market, and the honest answer to "where do I find them" is that most
+directories list free servers and the paid ones are usually sold on their own product pages. This estate
+sells each server on its own page and the whole set as a bundle, with one pricing rule: $${SINGLE_USD}
+once for a server, $${BUNDLE_USD} once for all of them, lifetime, no subscription and no seat count.</p>
+
+<h2>How paying works</h2>
+<p>Checkout is Stripe. After payment you get a key that looks like <code>MCPL1.xxx.yyy</code>, an Ed25519
+signature over a small payload. Verification happens locally against a public key compiled into the
+server, so the server never phones home: no activation server, no license check on startup, no telemetry,
+and activation works with the network off.</p>
+
+<h2>The free tier is real</h2>
+<p>The free tier is meant to be the whole product for light use rather than a demo that stops at the
+interesting part. Every tool ships in the free build; a Pro key removes limits rather than downloading
+anything. So the honest guidance is to try the free tier for a week and buy when a limit gets in your way.
+The exact free and Pro limits are on the <a href="/guides/mcp-server-free-vs-pro">free versus Pro</a>
+page.</p>
+
+<h2>Try one</h2>
+${install("invoice")}
+<p>For the deeper look at how paid servers are licensed and discovered, see
+<a href="/guides/paid-mcp-servers-and-how-you-pay-for-one">paid MCP servers and how you pay for one</a> and
+<a href="/guides/licensing-a-paid-mcp-server">licensing a paid MCP server</a>.</p>
+${FOOT}`,
+    faq: [
+      { q: "Where do I find paid MCP servers?", a: "Most directories list free servers; paid ones are usually sold on their own product pages. This estate sells each server on its own page and the whole set as a bundle." },
+      { q: "How does paying for an MCP server work?", a: "Checkout is Stripe, and you get a key that is an Ed25519 signature verified locally. There is no subscription, no seat count and no card kept on file." },
+      { q: "Is the free tier a trial?", a: "No. The free tier is the whole product for light use and does not expire. A Pro key removes limits rather than downloading anything." },
+    ],
+  },
 };
 
 export const GUIDE_PRODUCT_LINKS = {
@@ -9319,172 +9485,6 @@ export const GUIDE_RELATED = {
   "x-mcp-header-tool-parameters": ["how-a-directory-scores-your-mcp-server", "mcp-stateful-tools-and-handles", "search-console-url-inspection-coverage-is-unstable"],
   "zip-and-unzip-mcp-servers-compared": ["currency-conversion-mcp-servers-compared", "image-resize-compress-watermark-from-chat", "send-a-month-of-paperwork-as-one-zip"],
   "zip-archives-safely-from-chat": ["combine-receipts-into-one-pdf-for-your-accountant", "image-resize-compress-watermark-from-chat", "send-a-month-of-paperwork-as-one-zip"],
-  "quotes-and-estimates-to-invoices": {
-    title: "Turn a quote or estimate into an invoice without retyping it",
-    description: "Price a quote in chat with VAT and discounts, then turn the accepted quote into a numbered invoice. Two MCP servers, one sentence each, no retyping.",
-    html: `<h1>Turn a quote or estimate into an invoice without retyping it</h1>
-<p>The question that usually starts this is "can an MCP server write my quotes and estimates?" and the
-answer is yes, and the useful part is what happens after: the accepted quote becomes the invoice, so the
-price, the line items and the VAT are carried over instead of retyped. Two servers do this together, and
-both run locally or over a hosted URL.</p>
-
-<h2>Price the quote in chat</h2>
-<p><a href="/s/quotes">MCP Quotes</a> prices a quote from a sentence: line items, quantity, unit price,
-VAT and a discount, with the totals computed in chat. It keeps a running list of quotes so you can pull
-one back up, revise it, and mark it accepted. The accepted quote is the hand-off point.</p>
-
-<h2>Turn the accepted quote into an invoice</h2>
-<p><a href="/s/invoice">MCP Invoice</a> allocates an invoice number that never repeats, computes the VAT
-lines and renders an A4 PDF from one sentence. Feed it the accepted quote and the line items carry over
-at the prices the quote carried, so nothing is retyped and nothing drifts between the two documents.</p>
-
-<h2>Install both</h2>
-${install(["quotes", "invoice"])}
-<p>There is no account and no API key. The free tier of each is real and does not expire, so you can run a
-quote-to-cash loop for light use before deciding whether to buy a key. See the longer walkthrough in
-<a href="/guides/quote-to-cash-in-claude">quote to cash in Claude</a>.</p>
-${FOOT}`,
-    faq: [
-      { q: "Can an MCP server write a quote or estimate?", a: "Yes. MCP Quotes prices a quote from a sentence with line items, quantity, unit price, VAT and a discount, and keeps a running list you can revise and mark accepted." },
-      { q: "Does the accepted quote become the invoice automatically?", a: "The invoice server takes the accepted quote's line items at the prices the quote carried, so the numbers carry over instead of being retyped. You still send the invoice yourself." },
-      { q: "Do I need to install anything to try it?", a: "No. Both servers are hosted at mcp.zovo.one, so you can add them by URL with a free anonymous token and nothing installed locally." },
-    ],
-  },
-  "delivery-schedule-and-work-order-from-chat": {
-    title: "Produce a delivery schedule and a work order from a chat",
-    description: "A work order says what will be done and at what price; a delivery schedule says what is owed and when. Two MCP servers raise one and track the other from a sentence.",
-    html: `<h1>Produce a delivery schedule and a work order from a chat</h1>
-<p>A trade business raises a work order and tracks a delivery schedule, and people usually ask for both at
-once. They are not the same document: a work order says what will be done, by whom and at what price, and
-a delivery schedule says what is owed and when, with its whole job being answering what is late. Two MCP
-servers cover the pair.</p>
-
-<h2>The work order server</h2>
-<p><a href="/s/work-order">MCP Work Order</a> registers a work order from a sentence, applies markup at the
-unit cost rather than the line total, and hands the finished job to the invoice server at the prices the
-work order carried, so nothing is retyped.</p>
-
-<h2>The delivery schedule server</h2>
-<p><a href="/s/delivery-schedule">MCP Delivery Schedule</a> records what is owed and when, and answers
-what is late. It is the tracking half of the pair, the record you check rather than the document you send.</p>
-
-<h2>Install both</h2>
-${install(["work-order", "delivery-schedule"])}
-<p>There is no account and no API key. For the full walkthrough of the two documents and their pricing
-see <a href="/guides/delivery-schedule-and-work-order-documents-from-mcp">delivery schedules and work
-orders from MCP</a>.</p>
-${FOOT}`,
-    faq: [
-      { q: "Can an MCP server produce a work order?", a: "Yes. MCP Work Order registers a work order from a sentence, applies markup at the unit cost, and hands the finished job to the invoice server at the prices the work order carried." },
-      { q: "What is the difference between a work order and a delivery schedule?", a: "A work order says what will be done, by whom and at what price. A delivery schedule says what is owed and when, and its whole job is answering what is late." },
-      { q: "Do I need to install anything?", a: "No. Both servers are hosted at mcp.zovo.one, so you can add them by URL with a free anonymous token and nothing installed locally." },
-    ],
-  },
-  "use-mcp-servers-without-installing-anything": {
-    title: "Use MCP servers without installing anything, by pasting a URL",
-    description: "Add an MCP server to Claude or Cursor by URL with a free anonymous token. No npm, no node, no local process. The hosted route at mcp.zovo.one.",
-    html: `<h1>Use MCP servers without installing anything, by pasting a URL</h1>
-<p>An MCP server does not have to run as a local process over stdio. It can run as an HTTP endpoint, and
-then "installing" it is just adding a URL to your client. That is the whole no-install route: no npm, no
-node version to match, no local process to keep running. You paste a URL, get a free anonymous token, and
-the server answers over the network.</p>
-
-<h2>How the hosted route works</h2>
-<p>Every hosted server answers at <code>https://mcp.zovo.one/mcp/&lt;name&gt;/t/&lt;token&gt;</code>.
-<a href="/mcp/connect">/mcp/connect</a> mints a free anonymous token and prints the ready line for your
-client. The token is anonymous, so there is no account and no sign-up. Files a hosted call generates, such
-as an invoice PDF or a filled Word document, come back as a download link that expires after an hour,
-because the hosted route has no filesystem to write to.</p>
-
-<h2>What the hosted route is not</h2>
-<p>It is not a like-for-like replacement for a local install. A hosted call reads and returns data in the
-response rather than writing a converted file back to a path on disk, and anything it generates is handed
-back as an expiring link. For a local file you want to keep, install the server on your own machine. The
-two routes are the same server, so you can start hosted and move local without changing your data.</p>
-
-<h2>Try it with a server</h2>
-${install("quotes")}
-<p>For the fuller comparison of local versus hosted, see
-<a href="/guides/local-mcp-servers-versus-hosted-connectors">local servers versus hosted connectors</a>
-and <a href="/guides/which-mcp-servers-work-by-pasting-a-url">which servers work by pasting a URL</a>.</p>
-${FOOT}`,
-    faq: [
-      { q: "Can I use an MCP server without installing anything?", a: "Yes. Hosted servers answer at mcp.zovo.one by URL. /mcp/connect mints a free anonymous token and prints the ready line, so there is no npm, no node and no local process." },
-      { q: "What happens to files a hosted call generates?", a: "The hosted route has no filesystem, so a generated file such as an invoice PDF comes back as a download link that expires after an hour rather than a path on disk." },
-      { q: "Is the hosted route the same as a local install?", a: "It is the same server, so you can start hosted and move local without changing your data. The difference is where files land: a link that expires versus a path on your own disk." },
-    ],
-  },
-  "small-business-accounting-mcp-roundup": {
-    title: "MCP servers for small business accounting: the roundup",
-    description: "Invoices, quotes, expenses, bank reconciliation, cash book, statements and petty cash as MCP servers that run offline in Claude or Cursor. Which one does what, and the honest free limits.",
-    html: `<h1>MCP servers for small business accounting: the roundup</h1>
-<p>For a small freelance practice or a one-person trade, the accounting work is paperwork: invoices,
-quotes, expenses, bank reconciliation, statements and petty cash. Each of those is a separate MCP server
-here, and together they cover the books end to end, run offline, and each has a free tier that does not
-expire. This is the roundup of which one does what.</p>
-
-<h2>Invoices and quotes</h2>
-<p><a href="/s/invoice">MCP Invoice</a> allocates a number that never repeats, computes VAT lines and
-renders an A4 PDF from one sentence. <a href="/s/quotes">MCP Quotes</a> prices a quote in chat with VAT
-and discounts, and the accepted quote turns into the invoice.</p>
-
-<h2>Expenses, mileage and petty cash</h2>
-<p><a href="/s/expense-tracker">MCP Expense Tracker</a> logs receipts and expenses and attaches a SHA-256
-hash of the receipt file as proof. <a href="/s/mileage-log">MCP Mileage Log</a> records trips per
-jurisdiction. <a href="/s/petty-cash">MCP Petty Cash</a> tracks the small cash float and its
-reconciliation.</p>
-
-<h2>Bank statements and the books</h2>
-<p><a href="/s/bank-statement">MCP Bank Statement</a> categorises a bank CSV export with rules you teach
-it and reconciles it against your invoices and expenses. <a href="/s/cash-book">MCP Cash Book</a> derives
-a double-entry ledger from the books you already keep and proves it to the minor unit.</p>
-
-<h2>One bundle, one price</h2>
-<p>All of these are part of the $${BUNDLE_USD} once bundle of ${LISTED_CHILD_COUNT} servers, lifetime, no
-subscription. The full accounting walkthrough is in
-<a href="/guides/best-mcp-servers-for-small-business-accounting">best MCP servers for small business
-accounting</a>.</p>
-${FOOT}`,
-    faq: [
-      { q: "Which MCP servers cover small business accounting?", a: "Invoice, Quotes, Expense Tracker, Mileage Log, Petty Cash, Bank Statement and Cash Book cover the paperwork end to end, run offline, and each has a free tier that does not expire." },
-      { q: "Is there a bundle?", a: "Yes. All of them are part of the one-time bundle of all servers, lifetime, no subscription. The free tier of each is real and does not expire." },
-      { q: "Do they need an account?", a: "No. There is no account and no API key. Servers run locally or over a hosted URL at mcp.zovo.one." },
-    ],
-  },
-  "how-to-find-and-pay-for-mcp-servers": {
-    title: "How to find and pay for MCP servers",
-    description: "Where paid MCP servers are listed, how one-time pricing works, and how a key activates without phoning home. The free tier is real and does not expire.",
-    html: `<h1>How to find and pay for MCP servers</h1>
-<p>Paid MCP servers are a young market, and the honest answer to "where do I find them" is that most
-directories list free servers and the paid ones are usually sold on their own product pages. This estate
-sells each server on its own page and the whole set as a bundle, with one pricing rule: $${SINGLE_USD}
-once for a server, $${BUNDLE_USD} once for all of them, lifetime, no subscription and no seat count.</p>
-
-<h2>How paying works</h2>
-<p>Checkout is Stripe. After payment you get a key that looks like <code>MCPL1.xxx.yyy</code>, an Ed25519
-signature over a small payload. Verification happens locally against a public key compiled into the
-server, so the server never phones home: no activation server, no license check on startup, no telemetry,
-and activation works with the network off.</p>
-
-<h2>The free tier is real</h2>
-<p>The free tier is meant to be the whole product for light use rather than a demo that stops at the
-interesting part. Every tool ships in the free build; a Pro key removes limits rather than downloading
-anything. So the honest guidance is to try the free tier for a week and buy when a limit gets in your way.
-The exact free and Pro limits are on the <a href="/guides/mcp-server-free-vs-pro">free versus Pro</a>
-page.</p>
-
-<h2>Try one</h2>
-${install("invoice")}
-<p>For the deeper look at how paid servers are licensed and discovered, see
-<a href="/guides/paid-mcp-servers-and-how-you-pay-for-one">paid MCP servers and how you pay for one</a> and
-<a href="/guides/licensing-a-paid-mcp-server">licensing a paid MCP server</a>.</p>
-${FOOT}`,
-    faq: [
-      { q: "Where do I find paid MCP servers?", a: "Most directories list free servers; paid ones are usually sold on their own product pages. This estate sells each server on its own page and the whole set as a bundle." },
-      { q: "How does paying for an MCP server work?", a: "Checkout is Stripe, and you get a key that is an Ed25519 signature verified locally. There is no subscription, no seat count and no card kept on file." },
-      { q: "Is the free tier a trial?", a: "No. The free tier is the whole product for light use and does not expire. A Pro key removes limits rather than downloading anything." },
-    ],
-  },
 };
 
 /**
