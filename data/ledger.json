@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-21T00:50:44.923Z",
+  "generated_at": "2026-09-23T05:14:31.072Z",
   "session": {
     "count": 96,
     "history": [
@@ -465,6 +465,38 @@
         "smithery_yaml": true,
         "dockerfile": true,
         "license": true
+      },
+      "distribution": {
+        "npm": "unknown",
+        "registry": "unknown",
+        "github": "unknown",
+        "smithery": "unknown",
+        "glama": "unknown"
+      }
+    },
+    {
+      "id": "backlink-checker",
+      "npm_name": "@theluckystrike/mcp-backlink-checker",
+      "version": "0.22.0",
+      "dir": "servers/backlink-checker",
+      "tools": [
+        "link_check",
+        "link_audit",
+        "robots_guard_check"
+      ],
+      "tool_count": 3,
+      "free_limits": "pending",
+      "price_usd": 19,
+      "build_ok": true,
+      "test_summary": "pending",
+      "result_status": "pending",
+      "loc": 197,
+      "files_present": {
+        "readme": true,
+        "server_json": true,
+        "smithery_yaml": true,
+        "dockerfile": true,
+        "license": false
       },
       "distribution": {
         "npm": "unknown",
@@ -1453,7 +1485,7 @@
       "build_ok": true,
       "test_summary": "# pass 1 / # fail 0",
       "result_status": "DONE",
-      "loc": 450,
+      "loc": 451,
       "files_present": {
         "readme": true,
         "server_json": true,
@@ -2169,6 +2201,11 @@
         "url": "https://mcp.zovo.one/buy/asset-register"
       },
       {
+        "id": "backlink-checker",
+        "price_usd": 19,
+        "url": "https://mcp.zovo.one/buy/backlink-checker"
+      },
+      {
         "id": "bank-statement",
         "price_usd": 19,
         "url": "https://mcp.zovo.one/buy/bank-statement"
@@ -2474,6 +2511,10 @@
     {
       "file": "docs/BLIND_RECOMMENDATION_R2.md",
       "first_line": "Blind Recommendation Run R2 — 18 Buyer Questions"
+    },
+    {
+      "file": "docs/BLIND_RECOMMENDATION_R7.md",
+      "first_line": "Blind Recommendation — Round 7 (S130, 2026-09-21) — TRUE BLIND PASS"
     },
     {
       "file": "docs/CALENDAR_AUDIT.md",
@@ -2852,6 +2893,10 @@
       "first_line": "Distribution round 6: kanban, image onto Docker MCP catalog + Cline marketplace"
     },
     {
+      "file": "docs/DIST_R7_NOTES.md",
+      "first_line": "DIST R7 — PR re-audit + glama sweep + dead-surface reprobe (2026-09-21)"
+    },
+    {
       "file": "docs/DIST_R7_RESULT.md",
       "first_line": "Round 7: bank-statement demo GIF, Docker MCP catalog + Cline marketplace"
     },
@@ -3092,6 +3137,10 @@
       "first_line": "Mirror sync round 1 — the full re-sync, and the five defects it was hiding"
     },
     {
+      "file": "docs/MONETIZATION_MAP.md",
+      "first_line": "Cold Monetization Map — 47-Server Estate (mcp.zovo.one)"
+    },
+    {
       "file": "docs/NAMESPACE_R1.md",
       "first_line": "The registry namespace experiment (2026-09-07)"
     },
@@ -3304,6 +3353,14 @@
       "first_line": "mcp-quotes: build and adversarial audit"
     },
     {
+      "file": "docs/RATING-S130.md",
+      "first_line": "RATING-S130 — 2026-09-21"
+    },
+    {
+      "file": "docs/RATING-S131.md",
+      "first_line": "RATING-S131 (2026-09-21)"
+    },
+    {
       "file": "docs/RATING-S43.md",
       "first_line": "RATING-S43 — 2026-09-18"
     },
@@ -3330,6 +3387,10 @@
     {
       "file": "docs/REGISTRY_REMOTE_R1.md",
       "first_line": "Registry remote R1 — 2026-09-17"
+    },
+    {
+      "file": "docs/REGISTRY_VARIANTS_R2.md",
+      "first_line": "REGISTRY_VARIANTS_R2 — Next variant-name batch (manifests only)"
     },
     {
       "file": "docs/REGISTRY_VISIBILITY_R1.md",
@@ -3456,6 +3517,30 @@
       "first_line": "REVIEW_V5_SONNET"
     },
     {
+      "file": "docs/S128_A_THREESERVERS.md",
+      "first_line": "S128_A_THREESERVERS — 3 new MCP servers"
+    },
+    {
+      "file": "docs/S128_B_REDISTRO.md",
+      "first_line": "S128_B_REDISTRO — free-directory re-probe (2026-09-21, orchestrator after delegated agent burned budget on reads only)"
+    },
+    {
+      "file": "docs/S128_C_ORGANIC.md",
+      "first_line": "S128_C_ORGANIC — llms-full tool lists + coverage-2026 asset (2026-09-21, orchestrator)"
+    },
+    {
+      "file": "docs/S128_D_MONETIZE.md",
+      "first_line": "S128_D — Monetization Map & Checkout Hardening"
+    },
+    {
+      "file": "docs/S128_E_MEASURE.md",
+      "first_line": "S128_E_MEASURE — KPI re-measure 2026-09-21 (orchestrator, runtime-verified)"
+    },
+    {
+      "file": "docs/S128_RESULT.md",
+      "first_line": "S128 RESULT — 2026-09-21 (orchestrator solo session; delegated batches returned no artifacts, verified work done directly)"
+    },
+    {
       "file": "docs/S48-PLAN.md",
       "first_line": "S48 — MCP estate sprint plan (2026-09-20, orchestrator-led, multi-hour loop)"
     },
@@ -3466,6 +3551,10 @@
     {
       "file": "docs/SEO_INDEXATION_R1.md",
       "first_line": "Why Google will not index this site (loop 29, 2026-09-07)"
+    },
+    {
+      "file": "docs/SEO_LANDING_R1.md",
+      "first_line": "SEO_LANDING_R1.md — /servers landing surface (deleg_bcbe50a1... wait — deleg_261ea153)"
     },
     {
       "file": "docs/SETUP_PAGES_RESULT.md",
@@ -3498,6 +3587,10 @@
     {
       "file": "docs/STRATEGY-45.md",
       "first_line": "Sprint 45 — Organic Traffic Disruption + MCP Server Visibility"
+    },
+    {
+      "file": "docs/SURFACE_SWEEP_R3.md",
+      "first_line": "SURFACE SWEEP R3"
     },
     {
       "file": "docs/T10_REPROBE_R1.md",
@@ -3958,6 +4051,10 @@
     {
       "file": "docs/WEEKLY_2026-09-06.md",
       "first_line": "Weekly digest, 2026-09-06"
+    },
+    {
+      "file": "docs/WHITESPACE_R1.md",
+      "first_line": "WHITESPACE_R1 — Whitespace-query content wiring for mcp.zovo.one billing worker"
     },
     {
       "file": "docs/WIRING_LOOP34.md",

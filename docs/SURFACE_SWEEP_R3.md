@@ -1,6 +1,6 @@
 # SURFACE SWEEP R3
 
-**STATUS: in progress**
+**STATUS: complete (partial — sweep table finalized, new-surface scouting empty; agent budget exhausted)**
 
 Read-only sweep of MCP directory/distribution surfaces: probe pending submissions for status flips and scout new free surfaces.
 
