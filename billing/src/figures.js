@@ -155,14 +155,15 @@ export const HOSTED_IDS = [
   "goods-receipt",
   "onboarding",
   "leave",
-  "purchase-requisition"
+  "purchase-requisition",
+  "backlink-checker"
 ];
 
 /** stdio tools each server registers, excluding the shared license pair. */
 export const TOOLS = {
   "amortization": 7,
   "asset-register": 7,
-  "backlink-checker": 3,
+  "backlink-checker": 6,
   "bank-statement": 10,
   "barcode": 8,
   "bill-of-sale": 8,
@@ -213,12 +214,12 @@ export const TOOLS = {
 export const LICENSE_TOOLS = 2;
 
 /** Sum of TOOLS over CHILD_IDS. */
-export const OWN_TOOLS_TOTAL = 421;
+export const OWN_TOOLS_TOTAL = 424;
 
 /** Distinct tool names office-suite exposes: every child's own tools, plus the shared
  * license pair once. Reconciles with the independently measured OFFICE_SUITE_TOOLS in
  * billing/src/index.js, taken over stdio from the running bundle on 2026-09-07. */
-export const OFFICE_SUITE_TOOLS = 423;
+export const OFFICE_SUITE_TOOLS = 426;
 
 /** Servers the site actually lists, i.e. those with a README that becomes a /s/ page. */
 export const LISTED_IDS = [
@@ -325,7 +326,7 @@ export const LISTED_COUNT = 47;
 export const LISTED_CHILD_COUNT = 46;
 export const SERVER_DIR_COUNT = 47;
 export const CHILD_COUNT = 46;
-export const HOSTED_COUNT = 45;
+export const HOSTED_COUNT = 46;
 
 /** Hosted limits, read from remote/src/index.ts. */
 export const RATE_LIMIT_FREE = 600;

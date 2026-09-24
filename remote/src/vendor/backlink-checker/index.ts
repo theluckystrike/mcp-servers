@@ -169,6 +169,72 @@ registerTool("link_audit", {
   return text(rows.join("\n"));
 });
 
+registerTool("anchor_profile", {
+  annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true },
+  title: "Extract anchor text profile from a page",
+  description: "Fetch one referring page and list every outbound link with its anchor text and dofollow/nofollow classification, so you can see how a site links out before requesting a link change.",
+  inputSchema: {
+    page_url: z.string().describe("Page URL, including https://"),
+    limit: z.number().int().min(1).max(200).optional().describe("Max links to return (default 50)"),
+  },
+}, async ({ page_url, limit }): Promise<ToolResult> => {
+  let host: string;
+  try { host = new URL(page_url).hostname; } catch { return fail(`invalid page_url: ${page_url}`); }
+  const { status, html, contentType, error } = await fetchDoc(page_url);
+  if (error) return fail(`fetch failed: ${error}`);
+  if (!/html|text/.test(contentType)) return fail(`Content-Type ${contentType} - not HTML, no links.`);
+  const links = extractLinks(html).slice(0, limit ?? 50).map((l) => ({ ...l, ...classify(l, host) }));
+  const lines = [`Page: ${page_url}`, `Status: ${status}`, `Links: ${links.length}`];
+  for (const l of links) lines.push(`  - ${l.dofollow ? "dofollow" : "nofollow"} anchor: "${l.anchor || "(empty)"}" href: ${l.href}`);
+  return text(lines.join("\n"));
+});
+
+registerTool("referring_domain_summary", {
+  annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true },
+  title: "Summarize one referring domain from its page",
+  description: "Fetch a page and summarize the referring domain: HTTP status, indexability, outbound link count, and whether the target domain appears anywhere in the text (brand mention without a link).",
+  inputSchema: {
+    page_url: z.string().describe("Page URL, including https://"),
+    target_domain: z.string().describe("Domain to look for, linked or mentioned"),
+  },
+}, async ({ page_url, target_domain }): Promise<ToolResult> => {
+  const { status, html, contentType, error } = await fetchDoc(page_url);
+  if (error) return fail(`fetch failed: ${error}`);
+  const guards = pageGuards(html);
+  const links = extractLinks(html).map((l) => ({ ...l, ...classify(l, target_domain) }));
+  const mentions = (html.match(new RegExp(target_domain.replace(/\./g, "\\."), "gi")) || []).length;
+  return text([
+    `Page: ${page_url}`,
+    `Status: ${status}`,
+    `Indexable: ${guards.noindex ? "NO (noindex)" : "yes"}`,
+    `Outbound links: ${links.length}`,
+    `Mentions of ${target_domain} in text: ${mentions}`,
+    mentions > 0 && !links.some((l) => l.linksToTarget) ? "Verdict: brand mentioned but NOT linked - a conversion opportunity." : "Verdict: see link_check for per-link detail.",
+  ].join("\n"));
+});
+
+registerTool("outreach_queue", {
+  annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true },
+  title: "Check a list of pages for a link back to your domain",
+  description: "Batch link check for outreach follow-ups: pass up to 10 page URLs and your domain, get one line per page (status, linked or not, dofollow). Built for the Monday-morning question: which of the sites that promised a link actually shipped it?",
+  inputSchema: {
+    page_urls: z.array(z.string()).min(1).max(10).describe("Up to 10 page URLs, including https://"),
+    target_domain: z.string().describe("Your domain, e.g. example.com"),
+  },
+}, async ({ page_urls, target_domain }): Promise<ToolResult> => {
+  const lines = [`Target: ${target_domain}`, ""];
+  for (const u of page_urls.slice(0, 10)) {
+    const { status, html, error } = await fetchDoc(u);
+    if (error) { lines.push(`${u} - FETCH FAILED: ${error}`); continue; }
+    if (!html) { lines.push(`${u} - HTTP ${status}, no HTML body`); continue; }
+    const links = extractLinks(html).map((l) => ({ ...l, ...classify(l, target_domain) }));
+    const hits = links.filter((l) => l.linksToTarget);
+    if (hits.length === 0) lines.push(`${u} - HTTP ${status} - NO LINK (opportunity)`);
+    else lines.push(`${u} - HTTP ${status} - ${hits.length} link(s): ${hits.map((h) => h.dofollow ? "dofollow" : "nofollow").join(", ")}`);
+  }
+  return text(lines.join("\n"));
+});
+
 registerTool("robots_guard_check", {
   annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: true },
   title: "Check robots guards on a page",

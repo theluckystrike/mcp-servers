@@ -69,8 +69,12 @@ const idsMatch = pagesSrc.match(/^const ids = \[([^\]]*)\];/m);
 if (!idsMatch) throw new Error("build-figures: could not read the ids array from scripts/build-pages.mjs");
 const LISTED_IDS = [...idsMatch[1].matchAll(/"([a-z0-9-]+)"/g)].map((m) => m[1]).sort();
 if (LISTED_IDS.length < 2) throw new Error("build-figures: the page id list came back empty");
+// Alias storefront pages (e.g. prices-deal, timer-tracking) render the base server README
+// but live under their own registry name; they borrow the base server's src for figures.
+const ALIAS_BASE = { "prices-deal": "price-tracker", "timer-tracking": "time-tracker" };
 for (const id of LISTED_IDS) {
-  if (!SERVER_IDS.includes(id)) throw new Error(`build-figures: ${id} has a page and no src/index.ts`);
+  const base = ALIAS_BASE[id] ?? id;
+  if (!SERVER_IDS.includes(base)) throw new Error(`build-figures: ${id} has a page and no src/index.ts`);
 }
 const LISTED_CHILD_IDS = LISTED_IDS.filter((id) => id !== "office-suite");
 
@@ -87,7 +91,10 @@ if (LICENSE_TOOLS < 1) throw new Error("build-figures: no license tools found");
 // term in the catalogue total.
 const CHILD_IDS = SERVER_IDS.filter((id) => id !== "office-suite");
 // Listed children only: an unlisted server in progress is not part of what the suite ships.
-const OWN_TOOLS_TOTAL = LISTED_CHILD_IDS.reduce((n, id) => n + TOOLS[id], 0);
+const OWN_TOOLS_TOTAL = LISTED_CHILD_IDS.reduce((n, id) => {
+  const base = ALIAS_BASE[id] ?? id;
+  return n + (TOOLS[base] ?? TOOLS[id] ?? 0);
+}, 0);
 
 // ---------------------------------------------------------------------------
 // remote/  (the hosted endpoints and their limits)
@@ -96,7 +103,8 @@ const remoteSrc = read("remote/src/index.ts");
 const serversBlockStart = remoteSrc.indexOf("const SERVERS: Record<string, ServerCfg> = {");
 if (serversBlockStart < 0) throw new Error("build-figures: SERVERS map not found in remote/src/index.ts");
 const serversBlock = remoteSrc.slice(serversBlockStart, remoteSrc.indexOf("\n};", serversBlockStart));
-const HOSTED_IDS = [...serversBlock.matchAll(/^ {2}"?([a-z][a-z0-9-]*)"?:\s*\{/gm)].map((m) => m[1]);
+const HOSTED_IDS = [...serversBlock.matchAll(/^ {2}"?([a-z][a-z0-9-]*)"?:\s*\{/gm)].map((m) => m[1])
+  .filter((id) => !(id in ALIAS_BASE)); // alias endpoints are the same hosted servers, not new ones
 if (HOSTED_IDS.length < 2) throw new Error("build-figures: hosted server list came back empty");
 
 const RATE_LIMIT_FREE = intConst(remoteSrc, "RATE_LIMIT_FREE", "remote/src/index.ts");

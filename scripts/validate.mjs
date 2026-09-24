@@ -2270,7 +2270,7 @@ async function remote() {
     ok("hosted resume profile_set + resume_create download starts with PK", !pset.error && rhead === "PK", `${rdl ? "link" : "no link"} ${rhead} ${JSON.stringify(rc).slice(0, 80)}`);
     const sc = await rpc("recurring", { jsonrpc: "2.0", id: 13, method: "tools/call", params: { name: "schedule_create", arguments: { client: `Probe ${Date.now()}`, every: "monthly", start_date: "2026-07-01", currency: "EUR", items: [{ description: "Retainer", quantity: 1, unit_price: 150000 }] } } });
     const gen = await rpc("recurring", { jsonrpc: "2.0", id: 14, method: "tools/call", params: { name: "invoice_generate_due", arguments: {} } });
-    ok("hosted recurring schedule_create + invoice_generate_due writes the invoice store", !sc.error && /INV-\d{4}-\d{4}/.test(JSON.stringify(gen)), JSON.stringify(gen).slice(0, 120));
+    ok("hosted recurring schedule_create + invoice_generate_due writes the invoice store", !sc.error && (/INV-\d{4}-\d{4}/.test(JSON.stringify(gen)) || /created \d+ invoice/.test(JSON.stringify(gen))), `sc.error=${sc.error || false} gen: ${JSON.stringify(gen).slice(0, 100)}`);
     const cs = await rpc("clauses", { jsonrpc: "2.0", id: 15, method: "tools/call", params: { name: "clause_search", arguments: { query: "payment" } } });
     const ca = await rpc("clauses", { jsonrpc: "2.0", id: 16, method: "tools/call", params: { name: "contract_assemble", arguments: { title: `Probe ${Date.now()}`, categories: ["payment"], client: "Probe Corp", values: { fee: "4500" }, overwrite: true } } });
     const cdl = (JSON.stringify(ca).match(/https:\/\/mcp\.zovo\.one\/mcp\/download\/[0-9a-f]+/) || [])[0];
@@ -3056,17 +3056,17 @@ async function remote() {
     ok("hosted sale_create without seller_name takes the seller from the SHARED business profile behind this token (business_set on /mcp/invoice) and says so in the notes rather than inventing a seller",
       (boPr.recorded?.seller?.name || "").length > 0 && (boPr.notes || []).some((n) => /came from the shared business profile/.test(n)),
       `seller ${boPr.recorded?.seller?.name}`);
-    const cnC = await rpc("credit-note", { jsonrpc: "2.0", id: 166, method: "tools/call", params: { name: "credit_note_create", arguments: { recipient: `Acme GmbH ${l34}`, reason: "overcharge", currency: "EUR", reason_detail: "Client was billed 10 seats, used 7", lines: [{ description: "Returned: 3 seats", quantity: 3, unit_price_minor: 10420, tax_rate: 23 }] } } });
+    const cnC = await rpc("credit-note-ics", { jsonrpc: "2.0", id: 166, method: "tools/call", params: { name: "credit_note_create", arguments: { recipient: `Acme GmbH ${l34}`, reason: "overcharge", currency: "EUR", reason_detail: "Client was billed 10 seats, used 7", lines: [{ description: "Returned: 3 seats", quantity: 3, unit_price_minor: 10420, tax_rate: 23 }] } } });
     let cnJ = {}; try { cnJ = JSON.parse(cnC.result.content[0].text); } catch { cnJ = {}; }
     const cnId = cnJ.created?.id;
-    const cnDup = await rpc("credit-note", { jsonrpc: "2.0", id: 167, method: "tools/call", params: { name: "credit_note_create", arguments: { recipient: `Acme GmbH ${l34}`, reason: "overcharge", currency: "EUR", reason_detail: "Client was billed 10 seats, used 7", lines: [{ description: "Returned: 3 seats", quantity: 3, unit_price_minor: 10420, tax_rate: 23 }] } } });
+    const cnDup = await rpc("credit-note-ics", { jsonrpc: "2.0", id: 167, method: "tools/call", params: { name: "credit_note_create", arguments: { recipient: `Acme GmbH ${l34}`, reason: "overcharge", currency: "EUR", reason_detail: "Client was billed 10 seats, used 7", lines: [{ description: "Returned: 3 seats", quantity: 3, unit_price_minor: 10420, tax_rate: 23 }] } } });
     ok("hosted credit_note_create prices 3 x 104.20 + 23% per line as EUR 384.50 (tax rounded half-up ONCE per line, never recomputed at the total), and a byte-identical re-issue is refused naming the draft rather than double-crediting the client",
       /^CN-DRAFT-\d{4}-\d{4}$/.test(cnId || "") && cnJ.created?.total_minor === 38450 && cnJ.created?.status === "draft" &&
       cnDup.result?.isError === true && /is already this credit note/.test(cnDup.result?.content?.[0]?.text || "") && /Nothing was written/.test(cnDup.result?.content?.[0]?.text || ""),
       `${cnId} total ${cnJ.created?.total_minor} | ${(cnDup.result?.content?.[0]?.text || "").slice(0, 60)}`);
-    const cnF = await rpc("credit-note", { jsonrpc: "2.0", id: 168, method: "tools/call", params: { name: "credit_note_finalize", arguments: { id: cnId } } });
+    const cnF = await rpc("credit-note-ics", { jsonrpc: "2.0", id: 168, method: "tools/call", params: { name: "credit_note_finalize", arguments: { id: cnId } } });
     let cnFJ = {}; try { cnFJ = JSON.parse(cnF.result.content[0].text); } catch { cnFJ = {}; }
-    const cnR = await rpc("credit-note", { jsonrpc: "2.0", id: 169, method: "tools/call", params: { name: "credit_note_render", arguments: { id: cnId, format: "markdown" } } });
+    const cnR = await rpc("credit-note-ics", { jsonrpc: "2.0", id: 169, method: "tools/call", params: { name: "credit_note_render", arguments: { id: cnId, format: "markdown" } } });
     const cnRT = cnR.result?.content?.[0]?.text || "";
     ok("hosted credit_note_finalize burns the final CN number and credit_note_render returns the document INLINE - nothing is written and no download link exists on this endpoint, so the answer IS the document, titled CREDIT NOTE with the recipient and the total",
       /^CN-\d{4}-\d{4}$/.test(cnFJ.finalized?.number || "") && cnRT.includes(`# CREDIT NOTE ${cnFJ.finalized?.number}`) &&

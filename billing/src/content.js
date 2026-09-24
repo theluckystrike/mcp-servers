@@ -9540,6 +9540,55 @@ ${FOOT}`,
     ],
   },
 
+  "track-prices-and-drop-alerts-in-claude-or-cursor": {
+    title: "Track product prices and get drop alerts from your AI chat",
+    description: "Check a shop page price, build a watch list, keep price history and set target alerts, all from Claude or Cursor, with data stored locally.",
+    html: `<h1>Track product prices and get drop alerts from your AI chat</h1>
+<p>Price trackers want a browser extension, an account, or a monthly fee. The MCP Price Tracker
+takes none of those: you paste a product URL into the chat, it fetches the public page and extracts
+the current price, and a watch list with target alerts lives in local storage on your machine.</p>
+
+<h2>A watch in two sentences</h2>
+<p>"Check the price at &lt;product URL&gt;" returns the current price with no setup. "Watch this page and
+alert me under 149" starts a watch: three watches and thirty observations each are free, and
+"Any pending alerts?" lists everything that crossed its target since you last asked.</p>
+<p>History stays local, refresh happens only when you ask, and no background scraper runs on your
+machine. The watch list keeps every observation with its timestamp, so comparing two shops stays
+in the same conversation where the watches were set.</p>
+${install("price-tracker")}
+${FOOT}`,
+    faq: [
+      { q: "Which pages can it check?", a: "Any public http/https product page. Login walls, internal addresses and redirects into private networks are refused before and after every redirect." },
+      { q: "Where is my data?", a: "Watches, history and alerts stay in local storage on the machine running the server. Nothing is shared with third parties." },
+      { q: "Is it free?", a: "3 watches and 30 observations each are free. A Pro license lifts the limits: get one at https://mcp.zovo.one/buy/pro." },
+    ],
+  },
+
+  "track-billable-hours-in-claude": {
+    title: "Track billable time and export timesheets from your AI chat",
+    description: "Start timers, log entries against projects with rates, run reports and export CSV timesheets, all from chat, all stored locally.",
+    html: `<h1>Track billable time and export timesheets from your AI chat</h1>
+<p>Timesheet SaaS wants a seat fee and your team's discipline. The MCP Time Tracker runs in the
+chat you already have: start a timer when work starts, stop it when it ends, and the entry lands
+in a local log with the project name and any rate you set.</p>
+
+<h2>From timer to invoice</h2>
+<p>"Start a timer for client-acme", then "stop timer" is the whole loop. Backdated entries are
+first class ("Add 2.5 hours to client-acme yesterday, design review"), rates attach per project
+("client-acme bills at 95/hour"), and "Weekly report" totals hours per project.</p>
+<p>The export is a plain CSV you point at, ready for payroll or an accountant. Better: the
+invoice_summary tool hands tracked hours straight to the invoice generator, so tracked time
+becomes a numbered PDF invoice in one conversation. Local storage only, no account.</p>
+${install("time-tracker")}
+${FOOT}`,
+    faq: [
+      { q: "Where do entries live?", a: "Locally, in a file the server owns. Exports publish only when you explicitly ask: publishing means writing a CSV you point at." },
+      { q: "Can I invoice from this?", a: "Yes. The invoice_summary tool turns tracked entries into lines for our invoice generator, so hours become a numbered PDF invoice in one step." },
+      { q: "Is it free?", a: "Full local tracking is free. Pro licensing covers team-scale use: see https://mcp.zovo.one/buy/pro." },
+    ],
+  },
+
+
   "invoice-numbering-and-sequence-from-chat": {
     title: "Keep invoice numbers sequential and never reuse one",
     description: "Issue numbered invoices and recurring invoices from chat with a sequence that advances once, so the numbering your accountant sees is the numbering you produced.",
