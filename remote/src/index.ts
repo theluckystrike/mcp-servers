@@ -58,6 +58,7 @@ import { createServer as createGoodsReceipt } from "./vendor/goods-receipt/index
 import { createServer as createOnboarding } from "./vendor/onboarding/index.js";
 import { createServer as createLeave } from "./vendor/leave/index.js";
 import { createServer as createPurchaseRequisition } from "./vendor/purchase-requisition/index.js";
+import { createServer as createBacklinkChecker } from "./vendor/backlink-checker/index.js";
 
 export interface Env { REMOTE_DATA: KVNamespace; SWEEP_SECRET?: string }
 
@@ -785,6 +786,10 @@ const SERVERS: Record<string, ServerCfg> = {
     // S48. Own store (requisitions.json + counter) under the homedir shim.
     factory: createPurchaseRequisition as () => McpServer,
   },
+  "backlink-checker": {
+    // S141: stateless on-demand link checks (fetch only, no store), like currency.
+    factory: createBacklinkChecker as () => McpServer,
+  },
 };
 
 const json = (body: unknown, status = 200, extra: Record<string, string> = {}) =>
@@ -1425,6 +1430,7 @@ const TOOLS: Record<string, string[]> = {
   "onboarding": ["onboarding_hire_add", "onboarding_hire_list", "onboarding_task_add", "onboarding_task_done", "onboarding_template_apply", "onboarding_progress", "onboarding_overdue", "license_status", "license_activate"],
   "leave": ["leave_employee_add", "leave_request", "leave_approve", "leave_reject", "leave_cancel", "leave_balance", "leave_list", "leave_out_range", "leave_import", "leave_export_ics"],
   "purchase-requisition": ["purchase-requisition_create", "purchase-requisition_item_add", "purchase-requisition_item_remove", "purchase-requisition_show", "purchase-requisition_list", "purchase-requisition_delete", "run_start", "run_check", "run_show", "run_list", "run_sign_off", "run_status", "run_delete"],
+  "backlink-checker": ["link_check", "link_audit", "robots_guard_check", "license_status", "license_activate"],
 };
 
 const ENDPOINT_URLS = (base: string) => Object.keys(SERVERS).map((n) => `${base}/mcp/${n}`);

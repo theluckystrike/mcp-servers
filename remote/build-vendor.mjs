@@ -300,6 +300,9 @@ const SERVERS = {
   "onboarding": ["index.ts", "version.ts", "lib.ts", "onboarding.ts", "store.ts"],
   "leave": ["index.ts", "version.ts", "lib.ts", "leave.ts", "store.ts"],
   "purchase-requisition": ["index.ts", "version.ts", "lib.ts", "purchase_requisition.ts", "store.ts"],
+  // S141: stateless on-demand link checks (fetch only, no store) — like currency, nothing
+  // under /backlink-checker/ is ever persisted.
+  "backlink-checker": ["index.ts", "version.ts"],
 };
 
 /**
