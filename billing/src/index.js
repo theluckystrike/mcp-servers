@@ -1511,6 +1511,9 @@ ${relatedGuidesBlock("invoice")}`;
 
     if (path.startsWith("/s/") && method === "GET") {
       const id = path.slice(3);
+      // /s/bundle is a legal landing: /buy/bundle 303s scripted traffic to /s/bundle, which
+      // had no PAGES entry and 404'd. Redirect to the bundle page instead of 404.
+      if (id === "bundle") return new Response(null, { status: 308, headers: { Location: "/bundle", "cache-control": "no-store" } });
       const pg = PAGES[id];
       if (!pg) return new Response(page("Not found", `<h1>Unknown server</h1><p><a href="/">Back to products</a></p>`), { status: 404, headers: { "content-type": "text/html; charset=utf-8" } });
       // office-suite, and any future alias, has a product page but is not itself a PRODUCTS
