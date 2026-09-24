@@ -178,7 +178,12 @@ const SERVERS: Record<string, ServerCfg> = {
     factory: createTimeTracker as () => McpServer,
     publish: (p) => p.endsWith(".csv"),
   },
+  "timer-tracking": {
+    factory: createTimeTracker as () => McpServer,
+    publish: (p) => p.endsWith(".csv"),
+  },
   "price-tracker": { factory: createPriceTracker as () => McpServer },
+  "prices-deal": { factory: createPriceTracker as () => McpServer },
   "invoice": { factory: createInvoice as () => McpServer },
   "expense-tracker": {
     factory: createExpenseTracker as () => McpServer,
@@ -1386,7 +1391,9 @@ const VARIANT_ALIASES: Record<string, string> = {
 
 const TOOLS: Record<string, string[]> = {
   "time-tracker": ["timer_start", "timer_stop", "timer_status", "entry_add", "entry_list", "entry_delete", "entry_edit", "project_set_rate", "report", "invoice_summary", "export_csv", "license_status", "license_activate"],
+  "timer-tracking": ["timer_start", "timer_stop", "timer_status", "entry_add", "entry_list", "entry_delete", "entry_edit", "project_set_rate", "report", "invoice_summary", "export_csv", "license_status", "license_activate"],
   "price-tracker": ["price_check", "watch_add", "watch_list", "watch_remove", "watch_refresh", "price_history", "price_add_manual", "alerts_pending", "license_status", "license_activate"],
+  "prices-deal": ["price_check", "watch_add", "watch_list", "watch_remove", "watch_refresh", "price_history", "price_add_manual", "alerts_pending", "license_status", "license_activate"],
   "invoice": ["business_set", "client_add", "client_list", "invoice_create", "invoice_from_hours", "invoice_list", "invoice_get", "invoice_mark_paid", "invoice_pdf", "overdue_report", "license_status", "license_activate"],
   "expense-tracker": ["expense_add", "expense_list", "expense_update", "expense_delete", "receipt_attach", "category_rules", "expense_settings", "expense_summary", "mileage_add", "expense_export", "expense_to_invoice", "license_status", "license_activate"],
   "spreadsheet": ["sheet_load", "sheet_files", "sheet_unload", "sheet_info", "sheet_read", "sheet_query", "sheet_stats", "sheet_find", "sheet_add_column", "sheet_convert", "sheet_write", "license_status", "license_activate"],
