@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-24T00:42:19.264Z",
+  "generated_at": "2026-09-24T07:01:31.492Z",
   "session": {
     "count": 96,
     "history": [
@@ -482,15 +482,18 @@
       "tools": [
         "link_check",
         "link_audit",
+        "anchor_profile",
+        "referring_domain_summary",
+        "outreach_queue",
         "robots_guard_check"
       ],
-      "tool_count": 3,
+      "tool_count": 6,
       "free_limits": "pending",
       "price_usd": 19,
       "build_ok": true,
       "test_summary": "pending",
       "result_status": "pending",
-      "loc": 197,
+      "loc": 263,
       "files_present": {
         "readme": true,
         "server_json": true,
