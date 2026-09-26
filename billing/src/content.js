@@ -9618,6 +9618,120 @@ ${FOOT}`,
     ],
   },
 
+  "ats-resume-check-in-claude-and-cursor": {
+    title: "ATS resume check and cover letter from chat: pass the parser before the recruiter",
+    description: "How an ATS reads your resume, why good candidates get filtered, and how to run a keyword and format check plus a tailored cover letter without leaving Claude Code or Cursor.",
+    html: `<h1>ATS resume check and cover letter from chat</h1>
+<p>Most resumes are rejected by software before a person reads them. An applicant tracking system
+parses your file into fields, matches it against the job posting's keywords, and ranks it. If the
+parser mangles your two-column layout or your title says "Software Engineer II" while the posting
+says "Backend Developer", you lose. The fix is mechanical: parse the same way the ATS does, compare
+against the posting, close the gaps. <a href="/s/resume">MCP Resume</a> does that inside Claude Code
+or Cursor, where you are already working.</p>
+
+<h2>Run the check</h2>
+<p>Drop your resume and the job posting into the folder and say: "check my resume against this
+posting - missing keywords, formatting risks, and a match score". The server reads the document
+directly (no upload, nothing leaves your machine), extracts the sections the way a parser would,
+and reports what the posting asks for that your resume does not say. You get the keyword gaps, the
+titles to align, and the sections that will not survive a strict parser.</p>
+
+<h2>Rewrite and generate</h2>
+<p>Then iterate in the same chat: "rewrite the experience section for this posting, keep it
+truthful". The server produces a clean single-column output in docx or PDF - the two formats parsers
+handle reliably. When the resume is set, "write a cover letter for this posting, half a page,
+reference the retail-dashboards project" generates a letter grounded in your actual resume content,
+not generic filler.</p>
+${install("resume")}
+<p>Free tier covers the core loop. Pro is a one-time payment per server, or included in the
+bundle. Everything runs locally over stdio - your resume never touches a server.</p>
+
+<h2>Why this beats a web ATS checker</h2>
+<p>Web checkers give you a score and upsell a rewrite. Here the model that checked the resume is the
+model that rewrites it, against the specific posting, and the output is a real file you send. For
+the companion templates and the CV variant, see
+<a href="/guides/resume-and-cover-letter-from-chat">resume and cover letter from chat</a>.</p>
+${FOOT}`,
+    faq: [
+      { q: "Does my resume get uploaded anywhere?", a: "No. The server runs locally over stdio and reads files from your machine. Nothing is sent to an external service." },
+      { q: "Which file formats work?", a: "The common ones - PDF and docx in, and clean docx or PDF out, which are the formats applicant tracking systems parse most reliably." },
+      { q: "Can it tailor a cover letter too?", a: "Yes. It generates a letter grounded in your resume content and the specific posting, in the same chat." },
+    ],
+  },
+
+  "freelancer-invoice-and-billable-hours-in-chat": {
+    title: "Freelancer invoicing from chat: billable hours to invoice lines to PDF without a SaaS subscription",
+    description: "The freelance billing loop - timer, timesheet, invoice lines, numbered invoice, PDF - done in Claude Code or Cursor with three local MCP servers and no monthly fee.",
+    html: `<h1>Freelancer invoicing from chat: hours in, invoice out</h1>
+<p>The freelance billing stack is usually three subscriptions: a time tracker, an invoicing tool,
+and whatever exports between them. All three do one simple job each - which is exactly what local
+MCP servers replace. The loop: <a href="/s/time-tracker">MCP Time Tracker</a> records the hours,
+<a href="/s/invoice">MCP Invoice</a> turns them into a numbered invoice, and the PDF comes out of
+the same chat.</p>
+
+<h2>Capture the hours</h2>
+<p>"Start a timer for Acme, API refactor" starts one. Forgot to start it? "Log 2.5 hours yesterday
+for Acme, design review, at 90 euros an hour" writes a complete entry with rate and currency. At
+week's end: "hours for Acme this week, grouped by task" returns totals in hours and money.</p>
+
+<h2>Turn hours into an invoice</h2>
+<p>"Give me invoice lines for Acme in August, then issue the invoice" produces one line per task
+with hours, rate and amount, advances the invoice sequence once, and keeps the numbering consistent
+across months and clients. Add the client's terms and the PDF is generated in the same step. The
+full sequence detail is in <a href="/guides/invoice-numbering-and-sequence-from-chat">invoice
+numbering from chat</a>.</p>
+${install("invoice")}
+<p>The time tracker installs the same way (<code>install("time-tracker")</code> equivalent in the
+setup page). Both run locally over stdio; data lives under your home directory. Free tier covers
+real usage; Pro is a one-time payment per server or included in the
+<a href="/s/office-suite">bundle</a>.</p>
+
+<h2>Where this wins</h2>
+<p>No per-seat fee, no data leaving the machine, and the audit trail is the chat itself. For the
+expense side - receipts, rebilling client costs - see
+<a href="/guides/expense-tracking-in-claude">expense tracking in Claude</a>.</p>
+${FOOT}`,
+    faq: [
+      { q: "Do I need all three servers?", a: "No. The invoice server alone does lines-to-PDF. The time tracker only matters if you want the timer and weekly reports feeding those lines." },
+      { q: "Is there a monthly fee?", a: "No. The free tier covers core usage; Pro is a one-time payment per server, or one payment for the bundle." },
+      { q: "Where does my billing data live?", a: "On your machine, in plain JSON files under your home directory. Nothing is uploaded." },
+    ],
+  },
+
+  "price-drop-alerts-and-pdf-cleanup-from-chat": {
+    title: "Price drop alerts and PDF cleanup from chat: two small jobs you keep postponing",
+    description: "Watch supplier prices and get told when they drop, then merge, split and compress the PDFs those quotes arrive in - all from Claude or Cursor.",
+    html: `<h1>Price drop alerts and PDF cleanup from chat</h1>
+<p>Two jobs that never get a tool of their own: noticing when a supplier's price actually drops, and
+dealing with the PDFs everything arrives in. Both are one-chat jobs with
+<a href="/s/price-tracker">MCP Price Tracker</a> and <a href="/s/pdf">MCP PDF</a>.</p>
+
+<h2>Track prices, get the alert</h2>
+<p>"Track this price list for Acme" stores the current prices with a history. Next time the supplier
+sends an update, "check Acme's new list against what we paid" returns the deltas and sets pending
+alerts on anything that dropped. You stop renegotiating from memory and start negotiating from a
+record. Buying-side workflows are in
+<a href="/guides/price-lists-and-rate-cards-from-chat">price lists and rate cards</a>; the
+consumer-side pattern is <a href="/guides/price-drop-alerts-with-claude">price drop alerts</a>.</p>
+
+<h2>Deal with the PDFs</h2>
+<p>Quotes arrive as 30-page scans, terms sheets as separate files, and the accountant wants one
+document. In the same chat: "merge these three PDFs", "split pages 4-9 into their own file",
+"compress the scan so it emails". Page ranges, merging and compression are single tool calls - no
+online uploader, which matters when the documents are commercial.</p>
+${install("pdf")}
+<p>Both servers run locally over stdio. Free tier covers the core operations; Pro is a one-time
+payment per server or part of the <a href="/s/office-suite">bundle</a>. For receipt-heavy month-ends,
+see <a href="/guides/combine-receipts-into-one-pdf-for-your-accountant">combine receipts into one
+PDF</a>.</p>
+${FOOT}`,
+    faq: [
+      { q: "Where do price histories live?", a: "Locally, in the server's data directory under your home folder. Nothing is uploaded." },
+      { q: "Can it split a scanned PDF?", a: "Yes - by page range or per-page, which is how you separate a 30-page scan into individual documents." },
+      { q: "Does compression lose quality?", a: "It reduces file size for emailing and archiving; text remains selectable. For archival originals, keep the source file." },
+    ],
+  },
+
 };
 
 export const GUIDE_PRODUCT_LINKS = {
@@ -9642,6 +9756,9 @@ export const GUIDE_PRODUCT_LINKS = {
   "invoice-pdf-from-chat": ["invoice", "quotes"],
   "quotes-and-estimates-to-invoice-in-claude": ["quotes", "invoice"],
   "recurring-invoices-on-a-schedule": ["recurring", "invoice"],
+  "ats-resume-check-in-claude-and-cursor": ["resume"],
+  "freelancer-invoice-and-billable-hours-in-chat": ["time-tracker", "invoice"],
+  "price-drop-alerts-and-pdf-cleanup-from-chat": ["price-tracker", "pdf"],
 };
 
 /**
@@ -9652,19 +9769,19 @@ export const GUIDE_PRODUCT_LINKS = {
  * cover. Every guide slug here must exist in GUIDES (validated at build).
  */
 export const PRODUCT_GUIDE_LINKS = {
-  "time-tracker": ["track-time-in-claude-code", "kanban-board-in-claude-with-time-tracking", "project-profitability-hours-versus-budget"],
-  "price-tracker": ["price-drop-alerts-with-claude", "price-lists-and-rate-cards-from-chat", "supplier-directory-from-chat"],
+  "time-tracker": ["track-time-in-claude-code", "freelancer-invoice-and-billable-hours-in-chat", "kanban-board-in-claude-with-time-tracking", "project-profitability-hours-versus-budget"],
+  "price-tracker": ["price-drop-alerts-with-claude", "price-drop-alerts-and-pdf-cleanup-from-chat", "price-lists-and-rate-cards-from-chat", "supplier-directory-from-chat"],
   spreadsheet: ["read-excel-in-cursor", "csv-to-excel-and-back-in-claude", "answer-questions-about-a-spreadsheet-without-formulas", "ask-a-spreadsheet-questions-in-chat"],
-  invoice: ["invoice-pdf-from-chat", "quotes-and-estimates-to-invoice-in-claude", "recurring-invoices-on-a-schedule", "quotes-and-estimates-to-invoices"],
+  invoice: ["invoice-pdf-from-chat", "freelancer-invoice-and-billable-hours-in-chat", "quotes-and-estimates-to-invoice-in-claude", "recurring-invoices-on-a-schedule", "quotes-and-estimates-to-invoices"],
   "expense-tracker": ["expense-tracking-in-claude", "rebill-client-expenses-with-a-markup", "bank-statement-csv-categorize-reconcile"],
   currency: ["currency-conversion-ecb-rates-in-claude", "currency-conversion-mcp-servers-compared"],
   docx: ["word-documents-proposals-from-chat", "fill-a-quote-or-estimate-template-from-chat"],
   timezone: ["meeting-slots-across-time-zones", "calendar-ics-free-busy-in-claude"],
-  resume: ["resume-and-cover-letter-from-chat"],
+  resume: ["resume-and-cover-letter-from-chat", "ats-resume-check-in-claude-and-cursor"],
   recurring: ["recurring-invoices-on-a-schedule", "invoice-pdf-from-chat"],
   clauses: ["contract-clauses-library-assembly", "service-agreements-from-chat"],
   calendar: ["calendar-ics-free-busy-in-claude", "meeting-slots-across-time-zones"],
-  pdf: ["pdf-merge-split-stamp-from-chat", "split-a-scanned-pdf-into-separate-documents", "combine-receipts-into-one-pdf-for-your-accountant"],
+  pdf: ["pdf-merge-split-stamp-from-chat", "price-drop-alerts-and-pdf-cleanup-from-chat", "split-a-scanned-pdf-into-separate-documents", "combine-receipts-into-one-pdf-for-your-accountant"],
   image: ["image-resize-compress-watermark-from-chat"],
   "bank-statement": ["bank-statement-csv-categorize-reconcile", "reconcile-a-bank-export-with-your-invoices", "how-to-categorize-bank-transactions"],
   kanban: ["kanban-board-in-claude-with-time-tracking", "work-orders-and-job-cards-from-chat"],
