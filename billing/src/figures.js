@@ -341,7 +341,7 @@ export const SINGLE_USD = 19;
 export const BUNDLE_USD = 39;
 
 /** Published version, read from servers/<id>/server.json. */
-export const VERSION = "0.22.3";
+export const VERSION = "0.22.4";
 
 /** The free-tier sentence for each server, verbatim from data/facts.json. */
 export const FREE = {
