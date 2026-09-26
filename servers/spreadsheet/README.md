@@ -281,3 +281,9 @@ No. The server runs locally on your machine and reads your files directly. It ma
 and it stores nothing of its own beyond the files you ask it to write.
 
 Built by [theluckystrike](https://github.com/theluckystrike). Support: support@zovo.one
+
+## Use these docs as an MCP server
+
+Any MCP client (Claude, Cursor, Windsurf, VS Code) can read this repository's documentation directly via GitMCP — no install:
+
+- Docs MCP URL: https://gitmcp.io/theluckystrike/mcp-spreadsheet

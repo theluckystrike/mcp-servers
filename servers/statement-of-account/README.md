@@ -161,3 +161,9 @@ anywhere. There is no network call in this server at all. License keys verify of
 MIT. Support: support@zovo.one
 
 Built by [theluckystrike](https://github.com/theluckystrike).
+
+## Use these docs as an MCP server
+
+Any MCP client (Claude, Cursor, Windsurf, VS Code) can read this repository's documentation directly via GitMCP — no install:
+
+- Docs MCP URL: https://gitmcp.io/theluckystrike/mcp-statement-of-account

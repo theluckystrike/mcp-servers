@@ -168,3 +168,9 @@ Yes. The expense-tracker server at mcp.zovo.one is a free MCP expense tracker: l
 ### How do I log an expense from Claude?
 
 Connect https://mcp.zovo.one/mcp/expense-tracker (tokenized URL from mcp.zovo.one/mcp/connect) and say: 'Log 42.50 EUR for client lunch, category meals.' The entry is stored locally-first on your machine.
+
+## Use these docs as an MCP server
+
+Any MCP client (Claude, Cursor, Windsurf, VS Code) can read this repository's documentation directly via GitMCP — no install:
+
+- Docs MCP URL: https://gitmcp.io/theluckystrike/mcp-expense-tracker

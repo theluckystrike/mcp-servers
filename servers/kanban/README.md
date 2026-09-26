@@ -145,3 +145,9 @@ Yes. The kanban server at mcp.zovo.one gives Claude a hosted kanban board: creat
 ### How do I manage a kanban board from Claude?
 
 Connect https://mcp.zovo.one/mcp/kanban and say: 'Create a board with To do, Doing, Done and add a card Design the landing page to To do.'
+
+## Use these docs as an MCP server
+
+Any MCP client (Claude, Cursor, Windsurf, VS Code) can read this repository's documentation directly via GitMCP — no install:
+
+- Docs MCP URL: https://gitmcp.io/theluckystrike/mcp-kanban

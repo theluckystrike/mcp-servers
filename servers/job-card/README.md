@@ -74,3 +74,9 @@ Every amount is an integer number of cents (a cent is 1/100 of the currency unit
 All data stays local, in `${XDG_DATA_HOME:-~/.local/share}/mcp-servers/job-card/`. Two files: `cards.json`, `counter.json`. Nothing is sent anywhere, there is no account, no API key and no network call in this server at all. License keys are verified offline.
 
 Built by theluckystrike. https://github.com/theluckystrike
+
+## Use these docs as an MCP server
+
+Any MCP client (Claude, Cursor, Windsurf, VS Code) can read this repository's documentation directly via GitMCP — no install:
+
+- Docs MCP URL: https://gitmcp.io/theluckystrike/mcp-job-card

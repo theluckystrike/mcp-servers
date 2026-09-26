@@ -124,3 +124,9 @@ Everything stays on your machine. Statements are parsed locally and stored in a 
 licensing, not for parsing, not for anything. Deleting that directory resets it.
 
 Built by [theluckystrike](https://github.com/theluckystrike). Support: support@zovo.one
+
+## Use these docs as an MCP server
+
+Any MCP client (Claude, Cursor, Windsurf, VS Code) can read this repository's documentation directly via GitMCP — no install:
+
+- Docs MCP URL: https://gitmcp.io/theluckystrike/mcp-bank-statement

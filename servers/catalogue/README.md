@@ -121,3 +121,9 @@ is the shared business profile, read-only, for the default currency, the default
 and the name at the top of the price list. It creates no invoice and no quote.
 
 Built by [theluckystrike](https://github.com/theluckystrike).
+
+## Use these docs as an MCP server
+
+Any MCP client (Claude, Cursor, Windsurf, VS Code) can read this repository's documentation directly via GitMCP — no install:
+
+- Docs MCP URL: https://gitmcp.io/theluckystrike/mcp-catalogue

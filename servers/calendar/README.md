@@ -168,3 +168,9 @@ server follows the spec, which is what your calendar app does too.
 It writes `.ics` files with `event_export`, which you can import anywhere. It never modifies the calendar it read.
 
 5 MB, which is a few thousand events. Export a narrower date range if a full history is bigger than that.
+
+## Use these docs as an MCP server
+
+Any MCP client (Claude, Cursor, Windsurf, VS Code) can read this repository's documentation directly via GitMCP — no install:
+
+- Docs MCP URL: https://gitmcp.io/theluckystrike/mcp-calendar

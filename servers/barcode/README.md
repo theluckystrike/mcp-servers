@@ -127,3 +127,9 @@ no telemetry. Codes are written where you say, and a small register of what was 
 `~/.local/share/mcp-servers/barcode/` (or `$XDG_DATA_HOME`). License keys verify offline with a public key.
 
 Built by [theluckystrike](https://github.com/theluckystrike). Support: support@zovo.one
+
+## Use these docs as an MCP server
+
+Any MCP client (Claude, Cursor, Windsurf, VS Code) can read this repository's documentation directly via GitMCP — no install:
+
+- Docs MCP URL: https://gitmcp.io/theluckystrike/mcp-barcode

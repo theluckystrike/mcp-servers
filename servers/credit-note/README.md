@@ -84,3 +84,9 @@ Drafts carry a `CN-DRAFT-YYYY-NNNN` id no client sees. The final `CN-YYYY-NNNN` 
 All data stays local, in `${XDG_DATA_HOME:-~/.local/share}/mcp-servers/credit-note/`. Two files: `notes.json`, `counter.json`. Nothing is sent anywhere, there is no account, no API key and no network call in this server at all. License keys are verified offline. The Markdown and HTML renders are returned as text; this server writes no document files.
 
 Built by theluckystrike. https://github.com/theluckystrike
+
+## Use these docs as an MCP server
+
+Any MCP client (Claude, Cursor, Windsurf, VS Code) can read this repository's documentation directly via GitMCP — no install:
+
+- Docs MCP URL: https://gitmcp.io/theluckystrike/mcp-credit-note

@@ -229,3 +229,9 @@ No. The only outbound requests are to the product URLs you add, to fetch their p
 telemetry and no account.
 
 MIT licensed.
+
+## Use these docs as an MCP server
+
+Any MCP client (Claude, Cursor, Windsurf, VS Code) can read this repository's documentation directly via GitMCP — no install:
+
+- Docs MCP URL: https://gitmcp.io/theluckystrike/mcp-price-tracker

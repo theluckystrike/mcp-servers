@@ -111,3 +111,9 @@ Everything stays on your machine. Assets are JSON under `${XDG_DATA_HOME:-~/.loc
 ## License
 
 MIT. Support: support@zovo.one
+
+## Use these docs as an MCP server
+
+Any MCP client (Claude, Cursor, Windsurf, VS Code) can read this repository's documentation directly via GitMCP — no install:
+
+- Docs MCP URL: https://gitmcp.io/theluckystrike/mcp-asset-register

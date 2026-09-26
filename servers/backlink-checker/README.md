@@ -39,3 +39,9 @@ The free tier is full single-page checking: `link_check` and
 
 Single-server Pro is $19, or get all 46 servers with one lifetime key for
 $39 — see [mcp.zovo.one/buy/backlink-checker](https://mcp.zovo.one/buy/backlink-checker).
+
+## Use these docs as an MCP server
+
+Any MCP client (Claude, Cursor, Windsurf, VS Code) can read this repository's documentation directly via GitMCP — no install:
+
+- Docs MCP URL: https://gitmcp.io/theluckystrike/mcp-backlink-checker

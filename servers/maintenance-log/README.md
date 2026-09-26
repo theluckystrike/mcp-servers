@@ -72,3 +72,9 @@ Every date is stored as ISO 8601 (`YYYY-MM-DD`). Whether a service is overdue is
 All data stays local, in `${XDG_DATA_HOME:-~/.local/share}/mcp-servers/maintenance-log/`. Two files: `assets.json`, `counter.json`. Nothing is sent anywhere, there is no account, no API key and no network call in this server at all. License keys are verified offline.
 
 Built by theluckystrike. https://github.com/theluckystrike
+
+## Use these docs as an MCP server
+
+Any MCP client (Claude, Cursor, Windsurf, VS Code) can read this repository's documentation directly via GitMCP — no install:
+
+- Docs MCP URL: https://gitmcp.io/theluckystrike/mcp-maintenance-log

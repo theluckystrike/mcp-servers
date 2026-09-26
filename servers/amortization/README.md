@@ -67,3 +67,9 @@ The same arithmetic is why the effective annual rate is reported beside the nomi
 All data stays local, in `${XDG_DATA_HOME:-~/.local/share}/mcp-servers/amortization/`. Two files: `loans.json` and `counter.json`. No network call is made by this server at all, for any tool. No schedule is stored: every row is derived from the terms on the call, because a stored schedule is a second copy of a figure the rate and the term already decide, and the copy is the one that gets believed after somebody edits the rate.
 
 Built by theluckystrike. https://github.com/theluckystrike
+
+## Use these docs as an MCP server
+
+Any MCP client (Claude, Cursor, Windsurf, VS Code) can read this repository's documentation directly via GitMCP — no install:
+
+- Docs MCP URL: https://gitmcp.io/theluckystrike/mcp-amortization

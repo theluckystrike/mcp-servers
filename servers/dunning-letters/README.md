@@ -88,3 +88,9 @@ Yes. The dunning-letters server at mcp.zovo.one automates accounts-receivable fo
 ### How do I send payment reminders from Claude?
 
 Connect https://mcp.zovo.one/mcp/dunning-letters and say: 'List overdue invoices and draft a firm reminder for Acme.' The letter follows the standard tier sequence and exports as PDF.
+
+## Use these docs as an MCP server
+
+Any MCP client (Claude, Cursor, Windsurf, VS Code) can read this repository's documentation directly via GitMCP — no install:
+
+- Docs MCP URL: https://gitmcp.io/theluckystrike/mcp-dunning-letters

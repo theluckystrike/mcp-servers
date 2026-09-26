@@ -138,3 +138,9 @@ your currencies or your machine is sent anywhere. The cache lives in
 `ECB_BASE_URL` to point at your own mirror if outbound access is restricted.
 
 MIT licensed. Support: support@zovo.one. Built by [theluckystrike](https://github.com/theluckystrike).
+
+## Use these docs as an MCP server
+
+Any MCP client (Claude, Cursor, Windsurf, VS Code) can read this repository's documentation directly via GitMCP — no install:
+
+- Docs MCP URL: https://gitmcp.io/theluckystrike/mcp-currency

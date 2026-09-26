@@ -252,3 +252,9 @@ Yes. The docx server at mcp.zovo.one creates .docx files from Claude: template-b
 ### How do I create a .docx from Claude?
 
 Connect https://mcp.zovo.one/mcp/docx and describe the document — 'Create a proposal.docx with these three sections and a pricing table.' The file is written to your local storage directory.
+
+## Use these docs as an MCP server
+
+Any MCP client (Claude, Cursor, Windsurf, VS Code) can read this repository's documentation directly via GitMCP — no install:
+
+- Docs MCP URL: https://gitmcp.io/theluckystrike/mcp-docx

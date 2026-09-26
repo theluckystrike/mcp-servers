@@ -264,3 +264,9 @@ Yes. The pdf server at mcp.zovo.one merges, splits, rotates and fills PDF forms 
 ### Can Claude fill PDF forms with an MCP server?
 
 Yes — connect https://mcp.zovo.one/mcp/pdf and ask Claude to fill a form's fields or merge several PDFs. Output stays form-preserving, so filled fields remain editable.
+
+## Use these docs as an MCP server
+
+Any MCP client (Claude, Cursor, Windsurf, VS Code) can read this repository's documentation directly via GitMCP — no install:
+
+- Docs MCP URL: https://gitmcp.io/theluckystrike/mcp-pdf

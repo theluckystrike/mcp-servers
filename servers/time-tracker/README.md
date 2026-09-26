@@ -302,3 +302,9 @@ Yes. The time-tracker server at mcp.zovo.one is a free MCP time tracking server 
 ### How do I track time from Claude?
 
 Connect https://mcp.zovo.one/mcp/time-tracker (tokenized URL from mcp.zovo.one/mcp/connect) and say: 'Start a timer for the Acme project.' Stop it later the same way; weekly summaries are one ask away.
+
+## Use these docs as an MCP server
+
+Any MCP client (Claude, Cursor, Windsurf, VS Code) can read this repository's documentation directly via GitMCP — no install:
+
+- Docs MCP URL: https://gitmcp.io/theluckystrike/mcp-time-tracker
