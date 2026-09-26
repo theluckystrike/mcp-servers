@@ -1,39 +1,15 @@
-# Wave-5b: Agent-Reachability PRs for Zovo MCP Servers
+# Wave-5b agent-reach PRs — 2026-09-26
 
-STATUS: in progress
-
-Task: Add Zovo MCP servers to 1-2 additional high-signal awesome-list repos via verified GitHub PRs.
-
-Repo: /Users/mike/mcp-servers (git, branch main)
-
-## Candidate repos (searched "awesome mcp servers", sorted by stars)
-Excluded: punkpeye/awesome-mcp-servers (frozen), punkpeye/awesome-remote-mcp-servers (PR #610), Sagargupta16/awesome-mcp-servers (PR #109), agenticdevops/awesome-devops-mcp (PR #45), TrueHaiq/awesome-mcp (PR #52).
-
-Top non-excluded candidates with recent merged PRs (last 60 days):
-- MobinX/awesome-mcp-list (883 stars) — merged PRs 2026-09-25 (#509, #508, #507). Requires public GitHub repo per entry. FORMAT: `-   **[owner/repo](url)** [![GitHub stars](...)](...): desc`
-- TensorBlock/awesome-mcp-servers (865 stars) — merged PRs 2026-09-25 (#2659, #2696). Accepts hosted endpoints. FORMAT: `- [Server Name](url): desc... Install: ...` in docs/<category>.md
-- jaw9c/awesome-remote-mcp-servers (1119 stars) — merged PRs but recent ones show null merged_at (open). Skip.
-- YuzeHao2023/Awesome-MCP-Servers (1064) — recent PRs null merged_at. Skip.
-- wong2/awesome-mcp-servers (4325) — 404 on pulls API. Skip.
-
-## Selected: TensorBlock/awesome-mcp-servers + MobinX/awesome-mcp-list
-
-## Flagship 6 entries (mirror repo + hosted URL)
-1. invoice-generator-freelancers — repo theluckystrike/mcp-invoice-generator — https://mcp.zovo.one/mcp/invoice-generator-freelancers
-2. receipt-expense-scanner-reports — repo theluckystrike/mcp-expense-tracker — https://mcp.zovo.one/mcp/receipt-expense-scanner-reports
-3. convert-pdf-to-word-docx — repo theluckystrike/mcp-pdf — https://mcp.zovo.one/mcp/convert-pdf-to-word-docx
-4. price-drop-alert-tracker — repo theluckystrike/mcp-price-tracker — https://mcp.zovo.one/mcp/price-drop-alert-tracker
-5. subscription-manager-track-renewals — repo theluckystrike/mcp-recurring — https://mcp.zovo.one/mcp/subscription-manager-track-renewals
-6. cv-maker-resume-templates — repo theluckystrike/mcp-resume — https://mcp.zovo.one/mcp/cv-maker-resume-templates
+## Outcome
+- MobinX/awesome-mcp-list: PR https://github.com/MobinX/awesome-mcp-list/pull/517 | OPEN | MERGEABLE (verified via gh pr view --json state,mergeable)
+  - Evidence: `OPEN mergeable=MERGEABLE CLEAN`; PR files patch adds exactly 6 rows (theluckystrike/mcp-{invoice-generator,expense-tracker,credit-note,price-tracker,time-tracker,currency}) each with hosted remote URL https://mcp.zovo.one/mcp/<name>.
+  - Note: initial push reported CONFLICTING; rebased onto upstream main (98b8a31), force-pushed, re-verified MERGEABLE CLEAN.
+- TensorBlock/awesome-mcp-servers: already covered this wave — PR #2711 OPEN MERGEABLE (see intel/wave5-prs.md). No second PR opened there.
+- Rejected candidates: jaw9c/awesome-remote-mcp-servers and YuzeHao2023/Awesome-MCP-Servers (recent PRs unmerged, low merge velocity); wong2/awesome-mcp-servers (PRs via API only, 404).
 
 ## Files changed
-(tbd)
-
-## PRs
-(tbd)
-
-## Evidence
-(tbd)
+- Fork repo theluckystrike/awesome-mcp-list branch zovo-servers, commit 8066d5d (README.md +6 rows).
+- ~/mcp-servers: this intel file.
 
 ## Blockers
-(none yet)
+- None outstanding.
