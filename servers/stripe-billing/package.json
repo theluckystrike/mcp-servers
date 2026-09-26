@@ -1,0 +1,15 @@
+{
+  "name": "mcp-stripe-billing",
+  "version": "1.0.0",
+  "description": "MCP server: stripe-billing",
+  "type": "module",
+  "main": "src/index.js",
+  "bin": {
+    "mcp-stripe-billing": "src/index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.4",
+    "zod": "^3.23.8"
+  },
+  "license": "MIT"
+}

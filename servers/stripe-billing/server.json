@@ -1,0 +1,21 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.theluckystrike/stripe-billing",
+  "description": "Read your Stripe billing data from AI chat: balances, invoices, subscriptions. Read-only.",
+  "version": "0.1.0",
+  "repository": {
+    "url": "https://github.com/theluckystrike/mcp-servers",
+    "source": "github",
+    "subfolder": "servers/stripe-billing"
+  },
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "mcp-stripe-billing",
+      "version": "0.1.0",
+      "transport": {
+        "type": "stdio"
+      }
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.theluckystrike/pomodoro",
+  "description": "Plan a workday into pomodoros, log focus sessions, get daily stats. All data is local.",
+  "version": "0.1.0",
+  "repository": {
+    "url": "https://github.com/theluckystrike/mcp-servers",
+    "source": "github",
+    "subfolder": "servers/pomodoro"
+  },
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "mcp-pomodoro",
+      "version": "0.1.0",
+      "transport": {
+        "type": "stdio"
+      }
+    }
+  ]
+}

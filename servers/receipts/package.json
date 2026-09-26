@@ -1,0 +1,15 @@
+{
+  "name": "mcp-receipts",
+  "version": "1.0.0",
+  "description": "MCP server: receipts",
+  "type": "module",
+  "main": "src/index.js",
+  "bin": {
+    "mcp-receipts": "src/index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.4",
+    "zod": "^3.23.8"
+  },
+  "license": "MIT"
+}

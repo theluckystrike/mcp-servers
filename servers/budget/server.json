@@ -1,0 +1,21 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.theluckystrike/budget",
+  "description": "Set monthly budget categories, log spending, get over/under-budget reports. All data is local.",
+  "version": "0.1.0",
+  "repository": {
+    "url": "https://github.com/theluckystrike/mcp-servers",
+    "source": "github",
+    "subfolder": "servers/budget"
+  },
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "mcp-budget",
+      "version": "0.1.0",
+      "transport": {
+        "type": "stdio"
+      }
+    }
+  ]
+}
