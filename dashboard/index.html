@@ -105,7 +105,7 @@
 <div class="wrap">
   <header>
     <h1>MCP Servers by theluckystrike</h1>
-    <div class="meta">generated 2026-09-26 (R27 update) — session count 96</div>
+    <div class="meta">generated 2026-09-26 (R28b update) — session count 97</div>
   </header>
 
   <div class="kpi-row">
@@ -117,13 +117,13 @@
   </div>
 
   <section>
-    <h2>Latest distribution round — R27 (2026-09-26)</h2>
+    <h2>Latest distribution round — R28b (2026-09-26)</h2>
     <ul>
-      <li>Official MCP registry: <b>47/47 servers verified live by name</b> (per-name GET; search API capped).</li>
-      <li>Glama: <b>47/47 indexed</b> (score badges 200, up from 1/33).</li>
-      <li>GitMCP: <b>47/47 docs-MCP pages live</b>; deep links appended to all mirror READMEs and pushed (0dbedf60, sync-mirrors 47/47 green).</li>
-      <li>mcpservers.org: <b>4 free submissions accepted</b> — mcp-invoice (Finance), mcp-office-suite (Productivity), mcp-timesheet (Productivity), mcp-estimate (Finance).</li>
-      <li>KPI surfaces 17 → 20 (43ccd71f). Details: <span class="mono">intel/dist-r27.md</span>.</li>
+      <li>mcpservers.org: <b>16 submissions accepted</b> (R27: 4, R28: 12) — added quotes, time-tracker, expense-tracker, currency, invoice-generator, pomodoro, loan-calculator, receipts, budget, payroll, tax-calc, stripe-billing. Registry-name field left empty (R28 learning).</li>
+      <li><b>7 new servers built and shipped</b> (b22b5d62): pomodoro, loan-calculator, receipts, budget, payroll, tax-calc, stripe-billing — all smoke-tested green end-to-end via MCP client, pushed as standalone repos + estate subfolders with official-registry server.json.</li>
+      <li>Dead-link fix: 7 standalone repos created on GitHub before submission verification caught 404s — all submitted URLs now resolve.</li>
+      <li>KPI: mcpservers.org surface count 4 → 16. Next levers: registry publish run for the 7 new servers, Smithery remote listings, Glama/mcp.so manual sign-ins.</li>
+      <li>R27 round: 47/47 official registry, Glama 47/47, GitMCP 47/47 deep links (0dbedf60). Details: <span class="mono">intel/dist-r27.md</span>.</li>
       <li>Blocked, human-gated: mcp.so submit (sign-in), Glama claim (GitHub OAuth). Needs one manual browser sign-in each.</li>
     </ul>
   </section>
