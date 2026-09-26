@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-26T07:58:08.802Z",
+  "generated_at": "2026-09-26T12:00:00.000Z",
   "kpis": [
     {
       "cat": "Discovery",
@@ -11,7 +11,7 @@
       "why": "The official registry is the index Claude, Cursor and VS Code pickers read.",
       "status": "progress",
       "last_verified": "2026-09-26",
-      "note": "All 47 mirrors verified live in official registry by name (search API capped, per-name check used)"
+      "note": "All 47 mirrors verified live. 7 NEW servers (R28b: pomodoro, loan-calculator, receipts, budget, payroll, tax-calc, stripe-billing) added to estate with server.json \u2014 pending registry publish."
     },
     {
       "cat": "Discovery",
