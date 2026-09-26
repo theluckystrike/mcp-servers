@@ -47,6 +47,9 @@ for (const d of readdirSync(join(ROOT, "servers"))) {
   for (const f of readdirSync(dir)) {
     if (!/^server(\.[a-z0-9-]+)?\.json$/.test(f)) continue;
     if (f === "server.npm-package.json") continue;
+    // mcpb manifests are release-check mirrors of server.json (same name/version), NOT
+    // registry entries - publishing them 422s on the bare-name pattern. Skip up front.
+    if (f === "server.mcpb.json") continue;
     // Alias manifests share the primary entry's remote URL; the registry enforces one
     // remote URL per server, so publishing them always 400s. Skip them up front.
     if (f.endsWith(".snag.json")) continue;
