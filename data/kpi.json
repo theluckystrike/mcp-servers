@@ -4,12 +4,14 @@
     {
       "cat": "Discovery",
       "name": "Registry entries at latest version",
-      "value": 52,
+      "value": 47,
       "target": 145,
       "unit": "of all published names",
       "how": "one exact GET /v0.1/servers/<name>/versions/latest per manifest name, compared with the release version. NOT a substring search: with 30,395 servers in the registry a search can push the exact match off page one, which is how this read 41 of 91 while a direct sample of 12 returned 12 of 12 present",
       "why": "The official registry is the index Claude, Cursor and VS Code pickers read.",
-      "status": "progress"
+      "status": "progress",
+      "last_verified": "2026-09-26",
+      "note": "All 47 mirrors verified live in official registry by name (search API capped, per-name check used)"
     },
     {
       "cat": "Discovery",
@@ -24,12 +26,14 @@
     {
       "cat": "Discovery",
       "name": "Distribution surfaces live",
-      "value": 17,
+      "value": 20,
       "target": 74,
       "unit": "of 74",
       "how": "data/distribution.json",
       "why": "Each free registry or catalog is a compounding source of installs.",
-      "status": "progress"
+      "status": "progress",
+      "last_verified": "2026-09-26",
+      "note": "+3: mcpservers.org (4 servers submitted: invoice, office-suite, timesheet, estimate), GitMCP docs links (47/47 live), Glama 47/47 indexed"
     },
     {
       "cat": "Discovery",
