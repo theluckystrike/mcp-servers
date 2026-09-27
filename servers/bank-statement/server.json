@@ -27,19 +27,5 @@
       ],
       "fileSha256": "830ac9e4a7d211a704cbb156c6ebe865d3c8abc0493d17cd68cfe8ce33b71537"
     }
-  ],
-  "remotes": [
-    {
-      "type": "streamable-http",
-      "url": "https://mcp.zovo.one/mcp/bank-statement",
-      "headers": [
-        {
-          "name": "Authorization",
-          "description": "Bearer <Pro license key or anonymous token from GET https://mcp.zovo.one/mcp/token>",
-          "isRequired": true,
-          "isSecret": true
-        }
-      ]
-    }
   ]
 }

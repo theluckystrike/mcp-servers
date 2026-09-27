@@ -64,7 +64,7 @@ const CHILDREN: ChildDef[] = [
   { id: "delivery-schedule", pkg: "@theluckystrike/mcp-delivery-schedule", optional: true },
   { id: "packing-list", pkg: "@theluckystrike/mcp-packing-list", optional: true },
   { id: "checklist", pkg: "@theluckystrike/mcp-checklist", optional: true },
-  { id: "purchaseRequisition", pkg: "@theluckystrike/mcp-purchase-requisition", optional: true },
+  { id: "purchase-requisition", pkg: "@theluckystrike/mcp-purchase-requisition", optional: true },
   { id: "bill-of-sale", pkg: "@theluckystrike/mcp-bill-of-sale", optional: true },
   { id: "credit-note", pkg: "@theluckystrike/mcp-credit-note", optional: true },
   { id: "job-card", pkg: "@theluckystrike/mcp-job-card", optional: true },
@@ -77,7 +77,6 @@ const CHILDREN: ChildDef[] = [
   { id: "leave", pkg: "@theluckystrike/mcp-leave", optional: true },
   { id: "onboarding", pkg: "@theluckystrike/mcp-onboarding", optional: true },
   { id: "backlink-checker", pkg: "@theluckystrike/mcp-backlink-checker", optional: true },
-  { id: "purchase-requisition", pkg: "@theluckystrike/mcp-purchase-requisition", optional: true },
 ];
 
 /** Resolve the absolute path to a sibling server's dist/index.js. */

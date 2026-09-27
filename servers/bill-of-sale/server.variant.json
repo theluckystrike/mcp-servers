@@ -27,19 +27,5 @@
       ],
       "fileSha256": "ae8754959669a4c7b61f28722aa9e3eff3711987b9d9f5306b75ce1d6e7cd198"
     }
-  ],
-  "remotes": [
-    {
-      "type": "streamable-http",
-      "url": "https://mcp.zovo.one/mcp/bill-of-sale",
-      "headers": [
-        {
-          "name": "Authorization",
-          "description": "Bearer <Pro license key or anonymous token from GET https://mcp.zovo.one/mcp/token>",
-          "isRequired": true,
-          "isSecret": true
-        }
-      ]
-    }
   ]
 }

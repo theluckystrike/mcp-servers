@@ -1,6 +1,6 @@
 # Track time from Claude with a free, no-install server
 
-**Featured on [Awesome MCP Servers](mcpservers.org)** — [directory listing](https://mcpservers.org/servers/github-com-theluckystrike-mcp-servers-tree-main-servers-time-tracker) | [live hosted endpoint](https://mcp.zovo.one/s/time-tracker), free tier, no signup.
+**Featured on [Awesome MCP Servers](mcpservers.org)** - [directory listing](https://mcpservers.org/servers/github-com-theluckystrike-mcp-servers-tree-main-servers-time-tracker) | [live hosted endpoint](https://mcp.zovo.one/s/time-tracker), free tier, no signup.
 
 
 Track billable time without leaving your AI chat. Say "start a timer on the acme redesign", keep working, then
@@ -12,7 +12,7 @@ Built by [theluckystrike](https://github.com/theluckystrike).
 
 **In the [official MCP Registry](https://registry.modelcontextprotocol.io/v0.1/servers/io.github.theluckystrike%2Ftime-tracker-timesheet-billable-hours/versions/latest)** (`io.github.theluckystrike/time-tracker-timesheet-billable-hours`).
 
-**Listed on the [AI Product Index](https://index.percall.dev/l/zovo-time-tracker.html)** — live remote endpoint at [mcp.zovo.one/s/time-tracker](https://mcp.zovo.one/s/time-tracker), free tier, no signup.
+**Listed on the [AI Product Index](https://index.percall.dev/l/zovo-time-tracker.html)** - live remote endpoint at [mcp.zovo.one/s/time-tracker](https://mcp.zovo.one/s/time-tracker), free tier, no signup.
 
 
 ![time-tracker demo](../../assets/demo-time-tracker.gif)
@@ -297,7 +297,7 @@ letting anyone improvise an address.
 
 ### Is there a free MCP time tracking server?
 
-Yes. The time-tracker server at mcp.zovo.one is a free MCP time tracking server with no install: start and stop timers in chat, keep per-client totals, and produce weekly reports. Unlike SaaS trackers (WebWork, TrackingTime) it needs no account — paste the hosted URL and go.
+Yes. The time-tracker server at mcp.zovo.one is a free MCP time tracking server with no install: start and stop timers in chat, keep per-client totals, and produce weekly reports. Unlike SaaS trackers (WebWork, TrackingTime) it needs no account - paste the hosted URL and go.
 
 ### How do I track time from Claude?
 
@@ -305,6 +305,6 @@ Connect https://mcp.zovo.one/mcp/time-tracker (tokenized URL from mcp.zovo.one/m
 
 ## Use these docs as an MCP server
 
-Any MCP client (Claude, Cursor, Windsurf, VS Code) can read this repository's documentation directly via GitMCP — no install:
+Any MCP client (Claude, Cursor, Windsurf, VS Code) can read this repository's documentation directly via GitMCP - no install:
 
 - Docs MCP URL: https://gitmcp.io/theluckystrike/mcp-time-tracker

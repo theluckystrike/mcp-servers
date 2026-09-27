@@ -140,7 +140,7 @@ MIT. Support: support@zovo.one
 
 ### Is there an MCP kanban server?
 
-Yes. The kanban server at mcp.zovo.one gives Claude a hosted kanban board: create boards, columns and cards, move cards between columns, all from any MCP client. Unlike the local-only GitHub repos it is hosted and free to start — nothing to clone or run.
+Yes. The kanban server at mcp.zovo.one gives Claude a hosted kanban board: create boards, columns and cards, move cards between columns, all from any MCP client. Unlike the local-only GitHub repos it is hosted and free to start - nothing to clone or run.
 
 ### How do I manage a kanban board from Claude?
 
@@ -148,6 +148,6 @@ Connect https://mcp.zovo.one/mcp/kanban and say: 'Create a board with To do, Doi
 
 ## Use these docs as an MCP server
 
-Any MCP client (Claude, Cursor, Windsurf, VS Code) can read this repository's documentation directly via GitMCP — no install:
+Any MCP client (Claude, Cursor, Windsurf, VS Code) can read this repository's documentation directly via GitMCP - no install:
 
 - Docs MCP URL: https://gitmcp.io/theluckystrike/mcp-kanban

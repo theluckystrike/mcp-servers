@@ -1,6 +1,6 @@
 # mcp-loan-calculator
 
-loan-calculator MCP server — give Claude (or any MCP client) real loan-calculator tools.
+loan-calculator MCP server - give Claude (or any MCP client) real loan-calculator tools.
 
 ## Install
 
@@ -17,9 +17,9 @@ loan-calculator MCP server — give Claude (or any MCP client) real loan-calcula
 
 ## Tools
 
-See src/index.js — each tool is self-documenting via the MCP protocol.
+See src/index.js - each tool is self-documenting via the MCP protocol.
 
-Part of the [luckystrike MCP suite](https://github.com/theluckystrike) — finance & productivity servers that turn AI chat into working documents and calculations.
+Part of the [luckystrike MCP suite](https://github.com/theluckystrike) - finance & productivity servers that turn AI chat into working documents and calculations.
 
 ## Docs (GitMCP)
 

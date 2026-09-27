@@ -27,11 +27,5 @@
       ],
       "fileSha256": "86d965e4871aaaf3543441a3e9c72e6f7c08abb65b60e4aa632a2553cec4c016"
     }
-  ],
-  "remotes": [
-    {
-      "type": "streamable-http",
-      "url": "https://mcp.zovo.one/mcp/mileage-logbook"
-    }
   ]
 }

@@ -4,7 +4,7 @@ Say "quote Acme for 12 hours at 90 EUR plus a 300 EUR setup, 23% VAT, good for 1
 
 **In the [official MCP Registry](https://registry.modelcontextprotocol.io/v0.1/servers/io.github.theluckystrike%2Fquotes-estimates-proposals-vat-win-rate/versions/latest)** (`io.github.theluckystrike/quotes-estimates-proposals-vat-win-rate`).
 
-**Listed on the [AI Product Index](https://index.percall.dev/l/zovo-quotes.html)** — live remote endpoint at [mcp.zovo.one/s/quotes](https://mcp.zovo.one/s/quotes), free tier, no signup.
+**Listed on the [AI Product Index](https://index.percall.dev/l/zovo-quotes.html)** - live remote endpoint at [mcp.zovo.one/s/quotes](https://mcp.zovo.one/s/quotes), free tier, no signup.
 
 
 ![quotes demo](../../assets/demo-quotes.gif)
@@ -216,6 +216,6 @@ Built by [theluckystrike](https://github.com/theluckystrike). Support: support@z
 
 ## Use these docs as an MCP server
 
-Any MCP client (Claude, Cursor, Windsurf, VS Code) can read this repository's documentation directly via GitMCP — no install:
+Any MCP client (Claude, Cursor, Windsurf, VS Code) can read this repository's documentation directly via GitMCP - no install:
 
 - Docs MCP URL: https://gitmcp.io/theluckystrike/mcp-quotes

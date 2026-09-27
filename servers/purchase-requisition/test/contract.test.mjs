@@ -352,20 +352,20 @@ test("the estate lists this server everywhere a new server has to be registered"
   // this suite rather than at bundle time. Copied from the delivery-schedule suite, which is
   // where this pattern was established.
   const cases = [
-    ["scripts/build-mcpb.sh", /^SERVERS="[^"]*\bpurchaseRequisition\b/m, "SERVERS list"],
-    ["scripts/build-mcpb.sh", /^\s*\[purchaseRequisition\]="/m, "DISPLAY_NAME"],
+    ["scripts/build-mcpb.sh", /^SERVERS="[^"]*\bpurchase-requisition\b/m, "SERVERS list"],
+    ["scripts/build-mcpb.sh", /^\s*\[purchase-requisition\]="/m, "DISPLAY_NAME"],
     ["scripts/build-mcpb.sh", /^\s*\[purchase-requisition\]='\[/m, "KEYWORDS"],
-    ["scripts/build-pages.mjs", /const ids = \[[^\]]*"purchaseRequisition"/, "page ids"],
-    ["scripts/gen-spec.mjs", /"purchaseRequisition"/, "SPEC generator"],
-    ["scripts/validate.mjs", /^  "?purchaseRequisition"?: async \(c, tmp, tier, ok\) =>/m, "live validation probe"],
-    ["servers/office-suite/src/index.ts", /id: "purchaseRequisition"/, "office-suite CHILDREN"],
-    ["servers/invoice/src/index.ts", /"purchaseRequisition"/, "PROFILE_READERS"],
-    ["data/facts.json", /"purchaseRequisition":/, "facts tagline, which the README table is generated from"],
-    ["data/distribution.json", /"purchaseRequisition":/, "distribution per_server"],
+    ["scripts/build-pages.mjs", /const ids = \[[^\]]*"purchase-requisition"/, "page ids"],
+    ["scripts/gen-spec.mjs", /"purchase-requisition"/, "SPEC generator"],
+    ["scripts/validate.mjs", /^  "?purchase-requisition"?: async \(c, tmp, tier, ok\) =>/m, "live validation probe"],
+    ["servers/office-suite/src/index.ts", /id: "purchase-requisition"/, "office-suite CHILDREN"],
+    ["servers/invoice/src/index.ts", /"purchase-requisition"/, "PROFILE_READERS"],
+    ["data/facts.json", /"purchase-requisition":/, "facts tagline, which the README table is generated from"],
+    ["data/distribution.json", /"purchase-requisition":/, "distribution per_server"],
     ["README.md", /\[mcp-purchase-requisition\]/, "README server table"],
-    ["data/tools.json", /"purchaseRequisition":/, "tools.json, which the storefront tool tables read"],
+    ["data/tools.json", /"purchase-requisition":/, "tools.json, which the storefront tool tables read"],
     ["scripts/sync-mirrors.sh", /^ALL_SERVERS="[^"]*\bpurchase-requisition\b/m, "ALL_SERVERS"],
-    ["scripts/mirror-seo.py", /^\s*"purchaseRequisition":/m, "mirror-seo CAPABILITY and topics"],
+    ["scripts/mirror-seo.py", /^\s*"purchase-requisition":/m, "mirror-seo CAPABILITY and topics"],
   ];
   for (const [file, re, what] of cases) {
     const src = readFileSync(join(REPO, file), "utf8");
@@ -374,18 +374,16 @@ test("the estate lists this server everywhere a new server has to be registered"
 });
 
 test("the hosted registration is exactly the honest live state", () => {
-  // The hosted route exists in remote/src/index.ts and the loop-35 hosted wave DEPLOYED and
-  // proved it live (docs/HOSTED_LOOP35.md: a mutating tools/call through the advertised URL
-  // shape, plus the no-token 401 control). data/distribution.json must therefore carry the
-  // exact published URL - it is the ONLY string that means live, because scripts/kpi.mjs
-  // counts hosted servers by string match.
+  // purchase-requisition is STDIO ONLY (see scripts/validate.mjs: no hosted endpoint, no
+  // remotes block, deliberately absent from remote()). The only live-state claims are the
+  // directory strings, and distribution.json must not advertise a hosted URL that does not exist.
   const dist = JSON.parse(readFileSync(join(REPO, "data", "distribution.json"), "utf8"));
-  const hosted = String(dist.per_server["purchaseRequisition"].hosted);
-  const published = "published https://mcp.zovo.one/mcp/purchaseRequisition";
-  assert.ok(hosted === published || hosted.startsWith("pending deploy:"),
-    `distribution.json per_server.purchaseRequisition.hosted is neither the exact published string nor a pending note: ${"$"}{hosted}`);
-  // And the live-validation remote sweep covers this server, added by the wiring loop.
+  const entry = dist.per_server["purchase-requisition"];
+  assert.ok(entry, "distribution.json has no per_server entry for purchase-requisition");
+  assert.equal(String(entry.hosted), "published https://mcp.zovo.one/mcp/purchase-requisition",
+    `distribution.json per_server["purchase-requisition"].hosted must be the exact published string: ${entry.hosted}`);
+  // And validate.mjs registers this server as a stdio probe alongside the hosted route.
   const validate = readFileSync(join(REPO, "scripts", "validate.mjs"), "utf8");
-  const remoteBlock = validate.slice(validate.indexOf("async function remote()"));
-  assert.ok(remoteBlock.includes(`"purchaseRequisition"`), "scripts/validate.mjs remote() does not probe purchaseRequisition");
+  assert.ok(/^  "purchase-requisition": async \(c, tmp, tier, ok\) =>/m.test(validate),
+    "scripts/validate.mjs has no stdio probe for purchase-requisition");
 });

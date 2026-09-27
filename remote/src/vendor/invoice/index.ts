@@ -36,10 +36,7 @@ const gate = createLicenseGate({ product: "invoice" });
  */
 const PROFILE_READERS = [
   "asset-register", "bank-statement", "barcode", "bill-of-sale", "calendar", "catalogue", "change-order", "checklist", "clauses", "currency", "delivery-schedule", "docx", "dunning-letters", "expense-tracker",
-  "image", "kanban", "leave", "packing-list", "pdf", "per-diem", "petty-cash", "quotes", "resume", "statement-of-account", "time-tracker", "timezone",
-    "purchase-requisition",
-  "purchaseRequisition",
-"work-order",
+  "image", "kanban", "leave", "packing-list", "pdf", "per-diem", "petty-cash", "purchase-requisition", "quotes", "resume", "statement-of-account", "time-tracker", "timezone", "work-order",
 ];
 
 /**

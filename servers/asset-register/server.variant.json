@@ -27,19 +27,5 @@
       ],
       "fileSha256": "3b11da05eef7f360cc363194f5e676a9be719ad504265e178e1cb3035f9ec1f9"
     }
-  ],
-  "remotes": [
-    {
-      "type": "streamable-http",
-      "url": "https://mcp.zovo.one/mcp/asset-register",
-      "headers": [
-        {
-          "name": "Authorization",
-          "description": "Bearer <Pro license key or anonymous token from GET https://mcp.zovo.one/mcp/token>",
-          "isRequired": true,
-          "isSecret": true
-        }
-      ]
-    }
   ]
 }

@@ -92,7 +92,7 @@ test("purchase orders: buyer from the shared profile, PO ids per year, receive i
   const { box, c } = open(t);
   await c.init();
   const r = parse(await c.call("purchase_order_create", {
-    supplier: "Widget Co", currency: "EUR", expected_delivery_date: "2026-09-20",
+    supplier: "Widget Co", currency: "EUR", issue_date: "2026-09-01", expected_delivery_date: "2026-09-20",
     items: [{ description: "Cables", quantity: 4, unit_price_minor: 2500, tax_rate: 23 }],
   }));
   assert.equal(r.created.id, "PO-2026-0001");

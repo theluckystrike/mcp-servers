@@ -331,7 +331,7 @@ server.registerTool("rate_set", { annotations: { readOnlyHint: false, destructiv
         list.push(rate);
         setRates(list);
       }
-      return { rate, replaced };
+      return { rate, replaced: replaced ? { ...replaced, rate_text: rateText(replaced) } : null };
     });
     const notes: string[] = [];
     if (out.replaced) {

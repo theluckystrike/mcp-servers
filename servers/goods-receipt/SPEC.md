@@ -186,12 +186,11 @@ From `servers/goods-receipt/README.md`.
 
 | | Free | Pro |
 | --- | --- | --- |
-| GoodsReceipts you keep | 3 | unlimited |
-| Runs of them | unlimited | unlimited |
-| Steps per goods-receipt | up to 500 | up to 500 |
-| `run_show`, `run_list`, the counts | yes | yes |
-| The run report as text | yes | yes |
-| Writing the report to a file with `out_path` | no | yes |
+| Purchase orders | up to 2,000 | up to 2,000 |
+| GRNs | up to 5,000 | up to 5,000 |
+| Lines per PO / per GRN | up to 200 | up to 200 |
+| `grn_list`, `grn_get`, `grn_discrepancy`, `grn_status_report` | yes | yes |
+| `grn_export_csv` | no | yes |
 
 Enforced limits in the source:
 

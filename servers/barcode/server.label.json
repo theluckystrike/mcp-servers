@@ -27,11 +27,5 @@
       ],
       "fileSha256": "b67818c727f5c7d55c6d50cf16b467a1d422c611cad6e9121e6a519abde3ab81"
     }
-  ],
-  "remotes": [
-    {
-      "type": "streamable-http",
-      "url": "https://mcp.zovo.one/mcp/label"
-    }
   ]
 }

@@ -27,19 +27,5 @@
       ],
       "fileSha256": "b5f4c0aebc601c2ae37ed25dbd88e77a86b8909d6c4a8a54c8d0446f45c93d4e"
     }
-  ],
-  "remotes": [
-    {
-      "type": "streamable-http",
-      "url": "https://mcp.zovo.one/mcp/spreadsheet",
-      "headers": [
-        {
-          "name": "Authorization",
-          "description": "Bearer <Pro license key or anonymous token from GET https://mcp.zovo.one/mcp/token>",
-          "isRequired": true,
-          "isSecret": true
-        }
-      ]
-    }
   ]
 }

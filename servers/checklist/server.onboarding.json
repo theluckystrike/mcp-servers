@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/onboarding-checklist-inspection-runs",
   "description": "Onboarding and inspection checklists you reuse: dated runs, who ticked what, and a sign-off.",
-  "version": "0.22.3",
+  "version": "0.22.0",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
@@ -26,12 +26,6 @@
         }
       ],
       "fileSha256": "14ad012b16aaea8a2688266f871d674d9726a71545231cc99bf1033962aaa715"
-    }
-  ],
-  "remotes": [
-    {
-      "type": "streamable-http",
-      "url": "https://mcp.zovo.one/mcp/onboarding-checklist-inspection-runs"
     }
   ]
 }

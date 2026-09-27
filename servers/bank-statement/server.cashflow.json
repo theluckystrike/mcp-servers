@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/cashflow",
   "description": "Bank CSV cashflow: categorise, summarise per currency, reconcile against expenses.",
-  "version": "0.22.3",
+  "version": "0.22.0",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
@@ -26,12 +26,6 @@
         }
       ],
       "fileSha256": "830ac9e4a7d211a704cbb156c6ebe865d3c8abc0493d17cd68cfe8ce33b71537"
-    }
-  ],
-  "remotes": [
-    {
-      "type": "streamable-http",
-      "url": "https://mcp.zovo.one/mcp/cashflow"
     }
   ]
 }

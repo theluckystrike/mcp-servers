@@ -27,11 +27,5 @@
       ],
       "fileSha256": "ec6e17db0ab1cd065520b4b391295e6ff6e29244337c1d632ff7ebc0ee00b894"
     }
-  ],
-  "remotes": [
-    {
-      "type": "streamable-http",
-      "url": "https://mcp.zovo.one/mcp/service-contract"
-    }
   ]
 }

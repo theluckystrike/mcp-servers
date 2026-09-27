@@ -53,7 +53,7 @@ test("the version is one number: package.json, src/version.ts, serverInfo and ev
           `${file} fileSha256 is neither TBD nor a sha256: ${p.fileSha256}`);
       }
     }
-    if (file === "server.mcpb.json" || file === "server.json") {
+    if (file === "server.mcpb.json") {
       const remotes = JSON.parse(readFileSync(join(HERE, "remotes.json"), "utf8"));
       assert.deepEqual(j.remotes, remotes, `${file} remotes must equal remotes.json (hosted at /mcp/onboarding)`);
       assert.equal(remotes[0].url, "https://mcp.zovo.one/mcp/onboarding");

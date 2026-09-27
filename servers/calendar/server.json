@@ -27,19 +27,5 @@
       ],
       "fileSha256": "4af4dc56d5ca639d2965b7518e4d54e8ab43542e7f4b7386446874a40ad93c57"
     }
-  ],
-  "remotes": [
-    {
-      "type": "streamable-http",
-      "url": "https://mcp.zovo.one/mcp/calendar",
-      "headers": [
-        {
-          "name": "Authorization",
-          "description": "Bearer <Pro license key or anonymous token from GET https://mcp.zovo.one/mcp/token>",
-          "isRequired": true,
-          "isSecret": true
-        }
-      ]
-    }
   ]
 }

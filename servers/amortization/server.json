@@ -27,19 +27,5 @@
       ],
       "fileSha256": "3ec374283bc7a5b0b8f499c39704e1ae94227c35fdbca8afa0fee78753675a77"
     }
-  ],
-  "remotes": [
-    {
-      "type": "streamable-http",
-      "url": "https://mcp.zovo.one/mcp/amortization",
-      "headers": [
-        {
-          "name": "Authorization",
-          "description": "Bearer <Pro license key or anonymous token from GET https://mcp.zovo.one/mcp/token>",
-          "isRequired": true,
-          "isSecret": true
-        }
-      ]
-    }
   ]
 }

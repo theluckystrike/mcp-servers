@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/standup",
   "description": "A task board for daily standups: columns, due dates, priorities, weekly review.",
-  "version": "0.22.3",
+  "version": "0.22.0",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
@@ -26,12 +26,6 @@
         }
       ],
       "fileSha256": "e85e0f1d98cf45da8b8ce242f5b9a9681cde6e5cee1b1b787dad1e8844d0d53d"
-    }
-  ],
-  "remotes": [
-    {
-      "type": "streamable-http",
-      "url": "https://mcp.zovo.one/mcp/standup"
     }
   ]
 }

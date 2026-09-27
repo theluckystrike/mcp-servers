@@ -226,7 +226,8 @@ test("one rate per jurisdiction and category is free, overwriting it is free, th
   const rates = JSON.parse(readFileSync(join(storeDir(box.dataHome), "rates.json"), "utf8"));
   assert.equal(rates.length, 1, "the refused second rate was written");
   const over = await c.json("rate_set", { ...RATE, rate: 0.71, effective_from: RATE.effective_from });
-  assert.equal(over.replaced.rate, 0.7, "overwriting the same effective date is free and reports what it replaced");
+  assert.equal(over.replaced.rate_per_unit, 0.7, "overwriting the same effective date is free and reports the numeric rate it replaced");
+  assert.equal(over.replaced.rate, "USD 0.700/mile", "the replaced rate carries its formatted display text");
 });
 
 test("a future trip and an unknown unit or category are refused", async (t) => {

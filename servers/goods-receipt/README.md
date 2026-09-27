@@ -5,10 +5,10 @@
 **In the [official MCP Registry](https://registry.modelcontextprotocol.io/v0.1/servers/io.github.theluckystrike%2Fgoods-receipt/versions/latest)** (`io.github.theluckystrike/goods-receipt`).
 
 Purchase orders and the goods-receipt notes that receive them. A PO carries a reference, a
-supplier, and dated lines — sku, description, whole units ordered — plus whole-percent
+supplier, and dated lines - sku, description, whole units ordered - plus whole-percent
 over/under tolerances that decide when a receipt is flagged. A GRN is raised against an open
 PO, one cell per line: units received, units damaged, and any shortage you already know
-about. Shortage is derived, not typed — ordered minus received, floored at zero — and shows
+about. Shortage is derived, not typed - ordered minus received, floored at zero - and shows
 up as a discrepancy the moment the numbers disagree.
 
 ## The one rule that decides everything else
@@ -18,8 +18,8 @@ not against each delivery in isolation.
 
 Three deliveries of 40 against an order of 100 at 10% are allowed in ones and tens but the
 third delivery is refused, because 120 received of 100 ordered breaks the over tolerance even
-though no single delivery did. Partial deliveries are fine — several GRNs against the same PO
-is the normal case — and the cumulative rule is what stops them quietly over-receiving.
+though no single delivery did. Partial deliveries are fine - several GRNs against the same PO
+is the normal case - and the cumulative rule is what stops them quietly over-receiving.
 
 Two smaller rules follow from it:
 
@@ -28,7 +28,7 @@ Two smaller rules follow from it:
   is the only thing the warehouse actually sees.
 - **Receiving past tolerance is refused, never clamped.** Unless the extra units are declared
   damaged, a receipt that breaks the over tolerance writes nothing and says why. Damaged
-  units still count for the tolerance check — "it arrived broken" is not a licence to order
+  units still count for the tolerance check - "it arrived broken" is not a licence to order
   100 and receive 130.
 
 ## The tools
@@ -84,7 +84,7 @@ received and shown as a discrepancy. `grn_export_csv` (Pro) writes the whole led
 | `grn_list`, `grn_get`, `grn_discrepancy`, `grn_status_report` | yes | yes |
 | `grn_export_csv` | no | yes |
 
-The domain is capped estate-wide (2,000 POs, 5,000 GRNs, 200 lines) on every tier — these are
+The domain is capped estate-wide (2,000 POs, 5,000 GRNs, 200 lines) on every tier - these are
 hard rules so a store cannot grow past what the file format can hold, not a paywall. Pro
 unlocks CSV export for pushing receipts into a spreadsheet or an ERP.
 
@@ -102,6 +102,6 @@ Built by [theluckystrike](https://github.com/theluckystrike). Support: support@z
 
 ## Use these docs as an MCP server
 
-Any MCP client (Claude, Cursor, Windsurf, VS Code) can read this repository's documentation directly via GitMCP — no install:
+Any MCP client (Claude, Cursor, Windsurf, VS Code) can read this repository's documentation directly via GitMCP - no install:
 
 - Docs MCP URL: https://gitmcp.io/theluckystrike/mcp-goods-receipt

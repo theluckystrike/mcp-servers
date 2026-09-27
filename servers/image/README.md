@@ -4,7 +4,7 @@ Say "make these five photos 1200 pixels wide" or "shrink this screenshot and str
 
 **In the [official MCP Registry](https://registry.modelcontextprotocol.io/v0.1/servers/io.github.theluckystrike%2Fimage-resize-convert-compress-watermark/versions/latest)** (`io.github.theluckystrike/image-resize-convert-compress-watermark`).
 
-**Listed on the [AI Product Index](https://index.percall.dev/l/zovo-image.html)** — live remote endpoint at [mcp.zovo.one/s/image](https://mcp.zovo.one/s/image), free tier, no signup.
+**Listed on the [AI Product Index](https://index.percall.dev/l/zovo-image.html)** - live remote endpoint at [mcp.zovo.one/s/image](https://mcp.zovo.one/s/image), free tier, no signup.
 
 
 ![image demo](../../assets/demo-image.gif)
@@ -277,6 +277,6 @@ Built by [theluckystrike](https://github.com/theluckystrike).
 
 ## Use these docs as an MCP server
 
-Any MCP client (Claude, Cursor, Windsurf, VS Code) can read this repository's documentation directly via GitMCP — no install:
+Any MCP client (Claude, Cursor, Windsurf, VS Code) can read this repository's documentation directly via GitMCP - no install:
 
 - Docs MCP URL: https://gitmcp.io/theluckystrike/mcp-image

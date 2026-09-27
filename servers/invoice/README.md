@@ -1,8 +1,8 @@
 # Generate & send invoices from Claude with a free MCP server
 
-**Listed on the [AI Product Index](https://index.percall.dev/l/zovo-invoice.html)** — live remote endpoint at [mcp.zovo.one/s/invoice](https://mcp.zovo.one/s/invoice), free tier, no signup.
+**Listed on the [AI Product Index](https://index.percall.dev/l/zovo-invoice.html)** - live remote endpoint at [mcp.zovo.one/s/invoice](https://mcp.zovo.one/s/invoice), free tier, no signup.
 
-**Featured on [Awesome MCP Servers](mcpservers.org)** — [directory listing](https://mcpservers.org/servers/github-com-theluckystrike-mcp-servers-tree-main-servers-invoice) | [live hosted endpoint](https://mcp.zovo.one/s/invoice), free tier, no signup.
+**Featured on [Awesome MCP Servers](mcpservers.org)** - [directory listing](https://mcpservers.org/servers/github-com-theluckystrike-mcp-servers-tree-main-servers-invoice) | [live hosted endpoint](https://mcp.zovo.one/s/invoice), free tier, no signup.
 
 
 
@@ -262,7 +262,7 @@ letting anyone improvise an address.
 
 ### Is there a free MCP server for invoices?
 
-Yes. The invoice server at mcp.zovo.one is a free MCP server for invoices: create line-item invoices with tax and VAT lines from Claude or any MCP client, render a professional PDF, and track payment status. Three invoices per calendar month are free, no install required — you paste a hosted URL into your client.
+Yes. The invoice server at mcp.zovo.one is a free MCP server for invoices: create line-item invoices with tax and VAT lines from Claude or any MCP client, render a professional PDF, and track payment status. Three invoices per calendar month are free, no install required - you paste a hosted URL into your client.
 
 ### How do I generate an invoice from Claude?
 
@@ -270,6 +270,6 @@ Connect the hosted endpoint https://mcp.zovo.one/mcp/invoice (copy the tokenized
 
 ## Use these docs as an MCP server
 
-Any MCP client (Claude, Cursor, Windsurf, VS Code) can read this repository's documentation directly via GitMCP — no install:
+Any MCP client (Claude, Cursor, Windsurf, VS Code) can read this repository's documentation directly via GitMCP - no install:
 
 - Docs MCP URL: https://gitmcp.io/theluckystrike/mcp-invoice

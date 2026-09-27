@@ -27,19 +27,5 @@
       ],
       "fileSha256": "51147c598e448b6d546aaa1b88a2c6bb07a93d660c514d675fbc55ddbe7a3d26"
     }
-  ],
-  "remotes": [
-    {
-      "type": "streamable-http",
-      "url": "https://mcp.zovo.one/mcp/dunning-letters",
-      "headers": [
-        {
-          "name": "Authorization",
-          "description": "Bearer <Pro license key or anonymous token from GET https://mcp.zovo.one/mcp/token>",
-          "isRequired": true,
-          "isSecret": true
-        }
-      ]
-    }
   ]
 }

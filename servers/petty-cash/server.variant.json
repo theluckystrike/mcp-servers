@@ -27,19 +27,5 @@
       ],
       "fileSha256": "bdeb3c601c5f26bd1c281b0a15bbabce8d5506bf1988b51835a3805fee9f0435"
     }
-  ],
-  "remotes": [
-    {
-      "type": "streamable-http",
-      "url": "https://mcp.zovo.one/mcp/petty-cash",
-      "headers": [
-        {
-          "name": "Authorization",
-          "description": "Bearer <Pro license key or anonymous token from GET https://mcp.zovo.one/mcp/token>",
-          "isRequired": true,
-          "isSecret": true
-        }
-      ]
-    }
   ]
 }

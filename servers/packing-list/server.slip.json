@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/packing-slip-cartons-shipment-weights",
   "description": "Packing slips with no prices: what is in each carton, gross and chargeable weight, lines short.",
-  "version": "0.22.3",
+  "version": "0.22.0",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
@@ -26,12 +26,6 @@
         }
       ],
       "fileSha256": "baa6e5fb1f5ef675b96ff7ec0becb16ca95a1ab44bc8035e9aa1e14c832004d8"
-    }
-  ],
-  "remotes": [
-    {
-      "type": "streamable-http",
-      "url": "https://mcp.zovo.one/mcp/packing-slip-cartons-shipment-weights"
     }
   ]
 }

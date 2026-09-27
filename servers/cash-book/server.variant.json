@@ -27,19 +27,5 @@
       ],
       "fileSha256": "f6cafa4040e2fd3afd4686e5ecae5257d6f442ee5ca72bb90a63fa647e8041d6"
     }
-  ],
-  "remotes": [
-    {
-      "type": "streamable-http",
-      "url": "https://mcp.zovo.one/mcp/cash-book",
-      "headers": [
-        {
-          "name": "Authorization",
-          "description": "Bearer <Pro license key or anonymous token from GET https://mcp.zovo.one/mcp/token>",
-          "isRequired": true,
-          "isSecret": true
-        }
-      ]
-    }
   ]
 }

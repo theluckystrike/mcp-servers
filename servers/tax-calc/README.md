@@ -1,6 +1,6 @@
 # mcp-tax-calc
 
-tax-calc MCP server — give Claude (or any MCP client) real tax-calc tools.
+tax-calc MCP server - give Claude (or any MCP client) real tax-calc tools.
 
 ## Install
 
@@ -17,9 +17,9 @@ tax-calc MCP server — give Claude (or any MCP client) real tax-calc tools.
 
 ## Tools
 
-See src/index.js — each tool is self-documenting via the MCP protocol.
+See src/index.js - each tool is self-documenting via the MCP protocol.
 
-Part of the [luckystrike MCP suite](https://github.com/theluckystrike) — finance & productivity servers that turn AI chat into working documents and calculations.
+Part of the [luckystrike MCP suite](https://github.com/theluckystrike) - finance & productivity servers that turn AI chat into working documents and calculations.
 
 ## Docs (GitMCP)
 

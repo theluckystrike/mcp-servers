@@ -10,7 +10,7 @@ native dependency.
 
 **In the [official MCP Registry](https://registry.modelcontextprotocol.io/v0.1/servers/io.github.theluckystrike%2Fresume-cover-letter-docx-generator/versions/latest)** (`io.github.theluckystrike/resume-cover-letter-docx-generator`).
 
-**Listed on the [AI Product Index](https://index.percall.dev/l/zovo-resume.html)** — live remote endpoint at [mcp.zovo.one/s/resume](https://mcp.zovo.one/s/resume), free tier, no signup.
+**Listed on the [AI Product Index](https://index.percall.dev/l/zovo-resume.html)** - live remote endpoint at [mcp.zovo.one/s/resume](https://mcp.zovo.one/s/resume), free tier, no signup.
 
 
 ![resume demo](../../assets/demo-resume.gif)
@@ -217,6 +217,6 @@ letting anyone improvise an address.
 
 ## Use these docs as an MCP server
 
-Any MCP client (Claude, Cursor, Windsurf, VS Code) can read this repository's documentation directly via GitMCP — no install:
+Any MCP client (Claude, Cursor, Windsurf, VS Code) can read this repository's documentation directly via GitMCP - no install:
 
 - Docs MCP URL: https://gitmcp.io/theluckystrike/mcp-resume

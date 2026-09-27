@@ -27,19 +27,5 @@
       ],
       "fileSha256": "d3d7fd2f7cb850130638ba9b560f93c31a25a16cb0c1433206aa1a0d5801570f"
     }
-  ],
-  "remotes": [
-    {
-      "type": "streamable-http",
-      "url": "https://mcp.zovo.one/mcp/statement-of-account",
-      "headers": [
-        {
-          "name": "Authorization",
-          "description": "Bearer <Pro license key or anonymous token from GET https://mcp.zovo.one/mcp/token>",
-          "isRequired": true,
-          "isSecret": true
-        }
-      ]
-    }
   ]
 }

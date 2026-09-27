@@ -27,19 +27,5 @@
       ],
       "fileSha256": "e85e0f1d98cf45da8b8ce242f5b9a9681cde6e5cee1b1b787dad1e8844d0d53d"
     }
-  ],
-  "remotes": [
-    {
-      "type": "streamable-http",
-      "url": "https://mcp.zovo.one/mcp/kanban",
-      "headers": [
-        {
-          "name": "Authorization",
-          "description": "Bearer <Pro license key or anonymous token from GET https://mcp.zovo.one/mcp/token>",
-          "isRequired": true,
-          "isSecret": true
-        }
-      ]
-    }
   ]
 }
