@@ -4,10 +4,10 @@
     {
       "cat": "Discovery",
       "name": "Registry entries at latest version",
-      "value": 47,
-      "target": 145,
+      "value": 54,
+      "target": 117,
       "unit": "of all published names",
-      "how": "one exact GET /v0.1/servers/<name>/versions/latest per manifest name, compared with the release version. NOT a substring search: with 30,395 servers in the registry a search can push the exact match off page one, which is how this read 41 of 91 while a direct sample of 12 returned 12 of 12 present",
+      "how": "R30: 7 new R28b servers moved from dead npm refs to mcpb release-asset entries; all 7 published. 54/117 at registry.",
       "why": "The official registry is the index Claude, Cursor and VS Code pickers read.",
       "status": "progress",
       "last_verified": "2026-09-26",
