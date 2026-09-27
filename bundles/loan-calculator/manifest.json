@@ -1,0 +1,39 @@
+{
+  "manifest_version": "0.2",
+  "name": "mcp-loan-calculator",
+  "display_name": "Loan Calculator",
+  "version": "1.0.0",
+  "description": "Monthly loan payments and year-by-year amortization schedules. All local.",
+  "author": {
+    "name": "theluckystrike",
+    "url": "https://github.com/theluckystrike"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/theluckystrike/mcp-servers"
+  },
+  "homepage": "https://mcp.zovo.one",
+  "license": "MIT",
+  "server": {
+    "type": "node",
+    "entry_point": "server/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": [
+        "${__dirname}/server/index.js"
+      ],
+      "env": {}
+    }
+  },
+  "user_config": {},
+  "tools": [
+    {
+      "name": "loan_payment",
+      "description": "Monthly payment + total interest for a loan"
+    },
+    {
+      "name": "loan_amortize",
+      "description": "Year-by-year amortization schedule"
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "manifest_version": "0.2",
+  "name": "mcp-budget",
+  "display_name": "Budget Tracker",
+  "version": "1.0.0",
+  "description": "Set monthly budget categories, record expenses, see remaining amounts. All local.",
+  "author": {
+    "name": "theluckystrike",
+    "url": "https://github.com/theluckystrike"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/theluckystrike/mcp-servers"
+  },
+  "homepage": "https://mcp.zovo.one",
+  "license": "MIT",
+  "server": {
+    "type": "node",
+    "entry_point": "server/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": [
+        "${__dirname}/server/index.js"
+      ],
+      "env": {}
+    }
+  },
+  "user_config": {},
+  "tools": [
+    {
+      "name": "budget_set",
+      "description": "Set a monthly budget category and cap"
+    },
+    {
+      "name": "budget_spend",
+      "description": "Record an expense against a budget category"
+    },
+    {
+      "name": "budget_report",
+      "description": "Show all budgets and remaining amounts"
+    }
+  ]
+}

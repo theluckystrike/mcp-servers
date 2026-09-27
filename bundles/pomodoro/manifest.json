@@ -1,0 +1,39 @@
+{
+  "manifest_version": "0.2",
+  "name": "mcp-pomodoro",
+  "display_name": "Pomodoro Planner",
+  "version": "1.0.0",
+  "description": "Plan work sessions into pomodoros with breaks. All local.",
+  "author": {
+    "name": "theluckystrike",
+    "url": "https://github.com/theluckystrike"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/theluckystrike/mcp-servers"
+  },
+  "homepage": "https://mcp.zovo.one",
+  "license": "MIT",
+  "server": {
+    "type": "node",
+    "entry_point": "server/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": [
+        "${__dirname}/server/index.js"
+      ],
+      "env": {}
+    }
+  },
+  "user_config": {},
+  "tools": [
+    {
+      "name": "pomodoro_plan",
+      "description": "Turn total minutes of work into a pomodoro schedule with breaks"
+    },
+    {
+      "name": "pomodoro_end_time",
+      "description": "Given a start time, show what clock time each pomodoro/break ends"
+    }
+  ]
+}

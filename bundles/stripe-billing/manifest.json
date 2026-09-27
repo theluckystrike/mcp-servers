@@ -1,0 +1,49 @@
+{
+  "manifest_version": "0.2",
+  "name": "mcp-stripe-billing",
+  "display_name": "Stripe Billing",
+  "version": "1.0.0",
+  "description": "Check your Stripe balance and draft payment links from any MCP client.",
+  "author": {
+    "name": "theluckystrike",
+    "url": "https://github.com/theluckystrike"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/theluckystrike/mcp-servers"
+  },
+  "homepage": "https://mcp.zovo.one",
+  "license": "MIT",
+  "server": {
+    "type": "node",
+    "entry_point": "server/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": [
+        "${__dirname}/server/index.js"
+      ],
+      "env": {
+        "STRIPE_SECRET_KEY": "${user_config.stripe_secret_key}"
+      }
+    }
+  },
+  "user_config": {
+    "stripe_secret_key": {
+      "type": "string",
+      "title": "Stripe secret key",
+      "description": "Your Stripe secret key (sk_live_... or sk_test_...).",
+      "sensitive": true,
+      "required": true
+    }
+  },
+  "tools": [
+    {
+      "name": "stripe_balance",
+      "description": "Show available and pending Stripe balance"
+    },
+    {
+      "name": "stripe_payment_link",
+      "description": "Formula for creating a Stripe payment link"
+    }
+  ]
+}

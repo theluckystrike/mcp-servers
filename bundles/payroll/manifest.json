@@ -1,0 +1,39 @@
+{
+  "manifest_version": "0.2",
+  "name": "mcp-payroll",
+  "display_name": "Payroll Estimator",
+  "version": "1.0.0",
+  "description": "Gross-to-net payroll estimates for hourly staff and contractor payout totals. All local.",
+  "author": {
+    "name": "theluckystrike",
+    "url": "https://github.com/theluckystrike"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/theluckystrike/mcp-servers"
+  },
+  "homepage": "https://mcp.zovo.one",
+  "license": "MIT",
+  "server": {
+    "type": "node",
+    "entry_point": "server/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": [
+        "${__dirname}/server/index.js"
+      ],
+      "env": {}
+    }
+  },
+  "user_config": {},
+  "tools": [
+    {
+      "name": "payroll_run",
+      "description": "Gross-to-net payroll estimate for hourly staff"
+    },
+    {
+      "name": "payroll_invoice_total",
+      "description": "Total contractor payout for a list of hours/rate entries"
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "manifest_version": "0.2",
+  "name": "mcp-tax-calc",
+  "display_name": "US Tax Calculator",
+  "version": "1.0.0",
+  "description": "Estimate 2026 US federal income tax (single filer, standard deduction). All local.",
+  "author": {
+    "name": "theluckystrike",
+    "url": "https://github.com/theluckystrike"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/theluckystrike/mcp-servers"
+  },
+  "homepage": "https://mcp.zovo.one",
+  "license": "MIT",
+  "server": {
+    "type": "node",
+    "entry_point": "server/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": [
+        "${__dirname}/server/index.js"
+      ],
+      "env": {}
+    }
+  },
+  "user_config": {},
+  "tools": [
+    {
+      "name": "us_federal_tax",
+      "description": "Estimate 2026 US federal income tax (single filer, standard deduction)"
+    }
+  ]
+}
