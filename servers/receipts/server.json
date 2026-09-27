@@ -10,12 +10,13 @@
   },
   "packages": [
     {
-      "registryType": "npm",
-      "identifier": "mcp-receipts",
-      "version": "0.1.0",
+      "registryType": "mcpb",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.22.0/receipts.mcpb",
+      "version": "0.22.0",
       "transport": {
         "type": "stdio"
-      }
+      },
+      "fileSha256": "b0c375e9eb7020ba1ec47e19b5684a9e87f339ae87870f4173a34f83d88ea5cc"
     }
   ]
 }

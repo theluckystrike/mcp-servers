@@ -1,7 +1,7 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/loan-calculator",
-  "description": "Loan and mortgage math from your AI chat: monthly payment, full amortization schedule, payoff comparison.",
+  "description": "Loan and mortgage math: monthly payment, amortization schedule, payoff comparison.",
   "version": "1.0.0",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
@@ -10,12 +10,13 @@
   },
   "packages": [
     {
-      "registryType": "npm",
-      "identifier": "mcp-loan-calculator",
-      "version": "0.1.0",
+      "registryType": "mcpb",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.22.0/loan-calculator.mcpb",
+      "version": "0.22.0",
       "transport": {
         "type": "stdio"
-      }
+      },
+      "fileSha256": "bc1c9400378842a60f916fe7be35002320e650189437390f5a9c65b72fe1b823"
     }
   ]
 }

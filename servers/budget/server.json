@@ -10,12 +10,13 @@
   },
   "packages": [
     {
-      "registryType": "npm",
-      "identifier": "mcp-budget",
-      "version": "0.1.0",
+      "registryType": "mcpb",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.22.0/budget.mcpb",
+      "version": "0.22.0",
       "transport": {
         "type": "stdio"
-      }
+      },
+      "fileSha256": "6da761f3cbf59f75e8d9227794ea26490c2eaceff65e4ca39ca4cc640d86f2e9"
     }
   ]
 }

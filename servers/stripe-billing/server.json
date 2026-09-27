@@ -10,12 +10,13 @@
   },
   "packages": [
     {
-      "registryType": "npm",
-      "identifier": "mcp-stripe-billing",
-      "version": "0.1.0",
+      "registryType": "mcpb",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.22.0/stripe-billing.mcpb",
+      "version": "0.22.0",
       "transport": {
         "type": "stdio"
-      }
+      },
+      "fileSha256": "f371cbf173a881fd462da68578ea12d8f6804dd365e049397bade2805f0960af"
     }
   ]
 }

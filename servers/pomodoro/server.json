@@ -10,12 +10,13 @@
   },
   "packages": [
     {
-      "registryType": "npm",
-      "identifier": "mcp-pomodoro",
-      "version": "0.1.0",
+      "registryType": "mcpb",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.22.0/pomodoro.mcpb",
+      "version": "0.22.0",
       "transport": {
         "type": "stdio"
-      }
+      },
+      "fileSha256": "3302f12fcc86ec99d6d4a73a44bc65625269db44b736ee038d5a3e9168c0cc6a"
     }
   ]
 }
