@@ -9732,6 +9732,82 @@ ${FOOT}`,
     ],
   },
 
+  "convert-usd-to-ghs-zar-kes-in-claude": {
+    title: "Convert USD to cedis, rand and shillings in Claude with real rates",
+    description: "Exchange-rate lookups for USD to GHS, ZAR, KES and 30 more currencies, straight from chat, with daily ECB reference rates and no API key.",
+    html: `<h1>Convert USD to cedis, rand and shillings in Claude with real rates</h1>
+<p>"What is 500 dollars in cedis" is a question people ask search engines dozens of times a day,
+and the answers they get are ad-covered converter sites with stale widgets. If you already work
+in Claude or Cursor, the MCP currency server answers it in one tool call - and, unlike a widget,
+it can convert a whole list, look up a historical date, and hand the numbers back in a form you
+can paste into an invoice.</p>
+
+<h2>The pairs people actually ask about</h2>
+<p>The server quotes everything off the euro, the way the European Central Bank publishes its
+daily reference rates, so USD to GHS is computed as one rate path (USD to EUR, EUR to GHS) from
+the same daily file. That keeps every pair consistent: USD to ZAR, USD to KES, EUR to CAD,
+GBP to NGN - any combination of the roughly 30 currencies the ECB publishes is a valid pair,
+on the same day's rates, with no per-pair scraping.</p>
+<p>"Convert 500 USD to GHS" returns the amount and the rate used. "Convert 250 USD to ZAR, KES
+and NGN" is one convert_many call, not three lookups. "What was the USD to GHS rate on the 3rd"
+is rate_on, so back-dated invoices and expense reports use the rate of the day they claim.</p>
+${install("currency")}
+
+<h2>Why an invoice needs rate_on, not today's rate</h2>
+<p>Freelancers billing across borders get burned by rate drift: you quote on Monday, the client
+pays Friday, and the settlement amount differs. Asking the server for the rate on the invoice
+date gives you a defensible number to put on the document - the same logic accountants apply
+with month-end closing rates. <a href="/guides/currency-conversion-ecb-rates-in-claude">The general
+currency guide</a> covers the full workflow; <a href="/guides/currency-conversion-mcp-servers-compared">the
+comparison page</a> shows how this server stacks up against the alternatives.</p>
+<p>The server runs locally over stdio with a disk cache, so repeated conversions in one session
+do not re-download the rate file. Free tier covers the core conversions; Pro is a one-time
+payment per server or part of the <a href="/s/office-suite">bundle</a>.</p>
+${FOOT}`,
+    faq: [
+      { q: "Does it support USD to GHS, ZAR and KES?", a: "Yes - every currency the ECB publishes daily reference rates for, roughly 30 including GHS, ZAR, KES and NGN. Any pair between them converts in one call." },
+      { q: "How current are the rates?", a: "They are the ECB's daily euro foreign-exchange reference rates, updated each business day. Weekends resolve to the last published day." },
+      { q: "Can I get the rate for a past date?", a: "Yes. rate_on returns the published rate for a given date, which is what back-dated invoices and expense reports should use." },
+    ],
+  },
+
+  "loan-amortization-schedule-excel-from-chat": {
+    title: "Build a loan amortization schedule from chat and export it for Excel",
+    description: "Create a loan, generate the month-by-month amortization schedule with interest and principal split, and export the table - no spreadsheet formulas.",
+    html: `<h1>Build a loan amortization schedule from chat and export it for Excel</h1>
+<p>The amortization schedule is the most-searched spreadsheet template on the internet, and every
+version of it is the same 20 minutes of formula wrangling: PMT for the payment, then 120 rows of
+interest = balance x rate / 12, principal = payment minus interest, balance minus principal.
+The MCP amortization server does the whole thing in one tool call and hands back the table.</p>
+
+<h2>One prompt, full schedule</h2>
+<p>"Create a loan: 25,000 at 8.9% over 5 years, monthly payments" stores the loan and returns the
+schedule - every month's payment split into interest and principal, and the running balance. Ask
+for the journal view and you get the double-entry form bookkeepers want; loans_report sums
+interest paid to date across every loan you have stored.</p>
+<p>Because the loan is stored, follow-ups are free: "what if I pay 200 extra a month" becomes
+loan_repay_early and a recalculated schedule showing the interest saved and months dropped -
+the comparison people build a second spreadsheet tab for.</p>
+${install("amortization")}
+
+<h2>Where this beats the spreadsheet template</h2>
+<p>The template is only correct if your rate convention matches its formula - and the PMT
+signature differs between Excel, Google Sheets and Numbers, which is where most downloaded
+schedules go wrong. The server states its convention once and applies it consistently, and the
+schedule it returns is plain tabular data you can paste into any spreadsheet. For leasing
+specifically, <a href="/guides/loan-and-lease-schedules-from-chat">the loan and lease guide</a>
+covers asset-finance schedules; for what a payment actually costs over the full term, the
+<a href="/s/loan-calculator">loan calculator</a> page gives the headline figures.</p>
+<p>Runs locally over stdio. Free tier covers the core schedules; Pro is a one-time payment per
+server or part of the <a href="/s/office-suite">bundle</a>.</p>
+${FOOT}`,
+    faq: [
+      { q: "Do I need to know the PMT formula?", a: "No. You state principal, rate, term and payment frequency; the server computes the payment and the full schedule. No spreadsheet formulas involved." },
+      { q: "Can I model extra repayments?", a: "Yes. loan_repay_early applies an extra payment and recalculates the schedule, showing the interest saved and the term shortened." },
+      { q: "Can I get the table into Excel?", a: "Yes - the schedule comes back as tabular data you can paste straight into a sheet, with one row per payment." },
+    ],
+  },
+
 };
 
 export const GUIDE_PRODUCT_LINKS = {
@@ -9758,6 +9834,8 @@ export const GUIDE_PRODUCT_LINKS = {
   "ats-resume-check-in-claude-and-cursor": ["resume"],
   "freelancer-invoice-and-billable-hours-in-chat": ["time-tracker", "invoice"],
   "price-drop-alerts-and-pdf-cleanup-from-chat": ["price-tracker", "pdf"],
+  "convert-usd-to-ghs-zar-kes-in-claude": ["currency"],
+  "loan-amortization-schedule-excel-from-chat": ["amortization"],
 };
 
 /**
@@ -9773,7 +9851,7 @@ export const PRODUCT_GUIDE_LINKS = {
   spreadsheet: ["read-excel-in-cursor", "csv-to-excel-and-back-in-claude", "answer-questions-about-a-spreadsheet-without-formulas", "ask-a-spreadsheet-questions-in-chat"],
   invoice: ["invoice-pdf-from-chat", "freelancer-invoice-and-billable-hours-in-chat", "quotes-and-estimates-to-invoice-in-claude", "recurring-invoices-on-a-schedule", "quotes-and-estimates-to-invoices"],
   "expense-tracker": ["expense-tracking-in-claude", "rebill-client-expenses-with-a-markup", "bank-statement-csv-categorize-reconcile"],
-  currency: ["currency-conversion-ecb-rates-in-claude", "currency-conversion-mcp-servers-compared"],
+  currency: ["currency-conversion-ecb-rates-in-claude", "currency-conversion-mcp-servers-compared", "convert-usd-to-ghs-zar-kes-in-claude"],
   docx: ["word-documents-proposals-from-chat", "fill-a-quote-or-estimate-template-from-chat"],
   timezone: ["meeting-slots-across-time-zones", "calendar-ics-free-busy-in-claude"],
   resume: ["resume-and-cover-letter-from-chat", "ats-resume-check-in-claude-and-cursor"],
