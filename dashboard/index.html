@@ -105,7 +105,7 @@
 <div class="wrap">
   <header>
     <h1>MCP Servers by theluckystrike</h1>
-    <div class="meta">generated 2026-09-28 (R6 update) — session count 105</div>
+    <div class="meta">generated 2026-09-28 (R7 update) — session count 106</div>
   </header>
 
   <div class="kpi-row">
@@ -118,6 +118,10 @@
 
   <section>
     <h2>Latest round — R6 (2026-09-28, lastmod freshness lever)</h2>
+<ul>
+<li><b>R7 (2026-09-28) demand-driven content:</b> 2 new guides built against GSC query impressions — /guides/convert-usd-to-ghs-zar-kes-in-claude (currency cluster) and /guides/loan-amortization-schedule-excel-from-chat (amortization cluster). 137 guides total; both live (200), in sitemap (237 URLs), IndexNow-pinged, PR #15 merged, sitemap resubmitted to GSC (204).</li>
+</ul>
+
 <ul>
 <li><b>FIX 3 FROM R5 EXECUTED — sitemap lastmod refreshed:</b> root cause was the freshness signal being downstream of docs/RELEASE_V*.md, not of deploys. No release doc existed for R5's shipping, so lastmod sat frozen at 2026-09-19. Shipped docs/RELEASE_V0240.md (dated 2026-09-28, full R5 evidence), rebuilt pages.js — live sitemap now carries <b>lastmod 2026-09-28 on all 235 URLs</b> (verified by curl).</li>
 <li><b>RE-SUBMISSION with fresh dates:</b> GSC sitemap resubmit confirmed 204; IndexNow bulk re-ping of all 235 URLs accepted (HTTP 200). Both engines now see every URL as changed today.</li>
