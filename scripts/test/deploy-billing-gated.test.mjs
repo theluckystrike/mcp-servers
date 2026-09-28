@@ -3,7 +3,24 @@ import assert from "node:assert/strict";
 import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
-import { sourceHash } from "../deploy-billing-gated.mjs";
+import { rollbackDecision, sourceHash } from "../deploy-billing-gated.mjs";
+
+const approvedVersion = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa";
+const uploadedVersion = "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb";
+const uploadedDeployment = { id: "cccccccc-cccc-4ccc-8ccc-cccccccccccc", version: uploadedVersion };
+
+test("rollback is allowed only for our observed active deployment and unchanged remote pin", () => {
+  const state = { approvedVersion, uploadedVersion, uploadedDeployment,
+    currentDeployment: uploadedDeployment, currentPin: approvedVersion };
+  assert.equal(rollbackDecision(state), null);
+  assert.match(rollbackDecision({ ...state, uploadedDeployment: undefined }), /not observed/);
+  assert.match(rollbackDecision({ ...state, currentDeployment: { ...uploadedDeployment,
+    id: "dddddddd-dddd-4ddd-8ddd-dddddddddddd" } }), /active deployment changed/);
+  assert.match(rollbackDecision({ ...state, currentDeployment: { ...uploadedDeployment,
+    version: approvedVersion } }), /active deployment changed/);
+  assert.match(rollbackDecision({ ...state, currentPin: uploadedVersion }), /pin changed/);
+  assert.match(rollbackDecision({ ...state, approvedVersion: "invalid" }), /missing approved/);
+});
 
 const files = [
   "billing/src/worker.js",
