@@ -243,3 +243,27 @@ export async function readMonitorStatus(env, request) {
   return new Response(raw || "{}", { status: raw ? 200 : 503,
     headers: { "content-type": "application/json", "cache-control": "no-store" } });
 }
+
+// A status-only endpoint for an external health checker. It exposes no Session,
+// license, or monitor detail, and treats a missing or stale Cron run as unhealthy.
+export async function readMonitorHealth(env, now = Date.now()) {
+  let healthy = false;
+  try {
+    const [raw, approved] = await Promise.all([
+      env.REMOTE_DATA.get(STATUS_KEY), env.REMOTE_DATA.get(APPROVED_VERSION),
+    ]);
+    const status = JSON.parse(raw || "null");
+    const version = env.CF_VERSION_METADATA?.id;
+    const age = now - Date.parse(status?.checkedAt);
+    const operationsAge = now - Date.parse(status?.operationsCheckedAt);
+    const failureAge = status?.lastFailureAt ? now - Date.parse(status.lastFailureAt) : Infinity;
+    healthy = status?.ok === true && version && approved === version && status.version === version &&
+      Number.isFinite(age) && age >= -5 * 60_000 && age <= 20 * 60_000 &&
+      Number.isFinite(operationsAge) && operationsAge >= -5 * 60_000 && operationsAge <= 75 * 60_000 &&
+      failureAge >= 40 * 60_000;
+  } catch {
+    healthy = false;
+  }
+  return new Response(healthy ? "ok" : "unhealthy", { status: healthy ? 200 : 503,
+    headers: { "content-type": "text/plain; charset=utf-8", "cache-control": "no-store" } });
+}

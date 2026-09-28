@@ -1,11 +1,14 @@
 import app from "./index.js";
-import { readMonitorStatus, recordWebhookStatus, runScheduledMonitor } from "./scheduled-monitor.js";
+import { readMonitorHealth, readMonitorStatus, recordWebhookStatus, runScheduledMonitor } from "./scheduled-monitor.js";
 
 export default {
   async fetch(request, env, ctx) {
     const path = new URL(request.url).pathname;
     if (path === "/internal/monitor-status" && request.method === "GET") {
       return readMonitorStatus(env, request);
+    }
+    if (path === "/health/checkout-monitor" && request.method === "GET") {
+      return readMonitorHealth(env);
     }
     if (path !== "/webhook" || request.method !== "POST" ||
         !/^Stripe\//.test(request.headers.get("user-agent") || "")) {

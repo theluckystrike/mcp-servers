@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { runScheduledMonitor, recordWebhookStatus, readMonitorStatus } from "../../billing/src/scheduled-monitor.js";
+import { runScheduledMonitor, recordWebhookStatus, readMonitorHealth, readMonitorStatus } from "../../billing/src/scheduled-monitor.js";
 
 function kv(initial = {}) {
   const data = new Map(Object.entries(initial));
@@ -144,6 +144,38 @@ test("status endpoint requires a token and webhook response status is stored wit
   await recordWebhookStatus(env, 503, Date.parse("2026-09-28T00:00:00Z"));
   const key = [...remote.data.keys()].find((name) => name.startsWith("monitor:webhook-status:"));
   assert.equal(remote.data.get(key), "503");
+});
+
+test("public monitor health fails closed on stale Cron, failed operations, or unapproved version", async () => {
+  const now = Date.parse("2026-09-28T04:20:00Z");
+  const version = "6d41c702-9584-441e-bbdf-9748b276b798";
+  const status = { ok: true, version, checkedAt: new Date(now - 5 * 60_000).toISOString(),
+    operationsCheckedAt: new Date(now - 30 * 60_000).toISOString(), lastFailureAt: null };
+  const remote = kv({ "monitor:approved-version": version, "monitor:status": JSON.stringify(status) });
+  const env = { REMOTE_DATA: remote, CF_VERSION_METADATA: { id: version } };
+  const healthy = await readMonitorHealth(env, now);
+  assert.equal(healthy.status, 200);
+  assert.equal(await healthy.text(), "ok");
+  assert.equal(healthy.headers.get("cache-control"), "no-store");
+
+  status.checkedAt = new Date(now - 21 * 60_000).toISOString();
+  remote.data.set("monitor:status", JSON.stringify(status));
+  assert.equal((await readMonitorHealth(env, now)).status, 503);
+  status.checkedAt = new Date(now - 5 * 60_000).toISOString();
+  status.operationsCheckedAt = new Date(now - 76 * 60_000).toISOString();
+  remote.data.set("monitor:status", JSON.stringify(status));
+  assert.equal((await readMonitorHealth(env, now)).status, 503);
+  status.operationsCheckedAt = new Date(now - 30 * 60_000).toISOString();
+  status.lastFailureAt = new Date(now - 10 * 60_000).toISOString();
+  remote.data.set("monitor:status", JSON.stringify(status));
+  assert.equal((await readMonitorHealth(env, now)).status, 503);
+  status.lastFailureAt = null;
+  remote.data.set("monitor:status", JSON.stringify(status));
+  remote.data.set("monitor:approved-version", "different-version");
+  assert.equal((await readMonitorHealth(env, now)).status, 503);
+  remote.data.set("monitor:approved-version", version);
+  remote.data.set("monitor:status", "not-json");
+  assert.equal((await readMonitorHealth(env, now)).status, 503);
 });
 
 test("scheduled reconciliation alerts on missing paid fulfillment, an expired sweep, and webhook 5xx", async () => {
