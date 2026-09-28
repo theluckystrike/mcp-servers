@@ -145,3 +145,49 @@ test("status endpoint requires a token and webhook response status is stored wit
   const key = [...remote.data.keys()].find((name) => name.startsWith("monitor:webhook-status:"));
   assert.equal(remote.data.get(key), "503");
 });
+
+test("scheduled reconciliation alerts on missing paid fulfillment, an expired sweep, and webhook 5xx", async () => {
+  const version = "6d41c702-9584-441e-bbdf-9748b276b798";
+  const now = Math.floor(Date.now() / 1000);
+  const olderHour = Math.floor((now - 30 * 3600) / 3600) * 3600;
+  const paid = { id: "cs_live_monitor_paid", livemode: true, status: "complete",
+    payment_status: "paid", created: now - 3600,
+    metadata: { site: "mcp.zovo.one", tenant: `anon_${"a".repeat(32)}` } };
+  const expired = Array.from({ length: 10 }, (_, index) => ({
+    id: `cs_live_monitor_expired_${index}`, status: "expired", created: olderHour + index,
+    metadata: { site: "mcp.zovo.one" },
+  }));
+  const route = async () => new Response('<form method="post"><input name="intent" value="checkout"></form>',
+    { status: 200, headers: { "x-mcp-buy": "checkout-intent-required", "content-type": "text/html" } });
+  const original = globalThis.fetch;
+  try {
+    for (const [name, sessions, license, webhookFailure, expected] of [
+      ["missing license", { complete: [paid] }, false, false, /license/],
+      ["missing hosted bind", { complete: [paid] }, true, false, /binding/],
+      ["all expired sweep", { recent: expired }, false, false, /sweepHours/],
+      ["webhook 5xx", {}, false, true, /webhookFailures/],
+    ]) {
+      const remote = kv({ "monitor:approved-version": version });
+      const env = { REMOTE_DATA: remote, LICENSES: kv(license ? { [`session:${paid.id}`]: "signed-key" } : {}),
+        CF_VERSION_METADATA: { id: version }, STRIPE_SECRET_KEY: "restricted-test-key" };
+      if (webhookFailure) await recordWebhookStatus(env, 503, Date.now());
+      globalThis.fetch = async (url) => {
+        const target = new URL(url);
+        assert.equal(target.hostname, "api.stripe.com", name);
+        let data = [];
+        if (target.pathname === "/v1/webhook_endpoints") {
+          data = [{ url: "https://mcp.zovo.one/webhook", status: "enabled",
+            enabled_events: ["checkout.session.completed", "checkout.session.async_payment_succeeded"] }];
+        } else if (target.pathname === "/v1/checkout/sessions") {
+          if (target.searchParams.get("status") === "complete") data = sessions.complete || [];
+          else if (target.searchParams.has("created[lt]")) data = sessions.recent || [];
+        }
+        return Response.json({ object: "list", data, has_more: false });
+      };
+      await assert.rejects(() => runScheduledMonitor(env, timeOutsideHourlySlot(), {}, route), expected, name);
+      const heartbeat = JSON.parse(remote.data.get("monitor:status"));
+      assert.equal(heartbeat.ok, false, name);
+      assert.ok(heartbeat.lastFailureAt, name);
+    }
+  } finally { globalThis.fetch = original; }
+});
