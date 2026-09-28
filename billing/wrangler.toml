@@ -1,5 +1,5 @@
 name = "mcp-billing"
-main = "src/index.js"
+main = "src/worker.js"
 compatibility_date = "2025-09-01"
 compatibility_flags = ["nodejs_compat"]
 account_id = "dd3f2a29b7707e21a87f26a622c0bb9d"
@@ -15,3 +15,20 @@ id = "75f8bf4872a0433285d11575cece8641"
 [[kv_namespaces]]
 binding = "REMOTE_DATA"
 id = "cf848cc5c07d4e0a9c7c65ad1c70055c"
+
+[[durable_objects.bindings]]
+name = "FULFILLMENT"
+class_name = "FulfillmentState"
+
+[[migrations]]
+tag = "fulfillment_state_v1"
+new_sqlite_classes = ["FulfillmentState"]
+
+[observability]
+enabled = true
+
+[observability.traces]
+enabled = true
+
+[version_metadata]
+binding = "CF_VERSION_METADATA"

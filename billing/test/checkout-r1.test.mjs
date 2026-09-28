@@ -22,7 +22,7 @@ import { fileURLToPath } from "node:url";
 import worker, {
   PRODUCTS, PRODUCT_ALIASES, SINGLE_PRODUCT_IDS, resolveProductId,
   checkoutLineItem, firstSentences, fulfillmentAllowed, checkoutCustomText, SITE_KEY_FILES, probeHeaders,
-  VALIDATION, BILLING_TEST_COUNT, successPage, countWord,
+  VALIDATION, BILLING_TEST_COUNT, successPage, countWord, validOrderToken,
 
 } from "../src/index.js";
 
@@ -64,7 +64,7 @@ async function withStripeStub(fn) {
   const calls = [];
   const real = globalThis.fetch;
   globalThis.fetch = async (u, init) => {
-    calls.push({ url: String(u), params: Object.fromEntries(new URLSearchParams(init?.body || "")) });
+    calls.push({ url: String(u), params: Object.fromEntries(new URLSearchParams(init?.body || "")), idempotencyKey: init?.headers?.["Idempotency-Key"] });
     return new Response(JSON.stringify({ id: "cs_test_stub", url: STUB_URL }), { status: 200, headers: { "content-type": "application/json" } });
   };
   try {
@@ -80,7 +80,7 @@ test("no product is waiting on a human, and the 503 that said so is gone", () =>
     assert.ok(Number.isInteger(p.usd) && p.usd > 0, `${id} has no usable price in dollars`);
   }
   assert.ok(!INDEX.includes('"price-pending-human" } }'), "the price-pending-human 503 branch is still live");
-  assert.ok(!INDEX.includes("status: 503"), "some /buy path still answers 503");
+  // Other routes may deliberately return 503 while fulfillment retries.
 });
 
 test("every product produces one complete, correctly-priced line item", () => {
@@ -194,6 +194,35 @@ test("opening a Buy link is side-effect free and renders the explicit checkout s
   assert.match(html, /No payment session has been created yet/);
 });
 
+test("a bounded form order token is carried into Stripe metadata and its idempotency key", async () => {
+  const get = new Request("https://mcp.zovo.one/buy/invoice?src=store.s.invoice", {
+    headers: { "user-agent": BROWSER_UA, accept: "text/html", "sec-fetch-mode": "navigate", "sec-fetch-dest": "document" },
+  });
+  const html = await (await worker.fetch(get, testEnv(), ctx)).text();
+  const token = html.match(/name="order_token" value="([^"]+)"/)?.[1];
+  assert.equal(validOrderToken(token), true);
+  const post = () => new Request(buy("/buy/invoice?src=store.s.invoice"), {
+    body: `intent=checkout&order_token=${token}`,
+  });
+  const { calls } = await withStripeStub(async () => {
+    await worker.fetch(post(), testEnv(), ctx);
+    await worker.fetch(post(), testEnv(), ctx);
+  });
+  assert.equal(calls.length, 2);
+  assert.equal(calls[0].idempotencyKey, `mcp-checkout-v1-invoice-${token}`);
+  assert.equal(calls[1].idempotencyKey, calls[0].idempotencyKey);
+  assert.equal(calls[0].params["metadata[order_token]"], token);
+  assert.equal(calls[0].params["metadata[worker_version]"], "unknown");
+  assert.equal(calls[0].params["metadata[request_method]"], "POST");
+  assert.deepEqual(calls[1].params, calls[0].params);
+  const invalid = await withStripeStub(() => worker.fetch(new Request(buy("/buy/invoice"), {
+    body: "intent=checkout&order_token=oversized-or-forged",
+  }), testEnv(), ctx));
+  assert.equal(invalid.result.status, 400);
+  assert.equal(invalid.calls.length, 0);
+  assert.equal(validOrderToken(token, Date.now() + 31 * 60 * 1000), false);
+});
+
 test("a forged or incomplete POST creates no Stripe Checkout Session", async () => {
   const validHeaders = Object.fromEntries(buy("/buy/invoice").headers);
   const cases = [
@@ -280,31 +309,19 @@ test("a browser that sends no User-Agent still reaches checkout", async () => {
 test("a crawler with no User-Agent still creates no Stripe session", async () => {
   const req = new Request("https://mcp.zovo.one/buy/invoice", { headers: { accept: "*/*" } });
   const { result: res, calls } = await withStripeStub(() => worker.fetch(req, testEnv(), ctx));
-  assert.equal(res.status, 303);
-  assert.equal(res.headers.get("x-mcp-buy"), "scripted-ua-no-session");
-  assert.equal(res.headers.get("location"), "https://mcp.zovo.one/s/invoice");
+  assert.equal(res.status, 200);
+  assert.equal(res.headers.get("x-mcp-buy"), "checkout-intent-required");
   assert.equal(calls.length, 0, "a crawler created a Stripe object");
 });
 
-test("a crawler on an alias is sent to a page that exists", async () => {
-  // Rewritten 2026-09-09. This asserted the literal /s/bundle, on the comment "/s/office-suite
-  // is not in PAGES". It is in PAGES now, and the route already prefers the alias's own page
-  // when one exists, so the assertion was failing on the better behaviour: a crawler that
-  // followed a /buy/office-suite link (every directory submission in docs/HUMAN_GATED_PACK.md
-  // ships that URL) now lands on the office-suite page rather than on the bundle page.
-  // The title is the property, so the property is what is asserted: fetch wherever it was
-  // sent and require a real page. A pinned path is exactly what went stale here.
+test("a crawler on an alias sees an intent page but creates no Stripe Session", async () => {
   for (const alias of Object.keys(PRODUCT_ALIASES)) {
     const req = new Request(`https://mcp.zovo.one/buy/${alias}`, { headers: { "user-agent": "curl/8.4.0" } });
     const { result: res, calls } = await withStripeStub(() => worker.fetch(req, testEnv(), ctx));
-    assert.equal(res.status, 303, `${alias}: not redirected`);
+    assert.equal(res.status, 200, `${alias}: no intent page`);
+    assert.equal(res.headers.get("x-mcp-buy"), "checkout-intent-required");
     assert.equal(calls.length, 0, `${alias}: a crawler created a Stripe object`);
-    const location = res.headers.get("location");
-    assert.match(location, /^https:\/\/mcp\.zovo\.one\/s\//, `${alias}: sent somewhere that is not a product page: ${location}`);
-    const landed = await worker.fetch(new Request(location), testEnv(), ctx);
-    assert.equal(landed.status, 200, `${alias}: sent to ${location}, which answers ${landed.status}`);
-    const html = await landed.text();
-    assert.ok(!html.includes("Unknown server"), `${alias}: sent to ${location}, which is the not-found page`);
+    assert.match(await res.text(), /Continue to secure Stripe checkout/);
   }
 });
 

@@ -36,14 +36,20 @@ test("the bundle description names the count, the one key and the saving", () =>
   );
   // Rewritten 2026-09-09. This was `/^Thirty MCP servers/`: a literal, there so the
   // assertion above could not pass by comparing a derived string to itself. A pinned English
-  // word is the one kind of anchor guaranteed to go stale, and it did the day the thirty-first
-  // server shipped. The anchor is now the estate on disk, which is where release-check reads
-  // the count from too, so the two sides of the comparison have genuinely different sources.
+  // word is the one kind of anchor guaranteed to go stale. Seven registry-published
+  // skeleton servers currently expose no license gate, so they cannot honestly be sold
+  // as Pro products. Keep the exception explicit until each has a real tier contract.
   const serversDir = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "servers");
   const onDisk = readdirSync(serversDir)
     .filter((n) => n !== "office-suite" && existsSync(join(serversDir, n, "package.json")));
-  assert.equal(SERVER_COUNT, onDisk.length,
-    `PRODUCTS sells ${SERVER_COUNT} servers, servers/ ships ${onDisk.length}: ${onDisk.join(", ")}`);
+  const notYetSellable = new Set(["budget", "loan-calculator", "payroll", "pomodoro", "receipts", "stripe-billing", "tax-calc"]);
+  const sellableOnDisk = onDisk.filter((n) => !notYetSellable.has(n));
+  assert.equal(SERVER_COUNT, sellableOnDisk.length,
+    `PRODUCTS sells ${SERVER_COUNT} servers, eligible servers/ ships ${sellableOnDisk.length}: ${sellableOnDisk.join(", ")}`);
+  for (const id of notYetSellable) {
+    assert.ok(onDisk.includes(id), `${id} was removed; review the temporary exclusion`);
+    assert.equal(PRODUCTS[id], undefined, `${id} has no license gate and must not be sold`);
+  }
   assert.ok(checkoutDescription("bundle").startsWith(`${countWord()} MCP servers`),
     `the bundle description does not lead with the count: ${checkoutDescription("bundle")}`);
   // countWord() falls back to the bare numeral when NUMBER_WORD runs out of entries, and the
@@ -151,7 +157,8 @@ test("metadata includes the portfolio attribution contract, probe tag and hosted
   assert.match(INDEX, /"metadata\[source\]": source/);
   assert.match(INDEX, /"metadata\[campaign\]": "mcp_lifetime_checkout"/);
   assert.match(INDEX, /"payment_intent_data\[metadata\]\[product_name\]": p\.name/);
-  assert.match(INDEX, /createCheckout\(env, host, id, probeTag, tenant, asked, src\)/);
+  assert.match(INDEX, /createCheckout\(env, host, id, probeTag, tenant, asked, src, orderToken\)/);
+  assert.match(INDEX, /"metadata\[order_token\]": orderToken/);
   assert.match(INDEX, /"metadata\[probe\]": "1"/);
   assert.match(INDEX, /"metadata\[tenant\]": tenant/);
 });

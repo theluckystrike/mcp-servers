@@ -2,11 +2,16 @@
 
 Scope: how money comes in for the fleet sold at mcp.zovo.one (one server $19, bundle $39,
 lifetime licenses signed Ed25519 as `MCPL1.<payload>.<sig>` by `billing/src/license.js`
-and `scripts/sign-license.mjs`). Current state of the estate measured 2026-09-17:
+and `scripts/sign-license.mjs`). Payment evidence was reviewed 2026-09-27; the
+checkout and fulfillment changes below are the current worktree until deployed:
 
-- Stripe Checkout is LIVE and wired end to end: `/buy/:product` -> Checkout Session ->
-  `/success` mints the key -> KV `session:<id>` -> webhook `checkout.session.completed`
-  pre-mints the same key. See `billing/RESULT.md` and `data/checkout_r1.json`.
+- The live Stripe Checkout endpoint creates Sessions. A buyer's GET `/buy/:product`
+  serves an intent page; its explicit POST creates a Checkout Session. The worker has
+  `/success` and webhook fulfillment paths that issue a key and optionally bind a
+  hosted tenant. The 2026-09-27 audit found no successful paid MCP transaction, so
+  payment-to-license delivery is still unproven in production. See
+  `../../cloud-session-test/stripe_checkout_deep_dive_2026-09-27.html` and
+  `data/checkout_r1.json`.
 - A grammY bot with XTR (Stars) invoicing already exists at `/Users/mike/mcp-servers/telegram/`
   (`src/bot.ts`, `src/pricing.ts`: single 1500 Stars, bundle 3000 Stars, `currency: "XTR"`,
   empty `provider_token`). It handles `pre_checkout_query` and `successful_payment` but
@@ -19,16 +24,16 @@ and `scripts/sign-license.mjs`). Current state of the estate measured 2026-09-17
 
 | Option | Status | Fees | Agent-wirable? | Settlement |
 |---|---|---|---|---|
-| Stripe Checkout | LIVE, end to end | 2.9% + $0.30 per card transaction (standard US/international cards, docs.stripe.com/pricing); no platform fee | YES - already wired | Bank payout, Stripe is the processor |
+| Stripe Checkout | Live Session creation; paid fulfillment unverified | 2.9% + $0.30 per card transaction (standard US/international cards, docs.stripe.com/pricing); no platform fee | YES - worker flow implemented | Bank payout, Stripe is the processor |
 | Telegram Stars (XTR) | Bot exists, fulfillment not wired to licenses | No commission charged by Telegram on Stars a bot earns; effective buyer-side cost is ~$0.013/Star via in-app purchase (core.telegram.org/bots/payments-stars pricing table); withdrawal is via Fragment as TON, where Fragment's own conversion applies | YES - bot code exists; needs a live bot token (human-gated at @BotFather) | Stars balance, withdrawn via Fragment |
-| License-key flow | LIVE (Stripe/Telegram feed into it; manual mint via scripts/sign-license.mjs) | None - it is the fulfillment layer, not a payment rail | YES for validation (see billing/src/license-auth.ts); minting already automated by the worker | n/a |
+| License-key flow | Manual mint and local verification proven; Stripe worker paths implemented but paid fulfillment unverified; Telegram fulfillment unwired | None - it is the fulfillment layer, not a payment rail | YES for validation (see billing/src/license-auth.ts); worker minting needs a paid production check | n/a |
 | GitHub Sponsors | Not set up | 0% platform fee on personal accounts; card processing via Stripe Connect applies per docs.github.com (about-github-sponsors); organization accounts are subject to processing fees | NO - requires a signed-in GitHub session to enable Sponsors | Bank payout via Stripe Connect |
 | Lemon Squeezy (merchant of record) | Not set up | 5% + $0.50 per transaction (lemonsqueezy.com/pricing), plus taxes handled by LS | NO - store creation, KYC/payout onboarding and store approval require a signed-in human at app.lemonsqueezy.com | Payout from LS, which remits sales tax |
 
 Rule applied (CONVENTIONS / CLAUDE.md): anything needing account creation, sign-in, KYC or
 a BotFather token is human-gated, recorded with the exact URL, and stopped at.
 
-## 1. Stripe Checkout (existing, LIVE)
+## 1. Stripe Checkout (live endpoint; paid fulfillment unverified)
 
 Fees: 2.9% + $0.30 per successful card charge (standard US pricing, docs.stripe.com/pricing).
 Agent-wirable: YES. Evidence of wirability measured this session: the worker holds
@@ -43,12 +48,21 @@ Adding a product is therefore a code change, not a dashboard change:
 
 1. Add the product to the PRODUCTS table in billing/src/index.js (id, usd amount, name, desc).
 2. `node remote/build-vendor.mjs` still exits cleanly (no description patches touched).
-3. `npx wrangler deploy` from billing/.
-4. Probe: `curl -sI https://mcp.zovo.one/buy/<new-product>` must 303 to a `cs_live_` URL.
-   Positive control first: `curl -s https://mcp.zovo.one/health` -> stripe_mode live.
+3. Run `npm run deploy` from `billing/`. This runs the local GET checkout guard,
+   billing tests, Wrangler dry-run and deployment, then checks the exact deployed
+   Version ID, live GET intent pages and the live Stripe Session count. A nonzero
+   exit means the release is not verified.
+4. Check `GET https://mcp.zovo.one/buy/<new-product>` with a browser navigation:
+   it must return HTTP 200, `x-mcp-buy: checkout-intent-required`, and a POST form.
+   GET must create zero live Stripe Sessions. `GET /health` reports `stripe_mode`.
+   A Stripe redirect is expected only after a valid form POST. Deliberate live
+   probes must send `x-mcp-probe: 1` and a fresh bounded `order_token`.
 
-No further integration steps exist; the rail is done. Remaining Stripe work is conversion,
-not wiring.
+The remaining operational checks are a controlled paid MCP purchase and license
+verification, paid-Session-to-key and hosted-bind reconciliation, and webhook
+delivery monitoring. The 2026-09-27 audit also found a duplicate webhook endpoint
+returning HTTP 400 that needs removal after confirming the working endpoint and
+its signing secret.
 
 ## 2. Telegram Stars (XTR)
 
@@ -87,9 +101,11 @@ Exact remaining integration steps (agent-wirable once a bot token exists):
 6. Marketing-only, no code: Stars invoices cannot be paid by users who have no Stars;
    keep the Stripe route as the fallback link in the same message.
 
-## 3. License-key flow (the fulfillment layer, LIVE)
+## 3. License-key flow (the fulfillment layer)
 
-This is what every rail above feeds into. Two halves, both proven:
+The manual key path and local verifiers have been tested. The Stripe worker has
+minting and verification paths, but no completed paid MCP purchase has verified
+their production behavior. Telegram does not yet feed this layer:
 
 Minting (server side, trusted): Ed25519 over `{v:1, p, id, iat, [exp], [h]}` base64url
 body, `MCPL1.<body>.<sig>`. Done by the billing worker (WebCrypto, billing/src/license.js)
@@ -170,7 +186,8 @@ human steps at https://app.lemonsqueezy.com/register. After setup the rest is AP
 
 ## Recommendation
 
-Keep Stripe Checkout as the primary rail (live, wired, cheapest at these price points).
+Keep Stripe Checkout as the primary rail while completing a paid end-to-end
+fulfillment check and webhook repair.
 Wire Telegram Stars fulfillment (steps in section 2) - the bot is the one distribution
 channel where Stars are the native currency and no card is needed. Defer Lemon Squeezy
 until there is meaningful EU/UK volume or Stripe Tax is evaluated (its own 2026 notice

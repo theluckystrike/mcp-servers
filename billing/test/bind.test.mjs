@@ -46,12 +46,19 @@ test("bindDecision never binds a spoofed tenant carried outside metadata", () =>
 
 test("success page shows the hosted-bound note only when a tenant was actually bound", () => {
   const withBind = successPage("MCPL1.x.y", "invoice", {}, GOOD);
-  assert.match(withBind, /already Pro/);
+  assert.match(withBind, /Pro activation was submitted/);
   assert.match(withBind, new RegExp(GOOD));
   assert.match(withBind, new RegExp(PRODUCTS.invoice.name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
 
   const withoutBind = successPage("MCPL1.x.y", "invoice", {}, "");
-  assert.doesNotMatch(withoutBind, /already Pro/);
+  assert.doesNotMatch(withoutBind, /Pro activation was submitted/);
+});
+
+test("pending hosted binding never claims activation is complete", () => {
+  const pending = successPage("MCPL1.x.y", "invoice", {}, "", GOOD);
+  assert.match(pending, /activation pending/i);
+  assert.match(pending, /not yet confirmed Pro/);
+  assert.doesNotMatch(pending, /Pro activation was submitted/);
 });
 
 test("success page always shows the key regardless of binding", () => {

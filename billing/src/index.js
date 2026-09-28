@@ -1,4 +1,4 @@
-import { mintLicense, verifyLicenseKey, hex } from "./license.js";
+import { mintLicense, verifyLicenseKey, sha256Hex } from "./license.js";
 import { PAGES, CHANGELOG } from "./pages.js";
 import { GUIDES, GUIDE_INDEX, GUIDE_PRODUCT_LINKS, GUIDE_RELATED, relatedGuidesBlock } from "./content.js";
 import { COMPARE, COMPARE_INDEX } from "./compare.js";
@@ -92,6 +92,7 @@ export const PRODUCT_ALIASES = { "office-suite": "bundle" };
 export const HOSTED_SERVERS = new Set([
   "amortization",
   "asset-register",
+  "backlink-checker",
   "bank-statement",
   "barcode",
   "bill-of-sale",
@@ -247,7 +248,7 @@ export const VALIDATION = { at: "2026-09-24", pass: 1254, total: 1254, servers: 
  * same way: test/checkout-r1.test.mjs counts the `test(` declarations on disk and fails
  * if this disagrees. The page said 25 when there were 99.
  */
-export const BILLING_TEST_COUNT = 156;
+export const BILLING_TEST_COUNT = 164;
 /**
  * The npm publish is pending: `npx -y @theluckystrike/mcp-<server>` returns E404 today,
  * and publishing needs an operator browser login (docs/HUMAN_GATED_PACK.md section 1).
@@ -874,10 +875,11 @@ ${sections}
   return page(title, body).replace("</title>", "</title>" + meta);
 }
 
-async function stripe(env, path, params, method = "POST") {
+async function stripe(env, path, params, method = "POST", idempotencyKey = "") {
   const init = { method, headers: { Authorization: `Bearer ${env.STRIPE_SECRET_KEY}` } };
   if (method === "POST") {
     init.headers["Content-Type"] = "application/x-www-form-urlencoded";
+    if (idempotencyKey) init.headers["Idempotency-Key"] = idempotencyKey;
     init.body = new URLSearchParams(params).toString();
   }
   const res = await fetch(`https://api.stripe.com/v1/${path}`, init);
@@ -936,7 +938,16 @@ export function firstSentences(text, max) {
   return (space > 60 ? body.slice(0, space) : body).replace(/[\s,;:]+$/, "") + "...";
 }
 
-async function createCheckout(env, host, productId, probeTag = "", tenant = "", askedId = productId, source = "direct") {
+const ORDER_TOKEN_MAX_AGE_MS = 30 * 60 * 1000;
+export const newOrderToken = () => `${Date.now()}.${crypto.randomUUID()}`;
+export function validOrderToken(token, now = Date.now()) {
+  const match = typeof token === "string" && token.match(/^([0-9]{13})\.([0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12})$/i);
+  if (!match) return false;
+  const age = now - Number(match[1]);
+  return age >= -60_000 && age <= ORDER_TOKEN_MAX_AGE_MS;
+}
+
+async function createCheckout(env, host, productId, probeTag = "", tenant = "", askedId = productId, source = "direct", orderToken = newOrderToken()) {
   const p = PRODUCTS[productId];
   const ct = checkoutCustomText(productId, askedId);
   const s = await stripe(env, "checkout/sessions", {
@@ -962,6 +973,9 @@ async function createCheckout(env, host, productId, probeTag = "", tenant = "", 
     "metadata[site]": host,
     "metadata[source]": source,
     "metadata[campaign]": "mcp_lifetime_checkout",
+    "metadata[order_token]": orderToken,
+    "metadata[worker_version]": env.CF_VERSION_METADATA?.id || "unknown",
+    "metadata[request_method]": "POST",
       ...(askedId !== productId ? { "metadata[asked]": askedId } : {}),
       ...(probeTag ? { "metadata[probe]": "1" } : {}),
       ...(tenant ? { client_reference_id: tenant, "metadata[tenant]": tenant } : {}),
@@ -975,13 +989,9 @@ async function createCheckout(env, host, productId, probeTag = "", tenant = "", 
     // name and the amount - instead of asserting the request it just sent. A 303 to
     // checkout.stripe.com is not evidence that the right product is on the page.
     "expand[]": "line_items",
-  });
+  }, "POST", `mcp-checkout-v1-${productId}-${orderToken}`);
+  console.log(JSON.stringify({ event: "checkout_session_created", version_id: env.CF_VERSION_METADATA?.id || "unknown", session_id: s.id, product: productId, probe: Boolean(probeTag), request_method: "POST" }));
   return s;
-}
-
-/** Write the hosted bind record. No TTL: a purchase is a lifetime key. */
-async function bindTenant(env, tenant, key) {
-  await env.REMOTE_DATA.put(`bind:${tenant}`, key);
 }
 
 /**
@@ -1127,7 +1137,7 @@ ${productId === "bundle"
 ${alias}<p><strong>$${p.usd}.00 USD</strong> &middot; one payment &middot; lifetime licence</p>
 <p>${esc(p.desc || (productId === "bundle" ? `All ${SERVER_COUNT} servers, one key.` : ""))}</p>
 ${whatYouGet}
-<form method="post" action="${esc(action)}"><input type="hidden" name="intent" value="checkout">
+<form method="post" action="${esc(action)}"><input type="hidden" name="intent" value="checkout"><input type="hidden" name="order_token" value="${newOrderToken()}">
 <button class="buy" type="submit">Continue to secure Stripe checkout</button></form>
 <p class="muted">No payment session has been created yet. Stripe collects the card on the next page.</p>
 ${purchasePromiseHtml(p.usd)}
@@ -1256,28 +1266,60 @@ class MintError extends Error {}
  * before it is stored or returned, so a private/public key mismatch fails loudly
  * instead of charging a customer for an unusable key.
  */
+export async function sessionLicenseId(sessionId) {
+  return (await sha256Hex(`mcp-license-session-v1:${sessionId}`)).slice(0, 24);
+}
+
 async function keyForSession(env, session, productId) {
   const cached = await env.LICENSES.get(`session:${session.id}`);
-  if (cached) return cached;
+  if (cached) {
+    const check = await verifyLicenseKey(cached, productId);
+    if (!check.ok) throw new MintError(`cached key invalid: ${check.reason}`);
+    return cached;
+  }
   const p = PRODUCTS[productId];
   if (!p) throw new Error(`unknown product: ${productId}`);
-  const email = session.customer_details?.email || session.customer_email || "";
+  if (!Number.isSafeInteger(session.created)) throw new MintError("session creation time missing");
   const { key } = await mintLicense(env.LICENSE_PRIVATE_KEY_PEM, {
     product: p.payload,
-    id: hex(6),
-    iat: session.created || Math.floor(Date.now() / 1000),
-    email,
+    // The same paid Session produces the same signed payload on every Worker.
+    // KV is eventually consistent and cannot implement store-if-absent.
+    id: await sessionLicenseId(session.id),
+    iat: session.created,
   });
   const check = await verifyLicenseKey(key, productId);
   if (!check.ok) {
     console.error(`mint verification failed for session ${session.id} product ${productId}: ${check.reason}`);
     throw new MintError(check.reason);
   }
-  // Store-if-absent: re-read to keep a concurrent webhook and /success in agreement.
-  const again = await env.LICENSES.get(`session:${session.id}`);
-  if (again) return again;
-  await env.LICENSES.put(`session:${session.id}`, key, { metadata: { product: productId, email } });
   return key;
+}
+
+/** Persist the fulfillment job before attempting KV writes; the object's alarm retries. */
+async function fulfillSession(env, session, productId, key) {
+  if (!env.FULFILLMENT) throw new Error("fulfillment state binding unavailable");
+  const bd = bindDecision(session, true);
+  const stub = env.FULFILLMENT.getByName(session.id);
+  const response = await stub.fetch("https://fulfillment.internal/issue", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ sessionId: session.id, product: productId, key,
+      tenant: bd.bind ? bd.tenant : "" }),
+  });
+  const result = await response.json();
+  if (response.status !== 200 && response.status !== 503) {
+    throw new Error(`fulfillment state rejected job: ${response.status} ${result.error || ""}`);
+  }
+  return { ...result, tenant: bd.bind ? bd.tenant : "" };
+}
+
+/** Session-level server event for joining a paid Stripe Session to fulfillment. */
+function logFulfillmentOutcome(env, session, productId, state, source) {
+  console.log(JSON.stringify({ event: "checkout_fulfillment", source,
+    version_id: env.CF_VERSION_METADATA?.id || "unknown", session_id: session.id,
+    product: productId, payment_status: session.payment_status,
+    fulfillment_status: state.complete ? "complete" : "retrying",
+    hosted_binding: state.tenant ? (state.complete ? "submitted" : "retrying") : "not_requested" }));
 }
 
 /** Retrieve a Checkout Session with its line items expanded (review #3). */
@@ -1313,13 +1355,15 @@ claude mcp add ${esc(name)} -- npx -y ${esc(pkg)}
 <p class="muted">${NPM_PENDING_NOTE}</p>`;
 }
 
-export function successPage(key, productId, session, boundTenant = "") {
+export function successPage(key, productId, session, boundTenant = "", pendingTenant = "") {
   const p = PRODUCTS[productId];
   const hostedNote = boundTenant
     ? `<h2>Hosted endpoints</h2>
-<p>The hosted endpoint you were using (token <code>${esc(boundTenant)}</code>) is already Pro for ${esc(p.name)} -
-nothing further to do there. The key below still works for a local, stdio install.</p>`
-    : "";
+<p>Pro activation was submitted for your hosted endpoint (token <code>${esc(boundTenant)}</code>).
+It can take a short time to appear on every endpoint. The key below works for a local, stdio install.</p>`
+    : pendingTenant
+      ? `<h2>Hosted endpoint activation pending</h2><p>The hosted endpoint for token <code>${esc(pendingTenant)}</code> is not yet confirmed Pro. Your key below works for local activation. We are retrying the hosted activation automatically; reload this page to check again. If it remains pending, contact support@zovo.one with your Stripe receipt.</p>`
+      : "";
   return page("Your MCP Pro license key", `<h1>Payment received</h1>
 <p>${esc(p.name)} - $${p.usd} one-time, lifetime.</p>
 ${hostedNote}
@@ -2027,23 +2071,12 @@ const LIVE_TOOLS = {
       // UA/Fetch-Metadata guard. GET is therefore side-effect free for everyone. Obvious
       // scripts still land on the product page; browser-shaped requests see a confirmation
       // form. Only its same-origin POST may call Stripe.
-      if (scripted && !explicitProbe) {
+      if (method === "POST" && scripted && !explicitProbe) {
         return new Response(null, { status: 303, headers: { Location: `https://${host}/s/${encodeURIComponent(PAGES[asked] ? asked : id)}`, "cache-control": "no-store", "x-mcp-buy": "scripted-ua-no-session" } });
       }
       if (method === "GET") {
-        // S129 resume: a buyer arriving from a Stripe cancel (or a bookmarked session
-        // link) carries session_id. If that session is still open and unpaid and belongs
-        // to this product, drop them straight back on Stripe's checkout - one step, no
-        // re-confirmation form - instead of making them restart the decision.
-        const resumeId = url.searchParams.get("session_id") || "";
-        if (resumeId.startsWith("cs_live_") || resumeId.startsWith("cs_test_")) {
-          try {
-            const s = await retrieveSession(env, resumeId);
-            if (s && s.metadata?.product === id && s.payment_status === "unpaid" && s.status === "open" && s.url) {
-              return new Response(null, { status: 303, headers: { Location: s.url, "cache-control": "no-store", "x-mcp-buy": "checkout-resumed" } });
-            }
-          } catch { /* stale/foreign session id: fall through to the intent page */ }
-        }
+        // Always show the intent page. A cancellation session is checked only after
+        // the buyer explicitly submits the form, so GET cannot call Stripe.
         return new Response(checkoutIntentPage(url, id, asked, tenant), {
           status: 200,
           headers: {
@@ -2061,6 +2094,25 @@ const LIVE_TOOLS = {
           status: 400,
           headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store", "x-mcp-buy": "checkout-intent-invalid" },
         });
+      }
+      // The same confirmation form keeps one bounded order identity across retries.
+      // A direct legacy POST without a token gets a fresh identity for this request;
+      // callers should first GET the intent page and submit its hidden token.
+      const postedToken = new URLSearchParams(intentBody).get("order_token") || "";
+      if (postedToken && !validOrderToken(postedToken)) {
+        return new Response("Invalid order token", { status: 400, headers: { "cache-control": "no-store", "x-mcp-buy": "order-token-invalid" } });
+      }
+      const orderToken = postedToken || newOrderToken();
+      // A cancelled Checkout can be resumed only after an explicit, valid POST. GET
+      // remains free of Stripe calls, even when a session_id is supplied in the URL.
+      const resumeId = url.searchParams.get("session_id") || "";
+      if (resumeId.startsWith("cs_live_") || resumeId.startsWith("cs_test_")) {
+        try {
+          const s = await retrieveSession(env, resumeId);
+          if (s && s.metadata?.product === id && s.payment_status === "unpaid" && s.status === "open" && s.url) {
+            return new Response(null, { status: 303, headers: { Location: s.url, "cache-control": "no-store", "x-mcp-buy": "checkout-resumed" } });
+          }
+        } catch { /* stale/foreign session id: start a new checkout below */ }
       }
       // Conversion instrument: count the click before the redirect, skipping the same
       // probe-tagged and scripted requests the Stripe metadata already excludes.
@@ -2081,7 +2133,7 @@ const LIVE_TOOLS = {
             return new Response(null, { status: 303, headers: { Location: c.url, "cache-control": "no-store", "x-mcp-buy": "probe-session-reused", ...c.headers } });
           }
         }
-        const session = await createCheckout(env, host, id, probeTag, tenant, asked, src);
+        const session = await createCheckout(env, host, id, probeTag, tenant, asked, src, orderToken);
         const headers = { Location: session.url, "cache-control": "no-store", ...(probeTag ? probeHeaders(session) : {}) };
         if (probeKey) ctx.waitUntil(env.REMOTE_DATA.put(probeKey, JSON.stringify({ url: session.url, headers: probeHeaders(session) }), { expirationTtl: PROBE_SESSION_TTL }));
         return new Response(null, { status: 303, headers });
@@ -2111,15 +2163,14 @@ const LIVE_TOOLS = {
       }
       try {
         const key = await keyForSession(env, session, productId);
-        const bd = bindDecision(session, true);
-        if (bd.bind) {
-          try {
-            await bindTenant(env, bd.tenant, key);
-          } catch (e) {
-            console.error(`bind failed for ${sid} tenant ${bd.tenant}: ${e.message}`);
-          }
-        }
-        return new Response(successPage(key, productId, session, bd.bind ? bd.tenant : ""), { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" } });
+        const state = await fulfillSession(env, session, productId, key);
+        logFulfillmentOutcome(env, session, productId, state, "success_page");
+        return new Response(successPage(key, productId, session,
+          state.complete ? state.tenant : "", state.complete ? "" : state.tenant), {
+          status: state.complete ? 200 : 202,
+          headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store",
+            "x-mcp-fulfillment": state.complete ? "complete" : "retrying" },
+        });
       } catch (e) {
         console.error(`mint failed for ${sid}: ${e.message}`);
         return new Response(page("Key could not be issued", `<h1>Your payment went through, the key did not</h1>
@@ -2145,7 +2196,11 @@ const LIVE_TOOLS = {
       if (!decision.ok) return Response.json({ ok: false, reason: decision.reason }, { status: 402, headers: nostore });
       try {
         const key = await keyForSession(env, session, productId);
-        return Response.json({ ok: true, product: productId, key, support: "support@zovo.one" }, { headers: nostore });
+        const state = await fulfillSession(env, session, productId, key);
+        logFulfillmentOutcome(env, session, productId, state, "recovery");
+        return Response.json({ ok: true, product: productId, key,
+          hosted_binding: state.tenant ? (state.complete ? "submitted" : "retrying") : "not_requested",
+          support: "support@zovo.one" }, { status: state.complete ? 200 : 202, headers: nostore });
       } catch (e) {
         console.error(`recover mint failed for ${sid}: ${e.message}`);
         return Response.json({ ok: false, reason: "key could not be issued, email support@zovo.one" }, { status: 500, headers: nostore });
@@ -2178,14 +2233,10 @@ const LIVE_TOOLS = {
             return Response.json({ received: true, fulfilled: false, reason: decision.reason });
           }
           const key = await keyForSession(env, session, productId);
-          const bd = bindDecision(session, true);
-          if (bd.bind) {
-            try {
-              await bindTenant(env, bd.tenant, key);
-            } catch (e) {
-              console.error(`webhook bind failed for ${sid} tenant ${bd.tenant}: ${e.message}`);
-            }
-          }
+          const state = await fulfillSession(env, session, productId, key);
+          logFulfillmentOutcome(env, session, productId, state, "webhook");
+          if (!state.complete) return Response.json({ received: true, fulfilled: false,
+            retrying: true }, { status: 503 });
         } catch (e) {
           console.error(`webhook ${event.type} mint failed for ${sid}: ${e.message}`);
           return new Response(`mint failed: ${e.message}`, { status: 500 });

@@ -1,0 +1,48 @@
+export async function acceptFulfillmentJob(storage, incoming) {
+  if (!/^cs_[A-Za-z0-9_]+$/.test(incoming.sessionId || "") ||
+      !/^MCPL1\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/.test(incoming.key || "") ||
+      typeof incoming.product !== "string" ||
+      (incoming.tenant && !/^anon_[0-9a-f]{32}$/.test(incoming.tenant))) {
+    return { error: "invalid fulfillment job", status: 400 };
+  }
+  let job = await storage.get("job");
+  if (job && (job.sessionId !== incoming.sessionId || job.key !== incoming.key ||
+      job.product !== incoming.product || job.tenant !== incoming.tenant)) {
+    return { error: "fulfillment identity conflict", status: 409 };
+  }
+  if (!job) {
+    job = { ...incoming, licenseSaved: false, bound: !incoming.tenant, attempts: 0 };
+    // Schedule before the durable write, so a crash after writing cannot strand it.
+    await storage.setAlarm(Date.now() + 60_000);
+    await storage.put("job", job);
+  }
+  return { job };
+}
+
+export async function processFulfillment(storage, env, job) {
+  try {
+    if (!job.licenseSaved) {
+      await env.LICENSES.put(`session:${job.sessionId}`, job.key,
+        { metadata: { product: job.product } });
+      job.licenseSaved = true;
+      await storage.put("job", job);
+    }
+    if (!job.bound) {
+      await env.REMOTE_DATA.put(`bind:${job.tenant}`, job.key);
+      job.bound = true;
+      await storage.put("job", job);
+    }
+    await storage.deleteAlarm();
+    return { complete: true, licenseSaved: true, bound: job.bound };
+  } catch (error) {
+    job.attempts += 1;
+    job.lastError = String(error?.message || error).slice(0, 200);
+    await storage.put("job", job);
+    const delay = Math.min(60_000 * 2 ** Math.min(job.attempts - 1, 6), 3_600_000);
+    await storage.setAlarm(Date.now() + delay);
+    console.error(JSON.stringify({ kind: "fulfillment_retry_scheduled", sessionId: job.sessionId,
+      attempts: job.attempts, error: job.lastError }));
+    return { complete: false, licenseSaved: job.licenseSaved, bound: job.bound,
+      retryScheduled: true };
+  }
+}

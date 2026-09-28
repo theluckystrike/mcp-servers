@@ -2,6 +2,7 @@
 // Live validation of every server + billing, appended to data/validation.json (the validation database).
 // Each run: spawn dist/index.js over stdio, initialize, tools/list, real tool calls, free gate, pro gate, timing.
 import { spawn, execFileSync } from "node:child_process";
+import { randomUUID } from "node:crypto";
 import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, existsSync, statSync, readdirSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { createServer } from "node:http";
@@ -2236,8 +2237,9 @@ async function remote() {
       "-H", "accept: text/html", "-H", "sec-fetch-mode: navigate", "-H", "sec-fetch-site: same-origin",
       "-H", "sec-fetch-dest: document", "-H", "content-type: application/x-www-form-urlencoded",
       "-H", `origin: https://mcp.zovo.one`, "-H", `referer: ${url}`,
+      "-H", "x-mcp-probe: 1",
       "-A", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36",
-      "--data", "intent=checkout", url], { encoding: "utf8", timeout: 30000 });
+      "--data", `intent=checkout&order_token=${Date.now()}.${randomUUID()}`, url], { encoding: "utf8", timeout: 30000 });
     const status = Number((out.match(/^HTTP\/[\d.]+ (\d{3})/m) || [])[1] || 0);
     const loc = (out.match(/^location: (.*)$/mi) || [])[1] || "";
     return { status, loc };
