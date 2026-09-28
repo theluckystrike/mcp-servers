@@ -105,7 +105,7 @@
 <div class="wrap">
   <header>
     <h1>MCP Servers by theluckystrike</h1>
-    <div class="meta">generated 2026-09-28 (R4 update) — session count 104</div>
+    <div class="meta">generated 2026-09-28 (R6 update) — session count 105</div>
   </header>
 
   <div class="kpi-row">
@@ -117,7 +117,15 @@
   </div>
 
   <section>
-    <h2>Latest round — R5 (2026-09-28, indexing sprint)</h2>
+    <h2>Latest round — R6 (2026-09-28, lastmod freshness lever)</h2>
+<ul>
+<li><b>FIX 3 FROM R5 EXECUTED — sitemap lastmod refreshed:</b> root cause was the freshness signal being downstream of docs/RELEASE_V*.md, not of deploys. No release doc existed for R5's shipping, so lastmod sat frozen at 2026-09-19. Shipped docs/RELEASE_V0240.md (dated 2026-09-28, full R5 evidence), rebuilt pages.js — live sitemap now carries <b>lastmod 2026-09-28 on all 235 URLs</b> (verified by curl).</li>
+<li><b>RE-SUBMISSION with fresh dates:</b> GSC sitemap resubmit confirmed 204; IndexNow bulk re-ping of all 235 URLs accepted (HTTP 200). Both engines now see every URL as changed today.</li>
+<li>PR #13 merged (preflight green); worker redeployed (version 8a2e9b63); billing 173/173 pass before and after.</li>
+<li>PROCESS RULE learned: every sprint that changes site pages must also ship a dated release doc — otherwise crawlers never see the change. Release doc = part of shipping, not bookkeeping.</li>
+<li>KPI unchanged: GSC impressions (19/28d) is the primary organic KPI; weekly check. Re-inspect ~10 URLs in 2 weeks for index-rate movement from the freshness + IndexNow combo.</li>
+</ul>
+<h2>Previous round — R5 (2026-09-28, indexing sprint)</h2>
 <ul>
 <li><b>INDEX AUDIT (GSC URL Inspection API, 16 URLs):</b> exactly 1 page of mcp.zovo.one indexed (homepage). All 30 guides + 54 server pages + setup/compare = "Discovered — currently not indexed" or "unknown to Google". GSC search-analytics: 19 impressions / 0 clicks / 28 days. The content engine was built but invisible — no top of funnel confirmed at the index level.</li>
 <li><b>FIX 1 — IndexNow LIVE:</b> added key-verification route to the billing worker (PR #11 merged, preflight green), deployed (f69a1392). Key file verified live. Bulk POST of all 235 sitemap URLs accepted by api.indexnow.org (HTTP 200) — instant submission to Bing/Yandex/Seznam/Seznam-class engines.</li>
