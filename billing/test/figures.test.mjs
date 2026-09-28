@@ -26,7 +26,7 @@ import { dirname, join } from "node:path";
 import worker, { SINGLE_PRODUCT_IDS, VALIDATION } from "../src/index.js";
 import { GUIDES } from "../src/content.js";
 import {
-  LISTED_COUNT, LISTED_CHILD_COUNT, HOSTED_COUNT, SERVER_DIR_COUNT, VERSION,
+  LISTED_COUNT, LISTED_CHILD_COUNT, HOSTED_COUNT, SERVER_DIR_COUNT, VERSION, FREE_IDS,
 } from "../src/figures.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -51,8 +51,10 @@ test("billing/src/figures.js is what the manifests currently say", () => {
 });
 
 test("the catalogue counts agree with each other", () => {
-  assert.equal(SINGLE_PRODUCT_IDS.length, LISTED_CHILD_COUNT,
-    `PRODUCTS sells ${SINGLE_PRODUCT_IDS.length} servers singly and ${LISTED_CHILD_COUNT} listed servers are not office-suite. One of them is wrong.`);
+  // LISTED_CHILD_COUNT minus the free standalone servers (R32) equals the paid singles:
+  // the free seven have pages and tool counts but no PRODUCTS row — the bundle alias sells them.
+  assert.equal(SINGLE_PRODUCT_IDS.length, LISTED_CHILD_COUNT - FREE_IDS.length,
+    `PRODUCTS sells ${SINGLE_PRODUCT_IDS.length} servers singly and ${LISTED_CHILD_COUNT - FREE_IDS.length} listed non-free servers are not office-suite. One of them is wrong.`);
   assert.ok(HOSTED_COUNT <= LISTED_COUNT, "more hosted endpoints than listed servers");
   assert.ok(SERVER_DIR_COUNT >= LISTED_COUNT,
     "a listed server has no source directory, which cannot happen");

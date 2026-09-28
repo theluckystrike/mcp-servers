@@ -211,7 +211,7 @@
  ],
  "servers": {
   "time-tracker": {
-   "title": "MCP Time Tracking Server — Free, No Install",
+   "title": "MCP Time Tracking Server \u2014 Free, No Install",
    "tagline": "Track billable time without leaving the chat.",
    "does": "Track billable time from Claude with a free, no-install MCP server. Start and stop timers in chat, weekly reports and client billing.",
    "for": "Freelancers, consultants and developers who already work inside Claude Code, Cursor or Claude Desktop and bill by the hour.",
@@ -241,7 +241,7 @@
    "storage": "Works on the user's own files; nothing else stored."
   },
   "invoice": {
-   "title": "MCP Server for Invoices — Generate Invoices from Claude",
+   "title": "MCP Server for Invoices \u2014 Generate Invoices from Claude",
    "tagline": "Numbered invoices with tax lines, rendered to a professional PDF.",
    "does": "Generate and send invoices from Claude with a free MCP server. Create line-item invoices in chat with PDF output, taxes and VAT, plus payment tracking. No install.",
    "for": "Freelancers and small businesses that want to say: make an invoice for Acme, 12 hours at 90 EUR, due in 14 days.",
@@ -251,7 +251,7 @@
    "storage": "~/.local/share/mcp-servers/invoice/"
   },
   "expense-tracker": {
-   "title": "MCP Expense Tracker — Log Expenses from Claude",
+   "title": "MCP Expense Tracker \u2014 Log Expenses from Claude",
    "tagline": "Receipts, mileage and expenses that turn into invoice lines.",
    "does": "Log expenses from Claude with a free MCP server. Quick entry, categories, mileage, receipts and CSV export, ready to repbill with markup. No install.",
    "for": "Freelancers and small businesses who already track time and invoice from chat and want the receipts side closed in the same place.",
@@ -281,7 +281,7 @@
    "storage": "~/.local/share/mcp-servers/currency/ (rate cache)"
   },
   "docx": {
-   "title": "MCP Word Document Server — Create .docx from Claude",
+   "title": "MCP Word Document Server \u2014 Create .docx from Claude",
    "tagline": "Real Word documents from chat: proposals, contracts, quotes.",
    "does": "Create .docx Word documents from Claude with a free MCP server. Template-based docs, formatted sections, proposals and batch generation. No install.",
    "for": "Freelancers who send proposals and contracts and want them as editable Word files, not PDFs.",
@@ -341,7 +341,7 @@
    "storage": "~/.local/share/mcp-servers/calendar/"
   },
   "pdf": {
-   "title": "MCP PDF Server — Merge, Split, Fill Forms",
+   "title": "MCP PDF Server \u2014 Merge, Split, Fill Forms",
    "tagline": "Merge, split, stamp and read PDFs, pure JavaScript.",
    "does": "Merge, split and fill PDF forms from Claude with a free MCP server. Form-preserving operations, text extraction, stamps and batch jobs. No install.",
    "for": "Anyone who sends invoices, proposals and contracts as PDFs and needs to mark, combine or split them without a desktop app.",
@@ -371,7 +371,7 @@
    "storage": "~/.local/share/mcp-servers/bank-statement/"
   },
   "kanban": {
-   "title": "MCP Kanban Server — Boards from Claude",
+   "title": "MCP Kanban Server \u2014 Boards from Claude",
    "tagline": "A task board per project that hands off to the time tracker.",
    "does": "Run kanban boards from Claude with a free hosted MCP server. Create cards and move them between columns by chat, with due dates and estimates.",
    "for": "Freelancers who plan the week in a board and bill the hours from the same tasks.",
@@ -431,9 +431,9 @@
    "storage": "~/.local/share/mcp-servers/deposits/"
   },
   "per-diem": {
-   "title": "MCP Per Diem Calculator — Employee Travel Allowances from Claude",
+   "title": "MCP Per Diem Calculator \u2014 Employee Travel Allowances from Claude",
    "tagline": "Statutory travel allowances on the rate tables the tax authorities publish, and the trips you priced with them.",
-   "does": "Per diem allowance calculator for employee travel claims — Polish delegation, HMRC scale rates, US GSA M&IE. Free MCP server, not GSA federal rates lookup.",
+   "does": "Per diem allowance calculator for employee travel claims \u2014 Polish delegation, HMRC scale rates, US GSA M&IE. Free MCP server, not GSA federal rates lookup.",
    "for": "Anyone who claims or pays a statutory travel allowance: Polish contractors and employers on delegacja and diety, UK sole traders and companies on the HMRC benchmark rates, and US federal or corporate travellers on the GSA standard.",
    "example": "\"What is the per diem for 58 hours in Krakow, leaving Tuesday 8am, with breakfast on the first day and two nights in a hotel?\" ... \"Same trip under the HMRC rates.\" ... \"Save it as the Krakow audit trip.\" ... \"Total my per diems this quarter per scheme.\"",
    "free": "Rate lookups and calculations are unlimited on every tier: the tables are public regulation, and metering the reading of a regulation would be charging for the tax authority's work. 5 trips saved per calendar month, counted by start date, and unlimited trip lists.",
@@ -441,7 +441,7 @@
    "storage": "~/.local/share/mcp-servers/per-diem/"
   },
   "asset-register": {
-   "title": "MCP Server for Fixed Asset Register — Depreciation from Claude",
+   "title": "MCP Server for Fixed Asset Register \u2014 Depreciation from Claude",
    "tagline": "A fixed asset register that depreciates on the rates the tax authorities actually publish, with the schedule, the journal and the gain on sale.",
    "does": "Run a fixed asset register from Claude with a free MCP server: depreciation on published tax authority rates, schedules, journals and gain on sale. No install.",
    "for": "Anyone who has to put a depreciation figure on a return or in a ledger: Polish companies and sole traders on the KST annex rates, UK businesses claiming capital allowances on the main and special rate pools, and US filers on MACRS GDS.",
@@ -451,7 +451,7 @@
    "storage": "~/.local/share/mcp-servers/asset-register/"
   },
   "statement-of-account": {
-   "title": "MCP Server for Statements of Account — Customer Balances from Claude",
+   "title": "MCP Server for Statements of Account \u2014 Customer Balances from Claude",
    "tagline": "The one document that answers what a client actually owes you, aged as at any date, with the chaser drafted.",
    "does": "Generate a statement of account from Claude with a free MCP server: invoices, credits, payments and the running customer balance, aged. No install.",
    "for": "Anyone who invoices and then has to chase: freelancers and small firms who need to send a client a statement rather than forwarding five invoices, and anyone who has to answer what was owed on a given date rather than what is owed now.",
@@ -461,7 +461,7 @@
    "storage": "~/.local/share/mcp-servers/statement-of-account/"
   },
   "cash-book": {
-   "title": "MCP Server for Cash Book — Receipts, Payments and Balances from Claude",
+   "title": "MCP Server for Cash Book \u2014 Receipts, Payments and Balances from Claude",
    "tagline": "One double-entry ledger derived from the books you already keep, proved to the minor unit.",
    "does": "Keep a daily cash book from Claude with a free MCP server: receipts, payments and running balances for small-business finance. No install.",
    "for": "Anyone running this suite who has to answer whether the books add up, and anyone who has to hand an accountant a ledger rather than six exports: freelancers and small firms at month end, and bookkeepers who need every figure to name the document it came from.",
@@ -501,7 +501,7 @@
    "storage": "~/.local/share/mcp-servers/catalogue/"
   },
   "petty-cash": {
-   "title": "MCP Petty Cash Server — Track a Petty Cash Float from Claude",
+   "title": "MCP Petty Cash Server \u2014 Track a Petty Cash Float from Claude",
    "tagline": "A petty cash float on the imprest system, reconciled to the minor unit.",
    "does": "Track a petty cash float from Claude with a free MCP server. Imprest system, vouchers, reconciliations and cash-over-short. No install.",
    "for": "Anyone who holds cash for the small things and has to prove what happened to it: a one-tin office, a workshop, a site hut, a shop, a charity with a float, and the bookkeepers who have to turn a shoebox of receipts into a replenishment cheque and a journal that balances.",
@@ -521,7 +521,7 @@
    "storage": "~/.local/share/mcp-servers/change-order/"
   },
   "delivery-schedule": {
-   "title": "MCP Server for Delivery Schedules — Late Deliverables from Claude",
+   "title": "MCP Server for Delivery Schedules \u2014 Late Deliverables from Claude",
    "tagline": "Dated deliverables against a quote or a work order, and what is late as at any date you name.",
    "does": "Hold dated deliverables against a quote or work order and see what is late, from Claude. Free MCP server, no install.",
    "for": "Agencies, studios, consultancies and trades who quote a job in phases and then have to say, months later and on a date somebody else chose, which deliverables slipped, by how many days, and which ones the client has actually signed off and can therefore be invoiced.",
@@ -531,7 +531,7 @@
    "storage": "~/.local/share/mcp-servers/delivery-schedule/"
   },
   "packing-list": {
-   "title": "MCP Server for Packing Lists — Packing Slips from Claude",
+   "title": "MCP Server for Packing Lists \u2014 Packing Slips from Claude",
    "tagline": "Packing slips that carry no prices: what is in each carton, what it weighs, and what is still to pack.",
    "does": "Create packing slips and packing lists from Claude with a free MCP server: cartons, contents, weights, chargeable weight and shortfalls. No install.",
    "for": "Anyone who puts goods in boxes against an order: a maker shipping a batch, a trade delivering materials to a site, a small warehouse that wants the slip, the gross weight and the chargeable weight without a WMS.",
@@ -551,7 +551,7 @@
    "storage": "~/.local/share/mcp-servers/checklist/"
   },
   "bill-of-sale": {
-   "title": "MCP Server for Bill of Sale — Draft and Sign from Claude",
+   "title": "MCP Server for Bill of Sale \u2014 Draft and Sign from Claude",
    "tagline": "Record a sale of equipment, a vehicle or stock and get a printable bill of sale with signature lines.",
    "does": "Draft a bill of sale from Claude with a free MCP server: buyer, item identifiers, price, date and a BOS number you can edit and sign off. No install.",
    "for": "Side-business and small-business sales of physical goods: used vehicles, plant and equipment, electronics, and stock, where both parties want a signed record of what changed hands, in what condition, for how much and on what day.",
@@ -581,7 +581,7 @@
    "storage": "~/.local/share/mcp-servers/job-card/"
   },
   "dunning-letters": {
-   "title": "MCP Dunning Letters Server — Automated Payment Reminders",
+   "title": "MCP Dunning Letters Server \u2014 Automated Payment Reminders",
    "tagline": "Chase overdue invoices on a ladder anchored to the due date: reminder 1, reminder 2, the final notice, with the aging and the day's chase list.",
    "does": "Automated payment reminders for overdue invoices. Tiered dunning-letter sequences, PDF letters and accounts-receivable follow-up from Claude.",
    "for": "Freelancers and small businesses with late payers: the polite reminder, the firm one and the final notice, each dated, each recorded, so the paper trail is complete before a collections agency or a court ever sees it.",
@@ -611,7 +611,7 @@
    "storage": "~/.local/share/mcp-servers/service-agreement/"
   },
   "maintenance-log": {
-   "title": "MCP Server for Maintenance Log — Equipment and Vehicle Service from Claude",
+   "title": "MCP Server for Maintenance Log \u2014 Equipment and Vehicle Service from Claude",
    "tagline": "Equipment maintenance log: assets, service entries with costs, and a due report computed from stored dates.",
    "does": "Keep an equipment and vehicle maintenance log from Claude with a free MCP server: service events, costs and next-due tracking. No install.",
    "for": "The workshop, the rental flats, the van fleet or the studio: anyone whose equipment needs a service record that answers what is due without anyone remembering.",
@@ -621,7 +621,7 @@
    "storage": "~/.local/share/mcp-servers/maintenance-log/"
   },
   "mileage-log": {
-   "title": "MCP Server for Mileage Log — Deductible Trips from Claude",
+   "title": "MCP Server for Mileage Log \u2014 Deductible Trips from Claude",
    "tagline": "Mileage log for deductible driving: trips, effective-dated rates, summaries and CSV export.",
    "does": "Mileage log for deductible driving from Claude with a free MCP server: trips, effective-dated rates, totals and CSV export for reimbursement. No install.",
    "for": "Freelancers and small operators who drive for work and need the deductible log kept at the moment of the drive, not reconstructed from memory in April.",
@@ -641,7 +641,7 @@
    "storage": "~/.mcp-onboarding/store.json (or $MCP_ONBOARDING_HOME)"
   },
   "goods-receipt": {
-   "title": "MCP Server for Goods Receipt Notes (GRN) — Receive Against POs from Claude",
+   "title": "MCP Server for Goods Receipt Notes (GRN) \u2014 Receive Against POs from Claude",
    "tagline": "The receiving record for purchase orders: what arrived, against which line, in what quantity and condition.",
    "does": "Raise goods receipt notes (GRN) against open purchase orders from Claude with a free MCP server. Per-line units received or damaged, three-way match ready. No install.",
    "for": "Warehouses and workshops matching deliveries to orders: partial deliveries on a work order, quantity and damage notes at the dock, and the received-side leg of supplier invoice matching.",
@@ -663,7 +663,7 @@
    "pkg": "@theluckystrike/mcp-leave"
   },
   "purchase-requisition": {
-   "title": "MCP Server for Purchase Requisitions — Approvals from Claude",
+   "title": "MCP Server for Purchase Requisitions \u2014 Approvals from Claude",
    "tagline": "Purchase requisitions you build once and approve per order, with the signed record of each approval.",
    "does": "Run purchase requisition approvals from Claude with a free MCP server. Named approval steps, pass/fail runs, signed sign-off record. No install.",
    "for": "Procurement, site management and finance teams: approve-before-order gates, two-quote checks, budget-line sign-off, PO-number verification.",
@@ -679,7 +679,7 @@
    "free": "link_check and robots_guard_check: full single-page checking, no per-day limits. Pro adds batch link_audit."
   },
   "timer-tracking": {
-   "title": "MCP Timer Tracking Server — Free, No Install",
+   "title": "MCP Timer Tracking Server \u2014 Free, No Install",
    "tagline": "Timer tracking for billable hours, right in the chat.",
    "does": "Track billable time from Claude with a free, no-install MCP server. Start and stop timers in chat, log entries with client rates, weekly reports and CSV timesheets.",
    "for": "Freelancers, consultants and developers who already work inside Claude Code, Cursor or Claude Desktop and bill by the hour.",
@@ -689,7 +689,7 @@
    "storage": "~/.local/share/mcp-servers/time-tracker/"
   },
   "prices-deal": {
-   "title": "Prices Deal — Price Watcher & Drop Alerts MCP",
+   "title": "Prices Deal \u2014 Price Watcher & Drop Alerts MCP",
    "tagline": "Watch shop pages and get drop alerts without leaving the chat.",
    "does": "Watch product prices from Claude with a free, no-install MCP server. Check a page price now, build a watch list, keep price history and collect target-drop alerts.",
    "for": "Anyone who asks their assistant what something costs now, whether it dropped, or to keep an eye on it.",
@@ -697,6 +697,76 @@
    "free": "Unlimited price checks with extraction confidence; 3 watches with 30 observations each; alerts_pending free; redirects off product pages are refused.",
    "pro": "Unlimited watches, full history, refresh all.",
    "storage": "~/.local/share/mcp-servers/price-tracker/watches.json"
+  },
+  "pomodoro": {
+   "title": "MCP Pomodoro",
+   "tagline": "Focus blocks planned in the chat you are already in.",
+   "does": "Splits your available minutes into 25-minute focus blocks with 5-minute short breaks and a 15-minute long break every 4th block, the classic Pomodoro cadence computed for your actual schedule; half-blocks are handled honestly, a 50-minute window comes back as one focus block and one break rather than a fake full pomodoro.",
+   "for": "Anyone who plans their day in an AI chat and wants the pomodoro structure without opening a timer app.",
+   "example": "\"I have 3 hours free this afternoon \u2014 plan it as pomodoros.\" ... \"Plan my next 2 hours with breaks.\"",
+   "free": "The whole server: pomodoro_plan is free, unlimited, local, no network calls.",
+   "pro": "Not gated \u2014 this server is entirely free; the $39 bundle key covers the forty-seven paid servers.",
+   "storage": "none \u2014 stateless computation"
+  },
+  "budget": {
+   "title": "MCP Budget",
+   "tagline": "Monthly budgets you set and check inside the conversation.",
+   "does": "Envelope budgeting in chat: budget_set declares a category and its monthly cap, budget_spend records spending against it, budget_report returns every category with cap, spent and remaining, over-budget categories visible at a glance; a simple in-memory ledger, no bank connection and no finance app login.",
+   "for": "Anyone who wants the fastest possible loop between \"can I afford this?\" and an answer, without handing bank credentials to an app.",
+   "example": "\"Set a 400 monthly grocery budget and log 62 spent today.\" ... \"Which categories am I over on?\"",
+   "free": "All three tools, unlimited, local.",
+   "pro": "Not gated \u2014 this server is entirely free; the $39 bundle key covers the forty-seven paid servers.",
+   "storage": "in-memory (per session)"
+  },
+  "loan-calculator": {
+   "title": "MCP Loan Calculator",
+   "tagline": "Monthly payments and full amortization in one sentence.",
+   "does": "loan_payment returns the monthly payment, total paid and total interest for a principal, annual rate and term; loan_amortize returns the month-by-month schedule with principal vs interest per payment and running balance, so offers can be compared side by side in one conversation; zero-interest loans are handled exactly, not by a formula edge case.",
+   "for": "Anyone comparing a mortgage, car loan or personal loan who is tired of rate-shopping sites that bury the number under lead forms.",
+   "example": "\"Monthly payment on a 420,000 mortgage at 5.5% over 25 years, plus total interest.\" ... \"Compare 25y at 5.5% vs 20y at 5.2%.\"",
+   "free": "Both tools, unlimited, local.",
+   "pro": "Not gated \u2014 this server is entirely free; the $39 bundle key covers the forty-seven paid servers.",
+   "storage": "none \u2014 stateless computation"
+  },
+  "payroll": {
+   "title": "MCP Payroll",
+   "tagline": "Gross-to-net for hourly staff, computed in the conversation.",
+   "does": "payroll_run turns hours worked, hourly rate and a tax rate into gross pay, tax withheld and net pay, fractional hours handled as-is; payroll_invoice_total sums a batch of runs into one payroll total with combined gross, tax and net for the period; runs entirely on your machine, nothing leaves it.",
+   "for": "Solo operators and small teams who pay hourly people and want the arithmetic done right the first time, without a payroll platform priced for fifty-person companies.",
+   "example": "\"Ana: 32.5h at 28/h, 22% tax. Ben: 18h at 35/h, 20% tax. Run both and give me the payroll total.\"",
+   "free": "Both tools, unlimited, local.",
+   "pro": "Not gated \u2014 this server is entirely free; the $39 bundle key covers the forty-seven paid servers.",
+   "storage": "none \u2014 stateless computation"
+  },
+  "receipts": {
+   "title": "MCP Receipts",
+   "tagline": "Turn receipt lines into an itemized, taxed total.",
+   "does": "receipt_parse takes raw receipt lines \u2014 \"2 x Coffee 4.50\", \"Sandwich 8.90\" \u2014 and returns per-line amounts (qty \u00d7 unit price), a subtotal, tax at the rate you specify and the grand total, with quantity prefixes and bare line items handled equally; for expense reports, splitting bills, or checking a receipt was rung up right.",
+   "for": "Anyone with receipt text in hand \u2014 photographed, typed or pasted \u2014 who wants the taxed total now, not another app asking to connect to their bank.",
+   "example": "\"Parse this receipt at 8.5% tax: '2 x Coffee 4.50', 'Bagel 3.20', 'Orange juice 2.75'.\"",
+   "free": "The whole tool, unlimited, local.",
+   "pro": "Not gated \u2014 this server is entirely free; the $39 bundle key covers the forty-seven paid servers.",
+   "storage": "none \u2014 stateless computation"
+  },
+  "stripe-billing": {
+   "title": "MCP Stripe Billing",
+   "tagline": "Check your Stripe balance and build payment links from chat.",
+   "does": "stripe_balance reads your live account's available and pending balance straight from the Stripe REST API, and stripe_payment_link creates a real shareable buy.stripe.com link for a price ID; both call Stripe directly from your machine with your own STRIPE_SECRET_KEY, and without a key both tools say so plainly instead of returning silent mock data.",
+   "for": "Stripe account holders whose dashboard round-trips are mostly two small questions: what's my balance, and make me a payment link.",
+   "example": "\"What's my Stripe balance right now?\" ... \"Create a payment link for price_abc123, quantity 1.\"",
+   "free": "Both tools; you supply your own Stripe (restricted) key.",
+   "pro": "Not gated \u2014 this server is entirely free; the $39 bundle key covers the forty-seven paid servers.",
+   "storage": "none \u2014 direct REST calls"
+  },
+  "tax-calc": {
+   "title": "MCP Tax Calculator",
+   "tagline": "2026 US federal brackets, computed in the conversation.",
+   "does": "us_federal_tax applies the 2026 US federal brackets for a single filer, including the $15,750 standard deduction, and returns total tax, effective rate and marginal bracket, bracket edges exact rather than rounded; clearly labeled approximate planning values for \"can I afford X this year\" conversations, not filing advice.",
+   "for": "Anyone who wants a federal tax number immediately instead of handing an email address to a web estimator.",
+   "example": "\"Federal tax on 95,000 gross, single filer, 2026 brackets.\" ... \"Compare tax on 85,000 vs 95,000.\"",
+   "free": "The whole tool, unlimited, local.",
+   "pro": "Not gated \u2014 this server is entirely free; the $39 bundle key covers the forty-seven paid servers.",
+   "storage": "none \u2014 stateless computation"
   }
  },
  "version": "0.1.1",
@@ -967,7 +1037,7 @@
   },
   "supplier-list": {
    "date": "2026-09-17",
-   "probe": "npm registry search 'mcp <capability>' size=5 — no direct competitor found in results",
+   "probe": "npm registry search 'mcp <capability>' size=5 \u2014 no direct competitor found in results",
    "tokens": [
     "supplier",
     "supplier-list",
@@ -979,7 +1049,7 @@
   },
   "service-agreement": {
    "date": "2026-09-17",
-   "probe": "npm registry search 'mcp <capability>' size=5 — no direct competitor found in results",
+   "probe": "npm registry search 'mcp <capability>' size=5 \u2014 no direct competitor found in results",
    "tokens": [
     "service-agreement",
     "service-contract",
@@ -990,7 +1060,7 @@
   },
   "maintenance-log": {
    "date": "2026-09-17",
-   "probe": "npm registry search 'mcp <capability>' size=5 — no direct competitor found in results",
+   "probe": "npm registry search 'mcp <capability>' size=5 \u2014 no direct competitor found in results",
    "tokens": [
     "maintenance-log",
     "maintenance-schedule",
@@ -1001,7 +1071,7 @@
   },
   "mileage-log": {
    "date": "2026-09-17",
-   "probe": "npm registry search 'mcp <capability>' size=5 — no direct competitor found in results",
+   "probe": "npm registry search 'mcp <capability>' size=5 \u2014 no direct competitor found in results",
    "tokens": [
     "mileage-log",
     "mileage-logbook",

@@ -55,7 +55,7 @@ function intConst(src, name, where) {
 // servers/
 // ---------------------------------------------------------------------------
 const SERVER_IDS = readdirSync(join(ROOT, "servers"))
-  .filter((d) => existsSync(join(ROOT, "servers", d, "src/index.ts")))
+  .filter((d) => existsSync(join(ROOT, "servers", d, "src/index.ts")) || existsSync(join(ROOT, "servers", d, "src/index.js")))
   .sort();
 
 // A server directory can exist for days before the storefront serves a page for it, and
@@ -69,6 +69,9 @@ const idsMatch = pagesSrc.match(/^const ids = \[([^\]]*)\];/m);
 if (!idsMatch) throw new Error("build-figures: could not read the ids array from scripts/build-pages.mjs");
 const LISTED_IDS = [...idsMatch[1].matchAll(/"([a-z0-9-]+)"/g)].map((m) => m[1]).sort();
 if (LISTED_IDS.length < 2) throw new Error("build-figures: the page id list came back empty");
+// Free standalone servers (R32): listed and pageable but sold through the bundle alias.
+const freeMatch = pagesSrc.match(/^const FREE_IDS = new Set\(\[([^\]]*)\]\);/m);
+const FREE_IDS = freeMatch ? [...freeMatch[1].matchAll(/"([a-z0-9-]+)"/g)].map((m) => m[1]).sort() : [];
 // Alias storefront pages (e.g. prices-deal, timer-tracking) render the base server README
 // but live under their own registry name; they borrow the base server's src for figures.
 const ALIAS_BASE = { "prices-deal": "price-tracker", "timer-tracking": "time-tracker" };
@@ -80,7 +83,12 @@ const LISTED_CHILD_IDS = LISTED_IDS.filter((id) => id !== "office-suite");
 
 const TOOLS = {};
 for (const id of SERVER_IDS) {
-  TOOLS[id] = countRegisterTool(read(`servers/${id}/src/index.ts`));
+  const tsPath = join(ROOT, "servers", id, "src/index.ts");
+  const srcFile = existsSync(tsPath) ? "index.ts" : "index.js";
+  const src = read(`servers/${id}/src/${srcFile}`);
+  // The R32 free servers use the serve() helper with `name: 'tool_name'` entries rather
+  // than registerTool(); count both shapes.
+  TOOLS[id] = countRegisterTool(src) || (src.match(/\bname:\s*['"`][a-z_]+['"`]/g) || []).length;
 }
 
 const licenseSrc = read("packages/mcp-license/src/index.ts");
@@ -140,7 +148,17 @@ for (const id of SERVER_IDS) {
   const p = join(ROOT, "servers", id, "server.json");
   if (existsSync(p)) versions.add(JSON.parse(readFileSync(p, "utf8")).version);
 }
-const VERSION = versions.size === 1 ? [...versions][0] : [...versions].sort().pop();
+// The estate is uniformly versioned; the R32 free servers are at their own 1.0.0. Report the
+// version the estate actually shares: most frequent, not lexicographically largest.
+const versionCounts = {};
+for (const id of SERVER_IDS) {
+  const p = join(ROOT, "servers", id, "server.json");
+  if (existsSync(p)) {
+    const v = JSON.parse(readFileSync(p, "utf8")).version;
+    versionCounts[v] = (versionCounts[v] || 0) + 1;
+  }
+}
+const VERSION = Object.entries(versionCounts).sort((a, b) => b[1] - a[1] || b[0].localeCompare(a[0]))[0][0];
 
 // ---------------------------------------------------------------------------
 // emit
@@ -190,6 +208,9 @@ export const OFFICE_SUITE_TOOLS = ${OWN_TOOLS_TOTAL + LICENSE_TOOLS};
 /** Servers the site actually lists, i.e. those with a README that becomes a /s/ page. */
 export const LISTED_IDS = ${j(LISTED_IDS)};
 export const LISTED_CHILD_IDS = ${j(LISTED_CHILD_IDS)};
+
+/** Free standalone servers (R32): listed, pageable, sold through the bundle alias. */
+export const FREE_IDS = ${j(FREE_IDS)};
 
 /** Counts, computed so prose cannot go stale. LISTED_COUNT is the one a visitor should
  * ever see: SERVER_DIR_COUNT can be ahead of it while a new server is being built. */

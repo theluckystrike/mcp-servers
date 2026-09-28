@@ -81,7 +81,17 @@ export const SINGLE_PRODUCT_IDS = Object.keys(PRODUCTS).filter((id) => id !== "b
  * though docs/HUMAN_GATED_PACK.md ships that exact URL as office-suite's homepage on every
  * directory submission.
  */
-export const PRODUCT_ALIASES = { "office-suite": "bundle" };
+export const PRODUCT_ALIASES = {
+  "office-suite": "bundle",
+  // Free standalone servers (R32): no price of their own; the bundle key covers the paid estate.
+  "pomodoro": "bundle",
+  "budget": "bundle",
+  "loan-calculator": "bundle",
+  "payroll": "bundle",
+  "receipts": "bundle",
+  "stripe-billing": "bundle",
+  "tax-calc": "bundle",
+};
 
 /**
  * Servers reachable at https://mcp.zovo.one/mcp/<id> with no install. Derived from the
