@@ -1,6 +1,7 @@
 // Scheduled, read-only checkout reconciliation. Only aggregate counts and hashed
 // Session references are logged; customer data and license values stay in memory.
 import app, { PRODUCTS, PRODUCT_ALIASES } from "./index.js";
+import { FREE_IDS } from "./figures.js";
 
 const ORIGIN = "https://mcp.zovo.one";
 const WEBHOOK = `${ORIGIN}/webhook`;
@@ -55,7 +56,10 @@ function isMcpSession(session) {
 }
 
 function buyPaths() {
-  return [...Object.keys(PRODUCTS), ...Object.keys(PRODUCT_ALIASES)]
+  // Aliases resolve to an existing product, so probing each free-server alias only
+  // duplicates the bundle probe; keep the batch at the paid surface it guards.
+  const aliasIds = Object.keys(PRODUCT_ALIASES).filter((id) => !FREE_IDS.includes(id));
+  return [...Object.keys(PRODUCTS), ...aliasIds]
     .map((id) => `/buy/${encodeURIComponent(id)}`)
     .concat("/buy/bundle?session_id=cs_live_release_gate_sentinel", "/buy/bundle?src=release.gate.probe");
 }
