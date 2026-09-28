@@ -1,0 +1,18 @@
+{
+  "name": "mcp-billing-external-watchdog",
+  "main": "worker.js",
+  "compatibility_date": "2026-09-28",
+  "account_id": "dd3f2a29b7707e21a87f26a622c0bb9d",
+  "workers_dev": false,
+  "triggers": {
+    "crons": ["3-53/10 * * * *"]
+  },
+  "observability": {
+    "enabled": true,
+    "logs": { "enabled": true, "head_sampling_rate": 1 },
+    "traces": { "enabled": true, "head_sampling_rate": 0.01 }
+  },
+  "kv_namespaces": [
+    { "binding": "STATE", "id": "ebb5fbf7a440477da3bde5af19ebfdd7" }
+  ]
+}
