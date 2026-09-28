@@ -105,7 +105,7 @@
 <div class="wrap">
   <header>
     <h1>MCP Servers by theluckystrike</h1>
-    <div class="meta">generated 2026-09-28 (R33 update) — session count 102</div>
+    <div class="meta">generated 2026-09-28 (R4 update) — session count 103</div>
   </header>
 
   <div class="kpi-row">
@@ -117,7 +117,13 @@
   </div>
 
   <section>
-    <h2>Latest round — R33 (2026-09-28)</h2>
+    <h2>Latest round — R4 (2026-09-28)</h2>
+<ul>
+<li><b>SERVER COVERAGE COMPLETE — all 7 servers now have a live issue reply:</b> posted 2 value-first replies (draft-07 → writ-agent/writ#28 for stripe-billing: read-tier + restricted-key policy feedback; draft-08 → ledgerfield/ledgerfield#29 for tax-calc: bracket-schema pitfalls + property-test anchors). Both read back verified; URLs pre-flighted 200; PR #9 merged (preflight green).</li>
+<li>Click stats re-check: total 978, last-7d 1 — R3/R4 issue threads too fresh for attribution signal; next check in ~1 week per measurement cadence.</li>
+<li>Next lever: R5 batch scaled to observed referral signal; otherwise shift to search-visible content (the only untried inbound channel).</li>
+</ul>
+<h2>Previous round — R33 (2026-09-28)</h2>
 <ul>
 <li><b>OUTREACH LIVE — first inbound-human-discovery channel activated:</b> 5 value-first GitHub issue replies posted (draft-05 skipped — maintainer paused that issue). Each reply leads with a substantive engineering answer, then discloses a matching free MCP server with a verified <code>claude mcp add --mcpb</code> install command (all 5 release URLs pre-flighted 200 → targets: loan-calculator, pomodoro, budget, receipts, payroll).</li>
 <li>Caught and fixed a posting bug before it shipped: first attempt posted literal file paths as comment bodies (gh <code>-f body=@file</code> quoting trap) — deleted all 5 within minutes, reposted with proper <code>--input</code> JSON, read back verified (correct authors + full bodies).</li>
