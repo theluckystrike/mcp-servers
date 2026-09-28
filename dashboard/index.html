@@ -105,7 +105,7 @@
 <div class="wrap">
   <header>
     <h1>MCP Servers by theluckystrike</h1>
-    <div class="meta">generated 2026-09-28 (R32 update) — session count 101</div>
+    <div class="meta">generated 2026-09-28 (R33 update) — session count 102</div>
   </header>
 
   <div class="kpi-row">
@@ -117,7 +117,14 @@
   </div>
 
   <section>
-    <h2>Latest round — R32 (2026-09-28)</h2>
+    <h2>Latest round — R33 (2026-09-28)</h2>
+<ul>
+<li><b>OUTREACH LIVE — first inbound-human-discovery channel activated:</b> 5 value-first GitHub issue replies posted (draft-05 skipped — maintainer paused that issue). Each reply leads with a substantive engineering answer, then discloses a matching free MCP server with a verified <code>claude mcp add --mcpb</code> install command (all 5 release URLs pre-flighted 200 → targets: loan-calculator, pomodoro, budget, receipts, payroll).</li>
+<li>Caught and fixed a posting bug before it shipped: first attempt posted literal file paths as comment bodies (gh <code>-f body=@file</code> quoting trap) — deleted all 5 within minutes, reposted with proper <code>--input</code> JSON, read back verified (correct authors + full bodies).</li>
+<li>Drafts + live comment links recorded in docs/outreach/R3/index.md; PR #7 merged (preflight green).</li>
+<li>Next levers: watch issue-thread referrals in /stats/clicks (by_src), then R4 batch of 6 fresh issue matches incl. tax-calculator.</li>
+</ul>
+<h2>Previous round — R32 (2026-09-28)</h2>
     <ul>
       <li><b>STOREFRONT GAP CLOSED — the 7 new servers now have full storefront presence on mcp.zovo.one</b>: before R32 they had zero site presence (no /s/ page, no setup pages, not listed). Now: 7 new product pages (/s/pomodoro, /s/budget, /s/loan-calculator, /s/payroll, /s/receipts, /s/stripe-billing, /s/tax-calc), 7 &times; 6 = 42 new /setup/&lt;client&gt;/&lt;server&gt; pages, sitemap 228 &rarr; 235 URLs, all 7 in LISTED_IDS/SERVER_IDS (47 &rarr; 54 listed servers) and in the rotating "More servers" internal-link pool on every page.</li>
       <li>Free-server model: the 7 get full pages without Stripe prices — /buy/&lt;id&gt; aliases to the $39 bundle via PRODUCT_ALIASES (same pattern as office-suite). Written 7 rich READMEs + facts.json entries; build-pages/build-figures extended for JS (serve()-style) servers.</li>
