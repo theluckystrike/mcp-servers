@@ -1511,6 +1511,12 @@ const worker = {
       return new Response(null, { status: 301, headers: { Location: `${url.origin}${path}${url.search}`, "cache-control": "public, max-age=86400" } });
     }
 
+    // IndexNow key verification: Bing/Yandex instant-submit requires a key file at the site
+    // root matching the key used in submits. Content: the key itself, text/plain.
+    if (path === "/e5c1a8f3d2b94c6f8a7d0e3b5c9f1a4d.txt" && (method === "GET" || method === "HEAD")) {
+      return new Response("e5c1a8f3d2b94c6f8a7d0e3b5c9f1a4d", { headers: { "content-type": "text/plain; charset=utf-8", "cache-control": "public, max-age=3600" } });
+    }
+
     if (path === "/health") {
       // signer check: mint a throwaway key in-runtime and verify it. No secrets leak.
       let signer = "unavailable";
