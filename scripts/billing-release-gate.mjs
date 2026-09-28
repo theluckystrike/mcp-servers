@@ -141,6 +141,7 @@ async function verify(expectedVersion) {
 
 function preflight() {
   command("node", ["--test", "scripts/test/billing-release-gate.test.mjs"]);
+  command("node", ["--test", "scripts/test/billing-scheduled-monitor.test.mjs"]);
   command("npm", ["test"], BILLING);
   command("npx", ["wrangler", "deploy", "--dry-run", "--strict"], BILLING);
   console.log("PASS: local GET-to-Stripe guard, billing tests, Wrangler dry-run");

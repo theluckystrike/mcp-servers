@@ -990,7 +990,7 @@ async function createCheckout(env, host, productId, probeTag = "", tenant = "", 
     // checkout.stripe.com is not evidence that the right product is on the page.
     "expand[]": "line_items",
   }, "POST", `mcp-checkout-v1-${productId}-${orderToken}`);
-  console.log(JSON.stringify({ event: "checkout_session_created", version_id: env.CF_VERSION_METADATA?.id || "unknown", session_ref: await sessionLogRef(s.id), product: productId, probe: Boolean(probeTag), request_method: "POST" }));
+  console.log(JSON.stringify({ event: "checkout_session_created", version_id: env.CF_VERSION_METADATA?.id || "unknown", session_ref: await sessionLogRef(s.id), product: productId, source, probe: Boolean(probeTag), request_method: "POST" }));
   return s;
 }
 
@@ -1323,9 +1323,22 @@ async function fulfillSession(env, session, productId, key) {
 async function logFulfillmentOutcome(env, session, productId, state, source) {
   console.log(JSON.stringify({ event: "checkout_fulfillment", source,
     version_id: env.CF_VERSION_METADATA?.id || "unknown", session_ref: await sessionLogRef(session.id),
-    product: productId, payment_status: session.payment_status,
+    product: productId, acquisition_source: validSrc(session.metadata?.source) ? session.metadata.source : "unknown",
+    payment_status: session.payment_status, stripe_mode: session.livemode === true ? "live" : session.livemode === false ? "test" : "unknown",
     fulfillment_status: state.complete ? "complete" : "retrying",
-    hosted_binding: state.tenant ? (state.complete ? "submitted" : "retrying") : "not_requested" }));
+    license_saved: Boolean(state.licenseSaved),
+    hosted_binding: state.tenant ? (state.bound ? "saved" : "retrying") : "not_requested" }));
+}
+
+/** Repeated observations are joined by session_ref; they are not separate purchases. */
+async function logVerifiedPayment(env, session, productId, source) {
+  console.log(JSON.stringify({ event: session.payment_status === "paid" ? "checkout_payment_verified" : "checkout_comped_verified",
+    source, version_id: env.CF_VERSION_METADATA?.id || "unknown",
+    session_ref: await sessionLogRef(session.id), product: productId,
+    acquisition_source: validSrc(session.metadata?.source) ? session.metadata.source : "unknown",
+    stripe_mode: session.livemode === true ? "live" : session.livemode === false ? "test" : "unknown",
+    amount_total: session.amount_total, currency: session.currency || "usd",
+    probe: session.metadata?.probe === "1" }));
 }
 
 /** Retrieve a Checkout Session with its line items expanded (review #3). */
@@ -2167,6 +2180,7 @@ const LIVE_TOOLS = {
 <p>${esc(decision.reason)}. If you have just paid, reload this page in a few seconds.</p>
 <p>Still stuck? Email support@zovo.one with your Stripe receipt.</p><p><a href="/">Back to products</a></p>`), { status: 402, headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" } });
       }
+      await logVerifiedPayment(env, session, productId, "success_page");
       try {
         const key = await keyForSession(env, session, productId);
         const state = await fulfillSession(env, session, productId, key);
@@ -2200,6 +2214,7 @@ const LIVE_TOOLS = {
       const productId = session.metadata?.product;
       const decision = fulfillmentAllowed(session, productId);
       if (!decision.ok) return Response.json({ ok: false, reason: decision.reason }, { status: 402, headers: nostore });
+      await logVerifiedPayment(env, session, productId, "recovery");
       try {
         const key = await keyForSession(env, session, productId);
         const state = await fulfillSession(env, session, productId, key);
@@ -2238,6 +2253,7 @@ const LIVE_TOOLS = {
             console.error(`webhook ${event.type} not fulfilled for ${await sessionLogRef(sid)}: ${decision.reason}`);
             return Response.json({ received: true, fulfilled: false, reason: decision.reason });
           }
+          await logVerifiedPayment(env, session, productId, "webhook");
           const key = await keyForSession(env, session, productId);
           const state = await fulfillSession(env, session, productId, key);
           await logFulfillmentOutcome(env, session, productId, state, "webhook");

@@ -21,6 +21,7 @@ export async function acceptFulfillmentJob(storage, incoming) {
 
 export async function processFulfillment(storage, env, job) {
   try {
+    const wasComplete = job.licenseSaved && job.bound;
     if (!job.licenseSaved) {
       await env.LICENSES.put(`session:${job.sessionId}`, job.key,
         { metadata: { product: job.product } });
@@ -33,6 +34,14 @@ export async function processFulfillment(storage, env, job) {
       await storage.put("job", job);
     }
     await storage.deleteAlarm();
+    // Alarm recovery has no page request or webhook to log its final transition.
+    if (!wasComplete) {
+      const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(`mcp-session-log-v1:${job.sessionId}`));
+      const sessionRef = [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, "0")).join("").slice(0, 12);
+      console.log(JSON.stringify({ event: "checkout_fulfillment", source: "durable_object",
+        session_ref: sessionRef, product: job.product, fulfillment_status: "complete",
+        license_saved: true, hosted_binding: job.tenant ? "saved" : "not_requested" }));
+    }
     return { complete: true, licenseSaved: true, bound: job.bound };
   } catch (error) {
     job.attempts += 1;

@@ -47,6 +47,10 @@ try {
   const version = /Current Version ID:\s*([0-9a-f-]{36})/i.exec(output)?.[1];
   if (!version) throw new Error("Wrangler did not report a deployed Version ID; postdeploy verification cannot be tied to this release");
   run(process.execPath, [gate, "verify", "--expected-version", version], root);
+  // Cron reads this remote pin. A direct Wrangler deployment leaves the pin on
+  // the prior version and will fail the scheduled check.
+  run("npx", ["wrangler", "kv", "key", "put", "monitor:approved-version", version,
+    "--binding", "REMOTE_DATA", "--remote", "--config", "wrangler.toml"], billing);
   console.log(`Billing release verified: ${version}`);
 } catch (error) {
   console.error(`BILLING DEPLOYMENT FAILED: ${error.message}`);

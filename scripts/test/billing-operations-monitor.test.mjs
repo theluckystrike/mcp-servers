@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { createHash } from "node:crypto";
 import { paidSessionFindings, webhookFindings, stripeWebhookHttpFindings } from "../billing-operations-monitor.mjs";
 
 const now = 1_800_000_000;
@@ -13,6 +14,8 @@ const paid = {
 test("paid Session with missing license or hosted binding is an alert", () => {
   let result = paidSessionFindings([paid], () => null, now);
   assert.deepEqual(result.findings.map((f) => f.issue), ["issued key missing"]);
+  assert.equal(result.findings[0].sessionRef,
+    createHash("sha256").update(`mcp-session-log-v1:${paid.id}`).digest("hex").slice(0, 12));
   result = paidSessionFindings([paid], (binding) => binding === "LICENSES" ? key : null, now);
   assert.deepEqual(result.findings.map((f) => f.issue), ["hosted binding missing"]);
   result = paidSessionFindings([paid], (binding) => binding === "LICENSES" ? key : "MCPL1.other.signature", now);

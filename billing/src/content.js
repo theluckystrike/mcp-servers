@@ -9745,7 +9745,6 @@ export const GUIDE_PRODUCT_LINKS = {
   "service-agreements-from-chat": ["service-agreement", "clauses"],
   "petty-cash-float-from-chat": ["petty-cash", "cash-book"],
   "petty-cash-book-and-cash-ledger-mcp-servers": ["petty-cash", "cash-book", "expense-tracker"],
-  "credit-notes-and-purchase-orders-from-chat": ["billing-docs", "packing-list"],
   "supplier-directory-from-chat": ["supplier-list", "catalogue", "price-tracker"],
   "price-lists-and-rate-cards-from-chat": ["price-tracker", "catalogue", "supplier-list"],
   "loan-and-lease-schedules-from-chat": ["amortization", "deposits"],

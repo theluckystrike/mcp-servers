@@ -35,6 +35,10 @@ test("Session-derived key identity is stable across workers and unique by Sessio
 
 test("failed hosted bind remains durable and is retried without repeating key persistence", async () => {
   const h = harness(true);
+  const originalLog = console.log;
+  const events = [];
+  console.log = (line) => events.push(JSON.parse(line));
+  try {
   const accepted = await acceptFulfillmentJob(h.storage, incoming);
   assert.equal(accepted.job.sessionId, incoming.sessionId);
   assert.equal(h.alarms.length, 1);
@@ -49,6 +53,15 @@ test("failed hosted bind remains durable and is retried without repeating key pe
   assert.deepEqual(h.writes.map((x) => x[0]), ["license", "bind"]);
   assert.equal(h.saved.get("job").bound, true);
   assert.equal(h.alarms.at(-1), null);
+  const completions = events.filter((event) => event.event === "checkout_fulfillment");
+  assert.equal(completions.length, 1);
+  assert.equal(completions[0].source, "durable_object");
+  assert.equal(completions[0].hosted_binding, "saved");
+  assert.match(completions[0].session_ref, /^[0-9a-f]{12}$/);
+  assert.ok(!JSON.stringify(completions).includes(incoming.sessionId));
+  } finally {
+    console.log = originalLog;
+  }
 });
 
 test("a replay cannot replace the durable key or tenant for a Session", async () => {

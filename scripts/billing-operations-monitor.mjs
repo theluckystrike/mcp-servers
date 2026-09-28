@@ -17,7 +17,7 @@ const STRIPE_USER_AGENT = /^Stripe\//;
 // UTC are historical failures; retain them in the incident report, not the
 // hourly current-state alert. The rolling 24h window takes over after 24h.
 const WEBHOOK_BASELINE_SECONDS = Math.floor(Date.parse("2026-09-28T02:13:03Z") / 1000);
-const sessionRef = (sessionId) => createHash("sha256").update(sessionId).digest("hex").slice(0, 12);
+const sessionRef = (sessionId) => createHash("sha256").update(`mcp-session-log-v1:${sessionId}`).digest("hex").slice(0, 12);
 
 function run(bin, args) {
   const result = spawnSync(bin, args, { cwd: ROOT, encoding: "utf8", timeout: 120000,

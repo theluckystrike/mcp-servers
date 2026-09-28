@@ -66,7 +66,7 @@ test("one paid Session keeps the same key when Stripe later supplies customer em
   const session = {
     id: sid, created: 1788352878, mode: "payment", status: "complete",
     payment_status: "paid", currency: "usd", amount_total: 1900,
-    metadata: { product: "invoice" },
+    metadata: { product: "invoice", source: "store.invoice" },
     line_items: { data: [{ quantity: 1, currency: "usd",
       price: { id: PRODUCTS.invoice.price, unit_amount: 1900 } }] },
   };
@@ -93,7 +93,17 @@ test("one paid Session keeps the same key when Stripe later supplies customer em
     assert.equal(second.status, 200);
     assert.equal(issued.length, 2);
     assert.equal(issued[0], issued[1]);
-    assert.equal(logs.filter((line) => line.includes('"event":"checkout_fulfillment"')).length, 2);
+    const events = logs.map((line) => JSON.parse(line));
+    const payments = events.filter((event) => event.event === "checkout_payment_verified");
+    const fulfillments = events.filter((event) => event.event === "checkout_fulfillment");
+    assert.equal(payments.length, 2);
+    assert.equal(fulfillments.length, 2);
+    assert.equal(new Set([...payments, ...fulfillments].map((event) => event.session_ref)).size, 1);
+    assert.equal(payments[0].amount_total, 1900);
+    assert.equal(payments[0].currency, "usd");
+    assert.equal(payments[0].product, "invoice");
+    assert.equal(payments[0].acquisition_source, "store.invoice");
+    assert.equal(fulfillments[0].acquisition_source, "store.invoice");
     assert.ok(logs.every((line) => !line.includes(sid) && !line.includes("buyer@example.com")));
   } finally {
     globalThis.fetch = originalFetch;
