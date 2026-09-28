@@ -9871,7 +9871,7 @@ export const PRODUCT_GUIDE_LINKS = {
   "asset-register": ["fixed-assets-and-depreciation-from-chat", "equipment-maintenance-log-from-chat"],
   "statement-of-account": ["client-statements-and-dunning-from-chat", "chase-unpaid-invoices-without-a-crm"],
   "cash-book": ["one-ledger-from-every-server", "petty-cash-book-and-cash-ledger-mcp-servers"],
-  amortization: ["loan-and-lease-schedules-from-chat"],
+  amortization: ["loan-and-lease-schedules-from-chat", "loan-amortization-schedule-excel-from-chat"],
   "petty-cash": ["petty-cash-float-from-chat", "petty-cash-book-and-cash-ledger-mcp-servers"],
   "work-order": ["work-orders-and-job-cards-from-chat", "delivery-schedule-and-work-order-documents-from-mcp", "delivery-schedule-and-work-order-from-chat"],
   catalogue: ["price-lists-and-rate-cards-from-chat", "supplier-directory-from-chat"],
