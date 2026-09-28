@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // Read-only live reconciliation. Never print KV values or Stripe customer data.
 import { spawnSync } from "node:child_process";
+import { createHash } from "node:crypto";
 import { fileURLToPath } from "node:url";
 import { dirname, join, resolve } from "node:path";
 
@@ -16,6 +17,7 @@ const STRIPE_USER_AGENT = /^Stripe\//;
 // UTC are historical failures; retain them in the incident report, not the
 // hourly current-state alert. The rolling 24h window takes over after 24h.
 const WEBHOOK_BASELINE_SECONDS = Math.floor(Date.parse("2026-09-28T02:13:03Z") / 1000);
+const sessionRef = (sessionId) => createHash("sha256").update(sessionId).digest("hex").slice(0, 12);
 
 function run(bin, args) {
   const result = spawnSync(bin, args, { cwd: ROOT, encoding: "utf8", timeout: 120000,
@@ -61,7 +63,7 @@ function remoteKey(binding, key) {
   const value = run("npx", ["wrangler", "kv", "key", "get", key, "--binding", binding,
     "--remote", "--text", "--config", CONFIG]).trim();
   if (!/^MCPL1\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$/.test(value)) {
-    throw new Error(`Malformed ${binding} license value for ${key}`);
+    throw new Error(`Malformed ${binding} license value`);
   }
   return value;
 }
@@ -86,14 +88,14 @@ export function paidSessionFindings(sessions, readKey, nowSeconds) {
     checked++;
     const issued = readKey("LICENSES", `session:${session.id}`);
     if (!issued) {
-      findings.push({ sessionId: session.id, issue: "issued key missing" });
+      findings.push({ sessionRef: sessionRef(session.id), issue: "issued key missing" });
       continue;
     }
     const tenant = session.metadata?.tenant;
     if (typeof tenant === "string" && /^anon_[0-9a-f]{32}$/.test(tenant)) {
       const bound = readKey("REMOTE_DATA", `bind:${tenant}`);
-      if (!bound) findings.push({ sessionId: session.id, issue: "hosted binding missing" });
-      else if (bound !== issued) findings.push({ sessionId: session.id, issue: "hosted binding differs from issued key" });
+      if (!bound) findings.push({ sessionRef: sessionRef(session.id), issue: "hosted binding missing" });
+      else if (bound !== issued) findings.push({ sessionRef: sessionRef(session.id), issue: "hosted binding differs from issued key" });
     }
   }
   return { checked, pending, findings };
@@ -195,7 +197,7 @@ async function main() {
     ["type", "checkout.session.async_payment_succeeded"], ["delivery_success", "false"]]);
   const webhooks = webhookFindings(endpoints, [...events, ...delayedEvents], now);
   const http = await cloudflareWebhookStatuses(now);
-  const findings = [...paid.findings.map((finding) => `${finding.sessionId}: ${finding.issue}`), ...webhooks.findings];
+  const findings = [...paid.findings.map((finding) => `Session SHA-256 ${finding.sessionRef}: ${finding.issue}`), ...webhooks.findings];
   if (http.failures) findings.push(`${http.failures} observed Stripe-user-agent POST /webhook HTTP 4xx/5xx response(s) since ${http.since} (statuses ${http.statuses.join(",")})`);
   const summary = `30d eligible MCP completions checked=${paid.checked}, settling=${paid.pending}; enabled MCP webhook destinations=${webhooks.enabled}; overdue MCP webhook events=${webhooks.overdue}; observed Stripe webhook HTTP 4xx/5xx since ${http.since}=${http.failures}`;
   if (findings.length) throw new Error(`${summary}; ${findings.join("; ")}`);

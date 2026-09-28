@@ -36,11 +36,16 @@ export async function processFulfillment(storage, env, job) {
     return { complete: true, licenseSaved: true, bound: job.bound };
   } catch (error) {
     job.attempts += 1;
-    job.lastError = String(error?.message || error).slice(0, 200);
+    job.lastError = String(error?.message || error)
+      .replace(/cs_(?:live|test)_[A-Za-z0-9]+/g, "[session]")
+      .replace(/MCPL1\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+/g, "[license]")
+      .replace(/anon_[0-9a-f]{32}/g, "[tenant]").slice(0, 200);
     await storage.put("job", job);
     const delay = Math.min(60_000 * 2 ** Math.min(job.attempts - 1, 6), 3_600_000);
     await storage.setAlarm(Date.now() + delay);
-    console.error(JSON.stringify({ kind: "fulfillment_retry_scheduled", sessionId: job.sessionId,
+    const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(`mcp-session-log-v1:${job.sessionId}`));
+    const sessionRef = [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, "0")).join("").slice(0, 12);
+    console.error(JSON.stringify({ kind: "fulfillment_retry_scheduled", session_ref: sessionRef,
       attempts: job.attempts, error: job.lastError }));
     return { complete: false, licenseSaved: job.licenseSaved, bound: job.bound,
       retryScheduled: true };

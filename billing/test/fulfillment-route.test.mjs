@@ -80,7 +80,10 @@ test("one paid Session keeps the same key when Stripe later supplies customer em
     } }) },
   };
   const originalFetch = globalThis.fetch;
+  const originalLog = console.log;
+  const logs = [];
   globalThis.fetch = async () => Response.json(session);
+  console.log = (...args) => logs.push(args.join(" "));
   try {
     const request = () => worker.fetch(new Request(`https://mcp.zovo.one/recover?session_id=${sid}`), env, { waitUntil() {} });
     const first = await request();
@@ -90,7 +93,10 @@ test("one paid Session keeps the same key when Stripe later supplies customer em
     assert.equal(second.status, 200);
     assert.equal(issued.length, 2);
     assert.equal(issued[0], issued[1]);
+    assert.equal(logs.filter((line) => line.includes('"event":"checkout_fulfillment"')).length, 2);
+    assert.ok(logs.every((line) => !line.includes(sid) && !line.includes("buyer@example.com")));
   } finally {
     globalThis.fetch = originalFetch;
+    console.log = originalLog;
   }
 });

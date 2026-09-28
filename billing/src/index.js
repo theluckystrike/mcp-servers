@@ -990,7 +990,7 @@ async function createCheckout(env, host, productId, probeTag = "", tenant = "", 
     // checkout.stripe.com is not evidence that the right product is on the page.
     "expand[]": "line_items",
   }, "POST", `mcp-checkout-v1-${productId}-${orderToken}`);
-  console.log(JSON.stringify({ event: "checkout_session_created", version_id: env.CF_VERSION_METADATA?.id || "unknown", session_id: s.id, product: productId, probe: Boolean(probeTag), request_method: "POST" }));
+  console.log(JSON.stringify({ event: "checkout_session_created", version_id: env.CF_VERSION_METADATA?.id || "unknown", session_ref: await sessionLogRef(s.id), product: productId, probe: Boolean(probeTag), request_method: "POST" }));
   return s;
 }
 
@@ -1270,6 +1270,12 @@ export async function sessionLicenseId(sessionId) {
   return (await sha256Hex(`mcp-license-session-v1:${sessionId}`)).slice(0, 24);
 }
 
+const sessionLogRef = async (sessionId) => (await sha256Hex(`mcp-session-log-v1:${sessionId}`)).slice(0, 12);
+const safeLogError = (error) => String(error?.message || error)
+  .replace(/cs_(?:live|test)_[A-Za-z0-9]+/g, "[session]")
+  .replace(/MCPL1\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+/g, "[license]")
+  .replace(/anon_[0-9a-f]{32}/g, "[tenant]");
+
 async function keyForSession(env, session, productId) {
   const cached = await env.LICENSES.get(`session:${session.id}`);
   if (cached) {
@@ -1289,7 +1295,7 @@ async function keyForSession(env, session, productId) {
   });
   const check = await verifyLicenseKey(key, productId);
   if (!check.ok) {
-    console.error(`mint verification failed for session ${session.id} product ${productId}: ${check.reason}`);
+    console.error(`mint verification failed for session ${await sessionLogRef(session.id)} product ${productId}: ${check.reason}`);
     throw new MintError(check.reason);
   }
   return key;
@@ -1314,9 +1320,9 @@ async function fulfillSession(env, session, productId, key) {
 }
 
 /** Session-level server event for joining a paid Stripe Session to fulfillment. */
-function logFulfillmentOutcome(env, session, productId, state, source) {
+async function logFulfillmentOutcome(env, session, productId, state, source) {
   console.log(JSON.stringify({ event: "checkout_fulfillment", source,
-    version_id: env.CF_VERSION_METADATA?.id || "unknown", session_id: session.id,
+    version_id: env.CF_VERSION_METADATA?.id || "unknown", session_ref: await sessionLogRef(session.id),
     product: productId, payment_status: session.payment_status,
     fulfillment_status: state.complete ? "complete" : "retrying",
     hosted_binding: state.tenant ? (state.complete ? "submitted" : "retrying") : "not_requested" }));
@@ -2149,7 +2155,7 @@ const LIVE_TOOLS = {
       try {
         session = await retrieveSession(env, sid);
       } catch (e) {
-        console.error(`session retrieve failed for ${sid}: ${e.message}`);
+        console.error(`session retrieve failed for ${await sessionLogRef(sid)}: ${safeLogError(e)}`);
         return new Response(page("Session not found", `<h1>We could not load that checkout session</h1>
 <p>The link may be mistyped or expired. If you have paid, email support@zovo.one with your Stripe receipt and your key will be sent back.</p>
 <p><a href="/">Back to products</a></p>`), { status: 404, headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" } });
@@ -2164,7 +2170,7 @@ const LIVE_TOOLS = {
       try {
         const key = await keyForSession(env, session, productId);
         const state = await fulfillSession(env, session, productId, key);
-        logFulfillmentOutcome(env, session, productId, state, "success_page");
+        await logFulfillmentOutcome(env, session, productId, state, "success_page");
         return new Response(successPage(key, productId, session,
           state.complete ? state.tenant : "", state.complete ? "" : state.tenant), {
           status: state.complete ? 200 : 202,
@@ -2172,7 +2178,7 @@ const LIVE_TOOLS = {
             "x-mcp-fulfillment": state.complete ? "complete" : "retrying" },
         });
       } catch (e) {
-        console.error(`mint failed for ${sid}: ${e.message}`);
+        console.error(`mint failed for ${await sessionLogRef(sid)}: ${safeLogError(e)}`);
         return new Response(page("Key could not be issued", `<h1>Your payment went through, the key did not</h1>
 <p>Nothing further is needed from you. Email support@zovo.one with your Stripe receipt and the key will be issued by hand, or refunded.</p>`), { status: 500, headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" } });
       }
@@ -2188,7 +2194,7 @@ const LIVE_TOOLS = {
       try {
         session = await retrieveSession(env, sid);
       } catch (e) {
-        console.error(`recover retrieve failed for ${sid}: ${e.message}`);
+        console.error(`recover retrieve failed for ${await sessionLogRef(sid)}: ${safeLogError(e)}`);
         return Response.json({ ok: false, reason: "session not found" }, { status: 404, headers: nostore });
       }
       const productId = session.metadata?.product;
@@ -2197,12 +2203,12 @@ const LIVE_TOOLS = {
       try {
         const key = await keyForSession(env, session, productId);
         const state = await fulfillSession(env, session, productId, key);
-        logFulfillmentOutcome(env, session, productId, state, "recovery");
+        await logFulfillmentOutcome(env, session, productId, state, "recovery");
         return Response.json({ ok: true, product: productId, key,
           hosted_binding: state.tenant ? (state.complete ? "submitted" : "retrying") : "not_requested",
           support: "support@zovo.one" }, { status: state.complete ? 200 : 202, headers: nostore });
       } catch (e) {
-        console.error(`recover mint failed for ${sid}: ${e.message}`);
+        console.error(`recover mint failed for ${await sessionLogRef(sid)}: ${safeLogError(e)}`);
         return Response.json({ ok: false, reason: "key could not be issued, email support@zovo.one" }, { status: 500, headers: nostore });
       }
     }
@@ -2229,16 +2235,16 @@ const LIVE_TOOLS = {
           const productId = session.metadata?.product;
           const decision = fulfillmentAllowed(session, productId);
           if (!decision.ok) {
-            console.error(`webhook ${event.type} not fulfilled for ${sid}: ${decision.reason}`);
+            console.error(`webhook ${event.type} not fulfilled for ${await sessionLogRef(sid)}: ${decision.reason}`);
             return Response.json({ received: true, fulfilled: false, reason: decision.reason });
           }
           const key = await keyForSession(env, session, productId);
           const state = await fulfillSession(env, session, productId, key);
-          logFulfillmentOutcome(env, session, productId, state, "webhook");
+          await logFulfillmentOutcome(env, session, productId, state, "webhook");
           if (!state.complete) return Response.json({ received: true, fulfilled: false,
             retrying: true }, { status: 503 });
         } catch (e) {
-          console.error(`webhook ${event.type} mint failed for ${sid}: ${e.message}`);
+          console.error(`webhook ${event.type} mint failed for ${await sessionLogRef(sid)}: ${safeLogError(e)}`);
           return new Response(`mint failed: ${e.message}`, { status: 500 });
         }
       }
