@@ -52,16 +52,17 @@ jobs:
 
       # The local production release gate also verifies signatures using the
       # ignored production signing key. CI has no copy of that key. Keep those
-      # production-key tests in the local gate and run every key-independent
-      # test here, including an ephemeral Ed25519 signing test. The two paid
-      # fulfillment-route tests also require the production signing key.
+      # production-key tests in the local gate. CI runs an ephemeral signing
+      # test and both paid fulfillment-route tests with a generated signer in
+      # an isolated copy of the source.
       - name: Run key-independent billing tests and Wrangler dry run
         if: steps.scope.outputs.check == 'true'
         run: |
           node --test scripts/test/deploy-billing-gated.test.mjs \
             scripts/test/billing-release-gate.test.mjs \
             scripts/test/billing-scheduled-monitor.test.mjs \
-            scripts/test/billing-mint-ephemeral.test.mjs
+            scripts/test/billing-mint-ephemeral.test.mjs \
+            scripts/test/billing-route-ci.test.mjs
           billing_tests=()
           for file in billing/test/*.test.mjs; do
             case "$file" in
