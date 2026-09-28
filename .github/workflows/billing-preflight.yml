@@ -50,6 +50,25 @@ jobs:
         if: steps.scope.outputs.check == 'true'
         run: npm install --global wrangler@4.80.0
 
-      - name: Run billing release preflight
+      # The local production release gate also verifies signatures using the
+      # ignored production signing key. CI has no copy of that key. Keep those
+      # production-key tests in the local gate and run every key-independent
+      # test here, including an ephemeral Ed25519 signing test. The two paid
+      # fulfillment-route tests also require the production signing key.
+      - name: Run key-independent billing tests and Wrangler dry run
         if: steps.scope.outputs.check == 'true'
-        run: node scripts/billing-release-gate.mjs preflight
+        run: |
+          node --test scripts/test/deploy-billing-gated.test.mjs \
+            scripts/test/billing-release-gate.test.mjs \
+            scripts/test/billing-scheduled-monitor.test.mjs \
+            scripts/test/billing-mint-ephemeral.test.mjs
+          billing_tests=()
+          for file in billing/test/*.test.mjs; do
+            case "$file" in
+              billing/test/mint.test.mjs|billing/test/fulfillment-route.test.mjs|billing/test/license-auth.test.mjs) ;;
+              *) billing_tests+=("$file") ;;
+            esac
+          done
+          node --test "${billing_tests[@]}"
+          node --test --test-skip-pattern='a minted key cross-verifies' billing/test/license-auth.test.mjs
+          (cd billing && npx wrangler deploy --dry-run --strict)
