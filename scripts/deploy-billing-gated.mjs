@@ -35,6 +35,7 @@ export function sourceHash(repoRoot = root) {
     "scripts/billing-monitor-watchdog.mjs",
     ".github/workflows/billing-preflight.yml",
     ".github/workflows/billing-monitor-watchdog.yml",
+    ".github/workflows/billing-monitor-periodic.yml",
     "scripts/billing-monitor.sh",
     "scripts/install-billing-monitor.sh",
   ]) {

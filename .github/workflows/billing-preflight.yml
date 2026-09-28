@@ -32,7 +32,7 @@ jobs:
             exit 0
           fi
           git diff --name-only "$BASE_SHA" "$GITHUB_SHA" > "$RUNNER_TEMP/billing-changed-files"
-          if grep -Eq '^(billing/|scripts/billing-|scripts/deploy-billing-gated\.mjs$|scripts/test/(billing-|deploy-billing-gated\.)|\.github/workflows/billing-(preflight|monitor-watchdog)\.yml$)' "$RUNNER_TEMP/billing-changed-files"; then
+          if grep -Eq '^(billing/|scripts/billing-|scripts/deploy-billing-gated\.mjs$|scripts/test/(billing-|deploy-billing-gated\.)|\.github/workflows/billing-(preflight|monitor-watchdog|monitor-periodic)\.yml$)' "$RUNNER_TEMP/billing-changed-files"; then
             echo 'check=true' >> "$GITHUB_OUTPUT"
           else
             echo 'check=false' >> "$GITHUB_OUTPUT"
