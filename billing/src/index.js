@@ -1301,6 +1301,47 @@ async function keyForSession(env, session, productId) {
   return key;
 }
 
+/** Deliver the license key to the buyer by email (Resend). Idempotent via a KV
+ *  flag; failure is logged and swallowed — email must never break fulfillment. */
+async function sendLicenseEmail(env, session, productId, key) {
+  const email = session.customer_details?.email;
+  if (!email || typeof email !== "string" || !email.includes("@")) return "no_buyer_email";
+  const flag = `email:sent:${session.id}`;
+  if (await env.LICENSES.get(flag)) return "already_sent";
+  const p = PRODUCTS[productId];
+  if (!env.RESEND_API_KEY) { console.error("license email skipped: RESEND_API_KEY not set"); return "no_api_key"; }
+  const subject = `Your MCP license key for ${p?.name || productId}`;
+  const text = [
+    "Thanks for your purchase.",
+    "",
+    `Product: ${p?.name || productId}`,
+    `License key: ${key}`,
+    "",
+    "To activate, run the license_activate tool in the server and paste this key when asked.",
+    "The key verifies offline; nothing is sent anywhere by the activation check.",
+    "",
+    "Need help? Reply to this email or write to support@zovo.one.",
+  ].join("\n");
+  try {
+    const res = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: { "authorization": `Bearer ${env.RESEND_API_KEY}`, "content-type": "application/json" },
+      body: JSON.stringify({ from: "Mike <mike@zovo.one>", to: [email], subject, text,
+        reply_to: "support@zovo.one" }),
+    });
+    if (!res.ok) {
+      const body = await res.text();
+      console.error(`license email send failed for ${session.id}: ${res.status} ${body.slice(0, 200)}`);
+      return "send_failed";
+    }
+    await env.LICENSES.put(flag, new Date().toISOString());
+    return "sent";
+  } catch (e) {
+    console.error(`license email error for ${session.id}: ${safeLogError(e)}`);
+    return "send_failed";
+  }
+}
+
 /** Persist the fulfillment job before attempting KV writes; the object's alarm retries. */
 async function fulfillSession(env, session, productId, key) {
   if (!env.FULFILLMENT) throw new Error("fulfillment state binding unavailable");
@@ -2257,6 +2298,10 @@ const LIVE_TOOLS = {
           const key = await keyForSession(env, session, productId);
           const state = await fulfillSession(env, session, productId, key);
           await logFulfillmentOutcome(env, session, productId, state, "webhook");
+          if (state.complete) {
+            const emailOutcome = await sendLicenseEmail(env, session, productId, key);
+            console.log(JSON.stringify({ event: "license_email", session_ref: await sessionLogRef(session.id), outcome: emailOutcome }));
+          }
           if (!state.complete) return Response.json({ received: true, fulfilled: false,
             retrying: true }, { status: 503 });
         } catch (e) {
