@@ -204,15 +204,21 @@ export async function runScheduledMonitor(env, scheduledTime, ctx, route = app.f
   let previous = {};
   try { previous = JSON.parse(await env.REMOTE_DATA.get(STATUS_KEY) || "{}"); }
   catch { throw new Error("previous monitor status malformed"); }
+  const version = env.CF_VERSION_METADATA?.id || null;
+  const sameVersion = Boolean(version) && previous.version === version;
   const report = { checkedAt: new Date().toISOString(), batch,
-    version: env.CF_VERSION_METADATA?.id || null, ok: false,
-    operationsCheckedAt: previous.operationsCheckedAt || null,
+    version, ok: false,
+    operationsCheckedAt: sameVersion ? previous.operationsCheckedAt || null : null,
+    operationsVersion: sameVersion ? previous.operationsVersion || null : null,
     lastFailureAt: previous.lastFailureAt || null };
   try {
     report.buy = await checkBuyBatch(env, now, batch, ctx, route);
-    if (!report.operationsCheckedAt || now - Date.parse(report.operationsCheckedAt) / 1000 >= 55 * 60) {
+    const operationsAge = now - Date.parse(report.operationsCheckedAt) / 1000;
+    if (!report.operationsCheckedAt || report.operationsVersion !== version ||
+      !Number.isFinite(operationsAge) || operationsAge < -5 * 60 || operationsAge >= 55 * 60) {
       report.operations = await checkOperations(env, now);
       report.operationsCheckedAt = new Date().toISOString();
+      report.operationsVersion = version;
     }
     report.ok = true;
     console.log(JSON.stringify({ event: "billing_monitor_pass", ...report }));
@@ -263,6 +269,7 @@ export async function readMonitorHealth(env, now = Date.now()) {
     const operationsAge = now - Date.parse(status?.operationsCheckedAt);
     const failureAge = status?.lastFailureAt ? now - Date.parse(status.lastFailureAt) : Infinity;
     healthy = status?.ok === true && version && approved === version && status.version === version &&
+      status.operationsVersion === version &&
       Number.isFinite(age) && age >= -5 * 60_000 && age <= 20 * 60_000 &&
       Number.isFinite(operationsAge) && operationsAge >= -5 * 60_000 && operationsAge <= 75 * 60_000 &&
       failureAge >= 40 * 60_000;

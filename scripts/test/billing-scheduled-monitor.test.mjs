@@ -21,7 +21,8 @@ function timeOutsideHourlySlot() {
 test("scheduled monitor checks a buy-page batch without creating a live Session", async () => {
   const version = "6d41c702-9584-441e-bbdf-9748b276b798";
   const remote = kv({ "monitor:approved-version": version,
-    "monitor:status": JSON.stringify({ operationsCheckedAt: new Date().toISOString() }) });
+    "monitor:status": JSON.stringify({ version, operationsVersion: version,
+      operationsCheckedAt: new Date().toISOString() }) });
   const env = { REMOTE_DATA: remote, CF_VERSION_METADATA: { id: version }, STRIPE_SECRET_KEY: "restricted-test-key" };
   const original = globalThis.fetch;
   let getCount = 0;
@@ -47,7 +48,8 @@ test("scheduled monitor checks a buy-page batch without creating a live Session"
 test("scheduled probe exercises real billing GET handler without a Stripe create call", async () => {
   const version = "6d41c702-9584-441e-bbdf-9748b276b798";
   const remote = kv({ "monitor:approved-version": version,
-    "monitor:status": JSON.stringify({ operationsCheckedAt: new Date().toISOString() }) });
+    "monitor:status": JSON.stringify({ version, operationsVersion: version,
+      operationsCheckedAt: new Date().toISOString() }) });
   const env = { REMOTE_DATA: remote, CF_VERSION_METADATA: { id: version }, STRIPE_SECRET_KEY: "restricted-test-key" };
   const original = globalThis.fetch;
   let stripeCalls = 0;
@@ -70,9 +72,12 @@ test("unapproved version fails closed and records a failing heartbeat", async ()
   assert.equal(JSON.parse(remote.data.get("monitor:status")).ok, false);
 });
 
-test("first scheduled run reconciles operations and records an hourly checkpoint", async () => {
+test("first scheduled run on a new version refreshes operations despite a recent prior checkpoint", async () => {
   const version = "6d41c702-9584-441e-bbdf-9748b276b798";
-  const remote = kv({ "monitor:approved-version": version });
+  const priorOperationsAt = new Date(Date.now() - 10 * 60_000).toISOString();
+  const remote = kv({ "monitor:approved-version": version,
+    "monitor:status": JSON.stringify({ version: "previous-version", operationsVersion: "previous-version",
+      operationsCheckedAt: priorOperationsAt }) });
   const env = { REMOTE_DATA: remote, CF_VERSION_METADATA: { id: version }, STRIPE_SECRET_KEY: "restricted-test-key",
     LICENSES: kv() };
   const original = globalThis.fetch;
@@ -94,13 +99,16 @@ test("first scheduled run reconciles operations and records an hourly checkpoint
     assert.equal(report.ok, true);
     assert.equal(report.operations.enabled, 1);
     assert.ok(report.operationsCheckedAt);
+    assert.equal(report.operationsVersion, version);
+    assert.notEqual(report.operationsCheckedAt, priorOperationsAt);
   } finally { globalThis.fetch = original; }
 });
 
 test("concurrent customer POST is ignored but a Session tagged to GET probe alerts", async () => {
   const version = "6d41c702-9584-441e-bbdf-9748b276b798";
   const remote = kv({ "monitor:approved-version": version,
-    "monitor:status": JSON.stringify({ operationsCheckedAt: new Date().toISOString() }) });
+    "monitor:status": JSON.stringify({ version, operationsVersion: version,
+      operationsCheckedAt: new Date().toISOString() }) });
   const env = { REMOTE_DATA: remote, CF_VERSION_METADATA: { id: version }, STRIPE_SECRET_KEY: "restricted-test-key" };
   const original = globalThis.fetch;
   let calls = 0;
@@ -149,7 +157,8 @@ test("status endpoint requires a token and webhook response status is stored wit
 test("public monitor health fails closed on stale Cron, failed operations, or unapproved version", async () => {
   const now = Date.parse("2026-09-28T04:20:00Z");
   const version = "6d41c702-9584-441e-bbdf-9748b276b798";
-  const status = { ok: true, version, checkedAt: new Date(now - 5 * 60_000).toISOString(),
+  const status = { ok: true, version, operationsVersion: version,
+    checkedAt: new Date(now - 5 * 60_000).toISOString(),
     operationsCheckedAt: new Date(now - 30 * 60_000).toISOString(), lastFailureAt: null };
   const remote = kv({ "monitor:approved-version": version, "monitor:status": JSON.stringify(status) });
   const env = { REMOTE_DATA: remote, CF_VERSION_METADATA: { id: version } };
@@ -170,6 +179,10 @@ test("public monitor health fails closed on stale Cron, failed operations, or un
   remote.data.set("monitor:status", JSON.stringify(status));
   assert.equal((await readMonitorHealth(env, now)).status, 503);
   status.lastFailureAt = null;
+  status.operationsVersion = "previous-version";
+  remote.data.set("monitor:status", JSON.stringify(status));
+  assert.equal((await readMonitorHealth(env, now)).status, 503);
+  status.operationsVersion = version;
   remote.data.set("monitor:status", JSON.stringify(status));
   remote.data.set("monitor:approved-version", "different-version");
   assert.equal((await readMonitorHealth(env, now)).status, 503);
