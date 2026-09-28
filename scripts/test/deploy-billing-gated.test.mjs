@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
-import { rollbackDecision, sourceHash } from "../deploy-billing-gated.mjs";
+import { recoveryPlan, rollbackDecision, sourceHash } from "../deploy-billing-gated.mjs";
 
 const approvedVersion = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa";
 const uploadedVersion = "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb";
@@ -20,6 +20,13 @@ test("rollback is allowed only for our observed active deployment and unchanged 
     version: approvedVersion } }), /active deployment changed/);
   assert.match(rollbackDecision({ ...state, currentPin: uploadedVersion }), /pin changed/);
   assert.match(rollbackDecision({ ...state, approvedVersion: "invalid" }), /missing approved/);
+});
+
+test("an ambiguous final KV pin write requires manual recovery", () => {
+  const base = { approvedVersion, uploadedVersion };
+  assert.equal(recoveryPlan({ ...base, pinWriteStarted: false }), "rollback");
+  assert.equal(recoveryPlan({ ...base, pinWriteStarted: true }), "manual");
+  assert.equal(recoveryPlan({ ...base, uploadedVersion: undefined, pinWriteStarted: false }), "none");
 });
 
 const files = [

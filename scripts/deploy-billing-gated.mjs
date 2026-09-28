@@ -84,6 +84,13 @@ export function rollbackDecision({ approvedVersion, uploadedVersion, uploadedDep
   return null;
 }
 
+export function recoveryPlan({ approvedVersion, uploadedVersion, pinWriteStarted }) {
+  if (!UUID.test(approvedVersion || "") || !UUID.test(uploadedVersion || "")) return "none";
+  // A KV write can commit remotely even when the CLI reports an error. The
+  // subsequent read can still return the old value during propagation.
+  return pinWriteStarted ? "manual" : "rollback";
+}
+
 function restoreLocalPin(approvedVersion, uploadedVersion) {
   // The verify subprocess pins locally before the remote KV write. Only undo
   // that write if the remote pin is still the old approved value and no other
@@ -119,6 +126,7 @@ function main() {
   let approvedVersion;
   let uploadedVersion;
   let uploadedDeployment;
+  let pinWriteStarted = false;
   try {
     if (process.argv.length !== 2) throw new Error("This deployment command accepts no bypass flags");
     approvedVersion = remoteApprovedVersion();
@@ -149,12 +157,16 @@ function main() {
     }
     // Cron reads this remote pin. A direct Wrangler deployment leaves the pin on
     // the prior version and will fail the scheduled check.
+    pinWriteStarted = true;
     run("npx", ["wrangler", "kv", "key", "put", "monitor:approved-version", uploadedVersion,
       "--binding", "REMOTE_DATA", "--remote", "--config", "wrangler.toml"], billing);
     console.log(`Billing release verified: ${uploadedVersion}`);
   } catch (error) {
     console.error(`BILLING DEPLOYMENT FAILED: ${error.message}`);
-    if (approvedVersion && uploadedVersion && UUID.test(uploadedVersion)) {
+    const recovery = recoveryPlan({ approvedVersion, uploadedVersion, pinWriteStarted });
+    if (recovery === "manual") {
+      console.error("BILLING MANUAL RECOVERY REQUIRED: remote approved-version write may have committed; inspect live deployment and remote/local pins before rollback");
+    } else if (recovery === "rollback") {
       try {
         rollbackIfStillOurs(approvedVersion, uploadedVersion, uploadedDeployment);
       } catch (rollbackError) {
