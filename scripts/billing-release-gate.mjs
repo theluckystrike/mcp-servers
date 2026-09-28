@@ -140,6 +140,7 @@ async function verify(expectedVersion) {
 }
 
 function preflight() {
+  command("node", ["--test", "scripts/test/deploy-billing-gated.test.mjs"]);
   command("node", ["--test", "scripts/test/billing-release-gate.test.mjs"]);
   command("node", ["--test", "scripts/test/billing-scheduled-monitor.test.mjs"]);
   command("npm", ["test"], BILLING);

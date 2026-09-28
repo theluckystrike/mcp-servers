@@ -4,27 +4,37 @@
 import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { readFileSync, readdirSync, statSync } from "node:fs";
-import { dirname, join } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const billing = join(root, "billing");
 const gate = join(root, "scripts", "billing-release-gate.mjs");
 
-function sourceHash() {
+export function sourceHash(repoRoot = root) {
   const hash = createHash("sha256");
   const visit = (path) => {
     for (const name of readdirSync(path).sort()) {
       const file = join(path, name);
       if (statSync(file).isDirectory()) visit(file);
-      else { hash.update(file.slice(root.length)); hash.update(readFileSync(file)); }
+      else { hash.update(file.slice(repoRoot.length)); hash.update(readFileSync(file)); }
     }
   };
-  visit(join(billing, "src"));
-  visit(join(billing, "test"));
-  visit(join(root, "scripts", "test"));
-  for (const file of [join(billing, "wrangler.toml"), join(billing, "package.json"), gate]) {
-    hash.update(file.slice(root.length)); hash.update(readFileSync(file));
+  visit(join(repoRoot, "billing", "src"));
+  visit(join(repoRoot, "billing", "test"));
+  visit(join(repoRoot, "scripts", "test"));
+  for (const relative of [
+    "billing/wrangler.toml",
+    "billing/package.json",
+    "scripts/deploy-billing-gated.mjs",
+    "scripts/billing-release-gate.mjs",
+    "scripts/billing-operations-monitor.mjs",
+    "scripts/billing-monitor-watchdog.mjs",
+    "scripts/billing-monitor.sh",
+    "scripts/install-billing-monitor.sh",
+  ]) {
+    const file = join(repoRoot, relative);
+    hash.update(relative); hash.update(readFileSync(file));
   }
   return hash.digest("hex");
 }
@@ -37,22 +47,26 @@ function run(bin, args, cwd) {
   return result.stdout;
 }
 
-try {
-  if (process.argv.length !== 2) throw new Error("This deployment command accepts no bypass flags");
-  const checkedSource = sourceHash();
-  run(process.execPath, [gate, "preflight"], root);
-  if (sourceHash() !== checkedSource) throw new Error("Billing source or gate changed during preflight; rerun against stable files");
-  const output = run("npx", ["wrangler", "deploy", "--strict"], billing);
-  if (sourceHash() !== checkedSource) throw new Error("Billing source or gate changed during deployment; postdeploy verification cannot certify the tested source");
-  const version = /Current Version ID:\s*([0-9a-f-]{36})/i.exec(output)?.[1];
-  if (!version) throw new Error("Wrangler did not report a deployed Version ID; postdeploy verification cannot be tied to this release");
-  run(process.execPath, [gate, "verify", "--expected-version", version], root);
-  // Cron reads this remote pin. A direct Wrangler deployment leaves the pin on
-  // the prior version and will fail the scheduled check.
-  run("npx", ["wrangler", "kv", "key", "put", "monitor:approved-version", version,
-    "--binding", "REMOTE_DATA", "--remote", "--config", "wrangler.toml"], billing);
-  console.log(`Billing release verified: ${version}`);
-} catch (error) {
-  console.error(`BILLING DEPLOYMENT FAILED: ${error.message}`);
-  process.exitCode = 1;
+function main() {
+  try {
+    if (process.argv.length !== 2) throw new Error("This deployment command accepts no bypass flags");
+    const checkedSource = sourceHash();
+    run(process.execPath, [gate, "preflight"], root);
+    if (sourceHash() !== checkedSource) throw new Error("Billing source or gate changed during preflight; rerun against stable files");
+    const output = run("npx", ["wrangler", "deploy", "--strict"], billing);
+    if (sourceHash() !== checkedSource) throw new Error("Billing source or gate changed during deployment; postdeploy verification cannot certify the tested source");
+    const version = /Current Version ID:\s*([0-9a-f-]{36})/i.exec(output)?.[1];
+    if (!version) throw new Error("Wrangler did not report a deployed Version ID; postdeploy verification cannot be tied to this release");
+    run(process.execPath, [gate, "verify", "--expected-version", version], root);
+    // Cron reads this remote pin. A direct Wrangler deployment leaves the pin on
+    // the prior version and will fail the scheduled check.
+    run("npx", ["wrangler", "kv", "key", "put", "monitor:approved-version", version,
+      "--binding", "REMOTE_DATA", "--remote", "--config", "wrangler.toml"], billing);
+    console.log(`Billing release verified: ${version}`);
+  } catch (error) {
+    console.error(`BILLING DEPLOYMENT FAILED: ${error.message}`);
+    process.exitCode = 1;
+  }
 }
+
+if (process.argv[1] && fileURLToPath(import.meta.url) === resolve(process.argv[1])) main();
