@@ -1,0 +1,55 @@
+name: Billing preflight
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  billing-preflight:
+    name: Billing preflight
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Keep this job present on unrelated changes. A path-filtered workflow
+      # would leave a required check pending and block unrelated merges.
+      - name: Determine whether billing files changed
+        id: scope
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          if [ -z "$BASE_SHA" ] || ! git cat-file -e "$BASE_SHA^{commit}" 2>/dev/null; then
+            echo 'check=true' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          git diff --name-only "$BASE_SHA" "$GITHUB_SHA" > "$RUNNER_TEMP/billing-changed-files"
+          if grep -Eq '^(billing/|scripts/billing-|scripts/deploy-billing-gated\.mjs$|scripts/test/(billing-|deploy-billing-gated\.)|\.github/workflows/billing-(preflight|monitor-watchdog)\.yml$)' "$RUNNER_TEMP/billing-changed-files"; then
+            echo 'check=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'check=false' >> "$GITHUB_OUTPUT"
+            echo 'No billing release files changed.'
+          fi
+
+      - uses: actions/setup-node@v4
+        if: steps.scope.outputs.check == 'true'
+        with:
+          node-version: '22'
+
+      # Match the Wrangler version used by the current production release
+      # path. No Cloudflare credential is needed for a dry run.
+      - name: Install pinned Wrangler
+        if: steps.scope.outputs.check == 'true'
+        run: npm install --global wrangler@4.80.0
+
+      - name: Run billing release preflight
+        if: steps.scope.outputs.check == 'true'
+        run: node scripts/billing-release-gate.mjs preflight
