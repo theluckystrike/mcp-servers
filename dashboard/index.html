@@ -105,7 +105,7 @@
 <div class="wrap">
   <header>
     <h1>MCP Servers by theluckystrike</h1>
-    <div class="meta">generated 2026-09-27 (R29 update) — session count 98</div>
+    <div class="meta">generated 2026-09-28 (R31 update) — session count 100</div>
   </header>
 
   <div class="kpi-row">
@@ -115,6 +115,17 @@
     <div class="kpi"><span class="n">20</span><span class="l">published surfaces</span></div>
     <div class="kpi"><span class="n">$0</span><span class="l">revenue</span></div>
   </div>
+
+  <section>
+    <h2>Latest round — R31 (2026-09-28)</h2>
+    <ul>
+      <li><b>mcpservers.org COMPLETE for the 7 new R28b servers</b>: pomodoro, budget, loan-calculator, payroll, receipts, stripe-billing, tax-calculator all confirmed "Submission Successful!" (2026-09-28). Directory total now <b>61 accepted submissions</b>; listings enter review (~2 weeks).</li>
+      <li><b>Resend license-delivery email LIVE</b>: on Stripe webhook fulfillment the buyer receives their license key by email from mike@zovo.one (worker b8077a53; PR #2 merged to main). Idempotent via KV flag; email failure is log-only, never breaks fulfillment. Billing suite 173/173 green.</li>
+      <li>Resend transport verified end-to-end (probe delivered; 3 domains verified). Key at ~/.secrets/resend_zovo.key.</li>
+      <li>KPI: distribution surfaces live 20 &rarr; 21; kpi.json + distribution.json updated.</li>
+      <li>Next levers: 20 hand-written outreach emails to directory/newsletter maintainers (Resend ready); Glama + mcp.so still need one manual sign-in each.</li>
+    </ul>
+  </section>
 
   <section>
     <h2>Latest distribution round — R28b (2026-09-26)</h2>
