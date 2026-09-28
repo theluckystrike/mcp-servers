@@ -185,18 +185,24 @@ test("scheduled reconciliation alerts on missing paid fulfillment, an expired sw
   const paid = { id: "cs_live_monitor_paid", livemode: true, status: "complete",
     payment_status: "paid", created: now - 3600,
     metadata: { site: "mcp.zovo.one", tenant: `anon_${"a".repeat(32)}` } };
+  const urlOnlyPaid = { ...paid, id: "cs_live_monitor_url_only_paid", metadata: {},
+    success_url: "https://mcp.zovo.one/buy/success?session_id={CHECKOUT_SESSION_ID}" };
   const expired = Array.from({ length: 10 }, (_, index) => ({
     id: `cs_live_monitor_expired_${index}`, status: "expired", created: olderHour + index,
     metadata: { site: "mcp.zovo.one" },
   }));
+  const urlOnlyExpired = expired.map((session) => ({ ...session, metadata: {},
+    cancel_url: "https://mcp.zovo.one/buy/bundle" }));
   const route = async () => new Response('<form method="post"><input name="intent" value="checkout"></form>',
     { status: 200, headers: { "x-mcp-buy": "checkout-intent-required", "content-type": "text/html" } });
   const original = globalThis.fetch;
   try {
     for (const [name, sessions, license, webhookFailure, expected] of [
       ["missing license", { complete: [paid] }, false, false, /license/],
+      ["missing license from URL-only MCP Session", { complete: [urlOnlyPaid] }, false, false, /license/],
       ["missing hosted bind", { complete: [paid] }, true, false, /binding/],
       ["all expired sweep", { recent: expired }, false, false, /sweepHours/],
+      ["all expired URL-only MCP sweep", { recent: urlOnlyExpired }, false, false, /sweepHours/],
       ["webhook 5xx", {}, false, true, /webhookFailures/],
     ]) {
       const remote = kv({ "monitor:approved-version": version });

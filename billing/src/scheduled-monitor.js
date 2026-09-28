@@ -45,8 +45,13 @@ async function stripeList(env, path, params = []) {
 }
 
 function isMcpSession(session) {
-  return session?.metadata?.site === "mcp.zovo.one" ||
-    session?.metadata?.campaign === "mcp_lifetime_checkout";
+  if (session?.metadata?.site === "mcp.zovo.one" ||
+    session?.metadata?.campaign === "mcp_lifetime_checkout") return true;
+  return [session?.success_url, session?.cancel_url].some((value) => {
+    if (typeof value !== "string") return false;
+    try { return new URL(value).hostname === "mcp.zovo.one"; }
+    catch { return false; }
+  });
 }
 
 function buyPaths() {
