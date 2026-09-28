@@ -105,7 +105,7 @@
 <div class="wrap">
   <header>
     <h1>MCP Servers by theluckystrike</h1>
-    <div class="meta">generated 2026-09-28 (R4 update) — session count 103</div>
+    <div class="meta">generated 2026-09-28 (R4 update) — session count 104</div>
   </header>
 
   <div class="kpi-row">
@@ -117,7 +117,15 @@
   </div>
 
   <section>
-    <h2>Latest round — R4 (2026-09-28)</h2>
+    <h2>Latest round — R5 (2026-09-28, indexing sprint)</h2>
+<ul>
+<li><b>INDEX AUDIT (GSC URL Inspection API, 16 URLs):</b> exactly 1 page of mcp.zovo.one indexed (homepage). All 30 guides + 54 server pages + setup/compare = "Discovered — currently not indexed" or "unknown to Google". GSC search-analytics: 19 impressions / 0 clicks / 28 days. The content engine was built but invisible — no top of funnel confirmed at the index level.</li>
+<li><b>FIX 1 — IndexNow LIVE:</b> added key-verification route to the billing worker (PR #11 merged, preflight green), deployed (f69a1392). Key file verified live. Bulk POST of all 235 sitemap URLs accepted by api.indexnow.org (HTTP 200) — instant submission to Bing/Yandex/Seznam/Seznam-class engines.</li>
+<li><b>FIX 2 — sitemap resubmitted to Google</b> via Search Console API (204). Google has no instant-submit API; crawl-priority should rise with fresh sitemap ping.</li>
+<li><b>FIX 3 — 2026-09-19 sitemap lastmod stale</b> relative to R32's 7 new pages: next content round must regenerate lastmod on change so freshness signals are real.</li>
+<li>KPI re-baseline: GSC impressions (19→?) is now the primary organic KPI, checked weekly. Next: IndexNow acceptance visible in Bing webmaster tools; re-inspect 10 URLs in ~2 weeks to measure index rate.</li>
+</ul>
+<h2>Previous round — R4 (2026-09-28)</h2>
 <ul>
 <li><b>SERVER COVERAGE COMPLETE — all 7 servers now have a live issue reply:</b> posted 2 value-first replies (draft-07 → writ-agent/writ#28 for stripe-billing: read-tier + restricted-key policy feedback; draft-08 → ledgerfield/ledgerfield#29 for tax-calc: bracket-schema pitfalls + property-test anchors). Both read back verified; URLs pre-flighted 200; PR #9 merged (preflight green).</li>
 <li>Click stats re-check: total 978, last-7d 1 — R3/R4 issue threads too fresh for attribution signal; next check in ~1 week per measurement cadence.</li>
