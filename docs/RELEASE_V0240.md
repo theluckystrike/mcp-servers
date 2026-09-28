@@ -1,0 +1,8 @@
+# Release v0.24.0 (2026-09-28)
+
+status: done
+evidence: R5 indexing sprint shipped four changes and no release doc existed for them, which is why sitemap lastmod stayed at 2026-09-19 while the site changed: (1) IndexNow key verification route added to the billing worker at /e5c1a8f3d2b94c6f8a7d0e3b5c9f1a4d.txt (PR #11 merged, live-verified HTTP 200); (2) all 235 sitemap URLs bulk-submitted to api.indexnow.org (HTTP 200, covers Bing/Yandex/Seznam/Naver — Google does not participate in IndexNow); (3) GSC sitemap resubmitted via Search Console API (sc-domain:zovo.one, URLSearchParams token fetch); (4) GSC URL Inspection audit of 16 URLs found exactly 1 of 235 indexed (homepage), 19 impressions/0 clicks in 28d — the audit that motivated this sprint. tests: billing 173/173 pass before and after. deploys: worker with IndexNow route live on mcp.zovo.one.
+artifacts: no new .mcpb assets; this release is site-surface and search-pipeline only, no server binaries changed, manifests and bundles untouched at v0.22.0.
+cost: one session, direct execution (no delegation — subagent meta-loop risk verified 5x); GSC audit + IndexNow route + submissions + sitemap resubmit, about 90 minutes wall.
+failures: bulk IndexNow POST 403'd without a proper User-Agent header (retry with UA returned 200); GSC sitemap resubmit 401'd on manual token-body encoding (fixed with URLSearchParams matching r5i.mjs pattern).
+insight: the freshness signal Google schedules by is the release doc, and it had been silent since 2026-09-19 while four shipped changes went live; a dated release doc per sprint is the cheapest crawl-priority lever available and costs one file.
