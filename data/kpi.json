@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-09-28T12:00:00.000Z",
+ "generated_at": "2026-09-28T13:00:00.000Z",
  "kpis": [
   {
    "cat": "Discovery",
@@ -26,10 +26,10 @@
   {
    "cat": "Discovery",
    "name": "Distribution surfaces live",
-   "value": 21,
+   "value": 22,
    "target": 74,
    "unit": "of 74",
-   "how": "data/distribution.json",
+   "how": "data/distribution.json | R32: storefront pages for the 7 new servers live on mcp.zovo.one (/s/ + /setup/, 42 new setup pages, sitemap 235 URLs).",
    "why": "Each free registry or catalog is a compounding source of installs.",
    "status": "progress",
    "last_verified": "2026-09-28",
@@ -38,12 +38,13 @@
   {
    "cat": "Discovery",
    "name": "URLs offered in the sitemap",
-   "value": 228,
+   "value": 235,
    "target": null,
    "unit": "URLs",
-   "how": "curl mcp.zovo.one/sitemap.xml",
+   "how": "curl mcp.zovo.one/sitemap.xml | R32: +7 /s/ pages for the new servers (42 new setup pages served under /setup/, sitemap lists /s/ + short paths).",
    "why": "Not a score to maximise. It was 312, of which 216 were client-by-product setup permutations measuring 73.6-77.5% similar to each other; Googlebot read the sitemap 7 times and then crawled 2 pages. Cut to 96 on 2026-09-07 and the permutations marked noindex,follow. See docs/SEO_INDEXATION_R1.md.",
-   "status": "measured"
+   "status": "measured",
+   "last_verified": "2026-09-28"
   },
   {
    "cat": "Discovery",

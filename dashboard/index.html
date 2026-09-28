@@ -105,7 +105,7 @@
 <div class="wrap">
   <header>
     <h1>MCP Servers by theluckystrike</h1>
-    <div class="meta">generated 2026-09-28 (R31 update) — session count 100</div>
+    <div class="meta">generated 2026-09-28 (R32 update) — session count 101</div>
   </header>
 
   <div class="kpi-row">
@@ -117,7 +117,18 @@
   </div>
 
   <section>
-    <h2>Latest round — R31 (2026-09-28)</h2>
+    <h2>Latest round — R32 (2026-09-28)</h2>
+    <ul>
+      <li><b>STOREFRONT GAP CLOSED — the 7 new servers now have full storefront presence on mcp.zovo.one</b>: before R32 they had zero site presence (no /s/ page, no setup pages, not listed). Now: 7 new product pages (/s/pomodoro, /s/budget, /s/loan-calculator, /s/payroll, /s/receipts, /s/stripe-billing, /s/tax-calc), 7 &times; 6 = 42 new /setup/&lt;client&gt;/&lt;server&gt; pages, sitemap 228 &rarr; 235 URLs, all 7 in LISTED_IDS/SERVER_IDS (47 &rarr; 54 listed servers) and in the rotating "More servers" internal-link pool on every page.</li>
+      <li>Free-server model: the 7 get full pages without Stripe prices — /buy/&lt;id&gt; aliases to the $39 bundle via PRODUCT_ALIASES (same pattern as office-suite). Written 7 rich READMEs + facts.json entries; build-pages/build-figures extended for JS (serve()-style) servers.</li>
+      <li>Verified live: all 7 /s/ pages 200, setup pages 200, /buy alias 200, sitemap contains all 7. Billing suite 173/173 green (incl. monitor buy-batch fix: free aliases excluded from scheduled probe). Deployed worker 2b0faf5b.</li>
+      <li>Committed via PR #4 (protected main; preflight green) &rarr; merged bf6ad493.</li>
+      <li>Next levers: 20 outreach emails (Resend ready); Glama + mcp.so manual sign-ins; GSC re-crawl check on the 7 new URLs in ~1 week.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Previous round — R31 (2026-09-28)</h2>
     <ul>
       <li><b>mcpservers.org COMPLETE for the 7 new R28b servers</b>: pomodoro, budget, loan-calculator, payroll, receipts, stripe-billing, tax-calculator all confirmed "Submission Successful!" (2026-09-28). Directory total now <b>61 accepted submissions</b>; listings enter review (~2 weeks).</li>
       <li><b>Resend license-delivery email LIVE</b>: on Stripe webhook fulfillment the buyer receives their license key by email from mike@zovo.one (worker b8077a53; PR #2 merged to main). Idempotent via KV flag; email failure is log-only, never breaks fulfillment. Billing suite 173/173 green.</li>
