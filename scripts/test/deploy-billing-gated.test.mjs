@@ -15,6 +15,7 @@ const files = [
   "scripts/billing-release-gate.mjs",
   "scripts/billing-operations-monitor.mjs",
   "scripts/billing-monitor-watchdog.mjs",
+  ".github/workflows/billing-monitor-watchdog.yml",
   "scripts/billing-monitor.sh",
   "scripts/install-billing-monitor.sh",
 ];
