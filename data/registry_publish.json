@@ -1,5 +1,5 @@
 {
-  "at": "2026-09-29T05:31:43.664Z",
+  "at": "2026-09-29T06:11:09.730Z",
   "published": [],
   "duplicate": [
     "io.github.theluckystrike/amortization@0.22.0",
@@ -23,10 +23,12 @@
     "io.github.theluckystrike/change-order@0.22.0",
     "io.github.theluckystrike/checklist@0.22.0",
     "io.github.theluckystrike/clauses@0.22.0",
+    "io.github.theluckystrike/contract-clause-library-proposal-template-docx@0.22.0",
     "io.github.theluckystrike/convert-pdf-to-word-docx@0.22.0",
     "io.github.theluckystrike/credit-note@0.22.0",
     "io.github.theluckystrike/currency@0.22.0",
     "io.github.theluckystrike/currency-converter-ecb-rates-daily-keyless@0.22.0",
+    "io.github.theluckystrike/cv-maker-resume-templates@0.22.0",
     "io.github.theluckystrike/delegacja@0.22.0",
     "io.github.theluckystrike/delivery-note@0.22.0",
     "io.github.theluckystrike/delivery-schedule@0.22.0",
@@ -122,16 +124,5 @@
     "io.github.theluckystrike/zip@0.22.0",
     "io.github.theluckystrike/zip-archive-create-extract-bomb-guard@0.22.0"
   ],
-  "failed": [
-    {
-      "name": "io.github.theluckystrike/contract-clause-library-proposal-template-docx",
-      "version": "0.22.0",
-      "error": "Publishing to https://registry.modelcontextprotocol.io...\nError: publish failed: server returned status 400: {\"title\":\"Bad Request\",\"status\":400,\"detail\":\"Failed to publish server\",\"errors\":[{\"message\":\"failed to begin transaction: failed to connect to `user=app database=app`:\\n\\t34.118.233.51:5432 "
-    },
-    {
-      "name": "io.github.theluckystrike/cv-maker-resume-templates",
-      "version": "0.22.0",
-      "error": "Publishing to https://registry.modelcontextprotocol.io...\nError: publish failed: server returned status 400: {\"title\":\"Bad Request\",\"status\":400,\"detail\":\"Failed to publish server\",\"errors\":[{\"message\":\"failed to begin transaction: failed to connect to `user=app database=app`:\\n\\t34.118.233.51:5432 "
-    }
-  ]
+  "failed": []
 }
