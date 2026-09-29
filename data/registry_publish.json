@@ -1,5 +1,5 @@
 {
-  "at": "2026-09-29T07:32:47.054Z",
+  "at": "2026-09-29T08:00:07.449Z",
   "published": [],
   "duplicate": [
     "io.github.theluckystrike/amortization@0.22.0",
@@ -23,7 +23,6 @@
     "io.github.theluckystrike/change-order@0.22.0",
     "io.github.theluckystrike/checklist@0.22.0",
     "io.github.theluckystrike/clauses@0.22.0",
-    "io.github.theluckystrike/contract-clause-library-proposal-template-docx@0.22.0",
     "io.github.theluckystrike/convert-pdf-to-word-docx@0.22.0",
     "io.github.theluckystrike/credit-note@0.22.0",
     "io.github.theluckystrike/currency@0.22.0",
@@ -83,7 +82,6 @@
     "io.github.theluckystrike/pivot@0.22.0",
     "io.github.theluckystrike/pomodoro@1.0.0",
     "io.github.theluckystrike/price-drop-alert-tracker@0.22.0",
-    "io.github.theluckystrike/price-tracker-drop-alert-watch@0.22.0",
     "io.github.theluckystrike/purchase-order@0.22.0",
     "io.github.theluckystrike/purchase-requisition@0.22.0",
     "io.github.theluckystrike/quotes@0.22.0",
@@ -109,7 +107,6 @@
     "io.github.theluckystrike/subscription-manager-track-renewals@0.22.0",
     "io.github.theluckystrike/subscriptions@0.22.0",
     "io.github.theluckystrike/supplier-list@0.22.0",
-    "io.github.theluckystrike/task-board-todo-kanban@0.22.0",
     "io.github.theluckystrike/tax-calc@1.0.0",
     "io.github.theluckystrike/templates@0.22.0",
     "io.github.theluckystrike/terms@0.22.0",
@@ -124,5 +121,21 @@
     "io.github.theluckystrike/zip@0.22.0",
     "io.github.theluckystrike/zip-archive-create-extract-bomb-guard@0.22.0"
   ],
-  "failed": []
+  "failed": [
+    {
+      "name": "io.github.theluckystrike/contract-clause-library-proposal-template-docx",
+      "version": "0.22.0",
+      "error": "Publishing to https://registry.modelcontextprotocol.io...\nError: publish failed: server returned status 400: {\"title\":\"Bad Request\",\"status\":400,\"detail\":\"Failed to publish server\",\"errors\":[{\"message\":\"failed to begin transaction: failed to connect to `user=app database=app`:\\n\\t34.118.233.51:5432 "
+    },
+    {
+      "name": "io.github.theluckystrike/price-tracker-drop-alert-watch",
+      "version": "0.22.0",
+      "error": "Publishing to https://registry.modelcontextprotocol.io...\nError: publish failed: server returned status 504: <html>\r\n<head><title>504 Gateway Time-out</title></head>\r\n<body>\r\n<center><h1>504 Gateway Time-out</h1></center>\r\n<hr><center>nginx</center>\r\n</body>\r\n</html>\r\n\nCommand failed: mcp-publisher "
+    },
+    {
+      "name": "io.github.theluckystrike/task-board-todo-kanban",
+      "version": "0.22.0",
+      "error": "Publishing to https://registry.modelcontextprotocol.io...\nError: publish failed: server returned status 400: {\"title\":\"Bad Request\",\"status\":400,\"detail\":\"Failed to publish server\",\"errors\":[{\"message\":\"failed to begin transaction: failed to connect to `user=app database=app`:\\n\\t34.118.233.51:5432 "
+    }
+  ]
 }
