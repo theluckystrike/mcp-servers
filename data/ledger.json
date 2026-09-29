@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-09-26T07:58:09.107Z",
+  "generated_at": "2026-09-29T03:26:02.265Z",
   "session": {
-    "count": 96,
+    "count": 97,
     "history": [
       {
         "at": "2026-09-02T12:48:50.865Z",
@@ -398,6 +398,10 @@
       {
         "at": "2026-09-19T15:08:23.660Z",
         "note": "S49: hosted Stripe checkout verified end-to-end (two-step intent flow, live cs_live session); validation 1244/1244; billing 163/163"
+      },
+      {
+        "at": "2026-09-29T03:26:02.265Z",
+        "note": "R7 fact-check: 2 paid Stripe sessions = REAL humans (renoboost.belfort, jesswilensky via /pricing founding tier, $38); 894 lic:* keys minted in REMOTE_DATA; '0 minted' and 'all-QA' claims corrected; funnel works - constraint is /pricing traffic"
       }
     ]
   },
@@ -656,6 +660,34 @@
         "smithery_yaml": true,
         "dockerfile": true,
         "license": true
+      },
+      "distribution": {
+        "npm": "unknown",
+        "registry": "unknown",
+        "github": "unknown",
+        "smithery": "unknown",
+        "glama": "unknown"
+      }
+    },
+    {
+      "id": "budget",
+      "npm_name": "mcp-budget",
+      "version": "1.0.0",
+      "dir": "servers/budget",
+      "tools": [],
+      "tool_count": 0,
+      "free_limits": "pending",
+      "price_usd": 19,
+      "build_ok": false,
+      "test_summary": "pending",
+      "result_status": "pending",
+      "loc": 3,
+      "files_present": {
+        "readme": true,
+        "server_json": true,
+        "smithery_yaml": false,
+        "dockerfile": false,
+        "license": false
       },
       "distribution": {
         "npm": "unknown",
@@ -1268,7 +1300,7 @@
       "build_ok": true,
       "test_summary": "# pass 12 / # fail 0",
       "result_status": "DONE",
-      "loc": 1718,
+      "loc": 1715,
       "files_present": {
         "readme": true,
         "server_json": true,
@@ -1406,6 +1438,34 @@
       }
     },
     {
+      "id": "loan-calculator",
+      "npm_name": "mcp-loan-calculator",
+      "version": "1.0.0",
+      "dir": "servers/loan-calculator",
+      "tools": [],
+      "tool_count": 0,
+      "free_limits": "pending",
+      "price_usd": 19,
+      "build_ok": false,
+      "test_summary": "pending",
+      "result_status": "pending",
+      "loc": 3,
+      "files_present": {
+        "readme": true,
+        "server_json": true,
+        "smithery_yaml": false,
+        "dockerfile": false,
+        "license": false
+      },
+      "distribution": {
+        "npm": "unknown",
+        "registry": "unknown",
+        "github": "unknown",
+        "smithery": "unknown",
+        "glama": "unknown"
+      }
+    },
+    {
       "id": "maintenance-log",
       "npm_name": "@theluckystrike/mcp-maintenance-log",
       "version": "0.22.0",
@@ -1488,7 +1548,7 @@
       "build_ok": true,
       "test_summary": "# pass 1 / # fail 0",
       "result_status": "DONE",
-      "loc": 451,
+      "loc": 450,
       "files_present": {
         "readme": true,
         "server_json": true,
@@ -1572,6 +1632,34 @@
         "smithery_yaml": true,
         "dockerfile": true,
         "license": true
+      },
+      "distribution": {
+        "npm": "unknown",
+        "registry": "unknown",
+        "github": "unknown",
+        "smithery": "unknown",
+        "glama": "unknown"
+      }
+    },
+    {
+      "id": "payroll",
+      "npm_name": "mcp-payroll",
+      "version": "1.0.0",
+      "dir": "servers/payroll",
+      "tools": [],
+      "tool_count": 0,
+      "free_limits": "pending",
+      "price_usd": 19,
+      "build_ok": false,
+      "test_summary": "pending",
+      "result_status": "pending",
+      "loc": 3,
+      "files_present": {
+        "readme": true,
+        "server_json": true,
+        "smithery_yaml": false,
+        "dockerfile": false,
+        "license": false
       },
       "distribution": {
         "npm": "unknown",
@@ -1693,6 +1781,34 @@
       }
     },
     {
+      "id": "pomodoro",
+      "npm_name": "mcp-pomodoro",
+      "version": "1.0.0",
+      "dir": "servers/pomodoro",
+      "tools": [],
+      "tool_count": 0,
+      "free_limits": "pending",
+      "price_usd": 19,
+      "build_ok": false,
+      "test_summary": "pending",
+      "result_status": "pending",
+      "loc": 3,
+      "files_present": {
+        "readme": true,
+        "server_json": true,
+        "smithery_yaml": false,
+        "dockerfile": false,
+        "license": false
+      },
+      "distribution": {
+        "npm": "unknown",
+        "registry": "unknown",
+        "github": "unknown",
+        "smithery": "unknown",
+        "glama": "unknown"
+      }
+    },
+    {
       "id": "price-tracker",
       "npm_name": "@theluckystrike/mcp-price-tracker",
       "version": "0.22.0",
@@ -1802,6 +1918,34 @@
         "smithery_yaml": true,
         "dockerfile": true,
         "license": true
+      },
+      "distribution": {
+        "npm": "unknown",
+        "registry": "unknown",
+        "github": "unknown",
+        "smithery": "unknown",
+        "glama": "unknown"
+      }
+    },
+    {
+      "id": "receipts",
+      "npm_name": "mcp-receipts",
+      "version": "1.0.0",
+      "dir": "servers/receipts",
+      "tools": [],
+      "tool_count": 0,
+      "free_limits": "pending",
+      "price_usd": 19,
+      "build_ok": false,
+      "test_summary": "pending",
+      "result_status": "pending",
+      "loc": 3,
+      "files_present": {
+        "readme": true,
+        "server_json": true,
+        "smithery_yaml": false,
+        "dockerfile": false,
+        "license": false
       },
       "distribution": {
         "npm": "unknown",
@@ -1998,6 +2142,34 @@
       }
     },
     {
+      "id": "stripe-billing",
+      "npm_name": "mcp-stripe-billing",
+      "version": "1.0.0",
+      "dir": "servers/stripe-billing",
+      "tools": [],
+      "tool_count": 0,
+      "free_limits": "pending",
+      "price_usd": 19,
+      "build_ok": false,
+      "test_summary": "pending",
+      "result_status": "pending",
+      "loc": 3,
+      "files_present": {
+        "readme": true,
+        "server_json": true,
+        "smithery_yaml": false,
+        "dockerfile": false,
+        "license": false
+      },
+      "distribution": {
+        "npm": "unknown",
+        "registry": "unknown",
+        "github": "unknown",
+        "smithery": "unknown",
+        "glama": "unknown"
+      }
+    },
+    {
       "id": "supplier-list",
       "npm_name": "@theluckystrike/mcp-supplier-list",
       "version": "0.22.0",
@@ -2025,6 +2197,34 @@
         "smithery_yaml": true,
         "dockerfile": true,
         "license": true
+      },
+      "distribution": {
+        "npm": "unknown",
+        "registry": "unknown",
+        "github": "unknown",
+        "smithery": "unknown",
+        "glama": "unknown"
+      }
+    },
+    {
+      "id": "tax-calc",
+      "npm_name": "mcp-tax-calc",
+      "version": "1.0.0",
+      "dir": "servers/tax-calc",
+      "tools": [],
+      "tool_count": 0,
+      "free_limits": "pending",
+      "price_usd": 19,
+      "build_ok": false,
+      "test_summary": "pending",
+      "result_status": "pending",
+      "loc": 3,
+      "files_present": {
+        "readme": true,
+        "server_json": true,
+        "smithery_yaml": false,
+        "dockerfile": false,
+        "license": false
       },
       "distribution": {
         "npm": "unknown",
@@ -2229,6 +2429,11 @@
         "url": "https://mcp.zovo.one/buy/billing-docs"
       },
       {
+        "id": "budget",
+        "price_usd": 19,
+        "url": "https://mcp.zovo.one/buy/budget"
+      },
+      {
         "id": "calendar",
         "price_usd": 19,
         "url": "https://mcp.zovo.one/buy/calendar"
@@ -2324,6 +2529,11 @@
         "url": "https://mcp.zovo.one/buy/leave"
       },
       {
+        "id": "loan-calculator",
+        "price_usd": 19,
+        "url": "https://mcp.zovo.one/buy/loan-calculator"
+      },
+      {
         "id": "maintenance-log",
         "price_usd": 19,
         "url": "https://mcp.zovo.one/buy/maintenance-log"
@@ -2349,6 +2559,11 @@
         "url": "https://mcp.zovo.one/buy/packing-list"
       },
       {
+        "id": "payroll",
+        "price_usd": 19,
+        "url": "https://mcp.zovo.one/buy/payroll"
+      },
+      {
         "id": "pdf",
         "price_usd": 19,
         "url": "https://mcp.zovo.one/buy/pdf"
@@ -2364,6 +2579,11 @@
         "url": "https://mcp.zovo.one/buy/petty-cash"
       },
       {
+        "id": "pomodoro",
+        "price_usd": 19,
+        "url": "https://mcp.zovo.one/buy/pomodoro"
+      },
+      {
         "id": "price-tracker",
         "price_usd": 19,
         "url": "https://mcp.zovo.one/buy/price-tracker"
@@ -2377,6 +2597,11 @@
         "id": "quotes",
         "price_usd": 19,
         "url": "https://mcp.zovo.one/buy/quotes"
+      },
+      {
+        "id": "receipts",
+        "price_usd": 19,
+        "url": "https://mcp.zovo.one/buy/receipts"
       },
       {
         "id": "recurring",
@@ -2404,9 +2629,19 @@
         "url": "https://mcp.zovo.one/buy/statement-of-account"
       },
       {
+        "id": "stripe-billing",
+        "price_usd": 19,
+        "url": "https://mcp.zovo.one/buy/stripe-billing"
+      },
+      {
         "id": "supplier-list",
         "price_usd": 19,
         "url": "https://mcp.zovo.one/buy/supplier-list"
+      },
+      {
+        "id": "tax-calc",
+        "price_usd": 19,
+        "url": "https://mcp.zovo.one/buy/tax-calc"
       },
       {
         "id": "time-tracker",
@@ -2502,6 +2737,10 @@
     {
       "file": "docs/BILLING_DOCS_RESULT.md",
       "first_line": "mcp-billing-docs: build"
+    },
+    {
+      "file": "docs/BILLING_RELEASE_CONTROL.md",
+      "first_line": "Billing release control"
     },
     {
       "file": "docs/BLIND_RECOMMENDATION_PROCEDURE.md",
@@ -3458,6 +3697,10 @@
     {
       "file": "docs/RELEASE_V0230.md",
       "first_line": "Release v0.23.0 (2026-09-19)"
+    },
+    {
+      "file": "docs/RELEASE_V0240.md",
+      "first_line": "Release v0.24.0 (2026-09-28)"
     },
     {
       "file": "docs/RELEASE_V060.md",

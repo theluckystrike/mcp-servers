@@ -105,84 +105,16 @@
 <div class="wrap">
   <header>
     <h1>MCP Servers by theluckystrike</h1>
-    <div class="meta">generated 2026-09-28 (R7 update) — session count 106</div>
+    <div class="meta">generated 2026-09-29T03:26:02.249Z — session count 96</div>
   </header>
 
   <div class="kpi-row">
-    <div class="kpi"><span class="n">47</span><span class="l">servers</span></div>
+    <div class="kpi"><span class="n">54</span><span class="l">servers</span></div>
     <div class="kpi"><span class="n">424</span><span class="l">tools total</span></div>
     <div class="kpi"><span class="n">999</span><span class="l">tests passing</span></div>
-    <div class="kpi"><span class="n">20</span><span class="l">published surfaces</span></div>
+    <div class="kpi"><span class="n">0</span><span class="l">published surfaces</span></div>
     <div class="kpi"><span class="n">$0</span><span class="l">revenue</span></div>
   </div>
-
-  <section>
-    <h2>Latest round — R6 (2026-09-28, lastmod freshness lever)</h2>
-<ul>
-<li><b>R9 (2026-09-28) KPI read:</b> GSC mcp.zovo.one 28d still 19 impressions/0 clicks (R5–R8 fixes too fresh for crawl cycle). New guides NOT yet inspected (URL Inspection API blocked for SA). Clicks: total 978, 7d=1 strict; but unattributed.invoice 7/7d and unattributed.time-tracker 6/7d — real human navigations arriving at money pages, source not yet attributed. Estate: 237 sitemap URLs, 137 guides, PRs #15-#17 merged. Next read: 2026-10-05.</li>
-<li><b>R7 (2026-09-28) demand-driven content:</b> 2 new guides built against GSC query impressions — /guides/convert-usd-to-ghs-zar-kes-in-claude (currency cluster) and /guides/loan-amortization-schedule-excel-from-chat (amortization cluster). 137 guides total; both live (200), in sitemap (237 URLs), IndexNow-pinged, PR #15 merged, sitemap resubmitted to GSC (204).</li>
-</ul>
-
-<ul>
-<li><b>FIX 3 FROM R5 EXECUTED — sitemap lastmod refreshed:</b> root cause was the freshness signal being downstream of docs/RELEASE_V*.md, not of deploys. No release doc existed for R5's shipping, so lastmod sat frozen at 2026-09-19. Shipped docs/RELEASE_V0240.md (dated 2026-09-28, full R5 evidence), rebuilt pages.js — live sitemap now carries <b>lastmod 2026-09-28 on all 235 URLs</b> (verified by curl).</li>
-<li><b>RE-SUBMISSION with fresh dates:</b> GSC sitemap resubmit confirmed 204; IndexNow bulk re-ping of all 235 URLs accepted (HTTP 200). Both engines now see every URL as changed today.</li>
-<li>PR #13 merged (preflight green); worker redeployed (version 8a2e9b63); billing 173/173 pass before and after.</li>
-<li>PROCESS RULE learned: every sprint that changes site pages must also ship a dated release doc — otherwise crawlers never see the change. Release doc = part of shipping, not bookkeeping.</li>
-<li>KPI unchanged: GSC impressions (19/28d) is the primary organic KPI; weekly check. Re-inspect ~10 URLs in 2 weeks for index-rate movement from the freshness + IndexNow combo.</li>
-</ul>
-<h2>Previous round — R5 (2026-09-28, indexing sprint)</h2>
-<ul>
-<li><b>INDEX AUDIT (GSC URL Inspection API, 16 URLs):</b> exactly 1 page of mcp.zovo.one indexed (homepage). All 30 guides + 54 server pages + setup/compare = "Discovered — currently not indexed" or "unknown to Google". GSC search-analytics: 19 impressions / 0 clicks / 28 days. The content engine was built but invisible — no top of funnel confirmed at the index level.</li>
-<li><b>FIX 1 — IndexNow LIVE:</b> added key-verification route to the billing worker (PR #11 merged, preflight green), deployed (f69a1392). Key file verified live. Bulk POST of all 235 sitemap URLs accepted by api.indexnow.org (HTTP 200) — instant submission to Bing/Yandex/Seznam/Seznam-class engines.</li>
-<li><b>FIX 2 — sitemap resubmitted to Google</b> via Search Console API (204). Google has no instant-submit API; crawl-priority should rise with fresh sitemap ping.</li>
-<li><b>FIX 3 — 2026-09-19 sitemap lastmod stale</b> relative to R32's 7 new pages: next content round must regenerate lastmod on change so freshness signals are real.</li>
-<li>KPI re-baseline: GSC impressions (19→?) is now the primary organic KPI, checked weekly. Next: IndexNow acceptance visible in Bing webmaster tools; re-inspect 10 URLs in ~2 weeks to measure index rate.</li>
-</ul>
-<h2>Previous round — R4 (2026-09-28)</h2>
-<ul>
-<li><b>SERVER COVERAGE COMPLETE — all 7 servers now have a live issue reply:</b> posted 2 value-first replies (draft-07 → writ-agent/writ#28 for stripe-billing: read-tier + restricted-key policy feedback; draft-08 → ledgerfield/ledgerfield#29 for tax-calc: bracket-schema pitfalls + property-test anchors). Both read back verified; URLs pre-flighted 200; PR #9 merged (preflight green).</li>
-<li>Click stats re-check: total 978, last-7d 1 — R3/R4 issue threads too fresh for attribution signal; next check in ~1 week per measurement cadence.</li>
-<li>Next lever: R5 batch scaled to observed referral signal; otherwise shift to search-visible content (the only untried inbound channel).</li>
-</ul>
-<h2>Previous round — R33 (2026-09-28)</h2>
-<ul>
-<li><b>OUTREACH LIVE — first inbound-human-discovery channel activated:</b> 5 value-first GitHub issue replies posted (draft-05 skipped — maintainer paused that issue). Each reply leads with a substantive engineering answer, then discloses a matching free MCP server with a verified <code>claude mcp add --mcpb</code> install command (all 5 release URLs pre-flighted 200 → targets: loan-calculator, pomodoro, budget, receipts, payroll).</li>
-<li>Caught and fixed a posting bug before it shipped: first attempt posted literal file paths as comment bodies (gh <code>-f body=@file</code> quoting trap) — deleted all 5 within minutes, reposted with proper <code>--input</code> JSON, read back verified (correct authors + full bodies).</li>
-<li>Drafts + live comment links recorded in docs/outreach/R3/index.md; PR #7 merged (preflight green).</li>
-<li>Next levers: watch issue-thread referrals in /stats/clicks (by_src), then R4 batch of 6 fresh issue matches incl. tax-calculator.</li>
-</ul>
-<h2>Previous round — R32 (2026-09-28)</h2>
-    <ul>
-      <li><b>STOREFRONT GAP CLOSED — the 7 new servers now have full storefront presence on mcp.zovo.one</b>: before R32 they had zero site presence (no /s/ page, no setup pages, not listed). Now: 7 new product pages (/s/pomodoro, /s/budget, /s/loan-calculator, /s/payroll, /s/receipts, /s/stripe-billing, /s/tax-calc), 7 &times; 6 = 42 new /setup/&lt;client&gt;/&lt;server&gt; pages, sitemap 228 &rarr; 235 URLs, all 7 in LISTED_IDS/SERVER_IDS (47 &rarr; 54 listed servers) and in the rotating "More servers" internal-link pool on every page.</li>
-      <li>Free-server model: the 7 get full pages without Stripe prices — /buy/&lt;id&gt; aliases to the $39 bundle via PRODUCT_ALIASES (same pattern as office-suite). Written 7 rich READMEs + facts.json entries; build-pages/build-figures extended for JS (serve()-style) servers.</li>
-      <li>Verified live: all 7 /s/ pages 200, setup pages 200, /buy alias 200, sitemap contains all 7. Billing suite 173/173 green (incl. monitor buy-batch fix: free aliases excluded from scheduled probe). Deployed worker 2b0faf5b.</li>
-      <li>Committed via PR #4 (protected main; preflight green) &rarr; merged bf6ad493.</li>
-      <li>Next levers: 20 outreach emails (Resend ready); Glama + mcp.so manual sign-ins; GSC re-crawl check on the 7 new URLs in ~1 week.</li>
-    </ul>
-  </section>
-
-  <section>
-    <h2>Previous round — R31 (2026-09-28)</h2>
-    <ul>
-      <li><b>mcpservers.org COMPLETE for the 7 new R28b servers</b>: pomodoro, budget, loan-calculator, payroll, receipts, stripe-billing, tax-calculator all confirmed "Submission Successful!" (2026-09-28). Directory total now <b>61 accepted submissions</b>; listings enter review (~2 weeks).</li>
-      <li><b>Resend license-delivery email LIVE</b>: on Stripe webhook fulfillment the buyer receives their license key by email from mike@zovo.one (worker b8077a53; PR #2 merged to main). Idempotent via KV flag; email failure is log-only, never breaks fulfillment. Billing suite 173/173 green.</li>
-      <li>Resend transport verified end-to-end (probe delivered; 3 domains verified). Key at ~/.secrets/resend_zovo.key.</li>
-      <li>KPI: distribution surfaces live 20 &rarr; 21; kpi.json + distribution.json updated.</li>
-      <li>Next levers: 20 hand-written outreach emails to directory/newsletter maintainers (Resend ready); Glama + mcp.so still need one manual sign-in each.</li>
-    </ul>
-  </section>
-
-  <section>
-    <h2>Latest distribution round — R28b (2026-09-26)</h2>
-    <ul>
-      <li>mcpservers.org: <b>16 submissions accepted</b> (R27: 4, R28: 12) — added quotes, time-tracker, expense-tracker, currency, invoice-generator, pomodoro, loan-calculator, receipts, budget, payroll, tax-calc, stripe-billing. Registry-name field left empty (R28 learning).</li>
-      <li><b>7 new servers built and shipped</b> (b22b5d62): pomodoro, loan-calculator, receipts, budget, payroll, tax-calc, stripe-billing — all smoke-tested green end-to-end via MCP client, pushed as standalone repos + estate subfolders with official-registry server.json.</li>
-      <li>Dead-link fix: 7 standalone repos created on GitHub before submission verification caught 404s — all submitted URLs now resolve.</li>
-      <li>KPI: mcpservers.org surface count 4 → 16. Next levers: registry publish run for the 7 new servers, Smithery remote listings, Glama/mcp.so manual sign-ins.</li>
-      <li>R27 round: 47/47 official registry, Glama 47/47, GitMCP 47/47 deep links (0dbedf60). Details: <span class="mono">intel/dist-r27.md</span>.</li>
-      <li>Blocked, human-gated: mcp.so submit (sign-in), Glama claim (GitHub OAuth). Needs one manual browser sign-in each.</li>
-    </ul>
-  </section>
 
   <section>
     <h2>Servers</h2>
@@ -291,6 +223,20 @@
     <td><span class="pill pill-pending" title="npm">npm: unknown</span> <span class="pill pill-pending" title="registry">registry: unknown</span> <span class="pill pill-pending" title="github">github: unknown</span> <span class="pill pill-pending" title="smithery">smithery: unknown</span> <span class="pill pill-pending" title="glama">glama: unknown</span></td>
     <td class="num mono">$19</td>
     <td><a href="https://mcp.zovo.one/buy/billing-docs">https://mcp.zovo.one/buy/billing-docs</a></td>
+  </tr>
+<tr>
+    <td class="mono">budget</td>
+    <td class="mono">1.0.0</td>
+    <td class="num">0</td>
+    <td class="tools" title="pending">pending</td>
+    <td>pending</td>
+    <td><span class="pill pill-bad" title="build">build: no</span></td>
+    <td class="mono">pending</td>
+    <td class="mono">pending</td>
+    <td><span class="pill pill-ok" title="readme">readme: yes</span> <span class="pill pill-ok" title="server.json">server.json: yes</span> <span class="pill pill-bad" title="smithery.yaml">smithery.yaml: no</span> <span class="pill pill-bad" title="dockerfile">dockerfile: no</span> <span class="pill pill-bad" title="license">license: no</span></td>
+    <td><span class="pill pill-pending" title="npm">npm: unknown</span> <span class="pill pill-pending" title="registry">registry: unknown</span> <span class="pill pill-pending" title="github">github: unknown</span> <span class="pill pill-pending" title="smithery">smithery: unknown</span> <span class="pill pill-pending" title="glama">glama: unknown</span></td>
+    <td class="num mono">$19</td>
+    <td><a href="https://mcp.zovo.one/buy/budget">https://mcp.zovo.one/buy/budget</a></td>
   </tr>
 <tr>
     <td class="mono">calendar</td>
@@ -559,6 +505,20 @@
     <td><a href="https://mcp.zovo.one/buy/leave">https://mcp.zovo.one/buy/leave</a></td>
   </tr>
 <tr>
+    <td class="mono">loan-calculator</td>
+    <td class="mono">1.0.0</td>
+    <td class="num">0</td>
+    <td class="tools" title="pending">pending</td>
+    <td>pending</td>
+    <td><span class="pill pill-bad" title="build">build: no</span></td>
+    <td class="mono">pending</td>
+    <td class="mono">pending</td>
+    <td><span class="pill pill-ok" title="readme">readme: yes</span> <span class="pill pill-ok" title="server.json">server.json: yes</span> <span class="pill pill-bad" title="smithery.yaml">smithery.yaml: no</span> <span class="pill pill-bad" title="dockerfile">dockerfile: no</span> <span class="pill pill-bad" title="license">license: no</span></td>
+    <td><span class="pill pill-pending" title="npm">npm: unknown</span> <span class="pill pill-pending" title="registry">registry: unknown</span> <span class="pill pill-pending" title="github">github: unknown</span> <span class="pill pill-pending" title="smithery">smithery: unknown</span> <span class="pill pill-pending" title="glama">glama: unknown</span></td>
+    <td class="num mono">$19</td>
+    <td><a href="https://mcp.zovo.one/buy/loan-calculator">https://mcp.zovo.one/buy/loan-calculator</a></td>
+  </tr>
+<tr>
     <td class="mono">maintenance-log</td>
     <td class="mono">0.22.0</td>
     <td class="num">6</td>
@@ -629,6 +589,20 @@
     <td><a href="https://mcp.zovo.one/buy/packing-list">https://mcp.zovo.one/buy/packing-list</a></td>
   </tr>
 <tr>
+    <td class="mono">payroll</td>
+    <td class="mono">1.0.0</td>
+    <td class="num">0</td>
+    <td class="tools" title="pending">pending</td>
+    <td>pending</td>
+    <td><span class="pill pill-bad" title="build">build: no</span></td>
+    <td class="mono">pending</td>
+    <td class="mono">pending</td>
+    <td><span class="pill pill-ok" title="readme">readme: yes</span> <span class="pill pill-ok" title="server.json">server.json: yes</span> <span class="pill pill-bad" title="smithery.yaml">smithery.yaml: no</span> <span class="pill pill-bad" title="dockerfile">dockerfile: no</span> <span class="pill pill-bad" title="license">license: no</span></td>
+    <td><span class="pill pill-pending" title="npm">npm: unknown</span> <span class="pill pill-pending" title="registry">registry: unknown</span> <span class="pill pill-pending" title="github">github: unknown</span> <span class="pill pill-pending" title="smithery">smithery: unknown</span> <span class="pill pill-pending" title="glama">glama: unknown</span></td>
+    <td class="num mono">$19</td>
+    <td><a href="https://mcp.zovo.one/buy/payroll">https://mcp.zovo.one/buy/payroll</a></td>
+  </tr>
+<tr>
     <td class="mono">pdf</td>
     <td class="mono">0.22.0</td>
     <td class="num">10</td>
@@ -671,6 +645,20 @@
     <td><a href="https://mcp.zovo.one/buy/petty-cash">https://mcp.zovo.one/buy/petty-cash</a></td>
   </tr>
 <tr>
+    <td class="mono">pomodoro</td>
+    <td class="mono">1.0.0</td>
+    <td class="num">0</td>
+    <td class="tools" title="pending">pending</td>
+    <td>pending</td>
+    <td><span class="pill pill-bad" title="build">build: no</span></td>
+    <td class="mono">pending</td>
+    <td class="mono">pending</td>
+    <td><span class="pill pill-ok" title="readme">readme: yes</span> <span class="pill pill-ok" title="server.json">server.json: yes</span> <span class="pill pill-bad" title="smithery.yaml">smithery.yaml: no</span> <span class="pill pill-bad" title="dockerfile">dockerfile: no</span> <span class="pill pill-bad" title="license">license: no</span></td>
+    <td><span class="pill pill-pending" title="npm">npm: unknown</span> <span class="pill pill-pending" title="registry">registry: unknown</span> <span class="pill pill-pending" title="github">github: unknown</span> <span class="pill pill-pending" title="smithery">smithery: unknown</span> <span class="pill pill-pending" title="glama">glama: unknown</span></td>
+    <td class="num mono">$19</td>
+    <td><a href="https://mcp.zovo.one/buy/pomodoro">https://mcp.zovo.one/buy/pomodoro</a></td>
+  </tr>
+<tr>
     <td class="mono">price-tracker</td>
     <td class="mono">0.22.0</td>
     <td class="num">8</td>
@@ -711,6 +699,20 @@
     <td><span class="pill pill-pending" title="npm">npm: unknown</span> <span class="pill pill-pending" title="registry">registry: unknown</span> <span class="pill pill-pending" title="github">github: unknown</span> <span class="pill pill-pending" title="smithery">smithery: unknown</span> <span class="pill pill-pending" title="glama">glama: unknown</span></td>
     <td class="num mono">$19</td>
     <td><a href="https://mcp.zovo.one/buy/quotes">https://mcp.zovo.one/buy/quotes</a></td>
+  </tr>
+<tr>
+    <td class="mono">receipts</td>
+    <td class="mono">1.0.0</td>
+    <td class="num">0</td>
+    <td class="tools" title="pending">pending</td>
+    <td>pending</td>
+    <td><span class="pill pill-bad" title="build">build: no</span></td>
+    <td class="mono">pending</td>
+    <td class="mono">pending</td>
+    <td><span class="pill pill-ok" title="readme">readme: yes</span> <span class="pill pill-ok" title="server.json">server.json: yes</span> <span class="pill pill-bad" title="smithery.yaml">smithery.yaml: no</span> <span class="pill pill-bad" title="dockerfile">dockerfile: no</span> <span class="pill pill-bad" title="license">license: no</span></td>
+    <td><span class="pill pill-pending" title="npm">npm: unknown</span> <span class="pill pill-pending" title="registry">registry: unknown</span> <span class="pill pill-pending" title="github">github: unknown</span> <span class="pill pill-pending" title="smithery">smithery: unknown</span> <span class="pill pill-pending" title="glama">glama: unknown</span></td>
+    <td class="num mono">$19</td>
+    <td><a href="https://mcp.zovo.one/buy/receipts">https://mcp.zovo.one/buy/receipts</a></td>
   </tr>
 <tr>
     <td class="mono">recurring</td>
@@ -783,6 +785,20 @@
     <td><a href="https://mcp.zovo.one/buy/statement-of-account">https://mcp.zovo.one/buy/statement-of-account</a></td>
   </tr>
 <tr>
+    <td class="mono">stripe-billing</td>
+    <td class="mono">1.0.0</td>
+    <td class="num">0</td>
+    <td class="tools" title="pending">pending</td>
+    <td>pending</td>
+    <td><span class="pill pill-bad" title="build">build: no</span></td>
+    <td class="mono">pending</td>
+    <td class="mono">pending</td>
+    <td><span class="pill pill-ok" title="readme">readme: yes</span> <span class="pill pill-ok" title="server.json">server.json: yes</span> <span class="pill pill-bad" title="smithery.yaml">smithery.yaml: no</span> <span class="pill pill-bad" title="dockerfile">dockerfile: no</span> <span class="pill pill-bad" title="license">license: no</span></td>
+    <td><span class="pill pill-pending" title="npm">npm: unknown</span> <span class="pill pill-pending" title="registry">registry: unknown</span> <span class="pill pill-pending" title="github">github: unknown</span> <span class="pill pill-pending" title="smithery">smithery: unknown</span> <span class="pill pill-pending" title="glama">glama: unknown</span></td>
+    <td class="num mono">$19</td>
+    <td><a href="https://mcp.zovo.one/buy/stripe-billing">https://mcp.zovo.one/buy/stripe-billing</a></td>
+  </tr>
+<tr>
     <td class="mono">supplier-list</td>
     <td class="mono">0.22.0</td>
     <td class="num">8</td>
@@ -795,6 +811,20 @@
     <td><span class="pill pill-pending" title="npm">npm: unknown</span> <span class="pill pill-pending" title="registry">registry: unknown</span> <span class="pill pill-pending" title="github">github: unknown</span> <span class="pill pill-pending" title="smithery">smithery: unknown</span> <span class="pill pill-pending" title="glama">glama: unknown</span></td>
     <td class="num mono">$19</td>
     <td><a href="https://mcp.zovo.one/buy/supplier-list">https://mcp.zovo.one/buy/supplier-list</a></td>
+  </tr>
+<tr>
+    <td class="mono">tax-calc</td>
+    <td class="mono">1.0.0</td>
+    <td class="num">0</td>
+    <td class="tools" title="pending">pending</td>
+    <td>pending</td>
+    <td><span class="pill pill-bad" title="build">build: no</span></td>
+    <td class="mono">pending</td>
+    <td class="mono">pending</td>
+    <td><span class="pill pill-ok" title="readme">readme: yes</span> <span class="pill pill-ok" title="server.json">server.json: yes</span> <span class="pill pill-bad" title="smithery.yaml">smithery.yaml: no</span> <span class="pill pill-bad" title="dockerfile">dockerfile: no</span> <span class="pill pill-bad" title="license">license: no</span></td>
+    <td><span class="pill pill-pending" title="npm">npm: unknown</span> <span class="pill pill-pending" title="registry">registry: unknown</span> <span class="pill pill-pending" title="github">github: unknown</span> <span class="pill pill-pending" title="smithery">smithery: unknown</span> <span class="pill pill-pending" title="glama">glama: unknown</span></td>
+    <td class="num mono">$19</td>
+    <td><a href="https://mcp.zovo.one/buy/tax-calc">https://mcp.zovo.one/buy/tax-calc</a></td>
   </tr>
 <tr>
     <td class="mono">time-tracker</td>
@@ -872,6 +902,7 @@
 <tr><td class="mono">barcode</td><td class="num mono">$19</td><td><a href="https://mcp.zovo.one/buy/barcode">https://mcp.zovo.one/buy/barcode</a></td></tr>
 <tr><td class="mono">bill-of-sale</td><td class="num mono">$19</td><td><a href="https://mcp.zovo.one/buy/bill-of-sale">https://mcp.zovo.one/buy/bill-of-sale</a></td></tr>
 <tr><td class="mono">billing-docs</td><td class="num mono">$19</td><td><a href="https://mcp.zovo.one/buy/billing-docs">https://mcp.zovo.one/buy/billing-docs</a></td></tr>
+<tr><td class="mono">budget</td><td class="num mono">$19</td><td><a href="https://mcp.zovo.one/buy/budget">https://mcp.zovo.one/buy/budget</a></td></tr>
 <tr><td class="mono">calendar</td><td class="num mono">$19</td><td><a href="https://mcp.zovo.one/buy/calendar">https://mcp.zovo.one/buy/calendar</a></td></tr>
 <tr><td class="mono">cash-book</td><td class="num mono">$19</td><td><a href="https://mcp.zovo.one/buy/cash-book">https://mcp.zovo.one/buy/cash-book</a></td></tr>
 <tr><td class="mono">catalogue</td><td class="num mono">$19</td><td><a href="https://mcp.zovo.one/buy/catalogue">https://mcp.zovo.one/buy/catalogue</a></td></tr>
@@ -891,23 +922,29 @@
 <tr><td class="mono">job-card</td><td class="num mono">$19</td><td><a href="https://mcp.zovo.one/buy/job-card">https://mcp.zovo.one/buy/job-card</a></td></tr>
 <tr><td class="mono">kanban</td><td class="num mono">$19</td><td><a href="https://mcp.zovo.one/buy/kanban">https://mcp.zovo.one/buy/kanban</a></td></tr>
 <tr><td class="mono">leave</td><td class="num mono">$19</td><td><a href="https://mcp.zovo.one/buy/leave">https://mcp.zovo.one/buy/leave</a></td></tr>
+<tr><td class="mono">loan-calculator</td><td class="num mono">$19</td><td><a href="https://mcp.zovo.one/buy/loan-calculator">https://mcp.zovo.one/buy/loan-calculator</a></td></tr>
 <tr><td class="mono">maintenance-log</td><td class="num mono">$19</td><td><a href="https://mcp.zovo.one/buy/maintenance-log">https://mcp.zovo.one/buy/maintenance-log</a></td></tr>
 <tr><td class="mono">mileage-log</td><td class="num mono">$19</td><td><a href="https://mcp.zovo.one/buy/mileage-log">https://mcp.zovo.one/buy/mileage-log</a></td></tr>
 <tr><td class="mono">office-suite</td><td class="num mono">$19</td><td><a href="https://mcp.zovo.one/buy/office-suite">https://mcp.zovo.one/buy/office-suite</a></td></tr>
 <tr><td class="mono">onboarding</td><td class="num mono">$19</td><td><a href="https://mcp.zovo.one/buy/onboarding">https://mcp.zovo.one/buy/onboarding</a></td></tr>
 <tr><td class="mono">packing-list</td><td class="num mono">$19</td><td><a href="https://mcp.zovo.one/buy/packing-list">https://mcp.zovo.one/buy/packing-list</a></td></tr>
+<tr><td class="mono">payroll</td><td class="num mono">$19</td><td><a href="https://mcp.zovo.one/buy/payroll">https://mcp.zovo.one/buy/payroll</a></td></tr>
 <tr><td class="mono">pdf</td><td class="num mono">$19</td><td><a href="https://mcp.zovo.one/buy/pdf">https://mcp.zovo.one/buy/pdf</a></td></tr>
 <tr><td class="mono">per-diem</td><td class="num mono">$19</td><td><a href="https://mcp.zovo.one/buy/per-diem">https://mcp.zovo.one/buy/per-diem</a></td></tr>
 <tr><td class="mono">petty-cash</td><td class="num mono">$19</td><td><a href="https://mcp.zovo.one/buy/petty-cash">https://mcp.zovo.one/buy/petty-cash</a></td></tr>
+<tr><td class="mono">pomodoro</td><td class="num mono">$19</td><td><a href="https://mcp.zovo.one/buy/pomodoro">https://mcp.zovo.one/buy/pomodoro</a></td></tr>
 <tr><td class="mono">price-tracker</td><td class="num mono">$19</td><td><a href="https://mcp.zovo.one/buy/price-tracker">https://mcp.zovo.one/buy/price-tracker</a></td></tr>
 <tr><td class="mono">purchase-requisition</td><td class="num mono">$19</td><td><a href="https://mcp.zovo.one/buy/purchase-requisition">https://mcp.zovo.one/buy/purchase-requisition</a></td></tr>
 <tr><td class="mono">quotes</td><td class="num mono">$19</td><td><a href="https://mcp.zovo.one/buy/quotes">https://mcp.zovo.one/buy/quotes</a></td></tr>
+<tr><td class="mono">receipts</td><td class="num mono">$19</td><td><a href="https://mcp.zovo.one/buy/receipts">https://mcp.zovo.one/buy/receipts</a></td></tr>
 <tr><td class="mono">recurring</td><td class="num mono">$19</td><td><a href="https://mcp.zovo.one/buy/recurring">https://mcp.zovo.one/buy/recurring</a></td></tr>
 <tr><td class="mono">resume</td><td class="num mono">$19</td><td><a href="https://mcp.zovo.one/buy/resume">https://mcp.zovo.one/buy/resume</a></td></tr>
 <tr><td class="mono">service-agreement</td><td class="num mono">$19</td><td><a href="https://mcp.zovo.one/buy/service-agreement">https://mcp.zovo.one/buy/service-agreement</a></td></tr>
 <tr><td class="mono">spreadsheet</td><td class="num mono">$19</td><td><a href="https://mcp.zovo.one/buy/spreadsheet">https://mcp.zovo.one/buy/spreadsheet</a></td></tr>
 <tr><td class="mono">statement-of-account</td><td class="num mono">$19</td><td><a href="https://mcp.zovo.one/buy/statement-of-account">https://mcp.zovo.one/buy/statement-of-account</a></td></tr>
+<tr><td class="mono">stripe-billing</td><td class="num mono">$19</td><td><a href="https://mcp.zovo.one/buy/stripe-billing">https://mcp.zovo.one/buy/stripe-billing</a></td></tr>
 <tr><td class="mono">supplier-list</td><td class="num mono">$19</td><td><a href="https://mcp.zovo.one/buy/supplier-list">https://mcp.zovo.one/buy/supplier-list</a></td></tr>
+<tr><td class="mono">tax-calc</td><td class="num mono">$19</td><td><a href="https://mcp.zovo.one/buy/tax-calc">https://mcp.zovo.one/buy/tax-calc</a></td></tr>
 <tr><td class="mono">time-tracker</td><td class="num mono">$19</td><td><a href="https://mcp.zovo.one/buy/time-tracker">https://mcp.zovo.one/buy/time-tracker</a></td></tr>
 <tr><td class="mono">timezone</td><td class="num mono">$19</td><td><a href="https://mcp.zovo.one/buy/timezone">https://mcp.zovo.one/buy/timezone</a></td></tr>
 <tr><td class="mono">work-order</td><td class="num mono">$19</td><td><a href="https://mcp.zovo.one/buy/work-order">https://mcp.zovo.one/buy/work-order</a></td></tr>
@@ -930,6 +967,7 @@
 <tr><td class="mono">barcode</td><td>unknown</td><td>unknown</td><td>unknown</td><td>unknown</td><td>unknown</td></tr>
 <tr><td class="mono">bill-of-sale</td><td>unknown</td><td>unknown</td><td>unknown</td><td>unknown</td><td>unknown</td></tr>
 <tr><td class="mono">billing-docs</td><td>unknown</td><td>unknown</td><td>unknown</td><td>unknown</td><td>unknown</td></tr>
+<tr><td class="mono">budget</td><td>unknown</td><td>unknown</td><td>unknown</td><td>unknown</td><td>unknown</td></tr>
 <tr><td class="mono">calendar</td><td>unknown</td><td>unknown</td><td>unknown</td><td>unknown</td><td>unknown</td></tr>
 <tr><td class="mono">cash-book</td><td>unknown</td><td>unknown</td><td>unknown</td><td>unknown</td><td>unknown</td></tr>
 <tr><td class="mono">catalogue</td><td>unknown</td><td>unknown</td><td>unknown</td><td>unknown</td><td>unknown</td></tr>
@@ -949,23 +987,29 @@
 <tr><td class="mono">job-card</td><td>unknown</td><td>unknown</td><td>unknown</td><td>unknown</td><td>unknown</td></tr>
 <tr><td class="mono">kanban</td><td>unknown</td><td>unknown</td><td>unknown</td><td>unknown</td><td>unknown</td></tr>
 <tr><td class="mono">leave</td><td>unknown</td><td>unknown</td><td>unknown</td><td>unknown</td><td>unknown</td></tr>
+<tr><td class="mono">loan-calculator</td><td>unknown</td><td>unknown</td><td>unknown</td><td>unknown</td><td>unknown</td></tr>
 <tr><td class="mono">maintenance-log</td><td>unknown</td><td>unknown</td><td>unknown</td><td>unknown</td><td>unknown</td></tr>
 <tr><td class="mono">mileage-log</td><td>unknown</td><td>unknown</td><td>unknown</td><td>unknown</td><td>unknown</td></tr>
 <tr><td class="mono">office-suite</td><td>unknown</td><td>unknown</td><td>unknown</td><td>unknown</td><td>unknown</td></tr>
 <tr><td class="mono">onboarding</td><td>unknown</td><td>unknown</td><td>unknown</td><td>unknown</td><td>unknown</td></tr>
 <tr><td class="mono">packing-list</td><td>unknown</td><td>unknown</td><td>unknown</td><td>unknown</td><td>unknown</td></tr>
+<tr><td class="mono">payroll</td><td>unknown</td><td>unknown</td><td>unknown</td><td>unknown</td><td>unknown</td></tr>
 <tr><td class="mono">pdf</td><td>unknown</td><td>unknown</td><td>unknown</td><td>unknown</td><td>unknown</td></tr>
 <tr><td class="mono">per-diem</td><td>unknown</td><td>unknown</td><td>unknown</td><td>unknown</td><td>unknown</td></tr>
 <tr><td class="mono">petty-cash</td><td>unknown</td><td>unknown</td><td>unknown</td><td>unknown</td><td>unknown</td></tr>
+<tr><td class="mono">pomodoro</td><td>unknown</td><td>unknown</td><td>unknown</td><td>unknown</td><td>unknown</td></tr>
 <tr><td class="mono">price-tracker</td><td>unknown</td><td>unknown</td><td>unknown</td><td>unknown</td><td>unknown</td></tr>
 <tr><td class="mono">purchase-requisition</td><td>unknown</td><td>unknown</td><td>unknown</td><td>unknown</td><td>unknown</td></tr>
 <tr><td class="mono">quotes</td><td>unknown</td><td>unknown</td><td>unknown</td><td>unknown</td><td>unknown</td></tr>
+<tr><td class="mono">receipts</td><td>unknown</td><td>unknown</td><td>unknown</td><td>unknown</td><td>unknown</td></tr>
 <tr><td class="mono">recurring</td><td>unknown</td><td>unknown</td><td>unknown</td><td>unknown</td><td>unknown</td></tr>
 <tr><td class="mono">resume</td><td>unknown</td><td>unknown</td><td>unknown</td><td>unknown</td><td>unknown</td></tr>
 <tr><td class="mono">service-agreement</td><td>unknown</td><td>unknown</td><td>unknown</td><td>unknown</td><td>unknown</td></tr>
 <tr><td class="mono">spreadsheet</td><td>unknown</td><td>unknown</td><td>unknown</td><td>unknown</td><td>unknown</td></tr>
 <tr><td class="mono">statement-of-account</td><td>unknown</td><td>unknown</td><td>unknown</td><td>unknown</td><td>unknown</td></tr>
+<tr><td class="mono">stripe-billing</td><td>unknown</td><td>unknown</td><td>unknown</td><td>unknown</td><td>unknown</td></tr>
 <tr><td class="mono">supplier-list</td><td>unknown</td><td>unknown</td><td>unknown</td><td>unknown</td><td>unknown</td></tr>
+<tr><td class="mono">tax-calc</td><td>unknown</td><td>unknown</td><td>unknown</td><td>unknown</td><td>unknown</td></tr>
 <tr><td class="mono">time-tracker</td><td>unknown</td><td>unknown</td><td>unknown</td><td>unknown</td><td>unknown</td></tr>
 <tr><td class="mono">timezone</td><td>unknown</td><td>unknown</td><td>unknown</td><td>unknown</td><td>unknown</td></tr>
 <tr><td class="mono">work-order</td><td>unknown</td><td>unknown</td><td>unknown</td><td>unknown</td><td>unknown</td></tr>
@@ -999,6 +1043,7 @@
 <tr><td class="mono">docs/BILLING_BIND_RESULT.md</td><td>In-product upgrade path (billing &lt;-&gt; hosted endpoints bind) — RESULT</td></tr>
 <tr><td class="mono">docs/BILLING_DOCS_AUDIT.md</td><td>mcp-billing-docs: Part 2 CLI run and the remaining Part 1 probes</td></tr>
 <tr><td class="mono">docs/BILLING_DOCS_RESULT.md</td><td>mcp-billing-docs: build</td></tr>
+<tr><td class="mono">docs/BILLING_RELEASE_CONTROL.md</td><td>Billing release control</td></tr>
 <tr><td class="mono">docs/BLIND_RECOMMENDATION_PROCEDURE.md</td><td>Blind recommendation test: the estate&#39;s primary discovery KPI</td></tr>
 <tr><td class="mono">docs/BLIND_RECOMMENDATION_R1.md</td><td>Blind MCP Recommendation Run — R1</td></tr>
 <tr><td class="mono">docs/BLIND_RECOMMENDATION_R2.md</td><td>Blind Recommendation Run R2 — 18 Buyer Questions</td></tr>
@@ -1238,6 +1283,7 @@
 <tr><td class="mono">docs/RELEASE_V0210.md</td><td>Release v0.21.0 (2026-09-07)</td></tr>
 <tr><td class="mono">docs/RELEASE_V0220.md</td><td>Release v0.22.0 (2026-09-17)</td></tr>
 <tr><td class="mono">docs/RELEASE_V0230.md</td><td>Release v0.23.0 (2026-09-19)</td></tr>
+<tr><td class="mono">docs/RELEASE_V0240.md</td><td>Release v0.24.0 (2026-09-28)</td></tr>
 <tr><td class="mono">docs/RELEASE_V060.md</td><td>Release v0.6.0</td></tr>
 <tr><td class="mono">docs/RELEASE_V061.md</td><td>Release v0.6.1</td></tr>
 <tr><td class="mono">docs/RELEASE_V070.md</td><td>Release v0.7.0</td></tr>
@@ -1551,6 +1597,17 @@
 <li>billing-docs: github not published (unknown)</li>
 <li>billing-docs: smithery not published (unknown)</li>
 <li>billing-docs: glama not published (unknown)</li>
+<li>budget: build not present (dist/index.js missing) — run npm run build</li>
+<li>budget: no tools parsed from src/index.ts (missing or not yet written)</li>
+<li>budget: LICENSE missing</li>
+<li>budget: smithery.yaml missing</li>
+<li>budget: Dockerfile missing</li>
+<li>budget: RESULT.md missing or has no status line</li>
+<li>budget: npm not published (unknown)</li>
+<li>budget: registry not published (unknown)</li>
+<li>budget: github not published (unknown)</li>
+<li>budget: smithery not published (unknown)</li>
+<li>budget: glama not published (unknown)</li>
 <li>calendar: npm not published (unknown)</li>
 <li>calendar: registry not published (unknown)</li>
 <li>calendar: github not published (unknown)</li>
@@ -1646,6 +1703,17 @@
 <li>leave: github not published (unknown)</li>
 <li>leave: smithery not published (unknown)</li>
 <li>leave: glama not published (unknown)</li>
+<li>loan-calculator: build not present (dist/index.js missing) — run npm run build</li>
+<li>loan-calculator: no tools parsed from src/index.ts (missing or not yet written)</li>
+<li>loan-calculator: LICENSE missing</li>
+<li>loan-calculator: smithery.yaml missing</li>
+<li>loan-calculator: Dockerfile missing</li>
+<li>loan-calculator: RESULT.md missing or has no status line</li>
+<li>loan-calculator: npm not published (unknown)</li>
+<li>loan-calculator: registry not published (unknown)</li>
+<li>loan-calculator: github not published (unknown)</li>
+<li>loan-calculator: smithery not published (unknown)</li>
+<li>loan-calculator: glama not published (unknown)</li>
 <li>maintenance-log: npm not published (unknown)</li>
 <li>maintenance-log: registry not published (unknown)</li>
 <li>maintenance-log: github not published (unknown)</li>
@@ -1672,6 +1740,17 @@
 <li>packing-list: github not published (unknown)</li>
 <li>packing-list: smithery not published (unknown)</li>
 <li>packing-list: glama not published (unknown)</li>
+<li>payroll: build not present (dist/index.js missing) — run npm run build</li>
+<li>payroll: no tools parsed from src/index.ts (missing or not yet written)</li>
+<li>payroll: LICENSE missing</li>
+<li>payroll: smithery.yaml missing</li>
+<li>payroll: Dockerfile missing</li>
+<li>payroll: RESULT.md missing or has no status line</li>
+<li>payroll: npm not published (unknown)</li>
+<li>payroll: registry not published (unknown)</li>
+<li>payroll: github not published (unknown)</li>
+<li>payroll: smithery not published (unknown)</li>
+<li>payroll: glama not published (unknown)</li>
 <li>pdf: npm not published (unknown)</li>
 <li>pdf: registry not published (unknown)</li>
 <li>pdf: github not published (unknown)</li>
@@ -1687,6 +1766,17 @@
 <li>petty-cash: github not published (unknown)</li>
 <li>petty-cash: smithery not published (unknown)</li>
 <li>petty-cash: glama not published (unknown)</li>
+<li>pomodoro: build not present (dist/index.js missing) — run npm run build</li>
+<li>pomodoro: no tools parsed from src/index.ts (missing or not yet written)</li>
+<li>pomodoro: LICENSE missing</li>
+<li>pomodoro: smithery.yaml missing</li>
+<li>pomodoro: Dockerfile missing</li>
+<li>pomodoro: RESULT.md missing or has no status line</li>
+<li>pomodoro: npm not published (unknown)</li>
+<li>pomodoro: registry not published (unknown)</li>
+<li>pomodoro: github not published (unknown)</li>
+<li>pomodoro: smithery not published (unknown)</li>
+<li>pomodoro: glama not published (unknown)</li>
 <li>price-tracker: npm not published (unknown)</li>
 <li>price-tracker: registry not published (unknown)</li>
 <li>price-tracker: github not published (unknown)</li>
@@ -1702,6 +1792,17 @@
 <li>quotes: github not published (unknown)</li>
 <li>quotes: smithery not published (unknown)</li>
 <li>quotes: glama not published (unknown)</li>
+<li>receipts: build not present (dist/index.js missing) — run npm run build</li>
+<li>receipts: no tools parsed from src/index.ts (missing or not yet written)</li>
+<li>receipts: LICENSE missing</li>
+<li>receipts: smithery.yaml missing</li>
+<li>receipts: Dockerfile missing</li>
+<li>receipts: RESULT.md missing or has no status line</li>
+<li>receipts: npm not published (unknown)</li>
+<li>receipts: registry not published (unknown)</li>
+<li>receipts: github not published (unknown)</li>
+<li>receipts: smithery not published (unknown)</li>
+<li>receipts: glama not published (unknown)</li>
 <li>recurring: npm not published (unknown)</li>
 <li>recurring: registry not published (unknown)</li>
 <li>recurring: github not published (unknown)</li>
@@ -1727,11 +1828,33 @@
 <li>statement-of-account: github not published (unknown)</li>
 <li>statement-of-account: smithery not published (unknown)</li>
 <li>statement-of-account: glama not published (unknown)</li>
+<li>stripe-billing: build not present (dist/index.js missing) — run npm run build</li>
+<li>stripe-billing: no tools parsed from src/index.ts (missing or not yet written)</li>
+<li>stripe-billing: LICENSE missing</li>
+<li>stripe-billing: smithery.yaml missing</li>
+<li>stripe-billing: Dockerfile missing</li>
+<li>stripe-billing: RESULT.md missing or has no status line</li>
+<li>stripe-billing: npm not published (unknown)</li>
+<li>stripe-billing: registry not published (unknown)</li>
+<li>stripe-billing: github not published (unknown)</li>
+<li>stripe-billing: smithery not published (unknown)</li>
+<li>stripe-billing: glama not published (unknown)</li>
 <li>supplier-list: npm not published (unknown)</li>
 <li>supplier-list: registry not published (unknown)</li>
 <li>supplier-list: github not published (unknown)</li>
 <li>supplier-list: smithery not published (unknown)</li>
 <li>supplier-list: glama not published (unknown)</li>
+<li>tax-calc: build not present (dist/index.js missing) — run npm run build</li>
+<li>tax-calc: no tools parsed from src/index.ts (missing or not yet written)</li>
+<li>tax-calc: LICENSE missing</li>
+<li>tax-calc: smithery.yaml missing</li>
+<li>tax-calc: Dockerfile missing</li>
+<li>tax-calc: RESULT.md missing or has no status line</li>
+<li>tax-calc: npm not published (unknown)</li>
+<li>tax-calc: registry not published (unknown)</li>
+<li>tax-calc: github not published (unknown)</li>
+<li>tax-calc: smithery not published (unknown)</li>
+<li>tax-calc: glama not published (unknown)</li>
 <li>time-tracker: npm not published (unknown)</li>
 <li>time-tracker: registry not published (unknown)</li>
 <li>time-tracker: github not published (unknown)</li>
@@ -1759,6 +1882,5 @@
     Data: data/ledger.json, regenerate with node scripts/update-dashboard.mjs --note '...'
   </footer>
 </div>
-<!-- S345 2026-09-28: cross-link lever shipped — zovo.one free-tools (1,089 impr/28d) now links mcp.zovo.one from currency-converter + invoice-generator (PR theluckystrike/zovo-tools#3, merged, LIVE verified). IndexNow pinged: 2 zovo.one URLs (202 via www? keyfile 404 on apex — key lives on mcp subdomain) + 5 mcp.zovo.one URLs (200). Rationale: mcp subdomain had 0 real-query impressions; all 19 impressions were site: queries. --><!-- S345 -->
 </body>
 </html>
