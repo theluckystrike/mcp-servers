@@ -3,106 +3,34 @@
   "status": "OK",
   "site": "sc-domain:zovo.one",
   "window": {
-    "start": "2026-08-21",
-    "end": "2026-09-18"
+    "start": "2026-08-29",
+    "end": "2026-09-26"
   },
   "api": "POST https://www.googleapis.com/webmasters/v3/sites/sc-domain:zovo.one/searchAnalytics/query, dataState:final, rowLimit:25000",
   "totals": {
-    "clicks": 59,
-    "impressions": 4855,
-    "page_rows": 422
+    "clicks": 57,
+    "impressions": 4435,
+    "page_rows": 397
   },
   "host_probe": {
     "host": "mcp.zovo.one",
     "filter": "page contains \"//mcp.zovo.one/\"",
     "daily_rows_returned": 29,
-    "days_with_impressions": 8,
+    "days_with_impressions": 9,
     "clicks": 0,
-    "impressions": 19,
+    "impressions": 20,
     "queries": [
       {
         "keys": [
           "site:zovo.one"
         ],
         "clicks": 0,
-        "impressions": 8,
+        "impressions": 9,
         "ctr": 0,
-        "position": 2.875
+        "position": 2.666666666666667
       }
     ],
     "daily": [
-      {
-        "keys": [
-          "2026-08-21"
-        ],
-        "clicks": 0,
-        "impressions": 0,
-        "ctr": 0,
-        "position": 0
-      },
-      {
-        "keys": [
-          "2026-08-22"
-        ],
-        "clicks": 0,
-        "impressions": 0,
-        "ctr": 0,
-        "position": 0
-      },
-      {
-        "keys": [
-          "2026-08-23"
-        ],
-        "clicks": 0,
-        "impressions": 0,
-        "ctr": 0,
-        "position": 0
-      },
-      {
-        "keys": [
-          "2026-08-24"
-        ],
-        "clicks": 0,
-        "impressions": 0,
-        "ctr": 0,
-        "position": 0
-      },
-      {
-        "keys": [
-          "2026-08-25"
-        ],
-        "clicks": 0,
-        "impressions": 0,
-        "ctr": 0,
-        "position": 0
-      },
-      {
-        "keys": [
-          "2026-08-26"
-        ],
-        "clicks": 0,
-        "impressions": 0,
-        "ctr": 0,
-        "position": 0
-      },
-      {
-        "keys": [
-          "2026-08-27"
-        ],
-        "clicks": 0,
-        "impressions": 0,
-        "ctr": 0,
-        "position": 0
-      },
-      {
-        "keys": [
-          "2026-08-28"
-        ],
-        "clicks": 0,
-        "impressions": 0,
-        "ctr": 0,
-        "position": 0
-      },
       {
         "keys": [
           "2026-08-29"
@@ -291,127 +219,6 @@
         "impressions": 0,
         "ctr": 0,
         "position": 0
-      }
-    ],
-    "page_rows_28d": 1,
-    "pages_with_impressions_28d": 1,
-    "pages": [
-      {
-        "keys": [
-          "https://mcp.zovo.one/"
-        ],
-        "clicks": 0,
-        "impressions": 19,
-        "ctr": 0,
-        "position": 3.1052631578947367
-      }
-    ],
-    "ever": {
-      "window": {
-        "start": "2025-05-29",
-        "end": "2026-09-18"
-      },
-      "note": "GSC retains 16 months; 480d is the widest honest \"ever\" probe from this API.",
-      "page_rows": 1,
-      "pages_with_impressions": 1,
-      "impressions": 19,
-      "clicks": 0,
-      "positive_control_zovo_one": {
-        "page_rows": 2589,
-        "pages_with_impressions": 2589,
-        "impressions": 82138
-      }
-    },
-    "positive_control_zovo_one": {
-      "daily_rows_returned": 29,
-      "days_with_impressions": 29,
-      "clicks": 59,
-      "impressions": 4796
-    }
-  },
-  "fresh_probe": {
-    "why": "dataState:'final' lags ~3 days and so cannot show a very recent first impression",
-    "window": {
-      "start": "2026-09-11",
-      "end": "2026-09-21"
-    },
-    "data_state": "all",
-    "host_daily_rows": 11,
-    "host_days_with_impressions": 5,
-    "host_impressions": 14,
-    "host_clicks": 0,
-    "host_daily": [
-      {
-        "keys": [
-          "2026-09-11"
-        ],
-        "clicks": 0,
-        "impressions": 1,
-        "ctr": 0,
-        "position": 5
-      },
-      {
-        "keys": [
-          "2026-09-12"
-        ],
-        "clicks": 0,
-        "impressions": 1,
-        "ctr": 0,
-        "position": 1
-      },
-      {
-        "keys": [
-          "2026-09-13"
-        ],
-        "clicks": 0,
-        "impressions": 2,
-        "ctr": 0,
-        "position": 2
-      },
-      {
-        "keys": [
-          "2026-09-14"
-        ],
-        "clicks": 0,
-        "impressions": 1,
-        "ctr": 0,
-        "position": 1
-      },
-      {
-        "keys": [
-          "2026-09-15"
-        ],
-        "clicks": 0,
-        "impressions": 0,
-        "ctr": 0,
-        "position": 0
-      },
-      {
-        "keys": [
-          "2026-09-16"
-        ],
-        "clicks": 0,
-        "impressions": 0,
-        "ctr": 0,
-        "position": 0
-      },
-      {
-        "keys": [
-          "2026-09-17"
-        ],
-        "clicks": 0,
-        "impressions": 9,
-        "ctr": 0,
-        "position": 1.2222222222222223
-      },
-      {
-        "keys": [
-          "2026-09-18"
-        ],
-        "clicks": 0,
-        "impressions": 0,
-        "ctr": 0,
-        "position": 0
       },
       {
         "keys": [
@@ -439,14 +246,198 @@
         "impressions": 0,
         "ctr": 0,
         "position": 0
+      },
+      {
+        "keys": [
+          "2026-09-22"
+        ],
+        "clicks": 0,
+        "impressions": 0,
+        "ctr": 0,
+        "position": 0
+      },
+      {
+        "keys": [
+          "2026-09-23"
+        ],
+        "clicks": 0,
+        "impressions": 0,
+        "ctr": 0,
+        "position": 0
+      },
+      {
+        "keys": [
+          "2026-09-24"
+        ],
+        "clicks": 0,
+        "impressions": 0,
+        "ctr": 0,
+        "position": 0
+      },
+      {
+        "keys": [
+          "2026-09-25"
+        ],
+        "clicks": 0,
+        "impressions": 0,
+        "ctr": 0,
+        "position": 0
+      },
+      {
+        "keys": [
+          "2026-09-26"
+        ],
+        "clicks": 0,
+        "impressions": 1,
+        "ctr": 0,
+        "position": 1
+      }
+    ],
+    "page_rows_28d": 1,
+    "pages_with_impressions_28d": 1,
+    "pages": [
+      {
+        "keys": [
+          "https://mcp.zovo.one/"
+        ],
+        "clicks": 0,
+        "impressions": 20,
+        "ctr": 0,
+        "position": 3
+      }
+    ],
+    "ever": {
+      "window": {
+        "start": "2025-06-06",
+        "end": "2026-09-26"
+      },
+      "note": "GSC retains 16 months; 480d is the widest honest \"ever\" probe from this API.",
+      "page_rows": 1,
+      "pages_with_impressions": 1,
+      "impressions": 20,
+      "clicks": 0,
+      "positive_control_zovo_one": {
+        "page_rows": 2590,
+        "pages_with_impressions": 2590,
+        "impressions": 83146
+      }
+    },
+    "positive_control_zovo_one": {
+      "daily_rows_returned": 29,
+      "days_with_impressions": 29,
+      "clicks": 57,
+      "impressions": 4402
+    }
+  },
+  "fresh_probe": {
+    "why": "dataState:'final' lags ~3 days and so cannot show a very recent first impression",
+    "window": {
+      "start": "2026-09-19",
+      "end": "2026-09-29"
+    },
+    "data_state": "all",
+    "host_daily_rows": 10,
+    "host_days_with_impressions": 1,
+    "host_impressions": 1,
+    "host_clicks": 0,
+    "host_daily": [
+      {
+        "keys": [
+          "2026-09-19"
+        ],
+        "clicks": 0,
+        "impressions": 0,
+        "ctr": 0,
+        "position": 0
+      },
+      {
+        "keys": [
+          "2026-09-20"
+        ],
+        "clicks": 0,
+        "impressions": 0,
+        "ctr": 0,
+        "position": 0
+      },
+      {
+        "keys": [
+          "2026-09-21"
+        ],
+        "clicks": 0,
+        "impressions": 0,
+        "ctr": 0,
+        "position": 0
+      },
+      {
+        "keys": [
+          "2026-09-22"
+        ],
+        "clicks": 0,
+        "impressions": 0,
+        "ctr": 0,
+        "position": 0
+      },
+      {
+        "keys": [
+          "2026-09-23"
+        ],
+        "clicks": 0,
+        "impressions": 0,
+        "ctr": 0,
+        "position": 0
+      },
+      {
+        "keys": [
+          "2026-09-24"
+        ],
+        "clicks": 0,
+        "impressions": 0,
+        "ctr": 0,
+        "position": 0
+      },
+      {
+        "keys": [
+          "2026-09-25"
+        ],
+        "clicks": 0,
+        "impressions": 0,
+        "ctr": 0,
+        "position": 0
+      },
+      {
+        "keys": [
+          "2026-09-26"
+        ],
+        "clicks": 0,
+        "impressions": 1,
+        "ctr": 0,
+        "position": 1
+      },
+      {
+        "keys": [
+          "2026-09-27"
+        ],
+        "clicks": 0,
+        "impressions": 0,
+        "ctr": 0,
+        "position": 0
+      },
+      {
+        "keys": [
+          "2026-09-28"
+        ],
+        "clicks": 0,
+        "impressions": 0,
+        "ctr": 0,
+        "position": 0
       }
     ],
     "positive_control_zovo_one": {
-      "daily_rows": 11,
+      "daily_rows": 10,
       "days_with_impressions": 10,
-      "impressions": 1229,
-      "clicks": 20,
-      "last_day_with_data": "2026-09-20"
+      "impressions": 1422,
+      "clicks": 16,
+      "last_day_with_data": "2026-09-28"
     }
   },
   "page": [
@@ -455,27 +446,18 @@
         "https://zovo.one/"
       ],
       "clicks": 50,
-      "impressions": 1224,
-      "ctr": 0.04084967320261438,
-      "position": 4.0359477124183005
-    },
-    {
-      "keys": [
-        "https://zovo.one/free-tools/ascii-art-generator"
-      ],
-      "clicks": 2,
-      "impressions": 2,
-      "ctr": 1,
-      "position": 1
+      "impressions": 1263,
+      "ctr": 0.0395882818685669,
+      "position": 3.794140934283452
     },
     {
       "keys": [
         "https://zovo.one/free-tools/collage-maker"
       ],
       "clicks": 2,
-      "impressions": 17,
-      "ctr": 0.11764705882352941,
-      "position": 63.1764705882353
+      "impressions": 14,
+      "ctr": 0.14285714285714285,
+      "position": 58.57142857142857
     },
     {
       "keys": [
@@ -484,6 +466,15 @@
       "clicks": 1,
       "impressions": 1,
       "ctr": 1,
+      "position": 1
+    },
+    {
+      "keys": [
+        "https://zovo.one/free-tools/life-expectancy-calculator"
+      ],
+      "clicks": 1,
+      "impressions": 2,
+      "ctr": 0.5,
       "position": 1
     },
     {
@@ -500,36 +491,27 @@
         "https://zovo.one/free-tools/word-clock"
       ],
       "clicks": 1,
-      "impressions": 9,
-      "ctr": 0.1111111111111111,
-      "position": 48.111111111111114
+      "impressions": 6,
+      "ctr": 0.16666666666666666,
+      "position": 103
     },
     {
       "keys": [
         "https://zovo.one/free-tools/word-cloud-generator"
       ],
       "clicks": 1,
-      "impressions": 5,
-      "ctr": 0.2,
-      "position": 11.2
-    },
-    {
-      "keys": [
-        "https://zovo.one/name"
-      ],
-      "clicks": 1,
-      "impressions": 41,
-      "ctr": 0.024390243902439025,
-      "position": 4.219512195121951
+      "impressions": 1,
+      "ctr": 1,
+      "position": 1
     },
     {
       "keys": [
         "https://mcp.zovo.one/"
       ],
       "clicks": 0,
-      "impressions": 19,
+      "impressions": 20,
       "ctr": 0,
-      "position": 3.1052631578947367
+      "position": 3
     },
     {
       "keys": [
@@ -560,39 +542,12 @@
     },
     {
       "keys": [
-        "https://www.zovo.one/?ref=earlylaunch"
-      ],
-      "clicks": 0,
-      "impressions": 2,
-      "ctr": 0,
-      "position": 1
-    },
-    {
-      "keys": [
-        "https://www.zovo.one/best/chrome-extensions-for-youtube"
-      ],
-      "clicks": 0,
-      "impressions": 22,
-      "ctr": 0,
-      "position": 47.86363636363637
-    },
-    {
-      "keys": [
         "https://www.zovo.one/compare/clipboard-history-pro-vs-ip-domain-country-flag"
       ],
       "clicks": 0,
       "impressions": 1,
       "ctr": 0,
       "position": 82
-    },
-    {
-      "keys": [
-        "https://www.zovo.one/compare/json-formatter-pro-vs-screenpal-screen-recorder-video-editor"
-      ],
-      "clicks": 0,
-      "impressions": 1,
-      "ctr": 0,
-      "position": 6
     },
     {
       "keys": [
@@ -605,15 +560,6 @@
     },
     {
       "keys": [
-        "https://www.zovo.one/compare/tab-suspender-pro-vs-video-popout"
-      ],
-      "clicks": 0,
-      "impressions": 1,
-      "ctr": 0,
-      "position": 5
-    },
-    {
-      "keys": [
         "https://www.zovo.one/compare/unit-converter-vs-font-size-increase"
       ],
       "clicks": 0,
@@ -623,21 +569,12 @@
     },
     {
       "keys": [
-        "https://www.zovo.one/compare/word-counter-vs-video-speed-controller-video-manager"
-      ],
-      "clicks": 0,
-      "impressions": 1,
-      "ctr": 0,
-      "position": 3
-    },
-    {
-      "keys": [
         "https://zovo.one/about"
       ],
       "clicks": 0,
-      "impressions": 31,
+      "impressions": 21,
       "ctr": 0,
-      "position": 4.129032258064516
+      "position": 4.0476190476190474
     },
     {
       "keys": [
@@ -671,63 +608,63 @@
         "https://zovo.one/alternatives/the-great-suspender"
       ],
       "clicks": 0,
-      "impressions": 8,
+      "impressions": 5,
       "ctr": 0,
-      "position": 45.125
+      "position": 49
     },
     {
       "keys": [
         "https://zovo.one/answers"
       ],
       "clicks": 0,
-      "impressions": 14,
+      "impressions": 5,
       "ctr": 0,
-      "position": 18
+      "position": 28.8
     },
     {
       "keys": [
         "https://zovo.one/articles"
       ],
       "clicks": 0,
-      "impressions": 16,
+      "impressions": 8,
       "ctr": 0,
-      "position": 9.25
+      "position": 9.5
     },
     {
       "keys": [
         "https://zovo.one/articles/regex-patterns-real-world"
       ],
       "clicks": 0,
-      "impressions": 3,
+      "impressions": 1,
       "ctr": 0,
-      "position": 69.66666666666667
+      "position": 64
     },
     {
       "keys": [
         "https://zovo.one/best"
       ],
       "clicks": 0,
-      "impressions": 27,
+      "impressions": 16,
       "ctr": 0,
-      "position": 11.185185185185185
+      "position": 9
     },
     {
       "keys": [
         "https://zovo.one/best-for"
       ],
       "clicks": 0,
-      "impressions": 11,
+      "impressions": 9,
       "ctr": 0,
-      "position": 13.363636363636363
+      "position": 15.333333333333334
     },
     {
       "keys": [
         "https://zovo.one/best/best-dark-mode-extensions"
       ],
       "clicks": 0,
-      "impressions": 8,
+      "impressions": 4,
       "ctr": 0,
-      "position": 33.625
+      "position": 55.25
     },
     {
       "keys": [
@@ -743,18 +680,18 @@
         "https://zovo.one/best/best-free-bookmark-managers-chrome-extensions"
       ],
       "clicks": 0,
-      "impressions": 42,
+      "impressions": 44,
       "ctr": 0,
-      "position": 44.57142857142857
+      "position": 44.43181818181818
     },
     {
       "keys": [
         "https://zovo.one/best/best-free-clipboard-managers-chrome-extensions"
       ],
       "clicks": 0,
-      "impressions": 9,
+      "impressions": 7,
       "ctr": 0,
-      "position": 10.777777777777779
+      "position": 10.857142857142858
     },
     {
       "keys": [
@@ -779,36 +716,36 @@
         "https://zovo.one/best/best-free-grammar-checkers-chrome-extensions"
       ],
       "clicks": 0,
-      "impressions": 3,
+      "impressions": 5,
       "ctr": 0,
-      "position": 61.333333333333336
+      "position": 38.8
     },
     {
       "keys": [
         "https://zovo.one/best/best-free-tab-manager-chrome-extensions"
       ],
       "clicks": 0,
-      "impressions": 21,
+      "impressions": 9,
       "ctr": 0,
-      "position": 20.523809523809526
+      "position": 36.22222222222222
     },
     {
       "keys": [
         "https://zovo.one/best/best-free-tab-suspender-chrome-extensions"
       ],
       "clicks": 0,
-      "impressions": 13,
+      "impressions": 9,
       "ctr": 0,
-      "position": 56.15384615384615
+      "position": 51.22222222222222
     },
     {
       "keys": [
         "https://zovo.one/best/best-free-translation-tools-chrome-extensions"
       ],
       "clicks": 0,
-      "impressions": 15,
+      "impressions": 16,
       "ctr": 0,
-      "position": 54.4
+      "position": 51.6875
     },
     {
       "keys": [
@@ -833,9 +770,9 @@
         "https://zovo.one/best/best-note-taking-extensions"
       ],
       "clicks": 0,
-      "impressions": 2,
+      "impressions": 6,
       "ctr": 0,
-      "position": 50
+      "position": 39.666666666666664
     },
     {
       "keys": [
@@ -848,39 +785,39 @@
     },
     {
       "keys": [
-        "https://zovo.one/best/timer-chrome"
-      ],
-      "clicks": 0,
-      "impressions": 4,
-      "ctr": 0,
-      "position": 57.75
-    },
-    {
-      "keys": [
         "https://zovo.one/blog"
       ],
       "clicks": 0,
-      "impressions": 24,
+      "impressions": 18,
       "ctr": 0,
-      "position": 11.875
+      "position": 12.38888888888889
     },
     {
       "keys": [
         "https://zovo.one/blog/chrome-bookmarks-disappeared-recovery.html"
       ],
       "clicks": 0,
-      "impressions": 135,
+      "impressions": 68,
       "ctr": 0,
-      "position": 58.2962962962963
+      "position": 57.98529411764706
+    },
+    {
+      "keys": [
+        "https://zovo.one/blog/chrome-dark-mode-complete-guide.html"
+      ],
+      "clicks": 0,
+      "impressions": 2,
+      "ctr": 0,
+      "position": 14.5
     },
     {
       "keys": [
         "https://zovo.one/blog/chrome-extensions-not-working-fix.html"
       ],
       "clicks": 0,
-      "impressions": 125,
+      "impressions": 79,
       "ctr": 0,
-      "position": 2.184
+      "position": 2.0506329113924053
     },
     {
       "keys": [
@@ -905,36 +842,36 @@
         "https://zovo.one/case-studies"
       ],
       "clicks": 0,
-      "impressions": 8,
+      "impressions": 5,
       "ctr": 0,
-      "position": 27.625
+      "position": 39.6
     },
     {
       "keys": [
         "https://zovo.one/community"
       ],
       "clicks": 0,
-      "impressions": 21,
+      "impressions": 9,
       "ctr": 0,
-      "position": 9.619047619047619
+      "position": 9
     },
     {
       "keys": [
         "https://zovo.one/compare"
       ],
       "clicks": 0,
-      "impressions": 16,
+      "impressions": 13,
       "ctr": 0,
-      "position": 9.0625
+      "position": 9.615384615384615
     },
     {
       "keys": [
         "https://zovo.one/compare/color-picker-vs-colorzilla"
       ],
       "clicks": 0,
-      "impressions": 1,
+      "impressions": 2,
       "ctr": 0,
-      "position": 47
+      "position": 50
     },
     {
       "keys": [
@@ -950,9 +887,9 @@
         "https://zovo.one/compare/cookie-manager-vs-editthiscookie"
       ],
       "clicks": 0,
-      "impressions": 10,
+      "impressions": 3,
       "ctr": 0,
-      "position": 25.2
+      "position": 49.333333333333336
     },
     {
       "keys": [
@@ -968,36 +905,27 @@
         "https://zovo.one/compare/json-formatter-vs-json-viewer-pro"
       ],
       "clicks": 0,
-      "impressions": 17,
+      "impressions": 8,
       "ctr": 0,
-      "position": 24.176470588235293
-    },
-    {
-      "keys": [
-        "https://zovo.one/compare/json-formatter-vs-jsonview"
-      ],
-      "clicks": 0,
-      "impressions": 1,
-      "ctr": 0,
-      "position": 19
+      "position": 38.875
     },
     {
       "keys": [
         "https://zovo.one/compare/privacy-tools"
       ],
       "clicks": 0,
-      "impressions": 4,
+      "impressions": 2,
       "ctr": 0,
-      "position": 23.25
+      "position": 29
     },
     {
       "keys": [
         "https://zovo.one/compare/qr-code-vs-qr-code-generator"
       ],
       "clicks": 0,
-      "impressions": 3,
+      "impressions": 1,
       "ctr": 0,
-      "position": 29.333333333333332
+      "position": 64
     },
     {
       "keys": [
@@ -1031,90 +959,99 @@
         "https://zovo.one/does-it-track"
       ],
       "clicks": 0,
-      "impressions": 27,
+      "impressions": 26,
       "ctr": 0,
-      "position": 10.407407407407407
+      "position": 15.153846153846153
     },
     {
       "keys": [
         "https://zovo.one/expert/case-study-chrome-memory-reduction"
       ],
       "clicks": 0,
-      "impressions": 17,
+      "impressions": 5,
       "ctr": 0,
-      "position": 31.764705882352942
+      "position": 24.4
     },
     {
       "keys": [
         "https://zovo.one/expert/case-study-va-client-retention"
       ],
       "clicks": 0,
-      "impressions": 14,
+      "impressions": 4,
       "ctr": 0,
-      "position": 16.142857142857142
+      "position": 27.75
     },
     {
       "keys": [
         "https://zovo.one/expert/chrome-extension-awards-2026"
       ],
       "clicks": 0,
-      "impressions": 22,
+      "impressions": 9,
       "ctr": 0,
-      "position": 18.727272727272727
+      "position": 13.666666666666666
     },
     {
       "keys": [
         "https://zovo.one/expert/state-of-filipino-vas-2026"
       ],
       "clicks": 0,
-      "impressions": 7,
+      "impressions": 5,
       "ctr": 0,
-      "position": 20.571428571428573
+      "position": 22.4
+    },
+    {
+      "keys": [
+        "https://zovo.one/extension-engine"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 2
     },
     {
       "keys": [
         "https://zovo.one/extensions"
       ],
       "clicks": 0,
-      "impressions": 34,
+      "impressions": 25,
       "ctr": 0,
-      "position": 16.764705882352942
+      "position": 15.8
     },
     {
       "keys": [
         "https://zovo.one/for"
       ],
       "clicks": 0,
-      "impressions": 6,
+      "impressions": 4,
       "ctr": 0,
-      "position": 17.666666666666668
-    },
-    {
-      "keys": [
-        "https://zovo.one/for/product-managers"
-      ],
-      "clicks": 0,
-      "impressions": 1,
-      "ctr": 0,
-      "position": 11
+      "position": 25
     },
     {
       "keys": [
         "https://zovo.one/free-tools"
       ],
       "clicks": 0,
-      "impressions": 21,
+      "impressions": 13,
       "ctr": 0,
-      "position": 7.857142857142857
+      "position": 9.76923076923077
+    },
+    {
+      "keys": [
+        "https://zovo.one/free-tools/1-rep-max-calculator"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 7
     },
     {
       "keys": [
         "https://zovo.one/free-tools/529-calculator"
       ],
       "clicks": 0,
-      "impressions": 2,
+      "impressions": 1,
       "ctr": 0,
-      "position": 63.5
+      "position": 72
     },
     {
       "keys": [
@@ -1130,27 +1067,27 @@
         "https://zovo.one/free-tools/ai-detector"
       ],
       "clicks": 0,
-      "impressions": 14,
+      "impressions": 4,
       "ctr": 0,
-      "position": 27.642857142857142
+      "position": 79.75
     },
     {
       "keys": [
         "https://zovo.one/free-tools/aia-compensation-calculator"
       ],
       "clicks": 0,
-      "impressions": 14,
+      "impressions": 10,
       "ctr": 0,
-      "position": 33.92857142857143
+      "position": 28.6
     },
     {
       "keys": [
         "https://zovo.one/free-tools/air-density-calculator"
       ],
       "clicks": 0,
-      "impressions": 1,
+      "impressions": 6,
       "ctr": 0,
-      "position": 96
+      "position": 57.5
     },
     {
       "keys": [
@@ -1159,7 +1096,7 @@
       "clicks": 0,
       "impressions": 3,
       "ctr": 0,
-      "position": 3
+      "position": 1.3333333333333333
     },
     {
       "keys": [
@@ -1172,57 +1109,66 @@
     },
     {
       "keys": [
-        "https://zovo.one/free-tools/apa-format-checker"
-      ],
-      "clicks": 0,
-      "impressions": 1,
-      "ctr": 0,
-      "position": 91
-    },
-    {
-      "keys": [
-        "https://zovo.one/free-tools/api-request-builder"
-      ],
-      "clicks": 0,
-      "impressions": 1,
-      "ctr": 0,
-      "position": 16
-    },
-    {
-      "keys": [
         "https://zovo.one/free-tools/api-tester"
       ],
       "clicks": 0,
-      "impressions": 6,
+      "impressions": 10,
       "ctr": 0,
-      "position": 62.166666666666664
+      "position": 40.2
+    },
+    {
+      "keys": [
+        "https://zovo.one/free-tools/articles/internet-speed-test-guide/"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 69
     },
     {
       "keys": [
         "https://zovo.one/free-tools/asa-citation-generator"
       ],
       "clicks": 0,
+      "impressions": 12,
+      "ctr": 0,
+      "position": 76.91666666666667
+    },
+    {
+      "keys": [
+        "https://zovo.one/free-tools/aspect-ratio-calculator"
+      ],
+      "clicks": 0,
       "impressions": 2,
       "ctr": 0,
-      "position": 92
+      "position": 63.5
     },
     {
       "keys": [
         "https://zovo.one/free-tools/audio-converter"
       ],
       "clicks": 0,
-      "impressions": 11,
+      "impressions": 41,
       "ctr": 0,
-      "position": 20.727272727272727
+      "position": 12.317073170731707
     },
     {
       "keys": [
         "https://zovo.one/free-tools/baby-name-generator"
       ],
       "clicks": 0,
-      "impressions": 2,
+      "impressions": 4,
       "ctr": 0,
-      "position": 10.5
+      "position": 16.75
+    },
+    {
+      "keys": [
+        "https://zovo.one/free-tools/baht-to-usd-converter"
+      ],
+      "clicks": 0,
+      "impressions": 3,
+      "ctr": 0,
+      "position": 6
     },
     {
       "keys": [
@@ -1240,16 +1186,16 @@
       "clicks": 0,
       "impressions": 51,
       "ctr": 0,
-      "position": 80.80392156862744
+      "position": 77.25490196078431
     },
     {
       "keys": [
         "https://zovo.one/free-tools/base64-encoder"
       ],
       "clicks": 0,
-      "impressions": 6,
+      "impressions": 5,
       "ctr": 0,
-      "position": 51.5
+      "position": 60
     },
     {
       "keys": [
@@ -1274,36 +1220,36 @@
         "https://zovo.one/free-tools/beam-deflection-calculator"
       ],
       "clicks": 0,
-      "impressions": 2,
+      "impressions": 4,
       "ctr": 0,
-      "position": 15.5
+      "position": 12.5
     },
     {
       "keys": [
         "https://zovo.one/free-tools/bench-press-estimator"
       ],
       "clicks": 0,
-      "impressions": 2,
+      "impressions": 1,
       "ctr": 0,
-      "position": 3.5
+      "position": 5
     },
     {
       "keys": [
         "https://zovo.one/free-tools/binary-converter"
       ],
       "clicks": 0,
-      "impressions": 10,
+      "impressions": 11,
       "ctr": 0,
-      "position": 16.2
+      "position": 14.272727272727273
     },
     {
       "keys": [
         "https://zovo.one/free-tools/binary-to-decimal-converter"
       ],
       "clicks": 0,
-      "impressions": 1,
+      "impressions": 3,
       "ctr": 0,
-      "position": 8
+      "position": 10
     },
     {
       "keys": [
@@ -1319,9 +1265,9 @@
         "https://zovo.one/free-tools/boat-loan-calculator"
       ],
       "clicks": 0,
-      "impressions": 6,
+      "impressions": 8,
       "ctr": 0,
-      "position": 3.6666666666666665
+      "position": 4.5
     },
     {
       "keys": [
@@ -1346,36 +1292,45 @@
         "https://zovo.one/free-tools/browser-fingerprint-checker"
       ],
       "clicks": 0,
-      "impressions": 23,
+      "impressions": 20,
       "ctr": 0,
-      "position": 8.652173913043478
+      "position": 8.55
     },
     {
       "keys": [
         "https://zovo.one/free-tools/budget-calculator"
       ],
       "clicks": 0,
-      "impressions": 26,
+      "impressions": 24,
       "ctr": 0,
-      "position": 32.30769230769231
+      "position": 34.5
+    },
+    {
+      "keys": [
+        "https://zovo.one/free-tools/budget-planner"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 7
     },
     {
       "keys": [
         "https://zovo.one/free-tools/business-card-maker"
       ],
       "clicks": 0,
-      "impressions": 38,
+      "impressions": 17,
       "ctr": 0,
-      "position": 89.15789473684211
+      "position": 90.94117647058823
     },
     {
       "keys": [
         "https://zovo.one/free-tools/canadian-dollar-to-rupee/"
       ],
       "clicks": 0,
-      "impressions": 6,
+      "impressions": 5,
       "ctr": 0,
-      "position": 16.5
+      "position": 17.8
     },
     {
       "keys": [
@@ -1427,9 +1382,9 @@
         "https://zovo.one/free-tools/cash-out-refinance-calculator"
       ],
       "clicks": 0,
-      "impressions": 125,
+      "impressions": 178,
       "ctr": 0,
-      "position": 10.544
+      "position": 11.415730337078651
     },
     {
       "keys": [
@@ -1472,27 +1427,18 @@
         "https://zovo.one/free-tools/clock-out-time-calculator"
       ],
       "clicks": 0,
-      "impressions": 1,
+      "impressions": 2,
       "ctr": 0,
-      "position": 8
+      "position": 47
     },
     {
       "keys": [
         "https://zovo.one/free-tools/color-blindness-simulator"
       ],
       "clicks": 0,
-      "impressions": 2,
-      "ctr": 0,
-      "position": 11.5
-    },
-    {
-      "keys": [
-        "https://zovo.one/free-tools/color-contrast-checker"
-      ],
-      "clicks": 0,
       "impressions": 1,
       "ctr": 0,
-      "position": 2
+      "position": 22
     },
     {
       "keys": [
@@ -1508,18 +1454,18 @@
         "https://zovo.one/free-tools/color-picker"
       ],
       "clicks": 0,
-      "impressions": 3,
+      "impressions": 2,
       "ctr": 0,
-      "position": 18.666666666666668
+      "position": 27.5
     },
     {
       "keys": [
         "https://zovo.one/free-tools/compound-interest-calculator"
       ],
       "clicks": 0,
-      "impressions": 13,
+      "impressions": 20,
       "ctr": 0,
-      "position": 22.23076923076923
+      "position": 21.05
     },
     {
       "keys": [
@@ -1529,15 +1475,6 @@
       "impressions": 8,
       "ctr": 0,
       "position": 4.25
-    },
-    {
-      "keys": [
-        "https://zovo.one/free-tools/countdown-timer"
-      ],
-      "clicks": 0,
-      "impressions": 1,
-      "ctr": 0,
-      "position": 3
     },
     {
       "keys": [
@@ -1562,9 +1499,9 @@
         "https://zovo.one/free-tools/cross-stitch-calculator"
       ],
       "clicks": 0,
-      "impressions": 4,
+      "impressions": 5,
       "ctr": 0,
-      "position": 7.25
+      "position": 7.6
     },
     {
       "keys": [
@@ -1589,27 +1526,18 @@
         "https://zovo.one/free-tools/css-gradient-generator"
       ],
       "clicks": 0,
-      "impressions": 5,
+      "impressions": 4,
       "ctr": 0,
-      "position": 7.6
-    },
-    {
-      "keys": [
-        "https://zovo.one/free-tools/csv-to-excel-converter"
-      ],
-      "clicks": 0,
-      "impressions": 2,
-      "ctr": 0,
-      "position": 2
+      "position": 5.5
     },
     {
       "keys": [
         "https://zovo.one/free-tools/currency-converter"
       ],
       "clicks": 0,
-      "impressions": 32,
+      "impressions": 29,
       "ctr": 0,
-      "position": 33.5625
+      "position": 34.10344827586207
     },
     {
       "keys": [
@@ -1622,84 +1550,84 @@
     },
     {
       "keys": [
-        "https://zovo.one/free-tools/date-calculator"
+        "https://zovo.one/free-tools/data-matrix-generator"
       ],
       "clicks": 0,
-      "impressions": 1,
+      "impressions": 4,
       "ctr": 0,
-      "position": 8
+      "position": 27.25
     },
     {
       "keys": [
         "https://zovo.one/free-tools/debt-consolidation-calculator"
       ],
       "clicks": 0,
-      "impressions": 2,
+      "impressions": 4,
       "ctr": 0,
-      "position": 15
+      "position": 20.75
     },
     {
       "keys": [
         "https://zovo.one/free-tools/debt-to-income-ratio-calculator"
       ],
       "clicks": 0,
-      "impressions": 23,
+      "impressions": 32,
       "ctr": 0,
-      "position": 7.956521739130435
+      "position": 7.25
     },
     {
       "keys": [
         "https://zovo.one/free-tools/diff-checker"
       ],
       "clicks": 0,
-      "impressions": 4,
+      "impressions": 2,
       "ctr": 0,
-      "position": 34.5
+      "position": 63
     },
     {
       "keys": [
         "https://zovo.one/free-tools/discord-timestamp"
       ],
       "clicks": 0,
-      "impressions": 37,
+      "impressions": 38,
       "ctr": 0,
-      "position": 56.108108108108105
+      "position": 54.89473684210526
     },
     {
       "keys": [
-        "https://zovo.one/free-tools/discount-calculator"
+        "https://zovo.one/free-tools/dividend-calculator"
       ],
       "clicks": 0,
-      "impressions": 1,
+      "impressions": 4,
       "ctr": 0,
-      "position": 8
+      "position": 7.25
     },
     {
       "keys": [
         "https://zovo.one/free-tools/dns-propagation-checker"
       ],
       "clicks": 0,
-      "impressions": 2,
+      "impressions": 3,
       "ctr": 0,
-      "position": 2
+      "position": 3.6666666666666665
     },
     {
       "keys": [
         "https://zovo.one/free-tools/dollar-to-zar-converter"
       ],
       "clicks": 0,
-      "impressions": 2,
+      "impressions": 6,
       "ctr": 0,
-      "position": 27
+      "position": 28.666666666666668
     },
     {
       "keys": [
         "https://zovo.one/free-tools/domain-availability-checker"
       ],
       "clicks": 0,
-      "impressions": 3,
+      "impressions": 2,
       "ctr": 0,
-      "position": 7
+      "position": 6
     },
     {
       "keys": [
@@ -1715,36 +1643,36 @@
         "https://zovo.one/free-tools/drum-machine"
       ],
       "clicks": 0,
-      "impressions": 2,
-      "ctr": 0,
-      "position": 80
-    },
-    {
-      "keys": [
-        "https://zovo.one/free-tools/dummy-data-generator"
-      ],
-      "clicks": 0,
       "impressions": 1,
       "ctr": 0,
-      "position": 2
+      "position": 82
     },
     {
       "keys": [
         "https://zovo.one/free-tools/electricity-bill-calculator"
       ],
       "clicks": 0,
-      "impressions": 5,
+      "impressions": 2,
       "ctr": 0,
-      "position": 38
+      "position": 45.5
+    },
+    {
+      "keys": [
+        "https://zovo.one/free-tools/electricity-cost-calculator"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 17
     },
     {
       "keys": [
         "https://zovo.one/free-tools/email-validator"
       ],
       "clicks": 0,
-      "impressions": 1,
+      "impressions": 8,
       "ctr": 0,
-      "position": 4
+      "position": 12
     },
     {
       "keys": [
@@ -1754,15 +1682,6 @@
       "impressions": 19,
       "ctr": 0,
       "position": 32.89473684210526
-    },
-    {
-      "keys": [
-        "https://zovo.one/free-tools/epoch-time-converter"
-      ],
-      "clicks": 0,
-      "impressions": 1,
-      "ctr": 0,
-      "position": 3
     },
     {
       "keys": [
@@ -1778,9 +1697,9 @@
         "https://zovo.one/free-tools/fedex-dimensional-weight-calculator"
       ],
       "clicks": 0,
-      "impressions": 3,
+      "impressions": 4,
       "ctr": 0,
-      "position": 21.666666666666668
+      "position": 16.5
     },
     {
       "keys": [
@@ -1796,34 +1715,43 @@
         "https://zovo.one/free-tools/ffmi-calculator"
       ],
       "clicks": 0,
-      "impressions": 2,
+      "impressions": 1,
       "ctr": 0,
-      "position": 5
+      "position": 8
+    },
+    {
+      "keys": [
+        "https://zovo.one/free-tools/fibonacci-generator"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 25
     },
     {
       "keys": [
         "https://zovo.one/free-tools/flow-chart-maker"
       ],
       "clicks": 0,
-      "impressions": 83,
+      "impressions": 103,
       "ctr": 0,
-      "position": 62.493975903614455
+      "position": 41.36893203883495
     },
     {
       "keys": [
         "https://zovo.one/free-tools/font-pair-generator"
       ],
       "clicks": 0,
-      "impressions": 3,
+      "impressions": 6,
       "ctr": 0,
-      "position": 18
+      "position": 22.166666666666668
     },
     {
       "keys": [
         "https://zovo.one/free-tools/freight-density-calculator"
       ],
       "clicks": 0,
-      "impressions": 6,
+      "impressions": 3,
       "ctr": 0,
       "position": 8
     },
@@ -1832,18 +1760,9 @@
         "https://zovo.one/free-tools/gear-tooth-calculator"
       ],
       "clicks": 0,
-      "impressions": 2,
+      "impressions": 16,
       "ctr": 0,
-      "position": 7
-    },
-    {
-      "keys": [
-        "https://zovo.one/free-tools/gpa-calculator"
-      ],
-      "clicks": 0,
-      "impressions": 1,
-      "ctr": 0,
-      "position": 43
+      "position": 8.5
     },
     {
       "keys": [
@@ -1868,18 +1787,18 @@
         "https://zovo.one/free-tools/h1b-wage-level-calculator"
       ],
       "clicks": 0,
-      "impressions": 7,
+      "impressions": 6,
       "ctr": 0,
-      "position": 17.285714285714285
+      "position": 20
     },
     {
       "keys": [
         "https://zovo.one/free-tools/habit-tracker"
       ],
       "clicks": 0,
-      "impressions": 2,
+      "impressions": 1,
       "ctr": 0,
-      "position": 11.5
+      "position": 10
     },
     {
       "keys": [
@@ -1895,18 +1814,18 @@
         "https://zovo.one/free-tools/hash-generator"
       ],
       "clicks": 0,
-      "impressions": 1,
+      "impressions": 2,
       "ctr": 0,
-      "position": 16
+      "position": 13.5
     },
     {
       "keys": [
         "https://zovo.one/free-tools/heat-loss-calculator"
       ],
       "clicks": 0,
-      "impressions": 6,
+      "impressions": 5,
       "ctr": 0,
-      "position": 9.833333333333334
+      "position": 10.2
     },
     {
       "keys": [
@@ -1940,18 +1859,18 @@
         "https://zovo.one/free-tools/html-css-playground"
       ],
       "clicks": 0,
-      "impressions": 6,
+      "impressions": 5,
       "ctr": 0,
-      "position": 4.833333333333334
+      "position": 5.4
     },
     {
       "keys": [
         "https://zovo.one/free-tools/html-entity-encoder"
       ],
       "clicks": 0,
-      "impressions": 150,
+      "impressions": 78,
       "ctr": 0,
-      "position": 5.76
+      "position": 5.346153846153846
     },
     {
       "keys": [
@@ -1961,15 +1880,6 @@
       "impressions": 2,
       "ctr": 0,
       "position": 6.5
-    },
-    {
-      "keys": [
-        "https://zovo.one/free-tools/ieee-citation-generator"
-      ],
-      "clicks": 0,
-      "impressions": 1,
-      "ctr": 0,
-      "position": 73
     },
     {
       "keys": [
@@ -1996,16 +1906,16 @@
       "clicks": 0,
       "impressions": 3,
       "ctr": 0,
-      "position": 48
+      "position": 21
     },
     {
       "keys": [
-        "https://zovo.one/free-tools/insulation-r-value-calculator"
+        "https://zovo.one/free-tools/inductance-calculator"
       ],
       "clicks": 0,
-      "impressions": 4,
+      "impressions": 1,
       "ctr": 0,
-      "position": 6.25
+      "position": 4
     },
     {
       "keys": [
@@ -2021,18 +1931,27 @@
         "https://zovo.one/free-tools/investment-calculator"
       ],
       "clicks": 0,
-      "impressions": 26,
+      "impressions": 28,
       "ctr": 0,
-      "position": 31.576923076923077
+      "position": 25.642857142857142
+    },
+    {
+      "keys": [
+        "https://zovo.one/free-tools/invoice-generator"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 9
     },
     {
       "keys": [
         "https://zovo.one/free-tools/ip-lookup"
       ],
       "clicks": 0,
-      "impressions": 2,
+      "impressions": 1,
       "ctr": 0,
-      "position": 7
+      "position": 8
     },
     {
       "keys": [
@@ -2045,66 +1964,66 @@
     },
     {
       "keys": [
-        "https://zovo.one/free-tools/irr-calculator"
-      ],
-      "clicks": 0,
-      "impressions": 1,
-      "ctr": 0,
-      "position": 1
-    },
-    {
-      "keys": [
         "https://zovo.one/free-tools/iv-drip-rate-calculator"
       ],
       "clicks": 0,
-      "impressions": 16,
+      "impressions": 49,
       "ctr": 0,
-      "position": 14.1875
-    },
-    {
-      "keys": [
-        "https://zovo.one/free-tools/javascript-playground"
-      ],
-      "clicks": 0,
-      "impressions": 2,
-      "ctr": 0,
-      "position": 2.5
+      "position": 9.938775510204081
     },
     {
       "keys": [
         "https://zovo.one/free-tools/jpeg-to-jpg-converter"
       ],
       "clicks": 0,
-      "impressions": 4,
+      "impressions": 6,
       "ctr": 0,
-      "position": 6
+      "position": 7
     },
     {
       "keys": [
         "https://zovo.one/free-tools/json-formatter"
       ],
       "clicks": 0,
-      "impressions": 5,
+      "impressions": 2,
       "ctr": 0,
-      "position": 25
+      "position": 47
     },
     {
       "keys": [
         "https://zovo.one/free-tools/json-to-xml-converter"
       ],
       "clicks": 0,
-      "impressions": 3,
+      "impressions": 2,
       "ctr": 0,
-      "position": 6.666666666666667
+      "position": 5.5
+    },
+    {
+      "keys": [
+        "https://zovo.one/free-tools/kentucky-paycheck-calculator"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 2
     },
     {
       "keys": [
         "https://zovo.one/free-tools/kinetic-energy-calculator"
       ],
       "clicks": 0,
-      "impressions": 6,
+      "impressions": 7,
       "ctr": 0,
-      "position": 22.333333333333332
+      "position": 19.428571428571427
+    },
+    {
+      "keys": [
+        "https://zovo.one/free-tools/kitchen-remodel-calculator"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 10
     },
     {
       "keys": [
@@ -2129,18 +2048,27 @@
         "https://zovo.one/free-tools/lease-vs-buy-calculator"
       ],
       "clicks": 0,
-      "impressions": 3,
+      "impressions": 2,
       "ctr": 0,
-      "position": 2
+      "position": 1.5
     },
     {
       "keys": [
         "https://zovo.one/free-tools/loan-calculator"
       ],
       "clicks": 0,
-      "impressions": 22,
+      "impressions": 59,
       "ctr": 0,
-      "position": 26.90909090909091
+      "position": 19.033898305084747
+    },
+    {
+      "keys": [
+        "https://zovo.one/free-tools/louisiana-paycheck-calculator"
+      ],
+      "clicks": 0,
+      "impressions": 2,
+      "ctr": 0,
+      "position": 2
     },
     {
       "keys": [
@@ -2153,30 +2081,12 @@
     },
     {
       "keys": [
-        "https://zovo.one/free-tools/madlib-generator"
-      ],
-      "clicks": 0,
-      "impressions": 1,
-      "ctr": 0,
-      "position": 17
-    },
-    {
-      "keys": [
         "https://zovo.one/free-tools/marathon-pace-chart"
       ],
       "clicks": 0,
       "impressions": 1,
       "ctr": 0,
       "position": 1
-    },
-    {
-      "keys": [
-        "https://zovo.one/free-tools/markdown-editor"
-      ],
-      "clicks": 0,
-      "impressions": 3,
-      "ctr": 0,
-      "position": 8
     },
     {
       "keys": [
@@ -2198,6 +2108,15 @@
     },
     {
       "keys": [
+        "https://zovo.one/free-tools/mean-bp-calculator"
+      ],
+      "clicks": 0,
+      "impressions": 2,
+      "ctr": 0,
+      "position": 2
+    },
+    {
+      "keys": [
         "https://zovo.one/free-tools/meeting-cost-calculator"
       ],
       "clicks": 0,
@@ -2207,30 +2126,39 @@
     },
     {
       "keys": [
-        "https://zovo.one/free-tools/metronome"
+        "https://zovo.one/free-tools/meme-generator"
       ],
       "clicks": 0,
       "impressions": 1,
       "ctr": 0,
-      "position": 51
+      "position": 6
+    },
+    {
+      "keys": [
+        "https://zovo.one/free-tools/metronome"
+      ],
+      "clicks": 0,
+      "impressions": 4,
+      "ctr": 0,
+      "position": 42.75
     },
     {
       "keys": [
         "https://zovo.one/free-tools/mind-map-maker"
       ],
       "clicks": 0,
-      "impressions": 3,
+      "impressions": 2,
       "ctr": 0,
-      "position": 5.666666666666667
+      "position": 5.5
     },
     {
       "keys": [
         "https://zovo.one/free-tools/molarity-calculator"
       ],
       "clicks": 0,
-      "impressions": 3,
+      "impressions": 2,
       "ctr": 0,
-      "position": 6
+      "position": 6.5
     },
     {
       "keys": [
@@ -2246,9 +2174,9 @@
         "https://zovo.one/free-tools/mortgage-calculator"
       ],
       "clicks": 0,
-      "impressions": 13,
+      "impressions": 23,
       "ctr": 0,
-      "position": 17.384615384615383
+      "position": 14.869565217391305
     },
     {
       "keys": [
@@ -2273,36 +2201,18 @@
         "https://zovo.one/free-tools/naira-to-usd-converter"
       ],
       "clicks": 0,
-      "impressions": 1,
+      "impressions": 2,
       "ctr": 0,
-      "position": 57
-    },
-    {
-      "keys": [
-        "https://zovo.one/free-tools/net-worth-calculator"
-      ],
-      "clicks": 0,
-      "impressions": 1,
-      "ctr": 0,
-      "position": 17
-    },
-    {
-      "keys": [
-        "https://zovo.one/free-tools/neumorphism-generator"
-      ],
-      "clicks": 0,
-      "impressions": 1,
-      "ctr": 0,
-      "position": 1
+      "position": 29.5
     },
     {
       "keys": [
         "https://zovo.one/free-tools/nevada-paycheck-calculator"
       ],
       "clicks": 0,
-      "impressions": 2,
+      "impressions": 1,
       "ctr": 0,
-      "position": 4.5
+      "position": 5
     },
     {
       "keys": [
@@ -2320,16 +2230,7 @@
       "clicks": 0,
       "impressions": 7,
       "ctr": 0,
-      "position": 16.714285714285715
-    },
-    {
-      "keys": [
-        "https://zovo.one/free-tools/ohms-law-calculator"
-      ],
-      "clicks": 0,
-      "impressions": 1,
-      "ctr": 0,
-      "position": 2
+      "position": 4.428571428571429
     },
     {
       "keys": [
@@ -2342,21 +2243,12 @@
     },
     {
       "keys": [
-        "https://zovo.one/free-tools/online-translator"
-      ],
-      "clicks": 0,
-      "impressions": 1,
-      "ctr": 0,
-      "position": 20
-    },
-    {
-      "keys": [
         "https://zovo.one/free-tools/options-profit-calculator"
       ],
       "clicks": 0,
-      "impressions": 4,
+      "impressions": 6,
       "ctr": 0,
-      "position": 11
+      "position": 7.5
     },
     {
       "keys": [
@@ -2372,9 +2264,18 @@
         "https://zovo.one/free-tools/password-generator"
       ],
       "clicks": 0,
-      "impressions": 8,
+      "impressions": 7,
       "ctr": 0,
-      "position": 38.25
+      "position": 41.285714285714285
+    },
+    {
+      "keys": [
+        "https://zovo.one/free-tools/pay-raise-calculator"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 2
     },
     {
       "keys": [
@@ -2408,7 +2309,7 @@
         "https://zovo.one/free-tools/paycheck-calculator-kentucky"
       ],
       "clicks": 0,
-      "impressions": 2,
+      "impressions": 1,
       "ctr": 0,
       "position": 6
     },
@@ -2417,18 +2318,27 @@
         "https://zovo.one/free-tools/pennsylvania-salary-calculator"
       ],
       "clicks": 0,
-      "impressions": 1,
+      "impressions": 3,
       "ctr": 0,
-      "position": 10
+      "position": 10.666666666666666
     },
     {
       "keys": [
         "https://zovo.one/free-tools/percent-off-calculator"
       ],
       "clicks": 0,
-      "impressions": 2,
+      "impressions": 1,
       "ctr": 0,
-      "position": 7
+      "position": 5
+    },
+    {
+      "keys": [
+        "https://zovo.one/free-tools/percentage-change-calculator"
+      ],
+      "clicks": 0,
+      "impressions": 6,
+      "ctr": 0,
+      "position": 5.166666666666667
     },
     {
       "keys": [
@@ -2453,18 +2363,9 @@
         "https://zovo.one/free-tools/photo-filter"
       ],
       "clicks": 0,
-      "impressions": 29,
+      "impressions": 8,
       "ctr": 0,
-      "position": 28.103448275862068
-    },
-    {
-      "keys": [
-        "https://zovo.one/free-tools/piano-keyboard"
-      ],
-      "clicks": 0,
-      "impressions": 1,
-      "ctr": 0,
-      "position": 7
+      "position": 53.75
     },
     {
       "keys": [
@@ -2473,16 +2374,16 @@
       "clicks": 0,
       "impressions": 2,
       "ctr": 0,
-      "position": 9.5
+      "position": 18
     },
     {
       "keys": [
         "https://zovo.one/free-tools/placeholder-image"
       ],
       "clicks": 0,
-      "impressions": 38,
+      "impressions": 33,
       "ctr": 0,
-      "position": 57.44736842105263
+      "position": 64.12121212121212
     },
     {
       "keys": [
@@ -2495,12 +2396,30 @@
     },
     {
       "keys": [
+        "https://zovo.one/free-tools/pool-pump-size-calculator"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 2
+    },
+    {
+      "keys": [
         "https://zovo.one/free-tools/pool-volume-calculator"
       ],
       "clicks": 0,
       "impressions": 2,
       "ctr": 0,
       "position": 3
+    },
+    {
+      "keys": [
+        "https://zovo.one/free-tools/power-factor-calculator"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 1
     },
     {
       "keys": [
@@ -2552,9 +2471,9 @@
         "https://zovo.one/free-tools/pulley-calculator"
       ],
       "clicks": 0,
-      "impressions": 4,
+      "impressions": 1,
       "ctr": 0,
-      "position": 3.75
+      "position": 5
     },
     {
       "keys": [
@@ -2570,18 +2489,18 @@
         "https://zovo.one/free-tools/qr-code-generator"
       ],
       "clicks": 0,
-      "impressions": 9,
+      "impressions": 3,
       "ctr": 0,
-      "position": 25.333333333333332
+      "position": 2.333333333333333
     },
     {
       "keys": [
         "https://zovo.one/free-tools/qr-reader"
       ],
       "clicks": 0,
-      "impressions": 38,
+      "impressions": 55,
       "ctr": 0,
-      "position": 56.578947368421055
+      "position": 44.61818181818182
     },
     {
       "keys": [
@@ -2597,45 +2516,36 @@
         "https://zovo.one/free-tools/quadratic-equation-grapher"
       ],
       "clicks": 0,
-      "impressions": 7,
+      "impressions": 3,
       "ctr": 0,
-      "position": 29.571428571428573
+      "position": 6.666666666666667
     },
     {
       "keys": [
         "https://zovo.one/free-tools/random-number-generator"
       ],
       "clicks": 0,
-      "impressions": 3,
+      "impressions": 9,
       "ctr": 0,
-      "position": 28
-    },
-    {
-      "keys": [
-        "https://zovo.one/free-tools/reading-time-calculator"
-      ],
-      "clicks": 0,
-      "impressions": 1,
-      "ctr": 0,
-      "position": 6
+      "position": 15.11111111111111
     },
     {
       "keys": [
         "https://zovo.one/free-tools/recipe-converter"
       ],
       "clicks": 0,
-      "impressions": 16,
+      "impressions": 25,
       "ctr": 0,
-      "position": 6.5
+      "position": 5.88
     },
     {
       "keys": [
         "https://zovo.one/free-tools/recipe-scaler"
       ],
       "clicks": 0,
-      "impressions": 3,
+      "impressions": 13,
       "ctr": 0,
-      "position": 58
+      "position": 21.76923076923077
     },
     {
       "keys": [
@@ -2651,36 +2561,18 @@
         "https://zovo.one/free-tools/rent-vs-buy-calculator"
       ],
       "clicks": 0,
-      "impressions": 4,
+      "impressions": 3,
       "ctr": 0,
-      "position": 4
-    },
-    {
-      "keys": [
-        "https://zovo.one/free-tools/resistor-color-code-calculator"
-      ],
-      "clicks": 0,
-      "impressions": 2,
-      "ctr": 0,
-      "position": 8
+      "position": 4.666666666666666
     },
     {
       "keys": [
         "https://zovo.one/free-tools/resume-builder"
       ],
       "clicks": 0,
-      "impressions": 57,
+      "impressions": 56,
       "ctr": 0,
-      "position": 32.43859649122807
-    },
-    {
-      "keys": [
-        "https://zovo.one/free-tools/retirement-calculator"
-      ],
-      "clicks": 0,
-      "impressions": 3,
-      "ctr": 0,
-      "position": 66.33333333333333
+      "position": 31.232142857142858
     },
     {
       "keys": [
@@ -2693,39 +2585,30 @@
     },
     {
       "keys": [
-        "https://zovo.one/free-tools/roman-numeral-converter"
+        "https://zovo.one/free-tools/rv-loan-calculator"
       ],
       "clicks": 0,
       "impressions": 1,
       "ctr": 0,
-      "position": 10
-    },
-    {
-      "keys": [
-        "https://zovo.one/free-tools/rv-loan-calculator"
-      ],
-      "clicks": 0,
-      "impressions": 2,
-      "ctr": 0,
-      "position": 4.5
+      "position": 3
     },
     {
       "keys": [
         "https://zovo.one/free-tools/salary-calculator-colorado"
       ],
       "clicks": 0,
-      "impressions": 2,
+      "impressions": 3,
       "ctr": 0,
-      "position": 4
+      "position": 3.3333333333333335
     },
     {
       "keys": [
         "https://zovo.one/free-tools/salary-calculator-florida"
       ],
       "clicks": 0,
-      "impressions": 2,
+      "impressions": 3,
       "ctr": 0,
-      "position": 12.5
+      "position": 9.666666666666666
     },
     {
       "keys": [
@@ -2741,9 +2624,9 @@
         "https://zovo.one/free-tools/salary-calculator-maryland"
       ],
       "clicks": 0,
-      "impressions": 4,
+      "impressions": 3,
       "ctr": 0,
-      "position": 5.25
+      "position": 4.666666666666666
     },
     {
       "keys": [
@@ -2777,9 +2660,9 @@
         "https://zovo.one/free-tools/salary-calculator-virginia"
       ],
       "clicks": 0,
-      "impressions": 16,
+      "impressions": 18,
       "ctr": 0,
-      "position": 77.5625
+      "position": 70.88888888888889
     },
     {
       "keys": [
@@ -2804,18 +2687,18 @@
         "https://zovo.one/free-tools/schema-generator"
       ],
       "clicks": 0,
-      "impressions": 13,
+      "impressions": 6,
       "ctr": 0,
-      "position": 17.076923076923077
+      "position": 32.33333333333333
     },
     {
       "keys": [
         "https://zovo.one/free-tools/scientific-notation-calculator"
       ],
       "clicks": 0,
-      "impressions": 11,
+      "impressions": 18,
       "ctr": 0,
-      "position": 6.363636363636363
+      "position": 6.944444444444445
     },
     {
       "keys": [
@@ -2840,9 +2723,9 @@
         "https://zovo.one/free-tools/sip-calculator"
       ],
       "clicks": 0,
-      "impressions": 3,
+      "impressions": 2,
       "ctr": 0,
-      "position": 18
+      "position": 19
     },
     {
       "keys": [
@@ -2873,30 +2756,21 @@
     },
     {
       "keys": [
-        "https://zovo.one/free-tools/speed-distance-time-calculator"
-      ],
-      "clicks": 0,
-      "impressions": 1,
-      "ctr": 0,
-      "position": 2
-    },
-    {
-      "keys": [
         "https://zovo.one/free-tools/sql-formatter"
       ],
       "clicks": 0,
-      "impressions": 5,
+      "impressions": 7,
       "ctr": 0,
-      "position": 5.2
+      "position": 4.857142857142858
     },
     {
       "keys": [
         "https://zovo.one/free-tools/sql-playground"
       ],
       "clicks": 0,
-      "impressions": 8,
+      "impressions": 6,
       "ctr": 0,
-      "position": 43.5
+      "position": 54.666666666666664
     },
     {
       "keys": [
@@ -2905,25 +2779,25 @@
       "clicks": 0,
       "impressions": 5,
       "ctr": 0,
-      "position": 7
+      "position": 9.2
     },
     {
       "keys": [
         "https://zovo.one/free-tools/ssl-checker"
       ],
       "clicks": 0,
-      "impressions": 8,
+      "impressions": 5,
       "ctr": 0,
-      "position": 7
+      "position": 3.8
     },
     {
       "keys": [
         "https://zovo.one/free-tools/statistical-significance-calculator"
       ],
       "clicks": 0,
-      "impressions": 7,
+      "impressions": 8,
       "ctr": 0,
-      "position": 4.142857142857142
+      "position": 4.875
     },
     {
       "keys": [
@@ -2933,6 +2807,15 @@
       "impressions": 1,
       "ctr": 0,
       "position": 2
+    },
+    {
+      "keys": [
+        "https://zovo.one/free-tools/steps-to-calories-converter"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 11
     },
     {
       "keys": [
@@ -2966,9 +2849,9 @@
         "https://zovo.one/free-tools/svg-animator"
       ],
       "clicks": 0,
-      "impressions": 1,
+      "impressions": 3,
       "ctr": 0,
-      "position": 3
+      "position": 4.333333333333334
     },
     {
       "keys": [
@@ -2993,27 +2876,36 @@
         "https://zovo.one/free-tools/tank-volume-calculator"
       ],
       "clicks": 0,
-      "impressions": 16,
+      "impressions": 15,
       "ctr": 0,
-      "position": 15.0625
+      "position": 14.6
     },
     {
       "keys": [
         "https://zovo.one/free-tools/td-exchange-rate-converter"
       ],
       "clicks": 0,
+      "impressions": 36,
+      "ctr": 0,
+      "position": 51.19444444444444
+    },
+    {
+      "keys": [
+        "https://zovo.one/free-tools/temperature-converter"
+      ],
+      "clicks": 0,
       "impressions": 10,
       "ctr": 0,
-      "position": 46
+      "position": 6.7
     },
     {
       "keys": [
         "https://zovo.one/free-tools/texas-payroll-calculator"
       ],
       "clicks": 0,
-      "impressions": 5,
+      "impressions": 12,
       "ctr": 0,
-      "position": 11.2
+      "position": 14.833333333333334
     },
     {
       "keys": [
@@ -3026,12 +2918,39 @@
     },
     {
       "keys": [
-        "https://zovo.one/free-tools/text-to-speech"
+        "https://zovo.one/free-tools/text-to-handwriting"
       ],
       "clicks": 0,
       "impressions": 2,
       "ctr": 0,
-      "position": 11.5
+      "position": 5
+    },
+    {
+      "keys": [
+        "https://zovo.one/free-tools/text-to-speech"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 4
+    },
+    {
+      "keys": [
+        "https://zovo.one/free-tools/thermal-expansion-calculator"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 8
+    },
+    {
+      "keys": [
+        "https://zovo.one/free-tools/three-phase-power-calculator"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 10
     },
     {
       "keys": [
@@ -3044,48 +2963,30 @@
     },
     {
       "keys": [
-        "https://zovo.one/free-tools/time-to-decimal-calculator"
-      ],
-      "clicks": 0,
-      "impressions": 1,
-      "ctr": 0,
-      "position": 4
-    },
-    {
-      "keys": [
         "https://zovo.one/free-tools/timestamp-converter"
       ],
       "clicks": 0,
-      "impressions": 8,
+      "impressions": 12,
       "ctr": 0,
-      "position": 33.5
+      "position": 27.833333333333332
+    },
+    {
+      "keys": [
+        "https://zovo.one/free-tools/timezone-converter"
+      ],
+      "clicks": 0,
+      "impressions": 2,
+      "ctr": 0,
+      "position": 7.5
     },
     {
       "keys": [
         "https://zovo.one/free-tools/trademark-search"
       ],
       "clicks": 0,
-      "impressions": 28,
+      "impressions": 40,
       "ctr": 0,
-      "position": 65.07142857142857
-    },
-    {
-      "keys": [
-        "https://zovo.one/free-tools/treadmill-calorie-calculator"
-      ],
-      "clicks": 0,
-      "impressions": 1,
-      "ctr": 0,
-      "position": 2
-    },
-    {
-      "keys": [
-        "https://zovo.one/free-tools/truth-table-solver"
-      ],
-      "clicks": 0,
-      "impressions": 1,
-      "ctr": 0,
-      "position": 76
+      "position": 66.575
     },
     {
       "keys": [
@@ -3101,90 +3002,72 @@
         "https://zovo.one/free-tools/typing-speed-test"
       ],
       "clicks": 0,
-      "impressions": 2,
+      "impressions": 1,
       "ctr": 0,
-      "position": 6.5
+      "position": 6
     },
     {
       "keys": [
         "https://zovo.one/free-tools/unit-converter"
       ],
       "clicks": 0,
-      "impressions": 8,
+      "impressions": 4,
       "ctr": 0,
-      "position": 33.625
-    },
-    {
-      "keys": [
-        "https://zovo.one/free-tools/upc-label-generator/"
-      ],
-      "clicks": 0,
-      "impressions": 1,
-      "ctr": 0,
-      "position": 4
+      "position": 61.5
     },
     {
       "keys": [
         "https://zovo.one/free-tools/ups-shipping-calculator"
       ],
       "clicks": 0,
-      "impressions": 19,
+      "impressions": 15,
       "ctr": 0,
-      "position": 3.8421052631578947
+      "position": 3.8666666666666667
     },
     {
       "keys": [
         "https://zovo.one/free-tools/url-shortener"
       ],
       "clicks": 0,
-      "impressions": 2,
+      "impressions": 3,
       "ctr": 0,
-      "position": 88.5
-    },
-    {
-      "keys": [
-        "https://zovo.one/free-tools/usd-to-aud-converter"
-      ],
-      "clicks": 0,
-      "impressions": 1,
-      "ctr": 0,
-      "position": 2
+      "position": 66.66666666666667
     },
     {
       "keys": [
         "https://zovo.one/free-tools/usd-to-cedis-converter"
       ],
       "clicks": 0,
-      "impressions": 7,
+      "impressions": 11,
       "ctr": 0,
-      "position": 44.285714285714285
+      "position": 21
     },
     {
       "keys": [
         "https://zovo.one/free-tools/usd-to-gbp-converter"
       ],
       "clicks": 0,
-      "impressions": 6,
+      "impressions": 7,
       "ctr": 0,
-      "position": 21.166666666666668
+      "position": 9.857142857142858
     },
     {
       "keys": [
         "https://zovo.one/free-tools/usd-to-idr-converter"
       ],
       "clicks": 0,
-      "impressions": 1,
+      "impressions": 2,
       "ctr": 0,
-      "position": 5
+      "position": 7
     },
     {
       "keys": [
         "https://zovo.one/free-tools/usd-to-inr-converter"
       ],
       "clicks": 0,
-      "impressions": 13,
+      "impressions": 7,
       "ctr": 0,
-      "position": 17
+      "position": 14.714285714285714
     },
     {
       "keys": [
@@ -3200,72 +3083,72 @@
         "https://zovo.one/free-tools/usd-to-php-converter"
       ],
       "clicks": 0,
-      "impressions": 28,
+      "impressions": 34,
       "ctr": 0,
-      "position": 15.178571428571429
+      "position": 12.558823529411764
+    },
+    {
+      "keys": [
+        "https://zovo.one/free-tools/usd-to-pkr-converter"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 12
     },
     {
       "keys": [
         "https://zovo.one/free-tools/usps-postage-calculator"
       ],
       "clicks": 0,
-      "impressions": 15,
+      "impressions": 9,
       "ctr": 0,
-      "position": 23.533333333333335
-    },
-    {
-      "keys": [
-        "https://zovo.one/free-tools/utc-to-est-converter"
-      ],
-      "clicks": 0,
-      "impressions": 1,
-      "ctr": 0,
-      "position": 3
+      "position": 26.22222222222222
     },
     {
       "keys": [
         "https://zovo.one/free-tools/utc-to-pst-converter"
       ],
       "clicks": 0,
-      "impressions": 2,
+      "impressions": 1,
       "ctr": 0,
-      "position": 7
+      "position": 6
     },
     {
       "keys": [
-        "https://zovo.one/free-tools/va-salary-calculator"
+        "https://zovo.one/free-tools/uuid-generator"
       ],
       "clicks": 0,
-      "impressions": 2,
+      "impressions": 4,
       "ctr": 0,
-      "position": 7
+      "position": 11
     },
     {
       "keys": [
         "https://zovo.one/free-tools/vcard-generator"
       ],
       "clicks": 0,
-      "impressions": 11,
+      "impressions": 3,
       "ctr": 0,
-      "position": 2.6363636363636367
+      "position": 2.666666666666667
     },
     {
       "keys": [
         "https://zovo.one/free-tools/video-to-gif-converter"
       ],
       "clicks": 0,
-      "impressions": 3,
+      "impressions": 2,
       "ctr": 0,
-      "position": 3
+      "position": 2.5
     },
     {
       "keys": [
         "https://zovo.one/free-tools/video-trimmer"
       ],
       "clicks": 0,
-      "impressions": 6,
+      "impressions": 3,
       "ctr": 0,
-      "position": 9.333333333333334
+      "position": 6.666666666666667
     },
     {
       "keys": [
@@ -3296,21 +3179,12 @@
     },
     {
       "keys": [
-        "https://zovo.one/free-tools/wallpaper-calculator"
-      ],
-      "clicks": 0,
-      "impressions": 1,
-      "ctr": 0,
-      "position": 2
-    },
-    {
-      "keys": [
         "https://zovo.one/free-tools/wcag-contrast-checker"
       ],
       "clicks": 0,
-      "impressions": 9,
+      "impressions": 11,
       "ctr": 0,
-      "position": 5.111111111111111
+      "position": 6.181818181818182
     },
     {
       "keys": [
@@ -3319,16 +3193,16 @@
       "clicks": 0,
       "impressions": 1,
       "ctr": 0,
-      "position": 3
+      "position": 10
     },
     {
       "keys": [
         "https://zovo.one/free-tools/webhook-tester"
       ],
       "clicks": 0,
-      "impressions": 12,
+      "impressions": 9,
       "ctr": 0,
-      "position": 68.25
+      "position": 50.55555555555556
     },
     {
       "keys": [
@@ -3344,54 +3218,54 @@
         "https://zovo.one/free-tools/whois-lookup"
       ],
       "clicks": 0,
-      "impressions": 2,
+      "impressions": 4,
       "ctr": 0,
-      "position": 3
+      "position": 2.5
     },
     {
       "keys": [
         "https://zovo.one/free-tools/wire-capacity-calculator"
       ],
       "clicks": 0,
-      "impressions": 4,
+      "impressions": 5,
       "ctr": 0,
-      "position": 3.5
+      "position": 4.4
     },
     {
       "keys": [
         "https://zovo.one/free-tools/wireframe-tool"
       ],
       "clicks": 0,
-      "impressions": 39,
+      "impressions": 70,
       "ctr": 0,
-      "position": 18.435897435897434
+      "position": 22.82857142857143
     },
     {
       "keys": [
         "https://zovo.one/free-tools/wisconsin-salary-calculator"
       ],
       "clicks": 0,
-      "impressions": 5,
+      "impressions": 4,
       "ctr": 0,
-      "position": 7.6
+      "position": 9.25
     },
     {
       "keys": [
         "https://zovo.one/free-tools/word-counter"
       ],
       "clicks": 0,
-      "impressions": 12,
+      "impressions": 5,
       "ctr": 0,
-      "position": 29.833333333333332
+      "position": 59.4
     },
     {
       "keys": [
         "https://zovo.one/free-tools/xml-to-csv-converter"
       ],
       "clicks": 0,
-      "impressions": 3,
+      "impressions": 1,
       "ctr": 0,
-      "position": 51.666666666666664
+      "position": 53
     },
     {
       "keys": [
@@ -3404,28 +3278,37 @@
     },
     {
       "keys": [
+        "https://zovo.one/free-tools/z-value-table"
+      ],
+      "clicks": 0,
+      "impressions": 2,
+      "ctr": 0,
+      "position": 4
+    },
+    {
+      "keys": [
         "https://zovo.one/glossary"
       ],
       "clicks": 0,
-      "impressions": 22,
+      "impressions": 8,
       "ctr": 0,
-      "position": 12.045454545454545
+      "position": 14.375
     },
     {
       "keys": [
         "https://zovo.one/guides"
       ],
       "clicks": 0,
-      "impressions": 10,
+      "impressions": 8,
       "ctr": 0,
-      "position": 20.6
+      "position": 17.875
     },
     {
       "keys": [
         "https://zovo.one/how-we-keep-you-safe"
       ],
       "clicks": 0,
-      "impressions": 2,
+      "impressions": 1,
       "ctr": 0,
       "position": 6
     },
@@ -3434,27 +3317,18 @@
         "https://zovo.one/industries"
       ],
       "clicks": 0,
-      "impressions": 22,
+      "impressions": 10,
       "ctr": 0,
-      "position": 37.22727272727273
-    },
-    {
-      "keys": [
-        "https://zovo.one/industries/finance/chrome-extensions-for-cryptocurrency"
-      ],
-      "clicks": 0,
-      "impressions": 1,
-      "ctr": 0,
-      "position": 67
+      "position": 43.7
     },
     {
       "keys": [
         "https://zovo.one/legal/accessibility"
       ],
       "clicks": 0,
-      "impressions": 14,
+      "impressions": 6,
       "ctr": 0,
-      "position": 9.5
+      "position": 15.666666666666666
     },
     {
       "keys": [
@@ -3463,59 +3337,59 @@
       "clicks": 0,
       "impressions": 10,
       "ctr": 0,
-      "position": 9.3
+      "position": 8.7
     },
     {
       "keys": [
         "https://zovo.one/legal/contact"
       ],
       "clicks": 0,
-      "impressions": 7,
+      "impressions": 3,
       "ctr": 0,
-      "position": 2.857142857142857
+      "position": 2
     },
     {
       "keys": [
         "https://zovo.one/legal/cookies"
       ],
       "clicks": 0,
-      "impressions": 12,
+      "impressions": 5,
       "ctr": 0,
-      "position": 9.25
+      "position": 13.8
     },
     {
       "keys": [
         "https://zovo.one/legal/disclaimer"
       ],
       "clicks": 0,
-      "impressions": 19,
+      "impressions": 14,
       "ctr": 0,
-      "position": 4.947368421052632
+      "position": 5.857142857142857
     },
     {
       "keys": [
         "https://zovo.one/legal/dmca"
       ],
       "clicks": 0,
-      "impressions": 23,
+      "impressions": 16,
       "ctr": 0,
-      "position": 17.52173913043478
+      "position": 20.625
     },
     {
       "keys": [
         "https://zovo.one/legal/membership"
       ],
       "clicks": 0,
-      "impressions": 13,
+      "impressions": 8,
       "ctr": 0,
-      "position": 6.615384615384615
+      "position": 10.625
     },
     {
       "keys": [
         "https://zovo.one/legal/open-source"
       ],
       "clicks": 0,
-      "impressions": 2,
+      "impressions": 1,
       "ctr": 0,
       "position": 5
     },
@@ -3524,9 +3398,9 @@
         "https://zovo.one/legal/permissions"
       ],
       "clicks": 0,
-      "impressions": 11,
+      "impressions": 9,
       "ctr": 0,
-      "position": 16.454545454545453
+      "position": 16.666666666666664
     },
     {
       "keys": [
@@ -3542,135 +3416,108 @@
         "https://zovo.one/legal/privacy"
       ],
       "clicks": 0,
-      "impressions": 38,
+      "impressions": 26,
       "ctr": 0,
-      "position": 17.605263157894736
+      "position": 22.846153846153847
     },
     {
       "keys": [
         "https://zovo.one/legal/refunds"
       ],
       "clicks": 0,
-      "impressions": 42,
+      "impressions": 33,
       "ctr": 0,
-      "position": 18.785714285714285
+      "position": 22.424242424242426
     },
     {
       "keys": [
         "https://zovo.one/legal/security"
       ],
       "clicks": 0,
-      "impressions": 12,
+      "impressions": 4,
       "ctr": 0,
-      "position": 11
+      "position": 13.25
     },
     {
       "keys": [
         "https://zovo.one/legal/terms"
       ],
       "clicks": 0,
-      "impressions": 11,
+      "impressions": 8,
       "ctr": 0,
-      "position": 13.545454545454545
+      "position": 15.5
     },
     {
       "keys": [
-        "https://zovo.one/lifetime?utm_source=ccg&utm_medium=article&utm_campaign="
+        "https://zovo.one/name"
       ],
       "clicks": 0,
-      "impressions": 1,
+      "impressions": 19,
       "ctr": 0,
-      "position": 1
+      "position": 4
     },
     {
       "keys": [
         "https://zovo.one/newsletter"
       ],
       "clicks": 0,
-      "impressions": 3,
+      "impressions": 1,
       "ctr": 0,
-      "position": 5.666666666666667
+      "position": 13
     },
     {
       "keys": [
         "https://zovo.one/open-source"
       ],
       "clicks": 0,
-      "impressions": 23,
+      "impressions": 17,
       "ctr": 0,
-      "position": 8.130434782608695
+      "position": 9.352941176470589
     },
     {
       "keys": [
         "https://zovo.one/partners"
       ],
       "clicks": 0,
-      "impressions": 9,
+      "impressions": 10,
       "ctr": 0,
-      "position": 7
+      "position": 7.1
     },
     {
       "keys": [
         "https://zovo.one/permissions"
       ],
       "clicks": 0,
-      "impressions": 14,
+      "impressions": 9,
       "ctr": 0,
-      "position": 23.357142857142858
+      "position": 14.333333333333334
     },
     {
       "keys": [
         "https://zovo.one/pricing"
       ],
       "clicks": 0,
-      "impressions": 20,
+      "impressions": 15,
       "ctr": 0,
-      "position": 6.35
+      "position": 6.2
     },
     {
       "keys": [
         "https://zovo.one/privacy-policy"
       ],
       "clicks": 0,
-      "impressions": 2,
-      "ctr": 0,
-      "position": 3
-    },
-    {
-      "keys": [
-        "https://zovo.one/privacy/focus-mode-pro"
-      ],
-      "clicks": 0,
       "impressions": 1,
       "ctr": 0,
-      "position": 4
+      "position": 3
     },
     {
       "keys": [
         "https://zovo.one/privacy/form-filler"
       ],
       "clicks": 0,
-      "impressions": 2,
-      "ctr": 0,
-      "position": 8.5
-    },
-    {
-      "keys": [
-        "https://zovo.one/privacy/form-filler-pro"
-      ],
-      "clicks": 0,
-      "impressions": 3,
-      "ctr": 0,
-      "position": 8
-    },
-    {
-      "keys": [
-        "https://zovo.one/privacy/json-formatter-pro"
-      ],
-      "clicks": 0,
       "impressions": 1,
       "ctr": 0,
-      "position": 18
+      "position": 1
     },
     {
       "keys": [
@@ -3683,30 +3530,39 @@
     },
     {
       "keys": [
+        "https://zovo.one/privacy/text-expander"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 61
+    },
+    {
+      "keys": [
         "https://zovo.one/rankings"
       ],
       "clicks": 0,
-      "impressions": 25,
+      "impressions": 9,
       "ctr": 0,
-      "position": 11.48
+      "position": 11.88888888888889
     },
     {
       "keys": [
         "https://zovo.one/research"
       ],
       "clicks": 0,
-      "impressions": 9,
+      "impressions": 7,
       "ctr": 0,
-      "position": 5.777777777777778
+      "position": 5.142857142857143
     },
     {
       "keys": [
         "https://zovo.one/research/agentic-ai-content-pipelines"
       ],
       "clicks": 0,
-      "impressions": 8,
+      "impressions": 3,
       "ctr": 0,
-      "position": 13.875
+      "position": 5
     },
     {
       "keys": [
@@ -3722,27 +3578,27 @@
         "https://zovo.one/research/cws-localization"
       ],
       "clicks": 0,
-      "impressions": 13,
+      "impressions": 12,
       "ctr": 0,
-      "position": 27.615384615384617
+      "position": 29.25
     },
     {
       "keys": [
         "https://zovo.one/research/extension-graveyard"
       ],
       "clicks": 0,
-      "impressions": 15,
+      "impressions": 8,
       "ctr": 0,
-      "position": 27.866666666666667
+      "position": 34
     },
     {
       "keys": [
         "https://zovo.one/research/final-build-report"
       ],
       "clicks": 0,
-      "impressions": 6,
+      "impressions": 3,
       "ctr": 0,
-      "position": 32.16666666666667
+      "position": 59.666666666666664
     },
     {
       "keys": [
@@ -3758,15 +3614,6 @@
         "https://zovo.one/research/hidden-cost-free-extensions"
       ],
       "clicks": 0,
-      "impressions": 2,
-      "ctr": 0,
-      "position": 9.5
-    },
-    {
-      "keys": [
-        "https://zovo.one/research/mac-agent-setup"
-      ],
-      "clicks": 0,
       "impressions": 1,
       "ctr": 0,
       "position": 5
@@ -3776,18 +3623,9 @@
         "https://zovo.one/research/privacy-manifest-v3"
       ],
       "clicks": 0,
-      "impressions": 7,
+      "impressions": 3,
       "ctr": 0,
-      "position": 29
-    },
-    {
-      "keys": [
-        "https://zovo.one/research/ram-benchmark"
-      ],
-      "clicks": 0,
-      "impressions": 2,
-      "ctr": 0,
-      "position": 4.5
+      "position": 45.666666666666664
     },
     {
       "keys": [
@@ -3803,27 +3641,27 @@
         "https://zovo.one/research/tab-hoarding-2026"
       ],
       "clicks": 0,
-      "impressions": 6,
+      "impressions": 3,
       "ctr": 0,
-      "position": 32.83333333333333
+      "position": 58
     },
     {
       "keys": [
         "https://zovo.one/research/tab-hoarding-index"
       ],
       "clicks": 0,
-      "impressions": 31,
+      "impressions": 30,
       "ctr": 0,
-      "position": 67.93548387096774
+      "position": 68.2
     },
     {
       "keys": [
         "https://zovo.one/research/why-users-uninstall-extensions"
       ],
       "clicks": 0,
-      "impressions": 6,
+      "impressions": 2,
       "ctr": 0,
-      "position": 6.333333333333333
+      "position": 1.5
     },
     {
       "keys": [
@@ -3839,18 +3677,18 @@
         "https://zovo.one/roadmap"
       ],
       "clicks": 0,
-      "impressions": 21,
+      "impressions": 7,
       "ctr": 0,
-      "position": 5
+      "position": 3.2857142857142856
     },
     {
       "keys": [
         "https://zovo.one/services"
       ],
       "clicks": 0,
-      "impressions": 11,
+      "impressions": 5,
       "ctr": 0,
-      "position": 7
+      "position": 7.8
     },
     {
       "keys": [
@@ -3866,9 +3704,9 @@
         "https://zovo.one/services/extension-as-a-service"
       ],
       "clicks": 0,
-      "impressions": 12,
+      "impressions": 6,
       "ctr": 0,
-      "position": 5
+      "position": 3.3333333333333335
     },
     {
       "keys": [
@@ -3893,27 +3731,18 @@
         "https://zovo.one/services/saas"
       ],
       "clicks": 0,
-      "impressions": 3,
+      "impressions": 2,
       "ctr": 0,
-      "position": 1.6666666666666665
-    },
-    {
-      "keys": [
-        "https://zovo.one/static-tools/invoice-generator"
-      ],
-      "clicks": 0,
-      "impressions": 1,
-      "ctr": 0,
-      "position": 12
+      "position": 1.5
     },
     {
       "keys": [
         "https://zovo.one/support"
       ],
       "clicks": 0,
-      "impressions": 29,
+      "impressions": 13,
       "ctr": 0,
-      "position": 7.0344827586206895
+      "position": 8.692307692307693
     },
     {
       "keys": [
@@ -3947,18 +3776,18 @@
         "https://zovo.one/tasks"
       ],
       "clicks": 0,
-      "impressions": 18,
+      "impressions": 6,
       "ctr": 0,
-      "position": 9.11111111111111
+      "position": 2.666666666666667
     },
     {
       "keys": [
         "https://zovo.one/tasks/count-words"
       ],
       "clicks": 0,
-      "impressions": 2,
+      "impressions": 1,
       "ctr": 0,
-      "position": 28
+      "position": 54
     },
     {
       "keys": [
@@ -3974,9 +3803,9 @@
         "https://zovo.one/tasks/create-qr-code"
       ],
       "clicks": 0,
-      "impressions": 28,
+      "impressions": 24,
       "ctr": 0,
-      "position": 62.42857142857143
+      "position": 71.33333333333333
     },
     {
       "keys": [
@@ -3998,15 +3827,6 @@
     },
     {
       "keys": [
-        "https://zovo.one/tasks/how-to-generate-qr-code"
-      ],
-      "clicks": 0,
-      "impressions": 1,
-      "ctr": 0,
-      "position": 11
-    },
-    {
-      "keys": [
         "https://zovo.one/tasks/manage-cookies-chrome"
       ],
       "clicks": 0,
@@ -4019,18 +3839,18 @@
         "https://zovo.one/tasks/suspend-chrome-tabs"
       ],
       "clicks": 0,
-      "impressions": 12,
+      "impressions": 8,
       "ctr": 0,
-      "position": 51.916666666666664
+      "position": 50.25
     },
     {
       "keys": [
         "https://zovo.one/tools"
       ],
       "clicks": 0,
-      "impressions": 37,
+      "impressions": 27,
       "ctr": 0,
-      "position": 7.27027027027027
+      "position": 6.962962962962963
     },
     {
       "keys": [
@@ -4043,75 +3863,57 @@
     },
     {
       "keys": [
-        "https://zovo.one/tools/tab-group-manager"
-      ],
-      "clicks": 0,
-      "impressions": 1,
-      "ctr": 0,
-      "position": 7
-    },
-    {
-      "keys": [
         "https://zovo.one/trends-2026"
       ],
       "clicks": 0,
-      "impressions": 33,
+      "impressions": 28,
       "ctr": 0,
-      "position": 24.12121212121212
+      "position": 25.928571428571427
     },
     {
       "keys": [
         "https://zovo.one/use-cases"
       ],
       "clicks": 0,
-      "impressions": 36,
+      "impressions": 20,
       "ctr": 0,
-      "position": 13.833333333333334
+      "position": 19.8
     },
     {
       "keys": [
         "https://zovo.one/use-cases/comparing-api-response-structures"
       ],
       "clicks": 0,
-      "impressions": 2,
+      "impressions": 21,
       "ctr": 0,
-      "position": 36
+      "position": 11.761904761904763
     },
     {
       "keys": [
         "https://zovo.one/use-cases/content-creation"
       ],
       "clicks": 0,
-      "impressions": 11,
+      "impressions": 3,
       "ctr": 0,
-      "position": 19.454545454545453
-    },
-    {
-      "keys": [
-        "https://zovo.one/use-cases/creating-unique-identifiers"
-      ],
-      "clicks": 0,
-      "impressions": 1,
-      "ctr": 0,
-      "position": 61
+      "position": 43.666666666666664
     },
     {
       "keys": [
         "https://zovo.one/use-cases/downloading-reference-images-for-design"
       ],
       "clicks": 0,
-      "impressions": 4,
+      "impressions": 1,
       "ctr": 0,
-      "position": 24.75
+      "position": 78
     },
     {
       "keys": [
         "https://zovo.one/use-cases/finding-old-research-bookmarks"
       ],
       "clicks": 0,
-      "impressions": 6,
+      "impressions": 4,
       "ctr": 0,
-      "position": 65.66666666666667
+      "position": 96.5
     },
     {
       "keys": [
@@ -4133,111 +3935,75 @@
     },
     {
       "keys": [
-        "https://zovo.one/use-cases/organizing-developer-documentation"
-      ],
-      "clicks": 0,
-      "impressions": 1,
-      "ctr": 0,
-      "position": 1
-    },
-    {
-      "keys": [
         "https://zovo.one/use-cases/privacy"
       ],
       "clicks": 0,
-      "impressions": 10,
+      "impressions": 6,
       "ctr": 0,
-      "position": 27.1
+      "position": 41.166666666666664
     },
     {
       "keys": [
         "https://zovo.one/use-cases/productivity"
       ],
       "clicks": 0,
-      "impressions": 8,
+      "impressions": 5,
       "ctr": 0,
-      "position": 22.875
+      "position": 29.6
     },
     {
       "keys": [
         "https://zovo.one/use-cases/recovering-accidentally-overwritten-text"
       ],
       "clicks": 0,
-      "impressions": 33,
+      "impressions": 19,
       "ctr": 0,
-      "position": 59.24242424242424
+      "position": 57.31578947368421
     },
     {
       "keys": [
         "https://zovo.one/use-cases/research"
       ],
       "clicks": 0,
-      "impressions": 15,
+      "impressions": 6,
       "ctr": 0,
-      "position": 24.8
-    },
-    {
-      "keys": [
-        "https://zovo.one/use-cases/saving-battery-on-oled-laptops"
-      ],
-      "clicks": 0,
-      "impressions": 1,
-      "ctr": 0,
-      "position": 65
+      "position": 45
     },
     {
       "keys": [
         "https://zovo.one/use-cases/saving-product-images-for-catalogs"
       ],
       "clicks": 0,
-      "impressions": 3,
-      "ctr": 0,
-      "position": 1
-    },
-    {
-      "keys": [
-        "https://zovo.one/use-cases/verifying-file-downloads"
-      ],
-      "clicks": 0,
       "impressions": 1,
       "ctr": 0,
-      "position": 3
+      "position": 1
     },
     {
       "keys": [
         "https://zovo.one/use-cases/web-development"
       ],
       "clicks": 0,
-      "impressions": 5,
+      "impressions": 3,
       "ctr": 0,
-      "position": 43.8
-    },
-    {
-      "keys": [
-        "https://zovo.one/vision"
-      ],
-      "clicks": 0,
-      "impressions": 1,
-      "ctr": 0,
-      "position": 5
+      "position": 44.666666666666664
     },
     {
       "keys": [
         "https://zovo.one/weekly"
       ],
       "clicks": 0,
-      "impressions": 18,
+      "impressions": 6,
       "ctr": 0,
-      "position": 10
+      "position": 17.166666666666668
     },
     {
       "keys": [
         "https://zovo.one/why"
       ],
       "clicks": 0,
-      "impressions": 7,
+      "impressions": 5,
       "ctr": 0,
-      "position": 6
+      "position": 4.8
     },
     {
       "keys": [
@@ -4255,10 +4021,10 @@
         "zovo",
         "https://zovo.one/"
       ],
-      "clicks": 46,
-      "impressions": 1025,
-      "ctr": 0.0448780487804878,
-      "position": 3.277073170731707
+      "clicks": 44,
+      "impressions": 1069,
+      "ctr": 0.0411599625818522,
+      "position": 3.4359214218896166
     },
     {
       "keys": [
@@ -4296,9 +4062,19 @@
         "https://zovo.one/"
       ],
       "clicks": 0,
-      "impressions": 3,
+      "impressions": 5,
       "ctr": 0,
-      "position": 5.333333333333333
+      "position": 5.2
+    },
+    {
+      "keys": [
+        "$1 to cedis",
+        "https://zovo.one/free-tools/usd-to-cedis-converter"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 12
     },
     {
       "keys": [
@@ -4306,9 +4082,9 @@
         "https://zovo.one/free-tools/td-exchange-rate-converter"
       ],
       "clicks": 0,
-      "impressions": 1,
+      "impressions": 2,
       "ctr": 0,
-      "position": 54
+      "position": 59
     },
     {
       "keys": [
@@ -4332,13 +4108,33 @@
     },
     {
       "keys": [
+        "1 dollar to cedis bank of ghana today",
+        "https://zovo.one/free-tools/usd-to-cedis-converter"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 10
+    },
+    {
+      "keys": [
         "1.2 million dollars in ghana cedis",
         "https://zovo.one/free-tools/usd-to-cedis-converter"
       ],
       "clicks": 0,
-      "impressions": 2,
+      "impressions": 1,
       "ctr": 0,
       "position": 64
+    },
+    {
+      "keys": [
+        "1.5 million dollars in ghana cedis",
+        "https://zovo.one/free-tools/usd-to-cedis-converter"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 48
     },
     {
       "keys": [
@@ -4362,13 +4158,53 @@
     },
     {
       "keys": [
-        "100k dollars to cedis",
+        "150 degree celsius in fahrenheit",
+        "https://zovo.one/free-tools/temperature-converter"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 5
+    },
+    {
+      "keys": [
+        "150 degree celsius to fahrenheit",
+        "https://zovo.one/free-tools/temperature-converter"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 6
+    },
+    {
+      "keys": [
+        "16 to 30 degrees celsius to fahrenheit",
+        "https://zovo.one/free-tools/temperature-converter"
+      ],
+      "clicks": 0,
+      "impressions": 6,
+      "ctr": 0,
+      "position": 6.333333333333333
+    },
+    {
+      "keys": [
+        "1600 kwh cost",
+        "https://zovo.one/free-tools/electricity-cost-calculator"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 17
+    },
+    {
+      "keys": [
+        "2 dollars to ghana cedis",
         "https://zovo.one/free-tools/usd-to-cedis-converter"
       ],
       "clicks": 0,
       "impressions": 1,
       "ctr": 0,
-      "position": 59
+      "position": 9
     },
     {
       "keys": [
@@ -4382,6 +4218,16 @@
     },
     {
       "keys": [
+        "21000 dollars in rands",
+        "https://zovo.one/free-tools/dollar-to-zar-converter"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 57
+    },
+    {
+      "keys": [
         "accidentally copied something else",
         "https://zovo.one/use-cases/recovering-accidentally-overwritten-text"
       ],
@@ -4392,23 +4238,33 @@
     },
     {
       "keys": [
-        "addons youtube",
-        "https://www.zovo.one/best/chrome-extensions-for-youtube"
-      ],
-      "clicks": 0,
-      "impressions": 1,
-      "ctr": 0,
-      "position": 43
-    },
-    {
-      "keys": [
         "ahrefs seo toolbar chrome \"this extension may have been corrupted\"",
         "https://zovo.one/blog/chrome-extensions-not-working-fix.html"
       ],
       "clicks": 0,
-      "impressions": 117,
+      "impressions": 73,
       "ctr": 0,
       "position": 2
+    },
+    {
+      "keys": [
+        "air density",
+        "https://zovo.one/free-tools/air-density-calculator"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 44
+    },
+    {
+      "keys": [
+        "air formula",
+        "https://zovo.one/free-tools/air-density-calculator"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 87
     },
     {
       "keys": [
@@ -4416,9 +4272,19 @@
         "https://zovo.one/free-tools/loan-calculator"
       ],
       "clicks": 0,
-      "impressions": 2,
+      "impressions": 3,
       "ctr": 0,
-      "position": 9
+      "position": 11.333333333333334
+    },
+    {
+      "keys": [
+        "amortization schedule with fixed monthly payment",
+        "https://zovo.one/free-tools/loan-calculator"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 12
     },
     {
       "keys": [
@@ -4432,6 +4298,46 @@
     },
     {
       "keys": [
+        "asa citation format",
+        "https://zovo.one/free-tools/asa-citation-generator"
+      ],
+      "clicks": 0,
+      "impressions": 3,
+      "ctr": 0,
+      "position": 94
+    },
+    {
+      "keys": [
+        "asa citations",
+        "https://zovo.one/free-tools/asa-citation-generator"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 30
+    },
+    {
+      "keys": [
+        "asa format citation",
+        "https://zovo.one/free-tools/asa-citation-generator"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 94
+    },
+    {
+      "keys": [
+        "asa referencing",
+        "https://zovo.one/free-tools/asa-citation-generator"
+      ],
+      "clicks": 0,
+      "impressions": 2,
+      "ctr": 0,
+      "position": 94.5
+    },
+    {
+      "keys": [
         "asa works cited",
         "https://zovo.one/free-tools/asa-citation-generator"
       ],
@@ -4439,6 +4345,26 @@
       "impressions": 1,
       "ctr": 0,
       "position": 90
+    },
+    {
+      "keys": [
+        "auto finance cal",
+        "https://zovo.one/free-tools/loan-calculator"
+      ],
+      "clicks": 0,
+      "impressions": 2,
+      "ctr": 0,
+      "position": 3.5
+    },
+    {
+      "keys": [
+        "auto loan cal",
+        "https://zovo.one/free-tools/loan-calculator"
+      ],
+      "clicks": 0,
+      "impressions": 15,
+      "ctr": 0,
+      "position": 11.733333333333333
     },
     {
       "keys": [
@@ -4456,19 +4382,19 @@
         "https://zovo.one/free-tools/td-exchange-rate-converter"
       ],
       "clicks": 0,
-      "impressions": 2,
+      "impressions": 7,
       "ctr": 0,
-      "position": 90.5
+      "position": 91.57142857142857
     },
     {
       "keys": [
-        "bar code label maker",
+        "barcode label generator software",
         "https://zovo.one/free-tools/barcode-label-maker"
       ],
       "clicks": 0,
       "impressions": 1,
       "ctr": 0,
-      "position": 97
+      "position": 11
     },
     {
       "keys": [
@@ -4476,9 +4402,9 @@
         "https://zovo.one/free-tools/barcode-label-maker"
       ],
       "clicks": 0,
-      "impressions": 16,
+      "impressions": 15,
       "ctr": 0,
-      "position": 85.125
+      "position": 84.53333333333333
     },
     {
       "keys": [
@@ -4496,7 +4422,7 @@
         "https://zovo.one/free-tools/barcode-label-maker"
       ],
       "clicks": 0,
-      "impressions": 2,
+      "impressions": 3,
       "ctr": 0,
       "position": 82
     },
@@ -4509,6 +4435,26 @@
       "impressions": 1,
       "ctr": 0,
       "position": 78
+    },
+    {
+      "keys": [
+        "bill consolidation loan calculator",
+        "https://zovo.one/free-tools/debt-consolidation-calculator"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 30
+    },
+    {
+      "keys": [
+        "binary and denary converter",
+        "https://zovo.one/free-tools/binary-converter"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 14
     },
     {
       "keys": [
@@ -4552,6 +4498,16 @@
     },
     {
       "keys": [
+        "bookmark icons missing chrome",
+        "https://zovo.one/blog/chrome-bookmarks-disappeared-recovery.html"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 56
+    },
+    {
+      "keys": [
         "bookmark plugin chrome",
         "https://zovo.one/best/best-free-bookmark-managers-chrome-extensions"
       ],
@@ -4572,13 +4528,13 @@
     },
     {
       "keys": [
-        "business card maker online",
-        "https://zovo.one/free-tools/business-card-maker"
+        "cad to usd td bank",
+        "https://zovo.one/free-tools/td-exchange-rate-converter"
       ],
       "clicks": 0,
       "impressions": 1,
       "ctr": 0,
-      "position": 83
+      "position": 47
     },
     {
       "keys": [
@@ -4589,6 +4545,16 @@
       "impressions": 16,
       "ctr": 0,
       "position": 8.8125
+    },
+    {
+      "keys": [
+        "calculate infusion rate",
+        "https://zovo.one/free-tools/iv-drip-rate-calculator"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 14
     },
     {
       "keys": [
@@ -4612,13 +4578,53 @@
     },
     {
       "keys": [
+        "canadian dollar to us dollar td bank",
+        "https://zovo.one/free-tools/td-exchange-rate-converter"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 55
+    },
+    {
+      "keys": [
+        "canadian to us dollar td bank",
+        "https://zovo.one/free-tools/td-exchange-rate-converter"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 53
+    },
+    {
+      "keys": [
+        "car loan calculator extra payments",
+        "https://zovo.one/free-tools/loan-calculator"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 18
+    },
+    {
+      "keys": [
+        "car loan calculator with extra payments",
+        "https://zovo.one/free-tools/loan-calculator"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 14
+    },
+    {
+      "keys": [
         "cash out mortgage refinance calculator",
         "https://zovo.one/free-tools/cash-out-refinance-calculator"
       ],
       "clicks": 0,
-      "impressions": 4,
+      "impressions": 18,
       "ctr": 0,
-      "position": 14.75
+      "position": 14.333333333333334
     },
     {
       "keys": [
@@ -4626,9 +4632,9 @@
         "https://zovo.one/free-tools/cash-out-refinance-calculator"
       ],
       "clicks": 0,
-      "impressions": 5,
+      "impressions": 6,
       "ctr": 0,
-      "position": 7.4
+      "position": 7.833333333333333
     },
     {
       "keys": [
@@ -4646,9 +4652,9 @@
         "https://zovo.one/free-tools/cash-out-refinance-calculator"
       ],
       "clicks": 0,
-      "impressions": 42,
+      "impressions": 44,
       "ctr": 0,
-      "position": 8.476190476190476
+      "position": 8.545454545454547
     },
     {
       "keys": [
@@ -4702,23 +4708,13 @@
     },
     {
       "keys": [
-        "chrome accidentally deleted bookmark folder",
-        "https://zovo.one/blog/chrome-bookmarks-disappeared-recovery.html"
+        "check a trademark",
+        "https://zovo.one/free-tools/trademark-search"
       ],
       "clicks": 0,
-      "impressions": 1,
+      "impressions": 3,
       "ctr": 0,
-      "position": 69
-    },
-    {
-      "keys": [
-        "chrome apps youtube",
-        "https://www.zovo.one/best/chrome-extensions-for-youtube"
-      ],
-      "clicks": 0,
-      "impressions": 1,
-      "ctr": 0,
-      "position": 45
+      "position": 16
     },
     {
       "keys": [
@@ -4746,19 +4742,9 @@
         "https://zovo.one/blog/chrome-bookmarks-disappeared-recovery.html"
       ],
       "clicks": 0,
-      "impressions": 2,
+      "impressions": 1,
       "ctr": 0,
-      "position": 39
-    },
-    {
-      "keys": [
-        "chrome bookmark icons blank",
-        "https://zovo.one/blog/chrome-bookmarks-disappeared-recovery.html"
-      ],
-      "clicks": 0,
-      "impressions": 2,
-      "ctr": 0,
-      "position": 50.5
+      "position": 18
     },
     {
       "keys": [
@@ -4766,9 +4752,9 @@
         "https://zovo.one/blog/chrome-bookmarks-disappeared-recovery.html"
       ],
       "clicks": 0,
-      "impressions": 1,
+      "impressions": 2,
       "ctr": 0,
-      "position": 52
+      "position": 53
     },
     {
       "keys": [
@@ -4776,7 +4762,7 @@
         "https://zovo.one/blog/chrome-bookmarks-disappeared-recovery.html"
       ],
       "clicks": 0,
-      "impressions": 4,
+      "impressions": 2,
       "ctr": 0,
       "position": 61
     },
@@ -4786,19 +4772,9 @@
         "https://zovo.one/best/best-free-bookmark-managers-chrome-extensions"
       ],
       "clicks": 0,
-      "impressions": 3,
+      "impressions": 5,
       "ctr": 0,
-      "position": 42.333333333333336
-    },
-    {
-      "keys": [
-        "chrome bookmarks lost icons",
-        "https://zovo.one/blog/chrome-bookmarks-disappeared-recovery.html"
-      ],
-      "clicks": 0,
-      "impressions": 1,
-      "ctr": 0,
-      "position": 55
+      "position": 42
     },
     {
       "keys": [
@@ -4836,9 +4812,19 @@
         "https://zovo.one/best/best-note-taking-extensions"
       ],
       "clicks": 0,
-      "impressions": 1,
+      "impressions": 2,
       "ctr": 0,
-      "position": 41
+      "position": 38.5
+    },
+    {
+      "keys": [
+        "chrome extension tracking",
+        "https://zovo.one/does-it-track"
+      ],
+      "clicks": 0,
+      "impressions": 2,
+      "ctr": 0,
+      "position": 27
     },
     {
       "keys": [
@@ -4862,23 +4848,23 @@
     },
     {
       "keys": [
-        "chrome favorites icons missing",
-        "https://zovo.one/blog/chrome-bookmarks-disappeared-recovery.html"
+        "chrome notes extension",
+        "https://zovo.one/best/best-note-taking-extensions"
       ],
       "clicks": 0,
       "impressions": 1,
       "ctr": 0,
-      "position": 51
+      "position": 32
     },
     {
       "keys": [
-        "chrome how to get bookmark bar back",
-        "https://zovo.one/blog/chrome-bookmarks-disappeared-recovery.html"
+        "chrome sleep tabs",
+        "https://zovo.one/tasks/suspend-chrome-tabs"
       ],
       "clicks": 0,
       "impressions": 1,
       "ctr": 0,
-      "position": 62
+      "position": 66
     },
     {
       "keys": [
@@ -4892,6 +4878,16 @@
     },
     {
       "keys": [
+        "citation asa",
+        "https://zovo.one/free-tools/asa-citation-generator"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 37
+    },
+    {
+      "keys": [
         "clock word",
         "https://zovo.one/free-tools/word-clock"
       ],
@@ -4902,16 +4898,6 @@
     },
     {
       "keys": [
-        "collage board maker",
-        "https://zovo.one/free-tools/collage-maker"
-      ],
-      "clicks": 0,
-      "impressions": 1,
-      "ctr": 0,
-      "position": 95
-    },
-    {
-      "keys": [
         "collage builder",
         "https://zovo.one/free-tools/collage-maker"
       ],
@@ -4919,6 +4905,16 @@
       "impressions": 1,
       "ctr": 0,
       "position": 97
+    },
+    {
+      "keys": [
+        "collage maker free online",
+        "https://zovo.one/free-tools/collage-maker"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 41
     },
     {
       "keys": [
@@ -4942,13 +4938,13 @@
     },
     {
       "keys": [
-        "collegiate gpa calculator",
-        "https://zovo.one/free-tools/gpa-calculator"
+        "color picker chart",
+        "https://zovo.one/free-tools/color-picker"
       ],
       "clicks": 0,
       "impressions": 1,
       "ctr": 0,
-      "position": 43
+      "position": 29
     },
     {
       "keys": [
@@ -4962,6 +4958,76 @@
     },
     {
       "keys": [
+        "colorzilla chrome",
+        "https://zovo.one/compare/color-picker-vs-colorzilla"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 53
+    },
+    {
+      "keys": [
+        "compound dividend calculator",
+        "https://zovo.one/free-tools/dividend-calculator"
+      ],
+      "clicks": 0,
+      "impressions": 3,
+      "ctr": 0,
+      "position": 9
+    },
+    {
+      "keys": [
+        "compound interest earned calculator",
+        "https://zovo.one/free-tools/compound-interest-calculator"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 30
+    },
+    {
+      "keys": [
+        "compound interest retirement calculator",
+        "https://zovo.one/free-tools/compound-interest-calculator"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 14
+    },
+    {
+      "keys": [
+        "convert timestamp",
+        "https://zovo.one/free-tools/timestamp-converter"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 8
+    },
+    {
+      "keys": [
+        "convert unix timestamp",
+        "https://zovo.one/free-tools/timestamp-converter"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 9
+    },
+    {
+      "keys": [
+        "copied over",
+        "https://zovo.one/use-cases/recovering-accidentally-overwritten-text"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 74
+    },
+    {
+      "keys": [
         "corrector extension",
         "https://zovo.one/best/best-free-grammar-checkers-chrome-extensions"
       ],
@@ -4969,6 +5035,16 @@
       "impressions": 1,
       "ctr": 0,
       "position": 70
+    },
+    {
+      "keys": [
+        "create a flowchart",
+        "https://zovo.one/free-tools/flow-chart-maker"
+      ],
+      "clicks": 0,
+      "impressions": 2,
+      "ctr": 0,
+      "position": 29.5
     },
     {
       "keys": [
@@ -5022,13 +5098,13 @@
     },
     {
       "keys": [
-        "create visiting card online free",
-        "https://zovo.one/free-tools/business-card-maker"
+        "create fluxogram",
+        "https://zovo.one/free-tools/flow-chart-maker"
       ],
       "clicks": 0,
       "impressions": 1,
       "ctr": 0,
-      "position": 99
+      "position": 26
     },
     {
       "keys": [
@@ -5066,9 +5142,9 @@
         "https://zovo.one/free-tools/currency-converter"
       ],
       "clicks": 0,
-      "impressions": 3,
+      "impressions": 2,
       "ctr": 0,
-      "position": 68.33333333333333
+      "position": 71.5
     },
     {
       "keys": [
@@ -5082,6 +5158,16 @@
     },
     {
       "keys": [
+        "custom barcode label generator",
+        "https://zovo.one/free-tools/barcode-label-maker"
+      ],
+      "clicks": 0,
+      "impressions": 3,
+      "ctr": 0,
+      "position": 16.333333333333336
+    },
+    {
+      "keys": [
         "daltonism simulator",
         "https://zovo.one/free-tools/color-blindness-simulator"
       ],
@@ -5089,6 +5175,16 @@
       "impressions": 1,
       "ctr": 0,
       "position": 22
+    },
+    {
+      "keys": [
+        "debt amortization schedule calculator",
+        "https://zovo.one/free-tools/loan-calculator"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 30
     },
     {
       "keys": [
@@ -5126,19 +5222,9 @@
         "https://zovo.one/free-tools/business-card-maker"
       ],
       "clicks": 0,
-      "impressions": 2,
-      "ctr": 0,
-      "position": 89.5
-    },
-    {
-      "keys": [
-        "draw a flow chart",
-        "https://zovo.one/free-tools/flow-chart-maker"
-      ],
-      "clicks": 0,
       "impressions": 1,
       "ctr": 0,
-      "position": 84
+      "position": 93
     },
     {
       "keys": [
@@ -5146,9 +5232,19 @@
         "https://zovo.one/free-tools/flow-chart-maker"
       ],
       "clicks": 0,
-      "impressions": 2,
+      "impressions": 1,
       "ctr": 0,
-      "position": 84.5
+      "position": 84
+    },
+    {
+      "keys": [
+        "draw flow chart online free",
+        "https://zovo.one/free-tools/flow-chart-maker"
+      ],
+      "clicks": 0,
+      "impressions": 5,
+      "ctr": 0,
+      "position": 11.4
     },
     {
       "keys": [
@@ -5156,49 +5252,9 @@
         "https://zovo.one/free-tools/flow-chart-maker"
       ],
       "clicks": 0,
-      "impressions": 5,
+      "impressions": 4,
       "ctr": 0,
-      "position": 86.4
-    },
-    {
-      "keys": [
-        "draw flowcharts",
-        "https://zovo.one/free-tools/flow-chart-maker"
-      ],
-      "clicks": 0,
-      "impressions": 1,
-      "ctr": 0,
-      "position": 89
-    },
-    {
-      "keys": [
-        "draw flows",
-        "https://zovo.one/free-tools/flow-chart-maker"
-      ],
-      "clicks": 0,
-      "impressions": 1,
-      "ctr": 0,
-      "position": 87
-    },
-    {
-      "keys": [
-        "draw workflow",
-        "https://zovo.one/free-tools/flow-chart-maker"
-      ],
-      "clicks": 0,
-      "impressions": 1,
-      "ctr": 0,
-      "position": 81
-    },
-    {
-      "keys": [
-        "draw workflow diagram",
-        "https://zovo.one/free-tools/flow-chart-maker"
-      ],
-      "clicks": 0,
-      "impressions": 1,
-      "ctr": 0,
-      "position": 84
+      "position": 56.75
     },
     {
       "keys": [
@@ -5216,9 +5272,19 @@
         "https://zovo.one/free-tools/iv-drip-rate-calculator"
       ],
       "clicks": 0,
-      "impressions": 2,
+      "impressions": 10,
       "ctr": 0,
-      "position": 8.5
+      "position": 6.9
+    },
+    {
+      "keys": [
+        "drip rate formula",
+        "https://zovo.one/free-tools/iv-drip-rate-calculator"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 9
     },
     {
       "keys": [
@@ -5232,13 +5298,13 @@
     },
     {
       "keys": [
-        "edit filter foto",
-        "https://zovo.one/free-tools/photo-filter"
+        "ecc200",
+        "https://zovo.one/free-tools/data-matrix-generator"
       ],
       "clicks": 0,
-      "impressions": 1,
+      "impressions": 4,
       "ctr": 0,
-      "position": 77
+      "position": 27.25
     },
     {
       "keys": [
@@ -5262,13 +5328,33 @@
     },
     {
       "keys": [
-        "extension yt",
-        "https://www.zovo.one/best/chrome-extensions-for-youtube"
+        "fast metronome",
+        "https://zovo.one/free-tools/metronome"
       ],
       "clicks": 0,
       "impressions": 1,
       "ctr": 0,
-      "position": 38
+      "position": 70
+    },
+    {
+      "keys": [
+        "fastest metronome",
+        "https://zovo.one/free-tools/metronome"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 35
+    },
+    {
+      "keys": [
+        "fibonacci sequence table",
+        "https://zovo.one/free-tools/fibonacci-generator"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 25
     },
     {
       "keys": [
@@ -5282,13 +5368,13 @@
     },
     {
       "keys": [
-        "find my google bookmarks",
-        "https://zovo.one/blog/chrome-bookmarks-disappeared-recovery.html"
+        "find a trademark",
+        "https://zovo.one/free-tools/trademark-search"
       ],
       "clicks": 0,
       "impressions": 1,
       "ctr": 0,
-      "position": 55
+      "position": 98
     },
     {
       "keys": [
@@ -5302,23 +5388,13 @@
     },
     {
       "keys": [
-        "flow chart builder",
-        "https://zovo.one/free-tools/flow-chart-maker"
-      ],
-      "clicks": 0,
-      "impressions": 1,
-      "ctr": 0,
-      "position": 42
-    },
-    {
-      "keys": [
         "flow chart creator free",
         "https://zovo.one/free-tools/flow-chart-maker"
       ],
       "clicks": 0,
-      "impressions": 2,
+      "impressions": 10,
       "ctr": 0,
-      "position": 25.5
+      "position": 28.4
     },
     {
       "keys": [
@@ -5326,9 +5402,9 @@
         "https://zovo.one/free-tools/flow-chart-maker"
       ],
       "clicks": 0,
-      "impressions": 2,
+      "impressions": 18,
       "ctr": 0,
-      "position": 19.5
+      "position": 23.444444444444443
     },
     {
       "keys": [
@@ -5336,9 +5412,9 @@
         "https://zovo.one/free-tools/flow-chart-maker"
       ],
       "clicks": 0,
-      "impressions": 2,
+      "impressions": 1,
       "ctr": 0,
-      "position": 41
+      "position": 43
     },
     {
       "keys": [
@@ -5349,6 +5425,26 @@
       "impressions": 1,
       "ctr": 0,
       "position": 40
+    },
+    {
+      "keys": [
+        "flowchart creator",
+        "https://zovo.one/free-tools/flow-chart-maker"
+      ],
+      "clicks": 0,
+      "impressions": 3,
+      "ctr": 0,
+      "position": 16
+    },
+    {
+      "keys": [
+        "flowchart creator online",
+        "https://zovo.one/free-tools/flow-chart-maker"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 29
     },
     {
       "keys": [
@@ -5366,9 +5462,9 @@
         "https://zovo.one/free-tools/flow-chart-maker"
       ],
       "clicks": 0,
-      "impressions": 2,
+      "impressions": 1,
       "ctr": 0,
-      "position": 78.5
+      "position": 77
     },
     {
       "keys": [
@@ -5382,33 +5478,83 @@
     },
     {
       "keys": [
+        "flowcharts programs",
+        "https://zovo.one/free-tools/flow-chart-maker"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 52
+    },
+    {
+      "keys": [
         "font pairs",
         "https://zovo.one/free-tools/font-pair-generator"
       ],
       "clicks": 0,
+      "impressions": 4,
+      "ctr": 0,
+      "position": 26.25
+    },
+    {
+      "keys": [
+        "free amortization calculator",
+        "https://zovo.one/free-tools/loan-calculator"
+      ],
+      "clicks": 0,
       "impressions": 2,
       "ctr": 0,
-      "position": 26
+      "position": 16.5
     },
     {
       "keys": [
-        "foto filter",
-        "https://zovo.one/free-tools/photo-filter"
+        "free email address validator",
+        "https://zovo.one/free-tools/email-validator"
+      ],
+      "clicks": 0,
+      "impressions": 6,
+      "ctr": 0,
+      "position": 8.666666666666668
+    },
+    {
+      "keys": [
+        "free email validation checker",
+        "https://zovo.one/free-tools/email-validator"
       ],
       "clicks": 0,
       "impressions": 1,
       "ctr": 0,
-      "position": 88
+      "position": 40
     },
     {
       "keys": [
-        "free online business card",
-        "https://zovo.one/free-tools/business-card-maker"
+        "free flow chart creator",
+        "https://zovo.one/free-tools/flow-chart-maker"
+      ],
+      "clicks": 0,
+      "impressions": 2,
+      "ctr": 0,
+      "position": 30
+    },
+    {
+      "keys": [
+        "free loan calculator",
+        "https://zovo.one/free-tools/loan-calculator"
       ],
       "clicks": 0,
       "impressions": 1,
       "ctr": 0,
-      "position": 87
+      "position": 10
+    },
+    {
+      "keys": [
+        "free online wireframing tools",
+        "https://zovo.one/free-tools/wireframe-tool"
+      ],
+      "clicks": 0,
+      "impressions": 3,
+      "ctr": 0,
+      "position": 20
     },
     {
       "keys": [
@@ -5472,6 +5618,36 @@
     },
     {
       "keys": [
+        "free wireframe tool",
+        "https://zovo.one/free-tools/wireframe-tool"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 26
+    },
+    {
+      "keys": [
+        "free wireframe tools for web design",
+        "https://zovo.one/free-tools/wireframe-tool"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 34
+    },
+    {
+      "keys": [
+        "free wireframing",
+        "https://zovo.one/free-tools/wireframe-tool"
+      ],
+      "clicks": 0,
+      "impressions": 6,
+      "ctr": 0,
+      "position": 24.833333333333332
+    },
+    {
+      "keys": [
         "freeze tabs chrome",
         "https://zovo.one/tasks/suspend-chrome-tabs"
       ],
@@ -5479,6 +5655,16 @@
       "impressions": 2,
       "ctr": 0,
       "position": 73.5
+    },
+    {
+      "keys": [
+        "general purpose loan calculator",
+        "https://zovo.one/free-tools/loan-calculator"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 22
     },
     {
       "keys": [
@@ -5502,23 +5688,23 @@
     },
     {
       "keys": [
-        "google youtube extension",
-        "https://www.zovo.one/best/chrome-extensions-for-youtube"
+        "google extension notes",
+        "https://zovo.one/best/best-note-taking-extensions"
       ],
       "clicks": 0,
-      "impressions": 1,
+      "impressions": 2,
       "ctr": 0,
-      "position": 36
+      "position": 35
     },
     {
       "keys": [
-        "grave extensao",
-        "https://zovo.one/research/extension-graveyard"
+        "hash shorter than md5",
+        "https://zovo.one/free-tools/hash-generator"
       ],
       "clicks": 0,
       "impressions": 1,
       "ctr": 0,
-      "position": 60
+      "position": 11
     },
     {
       "keys": [
@@ -5526,9 +5712,9 @@
         "https://zovo.one/free-tools/cash-out-refinance-calculator"
       ],
       "clicks": 0,
-      "impressions": 1,
+      "impressions": 3,
       "ctr": 0,
-      "position": 13
+      "position": 12
     },
     {
       "keys": [
@@ -5542,13 +5728,23 @@
     },
     {
       "keys": [
+        "house amortization calculator",
+        "https://zovo.one/free-tools/mortgage-calculator"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 24
+    },
+    {
+      "keys": [
         "house loan estimator",
         "https://zovo.one/free-tools/mortgage-calculator"
       ],
       "clicks": 0,
-      "impressions": 5,
+      "impressions": 13,
       "ctr": 0,
-      "position": 11.4
+      "position": 11.153846153846153
     },
     {
       "keys": [
@@ -5592,13 +5788,23 @@
     },
     {
       "keys": [
-        "how to bring back the bookmark bar on google chrome",
-        "https://zovo.one/blog/chrome-bookmarks-disappeared-recovery.html"
+        "how much local tax is deducted from the paycheck",
+        "https://zovo.one/free-tools/pennsylvania-salary-calculator"
       ],
       "clicks": 0,
-      "impressions": 2,
+      "impressions": 1,
       "ctr": 0,
-      "position": 63.5
+      "position": 20
+    },
+    {
+      "keys": [
+        "how much percent does the government take from paycheck",
+        "https://zovo.one/free-tools/salary-calculator-virginia"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 28
     },
     {
       "keys": [
@@ -5632,16 +5838,6 @@
     },
     {
       "keys": [
-        "how to get bookmark bar back on chrome",
-        "https://zovo.one/blog/chrome-bookmarks-disappeared-recovery.html"
-      ],
-      "clicks": 0,
-      "impressions": 1,
-      "ctr": 0,
-      "position": 66
-    },
-    {
-      "keys": [
         "how to get my bookmark bar back on google chrome",
         "https://zovo.one/blog/chrome-bookmarks-disappeared-recovery.html"
       ],
@@ -5652,36 +5848,6 @@
     },
     {
       "keys": [
-        "how to get your bookmarks bar back on google chrome",
-        "https://zovo.one/blog/chrome-bookmarks-disappeared-recovery.html"
-      ],
-      "clicks": 0,
-      "impressions": 1,
-      "ctr": 0,
-      "position": 60
-    },
-    {
-      "keys": [
-        "how to paste the previous copied text",
-        "https://zovo.one/use-cases/recovering-accidentally-overwritten-text"
-      ],
-      "clicks": 0,
-      "impressions": 1,
-      "ctr": 0,
-      "position": 58
-    },
-    {
-      "keys": [
-        "how to put back bookmarks bar google chrome",
-        "https://zovo.one/blog/chrome-bookmarks-disappeared-recovery.html"
-      ],
-      "clicks": 0,
-      "impressions": 1,
-      "ctr": 0,
-      "position": 62
-    },
-    {
-      "keys": [
         "i can't find my bookmarks",
         "https://zovo.one/blog/chrome-bookmarks-disappeared-recovery.html"
       ],
@@ -5689,16 +5855,6 @@
       "impressions": 1,
       "ctr": 0,
       "position": 58
-    },
-    {
-      "keys": [
-        "i lost my bookmarks bar on google chrome",
-        "https://zovo.one/blog/chrome-bookmarks-disappeared-recovery.html"
-      ],
-      "clicks": 0,
-      "impressions": 1,
-      "ctr": 0,
-      "position": 66
     },
     {
       "keys": [
@@ -5719,6 +5875,16 @@
       "impressions": 1,
       "ctr": 0,
       "position": 15
+    },
+    {
+      "keys": [
+        "infusion rate calculator",
+        "https://zovo.one/free-tools/iv-drip-rate-calculator"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 14
     },
     {
       "keys": [
@@ -5752,13 +5918,23 @@
     },
     {
       "keys": [
+        "investment calculator compounding interest",
+        "https://zovo.one/free-tools/investment-calculator"
+      ],
+      "clicks": 0,
+      "impressions": 2,
+      "ctr": 0,
+      "position": 6
+    },
+    {
+      "keys": [
         "investment estimator",
         "https://zovo.one/free-tools/investment-calculator"
       ],
       "clicks": 0,
-      "impressions": 1,
+      "impressions": 2,
       "ctr": 0,
-      "position": 43
+      "position": 41
     },
     {
       "keys": [
@@ -5776,9 +5952,29 @@
         "https://zovo.one/free-tools/iv-drip-rate-calculator"
       ],
       "clicks": 0,
+      "impressions": 22,
+      "ctr": 0,
+      "position": 9.772727272727273
+    },
+    {
+      "keys": [
+        "iv flow rate calculator",
+        "https://zovo.one/free-tools/iv-drip-rate-calculator"
+      ],
+      "clicks": 0,
       "impressions": 1,
       "ctr": 0,
       "position": 11
+    },
+    {
+      "keys": [
+        "kid name generator",
+        "https://zovo.one/free-tools/baby-name-generator"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 18
     },
     {
       "keys": [
@@ -5796,9 +5992,9 @@
         "https://zovo.one/free-tools/barcode-label-maker"
       ],
       "clicks": 0,
-      "impressions": 3,
+      "impressions": 4,
       "ctr": 0,
-      "position": 98.33333333333333
+      "position": 97.75
     },
     {
       "keys": [
@@ -5816,9 +6012,9 @@
         "https://zovo.one/free-tools/barcode-label-maker"
       ],
       "clicks": 0,
-      "impressions": 12,
+      "impressions": 8,
       "ctr": 0,
-      "position": 84.83333333333333
+      "position": 84.125
     },
     {
       "keys": [
@@ -5852,6 +6048,16 @@
     },
     {
       "keys": [
+        "list code generators that can create webhook handlers for delivery status callbacks and retries",
+        "https://zovo.one/free-tools/webhook-tester"
+      ],
+      "clicks": 0,
+      "impressions": 2,
+      "ctr": 0,
+      "position": 6.5
+    },
+    {
+      "keys": [
         "loan calculator with amortization schedule",
         "https://zovo.one/free-tools/loan-calculator"
       ],
@@ -5859,6 +6065,26 @@
       "impressions": 1,
       "ctr": 0,
       "position": 26
+    },
+    {
+      "keys": [
+        "loan payment amortization schedule",
+        "https://zovo.one/free-tools/loan-calculator"
+      ],
+      "clicks": 0,
+      "impressions": 4,
+      "ctr": 0,
+      "position": 26.5
+    },
+    {
+      "keys": [
+        "loan repayment table",
+        "https://zovo.one/free-tools/loan-calculator"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 29
     },
     {
       "keys": [
@@ -5882,16 +6108,6 @@
     },
     {
       "keys": [
-        "make an online business card",
-        "https://zovo.one/free-tools/business-card-maker"
-      ],
-      "clicks": 0,
-      "impressions": 1,
-      "ctr": 0,
-      "position": 88
-    },
-    {
-      "keys": [
         "make name card online free",
         "https://zovo.one/free-tools/business-card-maker"
       ],
@@ -5906,9 +6122,9 @@
         "https://zovo.one/free-tools/business-card-maker"
       ],
       "clicks": 0,
-      "impressions": 18,
+      "impressions": 7,
       "ctr": 0,
-      "position": 91.77777777777777
+      "position": 91.14285714285714
     },
     {
       "keys": [
@@ -5952,13 +6168,33 @@
     },
     {
       "keys": [
-        "missing bookmarks",
-        "https://zovo.one/blog/chrome-bookmarks-disappeared-recovery.html"
+        "meeting planner world clock",
+        "https://zovo.one/free-tools/timezone-converter"
       ],
       "clicks": 0,
       "impressions": 1,
       "ctr": 0,
-      "position": 62
+      "position": 12
+    },
+    {
+      "keys": [
+        "metronome google free",
+        "https://zovo.one/free-tools/metronome"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 15
+    },
+    {
+      "keys": [
+        "meu zovo",
+        "https://zovo.one/"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 35
     },
     {
       "keys": [
@@ -5982,13 +6218,23 @@
     },
     {
       "keys": [
+        "monthly investment calculator compound interest",
+        "https://zovo.one/free-tools/investment-calculator"
+      ],
+      "clicks": 0,
+      "impressions": 2,
+      "ctr": 0,
+      "position": 9
+    },
+    {
+      "keys": [
         "mortgage cash out refi calculator",
         "https://zovo.one/free-tools/cash-out-refinance-calculator"
       ],
       "clicks": 0,
-      "impressions": 1,
+      "impressions": 6,
       "ctr": 0,
-      "position": 11
+      "position": 12.5
     },
     {
       "keys": [
@@ -5996,9 +6242,9 @@
         "https://zovo.one/free-tools/cash-out-refinance-calculator"
       ],
       "clicks": 0,
-      "impressions": 14,
+      "impressions": 15,
       "ctr": 0,
-      "position": 9.357142857142858
+      "position": 9.6
     },
     {
       "keys": [
@@ -6009,6 +6255,16 @@
       "impressions": 3,
       "ctr": 0,
       "position": 18
+    },
+    {
+      "keys": [
+        "mortgage refinance calculator with cash out",
+        "https://zovo.one/free-tools/cash-out-refinance-calculator"
+      ],
+      "clicks": 0,
+      "impressions": 2,
+      "ctr": 0,
+      "position": 19
     },
     {
       "keys": [
@@ -6042,13 +6298,13 @@
     },
     {
       "keys": [
-        "online business card making",
-        "https://zovo.one/free-tools/business-card-maker"
+        "online barcode printer",
+        "https://zovo.one/free-tools/barcode-label-maker"
       ],
       "clicks": 0,
       "impressions": 1,
       "ctr": 0,
-      "position": 95
+      "position": 72
     },
     {
       "keys": [
@@ -6068,7 +6324,7 @@
       "clicks": 0,
       "impressions": 1,
       "ctr": 0,
-      "position": 87
+      "position": 93
     },
     {
       "keys": [
@@ -6079,6 +6335,16 @@
       "impressions": 1,
       "ctr": 0,
       "position": 37
+    },
+    {
+      "keys": [
+        "online debt consolidation",
+        "https://zovo.one/free-tools/debt-consolidation-calculator"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 23
     },
     {
       "keys": [
@@ -6096,29 +6362,29 @@
         "https://zovo.one/free-tools/flow-chart-maker"
       ],
       "clicks": 0,
+      "impressions": 3,
+      "ctr": 0,
+      "position": 19.333333333333332
+    },
+    {
+      "keys": [
+        "online flow chart creator free",
+        "https://zovo.one/free-tools/flow-chart-maker"
+      ],
+      "clicks": 0,
       "impressions": 2,
       "ctr": 0,
-      "position": 18
+      "position": 22.5
     },
     {
       "keys": [
-        "online photo collage",
-        "https://zovo.one/free-tools/collage-maker"
+        "online time in time out",
+        "https://zovo.one/free-tools/clock-out-time-calculator"
       ],
       "clicks": 0,
       "impressions": 1,
       "ctr": 0,
-      "position": 96
-    },
-    {
-      "keys": [
-        "online service card maker",
-        "https://zovo.one/free-tools/business-card-maker"
-      ],
-      "clicks": 0,
-      "impressions": 1,
-      "ctr": 0,
-      "position": 97
+      "position": 86
     },
     {
       "keys": [
@@ -6139,6 +6405,16 @@
       "impressions": 2,
       "ctr": 0,
       "position": 5
+    },
+    {
+      "keys": [
+        "pay stubs calculator",
+        "https://zovo.one/free-tools/texas-payroll-calculator"
+      ],
+      "clicks": 0,
+      "impressions": 2,
+      "ctr": 0,
+      "position": 21.5
     },
     {
       "keys": [
@@ -6172,33 +6448,53 @@
     },
     {
       "keys": [
-        "photo filter editor",
-        "https://zovo.one/free-tools/photo-filter"
+        "pinjaman kalkulator",
+        "https://zovo.one/free-tools/loan-calculator"
       ],
       "clicks": 0,
       "impressions": 1,
       "ctr": 0,
-      "position": 77
+      "position": 25
     },
     {
       "keys": [
-        "picture collage maker online",
-        "https://zovo.one/free-tools/collage-maker"
+        "pixel editor",
+        "https://zovo.one/free-tools/pixel-art-editor"
       ],
       "clicks": 0,
-      "impressions": 1,
+      "impressions": 2,
       "ctr": 0,
-      "position": 96
+      "position": 18
     },
     {
       "keys": [
-        "postman tutorial for back sleepers",
-        "https://zovo.one/expert/case-study-chrome-memory-reduction"
+        "power of compounding calculator",
+        "https://zovo.one/free-tools/compound-interest-calculator"
       ],
       "clicks": 0,
       "impressions": 1,
       "ctr": 0,
-      "position": 229
+      "position": 12
+    },
+    {
+      "keys": [
+        "print barcode labels",
+        "https://zovo.one/free-tools/barcode-label-maker"
+      ],
+      "clicks": 0,
+      "impressions": 2,
+      "ctr": 0,
+      "position": 92.5
+    },
+    {
+      "keys": [
+        "privacy-first text expander",
+        "https://zovo.one/privacy/text-expander"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 61
     },
     {
       "keys": [
@@ -6206,9 +6502,9 @@
         "https://zovo.one/free-tools/flow-chart-maker"
       ],
       "clicks": 0,
-      "impressions": 3,
+      "impressions": 9,
       "ctr": 0,
-      "position": 19.333333333333332
+      "position": 22.11111111111111
     },
     {
       "keys": [
@@ -6236,9 +6532,9 @@
         "https://zovo.one/free-tools/qr-reader"
       ],
       "clicks": 0,
-      "impressions": 11,
+      "impressions": 12,
       "ctr": 0,
-      "position": 66.27272727272727
+      "position": 65.91666666666667
     },
     {
       "keys": [
@@ -6256,9 +6552,9 @@
         "https://zovo.one/free-tools/qr-reader"
       ],
       "clicks": 0,
-      "impressions": 14,
+      "impressions": 15,
       "ctr": 0,
-      "position": 63.642857142857146
+      "position": 63.266666666666666
     },
     {
       "keys": [
@@ -6272,6 +6568,16 @@
     },
     {
       "keys": [
+        "qr readers",
+        "https://zovo.one/free-tools/qr-reader"
+      ],
+      "clicks": 0,
+      "impressions": 8,
+      "ctr": 0,
+      "position": 9.5
+    },
+    {
+      "keys": [
         "qr.code reader",
         "https://zovo.one/free-tools/qr-reader"
       ],
@@ -6279,6 +6585,86 @@
       "impressions": 2,
       "ctr": 0,
       "position": 66
+    },
+    {
+      "keys": [
+        "r25 000 in dollars",
+        "https://zovo.one/free-tools/dollar-to-zar-converter"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 28
+    },
+    {
+      "keys": [
+        "random counter",
+        "https://zovo.one/free-tools/random-number-generator"
+      ],
+      "clicks": 0,
+      "impressions": 2,
+      "ctr": 0,
+      "position": 7.5
+    },
+    {
+      "keys": [
+        "random number generator from a list of numbers",
+        "https://zovo.one/free-tools/random-number-generator"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 15
+    },
+    {
+      "keys": [
+        "random sequence generator",
+        "https://zovo.one/free-tools/random-number-generator"
+      ],
+      "clicks": 0,
+      "impressions": 2,
+      "ctr": 0,
+      "position": 15.5
+    },
+    {
+      "keys": [
+        "ratio calculator",
+        "https://zovo.one/free-tools/aspect-ratio-calculator"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 48
+    },
+    {
+      "keys": [
+        "ratio finder",
+        "https://zovo.one/free-tools/aspect-ratio-calculator"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 79
+    },
+    {
+      "keys": [
+        "read qr code",
+        "https://zovo.one/free-tools/qr-reader"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 69
+    },
+    {
+      "keys": [
+        "recipe scaler",
+        "https://zovo.one/free-tools/recipe-scaler"
+      ],
+      "clicks": 0,
+      "impressions": 10,
+      "ctr": 0,
+      "position": 10.9
     },
     {
       "keys": [
@@ -6299,6 +6685,16 @@
       "impressions": 1,
       "ctr": 0,
       "position": 11
+    },
+    {
+      "keys": [
+        "refinance calculator mortgage cash out",
+        "https://zovo.one/free-tools/cash-out-refinance-calculator"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 13
     },
     {
       "keys": [
@@ -6326,9 +6722,9 @@
         "https://zovo.one/free-tools/cash-out-refinance-calculator"
       ],
       "clicks": 0,
-      "impressions": 2,
+      "impressions": 10,
       "ctr": 0,
-      "position": 11
+      "position": 11.6
     },
     {
       "keys": [
@@ -6336,9 +6732,9 @@
         "https://zovo.one/free-tools/cash-out-refinance-calculator"
       ],
       "clicks": 0,
-      "impressions": 3,
+      "impressions": 5,
       "ctr": 0,
-      "position": 15.666666666666666
+      "position": 14.8
     },
     {
       "keys": [
@@ -6346,9 +6742,29 @@
         "https://zovo.one/free-tools/cash-out-refinance-calculator"
       ],
       "clicks": 0,
-      "impressions": 2,
+      "impressions": 8,
       "ctr": 0,
-      "position": 14
+      "position": 12.375
+    },
+    {
+      "keys": [
+        "refinance mortgage rates florida calculator",
+        "https://zovo.one/free-tools/cash-out-refinance-calculator"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 19
+    },
+    {
+      "keys": [
+        "refinance take cash out calculator",
+        "https://zovo.one/free-tools/cash-out-refinance-calculator"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 17
     },
     {
       "keys": [
@@ -6356,7 +6772,17 @@
         "https://zovo.one/free-tools/cash-out-refinance-calculator"
       ],
       "clicks": 0,
-      "impressions": 5,
+      "impressions": 9,
+      "ctr": 0,
+      "position": 11.11111111111111
+    },
+    {
+      "keys": [
+        "refinance with cash-out calculator",
+        "https://zovo.one/free-tools/cash-out-refinance-calculator"
+      ],
+      "clicks": 0,
+      "impressions": 1,
       "ctr": 0,
       "position": 11
     },
@@ -6446,9 +6872,9 @@
         "https://zovo.one/free-tools/compound-interest-calculator"
       ],
       "clicks": 0,
-      "impressions": 2,
+      "impressions": 5,
       "ctr": 0,
-      "position": 49.5
+      "position": 34.8
     },
     {
       "keys": [
@@ -6472,6 +6898,16 @@
     },
     {
       "keys": [
+        "savings rate calculator compound interest",
+        "https://zovo.one/free-tools/compound-interest-calculator"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 13
+    },
+    {
+      "keys": [
         "search a trademark",
         "https://zovo.one/free-tools/trademark-search"
       ],
@@ -6482,13 +6918,53 @@
     },
     {
       "keys": [
+        "shorten my url",
+        "https://zovo.one/free-tools/url-shortener"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 23
+    },
+    {
+      "keys": [
+        "sibling name generator",
+        "https://zovo.one/free-tools/baby-name-generator"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 28
+    },
+    {
+      "keys": [
+        "simple cash-out refinance calculator",
+        "https://zovo.one/free-tools/cash-out-refinance-calculator"
+      ],
+      "clicks": 0,
+      "impressions": 2,
+      "ctr": 0,
+      "position": 4.5
+    },
+    {
+      "keys": [
+        "site wireframe tool",
+        "https://zovo.one/free-tools/wireframe-tool"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 33
+    },
+    {
+      "keys": [
         "site:zovo.one",
         "https://mcp.zovo.one/"
       ],
       "clicks": 0,
-      "impressions": 8,
+      "impressions": 9,
       "ctr": 0,
-      "position": 2.875
+      "position": 2.666666666666667
     },
     {
       "keys": [
@@ -6546,9 +7022,9 @@
         "https://zovo.one/"
       ],
       "clicks": 0,
-      "impressions": 4,
+      "impressions": 3,
       "ctr": 0,
-      "position": 1
+      "position": 1.3333333333333333
     },
     {
       "keys": [
@@ -6556,9 +7032,9 @@
         "https://zovo.one/about"
       ],
       "clicks": 0,
-      "impressions": 4,
+      "impressions": 2,
       "ctr": 0,
-      "position": 8
+      "position": 9
     },
     {
       "keys": [
@@ -6586,9 +7062,9 @@
         "https://zovo.one/answers"
       ],
       "clicks": 0,
-      "impressions": 4,
+      "impressions": 3,
       "ctr": 0,
-      "position": 9
+      "position": 10
     },
     {
       "keys": [
@@ -6786,9 +7262,9 @@
         "https://zovo.one/compare"
       ],
       "clicks": 0,
-      "impressions": 12,
+      "impressions": 13,
       "ctr": 0,
-      "position": 9.833333333333334
+      "position": 9.615384615384615
     },
     {
       "keys": [
@@ -7446,9 +7922,9 @@
         "https://zovo.one/guides"
       ],
       "clicks": 0,
-      "impressions": 4,
+      "impressions": 3,
       "ctr": 0,
-      "position": 5
+      "position": 5.333333333333333
     },
     {
       "keys": [
@@ -7586,9 +8062,9 @@
         "https://zovo.one/name"
       ],
       "clicks": 0,
-      "impressions": 7,
+      "impressions": 5,
       "ctr": 0,
-      "position": 7.428571428571429
+      "position": 6.4
     },
     {
       "keys": [
@@ -7616,9 +8092,9 @@
         "https://zovo.one/partners"
       ],
       "clicks": 0,
-      "impressions": 9,
+      "impressions": 10,
       "ctr": 0,
-      "position": 7
+      "position": 7.1
     },
     {
       "keys": [
@@ -7626,9 +8102,9 @@
         "https://zovo.one/permissions"
       ],
       "clicks": 0,
-      "impressions": 7,
+      "impressions": 6,
       "ctr": 0,
-      "position": 7
+      "position": 7.666666666666667
     },
     {
       "keys": [
@@ -7666,9 +8142,9 @@
         "https://zovo.one/research"
       ],
       "clicks": 0,
-      "impressions": 4,
+      "impressions": 3,
       "ctr": 0,
-      "position": 3
+      "position": 3.3333333333333335
     },
     {
       "keys": [
@@ -7756,9 +8232,9 @@
         "https://zovo.one/roadmap"
       ],
       "clicks": 0,
-      "impressions": 7,
+      "impressions": 6,
       "ctr": 0,
-      "position": 2
+      "position": 2.166666666666667
     },
     {
       "keys": [
@@ -7806,9 +8282,9 @@
         "https://zovo.one/tasks"
       ],
       "clicks": 0,
-      "impressions": 7,
+      "impressions": 6,
       "ctr": 0,
-      "position": 2.7142857142857144
+      "position": 2.666666666666667
     },
     {
       "keys": [
@@ -8026,9 +8502,9 @@
         "https://zovo.one/why"
       ],
       "clicks": 0,
-      "impressions": 3,
+      "impressions": 1,
       "ctr": 0,
-      "position": 9.666666666666666
+      "position": 11
     },
     {
       "keys": [
@@ -8042,6 +8518,16 @@
     },
     {
       "keys": [
+        "ssh keygen rsa 2048",
+        "https://zovo.one/free-tools/ssh-key-generator"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 29
+    },
+    {
+      "keys": [
         "step sip calculator",
         "https://zovo.one/free-tools/sip-calculator"
       ],
@@ -8052,16 +8538,6 @@
     },
     {
       "keys": [
-        "tab freezer",
-        "https://zovo.one/tasks/suspend-chrome-tabs"
-      ],
-      "clicks": 0,
-      "impressions": 1,
-      "ctr": 0,
-      "position": 54
-    },
-    {
-      "keys": [
         "tab hoarder",
         "https://zovo.one/research/tab-hoarding-index"
       ],
@@ -8069,6 +8545,66 @@
       "impressions": 2,
       "ctr": 0,
       "position": 70
+    },
+    {
+      "keys": [
+        "td bank cad to usd rate",
+        "https://zovo.one/free-tools/td-exchange-rate-converter"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 47
+    },
+    {
+      "keys": [
+        "td bank cdn to usd",
+        "https://zovo.one/free-tools/td-exchange-rate-converter"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 51
+    },
+    {
+      "keys": [
+        "td cad to usd",
+        "https://zovo.one/free-tools/td-exchange-rate-converter"
+      ],
+      "clicks": 0,
+      "impressions": 2,
+      "ctr": 0,
+      "position": 50
+    },
+    {
+      "keys": [
+        "td cad to usd conversion rate",
+        "https://zovo.one/free-tools/td-exchange-rate-converter"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 52
+    },
+    {
+      "keys": [
+        "td canada us exchange rate",
+        "https://zovo.one/free-tools/td-exchange-rate-converter"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 53
+    },
+    {
+      "keys": [
+        "td converter",
+        "https://zovo.one/free-tools/td-exchange-rate-converter"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 41
     },
     {
       "keys": [
@@ -8102,6 +8638,66 @@
     },
     {
       "keys": [
+        "td taux de change",
+        "https://zovo.one/free-tools/td-exchange-rate-converter"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 63
+    },
+    {
+      "keys": [
+        "td us dollar to canadian",
+        "https://zovo.one/free-tools/td-exchange-rate-converter"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 53
+    },
+    {
+      "keys": [
+        "td usd to cad",
+        "https://zovo.one/free-tools/td-exchange-rate-converter"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 55
+    },
+    {
+      "keys": [
+        "temperature in celcius to farenheit",
+        "https://zovo.one/free-tools/temperature-converter"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 10
+    },
+    {
+      "keys": [
+        "texas payroll calculator free",
+        "https://zovo.one/free-tools/texas-payroll-calculator"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 14
+    },
+    {
+      "keys": [
+        "texas payroll tax rate",
+        "https://zovo.one/free-tools/texas-payroll-calculator"
+      ],
+      "clicks": 0,
+      "impressions": 2,
+      "ctr": 0,
+      "position": 27.5
+    },
+    {
+      "keys": [
         "texas payroll tax rates",
         "https://zovo.one/free-tools/texas-payroll-calculator"
       ],
@@ -8109,6 +8705,16 @@
       "impressions": 1,
       "ctr": 0,
       "position": 8
+    },
+    {
+      "keys": [
+        "text that you copied",
+        "https://zovo.one/use-cases/recovering-accidentally-overwritten-text"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 59
     },
     {
       "keys": [
@@ -8166,9 +8772,39 @@
         "https://zovo.one/free-tools/trademark-search"
       ],
       "clicks": 0,
+      "impressions": 3,
+      "ctr": 0,
+      "position": 91.33333333333333
+    },
+    {
+      "keys": [
+        "trademark checker",
+        "https://zovo.one/free-tools/trademark-search"
+      ],
+      "clicks": 0,
       "impressions": 2,
       "ctr": 0,
-      "position": 98.5
+      "position": 100.5
+    },
+    {
+      "keys": [
+        "trademark look up",
+        "https://zovo.one/free-tools/trademark-search"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 34
+    },
+    {
+      "keys": [
+        "trademark no",
+        "https://zovo.one/free-tools/trademark-search"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 97
     },
     {
       "keys": [
@@ -8176,9 +8812,19 @@
         "https://zovo.one/free-tools/trademark-search"
       ],
       "clicks": 0,
-      "impressions": 1,
+      "impressions": 4,
       "ctr": 0,
       "position": 87
+    },
+    {
+      "keys": [
+        "trademark search engine",
+        "https://zovo.one/free-tools/trademark-search"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 30
     },
     {
       "keys": [
@@ -8202,6 +8848,16 @@
     },
     {
       "keys": [
+        "typeface combinations",
+        "https://zovo.one/free-tools/font-pair-generator"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 26
+    },
+    {
+      "keys": [
         "unix timestamp converter",
         "https://zovo.one/free-tools/timestamp-converter"
       ],
@@ -8209,6 +8865,36 @@
       "impressions": 2,
       "ctr": 0,
       "position": 13
+    },
+    {
+      "keys": [
+        "unix timestamp format",
+        "https://zovo.one/free-tools/timestamp-converter"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 45
+    },
+    {
+      "keys": [
+        "unix timestamp timezone",
+        "https://zovo.one/free-tools/timestamp-converter"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 8
+    },
+    {
+      "keys": [
+        "us dollar to canadian dollar td bank",
+        "https://zovo.one/free-tools/td-exchange-rate-converter"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 58
     },
     {
       "keys": [
@@ -8232,13 +8918,13 @@
     },
     {
       "keys": [
-        "verified first extension",
-        "https://zovo.one/industries"
+        "va cash out refi max ltv",
+        "https://zovo.one/free-tools/cash-out-refinance-calculator"
       ],
       "clicks": 0,
       "impressions": 2,
       "ctr": 0,
-      "position": 74
+      "position": 30
     },
     {
       "keys": [
@@ -8252,13 +8938,13 @@
     },
     {
       "keys": [
-        "webhooks gratis",
-        "https://zovo.one/free-tools/webhook-tester"
+        "web page wireframe tools",
+        "https://zovo.one/free-tools/wireframe-tool"
       ],
       "clicks": 0,
       "impressions": 1,
       "ctr": 0,
-      "position": 92
+      "position": 39
     },
     {
       "keys": [
@@ -8286,9 +8972,19 @@
         "https://zovo.one/blog/chrome-bookmarks-disappeared-recovery.html"
       ],
       "clicks": 0,
-      "impressions": 2,
+      "impressions": 1,
       "ctr": 0,
-      "position": 71.5
+      "position": 69
+    },
+    {
+      "keys": [
+        "wireframe app",
+        "https://zovo.one/free-tools/wireframe-tool"
+      ],
+      "clicks": 0,
+      "impressions": 5,
+      "ctr": 0,
+      "position": 34.6
     },
     {
       "keys": [
@@ -8296,9 +8992,19 @@
         "https://zovo.one/free-tools/wireframe-tool"
       ],
       "clicks": 0,
+      "impressions": 2,
+      "ctr": 0,
+      "position": 23.5
+    },
+    {
+      "keys": [
+        "wireframe design tool",
+        "https://zovo.one/free-tools/wireframe-tool"
+      ],
+      "clicks": 0,
       "impressions": 1,
       "ctr": 0,
-      "position": 27
+      "position": 41
     },
     {
       "keys": [
@@ -8316,9 +9022,9 @@
         "https://zovo.one/free-tools/wireframe-tool"
       ],
       "clicks": 0,
-      "impressions": 2,
+      "impressions": 6,
       "ctr": 0,
-      "position": 17.5
+      "position": 20.166666666666668
     },
     {
       "keys": [
@@ -8326,9 +9032,9 @@
         "https://zovo.one/free-tools/wireframe-tool"
       ],
       "clicks": 0,
-      "impressions": 5,
+      "impressions": 9,
       "ctr": 0,
-      "position": 23.6
+      "position": 26.555555555555557
     },
     {
       "keys": [
@@ -8336,9 +9042,9 @@
         "https://zovo.one/free-tools/wireframe-tool"
       ],
       "clicks": 0,
-      "impressions": 5,
+      "impressions": 6,
       "ctr": 0,
-      "position": 37.6
+      "position": 39.166666666666664
     },
     {
       "keys": [
@@ -8349,6 +9055,26 @@
       "impressions": 1,
       "ctr": 0,
       "position": 20
+    },
+    {
+      "keys": [
+        "wireframing free",
+        "https://zovo.one/free-tools/wireframe-tool"
+      ],
+      "clicks": 0,
+      "impressions": 2,
+      "ctr": 0,
+      "position": 21
+    },
+    {
+      "keys": [
+        "wireframing online",
+        "https://zovo.one/free-tools/wireframe-tool"
+      ],
+      "clicks": 0,
+      "impressions": 1,
+      "ctr": 0,
+      "position": 23
     },
     {
       "keys": [
@@ -8422,63 +9148,13 @@
     },
     {
       "keys": [
-        "youtube addon",
-        "https://www.zovo.one/best/chrome-extensions-for-youtube"
+        "zoekbalk google chrome verdwenen",
+        "https://zovo.one/blog/chrome-bookmarks-disappeared-recovery.html"
       ],
       "clicks": 0,
       "impressions": 1,
       "ctr": 0,
-      "position": 62
-    },
-    {
-      "keys": [
-        "youtube extension",
-        "https://www.zovo.one/best/chrome-extensions-for-youtube"
-      ],
-      "clicks": 0,
-      "impressions": 4,
-      "ctr": 0,
-      "position": 41.5
-    },
-    {
-      "keys": [
-        "youtube google chrome extension",
-        "https://www.zovo.one/best/chrome-extensions-for-youtube"
-      ],
-      "clicks": 0,
-      "impressions": 1,
-      "ctr": 0,
-      "position": 48
-    },
-    {
-      "keys": [
-        "youtube plugins chrome",
-        "https://www.zovo.one/best/chrome-extensions-for-youtube"
-      ],
-      "clicks": 0,
-      "impressions": 1,
-      "ctr": 0,
-      "position": 42
-    },
-    {
-      "keys": [
-        "youtube premium extension",
-        "https://www.zovo.one/best/chrome-extensions-for-youtube"
-      ],
-      "clicks": 0,
-      "impressions": 1,
-      "ctr": 0,
-      "position": 54
-    },
-    {
-      "keys": [
-        "yt extension",
-        "https://www.zovo.one/best/chrome-extensions-for-youtube"
-      ],
-      "clicks": 0,
-      "impressions": 1,
-      "ctr": 0,
-      "position": 39
+      "position": 58
     },
     {
       "keys": [
@@ -8496,9 +9172,9 @@
         "https://zovo.one/"
       ],
       "clicks": 0,
-      "impressions": 2,
+      "impressions": 1,
       "ctr": 0,
-      "position": 38.5
+      "position": 40
     },
     {
       "keys": [
@@ -8512,23 +9188,13 @@
     },
     {
       "keys": [
-        "zovo extension",
-        "https://zovo.one/"
-      ],
-      "clicks": 0,
-      "impressions": 2,
-      "ctr": 0,
-      "position": 3
-    },
-    {
-      "keys": [
         "zovo.to",
         "https://zovo.one/"
       ],
       "clicks": 0,
-      "impressions": 3,
+      "impressions": 4,
       "ctr": 0,
-      "position": 3.6666666666666665
+      "position": 4
     },
     {
       "keys": [
@@ -8539,16 +9205,6 @@
       "impressions": 1,
       "ctr": 0,
       "position": 10
-    },
-    {
-      "keys": [
-        "zvosdim",
-        "https://zovo.one/"
-      ],
-      "clicks": 0,
-      "impressions": 1,
-      "ctr": 0,
-      "position": 64
     },
     {
       "keys": [
@@ -8567,9 +9223,9 @@
         "https://mcp.zovo.one/"
       ],
       "clicks": 0,
-      "impressions": 19,
+      "impressions": 20,
       "ctr": 0,
-      "position": 3.1052631578947367
+      "position": 3
     }
   ]
 }
