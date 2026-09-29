@@ -42,3 +42,20 @@ Trace the 100-sessions → 2-paid leak in the MCP estate purchase path, identify
 
 ## Deploy Commands
 (placeholder)
+
+## Verification & corrections (2026-09-29, orchestrator, 2nd pass — replaces subagent misread)
+Commands: stripe checkout sessions list --live --limit 100 > /tmp/stripe_cs.txt (parsed with python3); CF KV API list prefix=lic: on REMOTE_DATA cf848cc5...
+
+1. **The 2 paid sessions are REAL humans, NOT QA artifacts.** Live Stripe (limit 100):
+   - cs_live_a1dlVs8P... paid, renoboost.belfort@gmail.com (Yves ROY), landing /pricing, tier founding, 2026-09-26
+   - cs_live_a1MN1EJF... paid, jesswilensky@gmail.com, landing /pricing, tier founding, 2026-09-24
+   The subagent's "all paid = test emails" claim is FALSE — it misattributed older
+   sprint-test@example.com UNPAID probes. Revenue = 2 x $19 = $38, both via /pricing
+   founding tier. Positive control: QA sessions (zovo-qa-dry, sprint-test) are unpaid.
+2. **License keys: 894 lic:* minted in REMOTE_DATA KV** (org-scoped, e.g. lic:0178bc0e2835:invoice).
+   The "0 license keys minted" KPI is WRONG — likely an older probe reading an empty
+   namespace. Fulfillment works.
+3. Real constraint confirmed: audience. Funnel works end-to-end for humans: /pricing ->
+   paid x2 -> keys minted. Both buyers landed on /pricing (not /s/<server> pages).
+   Highest-ROI fix: route more traffic to /pricing.
+
