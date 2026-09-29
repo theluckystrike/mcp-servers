@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-29T16:53:54.402Z",
+  "generated_at": "2026-09-29T17:22:18.549Z",
   "kpis": [
     {
       "cat": "Discovery",
@@ -177,7 +177,7 @@
       "value": 239,
       "target": 200,
       "unit": "files (1h TTL)",
-      "how": "previous value; wrangler timed out at 2026-09-29T16:52:21.298Z",
+      "how": "previous value; wrangler timed out at 2026-09-29T17:21:07.014Z",
       "why": "A produced document is a completed job, not just a call.",
       "stale": true,
       "status": "met"
@@ -245,13 +245,13 @@
     {
       "cat": "Reliability",
       "name": "Hosted tools/list latency p50",
-      "value": 917,
+      "value": 174,
       "target": 800,
       "unit": "ms",
       "lower_is_better": true,
       "how": "3 timed POSTs to /mcp/time-tracker",
       "why": "Above about a second, clients start their first prompt before the server answers (round 4 D-R5).",
-      "status": "progress"
+      "status": "met"
     },
     {
       "cat": "Reliability",
@@ -342,7 +342,7 @@
     },
     "sales_charges_seen": 0,
     "remote_kv": {
-      "total": 7470,
+      "total": 7480,
       "by": {
         "anon": 135,
         "bind": 2,
@@ -352,7 +352,7 @@
         "mint": 2,
         "monitor": 3,
         "oauth_client": 12,
-        "rl": 49,
+        "rl": 59,
         "shared": 2,
         "tok": 1002
       },
@@ -6775,15 +6775,19 @@
         "oauth_client:9cee467e919559c35b7ff7212b6834f9",
         "oauth_client:c6d804b0b7b33264acdcaf07aa61bab9",
         "rl:discovery:128.85.81.46:497416",
-        "rl:discovery:15.204.10.2:497415",
+        "rl:discovery:128.85.81.54:497417",
         "rl:discovery:15.204.10.2:497416",
-        "rl:discovery:152.55.178.56:497414",
+        "rl:discovery:15.204.10.2:497417",
         "rl:discovery:152.55.178.56:497415",
         "rl:discovery:152.55.178.56:497416",
+        "rl:discovery:152.55.178.56:497417",
         "rl:discovery:152.55.184.55:497415",
         "rl:discovery:152.55.184.55:497416",
+        "rl:discovery:152.55.184.55:497417",
         "rl:discovery:159.195.215.248:497415",
+        "rl:discovery:159.195.215.248:497417",
         "rl:discovery:169.58.147.63:497415",
+        "rl:discovery:172.96.232.115:497417",
         "rl:discovery:178.105.40.244:497416",
         "rl:discovery:185.43.233.32:497415",
         "rl:discovery:185.43.233.32:497416",
@@ -6794,18 +6798,23 @@
         "rl:discovery:2a01:4f9:2b:19af::2:497416",
         "rl:discovery:2a01:4f9:3b:451d::2:497415",
         "rl:discovery:2a01:4f9:3b:451d::2:497416",
+        "rl:discovery:2a01:4f9:3b:451d::2:497417",
         "rl:discovery:2a01:4f9:c012:7346::1:497416",
         "rl:discovery:2a02:c207:2348:3823::1:497415",
         "rl:discovery:2a02:c207:2348:3823::1:497416",
-        "rl:discovery:2a06:98c0:3600::103:497414",
         "rl:discovery:2a06:98c0:3600::103:497415",
         "rl:discovery:2a06:98c0:3600::103:497416",
+        "rl:discovery:2a06:98c0:3600::103:497417",
         "rl:discovery:35.186.177.40:497415",
         "rl:discovery:35.186.177.40:497416",
         "rl:discovery:4.154.209.155:497416",
         "rl:discovery:40.160.65.14:497415",
         "rl:discovery:40.160.65.14:497416",
+        "rl:discovery:40.160.65.14:497417",
         "rl:discovery:40.65.100.215:497415",
+        "rl:discovery:40.65.103.29:497417",
+        "rl:discovery:40.91.68.165:497416",
+        "rl:discovery:40.91.69.161:497417",
         "rl:discovery:40.91.71.214:497416",
         "rl:discovery:46.62.238.162:497415",
         "rl:discovery:52.151.23.248:497416",
@@ -6815,14 +6824,15 @@
         "rl:discovery:52.151.6.29:497415",
         "rl:discovery:52.151.6.29:497416",
         "rl:discovery:54.84.112.207:497416",
-        "rl:discovery:68.220.58.251:497414",
         "rl:discovery:73.225.209.11:497416",
         "rl:discovery:82.114.83.82:497415",
         "rl:discovery:82.114.83.82:497416",
+        "rl:discovery:82.114.83.82:497417",
         "rl:discovery:85.137.93.255:497415",
         "rl:discovery:85.253.235.187:497415",
         "rl:lic:1dc1266ab2d7:497415",
         "rl:lic:236ec7524fbb:497416",
+        "rl:lic:e03a5da9ae0f:497416",
         "shared:ecb:daily",
         "shared:ecb:history",
         "tok:anon_00003f7c304510e354000177ded0d697",
@@ -7844,11 +7854,11 @@
       "probe_ids_excluded": 306
     },
     "latency": {
-      "p50_ms": 917,
+      "p50_ms": 174,
       "samples": [
-        917,
-        683,
-        1262
+        934,
+        74,
+        174
       ]
     },
     "registry": {
