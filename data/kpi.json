@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-29T20:51:02.593Z",
+  "generated_at": "2026-09-29T21:18:18.483Z",
   "kpis": [
     {
       "cat": "Discovery",
@@ -177,7 +177,7 @@
       "value": 239,
       "target": 200,
       "unit": "files (1h TTL)",
-      "how": "previous value; wrangler timed out at 2026-09-29T20:50:04.596Z",
+      "how": "previous value; wrangler timed out at 2026-09-29T21:17:17.202Z",
       "why": "A produced document is a completed job, not just a call.",
       "stale": true,
       "status": "met"
@@ -245,7 +245,7 @@
     {
       "cat": "Reliability",
       "name": "Hosted tools/list latency p50",
-      "value": 67,
+      "value": 72,
       "target": 800,
       "unit": "ms",
       "lower_is_better": true,
@@ -342,7 +342,7 @@
     },
     "sales_charges_seen": 0,
     "remote_kv": {
-      "total": 7470,
+      "total": 7469,
       "by": {
         "anon": 135,
         "bind": 2,
@@ -351,7 +351,7 @@
         "meta": 419,
         "monitor": 3,
         "oauth_client": 12,
-        "rl": 46,
+        "rl": 45,
         "shared": 2,
         "tok": 1005
       },
@@ -6775,11 +6775,11 @@
         "oauth_client:c6d804b0b7b33264acdcaf07aa61bab9",
         "rl:discovery:136.114.65.242:497419",
         "rl:discovery:136.114.65.242:497420",
-        "rl:discovery:15.204.10.2:497419",
         "rl:discovery:15.204.10.2:497420",
-        "rl:discovery:152.55.178.56:497418",
+        "rl:discovery:15.204.10.2:497421",
         "rl:discovery:152.55.178.56:497419",
         "rl:discovery:152.55.178.56:497420",
+        "rl:discovery:152.55.178.56:497421",
         "rl:discovery:152.55.184.55:497419",
         "rl:discovery:152.55.184.55:497420",
         "rl:discovery:164.132.79.190:497419",
@@ -6787,37 +6787,36 @@
         "rl:discovery:178.105.40.244:497420",
         "rl:discovery:185.43.233.32:497420",
         "rl:discovery:2607:5300:205:200::98ce:497419",
+        "rl:discovery:2607:5300:205:200::98ce:497421",
         "rl:discovery:2a01:4f8:1c18:b3bf::1:497420",
         "rl:discovery:2a01:4f8:1c1b:6f8a::1:497419",
         "rl:discovery:2a01:4f8:1c1b:6f8a::1:497420",
+        "rl:discovery:2a01:4f8:1c1b:6f8a::1:497421",
         "rl:discovery:2a01:4f8:c015:9b2b::1:497419",
-        "rl:discovery:2a01:4f9:3b:451d::2:497418",
         "rl:discovery:2a01:4f9:3b:451d::2:497419",
         "rl:discovery:2a01:4f9:3b:451d::2:497420",
+        "rl:discovery:2a01:4f9:3b:451d::2:497421",
         "rl:discovery:2a02:c207:2348:3823::1:497420",
-        "rl:discovery:2a06:98c0:3600::103:497418",
+        "rl:discovery:2a02:c207:2348:3823::1:497421",
         "rl:discovery:2a06:98c0:3600::103:497419",
         "rl:discovery:2a06:98c0:3600::103:497420",
-        "rl:discovery:2a0a:4cc0:60:8ae:e442:eff:fe23:aaf2:497419",
+        "rl:discovery:2a06:98c0:3600::103:497421",
         "rl:discovery:35.186.177.40:497420",
-        "rl:discovery:4.154.209.155:497419",
         "rl:discovery:40.125.79.190:497419",
         "rl:discovery:40.160.65.14:497419",
         "rl:discovery:40.160.65.14:497420",
+        "rl:discovery:40.160.65.14:497421",
         "rl:discovery:40.65.100.215:497419",
         "rl:discovery:40.91.69.161:497419",
-        "rl:discovery:40.91.71.214:497418",
         "rl:discovery:46.62.238.162:497419",
         "rl:discovery:46.62.238.162:497420",
-        "rl:discovery:52.151.21.25:497419",
-        "rl:discovery:65.21.92.231:497418",
         "rl:discovery:65.21.92.231:497419",
-        "rl:discovery:82.114.83.82:497418",
         "rl:discovery:82.114.83.82:497419",
         "rl:discovery:82.114.83.82:497420",
+        "rl:discovery:82.114.83.82:497421",
         "rl:lic:0c9cddb86e97:497419",
         "rl:lic:428be1d0929b:497419",
-        "rl:lic:59ab16a1081a:497418",
+        "rl:lic:af21180038ad:497420",
         "rl:lic:c173cd037d52:497420",
         "shared:ecb:daily",
         "shared:ecb:history",
@@ -7843,11 +7842,11 @@
       "probe_ids_excluded": 306
     },
     "latency": {
-      "p50_ms": 67,
+      "p50_ms": 72,
       "samples": [
-        757,
-        67,
-        66
+        758,
+        72,
+        69
       ]
     },
     "registry": {
