@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-09-29T16:21:32.081Z",
+  "generated_at": "2026-09-29T16:53:54.402Z",
   "kpis": [
     {
       "cat": "Discovery",
       "name": "Registry entries at latest version",
-      "value": 54,
+      "value": 56,
       "target": 149,
       "unit": "of all published names",
       "how": "one exact GET /v0.1/servers/<name>/versions/latest per manifest name, compared with the release version. NOT a substring search: with 30,395 servers in the registry a search can push the exact match off page one, which is how this read 41 of 91 while a direct sample of 12 returned 12 of 12 present",
@@ -164,7 +164,7 @@
     {
       "cat": "Activation",
       "name": "Hosted tenants with stored data",
-      "value": 999,
+      "value": 1002,
       "target": 100,
       "unit": "tenants",
       "how": "wrangler kv key list --remote (prefix tok)",
@@ -177,7 +177,7 @@
       "value": 239,
       "target": 200,
       "unit": "files (1h TTL)",
-      "how": "previous value; wrangler timed out at 2026-09-29T16:17:26.046Z",
+      "how": "previous value; wrangler timed out at 2026-09-29T16:52:21.298Z",
       "why": "A produced document is a completed job, not just a call.",
       "stale": true,
       "status": "met"
@@ -245,13 +245,13 @@
     {
       "cat": "Reliability",
       "name": "Hosted tools/list latency p50",
-      "value": 99,
+      "value": 917,
       "target": 800,
       "unit": "ms",
       "lower_is_better": true,
       "how": "3 timed POSTs to /mcp/time-tracker",
       "why": "Above about a second, clients start their first prompt before the server answers (round 4 D-R5).",
-      "status": "met"
+      "status": "progress"
     },
     {
       "cat": "Reliability",
@@ -342,7 +342,7 @@
     },
     "sales_charges_seen": 0,
     "remote_kv": {
-      "total": 7469,
+      "total": 7470,
       "by": {
         "anon": 135,
         "bind": 2,
@@ -352,9 +352,9 @@
         "mint": 2,
         "monitor": 3,
         "oauth_client": 12,
-        "rl": 51,
+        "rl": 49,
         "shared": 2,
-        "tok": 999
+        "tok": 1002
       },
       "names": [
         "anon:02c50e96aa9d19a4a25e3517797e3e72:pdf",
@@ -6774,29 +6774,27 @@
         "oauth_client:6e724153720d6a28070bf52d46240a29",
         "oauth_client:9cee467e919559c35b7ff7212b6834f9",
         "oauth_client:c6d804b0b7b33264acdcaf07aa61bab9",
+        "rl:discovery:128.85.81.46:497416",
         "rl:discovery:15.204.10.2:497415",
         "rl:discovery:15.204.10.2:497416",
         "rl:discovery:152.55.178.56:497414",
         "rl:discovery:152.55.178.56:497415",
         "rl:discovery:152.55.178.56:497416",
-        "rl:discovery:152.55.184.55:497414",
         "rl:discovery:152.55.184.55:497415",
+        "rl:discovery:152.55.184.55:497416",
         "rl:discovery:159.195.215.248:497415",
-        "rl:discovery:169.58.147.63:497414",
         "rl:discovery:169.58.147.63:497415",
-        "rl:discovery:178.105.40.244:497414",
+        "rl:discovery:178.105.40.244:497416",
         "rl:discovery:185.43.233.32:497415",
         "rl:discovery:185.43.233.32:497416",
-        "rl:discovery:2607:5300:205:200::98ce:497414",
         "rl:discovery:2607:5300:205:200::98ce:497415",
         "rl:discovery:2607:5300:205:200::98ce:497416",
         "rl:discovery:2a01:4f8:1c18:b3bf::1:497415",
         "rl:discovery:2a01:4f8:1c18:b3bf::1:497416",
-        "rl:discovery:2a01:4f9:3b:451d::2:497414",
+        "rl:discovery:2a01:4f9:2b:19af::2:497416",
         "rl:discovery:2a01:4f9:3b:451d::2:497415",
         "rl:discovery:2a01:4f9:3b:451d::2:497416",
         "rl:discovery:2a01:4f9:c012:7346::1:497416",
-        "rl:discovery:2a02:c207:2348:3823::1:497414",
         "rl:discovery:2a02:c207:2348:3823::1:497415",
         "rl:discovery:2a02:c207:2348:3823::1:497416",
         "rl:discovery:2a06:98c0:3600::103:497414",
@@ -6804,27 +6802,27 @@
         "rl:discovery:2a06:98c0:3600::103:497416",
         "rl:discovery:35.186.177.40:497415",
         "rl:discovery:35.186.177.40:497416",
-        "rl:discovery:4.154.209.155:497414",
-        "rl:discovery:40.160.65.14:497414",
+        "rl:discovery:4.154.209.155:497416",
         "rl:discovery:40.160.65.14:497415",
         "rl:discovery:40.160.65.14:497416",
         "rl:discovery:40.65.100.215:497415",
-        "rl:discovery:40.91.68.165:497414",
+        "rl:discovery:40.91.71.214:497416",
         "rl:discovery:46.62.238.162:497415",
         "rl:discovery:52.151.23.248:497416",
         "rl:discovery:52.151.5.101:497416",
-        "rl:discovery:52.151.51.77:497414",
         "rl:discovery:52.151.51.77:497416",
         "rl:discovery:52.151.6.249:497415",
         "rl:discovery:52.151.6.29:497415",
         "rl:discovery:52.151.6.29:497416",
+        "rl:discovery:54.84.112.207:497416",
         "rl:discovery:68.220.58.251:497414",
-        "rl:discovery:82.114.83.82:497414",
+        "rl:discovery:73.225.209.11:497416",
         "rl:discovery:82.114.83.82:497415",
         "rl:discovery:82.114.83.82:497416",
         "rl:discovery:85.137.93.255:497415",
         "rl:discovery:85.253.235.187:497415",
         "rl:lic:1dc1266ab2d7:497415",
+        "rl:lic:236ec7524fbb:497416",
         "shared:ecb:daily",
         "shared:ecb:history",
         "tok:anon_00003f7c304510e354000177ded0d697",
@@ -7052,6 +7050,7 @@
         "tok:anon_39421f4adda56db071e5a8caf62b1514",
         "tok:anon_3957f50f133917a37d473d19d0e6a846",
         "tok:anon_3958320d7a4427ab1c38d6fba8d82899",
+        "tok:anon_3961c93f8ef46c4337ea90b79174f985",
         "tok:anon_3967e1fe5ad12ef3581811b4713c7505",
         "tok:anon_3b54588f40a2034329977cb4534ec056",
         "tok:anon_3ba8ee768e508786cc63f5a19e80eeb6",
@@ -7070,6 +7069,7 @@
         "tok:anon_3e660808bf88f8b8c6641ee789844c81",
         "tok:anon_3f24561abcee2b1ca05a4747037c7e8a",
         "tok:anon_3f277651438b463dc71764379b672f67",
+        "tok:anon_3f588f720a8ab946af285c263d86ca52",
         "tok:anon_4011dad3f20961c91b9d29d5c9587d30",
         "tok:anon_401cbccff40aceeec124ed63886233ae",
         "tok:anon_40b87a3060f90df808536846bb039ba3",
@@ -7083,6 +7083,7 @@
         "tok:anon_424addd1a08c2856dcd8d5af38e485b7",
         "tok:anon_424fa13a50e964020872ea8381aa8315",
         "tok:anon_42a9663b9067fddfe35270c94ca41a4e",
+        "tok:anon_42e11f6049099316269676e6c41aec66",
         "tok:anon_43698f16a2400016e919c5a9dc89b088",
         "tok:anon_441460201640392aea0fb7b08f47f0d6",
         "tok:anon_447ad5445930028c8a23dfa44dfdfd05",
@@ -7843,19 +7844,19 @@
       "probe_ids_excluded": 306
     },
     "latency": {
-      "p50_ms": 99,
+      "p50_ms": 917,
       "samples": [
-        1264,
-        88,
-        99
+        917,
+        683,
+        1262
       ]
     },
     "registry": {
-      "entries": 54,
+      "entries": 56,
       "names": 149,
       "release": "0.22.0",
-      "hosted": 97,
-      "unreachable": 6
+      "hosted": 99,
+      "unreachable": 0
     },
     "sitemap_urls": 237
   }

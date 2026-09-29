@@ -1,12 +1,11 @@
 {
-  "at": "2026-09-29T16:09:16.465Z",
+  "at": "2026-09-29T16:45:38.536Z",
   "published": [],
   "duplicate": [
     "io.github.theluckystrike/amortization@0.22.0",
     "io.github.theluckystrike/appointment@0.22.0",
     "io.github.theluckystrike/asset-register@0.22.0",
     "io.github.theluckystrike/backlink-checker@0.22.0",
-    "io.github.theluckystrike/bank-statement@0.22.0",
     "io.github.theluckystrike/bank-statement-csv-categorize-reconcile-ledger@0.22.0",
     "io.github.theluckystrike/barcode@0.22.0",
     "io.github.theluckystrike/barcode-qr-code-sepa-payment-ean13@0.22.0",
@@ -124,5 +123,11 @@
     "io.github.theluckystrike/zip@0.22.0",
     "io.github.theluckystrike/zip-archive-create-extract-bomb-guard@0.22.0"
   ],
-  "failed": []
+  "failed": [
+    {
+      "name": "io.github.theluckystrike/bank-statement",
+      "version": "0.22.0",
+      "error": "Publishing to https://registry.modelcontextprotocol.io...\nError: publish failed: server returned status 400: {\"title\":\"Bad Request\",\"status\":400,\"detail\":\"Failed to publish server\",\"errors\":[{\"message\":\"failed to begin transaction: failed to connect to `user=app database=app`:\\n\\t34.118.233.51:5432 "
+    }
+  ]
 }
