@@ -1,0 +1,12 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.theluckystrike/expense-report",
+  "description": "Expense report builder: log expenses, categorise, split VAT, export from chat.",
+  "version": "0.22.0",
+  "repository": {
+    "url": "https://github.com/theluckystrike/mcp-servers",
+    "source": "github",
+    "subfolder": "servers/expense-tracker"
+  },
+  "websiteUrl": "https://mcp.zovo.one/s/expense-tracker"
+}
