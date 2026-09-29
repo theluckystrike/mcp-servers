@@ -31,3 +31,20 @@ Round 7 distribution sweep for the theluckystrike/mcp-servers fleet (32 local-fi
   (Mike: npm login / new granular token). Single highest-leverage manual unblock today.
 - Direct probes: glama API 401 (auth needed), smithery/mcp.so/mcpmarket API 404 (no
   public API; assume listing state per distribution.json).
+
+## Verification (2026-09-29, orchestrator fact-check of distribution subagent claims)
+
+Commands: gh api repos/abordage/awesome-mcp/contents/repositories.yaml / README.md (base64 decode, grep); gh compare 899f1dd5...31296b4c; gh api commits?path=README.md; star histogram from README text.
+
+1. **REGRESSION claim ("abordage entry GONE post-merge") = WRONG.**
+   - repositories.yaml on main RIGHT NOW contains all 6 theluckystrike entries
+     (grep -c theluckystrike = 6). The 09-14 merge ab41f5ff (PR #106) is intact,
+     nothing removed it. Commits?path=README.md show daily "Update README [auto]".
+   - The subagent grep'd README.md only and concluded deletion. Actually the README
+     is an auto-generated RANKED render that only shows ~1419 of 2136 yaml URLs and
+     filters low-star repos (min star rendered = 16). Our 0-star repos are kept in
+     yaml (the machine-readable source) but cut from the README render.
+   - Actionable lever, NOT a regression: stars >= ~16 would re-include us in the
+     rendered README. Real fix = organic stars, never bought (conventions).
+2. Other claims spot-checked OK: PR 72 mcpHQ merged 09-23; Albertchamberlain PR 52
+   merged 09-18 (3 zovo hits); Glama 8 real badges / 4 not listed.
