@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-29T03:26:02.265Z",
+  "generated_at": "2026-10-07T04:25:35.670Z",
   "session": {
     "count": 97,
     "history": [
@@ -3459,6 +3459,10 @@
       "first_line": "PACKAGING_RESULT.md -- generic @theluckystrike/* vendoring for the three engine-sharing servers"
     },
     {
+      "file": "docs/PAYMENT_MAP.md",
+      "first_line": "Payment Map (MCP server estate)"
+    },
+    {
       "file": "docs/PDF_AUDIT.md",
       "first_line": "mcp-pdf: adversarial audit and user-value run"
     },
@@ -3581,6 +3585,10 @@
     {
       "file": "docs/PROFILE_FIRST_RESULT.md",
       "first_line": "Profile-first sweep: never ask for a fact the shared profile already holds"
+    },
+    {
+      "file": "docs/PUBLISH_UNBLOCK.md",
+      "first_line": "PUBLISH UNBLOCK — MCP official registry + npm"
     },
     {
       "file": "docs/QUALITY_LOOP35.md",

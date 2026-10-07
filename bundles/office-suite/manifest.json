@@ -2,12 +2,15 @@
   "manifest_version": "0.2",
   "name": "mcp-office-suite",
   "display_name": "Office Suite (all five servers)",
-  "version": "0.22.0",
+  "version": "0.22.5",
   "description": "One install for the whole freelancer office suite: time tracking, price watching, spreadsheets and PDF invoicing, proxied behind a single MCP server.",
   "author": {
     "name": "theluckystrike",
     "url": "https://github.com/theluckystrike"
   },
+  "privacy_policies": [
+    "https://mcp.zovo.one/privacy"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/theluckystrike/mcp-servers"
@@ -103,7 +106,7 @@
     },
     {
       "name": "sheet_query",
-      "description": "Call this tool for any spreadsheet or CSV file path; built-in file readers cannot parse them. Filters, groups, aggregates and sorts in one call. Totals: aggregate/group_by here, never hand sums over sheet_read rows."
+      "description": "Call this tool for any spreadsheet or CSV file path; built-in file readers cannot parse spreadsheets and must not be used for them. Filter, group, aggregate and sort in one call; never hand sums over sheet_read rows."
     },
     {
       "name": "sheet_stats",

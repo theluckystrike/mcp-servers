@@ -28,6 +28,10 @@ node "$ROOT/scripts/sync-versions.mjs"
 # Refuse to bundle a server whose compiled version.js disagrees with its generated version.ts:
 # a stale dist would ship a bundle whose handshake contradicts its manifest (seen at v0.18.0 on kanban).
 for d in "$ROOT"/servers/*/; do
+  # Only gate servers that actually have a compiled dist; plain-JS servers under
+  # construction (no dist/) ship bundles from their last good build and must not
+  # kill the whole build here (grep exits 1 on no match, which set -e escalates).
+  [ -f "$d/dist/version.js" ] || continue
   src=$(grep -o '"[0-9][0-9.]*"' "$d/src/version.ts" 2>/dev/null | head -1)
   dist=$(grep -o 'VERSION = "[0-9][0-9.]*"' "$d/dist/version.js" 2>/dev/null | grep -o '"[0-9][0-9.]*"')
   if [ -n "$src" ] && [ -n "$dist" ] && [ "$src" != "$dist" ]; then

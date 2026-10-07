@@ -1,0 +1,53 @@
+{
+  "task": "conversion r2: instrument guard + dead links",
+  "date": "2026-10-07",
+  "STATUS": "complete",
+  "summary": "All three R1 defect classes were found ALREADY FIXED in billing/src/index.js and live on mcp.zovo.one (committed in a prior sprint-loop run; git status clean, no drift between src and deploy). This run verified every fix live and audited all home-page links: zero dead links remain. No source changes were required; no deploy was needed.",
+  "checks": {
+    "instrument_guard": {
+      "finding": "The start-anchored scripted-UA guard from R1 is gone. Live worker now uses isHumanNavigation() (src/index.js:1080-1101) and isCheckoutIntent() (:1110-1120): a click counts ONLY on POST with intent=checkout + valid order_token + same-origin Origin header + sec-fetch-mode/dest/site headers + Referer + non-bot UA. GET never creates a checkout session (returns 200 intent page).",
+      "evidence": [
+        "GET /buy/time-tracker?src=store.home.table.x with curl default UA: 200, x-mcp-buy: checkout-intent-required, did NOT increment counter",
+        "GET with full Chrome UA + Referer: 200 intent page, did NOT increment (counter still 978)",
+        "POST with curl UA (scripted): 303 to /s/time-tracker, x-mcp-buy: scripted-ua-no-session, did NOT increment",
+        "POST with Chrome UA + Referer https://mcp.zovo.one/ + Origin + Accept: text/html + sec-fetch-* headers + order_token from intent page: HTTP 303 to checkout.stripe.com/c/pay/cs_live_..., counter 978 -> 979, by_src store.home.table.x {total:1, last7d:1} — incremented exactly once",
+        "GET /stats/clicks with curl default UA: 200, no counter side effect; counting_rule text in live JSON matches src/index.js:1255 verbatim, confirming deployed bundle == local src"
+      ]
+    },
+    "dead_routes": {
+      "finding": "The 33 dead /buy/ routes from R1 (503 price-pending-human) now all serve 200 intent pages and POST-checkout works for the formerly-dead products.",
+      "evidence": [
+        "All 47 unique /buy/<id>?src=store.home.table.<id> hrefs on the live home page probed with x-mcp-probe:1: every one returned 200 with x-mcp-buy: checkout-intent-required (incl. formerly-dead work-order, catalogue, change-order)",
+        "POST spot-check (Chrome-shaped headers): work-order, catalogue, change-order each 303 to live Stripe checkout",
+        "buy.unknown-product dead-route loss-bucketing present in live stats ({total:1})"
+      ]
+    },
+    "install_link_and_releases": {
+      "finding": "Home page install link points to https://github.com/theluckystrike/mcp-servers/releases/latest which resolves 302 -> v0.22.0 (200 with -L). Release v0.22.0 (2026-09-13) carries 54 .mcpb assets covering all servers — the R1 '4 of 30 servers' staleness is fixed.",
+      "evidence": [
+        "curl -L github.com/theluckystrike/mcp-servers/releases/latest: 200 (302 to tag v0.22.0)",
+        "GitHub API releases/latest: tag v0.22.0, 54 assets (amortization.mcpb ... zip.mcpb)",
+        "npm @theluckystrike/mcp-* still unpublished (npm view 404) — but every page disclosing npx -y ... explicitly says the npm publish is pending and 'do not paste it into a config expecting a server to start' (src/index.js:263,271,748,850), so the 404 is disclosed, not a surprise dead link"
+      ]
+    },
+    "full_link_audit": {
+      "evidence": [
+        "Home page internal routes: 202 unique hrefs (155 non-/buy/ after dedupe); curl each with x-mcp-probe:1 — every one 200, zero 404/503 (FAIL list empty: SWEEP-DONE with no FAIL lines)",
+        "External hrefs spot-checked (-L): github repo, repo tree docs, releases/latest, validation.json all 200; fonts.googleapis.com/fonts.gstatic.com root hrefs are <link rel=preconnect> origins (not fetchable, not dead)"
+      ]
+    },
+    "probe_isolation": {
+      "evidence": [
+        "All probes sent x-mcp-probe:1 where counting was at risk; live stats by_src shows no probe-origin entries; counting_rule in live stats explicitly excludes x-mcp-probe"
+      ]
+    }
+  },
+  "before_after": {
+    "total_clicks_before": 978,
+    "total_clicks_after": 979,
+    "increment_source": "store.home.table.x (the one deliberate live verification click; scripted and probe requests caused zero increments)"
+  },
+  "files_changed": [],
+  "deploy": "Not needed: live counting_rule and checkout-intent behavior match billing/src/index.js HEAD (465817a0) exactly; git status showed no modified tracked files.",
+  "git": "No code changes to commit; data/conversion_r2.json committed separately."
+}

@@ -2,12 +2,15 @@
   "manifest_version": "0.2",
   "name": "mcp-billing-docs",
   "display_name": "Billing Docs",
-  "version": "0.22.0",
+  "version": "0.22.5",
   "description": "Credit notes against your invoices and purchase orders to your suppliers, on the invoice engine.",
   "author": {
     "name": "theluckystrike",
     "url": "https://github.com/theluckystrike"
   },
+  "privacy_policies": [
+    "https://mcp.zovo.one/privacy"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/theluckystrike/mcp-servers"

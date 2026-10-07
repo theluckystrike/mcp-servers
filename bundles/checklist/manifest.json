@@ -2,12 +2,15 @@
   "manifest_version": "0.2",
   "name": "mcp-checklist",
   "display_name": "Checklist",
-  "version": "0.22.0",
+  "version": "0.22.5",
   "description": "Reusable checklists and the dated runs of them: pass, fail, not applicable, and a sign-off.",
   "author": {
     "name": "theluckystrike",
     "url": "https://github.com/theluckystrike"
   },
+  "privacy_policies": [
+    "https://mcp.zovo.one/privacy"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/theluckystrike/mcp-servers"

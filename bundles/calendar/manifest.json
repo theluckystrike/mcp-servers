@@ -2,12 +2,15 @@
   "manifest_version": "0.2",
   "name": "mcp-calendar",
   "display_name": "Calendar",
-  "version": "0.22.0",
+  "version": "0.22.5",
   "description": "Read the .ics your calendar already exports: what is on this week, when you are actually free, what is double-booked, and turn a meeting into billable time. All local.",
   "author": {
     "name": "theluckystrike",
     "url": "https://github.com/theluckystrike"
   },
+  "privacy_policies": [
+    "https://mcp.zovo.one/privacy"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/theluckystrike/mcp-servers"

@@ -1,0 +1,83 @@
+{
+  "STATUS": "complete",
+  "date": "2026-10-07",
+  "headline": "Registry publish is NOT blocked by missing work — only by an EXPIRED token. A fresh device code was already captured. npm is blocked by a dead token. Two user commands unblock both.",
+
+  "user_actions": [
+    {
+      "priority": 1,
+      "channel": "official MCP registry",
+      "why": "Saved token in ~/.config/mcp-publisher/token.json (method=github, scope io.github.theluckystrike/* + io.github.BeLikeNative/*) expired 2026-09-30 04:20 UTC.",
+      "command": "mcp-publisher login github",
+      "what_happens": "Prints a device code + https://github.com/login/device; open URL in browser, enter code, authorize. (~2 min)",
+      "code_captured_this_session": {
+        "url": "https://github.com/login/device",
+        "code": "0003-669A",
+        "note": "Captured 2026-10-07 10:38 local by starting login in background and killing it. Device codes expire in ~15 min — if you miss the window, just rerun the command to get a fresh code."
+      },
+      "after_login": "Run the publish commands below (5 stale manifests)."
+    },
+    {
+      "priority": 2,
+      "channel": "npm",
+      "why": "~/.npmrc token is dead: `npm whoami` -> E401. Blocks publishing 54 @theluckystrike/mcp-* packages (54 package.json in servers/; 'mcp-receipts' appears unscoped — verify before publishing).",
+      "command": "npm login",
+      "what_happens": "Browser opens; log in to npmjs.com; token is written to ~/.npmrc. Verify with `npm whoami` (should print 'theluckystrike').",
+      "alternative": "Create a granular token at https://www.npmjs.com/settings/theluckystrike/tokens/new (type: Granular, permission Read and write on packages under @theluckystrike) and paste into ~/.npmrc as //registry.npmjs.org/:_authToken=<TOKEN>"
+    }
+  ],
+
+  "publish_commands_after_login": {
+    "registry": [
+      "for n in credit-note delivery-schedule packing-list price-tracker-drop-alert-watch time-tracker-timesheet-billable-hours; do echo $n; done",
+      "# Registry already has these 5 names at 0.22.4 while local manifests say 0.22.0 — bump local version to 0.22.5 in servers/<name>/server.json first, then:",
+      "for n in credit-note delivery-schedule packing-list price-tracker-drop-alert-watch time-tracker-timesheet-billable-hours; do (cd servers/$n && mcp-publisher publish server.json); done"
+    ],
+    "npm": [
+      "cd servers/<name> && npm publish --access public   # per package, after bumping version"
+    ]
+  },
+
+  "registry_state": {
+    "publisher_version": "mcp-publisher 1.8.1 (Homebrew)",
+    "auth": {
+      "saved_token": "~/.config/mcp-publisher/token.json",
+      "method": "github",
+      "scope": "publish io.github.theluckystrike/* , io.github.BeLikeNative/*",
+      "expiry": "2026-09-30T04:20Z",
+      "status": "EXPIRED (6 days ago) — this is the only registry blocker"
+    },
+    "live_servers_in_official_registry": 184,
+    "distinct_names_live": 184,
+    "repo_manifests": { "servers_with_server_json": 54, "version_0.22.0": 47, "version_other": 7 },
+    "version_match": { "current": 49, "registry_ahead_of_local": 5, "missing_from_registry": 0 },
+    "website_url": { "mcp.zovo.one/s/<server> (good)": 171, "mcp.zovo.one/buy/<server> (robots-disallowed, stale)": 4 },
+    "newest_publish": "2026-09-29T02:31Z",
+    "non_interactive_auth_options": {
+      "github": "interactive device flow only (used above)",
+      "github-oidc": "GitHub Actions OIDC — non-interactive but only inside Actions runners; not usable locally",
+      "dns": "non-interactive: `mcp-publisher login dns --domain <domain> --private-key <key>` — requires the user to register a domain in the registry UI and hold a DNS private key; long-term automation option",
+      "http": "non-interactive HTTP auth with --domain; same setup burden",
+      "none": "anonymous, publish not permitted"
+    }
+  },
+
+  "npm_state": {
+    "whoami": "E401 Unauthorized (dead token in ~/.npmrc)",
+    "package_jsons": 54,
+    "names": "@theluckystrike/mcp-* for 53 dirs; servers/receipts/package.json name is 'mcp-receipts' (UNSCOPED — verify: publishing an unscoped name may hit name-conflict if taken)",
+    "bundles_ready": 54,
+    "bundles_dir": "bundles/ — 54 *.mcpb + 54 matching subdirs"
+  },
+
+  "ready_inventory": {
+    "mcpb_bundles_packed": 54,
+    "server_json_manifests_current": 54,
+    "registry_names_already_live": 184,
+    "registry_names_needing_republish": 5,
+    "npm_packages_waiting_on_token": 54
+  },
+
+  "prior_attempt_note": "intel/dist-r29.md said registry publish 'blocked'; in fact the 09-29 login succeeded, 184 entries were published, and only the token has since expired. Do not treat registry as starting from zero.",
+  "deliverable_docs": "docs/PUBLISH_UNBLOCK.md"
+}

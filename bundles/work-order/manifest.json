@@ -2,12 +2,15 @@
   "manifest_version": "0.2",
   "name": "mcp-work-order",
   "display_name": "Work Order",
-  "version": "0.22.0",
+  "version": "0.22.5",
   "description": "Job orders for trades and field work: parts, labour, status, completion report, invoice payload.",
   "author": {
     "name": "theluckystrike",
     "url": "https://github.com/theluckystrike"
   },
+  "privacy_policies": [
+    "https://mcp.zovo.one/privacy"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/theluckystrike/mcp-servers"

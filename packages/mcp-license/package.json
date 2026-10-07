@@ -27,7 +27,7 @@
   },
   "homepage": "https://github.com/theluckystrike/mcp-servers",
   "dependencies": {
-    "@theluckystrike/mcp-timezone": "^0.22.0"
+    "@theluckystrike/mcp-timezone": "^0.22.5"
   },
   "peerDependencies": {
     "@modelcontextprotocol/sdk": "^1.30.0",

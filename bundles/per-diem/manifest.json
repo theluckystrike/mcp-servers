@@ -2,12 +2,15 @@
   "manifest_version": "0.2",
   "name": "mcp-per-diem",
   "display_name": "Per Diem",
-  "version": "0.22.0",
+  "version": "0.22.5",
   "description": "Daily travel allowances on bundled public rate tables: Poland, HMRC and GSA.",
   "author": {
     "name": "theluckystrike",
     "url": "https://github.com/theluckystrike"
   },
+  "privacy_policies": [
+    "https://mcp.zovo.one/privacy"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/theluckystrike/mcp-servers"
