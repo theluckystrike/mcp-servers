@@ -105,7 +105,7 @@
 <div class="wrap">
   <header>
     <h1>MCP Servers by theluckystrike</h1>
-    <div class="meta">generated 2026-09-29T03:26:02.249Z — session count 96</div>
+    <div class="meta">generated 2026-10-07T04:25:35.670Z — session count 97</div>
   </header>
 
   <div class="kpi-row">
@@ -1223,6 +1223,7 @@
 <tr><td class="mono">docs/ORGANIC_R3.md</td><td>ORGANIC_R3 -- organic re-measurement after v0.3.2, 2026-09-03</td></tr>
 <tr><td class="mono">docs/ORGANIC_R4.md</td><td>ORGANIC R4 — 2026-09-20 (S48, executed in-process by orchestrator)</td></tr>
 <tr><td class="mono">docs/PACKAGING_RESULT.md</td><td>PACKAGING_RESULT.md -- generic @theluckystrike/* vendoring for the three engine-sharing servers</td></tr>
+<tr><td class="mono">docs/PAYMENT_MAP.md</td><td>Payment Map (MCP server estate)</td></tr>
 <tr><td class="mono">docs/PDF_AUDIT.md</td><td>mcp-pdf: adversarial audit and user-value run</td></tr>
 <tr><td class="mono">docs/PER_DIEM_AUDIT.md</td><td>mcp-per-diem: Part 2 CLI run and the remaining Part 1 gaps</td></tr>
 <tr><td class="mono">docs/PER_DIEM_RESULT.md</td><td>mcp-per-diem: build</td></tr>
@@ -1254,6 +1255,7 @@
 <tr><td class="mono">docs/PLAN_V8.md</td><td>Plan v8 (2026-09-04, loop 11): traffic before conversion</td></tr>
 <tr><td class="mono">docs/PLAN_V9.md</td><td>Plan v9 (2026-09-04, loop 12): enforce the wiring, test what was never tested</td></tr>
 <tr><td class="mono">docs/PROFILE_FIRST_RESULT.md</td><td>Profile-first sweep: never ask for a fact the shared profile already holds</td></tr>
+<tr><td class="mono">docs/PUBLISH_UNBLOCK.md</td><td>PUBLISH UNBLOCK — MCP official registry + npm</td></tr>
 <tr><td class="mono">docs/QUALITY_LOOP35.md</td><td>QUALITY loop 35 - seam defects 123/148 -&gt; 136/148 resolved in source</td></tr>
 <tr><td class="mono">docs/QUOTES_AUDIT.md</td><td>mcp-quotes: Part 2 CLI run and the remaining Part 1 probes</td></tr>
 <tr><td class="mono">docs/QUOTES_RESULT.md</td><td>mcp-quotes: build and adversarial audit</td></tr>
@@ -1452,9 +1454,11 @@
     <h2>Session log</h2>
     <div class="scroll-wrap" style="overflow-x:auto;">
     <table>
-      <thead><tr><th>at</th><th>note</th></tr></thead>
+      <thead><tr><td class="mono">2026-10-07T00:00:00.000Z</td><td>2026-10-07 monetization session: payment map R1 - 46/54 servers live Stripe checkout (bundle $39 covers 46, individual $19), 8 /buy 404 ids are aliases or unpublished slugs, zero 503s; conversion R2 - counting guard verified exact-once (979 total, probes excluded), 47/47 home buy links 200, zero dead links, formerly-33-dead /buy routes all live; publish unblock - registry token expired (device code captured), npm token dead (E401), 54 manifests ready, 2 user commands unblock both channels; organic R3 - GSC 28d: mcp.zovo.one 0 clicks/22 imps/2 indexed pages vs control 47/5347/364, sitemap 237 (132 guides, 54 /s, 33 compare), IndexNow re-pinged 200 with corrected key; dist R30 - 2 new PRs OPEN+MERGEABLE (ExMapo productivity #24, Albertchamberlain Awesome-MCP #75), Sagargupta16 skipped (fork-name collision)</td></tr>
+<tr><th>at</th><th>note</th></tr></thead>
       <tbody>
-        <tr><td class="mono">2026-09-19T15:08:23.660Z</td><td>S49: hosted Stripe checkout verified end-to-end (two-step intent flow, live cs_live session); validation 1244/1244; billing 163/163</td></tr>
+        <tr><td class="mono">2026-09-29T03:26:02.265Z</td><td>R7 fact-check: 2 paid Stripe sessions = REAL humans (renoboost.belfort, jesswilensky via /pricing founding tier, $38); 894 lic:* keys minted in REMOTE_DATA; &#39;0 minted&#39; and &#39;all-QA&#39; claims corrected; funnel works - constraint is /pricing traffic</td></tr>
+<tr><td class="mono">2026-09-19T15:08:23.660Z</td><td>S49: hosted Stripe checkout verified end-to-end (two-step intent flow, live cs_live session); validation 1244/1244; billing 163/163</td></tr>
 <tr><td class="mono">2026-09-19T14:56:24.656Z</td><td>S48: billing 163/163, validation run 50 1210/1242, 45 servers mapped, IndexNow 193/193</td></tr>
 <tr><td class="mono">2026-09-18T17:49:53.000Z</td><td>session 97 (S45 epilogue): RATING-S45+NEXT-SPRINT committed (0dbb6f1f); T11 Glama 13/42 RESOLVED as glama-side ingest lag behind registry renames, official registry 42/42 @0.22.0 verified (0f79ac6e); T12 directory census R2 (f41d650a): mcp.so organic now $39 paid-only (issues route stalled), smithery 404, mcpmarket gated; 2 human-gated levers: $39 mcp.so listing, npm publish -&gt; smithery. Re-crawl read due after 72h window.</td></tr>
 <tr><td class="mono">2026-09-18T17:17:01.405Z</td><td>sprint 45 wave 2: MCP Playground ESTATE COMPLETE - all 42 products submitted (36 wave-2, each 200 success + 409 dup double-confirm, zero failures, resumable script docs/submit_w2.mjs); outreach drafts T1 (Reddit/HN value post, modelcontextprotocol/registry Discussions post, R2 addendum with S45 proof points) held for user approval; T3 platform rechecks: Glama 13 theluckystrike servers listed (partial, high-traffic 3 not under expected slugs), mcp.so #4227/#4228 + mcpmux PR #300 still OPEN pending, Bing site: operator unreliable (73 phrase-indexed references), MCP Playground review-gated listings absent as expected; kpi 10/32 met; GSC first impressions on mcp.zovo.one (10); commits eabcf31a, de0ec6f3, T1/T2/T3 wave-2 docs 1eec21dd</td></tr>

@@ -1,0 +1,12 @@
+{
+  "task": "organic round 3 - diagnose Google indexation 2/237 on mcp.zovo.one and ship safe fixes",
+  "updated_at": "2026-10-07",
+  "STATUS": "in progress",
+  "gsc": "see data/organic_r3_gsc.json (28d: mcp.zovo.one 0 clicks/22 imps/2 indexed pages; control zovo.one 47 clicks/5347 imps/364 pages). Indexed pages: https://mcp.zovo.one/ (21 imps, pos ~3) and /mcp/time-tracker (1 imp).",
+  "prior_attempt": "deleg_55ef9534/task-3 died at session teardown after real work succeeded: GSC pull done, IndexNow 237 URLs x3 batches all HTTP 200.",
+  "sitemap_composition": {"guides": 133, "s_pages": 54, "compare": 33, "setup": 8, "suites": 3, "other": 6},
+  "noindex_probe": "0 noindex on home, /mcp, /s pages",
+  "findings": [],
+  "fixes_shipped": [],
+  "next_session": []
+}
