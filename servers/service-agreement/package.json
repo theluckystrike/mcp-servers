@@ -1,6 +1,6 @@
 {
   "name": "@theluckystrike/mcp-service-agreement",
-  "version": "0.22.0",
+  "version": "0.22.5",
   "description": "Service agreements for freelancers: scope, deliverables, rate, termination and liability caps.",
   "type": "module",
   "bin": {
@@ -47,7 +47,7 @@
   "homepage": "https://github.com/theluckystrike/mcp-servers/tree/main/servers/service-agreement",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.30.0",
-    "@theluckystrike/mcp-license": "^0.22.0",
+    "@theluckystrike/mcp-license": "^0.22.5",
     "zod": "^3.25.0"
   },
   "devDependencies": {
