@@ -12,7 +12,7 @@ const manifest = {
   version,
   description,
   author: { name: "theluckystrike", url: "https://github.com/theluckystrike" },
-  privacy_policies: [{ server_url: "https://mcp.zovo.one/privacy", data_usage: "No telemetry; the server processes documents locally in memory and collects no personal data." }],
+  privacy_policies: ["https://mcp.zovo.one/privacy"],
   repository: { type: "git", url: "https://github.com/theluckystrike/mcp-servers" },
   homepage: "https://mcp.zovo.one",
   license: "MIT",
