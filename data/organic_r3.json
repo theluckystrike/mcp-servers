@@ -1,12 +1,33 @@
 {
   "task": "organic round 3 - diagnose Google indexation 2/237 on mcp.zovo.one and ship safe fixes",
   "updated_at": "2026-10-07",
-  "STATUS": "in progress",
+  "STATUS": "done",
   "gsc": "see data/organic_r3_gsc.json (28d: mcp.zovo.one 0 clicks/22 imps/2 indexed pages; control zovo.one 47 clicks/5347 imps/364 pages). Indexed pages: https://mcp.zovo.one/ (21 imps, pos ~3) and /mcp/time-tracker (1 imp).",
   "prior_attempt": "deleg_55ef9534/task-3 died at session teardown after real work succeeded: GSC pull done, IndexNow 237 URLs x3 batches all HTTP 200.",
-  "sitemap_composition": {"guides": 133, "s_pages": 54, "compare": 33, "setup": 8, "suites": 3, "other": 6},
+  "sitemap_composition": {
+    "guides": 133,
+    "s_pages": 54,
+    "compare": 33,
+    "setup": 8,
+    "suites": 3,
+    "other": 6
+  },
   "noindex_probe": "0 noindex on home, /mcp, /s pages",
   "findings": [],
-  "fixes_shipped": [],
-  "next_session": []
+  "fixes_shipped": [
+    {
+      "fix": "contextual links from zovo.one (364 indexed pages, real authority) to mcp.zovo.one",
+      "evidence": "zovo.one linked to mcp.zovo.one exactly once (footer). Subagent spent 8 iterations finding repo at ~/zovo-workspaces/zovo-one-source.",
+      "implemented": "Added contextual MCP links to 3 zovo.one hub pages: AllExtensions.tsx (after extension list), BestHub.tsx (footer area), AlternativesHub.tsx (before HubCrossLinks). Each links to https://mcp.zovo.one/ plus deep links to /s/invoice and /s/time-tracker.",
+      "deploy": "commit a3f6b0a8 pushed to origin main (after rebase on 73a20ea3, sitemap.xml conflict resolved theirs); Vercel auto-deploys. Built clean (npm run build exit 0, esbuild checks passed).",
+      "followup": "IndexNow-ping the 3 changed zovo.one pages once live (background verification proc_7ca3d97e6d21 checks live HTML for mcp.zovo.one links)."
+    }
+  ],
+  "next_session": [
+    "IndexNow-ping changed zovo.one pages after Vercel deploy confirmed",
+    "Enrich /s/<server> pages with payment_map one_line_value_prop content (deferred: content not the current blocker \u2014 Google has not crawled them)",
+    "Re-probe URL Inspection on /s/time-tracker + 2 guides in 7-14 days to measure crawl pickup",
+    "Consider consolidating 33 compare pages only if crawl pickup stays flat after link fix"
+  ],
+  "diagnosis": "Crawl-budget/discovery problem, NOT thin content. URL Inspection API (scripts/gsc_inspect_r3.py) on 5 sample URLs: /guides/track-time-in-claude-code and /s/time-tracker = \"URL is unknown to Google\"; /compare/time-tracker, /setup/claude-desktop, /suites/freelancer = \"Discovered - currently not indexed\". All sampled pages return 200, server-rendered HTML, self-canonical, no noindex, clean robots.txt, dense internal linking. Google knows the URLs via sitemap but has crawled almost none: classic low-authority-host scheduling. The 2 indexed pages were reached via the single footer link from zovo.one."
 }
