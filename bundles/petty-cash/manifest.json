@@ -2,12 +2,15 @@
   "manifest_version": "0.2",
   "name": "mcp-petty-cash",
   "display_name": "Petty Cash",
-  "version": "0.22.0",
+  "version": "0.22.5",
   "description": "A petty cash float on the imprest system: vouchers, reconciliation and the replenishment.",
   "author": {
     "name": "theluckystrike",
     "url": "https://github.com/theluckystrike"
   },
+  "privacy_policies": [
+    "https://mcp.zovo.one/privacy"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/theluckystrike/mcp-servers"

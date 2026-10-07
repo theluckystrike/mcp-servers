@@ -2,12 +2,15 @@
   "manifest_version": "0.2",
   "name": "mcp-maintenance-log",
   "display_name": "Maintenance Log",
-  "version": "0.22.0",
+  "version": "0.22.5",
   "description": "Equipment maintenance log: assets, service entries with costs, and a due report from stored dates.",
   "author": {
     "name": "theluckystrike",
     "url": "https://github.com/theluckystrike"
   },
+  "privacy_policies": [
+    "https://mcp.zovo.one/privacy"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/theluckystrike/mcp-servers"

@@ -2,12 +2,15 @@
   "manifest_version": "0.2",
   "name": "mcp-currency",
   "display_name": "Currency Converter",
-  "version": "0.22.0",
+  "version": "0.22.5",
   "description": "Live and historical exchange rates from the European Central Bank, in your AI chat. Convert amounts, read rate history, and hand invoice tools the FX rates they need. No API key, cached locally, works offline.",
   "author": {
     "name": "theluckystrike",
     "url": "https://github.com/theluckystrike"
   },
+  "privacy_policies": [
+    "https://mcp.zovo.one/privacy"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/theluckystrike/mcp-servers"

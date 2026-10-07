@@ -2,12 +2,15 @@
   "manifest_version": "0.2",
   "name": "mcp-backlink-checker",
   "display_name": "Backlink Checker",
-  "version": "0.22.0",
+  "version": "0.22.5",
   "description": "Check backlinks from Claude or Cursor: does a page link to your domain, dofollow or nofollow, with anchor text, HTTP status and robots guards. All checks run on demand, nothing stored.",
   "author": {
     "name": "theluckystrike",
     "url": "https://github.com/theluckystrike"
   },
+  "privacy_policies": [
+    "https://mcp.zovo.one/privacy"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/theluckystrike/mcp-servers"

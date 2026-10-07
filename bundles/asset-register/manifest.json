@@ -2,12 +2,15 @@
   "manifest_version": "0.2",
   "name": "mcp-asset-register",
   "display_name": "Asset Register",
-  "version": "0.22.0",
+  "version": "0.22.5",
   "description": "Fixed assets and depreciation on bundled Polish KST, HMRC and IRS MACRS tables.",
   "author": {
     "name": "theluckystrike",
     "url": "https://github.com/theluckystrike"
   },
+  "privacy_policies": [
+    "https://mcp.zovo.one/privacy"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/theluckystrike/mcp-servers"

@@ -2,12 +2,15 @@
   "manifest_version": "0.2",
   "name": "mcp-zip",
   "display_name": "Zip",
-  "version": "0.22.0",
+  "version": "0.22.5",
   "description": "Create, inspect and extract zip archives from chat: glob a directory into a zip, list what is inside with a bomb and traversal check, extract safely, read one text entry without unpacking. No network.",
   "author": {
     "name": "theluckystrike",
     "url": "https://github.com/theluckystrike"
   },
+  "privacy_policies": [
+    "https://mcp.zovo.one/privacy"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/theluckystrike/mcp-servers"

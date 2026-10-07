@@ -2,12 +2,15 @@
   "manifest_version": "0.2",
   "name": "mcp-leave",
   "display_name": "Leave",
-  "version": "0.22.0",
+  "version": "0.22.5",
   "description": "Employee leave and PTO requests: balances, approvals, calendars, and who-is-out summaries.",
   "author": {
     "name": "theluckystrike",
     "url": "https://github.com/theluckystrike"
   },
+  "privacy_policies": [
+    "https://mcp.zovo.one/privacy"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/theluckystrike/mcp-servers"
