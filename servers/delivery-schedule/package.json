@@ -1,6 +1,6 @@
 {
   "name": "@theluckystrike/mcp-delivery-schedule",
-  "version": "0.22.0",
+  "version": "0.22.5",
   "description": "Dated deliverables against a quote or work order: due dates, sign-off, what is late, milestones.",
   "type": "module",
   "bin": {
