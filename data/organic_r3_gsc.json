@@ -1,8 +1,8 @@
 {
- "pulled_at": "2026-10-07",
+ "pulled_at": "2026-10-08",
  "28d_mcp_pages_total": {
   "clicks": 0,
-  "impressions": 22
+  "impressions": 23
  },
  "28d_mcp_pages_count": 2,
  "28d_mcp_top_pages": [
@@ -11,9 +11,9 @@
     "https://mcp.zovo.one/"
    ],
    "clicks": 0,
-   "impressions": 21,
+   "impressions": 22,
    "ctr": 0,
-   "position": 2.9523809523809526
+   "position": 3.090909090909091
   },
   {
    "keys": [
@@ -37,136 +37,118 @@
   }
  ],
  "28d_control_pages_total": {
-  "clicks": 47,
-  "impressions": 5347
+  "clicks": 48,
+  "impressions": 5228
  },
- "28d_control_pages_count": 364,
+ "28d_control_pages_count": 345,
  "28d_control_top_pages": [
   {
    "keys": [
     "https://zovo.one/"
    ],
-   "clicks": 41,
-   "impressions": 1152,
-   "ctr": 0.035590277777777776,
-   "position": 3.6493055555555554
+   "clicks": 42,
+   "impressions": 1146,
+   "ctr": 0.03664921465968586,
+   "position": 3.6326352530541013
   },
   {
    "keys": [
     "https://zovo.one/free-tools/cash-out-refinance-calculator"
    ],
    "clicks": 0,
-   "impressions": 803,
+   "impressions": 792,
    "ctr": 0,
-   "position": 11.39601494396015
+   "position": 11.505050505050505
   },
   {
    "keys": [
     "https://zovo.one/free-tools/flow-chart-maker"
    ],
    "clicks": 0,
-   "impressions": 289,
+   "impressions": 327,
    "ctr": 0,
-   "position": 28.370242214532873
+   "position": 28.226299694189603
   },
   {
    "keys": [
     "https://zovo.one/free-tools/wireframe-tool"
    ],
    "clicks": 0,
-   "impressions": 168,
+   "impressions": 164,
    "ctr": 0,
-   "position": 25.148809523809526
+   "position": 25.652439024390244
   },
   {
    "keys": [
     "https://zovo.one/free-tools/mortgage-calculator"
    ],
    "clicks": 0,
-   "impressions": 132,
+   "impressions": 126,
    "ctr": 0,
-   "position": 13.901515151515152
+   "position": 13.952380952380953
   },
   {
    "keys": [
     "https://zovo.one/free-tools/investment-calculator"
    ],
    "clicks": 0,
-   "impressions": 105,
+   "impressions": 102,
    "ctr": 0,
-   "position": 11.704761904761904
+   "position": 11.794117647058824
   },
   {
    "keys": [
     "https://zovo.one/free-tools/trademark-search"
    ],
    "clicks": 0,
-   "impressions": 92,
+   "impressions": 100,
    "ctr": 0,
-   "position": 71.46739130434783
+   "position": 72.02
   },
   {
    "keys": [
     "https://zovo.one/free-tools/iv-drip-rate-calculator"
    ],
    "clicks": 0,
-   "impressions": 91,
+   "impressions": 87,
    "ctr": 0,
-   "position": 12.197802197802197
+   "position": 12.091954022988507
   },
   {
    "keys": [
     "https://zovo.one/free-tools/loan-calculator"
    ],
    "clicks": 0,
-   "impressions": 89,
+   "impressions": 85,
    "ctr": 0,
-   "position": 15.932584269662922
+   "position": 15.764705882352942
   },
   {
    "keys": [
     "https://zovo.one/free-tools/resume-builder"
    ],
    "clicks": 0,
-   "impressions": 74,
+   "impressions": 65,
    "ctr": 0,
-   "position": 25.72972972972973
+   "position": 26.53846153846154
   },
   {
    "keys": [
     "https://zovo.one/free-tools/html-entity-encoder"
    ],
    "clicks": 0,
-   "impressions": 63,
+   "impressions": 60,
    "ctr": 0,
-   "position": 5.063492063492063
+   "position": 5.1
   },
   {
    "keys": [
     "https://zovo.one/free-tools/markdown-editor"
    ],
    "clicks": 0,
-   "impressions": 53,
+   "impressions": 56,
    "ctr": 0,
-   "position": 17.943396226415093
-  },
-  {
-   "keys": [
-    "https://zovo.one/free-tools/qr-reader"
-   ],
-   "clicks": 0,
-   "impressions": 45,
-   "ctr": 0,
-   "position": 26.866666666666667
-  },
-  {
-   "keys": [
-    "https://zovo.one/free-tools/barcode-label-maker"
-   ],
-   "clicks": 0,
-   "impressions": 44,
-   "ctr": 0,
-   "position": 74.22727272727273
+   "position": 17.75
   },
   {
    "keys": [
@@ -176,6 +158,24 @@
    "impressions": 41,
    "ctr": 0,
    "position": 46.19512195121951
+  },
+  {
+   "keys": [
+    "https://zovo.one/free-tools/audio-converter"
+   ],
+   "clicks": 0,
+   "impressions": 41,
+   "ctr": 0,
+   "position": 10.609756097560975
+  },
+  {
+   "keys": [
+    "https://zovo.one/free-tools/qr-reader"
+   ],
+   "clicks": 0,
+   "impressions": 41,
+   "ctr": 0,
+   "position": 25.024390243902438
   }
  ],
  "28d_control_top_queries": [
@@ -184,9 +184,9 @@
     "zovo"
    ],
    "clicks": 36,
-   "impressions": 975,
-   "ctr": 0.036923076923076927,
-   "position": 3.6923076923076925
+   "impressions": 976,
+   "ctr": 0.036885245901639344,
+   "position": 3.6762295081967213
   },
   {
    "keys": [
@@ -202,54 +202,54 @@
     "cash out refinance calculator"
    ],
    "clicks": 0,
-   "impressions": 286,
+   "impressions": 290,
    "ctr": 0,
-   "position": 9.416083916083917
+   "position": 9.596551724137932
   },
   {
    "keys": [
     "house loan estimator"
    ],
    "clicks": 0,
-   "impressions": 88,
+   "impressions": 86,
    "ctr": 0,
-   "position": 10.670454545454545
+   "position": 10.651162790697674
   },
   {
    "keys": [
     "investment calculator compound"
    ],
    "clicks": 0,
-   "impressions": 75,
+   "impressions": 74,
    "ctr": 0,
-   "position": 9.173333333333334
-  },
-  {
-   "keys": [
-    "mortgage cash out refinance calculator"
-   ],
-   "clicks": 0,
-   "impressions": 50,
-   "ctr": 0,
-   "position": 10.52
-  },
-  {
-   "keys": [
-    "cash out mortgage refinance calculator"
-   ],
-   "clicks": 0,
-   "impressions": 49,
-   "ctr": 0,
-   "position": 14.775510204081632
+   "position": 9.14864864864865
   },
   {
    "keys": [
     "flow chart creator free"
    ],
    "clicks": 0,
-   "impressions": 43,
+   "impressions": 51,
    "ctr": 0,
-   "position": 28.767441860465116
+   "position": 28.41176470588235
+  },
+  {
+   "keys": [
+    "cash out mortgage refinance calculator"
+   ],
+   "clicks": 0,
+   "impressions": 48,
+   "ctr": 0,
+   "position": 14.770833333333334
+  },
+  {
+   "keys": [
+    "mortgage cash out refinance calculator"
+   ],
+   "clicks": 0,
+   "impressions": 46,
+   "ctr": 0,
+   "position": 10.652173913043478
   },
   {
    "keys": [
@@ -258,7 +258,7 @@
    "clicks": 0,
    "impressions": 42,
    "ctr": 0,
-   "position": 9.476190476190476
+   "position": 9.547619047619047
   },
   {
    "keys": [
@@ -274,50 +274,50 @@
     "create a flowchart"
    ],
    "clicks": 0,
-   "impressions": 40,
+   "impressions": 41,
    "ctr": 0,
-   "position": 28.125
-  },
-  {
-   "keys": [
-    "resume free builder"
-   ],
-   "clicks": 0,
-   "impressions": 35,
-   "ctr": 0,
-   "position": 17.257142857142856
+   "position": 28.121951219512194
   },
   {
    "keys": [
     "create flowcharts"
    ],
    "clicks": 0,
-   "impressions": 33,
+   "impressions": 41,
    "ctr": 0,
-   "position": 27.575757575757574
+   "position": 27.536585365853657
   },
   {
    "keys": [
-    "calculate cash out refinance"
+    "resume free builder"
    ],
    "clicks": 0,
-   "impressions": 32,
+   "impressions": 34,
    "ctr": 0,
-   "position": 9.09375
+   "position": 17.323529411764707
   },
   {
    "keys": [
     "iv drip rate calculator"
    ],
    "clicks": 0,
-   "impressions": 32,
+   "impressions": 31,
    "ctr": 0,
-   "position": 9.5625
+   "position": 9.516129032258064
+  },
+  {
+   "keys": [
+    "auto loan cal"
+   ],
+   "clicks": 0,
+   "impressions": 29,
+   "ctr": 0,
+   "position": 12.03448275862069
   }
  ],
  "90d_mcp_pages_total": {
   "clicks": 0,
-  "impressions": 22
+  "impressions": 23
  },
  "90d_mcp_pages_count": 2,
  "90d_mcp_top_pages": [
@@ -326,9 +326,9 @@
     "https://mcp.zovo.one/"
    ],
    "clicks": 0,
-   "impressions": 21,
+   "impressions": 22,
    "ctr": 0,
-   "position": 2.9523809523809526
+   "position": 3.090909090909091
   },
   {
    "keys": [
@@ -353,18 +353,18 @@
  ],
  "90d_control_pages_total": {
   "clicks": 185,
-  "impressions": 17938
+  "impressions": 17981
  },
- "90d_control_pages_count": 607,
+ "90d_control_pages_count": 603,
  "90d_control_top_pages": [
   {
    "keys": [
     "https://zovo.one/"
    ],
    "clicks": 163,
-   "impressions": 3813,
-   "ctr": 0.04274849200104904,
-   "position": 3.928665093102544
+   "impressions": 3790,
+   "ctr": 0.04300791556728232,
+   "position": 3.9485488126649075
   },
   {
    "keys": [
@@ -380,27 +380,27 @@
     "https://zovo.one/free-tools/flow-chart-maker"
    ],
    "clicks": 0,
-   "impressions": 1213,
+   "impressions": 1239,
    "ctr": 0,
-   "position": 38.26133553173949
+   "position": 37.78369652945924
   },
   {
    "keys": [
     "https://zovo.one/free-tools/cash-out-refinance-calculator"
    ],
    "clicks": 0,
-   "impressions": 963,
+   "impressions": 995,
    "ctr": 0,
-   "position": 12.626168224299066
+   "position": 12.615075376884421
   },
   {
    "keys": [
     "https://zovo.one/blog/chrome-bookmarks-disappeared-recovery.html"
    ],
    "clicks": 0,
-   "impressions": 728,
+   "impressions": 723,
    "ctr": 0,
-   "position": 50.41346153846154
+   "position": 50.367911479944674
   },
   {
    "keys": [
@@ -416,63 +416,63 @@
     "https://zovo.one/articles/how-to-access-clipboard-history"
    ],
    "clicks": 0,
-   "impressions": 307,
+   "impressions": 305,
    "ctr": 0,
-   "position": 40.700325732899024
+   "position": 40.67213114754098
   },
   {
    "keys": [
     "https://zovo.one/free-tools/budget-calculator"
    ],
    "clicks": 0,
-   "impressions": 217,
+   "impressions": 216,
    "ctr": 0,
-   "position": 37.40552995391705
+   "position": 37.375
   },
   {
    "keys": [
     "https://zovo.one/free-tools/wireframe-tool"
    ],
    "clicks": 0,
-   "impressions": 193,
+   "impressions": 197,
    "ctr": 0,
-   "position": 27.23316062176166
+   "position": 27.19796954314721
   },
   {
    "keys": [
     "https://zovo.one/free-tools/business-card-maker"
    ],
    "clicks": 0,
-   "impressions": 190,
+   "impressions": 189,
    "ctr": 0,
-   "position": 80.97894736842105
+   "position": 80.95767195767196
   },
   {
    "keys": [
     "https://zovo.one/free-tools/html-entity-encoder"
    ],
    "clicks": 0,
-   "impressions": 183,
+   "impressions": 175,
    "ctr": 0,
-   "position": 6.103825136612022
+   "position": 6.097142857142857
   },
   {
    "keys": [
     "https://zovo.one/free-tools/payroll-calculator"
    ],
    "clicks": 0,
-   "impressions": 158,
+   "impressions": 154,
    "ctr": 0,
-   "position": 38.063291139240505
+   "position": 36.883116883116884
   },
   {
    "keys": [
     "https://zovo.one/free-tools/mortgage-calculator"
    ],
    "clicks": 0,
-   "impressions": 133,
+   "impressions": 134,
    "ctr": 0,
-   "position": 13.8796992481203
+   "position": 13.85820895522388
   },
   {
    "keys": [
@@ -485,12 +485,12 @@
   },
   {
    "keys": [
-    "https://zovo.one/free-tools/tank-volume-calculator"
+    "https://zovo.one/free-tools/trademark-search"
    ],
    "clicks": 0,
-   "impressions": 126,
+   "impressions": 127,
    "ctr": 0,
-   "position": 39.492063492063494
+   "position": 71.74015748031496
   }
  ],
  "90d_control_top_queries": [
@@ -498,10 +498,10 @@
    "keys": [
     "zovo"
    ],
-   "clicks": 142,
-   "impressions": 3056,
-   "ctr": 0.046465968586387435,
-   "position": 3.206479057591623
+   "clicks": 141,
+   "impressions": 3038,
+   "ctr": 0.04641211323238973,
+   "position": 3.2238314680710993
   },
   {
    "keys": [
@@ -517,9 +517,9 @@
     "cash out refinance calculator"
    ],
    "clicks": 0,
-   "impressions": 335,
+   "impressions": 356,
    "ctr": 0,
-   "position": 10.66865671641791
+   "position": 10.682584269662922
   },
   {
    "keys": [
@@ -535,18 +535,18 @@
     "house loan estimator"
    ],
    "clicks": 0,
-   "impressions": 89,
+   "impressions": 90,
    "ctr": 0,
-   "position": 10.674157303370787
+   "position": 10.677777777777777
   },
   {
    "keys": [
     "make online business card"
    ],
    "clicks": 0,
-   "impressions": 78,
+   "impressions": 77,
    "ctr": 0,
-   "position": 87.06410256410257
+   "position": 87.0909090909091
   },
   {
    "keys": [
@@ -559,6 +559,24 @@
   },
   {
    "keys": [
+    "flow chart creator free"
+   ],
+   "clicks": 0,
+   "impressions": 68,
+   "ctr": 0,
+   "position": 26.308823529411764
+  },
+  {
+   "keys": [
+    "flow chart creator online"
+   ],
+   "clicks": 0,
+   "impressions": 65,
+   "ctr": 0,
+   "position": 27.815384615384616
+  },
+  {
+   "keys": [
     "mortgage cash out refinance calculator"
    ],
    "clicks": 0,
@@ -568,30 +586,12 @@
   },
   {
    "keys": [
-    "flow chart creator online"
-   ],
-   "clicks": 0,
-   "impressions": 63,
-   "ctr": 0,
-   "position": 28.095238095238095
-  },
-  {
-   "keys": [
-    "flow chart creator free"
-   ],
-   "clicks": 0,
-   "impressions": 60,
-   "ctr": 0,
-   "position": 26.283333333333335
-  },
-  {
-   "keys": [
     "cash out refi calculator"
    ],
    "clicks": 0,
-   "impressions": 58,
+   "impressions": 59,
    "ctr": 0,
-   "position": 11.982758620689655
+   "position": 11.94915254237288
   },
   {
    "keys": [
@@ -604,12 +604,12 @@
   },
   {
    "keys": [
-    "create flowchart online"
+    "create a flowchart"
    ],
    "clicks": 0,
-   "impressions": 47,
+   "impressions": 46,
    "ctr": 0,
-   "position": 31.617021276595743
+   "position": 35.630434782608695
   },
   {
    "keys": [
@@ -622,12 +622,12 @@
   },
   {
    "keys": [
-    "create a flowchart"
+    "create flowchart online"
    ],
    "clicks": 0,
    "impressions": 45,
    "ctr": 0,
-   "position": 35.8
+   "position": 31.288888888888888
   }
  ]
 }

@@ -1,0 +1,5 @@
+timestamp,mode,to,subject,status,note
+"2026-10-08T15:32:51Z","dry-run","test@example.com","Dry run test","dry-run",""
+"2026-10-08T15:33:43Z","dry-run","v@example.com","verify","dry-run",""
+"2026-10-08T15:34:18Z","dry-run","v@example.com","verify","dry-run",""
+"2026-10-08T15:34:35Z","dry-run","v@example.com","verify","dry-run",""
