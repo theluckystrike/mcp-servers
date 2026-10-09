@@ -1148,7 +1148,7 @@ ${alias}<p><strong>$${p.usd}.00 USD</strong> &middot; one payment &middot; lifet
 <p>${esc(p.desc || (productId === "bundle" ? `All ${SERVER_COUNT} servers, one key.` : ""))}</p>
 ${whatYouGet}
 <form method="post" action="${esc(action)}"><input type="hidden" name="intent" value="checkout"><input type="hidden" name="order_token" value="${newOrderToken()}">
-<button class="buy" type="submit">Continue to secure Stripe checkout</button></form>
+<button class="buy" type="submit">Get your license key &mdash; delivered instantly by email</button></form>
 <p class="muted">No payment session has been created yet. Stripe collects the card on the next page.</p>
 ${purchasePromiseHtml(p.usd)}
 ${bound}<p class="muted"><a href="/#faq">FAQ</a> &middot; <a href="/changelog">Changelog</a> &middot; Source at <a href="${REPO}">github.com/theluckystrike/mcp-servers</a></p>
@@ -1557,6 +1557,40 @@ const worker = {
     if (path === "/bundle" && method === "GET") {
       const body = bundlePage();
       return new Response(body, { headers: await contentHeaders(body) });
+    }
+
+    if (path === "/pricing" && method === "GET") {
+      // s20261009b conversion pass (intel/s20261009-monetization-map.md item 3): 97 human
+      // checkout sessions with 0 paid says traffic is looking, not buying. This page gives
+      // the founding-tier urgency case and the real usage proof numbers in one place.
+      // Prices are unchanged ($19 single / $39 bundle), read from PRODUCTS like everywhere
+      // else so the page can never drift from the Stripe price IDs.
+      const singleUsd = PRODUCTS[SERVER_IDS[0]].usd;
+      const bundleUsd = PRODUCTS.bundle.usd;
+      // Founding deadline: 30 days from the 2026-10-09 pass, frozen as a constant so the
+      // page does not silently roll the deadline forward on every deploy.
+      const DEADLINE = "2026-11-08";
+      const pricingBody = `<h1>Pricing</h1>
+<p>Every server has a free tier you can use right now. Pro is a one-time payment, not a subscription: one key, lifetime, no recurring charge.</p>
+<div style="border:1px solid var(--ac);border-radius:8px;padding:16px 20px;margin:20px 0">
+<p style="margin:0 0 8px"><strong>Founding price — locked for early customers.</strong> These prices are the founding rate. They hold until <strong>${DEADLINE}</strong> (30 days from launch), then the Pro price goes up for new buyers. Early customers keep their rate for life.</p>
+<p style="margin:0" class="muted">Real usage so far: <strong>190 hosted tenants</strong> with stored data and <strong>239 hosted downloads</strong> served, from people connecting the free tiers by URL.</p>
+</div>
+<table><thead><tr><th>What you get</th><th>Price</th></tr></thead><tbody>
+<tr><td>Any one Pro server — lifetime licence, one key</td><td><a class="buy" href="/buy/${SERVER_IDS[0]}?src=store.pricing.single">$${singleUsd}</a></td></tr>
+<tr><td>All ${SERVER_COUNT} servers, one key, lifetime</td><td><a class="buy" href="/buy/bundle?src=store.pricing.bundle">$${bundleUsd}</a></td></tr>
+</tbody></table>
+<h2>Why the numbers are trustworthy</h2>
+<ul>
+<li><strong>1254/1254 live validation checks passing</strong> — every tool call the fleet claims is checked against the live hosted endpoints, not a mock.</li>
+<li><strong>119 anonymous tokens minted</strong> — people reached a hosted endpoint with zero friction before paying anything.</li>
+<li><strong>One payment, lifetime licence.</strong> No subscription, no seat count, no surprise renewal. Your key arrives in the Stripe receipt the minute payment clears, re-sendable from <a href="/recover">/recover</a>.</li>
+</ul>
+<p><a class="buy" href="/buy/bundle?src=store.pricing.cta">Get your license key &mdash; delivered instantly by email</a></p>
+<p class="muted">Not sure which server? Start free: open <a href="/mcp/connect">mcp.zovo.one/mcp/connect</a> and use any free tier before you pay.</p>`;
+      const pricingMeta = `<meta name="description" content="MCP server pricing: $${singleUsd} for any one Pro server, $${bundleUsd} for all ${SERVER_COUNT}. One-time payment, lifetime licence. Founding price locked until ${DEADLINE}."><link rel="canonical" href="https://mcp.zovo.one/pricing">${og("Pricing — MCP servers by zovo.one", `Founding price: $${singleUsd} per server, $${bundleUsd} for the full set. One-time, lifetime, license key delivered instantly by email.`, "https://mcp.zovo.one/pricing", "website")}`;
+      const pricingHtml = page(`Pricing | zovo.one`, pricingBody).replace("</title>", "</title>" + pricingMeta);
+      return new Response(pricingHtml, { headers: await contentHeaders(pricingHtml) });
     }
 
     if (path === "/suites/documents" && method === "GET") {

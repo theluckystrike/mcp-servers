@@ -321,7 +321,7 @@ test("a crawler on an alias sees an intent page but creates no Stripe Session", 
     assert.equal(res.status, 200, `${alias}: no intent page`);
     assert.equal(res.headers.get("x-mcp-buy"), "checkout-intent-required");
     assert.equal(calls.length, 0, `${alias}: a crawler created a Stripe object`);
-    assert.match(await res.text(), /Continue to secure Stripe checkout/);
+    assert.match(await res.text(), /Get your license key &mdash; delivered instantly by email/);
   }
 });
 
