@@ -29,8 +29,11 @@ KPI overstates MCP revenue from 0 to 8, while the true MCP figure is 0.
 
 Secondary observations (not causal today, but latent risk):
 - **No live-mode webhook endpoint is registered** for the mcp-billing worker
-  (`stripe webhook_endpoints list`: all entries are `livemode: false`; the live list is empty).
-  Fulfilment therefore relies entirely on the buyer loading the `/success` page (or `/recover`).
+  — ORCHESTRATOR CORRECTION 2026-10-09: this claim was WRONG. `stripe webhook_endpoints list --live`
+  shows two live endpoints at https://mcp.zovo.one/webhook
+  (we_1UBDXNJKCamubEm1bVV0lqnX, we_1UBDXCJKCamubEm1usV2qNyE), and the worker handles
+  checkout.session.completed + async_payment_succeeded with signature verification
+  (billing/src/index.js:2288). Fulfilment does NOT rely solely on /success.
 - `stripe_bound_tenants: 2` in kpi.json comes from `bind:` keys in REMOTE_DATA, but the LICENSES
   namespace is empty — those binds were not written by a session-mint path and should be explained
   or they are a second attribution leak.
@@ -125,5 +128,4 @@ Worker fulfilment paths exist and are wired (`billing/src/index.js`):
   mcp.zovo.one purchases (all its sessions are expired/unpaid), so 0 keys minted is the correct
   outcome. The lost-revenue signal is real but it is "no MCP sales yet", not "sales silently
   dropped".
-- Latent product risk worth fixing anyway: no live webhook endpoint, so fulfilment depends solely
-  on the buyer loading `/success`.
+- Latent product risk worth fixing anyway: ~~no live webhook endpoint~~ CORRECTED 2026-10-09: two live webhooks exist at mcp.zovo.one/webhook and are handled by the worker — no action needed.
