@@ -235,7 +235,7 @@
    "note": "186 stars and the largest untried list. Requires a published npm or PyPI package, a Docker image, or a public HTTPS endpoint. Nothing is on npm and https://mcp.zovo.one/mcp/<name> answers 401 to an unauthenticated prober. Revisit the moment npm publish clears. (2026-09-07)"
   },
   "allmcps.com": {
-   "status": "human-gated: operator submits the free form",
+   "status": "automatable: POST /api/v1/submit needs no captcha/auth; time-tracker submitted 2026-10-09 (pending). Dedupe fuzzy-blocks pdf/invoice vs hidden 'aging' row; claim needs emailed code (s20261009-submission-probes.md)",
    "url": "https://allmcps.com/submit",
    "note": "Round 26 (2026-09-08): NEW surface, free listing confirmed from page text ('Free listing review for Model Context Protocol servers'; 'Free listings use nofollow on website links. Verify + badge (or Premium) unlocks a dofollow reciprocal link'), so the listing itself is not paid. Gated because the form requires a contact email and approval is followed by an ownership claim, i.e. an account. Field-by-field path and the six repo URLs to submit are in docs/HUMAN_GATED_PACK.md. Note the newsletter checkbox is ticked by DEFAULT and should be unticked."
   },

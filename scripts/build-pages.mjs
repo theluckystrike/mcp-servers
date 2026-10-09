@@ -258,7 +258,13 @@ for (const id of ids) {
   // The bundle sentence is folded in last so it stays the final line of the page even
   // when a README has no /buy paragraph of its own to fold it into.
   const body = addBundleCta(tagged + ff.html, id);
-  out[id] = { title: f.title, tagline: f.tagline, description: f.does, html: body, first_five: ff.entries, first_five_round: ff.round, first_five_date: ff.date };
+  // SEO: some READMEs open with a bare package-name h1 ("<h1>mcp-price-tracker</h1>"),
+  // which is a weak search-signal and a poor reader headline. When the first h1 is just
+  // the id or its "mcp-<id>" package form, replace it with the facts.json tagline —
+  // descriptive copy that already exists per server, so nothing is invented here.
+  const weakH1 = new RegExp(`^<h1>(?:${id}|mcp-${id})<\\/h1>`, "i");
+  const seoBody = weakH1.test(body) ? body.replace(weakH1, `<h1>${escHtml(f.tagline)}</h1>`) : body;
+  out[id] = { title: f.title, tagline: f.tagline, description: f.does, html: seoBody, first_five: ff.entries, first_five_round: ff.round, first_five_date: ff.date };
 }
 writeFileSync(
   "billing/src/pages.js",

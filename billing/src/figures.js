@@ -225,7 +225,7 @@ export const TOOLS = {
   "stripe-billing": 2,
   "supplier-list": 8,
   "tax-calc": 1,
-  "time-tracker": 12,
+  "time-tracker": 18,
   "timezone": 9,
   "work-order": 10,
   "zip": 7
@@ -235,12 +235,12 @@ export const TOOLS = {
 export const LICENSE_TOOLS = 2;
 
 /** Sum of TOOLS over CHILD_IDS. */
-export const OWN_TOOLS_TOTAL = 436;
+export const OWN_TOOLS_TOTAL = 442;
 
 /** Distinct tool names office-suite exposes: every child's own tools, plus the shared
  * license pair once. Reconciles with the independently measured OFFICE_SUITE_TOOLS in
  * billing/src/index.js, taken over stdio from the running bundle on 2026-09-07. */
-export const OFFICE_SUITE_TOOLS = 438;
+export const OFFICE_SUITE_TOOLS = 444;
 
 /** Servers the site actually lists, i.e. those with a README that becomes a /s/ page. */
 export const LISTED_IDS = [
