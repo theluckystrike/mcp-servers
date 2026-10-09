@@ -1,0 +1,242 @@
+[
+ {
+  "server": "price-tracker",
+  "code": 0,
+  "url": "https://github.com/chatmcp/mcpso/issues/4981",
+  "err": ""
+ },
+ {
+  "server": "expense-tracker",
+  "code": 0,
+  "url": "https://github.com/chatmcp/mcpso/issues/4982",
+  "err": ""
+ },
+ {
+  "server": "currency",
+  "code": 0,
+  "url": "https://github.com/chatmcp/mcpso/issues/4983",
+  "err": ""
+ },
+ {
+  "server": "timezone",
+  "code": 0,
+  "url": "https://github.com/chatmcp/mcpso/issues/4984",
+  "err": ""
+ },
+ {
+  "server": "docx",
+  "code": 0,
+  "url": "https://github.com/chatmcp/mcpso/issues/4985",
+  "err": ""
+ },
+ {
+  "server": "resume",
+  "code": 0,
+  "url": "https://github.com/chatmcp/mcpso/issues/4986",
+  "err": ""
+ },
+ {
+  "server": "recurring",
+  "code": 0,
+  "url": "https://github.com/chatmcp/mcpso/issues/4987",
+  "err": ""
+ },
+ {
+  "server": "clauses",
+  "code": 0,
+  "url": "https://github.com/chatmcp/mcpso/issues/4988",
+  "err": ""
+ },
+ {
+  "server": "calendar",
+  "code": 0,
+  "url": "https://github.com/chatmcp/mcpso/issues/4989",
+  "err": ""
+ },
+ {
+  "server": "kanban",
+  "code": 0,
+  "url": "https://github.com/chatmcp/mcpso/issues/4990",
+  "err": ""
+ },
+ {
+  "server": "image",
+  "code": 0,
+  "url": "https://github.com/chatmcp/mcpso/issues/4991",
+  "err": ""
+ },
+ {
+  "server": "bank-statement",
+  "code": 0,
+  "url": "https://github.com/chatmcp/mcpso/issues/4992",
+  "err": ""
+ },
+ {
+  "server": "barcode",
+  "code": 0,
+  "url": "https://github.com/chatmcp/mcpso/issues/4993",
+  "err": ""
+ },
+ {
+  "server": "zip",
+  "code": 0,
+  "url": "https://github.com/chatmcp/mcpso/issues/4994",
+  "err": ""
+ },
+ {
+  "server": "billing-docs",
+  "code": 0,
+  "url": "https://github.com/chatmcp/mcpso/issues/4995",
+  "err": ""
+ },
+ {
+  "server": "deposits",
+  "code": 0,
+  "url": "https://github.com/chatmcp/mcpso/issues/4996",
+  "err": ""
+ },
+ {
+  "server": "per-diem",
+  "code": 0,
+  "url": "https://github.com/chatmcp/mcpso/issues/4997",
+  "err": ""
+ },
+ {
+  "server": "asset-register",
+  "code": 0,
+  "url": "https://github.com/chatmcp/mcpso/issues/4998",
+  "err": ""
+ },
+ {
+  "server": "statement-of-account",
+  "code": 0,
+  "url": "https://github.com/chatmcp/mcpso/issues/4999",
+  "err": ""
+ },
+ {
+  "server": "cash-book",
+  "code": 0,
+  "url": "https://github.com/chatmcp/mcpso/issues/5000",
+  "err": ""
+ },
+ {
+  "server": "amortization",
+  "code": 0,
+  "url": "https://github.com/chatmcp/mcpso/issues/5001",
+  "err": ""
+ },
+ {
+  "server": "petty-cash",
+  "code": 0,
+  "url": "https://github.com/chatmcp/mcpso/issues/5002",
+  "err": ""
+ },
+ {
+  "server": "work-order",
+  "code": 0,
+  "url": "https://github.com/chatmcp/mcpso/issues/5003",
+  "err": ""
+ },
+ {
+  "server": "catalogue",
+  "code": 0,
+  "url": "https://github.com/chatmcp/mcpso/issues/5004",
+  "err": ""
+ },
+ {
+  "server": "change-order",
+  "code": 0,
+  "url": "https://github.com/chatmcp/mcpso/issues/5005",
+  "err": ""
+ },
+ {
+  "server": "packing-list",
+  "code": 0,
+  "url": "https://github.com/chatmcp/mcpso/issues/5006",
+  "err": ""
+ },
+ {
+  "server": "checklist",
+  "code": 0,
+  "url": "https://github.com/chatmcp/mcpso/issues/5007",
+  "err": ""
+ },
+ {
+  "server": "bill-of-sale",
+  "code": 0,
+  "url": "https://github.com/chatmcp/mcpso/issues/5008",
+  "err": ""
+ },
+ {
+  "server": "credit-note",
+  "code": 0,
+  "url": "https://github.com/chatmcp/mcpso/issues/5009",
+  "err": ""
+ },
+ {
+  "server": "job-card",
+  "code": 0,
+  "url": "https://github.com/chatmcp/mcpso/issues/5010",
+  "err": ""
+ },
+ {
+  "server": "dunning-letters",
+  "code": 0,
+  "url": "https://github.com/chatmcp/mcpso/issues/5011",
+  "err": ""
+ },
+ {
+  "server": "supplier-list",
+  "code": 0,
+  "url": "https://github.com/chatmcp/mcpso/issues/5012",
+  "err": ""
+ },
+ {
+  "server": "service-agreement",
+  "code": 0,
+  "url": "https://github.com/chatmcp/mcpso/issues/5013",
+  "err": ""
+ },
+ {
+  "server": "maintenance-log",
+  "code": 0,
+  "url": "https://github.com/chatmcp/mcpso/issues/5014",
+  "err": ""
+ },
+ {
+  "server": "mileage-log",
+  "code": 0,
+  "url": "https://github.com/chatmcp/mcpso/issues/5015",
+  "err": ""
+ },
+ {
+  "server": "delivery-schedule",
+  "code": 0,
+  "url": "https://github.com/chatmcp/mcpso/issues/5016",
+  "err": ""
+ },
+ {
+  "server": "onboarding",
+  "code": 0,
+  "url": "https://github.com/chatmcp/mcpso/issues/5017",
+  "err": ""
+ },
+ {
+  "server": "goods-receipt",
+  "code": 0,
+  "url": "https://github.com/chatmcp/mcpso/issues/5018",
+  "err": ""
+ },
+ {
+  "server": "leave",
+  "code": 0,
+  "url": "https://github.com/chatmcp/mcpso/issues/5019",
+  "err": ""
+ },
+ {
+  "server": "purchase-requisition",
+  "code": 0,
+  "url": "https://github.com/chatmcp/mcpso/issues/5020",
+  "err": ""
+ }
+]

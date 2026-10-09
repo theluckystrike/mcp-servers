@@ -1,0 +1,63 @@
+--- a/remote/src/index.ts
++++ b/remote/src/index.ts
+@@ -1141,13 +1141,18 @@
+ }
+ 
+ /** Minimal consent page: plain HTML, no branding framework, one form per RFC 6749 §3.1. */
+-export function oauthConsentPage(base: string, params: URLSearchParams): string {
++export function oauthConsentPage(base: string, params: URLSearchParams, clientName = ""): string {
+   const esc = (x: unknown) => String(x ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
++  let host = "";
++  try { host = new URL(String(params.get("redirect_uri") ?? "")).host; } catch { host = "(invalid)"; }
++  const name = clientName.slice(0, 80) || "An unnamed tool";
+   return `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+ <title>Authorize MCP access</title></head><body>
+ <h1>Authorize this tool to use your data space</h1>
+ <p>Signing in creates a free anonymous access token and hands it to the tool that asked.
+ There is no account and nothing to fill in. The token works for 30 days and is refreshed on every use.</p>
++<p><strong>${esc(name)}</strong> (name supplied by the tool itself, not verified by Zovo) will receive the token at
++<strong>${esc(host)}</strong>. Only click Allow if you started this connection yourself.</p>
+ <form method="get" action="${esc(base)}/oauth/authorize/consent">
+ <input type="hidden" name="client_id" value="${esc(params.get("client_id"))}">
+ <input type="hidden" name="redirect_uri" value="${esc(params.get("redirect_uri"))}">
+@@ -1166,8 +1171,14 @@
+ }
+ 
+ /** Wrap an OAuth HTML fragment in a full Response (text/html, no-store). */
++const HTML_HEADERS = {
++  "content-type": "text/html; charset=utf-8",
++  "cache-control": "no-store",
++  "x-frame-options": "DENY",
++  "content-security-policy": "frame-ancestors 'none'",
++};
+ function htmlPage(html: string): Response {
+-  return new Response(html, { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" } });
++  return new Response(html, { headers: HTML_HEADERS });
+ }
+ 
+ /* --------------------------------------------------------------- storage */
+@@ -2411,8 +2422,8 @@
+       // Exact-match redirect URI per RFC 6749 §3.1.2.3 - no prefix or wildcard matching.
+       if (!registered.includes(redirectUri)) return htmlPage(oauthAuthorizeErrorPage("redirect_uri is not registered for this client."));
+       if (!/^[A-Za-z0-9_-]{43,128}$/.test(challenge)) return htmlPage(oauthAuthorizeErrorPage("code_challenge must be an S256 (base64url, 43-128 char) value."));
+-      const html = oauthConsentPage(base, url.searchParams);
+-      return new Response(html, { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" } });
++      const clientName = String((JSON.parse(client) as { metadata: { client_name?: unknown } }).metadata.client_name ?? "");
++      return htmlPage(oauthConsentPage(base, url.searchParams, clientName));
+     }
+ 
+     // The consent form's action. The user has clicked Allow: mint an anon token (same
+@@ -2452,7 +2463,12 @@
+       const stored = code ? await env.REMOTE_DATA.get(`oauth_code:${code}`) : null;
+       if (!stored) return json({ error: "invalid_grant", message: "Code is unknown, used or expired." }, 400);
+       const grant = JSON.parse(stored) as { token: string; client_id: string; redirect_uri: string; challenge: string };
+-      if (clientId && clientId !== grant.client_id) return json({ error: "invalid_grant", message: "client_id mismatch." }, 400);
++      // Public client: client_id is REQUIRED (RFC 6749 §4.1.3) and must match the code's client.
++      if (clientId !== grant.client_id) return json({ error: "invalid_grant", message: "client_id mismatch." }, 400);
++      const redirectUri = form.get("redirect_uri");
++      if (redirectUri !== null && String(redirectUri) !== grant.redirect_uri) {
++        return json({ error: "invalid_grant", message: "redirect_uri mismatch." }, 400);
++      }
+       if (!(await verifyPkce(verifier, grant.challenge))) return json({ error: "invalid_grant", message: "PKCE verification failed." }, 400);
+       // One-time use: delete before responding so a replay gets invalid_grant.
+       await env.REMOTE_DATA.delete(`oauth_code:${code}`);

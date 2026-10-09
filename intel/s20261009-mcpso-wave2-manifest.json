@@ -1,0 +1,242 @@
+[
+ {
+  "server": "price-tracker",
+  "slug": "price-tracker",
+  "pkg": "@theluckystrike/mcp-price-tracker",
+  "desc": "Ask your AI what something costs right now, track price drops and get told when a target price is hit. All data stays local."
+ },
+ {
+  "server": "expense-tracker",
+  "slug": "expense-tracker",
+  "pkg": "@theluckystrike/mcp-expense-tracker",
+  "desc": "Local expenses, receipts and mileage ledger for freelancers: categorise, split VAT, summarise, export to CSV or xlsx and rebill straight into an invoice."
+ },
+ {
+  "server": "currency",
+  "slug": "currency",
+  "pkg": "@theluckystrike/mcp-currency",
+  "desc": "Live and historical exchange rates from the European Central Bank, in your AI chat. Convert amounts, read rate history, and hand invoice tools the FX rates they need. No API key, cached locally, works offline."
+ },
+ {
+  "server": "timezone",
+  "slug": "timezone",
+  "pkg": "@theluckystrike/mcp-timezone",
+  "desc": "Time zones, meeting slots and calendar invites for people who work with clients abroad. Convert times, find hours that suit everyone, check DST, write .ics. All local."
+ },
+ {
+  "server": "docx",
+  "slug": "docx",
+  "pkg": "@theluckystrike/mcp-docx",
+  "desc": "Turn a chat into a real Word document: proposals, quotes, contracts, statements of work and letters as .docx files, plus reading and filling existing .docx templates. Everything stays on your machine."
+ },
+ {
+  "server": "resume",
+  "slug": "resume",
+  "pkg": "@theluckystrike/mcp-resume",
+  "desc": "Turn your CV facts into a tailored Word resume and a cover letter that invents nothing: keyword matching against the posting, page-fit trimming, and bracketed prompts wherever a fact is missing. Everything stays on your machine."
+ },
+ {
+  "server": "recurring",
+  "slug": "recurring",
+  "pkg": "@theluckystrike/mcp-recurring",
+  "desc": "Bill the same clients every month without remembering to. Define a recurring invoice once, then generate the real PDFs that are due into your invoice server, with month-end safe dates, an audit log and a revenue forecast. Everything stays on your machine."
+ },
+ {
+  "server": "clauses",
+  "slug": "clauses",
+  "pkg": "@theluckystrike/mcp-clauses",
+  "desc": "A personal library of reusable contract and proposal clauses: 25 generic freelance starters with {{variables}}, ranked search, and one-call assembly into a real Word .docx with every missing fact left as a bracketed prompt. Everything stays on your machine."
+ },
+ {
+  "server": "calendar",
+  "slug": "calendar",
+  "pkg": "@theluckystrike/mcp-calendar",
+  "desc": "Read the .ics your calendar already exports: what is on this week, when you are actually free, what is double-booked, and turn a meeting into billable time. All local."
+ },
+ {
+  "server": "kanban",
+  "slug": "kanban",
+  "pkg": "@theluckystrike/mcp-kanban",
+  "desc": "A local task board per project: columns, due dates, estimates, priorities and a link into your time tracker. All data stays on your machine."
+ },
+ {
+  "server": "image",
+  "slug": "image",
+  "pkg": "@theluckystrike/mcp-image",
+  "desc": "Resize, convert, compress, crop, thumbnail and watermark images from chat: no upload, no account, no native dependency. Every file stays on your machine."
+ },
+ {
+  "server": "bank-statement",
+  "slug": "bank-statement",
+  "pkg": "@theluckystrike/mcp-bank-statement",
+  "desc": "Import a bank CSV export, categorise it, summarise it per currency, find recurring charges and reconcile it against your expense ledger. Everything stays on your machine."
+ },
+ {
+  "server": "barcode",
+  "slug": "barcode",
+  "pkg": "@theluckystrike/mcp-barcode",
+  "desc": "QR codes and barcodes from chat: URLs, WiFi joins, vCards, SEPA payment QR that a banking app can scan, Code 128 and EAN-13, as SVG or PNG. No network, no account."
+ },
+ {
+  "server": "zip",
+  "slug": "zip",
+  "pkg": "@theluckystrike/mcp-zip",
+  "desc": "Create, inspect and extract zip archives from chat: glob a directory into a zip, list what is inside with a bomb and traversal check, extract safely, read one text entry without unpacking. No network."
+ },
+ {
+  "server": "billing-docs",
+  "slug": "billing-docs",
+  "pkg": "@theluckystrike/mcp-billing-docs",
+  "desc": "Credit notes against your invoices and purchase orders to your suppliers, on the invoice engine."
+ },
+ {
+  "server": "deposits",
+  "slug": "deposits",
+  "pkg": "@theluckystrike/mcp-deposits",
+  "desc": "Security and retainer deposits per client: hold them, apply them to invoices, refund them."
+ },
+ {
+  "server": "per-diem",
+  "slug": "per-diem",
+  "pkg": "@theluckystrike/mcp-per-diem",
+  "desc": "Daily travel allowances on bundled public rate tables: Poland, HMRC and GSA."
+ },
+ {
+  "server": "asset-register",
+  "slug": "asset-register",
+  "pkg": "@theluckystrike/mcp-asset-register",
+  "desc": "Fixed assets and depreciation on bundled Polish KST, HMRC and IRS MACRS tables."
+ },
+ {
+  "server": "statement-of-account",
+  "slug": "statement-of-account",
+  "pkg": "@theluckystrike/mcp-statement-of-account",
+  "desc": "Per-client statements of account, aging buckets and dunning letters from your own books."
+ },
+ {
+  "server": "cash-book",
+  "slug": "cash-book",
+  "pkg": "@theluckystrike/mcp-cash-book",
+  "desc": "One double-entry ledger derived from your invoices, bank, expenses, deposits and assets."
+ },
+ {
+  "server": "amortization",
+  "slug": "amortization",
+  "pkg": "@theluckystrike/mcp-amortization",
+  "desc": "Loan and lease schedules: payment, interest, early settlement and the journal, to the minor unit."
+ },
+ {
+  "server": "petty-cash",
+  "slug": "petty-cash",
+  "pkg": "@theluckystrike/mcp-petty-cash",
+  "desc": "A petty cash float on the imprest system: vouchers, reconciliation and the replenishment."
+ },
+ {
+  "server": "work-order",
+  "slug": "work-order",
+  "pkg": "@theluckystrike/mcp-work-order",
+  "desc": "Job orders for trades and field work: parts, labour, status, completion report, invoice payload."
+ },
+ {
+  "server": "catalogue",
+  "slug": "catalogue",
+  "pkg": "@theluckystrike/mcp-catalogue",
+  "desc": "A price list and rate card the quotes and invoice servers read by SKU."
+ },
+ {
+  "server": "change-order",
+  "slug": "change-order",
+  "pkg": "@theluckystrike/mcp-change-order",
+  "desc": "Change orders against a quote or work order: deltas, approval, running contract value."
+ },
+ {
+  "server": "packing-list",
+  "slug": "packing-list",
+  "pkg": "@theluckystrike/mcp-packing-list",
+  "desc": "Packing slips: cartons, contents, weights, chargeable weight and what is still to pack."
+ },
+ {
+  "server": "checklist",
+  "slug": "checklist",
+  "pkg": "@theluckystrike/mcp-checklist",
+  "desc": "Reusable checklists and the dated runs of them: pass, fail, not applicable, and a sign-off."
+ },
+ {
+  "server": "bill-of-sale",
+  "slug": "bill-of-sale",
+  "pkg": "@theluckystrike/mcp-bill-of-sale",
+  "desc": "Bills of sale for equipment, vehicles and stock: draft, finalize, print with signature lines."
+ },
+ {
+  "server": "credit-note",
+  "slug": "credit-note",
+  "pkg": "@theluckystrike/mcp-credit-note",
+  "desc": "Credit notes against an invoice or standalone: drafts, finalization, rendering, totals."
+ },
+ {
+  "server": "job-card",
+  "slug": "job-card",
+  "pkg": "@theluckystrike/mcp-job-card",
+  "desc": "Job cards for trades and field service: hours and materials per job, open to invoiced."
+ },
+ {
+  "server": "dunning-letters",
+  "slug": "dunning-letters",
+  "pkg": "@theluckystrike/mcp-dunning-letters",
+  "desc": "Chase overdue invoices: reminder 1, reminder 2, final notice, escalation dates, aging."
+ },
+ {
+  "server": "supplier-list",
+  "slug": "supplier-list",
+  "pkg": "@theluckystrike/mcp-supplier-list",
+  "desc": "A supplier directory that does not rot: contacts, terms, lead times, review dates."
+ },
+ {
+  "server": "service-agreement",
+  "slug": "service-agreement",
+  "pkg": "@theluckystrike/mcp-service-agreement",
+  "desc": "Service agreements for freelancers: scope, deliverables, rate, termination and liability caps."
+ },
+ {
+  "server": "maintenance-log",
+  "slug": "maintenance-log",
+  "pkg": "@theluckystrike/mcp-maintenance-log",
+  "desc": "Equipment maintenance log: assets, service entries with costs, and a due report from stored dates."
+ },
+ {
+  "server": "mileage-log",
+  "slug": "mileage-log",
+  "pkg": "@theluckystrike/mcp-mileage-log",
+  "desc": "Mileage log for deductible driving: trips, effective-dated rates, summaries and CSV export."
+ },
+ {
+  "server": "delivery-schedule",
+  "slug": "delivery-schedule",
+  "pkg": "@theluckystrike/mcp-delivery-schedule",
+  "desc": "Dated deliverables against a quote or work order: due dates, sign-off, what is late, milestones."
+ },
+ {
+  "server": "onboarding",
+  "slug": "onboarding",
+  "pkg": "@theluckystrike/mcp-onboarding",
+  "desc": "New-hire onboarding: task templates per role, day-one to day-ninety plans."
+ },
+ {
+  "server": "goods-receipt",
+  "slug": "goods-receipt",
+  "pkg": "@theluckystrike/mcp-goods-receipt",
+  "desc": "Goods receipt notes against purchase orders: over/under tolerances, damaged and short units, discrepancies, and CSV export."
+ },
+ {
+  "server": "leave",
+  "slug": "leave",
+  "pkg": "@theluckystrike/mcp-leave",
+  "desc": "Employee leave and PTO requests: balances, approvals, calendars, and who-is-out summaries."
+ },
+ {
+  "server": "purchase-requisition",
+  "slug": "purchase-requisition",
+  "pkg": "@theluckystrike/mcp-purchase-requisition",
+  "desc": "Reusable purchase-requisitions and dated runs: pass, fail, n/a, and a sign-off."
+ }
+]
