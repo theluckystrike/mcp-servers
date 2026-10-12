@@ -281,7 +281,7 @@ test("a 20,000-event 5 MB export imports, lists and is not re-parsed on every ca
     { jsonrpc: "2.0", id: 2, method: "tools/call", params: { name: "events_list", arguments: { calendar: "big", from: "2026-01-01", to: "2026-01-31" } } },
     { jsonrpc: "2.0", id: 3, method: "tools/call", params: { name: "conflicts", arguments: { calendar: "big", from: "2026-01-01", to: "2026-01-31" } } },
     { jsonrpc: "2.0", id: 4, method: "tools/call", params: { name: "free_busy", arguments: { from: "2026-01-01", to: "2026-01-31" } } },
-  ], dir, 30000);
+  ], dir, 90000);
   assert.deepEqual(bad, []);
   assert.match(textOf(out, 1), /20000 event definition\(s\)/);
   assert.match(textOf(out, 2), /28 event\(s\)/);

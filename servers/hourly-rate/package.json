@@ -22,6 +22,7 @@
   ],
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.30.0",
+    "@theluckystrike/mcp-license": "^0.22.5",
     "zod": "^3.25.0"
   },
   "license": "MIT",

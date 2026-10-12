@@ -46,7 +46,7 @@ test("stdout is JSON-RPC only and the three tools are listed with usable descrip
   await c.init();
   for (const line of c.stdoutLines) assert.doesNotThrow(() => JSON.parse(line), "non-JSON on stdout");
   const tools = await c.tools();
-  assert.deepEqual(tools.map((x) => x.name).sort(), ["break_even", "calculate_rate", "what_if"]);
+  assert.deepEqual(tools.map((x) => x.name).sort(), ["break_even", "calculate_rate", "license_activate", "license_status", "what_if"]);
   for (const tool of tools) {
     assert.ok(tool.description.length > 10 && tool.description.length <= 220, `${tool.name} description length ${tool.description.length}`);
     assert.doesNotMatch(tool.description, /^(Call this tool|Use this)\b/);

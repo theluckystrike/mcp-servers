@@ -2,11 +2,14 @@
 // Shared scaffold for the luckystrike finance/productivity MCP suite (stdio MCP servers).
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+import { createLicenseGate } from '@theluckystrike/mcp-license';
 
 export function money(n) { return Math.round(n * 100) / 100; }
 
 export async function serve(name, version, tools) {
   const server = new McpServer({ name, version });
+  const gate = createLicenseGate({ product: name.replace('@theluckystrike/mcp-', '') });
+  gate.registerTools(server as any);
   for (const t of (tools as any[])) {
     const { z } = await import('zod');
     const zod = {};

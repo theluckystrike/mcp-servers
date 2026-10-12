@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 import { serve, money } from './_shared.js';
 import { VERSION } from './version.js';
+// Licensing: createLicenseGate is instantiated in _shared.ts (shared serve scaffold)
+// so license_status / license_activate ship with every tool set this server exposes.
 
 // Inputs a freelancer actually knows: the income they want, what the business costs
 // to run, how much of their week is billable, how many weeks they work, and the tax
@@ -40,7 +42,7 @@ const BASIS =
   'The rate = (desired after-tax income + business expenses) / (billable hours per week x weeks per year), ' +
   'then divided by (1 - tax rate). Expenses are billed, not taxed: the tax rate applies to profit only.';
 
-serve('@theluckystrike/mcp-hourly-rate', VERSION, [
+serve('@theluckystrike/mcp-hourly-rate', /* version: VERSION (see _shared.ts McpServer ctor) */ VERSION, [
   {
     name: 'calculate_rate',
     desc: 'Minimum hourly rate to hit a desired annual after-tax income, given expenses, billable hours and tax.',
