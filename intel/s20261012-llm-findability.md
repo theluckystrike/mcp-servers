@@ -37,3 +37,9 @@ Registry distribution pass executed after the llms.txt deploy:
 - IndexNow pinged all 287 storefront URLs (accepted 287, failed 0) — includes the 47 /mcp/ pages.
 - Live surface check: llms.txt / sitemap.xml / robots.txt all 200 post-deploy.
 - Commit: 8448dcd0.
+
+## GSC audit (parent, 2026-10-12 ~01:35Z)
+- sc-domain:zovo.one verified (siteFullUser via zovo-gsc-cleanup service acct). 28d: 42 clicks / 1,251 impressions; mcp.zovo.one/ = 17 impressions, 0 clicks. Nearly all traffic is brand query "zovo" (34/42 clicks) — zero non-brand pull yet.
+- Sitemaps known to GSC: mcp.zovo.one/sitemap.xml = 237 submitted, 0 indexed. The 47 new /mcp/ landing URLs are TOO NEW to be indexed (urlInspection: home PASS+indexed; /mcp/invoice NEUTRAL "unknown to Google"; 1/10 sampled known).
+- ACTION TAKEN: re-PUT sitemap to GSC API (204), re-pinged IndexNow for all 287 URLs (287 accepted). Indexing is now a waiting game — next checkpoint in 5-7d.
+- Comparison: tg.zovo.one (628 URLs) and zovo.one main (749 URLs) also sit at 0 indexed across ALL sitemaps — domain-wide indexing lag predates today's fix. Non-brand organic needs either (a) patience + crawler-return cadence, or (b) backlink/referral signals to trigger crawling. This is the #1 organic lever to solve next.
