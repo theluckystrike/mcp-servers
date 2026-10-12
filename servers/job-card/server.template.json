@@ -1,0 +1,31 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.theluckystrike/job-card-template",
+  "description": "Open a job card, log hours and materials against it, print the card for client sign-off.",
+  "version": "0.22.0",
+  "repository": {
+    "url": "https://github.com/theluckystrike/mcp-servers",
+    "source": "github",
+    "subfolder": "servers/job-card"
+  },
+  "websiteUrl": "https://mcp.zovo.one/s/job-card",
+  "packages": [
+    {
+      "registryType": "mcpb",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.22.0/job-card.mcpb",
+      "version": "0.22.0",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "MCP_LICENSE_KEY",
+          "description": "Optional Pro license key (MCPL1....). Verified offline.",
+          "isRequired": false,
+          "isSecret": true
+        }
+      ],
+      "fileSha256": "7a057549caa37c12608e799ab52d28d81b9f690b93a7c75e04f85170848202e6"
+    }
+  ]
+}

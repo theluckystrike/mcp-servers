@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-10-12T00:36:03.407Z",
+  "generated_at": "2026-10-12T01:18:10.072Z",
   "kpis": [
     {
       "cat": "Discovery",
       "name": "Registry entries at latest version",
-      "value": 107,
+      "value": 108,
       "target": 149,
       "unit": "of all published names",
       "how": "one exact GET /v0.1/servers/<name>/versions/latest per manifest name, compared with the release version. NOT a substring search: with 30,395 servers in the registry a search can push the exact match off page one, which is how this read 41 of 91 while a direct sample of 12 returned 12 of 12 present",
@@ -24,7 +24,7 @@
     {
       "cat": "Discovery",
       "name": "Distribution surfaces live",
-      "value": 17,
+      "value": 21,
       "target": 74,
       "unit": "of 74",
       "how": "data/distribution.json",
@@ -157,7 +157,7 @@
       "value": 119,
       "target": 100,
       "unit": "tokens",
-      "how": "previous value; wrangler timed out at 2026-10-12T00:35:14.327Z",
+      "how": "previous value; wrangler timed out at 2026-10-12T01:16:51.880Z",
       "why": "Someone reached a hosted endpoint without a key: a zero-friction first call.",
       "stale": true,
       "status": "met"
@@ -168,7 +168,7 @@
       "value": 280,
       "target": 100,
       "unit": "tenants",
-      "how": "previous value; wrangler timed out at 2026-10-12T00:35:14.327Z",
+      "how": "previous value; wrangler timed out at 2026-10-12T01:16:51.880Z",
       "why": "A tenant document exists only after a mutating call succeeded.",
       "stale": true,
       "status": "met"
@@ -179,7 +179,7 @@
       "value": 239,
       "target": 200,
       "unit": "files (1h TTL)",
-      "how": "previous value; wrangler timed out at 2026-10-12T00:35:14.327Z",
+      "how": "previous value; wrangler timed out at 2026-10-12T01:16:51.880Z",
       "why": "A produced document is a completed job, not just a call.",
       "stale": true,
       "status": "met"
@@ -247,7 +247,7 @@
     {
       "cat": "Reliability",
       "name": "Hosted tools/list latency p50",
-      "value": 192,
+      "value": 516,
       "target": 800,
       "unit": "ms",
       "lower_is_better": true,
@@ -291,7 +291,7 @@
       "value": 0,
       "target": 5,
       "unit": "keys",
-      "how": "previous value; wrangler timed out at 2026-10-12T00:35:14.327Z",
+      "how": "previous value; wrangler timed out at 2026-10-12T01:16:51.880Z",
       "why": "One key per paid session; zero means no purchase reached /success.",
       "stale": true,
       "status": "zero"
@@ -322,7 +322,7 @@
       "value": 1,
       "target": 20,
       "unit": "tenants",
-      "how": "previous value; wrangler timed out at 2026-10-12T00:35:14.327Z",
+      "how": "previous value; wrangler timed out at 2026-10-12T01:16:51.880Z",
       "why": "Real Pro usage on hosted. The old count read every lic: document, so one validation run over 16 servers looked like 16 paying tenants.",
       "detail": {
         "lic_keys": null,
@@ -367,18 +367,18 @@
       "probe_ids_excluded": null
     },
     "latency": {
-      "p50_ms": 192,
+      "p50_ms": 516,
       "samples": [
-        229,
-        192,
-        71
+        851,
+        516,
+        70
       ]
     },
     "registry": {
-      "entries": 107,
+      "entries": 108,
       "names": 149,
       "release": null,
-      "hosted": 86,
+      "hosted": 85,
       "unreachable": 0
     },
     "sitemap_urls": 287
