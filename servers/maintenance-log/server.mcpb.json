@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/maintenance-log",
   "description": "Equipment maintenance log: assets, service entries with costs, and a due report from stored dates.",
-  "version": "0.22.0",
+  "version": "0.22.5",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
@@ -13,7 +13,7 @@
     {
       "registryType": "mcpb",
       "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.22.0/maintenance-log.mcpb",
-      "version": "0.22.0",
+      "version": "0.22.5",
       "transport": {
         "type": "stdio"
       },
@@ -25,7 +25,7 @@
           "isSecret": true
         }
       ],
-      "fileSha256": "4548349adab35740fc5cc17c2bd0e2c5c115c40bf7d1242e264500ab8b1a106e"
+      "fileSha256": "36c51b1987b329aeb89be43e0f58640fc41dd93692a040521fa20ef57738cffe"
     }
   ],
   "remotes": [

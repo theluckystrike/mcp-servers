@@ -77,6 +77,7 @@ const CHILDREN: ChildDef[] = [
   { id: "leave", pkg: "@theluckystrike/mcp-leave", optional: true },
   { id: "onboarding", pkg: "@theluckystrike/mcp-onboarding", optional: true },
   { id: "backlink-checker", pkg: "@theluckystrike/mcp-backlink-checker", optional: true },
+  { id: "hourly-rate", pkg: "@theluckystrike/mcp-hourly-rate", optional: true },
 ];
 
 /** Resolve the absolute path to a sibling server's dist/index.js. */

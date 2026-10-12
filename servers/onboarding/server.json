@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/onboarding",
   "description": "New-hire onboarding: role-based task templates, day-one to day-ninety checklists, completion.",
-  "version": "0.22.1",
+  "version": "0.22.5",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
@@ -13,7 +13,7 @@
     {
       "registryType": "mcpb",
       "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.22.0/onboarding.mcpb",
-      "version": "0.22.1",
+      "version": "0.22.5",
       "transport": {
         "type": "stdio"
       },
@@ -25,7 +25,7 @@
           "isSecret": true
         }
       ],
-      "fileSha256": "5f45391f0606350b2a108ef5da5cfeff6a75277e45bf61262cd3f85d5e96853f"
+      "fileSha256": "b1d74c53ecc98f4a38d53d79febed0296de762baf3b76a8136352c41179d4e3f"
     }
   ]
 }

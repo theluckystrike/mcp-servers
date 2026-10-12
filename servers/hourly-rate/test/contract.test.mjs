@@ -19,7 +19,7 @@ function open(t) {
 
 test("the version is one number: package.json, src/version.ts, serverInfo and both manifests agree", async (t) => {
   const pkg = JSON.parse(readFileSync(join(HERE, "package.json"), "utf8"));
-  assert.equal(pkg.name, "mcp-hourly-rate");
+  assert.equal(pkg.name, "@theluckystrike/mcp-hourly-rate");
   assert.match(pkg.version, /^\d+\.\d+\.\d+$/);
   assert.ok(pkg.description.length < 100, `package description is ${pkg.description.length} chars`);
   const generated = readFileSync(join(HERE, "src", "version.ts"), "utf8");
@@ -29,7 +29,7 @@ test("the version is one number: package.json, src/version.ts, serverInfo and bo
   const { c } = open(t);
   const info = await c.init();
   assert.equal(info.serverInfo.version, pkg.version);
-  assert.equal(info.serverInfo.name, "mcp-hourly-rate");
+  assert.equal(info.serverInfo.name, "@theluckystrike/mcp-hourly-rate");
   for (const file of ["server.json", "server.variant.json"]) {
     const j = JSON.parse(readFileSync(join(HERE, file), "utf8"));
     assert.equal(j.version, pkg.version, `${file} version`);
@@ -61,8 +61,8 @@ test("calculate_rate: 60k income, 10k expenses, 25 h/wk, 46 weeks, 30% tax is 87
     billable_hours_per_week: 25, weeks_per_year: 46, tax_rate_pct: 30,
   });
   assert.equal(r.isError, false, r.text);
-  // (60000+10000)/(25*46)/0.7 = 70000/1150/0.7 = 87.0629...
-  assert.match(r.text, /\$87\.06/);
+  // (60000+10000)/(25*46)/0.7 = 70000/1150/0.7 = 86.9565...
+  assert.match(r.text, /\$86\.96/);
   assert.match(r.text, /Billable hours per year: 1150/);
 });
 

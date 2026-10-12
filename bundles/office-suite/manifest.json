@@ -57,6 +57,30 @@
       "description": "Log time already worked as one entry and return its id, duration and amount. Give start plus end or minutes. rate is hourly in MAJOR units and is frozen on the entry, so a later rate change never moves it."
     },
     {
+      "name": "entry_log",
+      "description": "Log work time for a client/project in one step: minutes worked plus an optional note. The entry starts now minus the minutes, so it lands on today's day and week summaries."
+    },
+    {
+      "name": "summary_day",
+      "description": "Total hours logged for one calendar day (local date, default today), broken down per project."
+    },
+    {
+      "name": "summary_week",
+      "description": "Total hours logged in the week containing today (Mon-Sun, local dates), broken down per project."
+    },
+    {
+      "name": "summary_client",
+      "description": "All-time totals for one client/project: hours, entry count and billable amount, with a per-day breakdown."
+    },
+    {
+      "name": "target_set",
+      "description": "Set a weekly hours goal used by target_check. Stored locally."
+    },
+    {
+      "name": "target_check",
+      "description": "Compare hours logged this week (Mon-Sun, local dates) against the weekly target from target_set."
+    },
+    {
       "name": "entry_list",
       "description": "List logged entries as a table of id, day, start, project, task, hours, billable, tags and note, newest first, with total hours. Free reads the last 7 days and says so; Pro reads the whole history."
     },

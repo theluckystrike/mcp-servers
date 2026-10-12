@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/supplier-list",
   "description": "A supplier directory that does not rot: contacts, terms, lead times, review dates.",
-  "version": "0.22.0",
+  "version": "0.22.5",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
@@ -13,7 +13,7 @@
     {
       "registryType": "mcpb",
       "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.22.0/supplier-list.mcpb",
-      "version": "0.22.0",
+      "version": "0.22.5",
       "transport": {
         "type": "stdio"
       },
@@ -25,7 +25,7 @@
           "isSecret": true
         }
       ],
-      "fileSha256": "83922b9609a8dd175971ad1ef839aaa870494968a1891001a8527e6ce5fa8ddd"
+      "fileSha256": "dddb58534f1ec99a4de8dd4648dffc43b27433a6b5f07d265d074aeaeeb7f63a"
     }
   ],
   "remotes": [

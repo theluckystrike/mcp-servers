@@ -409,7 +409,7 @@ a demo that stops at the interesting part. This page lists the exact limits so y
 paying rather than after.</p>
 
 <h2>The table</h2>
-<p>Four of them in full, below. Every other server states its own free and Pro limits on its
+<p>Five of them in full, below. Every other server states its own free and Pro limits on its
 <a href="/">product page</a>, and the rule underneath them is the same one.</p>
 <table>
 <tr><th>Server</th><th>Free</th><th>Pro ($${SINGLE_USD} once)</th></tr>
@@ -425,6 +425,9 @@ paying rather than after.</p>
 <tr><td><a href="/s/backlink-checker">Backlink Checker</a></td>
 <td>Unlimited single-URL checks and robots guard checks. <code>link_audit</code> up to 3 URLs per call. Nothing is stored: every check is a fresh fetch.</td>
 <td>Unlimited URLs per <code>link_audit</code> call.</td></tr>
+<tr><td><a href="/s/hourly-rate">Hourly Rate</a></td>
+<td>Everything: three rate calculators, no metering, no key. The arithmetic is exact and the formula is in the source.</td>
+<td>Nothing is gated; the ${SINGLE_USD} bundle key covers the paid servers instead.</td></tr>
 <tr><td><a href="/s/invoice">Invoice</a></td>
 <td>3 invoices per calendar month, small footer line on the PDF. Overdue report free.</td>
 <td>Unlimited invoices, no footer, logo, custom invoice number prefix.</td></tr>
@@ -5189,6 +5192,7 @@ too.</p>
 <tr><td>work-order</td><td>5 open work orders, 200 lines each</td></tr>
 <tr><td>change-order</td><td>5 open change orders; contract value free</td></tr>
 <tr><td>catalogue</td><td>25 SKUs, one price tier, unlimited rate cards and text answers</td></tr>
+<tr><td>hourly-rate</td><td>Every tool, unlimited: three calculators over numbers you supply. Nothing is stored and there is nothing to meter.</td></tr>
 </table>
 
 <h2>The pattern in the caps</h2>

@@ -2,11 +2,11 @@
 // Renders servers/*/README.md into billing/src/pages.js so mcp.zovo.one serves a product page per server.
 import { readFileSync, writeFileSync, existsSync, readdirSync } from "node:fs";
 import { marked } from "marked";
-const ids = ["time-tracker", "price-tracker", "spreadsheet", "invoice", "expense-tracker", "currency", "timezone", "docx", "resume", "recurring", "clauses", "pdf", "calendar", "kanban", "image", "bank-statement", "quotes", "barcode", "zip", "billing-docs", "deposits", "per-diem", "asset-register", "statement-of-account", "cash-book", "amortization", "petty-cash", "work-order", "catalogue", "change-order", "delivery-schedule", "packing-list", "checklist", "bill-of-sale", "credit-note", "job-card", "dunning-letters", "supplier-list", "service-agreement", "maintenance-log", "mileage-log", "purchase-requisition", "goods-receipt", "onboarding", "leave", "backlink-checker", "office-suite", "pomodoro", "budget", "loan-calculator", "payroll", "receipts", "stripe-billing", "tax-calc"];
+const ids = ["time-tracker", "price-tracker", "spreadsheet", "invoice", "expense-tracker", "currency", "timezone", "docx", "resume", "recurring", "clauses", "pdf", "calendar", "kanban", "image", "bank-statement", "quotes", "barcode", "zip", "billing-docs", "deposits", "per-diem", "asset-register", "statement-of-account", "cash-book", "amortization", "petty-cash", "work-order", "catalogue", "change-order", "delivery-schedule", "packing-list", "checklist", "bill-of-sale", "credit-note", "job-card", "dunning-letters", "supplier-list", "service-agreement", "maintenance-log", "mileage-log", "purchase-requisition", "goods-receipt", "onboarding", "leave", "backlink-checker", "hourly-rate", "office-suite", "pomodoro", "budget", "loan-calculator", "payroll", "receipts", "stripe-billing", "tax-calc"];
 // Free standalone servers (R32): every page in `ids` that is not a paid single product and
 // not the office-suite aggregator. Like office-suite they have no price of their own — the
 // bundle key covers the paid servers — so /buy/<id> resolves through PRODUCT_ALIASES.
-const FREE_IDS = new Set(["pomodoro", "budget", "loan-calculator", "payroll", "receipts", "stripe-billing", "tax-calc"]);
+const FREE_IDS = new Set(["pomodoro", "budget", "loan-calculator", "payroll", "receipts", "stripe-billing", "tax-calc", "hourly-rate"]);
 const facts = JSON.parse(readFileSync("data/facts.json", "utf8"));
 // Servers the bundle actually covers as separate purchases: every page in `ids` except the
 // office-suite aggregator, which has no price of its own and is unlocked by the bundle key.

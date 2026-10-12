@@ -1662,6 +1662,53 @@ ${ours("backlink-checker")}
     ],
   },
 
+  "hourly-rate": {
+    title: "MCP Hourly Rate Calculator vs Trove Vault's Freelancer Rate Calculator: which rate tool to pick",
+    description: "A local pure-arithmetic rate calculator against an Apify-hosted market-rate actor. What each computes, where the numbers come from, network use, install path, price and licence, read from each product's own material.",
+    html: `<h1>MCP Hourly Rate Calculator vs Trove Vault's Freelancer Rate Calculator: which rate tool to pick</h1>
+<p>Both answer "what should I charge" from an AI chat, but they compute different things. Trove Vault's Freelancer Rate
+Calculator runs on the Apify platform and returns five billing models (hourly, daily, weekly, monthly retainer and project
+minimum) priced from market-rate data, billed per 1,000 rates computed. Ours is a local MCP server that does one division
+family over the numbers YOU supply: your desired after-tax income, your expenses, your billable hours and your tax rate.
+It reports the gross revenue needed, the billable hours per year, the minimum hourly rate and the pre-tax rate it was
+lifted from. No market data: the formula is in the source and every output is reproducible by hand.</p>
+
+<h2>The facts, read from each product</h2>
+<table>
+<thead><tr><th>Fact</th><th>Ours</th><th>Freelancer Rate Calculator (Trove Vault, Apify)</th></tr></thead>
+<tbody>
+<tr><td>What it computes</td><td>Minimum hourly rate from your own inputs: desired after-tax income, expenses, billable hours, weeks, tax; plus break-even and a what-if scenario table (2 to 12 scenarios)</td><td>Five billing models (hourly, daily, weekly, monthly retainer, project minimum) from market-rate data, after taxes and overhead</td></tr>
+<tr><td>Data source</td><td>The numbers in the call; the formula is in the source, no table ships</td><td>Market-rate data on the Apify platform</td></tr>
+<tr><td>Network</td><td>None. Pure arithmetic, nothing stored</td><td>Hosted on Apify; every call runs on their infrastructure</td></tr>
+<tr><td>Install/entry path</td><td>One-click <code>hourly-rate.mcpb</code> bundle, npx, or hosted URL. No account, no key</td><td>Apify account, OAuth on first MCP use, or a Bearer API token</td></tr>
+<tr><td>Price</td><td>Everything free: three tools, no metering, no key</td><td>From $0.85 per 1,000 rates computed</td></tr>
+<tr><td>Licence</td><td>MIT</td><td>Proprietary platform actor, community maintained</td></tr>
+</tbody>
+</table>
+
+<h2>When to pick the Apify actor</h2>
+<p>Pick it when the question is market-shaped: what are other freelancers with my profile charging, what does a retainer
+look like at market rates. That needs rate data we deliberately do not carry. Its per-1,000-rates pricing is fine for
+occasional lookups, and the five-model output (hourly through project minimum) is broader than ours.</p>
+
+<h2>When to pick ours</h2>
+<p>Pick ours when the numbers that matter are your own: the income you want to keep, what your business actually costs,
+how many of your week's hours are billable and your real tax rate. A market median cannot know those; our formula can,
+and it shows its work - gross revenue, billable hours, the pre-tax rate the answer was lifted from - so every number is
+auditable in the source. Everything is free and unlimited, nothing is stored, and no call leaves your machine.</p>
+
+<h2>Install lines</h2>
+${ours("hourly-rate")}
+
+<p>Exact config file paths per client are on the <a href="/setup">setup pages</a>.</p>`,
+    faq: [
+      { q: "Which one uses market-rate data?", a: "Trove Vault's Freelancer Rate Calculator does, on the Apify platform. Ours deliberately does not: it computes from the inputs you give it, so the answer is reproducible by hand and the formula is in the source." },
+      { q: "Which one is free?", a: "Ours, entirely: three tools, no metering, no key. The Apify actor charges from $0.85 per 1,000 rates computed." },
+      { q: "Does ours store anything or call the network?", a: "No. It is pure arithmetic over the call's inputs: no store, no files, no network, no telemetry." },
+      { q: "Where can I read the competitor facts myself?", a: "The actor's pricing, models and MCP configuration are published on its Apify Store page at apify.com/trovevault/freelancer-rate-calculator. Read on 2026-10-12." },
+    ],
+  },
+
   "leave": {
     title: "MCP Leave vs Vacation Tracker and BambooHR: which PTO tracker to pick",
     description: "A local leave ledger against a Slack-native PTO app and a full HR suite. What each tracks, approval flow, balances, calendar export, network use, install path, price and licence, read from each product's own material.",

@@ -117,12 +117,16 @@ test("expense_summary stays silent when the bank store is unreadable", async (t)
 
 test("expense_export names the bank tool when bank-statement holds transactions in range", async (t) => {
   const c = await started(t);
+  // Relative dates: the free window is measured from TODAY, so a hard-coded fixture
+  // silently falls out of range once the calendar moves past it (same time-bomb the
+  // summary test above fixed).
+  const d1 = daysAgo(4), d30 = daysAgo(1);
   writeBankDb(c.dataHome, [
-    { id: "1", account: "Revolut", date: "2026-09-01", description: "Spotify", amount_minor: -999, currency: "EUR", bank: "revolut", dedupe: "a", imported: "2026-09-01T00:00:00.000Z" },
+    { id: "1", account: "Revolut", date: d30, description: "Spotify", amount_minor: -999, currency: "EUR", bank: "revolut", dedupe: "a", imported: `${d30}T00:00:00.000Z` },
   ]);
-  await c.call("expense_add", { amount: 3.60, currency: "EUR", category: "meals", merchant: "Costa", date: "2026-09-01" });
+  await c.call("expense_add", { amount: 3.60, currency: "EUR", category: "meals", merchant: "Costa", date: d30 });
   const out = join(c.home, "sept.csv");
-  const r = await c.call("expense_export", { from: "2026-09-01", to: "2026-09-30", format: "csv", path: out });
+  const r = await c.call("expense_export", { from: d1, to: d30, format: "csv", path: out });
   assert.match(r.text, /1 transaction/);
   assert.match(r.text, /statement_export/);
 });

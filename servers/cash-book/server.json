@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/cash-book",
   "description": "One double-entry ledger derived from your invoices, bank, expenses, deposits and assets.",
-  "version": "0.22.0",
+  "version": "0.22.5",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
@@ -13,7 +13,7 @@
     {
       "registryType": "mcpb",
       "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.22.0/cash-book.mcpb",
-      "version": "0.22.0",
+      "version": "0.22.5",
       "transport": {
         "type": "stdio"
       },
@@ -25,7 +25,7 @@
           "isSecret": true
         }
       ],
-      "fileSha256": "f6cafa4040e2fd3afd4686e5ecae5257d6f442ee5ca72bb90a63fa647e8041d6"
+      "fileSha256": "e971cded43aebc4d9937a68a7492fbe89b49aba2fb03f1fd509e6e9d49edb9ff"
     }
   ]
 }

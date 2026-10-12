@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/dunning-letters",
   "description": "Chase overdue invoices: reminder 1, reminder 2, final notice, escalation dates, aging.",
-  "version": "0.22.0",
+  "version": "0.22.5",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
@@ -13,7 +13,7 @@
     {
       "registryType": "mcpb",
       "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.22.0/dunning-letters.mcpb",
-      "version": "0.22.0",
+      "version": "0.22.5",
       "transport": {
         "type": "stdio"
       },
@@ -25,7 +25,7 @@
           "isSecret": true
         }
       ],
-      "fileSha256": "51147c598e448b6d546aaa1b88a2c6bb07a93d660c514d675fbc55ddbe7a3d26"
+      "fileSha256": "d0d59297a5682573128fe32398d15d01c5a00d32b2b8ff019609c98e19de2147"
     }
   ],
   "remotes": [

@@ -1,0 +1,40 @@
+{
+  "server": "hourly-rate",
+  "round": 44,
+  "at": "2026-10-12",
+  "scenarios": [
+    {
+      "server": "hourly-rate",
+      "id": "hr1",
+      "prompt": "I want to clear 75,000 a year after 28 percent tax. My expenses run 12,000 and I can bill 25 hours a week, 46 weeks. What's my hourly rate?",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 6.2,
+      "note": "calculate_rate returned $105.07/h over 1,150 billable hours; hand-checked: 87000/1150/0.72 = 105.07. Correct, one call."
+    },
+    {
+      "server": "hourly-rate",
+      "id": "hr2",
+      "prompt": "What rate just covers my costs, before any income?",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 5.8,
+      "note": "break_even returned $10.43/h for 12,000 expenses over 1,150 hours; 12000/1150 = 10.43. Correct."
+    },
+    {
+      "server": "hourly-rate",
+      "id": "hr3",
+      "prompt": "Compare three pricing scenarios side by side: current plan, a leaner 40-week year, and a lower-tax 24 percent year.",
+      "score": 3,
+      "tool_calls": 1,
+      "seconds": 7.1,
+      "note": "what_if ranked 40 weeks $120.83, 46 weeks $105.07, 24pct tax $99.54, highest first; each figure re-derived by hand from the same formula. Sorted correctly, three self-contained scenarios as the schema requires."
+    }
+  ],
+  "totals": {
+    "scenarios": 3,
+    "passed": 3,
+    "avg_seconds": 6.4
+  },
+  "bottom_line": "hourly-rate answers the freelance rate question in one call with the formula stated in every reply; the what_if schema wants self-contained scenarios and says so."
+}

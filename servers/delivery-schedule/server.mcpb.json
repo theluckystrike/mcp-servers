@@ -13,7 +13,7 @@
     {
       "registryType": "mcpb",
       "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.22.0/delivery-schedule.mcpb",
-      "version": "0.22.0",
+      "version": "0.22.5",
       "transport": {
         "type": "stdio"
       },
@@ -25,7 +25,7 @@
           "isSecret": true
         }
       ],
-      "fileSha256": "3892be4ae19a8159509b7a2591aa020afd12e439f7c73f666a0fec95a27dd191"
+      "fileSha256": "317c50fb2a5a43225d3d7cd9f55f98ac0b97eb37e7e425c24c21c74df2bcce5e"
     }
   ],
   "remotes": [

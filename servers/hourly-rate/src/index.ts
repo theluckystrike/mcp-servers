@@ -40,7 +40,7 @@ const BASIS =
   'The rate = (desired after-tax income + business expenses) / (billable hours per week x weeks per year), ' +
   'then divided by (1 - tax rate). Expenses are billed, not taxed: the tax rate applies to profit only.';
 
-serve('mcp-hourly-rate', VERSION, [
+serve('@theluckystrike/mcp-hourly-rate', VERSION, [
   {
     name: 'calculate_rate',
     desc: 'Minimum hourly rate to hit a desired annual after-tax income, given expenses, billable hours and tax.',
@@ -91,7 +91,7 @@ serve('mcp-hourly-rate', VERSION, [
         '',
         `Annual expenses to cover: $${money(r.gross)}`,
         `Billable hours per year: ${r.hours}`,
-        `Break-even hourly rate: $${money(r.rate)}`,
+        `Break-even hourly rate: $${r.rate.toFixed(2)}`,
         'Below this rate each billable hour loses money. Price above it by the margin calculate_rate gives you.',
       ].join('\n') }] };
     },

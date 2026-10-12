@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/job-card",
   "description": "Job cards for trades and field service: hours and materials per job, open to invoiced.",
-  "version": "0.22.0",
+  "version": "0.22.5",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
@@ -13,7 +13,7 @@
     {
       "registryType": "mcpb",
       "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.22.0/job-card.mcpb",
-      "version": "0.22.0",
+      "version": "0.22.5",
       "transport": {
         "type": "stdio"
       },
@@ -25,7 +25,7 @@
           "isSecret": true
         }
       ],
-      "fileSha256": "7a057549caa37c12608e799ab52d28d81b9f690b93a7c75e04f85170848202e6"
+      "fileSha256": "30133b08d1a87ab3348d1851df385f46ec6a0196ea7e5419597bf23045c67180"
     }
   ],
   "remotes": [

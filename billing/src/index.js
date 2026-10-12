@@ -91,6 +91,7 @@ export const PRODUCT_ALIASES = {
   "receipts": "bundle",
   "stripe-billing": "bundle",
   "tax-calc": "bundle",
+  "hourly-rate": "bundle",
 };
 
 /**
@@ -583,6 +584,7 @@ const SERVER_DESCS = {
   amortization: "Loan and lease schedules for an AI assistant.",
   "asset-register": "Keep a fixed asset register and depreciate it on the rates the tax authorities actually publish.",
   "backlink-checker": "Backlink checking for solopreneurs and small studios: does a page link to your domain, dofollow or nofollow, with anchor text and HTTP status.",
+  "hourly-rate": "Rate setting for freelancers: the minimum hourly rate that covers a desired after-tax income, business expenses, billable hours and tax, plus break-even and what-if scenarios.",
   "bank-statement": "Export the CSV from your bank, say \"import this\", and the month is readable.",
   barcode: "Make a QR code or a barcode in the conversation you are already in.",
   "bill-of-sale": "Record a sale and get a signed-paper-ready bill of sale.",
@@ -2104,6 +2106,7 @@ const LLM_USE_WHEN = {
   "onboarding": "Use when the user onboards a new hire from role templates with a dated task checklist.",
   "leave": "Use when the user manages employee leave: requests, approvals, balances and who-is-out views.",
   "backlink-checker": "Use when the user checks backlinks to a page: dofollow status, anchor text, HTTP status.",
+  "hourly-rate": "Use when the user asks what to charge per hour: desired income, expenses, billable hours, tax, break-even.",
   "pomodoro": "Use when the user wants focus timers and breaks run inside the chat while working.",
   "budget": "Use when the user sets monthly budget envelopes and checks spending against them.",
   "loan-calculator": "Use when the user asks what a loan costs per month, with the full amortization.",

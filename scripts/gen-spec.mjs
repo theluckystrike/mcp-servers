@@ -30,7 +30,7 @@ const SERVERS = [
   "packing-list", "checklist",
   "bill-of-sale", "credit-note", "job-card", "dunning-letters",
   "supplier-list", "service-agreement", "maintenance-log", "mileage-log",
-  "purchase-requisition", "goods-receipt", "leave", "onboarding", "backlink-checker",
+  "purchase-requisition", "goods-receipt", "leave", "onboarding", "backlink-checker", "hourly-rate",
 ].sort();
 
 const COMMON_INVARIANTS = [
@@ -376,6 +376,18 @@ const CURATED = {
       "A fetch timeout (10s) or non-HTML content type is reported per URL as a row with the reason, never as a thrown error and never silently dropped.",
       "rel tokens are reported exactly as the page states them, including combined values (nofollow sponsored); the dofollow/nofollow verdict follows the nofollow family of tokens.",
       "Hosted since loop S128_D at /mcp/backlink-checker: the mcpb manifest carries remotes.json.",
+    ],
+  },
+  "hourly-rate": {
+    summary: "The minimum hourly rate a freelancer must charge to hit a desired after-tax annual income: calculate_rate takes the income the freelancer wants to keep, the business's annual expenses, billable hours per week, working weeks per year and the tax rate on profit, and reports the gross revenue needed, the billable hours per year, the minimum hourly rate and the pre-tax rate it was lifted from, because the tax applies to profit while expenses are billed at cost. break_even answers the narrower question of the rate that covers expenses alone. what_if prices 2 to 12 scenarios side by side (more hours for less money, a cheaper coworking desk, a lower tax rate) and returns them highest rate first. Pure arithmetic: no store is opened, no file written, no network call, and no rate table ships with the server.",
+    storageFiles: [],
+    noStore: true,
+    caps: [
+      "NO STORE IS OPENED and no file is written: every answer is derived on the call from the five inputs given.",
+      "The tax rate applies to profit only: expenses are billed at cost and are never taxed, which is why the formula divides by (1 - tax rate) after expenses are added, not before.",
+      "what_if accepts 2 to 12 scenarios and returns them sorted by rate, highest first; each scenario states which of the five inputs it changed.",
+      "Every money figure is rounded half-up to the cent; the worked example in the answer reproduces on a calculator.",
+      "Free on every tier: none of the three tools is gated, because the rate a freelancer must charge is the question this server exists for.",
     ],
   },
   "goods-receipt": {

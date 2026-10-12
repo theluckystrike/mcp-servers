@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/aging",
   "description": "Age your receivables into 0-30, 31-60, 61-90 and over 90 day buckets by due date.",
-  "version": "0.22.0",
+  "version": "0.22.5",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
@@ -13,7 +13,7 @@
     {
       "registryType": "mcpb",
       "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.22.0/statement-of-account.mcpb",
-      "version": "0.22.0",
+      "version": "0.22.5",
       "transport": {
         "type": "stdio"
       },
@@ -25,7 +25,7 @@
           "isSecret": true
         }
       ],
-      "fileSha256": "d3d7fd2f7cb850130638ba9b560f93c31a25a16cb0c1433206aa1a0d5801570f"
+      "fileSha256": "08ba14d0de7d027864f3de233e6f1dd2e7175d74e5f14c94347fc298f59e76c2"
     }
   ]
 }

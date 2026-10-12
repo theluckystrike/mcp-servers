@@ -1740,6 +1740,31 @@ async function run(name) {
     const row = (rep.purchaseOrders ?? [])[0];
     if (row) resultLine(`${row.id} ${row.reference}: ${row.status ?? "discrepancy"} — the tolerance did the arguing`);
   }
+  if (name === "hourly-rate") {
+    const pick = (raw) => JSON.parse(raw);
+
+    say("$ Hourly rate: the number a freelancer keeps re-deriving, from the inputs they already know.\n");
+    await sleep(STEP_DELAY_MS);
+
+    toolLine("calculate_rate", { desired_annual_income: 75000, business_expenses: 12000, billable_hours_per_week: 25, weeks_per_year: 46, tax_rate_pct: 28 });
+    resultLine(await c.call("calculate_rate", { desired_annual_income: 75000, business_expenses: 12000, billable_hours_per_week: 25, weeks_per_year: 46, tax_rate_pct: 28 }));
+    await sleep(STEP_DELAY_MS);
+
+    toolLine("break_even", { business_expenses: 12000, billable_hours_per_week: 25, weeks_per_year: 46 });
+    resultLine(await c.call("break_even", { business_expenses: 12000, billable_hours_per_week: 25, weeks_per_year: 46 }));
+    await sleep(STEP_DELAY_MS);
+
+    toolLine("what_if", { scenarios: [
+      { label: "46 weeks", desired_annual_income: 75000, business_expenses: 12000, billable_hours_per_week: 25, weeks_per_year: 46, tax_rate_pct: 28 },
+      { label: "40 weeks", desired_annual_income: 75000, business_expenses: 12000, billable_hours_per_week: 25, weeks_per_year: 40, tax_rate_pct: 28 },
+      { label: "24pct tax", desired_annual_income: 75000, business_expenses: 12000, billable_hours_per_week: 25, weeks_per_year: 46, tax_rate_pct: 24 },
+    ] });
+    resultLine(await c.call("what_if", { scenarios: [
+      { label: "46 weeks", desired_annual_income: 75000, business_expenses: 12000, billable_hours_per_week: 25, weeks_per_year: 46, tax_rate_pct: 28 },
+      { label: "40 weeks", desired_annual_income: 75000, business_expenses: 12000, billable_hours_per_week: 25, weeks_per_year: 40, tax_rate_pct: 28 },
+      { label: "24pct tax", desired_annual_income: 75000, business_expenses: 12000, billable_hours_per_week: 25, weeks_per_year: 46, tax_rate_pct: 24 },
+    ] }));
+  }
   if (name === "backlink-checker") {
     const pages = await startLinkPages();
     const BASE = pages.base;

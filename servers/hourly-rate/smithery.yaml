@@ -1,0 +1,10 @@
+name: mcp-hourly-rate
+target: local
+
+runtime: typescript
+startCommand:
+  type: stdio
+  configSchema:
+    type: object
+    properties: {}
+  exampleConfig: {}

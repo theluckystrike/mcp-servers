@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/billing-docs",
   "description": "Credit notes against your invoices and purchase orders to suppliers, with VAT and A4 PDFs.",
-  "version": "0.22.1",
+  "version": "0.22.5",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
@@ -13,8 +13,8 @@
     {
       "registryType": "mcpb",
       "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.22.0/billing-docs.mcpb",
-      "version": "0.22.0",
-      "fileSha256": "c5f184a28a385e0ae799bcb8655aefd0b61b3bb5de0163152fc58eb72d250bf2",
+      "version": "0.22.5",
+      "fileSha256": "640c50fb6bb88486d6b06660694dda52e5bcbdf57aabd66920f1d53345be64e2",
       "transport": {
         "type": "stdio"
       }

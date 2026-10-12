@@ -1,14 +1,15 @@
 {
-  "name": "mcp-hourly-rate",
-  "version": "1.0.0",
-  "description": "MCP server: hourly-rate",
+  "name": "@theluckystrike/mcp-hourly-rate",
+  "version": "0.22.5",
+  "description": "Freelance hourly-rate calculator with break-even and what-if scenarios.",
   "type": "module",
-  "main": "src/index.js",
+  "main": "dist/index.js",
   "bin": {
-    "mcp-hourly-rate": "src/index.js"
+    "mcp-hourly-rate": "dist/index.js"
   },
   "scripts": {
-    "test": "node --test test/*.test.mjs"
+    "test": "node --test test/*.test.mjs",
+    "build": "tsc -p tsconfig.json && node -e \"import('node:fs').then(f=>f.chmodSync('dist/index.js',0o755))\""
   },
   "keywords": [
     "mcp",
@@ -20,8 +21,28 @@
     "break-even"
   ],
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.0.4",
-    "zod": "^3.23.8"
+    "@modelcontextprotocol/sdk": "^1.30.0",
+    "zod": "^3.25.0"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "server.json"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "author": "theluckystrike",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/theluckystrike/mcp-servers",
+    "directory": "servers/hourly-rate"
+  },
+  "homepage": "https://github.com/theluckystrike/mcp-servers/tree/main/servers/hourly-rate",
+  "devDependencies": {
+    "typescript": "^5.6.0",
+    "@types/node": "^22.0.0"
+  }
 }

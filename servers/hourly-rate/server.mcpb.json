@@ -1,0 +1,35 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/mcpb.manifest.schema.json",
+  "name": "hourly-rate",
+  "display_name": "Hourly Rate Calculator",
+  "version": "0.22.5",
+  "description": "Freelance hourly-rate calculator with break-even and what-if scenarios.",
+  "long_description": "The minimum hourly rate a freelancer must charge to hit a desired after-tax annual income: calculate_rate takes the income you want to keep, the business's annual expenses, billable hours per week, working weeks per year and the tax rate on profit, and reports the gross revenue needed, the billable hours per year, the minimum hourly rate and the pre-tax rate it was lifted from. break_even answers the narrower question of the rate that covers expenses alone. what_if prices 2 to 12 scenarios side by side (more hours for less money, a cheaper desk, a lower tax rate) and returns them highest rate first. Pure arithmetic: no store, no file writes, no network, no rate table.",
+  "server": {
+    "type": "node",
+    "entry_point": "servers/hourly-rate/dist/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": [
+        "${__dirname}/servers/hourly-rate/dist/index.js"
+      ]
+    },
+    "environment_variables": {}
+  },
+  "tools": [
+    "calculate_rate",
+    "break_even",
+    "what_if"
+  ],
+  "keywords": [
+    "hourly-rate",
+    "freelance",
+    "rate-calculator",
+    "break-even",
+    "pricing"
+  ],
+  "license": "MIT",
+  "author": {
+    "name": "theluckystrike"
+  }
+}

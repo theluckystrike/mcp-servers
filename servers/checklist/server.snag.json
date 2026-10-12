@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/snag-list-defect-handover-signoff",
   "description": "Snag and defect lists at handover: every step marked, the failures listed, and a signature.",
-  "version": "0.22.0",
+  "version": "0.22.5",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
@@ -13,7 +13,7 @@
     {
       "registryType": "mcpb",
       "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.22.0/checklist.mcpb",
-      "version": "0.22.0",
+      "version": "0.22.5",
       "transport": {
         "type": "stdio"
       },
@@ -25,7 +25,7 @@
           "isSecret": true
         }
       ],
-      "fileSha256": "14ad012b16aaea8a2688266f871d674d9726a71545231cc99bf1033962aaa715"
+      "fileSha256": "8222038641ccdf6c8e5319828b66f6cf41afafa01fe19d5917a00ededed11c94"
     }
   ]
 }

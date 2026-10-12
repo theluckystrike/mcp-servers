@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/goods-receipt",
   "description": "Goods receipt notes vs purchase orders: tolerances, damaged/short units, CSV export.",
-  "version": "0.22.0",
+  "version": "0.22.5",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
@@ -13,7 +13,7 @@
     {
       "registryType": "mcpb",
       "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.22.0/goods-receipt.mcpb",
-      "version": "0.22.0",
+      "version": "0.22.5",
       "transport": {
         "type": "stdio"
       },
@@ -25,7 +25,7 @@
           "isSecret": true
         }
       ],
-      "fileSha256": "24d23876926decea7671edc0ac766a700f7b2221b1b32eb357afb7ee44eaa22a"
+      "fileSha256": "915c224a1a0d7d4089d613b49dc6a9fbcd80442a90006247a4836c4b3be07f0a"
     }
   ]
 }

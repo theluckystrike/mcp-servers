@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/deposits",
   "description": "Security and retainer deposits per client: hold, apply to an invoice, refund, statement.",
-  "version": "0.22.0",
+  "version": "0.22.5",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
@@ -13,7 +13,7 @@
     {
       "registryType": "mcpb",
       "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.22.0/deposits.mcpb",
-      "version": "0.22.0",
+      "version": "0.22.5",
       "transport": {
         "type": "stdio"
       },
@@ -25,7 +25,7 @@
           "isSecret": true
         }
       ],
-      "fileSha256": "67f68640679fed31f127cf4f7bca4b8251c631b1b16e2b6f42d3cf3c1d2936af"
+      "fileSha256": "a9c3e27452d7bb41183f535dbac1a05211771971f0762e25b18e359fed9e188b"
     }
   ],
   "remotes": [

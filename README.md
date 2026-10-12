@@ -3,7 +3,7 @@
 <!-- gen:badge -->
 ![License](https://img.shields.io/badge/license-MIT-blue)
 ![MCP Registry](https://img.shields.io/badge/MCP%20registry-listed-brightgreen)
-![Release](https://img.shields.io/badge/release-v0.22.0-informational)
+![Release](https://img.shields.io/badge/release-v0.22.5-informational)
 <!-- /gen:badge -->
 
 Practical Model Context Protocol servers for people who work inside Claude, Cursor and other MCP clients.
@@ -11,7 +11,7 @@ Every server runs locally over stdio, keeps all data on your machine, and has a 
 Pro unlocks the limits for a one-time payment: $19 per server or $39 for the bundle, lifetime.
 
 <!-- gen:counts -->
-46 servers plus the office-suite aggregator, 45 of them also reachable as a hosted endpoint with no install.
+54 servers plus the office-suite aggregator, 45 of them also reachable as a hosted endpoint with no install.
 <!-- /gen:counts -->
 
 No install? Use any server instantly as a hosted endpoint: `https://mcp.zovo.one/mcp/<server>` — or browse the catalog at [mcp.zovo.one](https://mcp.zovo.one).
@@ -41,6 +41,7 @@ returns 404 today. The commands below are written for the day it is published; u
 | [mcp-barcode](servers/barcode/README.md) | ![barcode](assets/demo-barcode.gif) | QR codes and barcodes drawn on your machine, with no upload and no network call. | `barcode.mcpb` |
 | [mcp-bill-of-sale](servers/bill-of-sale/README.md) | ![bill-of-sale](assets/demo-bill-of-sale.gif) | Record a sale of equipment, a vehicle or stock and get a printable bill of sale with signature lines. | `bill-of-sale.mcpb` |
 | [mcp-billing-docs](servers/billing-docs/README.md) | ![billing-docs](assets/demo-billing-docs.gif) | Credit notes and purchase orders, on the same engine as your invoices. | `billing-docs.mcpb` |
+| [mcp-budget](servers/budget/README.md) |  | Monthly budgets you set and check inside the conversation. | `budget.mcpb` |
 | [mcp-calendar](servers/calendar/README.md) | ![calendar](assets/demo-calendar.gif) | Read .ics calendars: events, free and busy, conflicts, exports. | `calendar.mcpb` |
 | [mcp-cash-book](servers/cash-book/README.md) | ![cash-book](assets/demo-cash-book.gif) | One double-entry ledger derived from the books you already keep, proved to the minor unit. | `cash-book.mcpb` |
 | [mcp-catalogue](servers/catalogue/README.md) | ![catalogue](assets/demo-catalogue.gif) | One price list and one rate card, kept where the invoice and the quote can both read them. | `catalogue.mcpb` |
@@ -55,27 +56,34 @@ returns 404 today. The commands below are written for the day it is published; u
 | [mcp-dunning-letters](servers/dunning-letters/README.md) | ![dunning-letters](assets/demo-dunning-letters.gif) | Chase overdue invoices on a ladder anchored to the due date: reminder 1, reminder 2, the final notice, with the aging and the day's chase list. | `dunning-letters.mcpb` |
 | [mcp-expense-tracker](servers/expense-tracker/README.md) | ![expense-tracker](assets/demo-expense-tracker.gif) | Receipts, mileage and expenses that turn into invoice lines. | `expense-tracker.mcpb` |
 | [mcp-goods-receipt](servers/goods-receipt/README.md) | ![goods-receipt](assets/demo-goods-receipt.gif) | The receiving record for purchase orders: what arrived, against which line, in what quantity and condition. | `goods-receipt.mcpb` |
+| [mcp-hourly-rate](servers/hourly-rate/README.md) | ![hourly-rate](assets/demo-hourly-rate.gif) | Price your hours from income, expenses, and tax, with what-if scenarios. | `hourly-rate.mcpb` |
 | [mcp-image](servers/image/README.md) | ![image](assets/demo-image.gif) | Resize, convert, compress and watermark images, pure JavaScript. | `image.mcpb` |
 | [mcp-invoice](servers/invoice/README.md) | ![invoice](assets/demo-invoice.gif) | Numbered invoices with tax lines, rendered to a professional PDF. | `invoice.mcpb` |
 | [mcp-job-card](servers/job-card/README.md) | ![job-card](assets/demo-job-card.gif) | One card per job: hours and materials logged against it, a status machine from open to invoiced, and the printed card for client sign-off. | `job-card.mcpb` |
 | [mcp-kanban](servers/kanban/README.md) | ![kanban](assets/demo-kanban.gif) | A task board per project that hands off to the time tracker. | `kanban.mcpb` |
 | [mcp-leave](servers/leave/README.md) | ![leave](assets/demo-leave.gif) | Employee leave and PTO: balances, approvals, calendars, and who-is-out summaries. | `leave.mcpb` |
+| [mcp-loan-calculator](servers/loan-calculator/README.md) |  | Monthly payments and full amortization in one sentence. | `loan-calculator.mcpb` |
 | [mcp-maintenance-log](servers/maintenance-log/README.md) |  | Equipment maintenance log: assets, service entries with costs, and a due report computed from stored dates. | `maintenance-log.mcpb` |
 | [mcp-mileage-log](servers/mileage-log/README.md) |  | Mileage log for deductible driving: trips, effective-dated rates, summaries and CSV export. | `mileage-log.mcpb` |
 | [mcp-onboarding](servers/onboarding/README.md) | ![onboarding](assets/demo-onboarding.gif) | New-hire onboarding as role-based task templates, with a dated checklist per hire that HR and the manager both read. | `onboarding.mcpb` |
 | [mcp-packing-list](servers/packing-list/README.md) | ![packing-list](assets/demo-packing-list.gif) | Packing slips that carry no prices: what is in each carton, what it weighs, and what is still to pack. | `packing-list.mcpb` |
+| [mcp-payroll](servers/payroll/README.md) |  | Gross-to-net for hourly staff, computed in the conversation. | `payroll.mcpb` |
 | [mcp-pdf](servers/pdf/README.md) | ![pdf](assets/demo-pdf.gif) | Merge, split, stamp and read PDFs, pure JavaScript. | `pdf.mcpb` |
 | [mcp-per-diem](servers/per-diem/README.md) | ![per-diem](assets/demo-per-diem.gif) | Statutory travel allowances on the rate tables the tax authorities publish, and the trips you priced with them. | `per-diem.mcpb` |
 | [mcp-petty-cash](servers/petty-cash/README.md) | ![petty-cash](assets/demo-petty-cash.gif) | A petty cash float on the imprest system, reconciled to the minor unit. | `petty-cash.mcpb` |
+| [mcp-pomodoro](servers/pomodoro/README.md) |  | Focus blocks planned in the chat you are already in. | `pomodoro.mcpb` |
 | [mcp-price-tracker](servers/price-tracker/README.md) | ![price-tracker](assets/demo-price-tracker.gif) | Check and watch product prices on ordinary shop pages. | `price-tracker.mcpb` |
 | [mcp-purchase-requisition](servers/purchase-requisition/README.md) | ![purchase-requisition](assets/demo-purchase-requisition.gif) | Purchase requisitions you build once and approve per order, with the signed record of each approval. | `purchase-requisition.mcpb` |
 | [mcp-quotes](servers/quotes/README.md) | ![quotes](assets/demo-quotes.gif) | Priced, VAT-correct quotes from chat, and the yes turns into an invoice. | `quotes.mcpb` |
+| [mcp-receipts](servers/receipts/README.md) |  | Turn receipt lines into an itemized, taxed total. | `receipts.mcpb` |
 | [mcp-recurring](servers/recurring/README.md) | ![recurring](assets/demo-recurring.gif) | Scheduled invoices, generated into your invoice book with PDFs. | `recurring.mcpb` |
 | [mcp-resume](servers/resume/README.md) | ![resume](assets/demo-resume.gif) | Resumes and cover letters as Word files from one profile, never invented. | `resume.mcpb` |
 | [mcp-service-agreement](servers/service-agreement/README.md) |  | Service agreements for freelancers: scope, deliverables, rate, termination and liability, rendered for signing. | `service-agreement.mcpb` |
 | [mcp-spreadsheet](servers/spreadsheet/README.md) | ![spreadsheet](assets/demo-spreadsheet.gif) | Read, query, edit and convert xlsx and csv files safely. | `spreadsheet.mcpb` |
 | [mcp-statement-of-account](servers/statement-of-account/README.md) | ![statement-of-account](assets/demo-statement-of-account.gif) | The one document that answers what a client actually owes you, aged as at any date, with the chaser drafted. | `statement-of-account.mcpb` |
+| [mcp-stripe-billing](servers/stripe-billing/README.md) |  | Check your Stripe balance and build payment links from chat. | `stripe-billing.mcpb` |
 | [mcp-supplier-list](servers/supplier-list/README.md) |  | A supplier directory that does not rot: contacts, terms, lead times, and when each record was last reviewed. | `supplier-list.mcpb` |
+| [mcp-tax-calc](servers/tax-calc/README.md) |  | 2026 US federal brackets, computed in the conversation. | `tax-calc.mcpb` |
 | [mcp-time-tracker](servers/time-tracker/README.md) | ![time-tracker](assets/demo-time-tracker.gif) | Track billable time without leaving the chat. | `time-tracker.mcpb` |
 | [mcp-timezone](servers/timezone/README.md) | ![timezone](assets/demo-timezone.gif) | Find meeting slots inside everyone's working hours. | `timezone.mcpb` |
 | [mcp-work-order](servers/work-order/README.md) | ![work-order](assets/demo-work-order.gif) | Job orders for trades and field work, priced the way the invoice will be. | `work-order.mcpb` |

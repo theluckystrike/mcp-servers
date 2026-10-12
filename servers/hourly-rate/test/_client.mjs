@@ -6,7 +6,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const here = dirname(fileURLToPath(import.meta.url));
-export const ENTRY = join(here, "..", "src", "index.js");
+export const ENTRY = join(here, "..", "dist", "index.js");
 export const REPO = join(here, "..", "..", "..");
 
 export function proKey(product = "hourly-rate") {

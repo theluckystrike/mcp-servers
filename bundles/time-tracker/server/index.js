@@ -25,7 +25,7 @@ function dbPath() { return join(dataDir(), "data.json"); }
  * (see docs/AUDIT.md). Reads (list/report/status/export) stay unlocked.
  */
 const LOCK = join(dataDir(), ".lock");
-const EMPTY = { version: 1, running: null, entries: [], projects: {} };
+const EMPTY = { version: 1, running: null, entries: [], projects: {}, targetHours: 0 };
 /**
  * Codex v3 #1 (P0): only a missing file is an empty database. A corrupt or unreadable
  * file throws, so no mutation can overwrite history that is still on disk.
@@ -37,6 +37,7 @@ function load() {
         running: raw.running ?? null,
         entries: Array.isArray(raw.entries) ? raw.entries : [],
         projects: raw.projects && typeof raw.projects === "object" ? raw.projects : {},
+        targetHours: typeof raw.targetHours === "number" && raw.targetHours > 0 ? raw.targetHours : 0,
     };
 }
 function save(db) {
@@ -482,6 +483,8 @@ server.registerTool("entry_add", { annotations: { readOnlyHint: false, destructi
         if (seconds <= 0)
             throw new Error("end must be after start");
         const db = load();
+        if (!gate.isPro() && db.entries.length >= 100)
+            return ok(gate.upgradeText("more than 100 stored entries (free tier)", "entry_add"));
         const r = resolveProject(db, a.project);
         if (r.kind === "ambiguous")
             return ok(ambiguousText(a.project, r.candidates));
@@ -506,6 +509,159 @@ server.registerTool("entry_add", { annotations: { readOnlyHint: false, destructi
             lines.unshift(r.note);
         return ok(lines.join("\n"));
     });
+}));
+/* -------------------- spec tools: entry_log / summaries / weekly target -------------------- */
+function entriesOnDay(db, day) {
+    return db.entries.filter(e => dayKey(e.start) === day);
+}
+/** Local-calendar Monday of the week containing `d` (same local-day rule as dayKey). */
+function mondayOf(d = new Date()) {
+    const x = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+    x.setDate(x.getDate() - ((x.getDay() + 6) % 7));
+    return `${x.getFullYear()}-${String(x.getMonth() + 1).padStart(2, "0")}-${String(x.getDate()).padStart(2, "0")}`;
+}
+function entriesInWeek(db, monday) {
+    const days = new Set();
+    const cur = new Date(`${monday}T12:00:00`);
+    for (let i = 0; i < 7; i++) {
+        days.add(`${cur.getFullYear()}-${String(cur.getMonth() + 1).padStart(2, "0")}-${String(cur.getDate()).padStart(2, "0")}`);
+        cur.setDate(cur.getDate() + 1);
+    }
+    return db.entries.filter(e => days.has(dayKey(e.start)));
+}
+function perProject(entries) {
+    const acc = new Map();
+    for (const e of entries) {
+        const cur = acc.get(e.project) ?? { seconds: 0, count: 0 };
+        cur.seconds += e.seconds;
+        cur.count += 1;
+        acc.set(e.project, cur);
+    }
+    return [...acc.entries()].sort((x, y) => y[1].seconds - x[1].seconds)
+        .map(([project, v]) => ({ project, ...v }));
+}
+server.registerTool("entry_log", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
+    title: "Log work time",
+    description: "Log work time for a client/project in one step: minutes worked plus an optional note. The entry starts now minus the minutes, so it lands on today's day and week summaries.",
+    inputSchema: {
+        client: z.string().min(1).describe("Client or project name. A partial name matching exactly one project resolves to it."),
+        project: z.string().optional().describe("Sub-project or task label stored on the entry"),
+        minutes: z.number().positive().describe("Minutes of work to log"),
+        note: z.string().optional().describe("Optional note"),
+    },
+}, guard(async (a) => {
+    return withFileLock(LOCK, async () => {
+        const db = load();
+        if (!gate.isPro() && db.entries.length >= 100)
+            return ok(gate.upgradeText("more than 100 stored entries (free tier)", "entry_log"));
+        const r = resolveProject(db, a.client);
+        if (r.kind === "ambiguous")
+            return ok(ambiguousText(a.client, r.candidates));
+        const meta = db.projects[r.project];
+        const end = new Date();
+        const start = new Date(end.getTime() - a.minutes * 60000);
+        const e = {
+            id: newId(),
+            project: r.project,
+            task: a.project,
+            tags: [],
+            start: iso(start),
+            end: iso(end),
+            seconds: Math.round(a.minutes * 60),
+            note: a.note,
+            billable: true,
+            rateCents: meta?.rateCents ?? 0,
+            currency: meta?.currency ?? "USD",
+        };
+        db.entries.push(e);
+        save(db);
+        const rc = rateForEntry(db, e);
+        const amount = rc > 0 ? ` ${money(amountCents(e.seconds, rc), currencyForEntry(db, e))} at ${money(rc, currencyForEntry(db, e))}/h.` : "";
+        const sub = a.project ? ` (${a.project})` : "";
+        return ok(`${r.note ? r.note + "\n" : ""}Logged ${a.minutes} min for "${e.project}"${sub} on ${dayKey(e.start)}.${amount} Entry id: ${e.id}.`);
+    });
+}));
+server.registerTool("summary_day", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+    title: "Daily summary",
+    description: "Total hours logged for one calendar day (local date, default today), broken down per project.",
+    inputSchema: {
+        date: z.string().regex(DATE_ONLY, "use YYYY-MM-DD").optional().describe("Local date YYYY-MM-DD. Default: today."),
+    },
+}, guard(async (a) => {
+    const db = load();
+    const day = a.date ?? dayKey(new Date().toISOString());
+    const entries = entriesOnDay(db, day);
+    const total = entries.reduce((n, e) => n + e.seconds, 0);
+    const rows = perProject(entries).map(p => [p.project, String(p.count), hours(p.seconds)]);
+    const head = `Day ${day}: ${hours(total)} h across ${entries.length} entr${entries.length === 1 ? "y" : "ies"}.`;
+    return ok(entries.length === 0 ? head : `${head}\n\n${table(["Project", "Entries", "Hours"], rows)}`);
+}));
+server.registerTool("summary_week", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+    title: "Weekly summary",
+    description: "Total hours logged in the week containing today (Mon-Sun, local dates), broken down per project.",
+    inputSchema: {},
+}, guard(async () => {
+    const db = load();
+    const monday = mondayOf();
+    const entries = entriesInWeek(db, monday);
+    const total = entries.reduce((n, e) => n + e.seconds, 0);
+    const rows = perProject(entries).map(p => [p.project, String(p.count), hours(p.seconds)]);
+    const head = `Week of ${monday} to ${dayKeyPlusOne(monday)}: ${hours(total)} h across ${entries.length} entr${entries.length === 1 ? "y" : "ies"}.`;
+    return ok(entries.length === 0 ? head : `${head}\n\n${table(["Project", "Entries", "Hours"], rows)}`);
+}));
+server.registerTool("summary_client", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+    title: "Client summary",
+    description: "All-time totals for one client/project: hours, entry count and billable amount, with a per-day breakdown.",
+    inputSchema: {
+        client: z.string().min(1).describe("Client or project name. A partial name matching exactly one project resolves to it."),
+    },
+}, guard(async (a) => {
+    const db = load();
+    const f = resolveFilter(db, a.client);
+    if (f.kind === "ambiguous")
+        return ok(f.text);
+    if (f.kind !== "ok")
+        return ok("No matching project.");
+    const entries = db.entries.filter(e => e.project === f.project).sort((x, y) => x.start.localeCompare(y.start));
+    const total = entries.reduce((n, e) => n + e.seconds, 0);
+    const perDay = new Map();
+    for (const e of entries)
+        perDay.set(dayKey(e.start), (perDay.get(dayKey(e.start)) ?? 0) + e.seconds);
+    const days = [...perDay.entries()].sort();
+    const head = `Client "${f.project}": ${hours(total)} h across ${entries.length} entr${entries.length === 1 ? "y" : "ies"}`
+        + `${entries.length ? `, last entry ${dayKey(entries[entries.length - 1].start)}.` : "."}`;
+    const rows = days.map(([d, s]) => [d, hours(s)]);
+    return ok(entries.length === 0 ? head : `${head}\n\n${table(["Day", "Hours"], rows)}`);
+}));
+server.registerTool("target_set", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+    title: "Set weekly hours goal",
+    description: "Set a weekly hours goal used by target_check. Stored locally.",
+    inputSchema: {
+        weekly_hours: z.number().positive().describe("Target hours per week, e.g. 32"),
+    },
+}, guard(async (a) => {
+    return withFileLock(LOCK, async () => {
+        const db = load();
+        db.targetHours = a.weekly_hours;
+        save(db);
+        return ok(`Weekly target set: ${a.weekly_hours} h/week.`);
+    });
+}));
+server.registerTool("target_check", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+    title: "Check weekly hours goal",
+    description: "Compare hours logged this week (Mon-Sun, local dates) against the weekly target from target_set.",
+    inputSchema: {},
+}, guard(async () => {
+    const db = load();
+    if (!(db.targetHours > 0))
+        return ok("No weekly target set. Use target_set to set one.");
+    const entries = entriesInWeek(db, mondayOf());
+    const total = entries.reduce((n, e) => n + e.seconds, 0);
+    const done = total / 3600;
+    const pct = Math.round((done / db.targetHours) * 100);
+    const remaining = Math.max(0, db.targetHours - done);
+    return ok(`This week: ${done.toFixed(2)} h of ${db.targetHours} h target (${pct}%).`
+        + (remaining > 0 ? ` ${remaining.toFixed(2)} h remaining.` : " Target reached."));
 }));
 server.registerTool("entry_list", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     title: "List time entries",

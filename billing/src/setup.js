@@ -148,7 +148,7 @@ export const CLIENT_ORDER = Object.keys(CLIENTS);
 
 /** Servers that get a page for this client. claude-web skips office-suite: it starts
  * 31 child processes and has no single connector URL. */
-const WEB_EXCLUDED = ["office-suite", "pomodoro", "budget", "loan-calculator", "payroll", "receipts", "stripe-billing", "tax-calc"];
+const WEB_EXCLUDED = ["office-suite", "pomodoro", "budget", "loan-calculator", "payroll", "receipts", "stripe-billing", "tax-calc", "hourly-rate"];
 export function serversFor(clientId) {
   return clientId === "claude-web" ? SERVER_ORDER.filter((id) => !WEB_EXCLUDED.includes(id)) : SERVER_ORDER;
 }
@@ -1028,7 +1028,7 @@ export const SETUP_SERVERS = {
       ["Block out my morning: 2 hours deep work, then email.", "pomodoro_plan"],
     ],
     free: "Everything: one tool, no metering, no key.",
-    pro: "Nothing is gated; the $39 bundle key covers the 47 paid servers instead.",
+    pro: "Nothing is gated; the $39 bundle key covers the 46 paid servers instead.",
     measured: "The contract suite runs the planner over real stdio and asserts the cadence: 3 hours returns six 25-minute focus blocks with breaks placed on the classic schedule including the long break at the 4th boundary, 50 minutes returns one focus block and one break rather than a padded fake pomodoro, and the response is a plain schedule object with no files written.",
   },
   budget: {
@@ -1138,6 +1138,24 @@ export const SETUP_SERVERS = {
     free: "Everything: one tool, no metering, no key.",
     pro: "Nothing is gated; the $39 bundle key covers the 47 paid servers instead.",
     measured: "The contract suite walks real stdio cases through the bracket table: 95,000 gross less the 15,750 standard deduction is taxed band by band with the marginal rate applied only above each threshold, the returned effective rate equals tax divided by gross, and a below-deduction income returns zero.",
+  },
+  "hourly-rate": {
+    title: "MCP Hourly Rate Calculator",
+    slug: "hourly-rate",
+    toolCount: "3 tools",
+    pkg: "@theluckystrike/mcp-hourly-rate",
+    sPage: "/s/hourly-rate",
+    hosted: null,
+    tagline: "Price your hours from income, expenses, and tax, with what-if scenarios.",
+    does: "calculate_rate turns desired annual income, billable hours per week, weeks per year, business expenses, and tax rate into a defensible hourly rate; break_even shows the rate that exactly covers costs; what_if re-prices after any single input moves. All arithmetic is exact and the formula is in the source.",
+    prompts: [
+      ["I want 75,000 a year, 25 billable hours a week, 46 weeks, 12,000 expenses, 28 percent tax.", "calculate_rate"],
+      ["What if I only manage 40 weeks?", "what_if"],
+      ["What rate just covers my costs?", "break_even"],
+    ],
+    free: "Everything: three tools, no metering, no key.",
+    pro: "Nothing is gated; the $39 bundle key covers the 47 paid servers instead.",
+    measured: "The contract suite walks a real stdio case through the formula: 60,000 income plus 10,000 expenses over 1,150 billable hours at a 30 percent tax rate returns an 86.96 break-even-style rate, hostile inputs are refused with a reason, and nothing hangs.",
   },
 };
 
@@ -1580,6 +1598,14 @@ const ANGLE = {
     vscode: "One pure tool, no writes, no network: auto-approve in agent mode so tax math inside a compensation-planning task costs no clicks.",
     windsurf: "One tool against the 100-tool ceiling; it is a planning estimate and the page says so, which is the honesty you want from a bracket calculator.",
     cline: "Pure function, no state: auto-approve without hesitation, the worst outcome is a planning number you would verify before filing anyway.",
+  },
+  "hourly-rate": {
+    "claude-desktop": "Pricing your own rate is a five-minute hallway question you keep re-deriving; here the answer comes back in the chat with every input visible, so renegotiating a rate is one sentence later.",
+    "claude-code": "The formula lives next to your code, so a rate refresh sits in the same terminal as the invoices it feeds; ask a what-if series and the numbers stay consistent because nothing is cached.",
+    cursor: "Agent mode can chain it: price the year, then ask for the rate at 40 weeks in the same session, two calls the model makes itself without a spreadsheet.",
+    vscode: "Pure math, no writes, no network: auto-approve in agent mode so pricing inside a planning task costs no clicks.",
+    windsurf: "Three tools against the 100-tool ceiling; the assumptions are stated in the source, which is the honesty you want from a number you defend to clients.",
+    cline: "Pure function, no state: auto-approve without hesitation, the worst outcome is a planning number you would sanity-check anyway.",
   },
 };
 

@@ -88,7 +88,7 @@ const content = await import(join(ROOT, "billing", "src", "content.js"));
 const compare = await import(join(ROOT, "billing", "src", "compare.js"));
 const pagesMod = await import(join(ROOT, "billing", "src", "pages.js"));
 
-const { PRODUCTS } = billing;
+const { PRODUCTS, SINGLE_PRODUCT_IDS } = billing;
 const { SETUP_SERVERS, CLIENT_ORDER } = setup;
 const { GUIDES } = content;
 const { COMPARE } = compare;
@@ -428,6 +428,15 @@ check("contract", "contract test", (s) =>
 // waiver never re-checks itself, and a competitor showing up next month would sit
 // unnoticed forever. See the `compare` check above.
 const WAIVERS = [
+  // 2026-10-12: hourly-rate ships entirely free (three calculators, no license gate, no
+  // metering), so it deliberately has no PRODUCTS row — checkout.test.mjs's
+  // notYetSellable set asserts that absence. The product check cannot pass for a server
+  // with nothing to sell; the waiver says why instead of leaving a bare FAIL in the row.
+  {
+    check: "product",
+    servers: ["hourly-rate"],
+    why: "2026-10-12: no Stripe product on purpose — every tool is free, there is no license gate to sell, and checkout.test.mjs enforces the absence. The $39 bundle is the only paid path.",
+  },
   // 2026-09-17: the wave-C hosted-row waiver for supplier-list, service-agreement,
   // maintenance-log and mileage-log was deleted — the worker was deployed and the
   // distribution.json rows reconciled to "published https://mcp.zovo.one/mcp/<server>".
@@ -440,11 +449,6 @@ const WAIVERS = [
     check: "logo",
     servers: ["supplier-list", "service-agreement", "maintenance-log", "mileage-log"],
     why: "2026-09-17: no logo PNG generated for the four newest servers; same content round as the GIFs.",
-  },
-  {
-    check: "spec",
-    servers: ["supplier-list", "service-agreement", "maintenance-log", "mileage-log"],
-    why: "2026-09-17: SPEC.md not yet written for the four newest servers; content round task, not wiring.",
   },
 ];
 const waived = new Map(); // "server:check" -> why
@@ -468,15 +472,21 @@ global_("README generated sections are current", () => {
 global_("PRODUCTS.bundle names the right count and saving", () => {
   const b = PRODUCTS.bundle;
   if (!b) return "no bundle product";
-  const n = SERVERS.length;
-  const saving = n * PRODUCTS[SERVERS[0]].usd - b.usd;
+  // The bundle is derived over the servers that are actually sold: SINGLE_PRODUCT_IDS
+  // (PRODUCTS minus bundle), not every server directory on disk. Free servers
+  // (pomodoro, budget, ..., hourly-rate) deliberately carry no PRODUCTS entry, so
+  // counting SERVERS here mixed unpriced directories into a priced arithmetic and
+  // failed the day the first free server landed.
+  const priced = SINGLE_PRODUCT_IDS;
+  const n = priced.length;
+  const saving = priced.reduce((sum, s) => sum + PRODUCTS[s].usd, 0) - b.usd;
   const words = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten",
     "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen",
-    "twenty", "twenty-one", "twenty-two", "twenty-three", "twenty-four", "twenty-five", "twenty-six", "twenty-seven", "twenty-eight", "twenty-nine", "thirty", "thirty-one", "thirty-two", "thirty-three", "thirty-four", "thirty-five", "thirty-six", "thirty-seven", "thirty-eight", "thirty-nine", "forty", "forty-one", "forty-two", "forty-three", "forty-four", "forty-five", "forty-six", "forty-seven"];
+    "twenty", "twenty-one", "twenty-two", "twenty-three", "twenty-four", "twenty-five", "twenty-six", "twenty-seven", "twenty-eight", "twenty-nine", "thirty", "thirty-one", "thirty-two", "thirty-three", "thirty-four", "thirty-five", "thirty-six", "thirty-seven", "thirty-eight", "thirty-nine", "forty", "forty-one", "forty-two", "forty-three", "forty-four", "forty-five", "forty-six", "forty-seven", "forty-eight", "forty-nine", "fifty", "fifty-one", "fifty-two", "fifty-three", "fifty-four"];
   const bad = [];
-  const prices = new Set(SERVERS.map((s) => PRODUCTS[s]?.usd));
+  const prices = new Set(priced.map((s) => PRODUCTS[s]?.usd));
   if (prices.size !== 1) bad.push(`per-server prices are not uniform: ${[...prices].join(", ")}`);
-  if (!b.desc.includes(`$${saving}`)) bad.push(`desc does not name the saving $${saving} (${n} x $${PRODUCTS[SERVERS[0]].usd} - $${b.usd})`);
+  if (!b.desc.includes(`$${saving}`)) bad.push(`desc does not name the saving $${saving} (${n} x $${PRODUCTS[priced[0]].usd} - $${b.usd})`);
   const named = new RegExp(`\\b(${words[n]}|${n})\\b`, "i").test(b.desc);
   if (!named) bad.push(`desc does not name the server count ${n} (${words[n]})`);
   return bad.length ? bad.join("; ") : true;

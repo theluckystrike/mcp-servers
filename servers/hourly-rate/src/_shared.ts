@@ -7,12 +7,12 @@ export function money(n) { return Math.round(n * 100) / 100; }
 
 export async function serve(name, version, tools) {
   const server = new McpServer({ name, version });
-  for (const t of tools) {
+  for (const t of (tools as any[])) {
     const { z } = await import('zod');
     const zod = {};
     const props = t.schema?.properties ?? {};
     const req = new Set(t.schema?.required ?? []);
-    for (const [k, v] of Object.entries(props)) {
+    for (const [k, v] of (Object.entries(props) as [string, any][])) {
       let s;
       if (v.type === 'number') s = z.number();
       else if (v.type === 'array') s = z.array(z.any());
