@@ -1913,6 +1913,11 @@ ${relatedGuidesBlock(slug)}`;
       return new Response(`<appSpecific><meta name="msvalidate.01" content="${env.BING_VERIFY_CODE}"/></appSpecific>`, { headers: { "content-type": "application/xml", "cache-control": "public, max-age=3600" } });
     }
     if (path === "/robots.txt") {
+      // R-s20261012: explicitly naming AI crawlers (GPTBot/ClaudeBot/... with their own
+      // Allow groups) was tried and reverted — test/checkout-r1.test.mjs "robots.txt keeps
+      // every crawler allowed" encodes the estate policy that no crawler may be singled
+      // out: the universal group already allows everything but the private funnel paths.
+      // Findability work belongs in /llms.txt, not per-bot robots rules.
       return new Response("User-agent: *\nAllow: /\nDisallow: /buy/\nDisallow: /success\nDisallow: /recover\nDisallow: /verify\nDisallow: /bound\nSitemap: https://mcp.zovo.one/sitemap.xml\n", { headers: { "content-type": "text/plain" } });
     }
     // A factual data inventory, not boilerplate. Every retention figure below is the
@@ -2046,6 +2051,69 @@ const LIVE_TOOLS = {
   "zip": ["license_status", "license_activate", "zip_upload", "zip_files", "zip_delete_upload", "zip_create", "zip_list", "zip_extract", "zip_add", "zip_extract_text", "zip_bundle_month", "zip_history"],
 };
 
+// R-s20261012: task-oriented "Use when" lines for llms.txt and llms-full.txt. The blind
+// recommendation runs R1-R7 (docs/BLIND_RECOMMENDATION_R7.md) showed assistants pick a
+// server from a one-line task match, not from a product title, so every entry is phrased
+// as the question the user brings. Kept next to LIVE_TOOLS for the same reason: it is a
+// build input to the discovery artifact, and checkout-r1.test.mjs asserts the lines that
+// carry it stay in catalogue order.
+const LLM_USE_WHEN = {
+  "time-tracker": "Use when the user needs to track billable hours per project and turn logged time into an invoice.",
+  "price-tracker": "Use when the user wants to check a product price on a shop page or watch it over time and be alerted.",
+  "spreadsheet": "Use when the user needs to read, filter, query or edit an xlsx or csv file from chat.",
+  "invoice": "Use when the user needs to create a numbered, tax-correct invoice and render it as a PDF.",
+  "expense-tracker": "Use when the user logs expenses or receipts and wants them categorised and turned into invoice lines.",
+  "currency": "Use when the user needs ECB reference exchange rates: convert amounts, historical rates, or fx for rebilling.",
+  "timezone": "Use when the user schedules a meeting across time zones and needs a slot inside everyone's working hours.",
+  "docx": "Use when the user needs a real Word .docx file: proposals, contracts or documents from a template.",
+  "resume": "Use when the user needs a resume or cover letter as a Word file, tailored to one job post.",
+  "recurring": "Use when the user invoices the same client on a schedule and wants invoices generated when due.",
+  "clauses": "Use when the user drafts contracts from reusable clauses or wants a clause library searched by jurisdiction.",
+  "pdf": "Use when the user needs to merge, split, stamp, reorder or extract text from PDF files.",
+  "calendar": "Use when the user asks about an .ics calendar: events, free and busy slots, conflicts or exports.",
+  "kanban": "Use when the user tracks tasks across project boards and hands them to time tracking.",
+  "image": "Use when the user needs images resized, converted, compressed, cropped or watermarked, or metadata stripped.",
+  "bank-statement": "Use when the user imports a bank CSV export and wants transactions categorised, summarised and reconciled.",
+  "quotes": "Use when the user needs a priced, VAT-correct quote for a client, and wants acceptance turned into an invoice.",
+  "barcode": "Use when the user needs QR codes or barcodes (WiFi, vCard, SEPA payment) drawn locally as SVG.",
+  "zip": "Use when the user needs to create, inspect or unpack zip archives locally.",
+  "billing-docs": "Use when the user needs credit notes or purchase orders on the same numbering engine as their invoices.",
+  "deposits": "Use when the user holds client security or retainer deposits and needs balances, applications and statements.",
+  "per-diem": "Use when the user calculates employee travel allowances on statutory published rate tables.",
+  "asset-register": "Use when the user maintains a fixed asset register with depreciation schedules, journals and disposal gains.",
+  "statement-of-account": "Use when the user needs to show what a client owes, aged as at a date, with a chaser letter drafted.",
+  "cash-book": "Use when the user needs a double-entry cash book: trial balance, ledger lines and month close.",
+  "amortization": "Use when the user needs a loan or lease amortization schedule with per-payment interest and early repayment.",
+  "petty-cash": "Use when the user runs a petty cash float: vouchers, top-ups, reconciliation and replenishment requests.",
+  "work-order": "Use when the user creates priced work orders for field or trade jobs and closes them into invoices.",
+  "catalogue": "Use when the user keeps a product price list or rate card that invoices and quotes must both read.",
+  "change-order": "Use when the client asks for changes to an approved quote or work order and the contract value must move.",
+  "delivery-schedule": "Use when the user tracks contract deliverables and milestones and needs a late-deliverables report.",
+  "packing-list": "Use when the user packs shipments against an order and needs cartons, shortfalls and printable packing slips.",
+  "checklist": "Use when the user runs the same procedure repeatedly and needs a dated, signed record of each run.",
+  "bill-of-sale": "Use when the user records a private sale of goods or a vehicle and needs a printable bill of sale.",
+  "credit-note": "Use when the user must correct or refund an issued invoice with a credit note, standalone or against one.",
+  "job-card": "Use when the user logs labor and materials per job, from open to invoiced, with a printable card.",
+  "dunning-letters": "Use when the user chases overdue invoices: aging summary and payment reminder letters.",
+  "supplier-list": "Use when the user keeps supplier contacts, terms and lead times, and reviews stale records.",
+  "service-agreement": "Use when the user drafts a freelance service agreement: scope, deliverables, rates, termination, liability.",
+  "maintenance-log": "Use when the user tracks equipment or vehicle servicing and needs due dates and full service history.",
+  "mileage-log": "Use when the user logs business trips for a deductible mileage claim at set rates.",
+  "purchase-requisition": "Use when the user raises purchase requests that need approval before ordering.",
+  "goods-receipt": "Use when the user receives goods against purchase orders and records GRNs and discrepancies.",
+  "onboarding": "Use when the user onboards a new hire from role templates with a dated task checklist.",
+  "leave": "Use when the user manages employee leave: requests, approvals, balances and who-is-out views.",
+  "backlink-checker": "Use when the user checks backlinks to a page: dofollow status, anchor text, HTTP status.",
+  "pomodoro": "Use when the user wants focus timers and breaks run inside the chat while working.",
+  "budget": "Use when the user sets monthly budget envelopes and checks spending against them.",
+  "loan-calculator": "Use when the user asks what a loan costs per month, with the full amortization.",
+  "payroll": "Use when the user computes gross-to-net pay for hourly staff in the conversation.",
+  "receipts": "Use when the user has receipt lines to total into an itemised, taxed total.",
+  "stripe-billing": "Use when the user checks a Stripe balance or builds payment links from chat.",
+  "tax-calc": "Use when the user computes 2026 US federal income tax from a taxable amount.",
+  "office-suite": "Use when the user wants every server above mounted at once behind one config entry instead of 54.",
+};
+
     if (path === "/llms.txt") {
       // Every install line here used to print `npx -y @theluckystrike/mcp-<name>`, which
       // returns E404 because nothing has been published to npm. This file is the artifact
@@ -2087,10 +2155,12 @@ const LIVE_TOOLS = {
       const lines = Object.entries(PAGES).filter(([k]) => k !== "office-suite").map(([k, v]) => {
         const price = PRODUCTS[k] ? ` Pro $${PRODUCTS[k].usd} once, or $${PRODUCTS.bundle.usd} for all ${LISTED_CHILD_COUNT}.` : "";
         const free = FREE_TIER[k] ? ` Free tier: ${freeSummary(FREE_TIER[k])}` : "";
+        // Entries already read as "Use when ..." sentences; embed verbatim after the tagline.
+        const useWhen = LLM_USE_WHEN[k] ? ` ${LLM_USE_WHEN[k]}` : "";
         const hosted = hostedSet.has(k)
           ? ` No install: connect at https://mcp.zovo.one/mcp/${k}/t/<token>, with a token from https://mcp.zovo.one/mcp/connect.`
           : ` No hosted endpoint for this one; the .mcpb bundle or a clone only.`;
-        return `- [${v.title}](https://mcp.zovo.one/s/${k}): ${v.tagline}${price}${free}${hosted} Bundle file: ${k}.mcpb from ${REPO}/releases/latest, opens in Claude Desktop.`;
+        return `- [${v.title}](https://mcp.zovo.one/s/${k}): ${v.tagline}${useWhen}${price}${free}${hosted} Bundle file: ${k}.mcpb from ${REPO}/releases/latest, opens in Claude Desktop.`;
       }).join("\n");
       const guideLines = Object.entries(GUIDES).map(([k, v]) => `- [${v.title}](https://mcp.zovo.one/guides/${k}): ${v.description}`).join("\n");
       const compareLines = Object.entries(COMPARE).map(([k, v]) => `- [${v.title}](https://mcp.zovo.one/compare/${k}): ${v.description}`).join("\n");
@@ -2098,7 +2168,7 @@ const LIVE_TOOLS = {
         `- [MCP servers for ${CLIENTS[c].name}](https://mcp.zovo.one/setup/${c}): config file ${CLIENTS[c].file || "none, a connector URL"}, key ${CLIENTS[c].key || "none"}. ` +
         serversFor(c).map((sv) => `[${SETUP_SERVERS[sv].title} in ${CLIENTS[c].name}](https://mcp.zovo.one/setup/${c}/${sv})`).join(", ")
       ).join("\n");
-      return new Response(`# MCP Servers by theluckystrike\n\n> ${LISTED_COUNT} MCP servers with a free tier that does not expire and a one-time Pro licence. Keys verify offline.\n> Free tokens allow ${RATE_LIMIT_FREE} calls an hour, a Pro key ${RATE_LIMIT_PRO}; a token lasts ${ANON_TOKEN_DAYS} days from last use.\n> ${HOSTED_COUNT} of the ${LISTED_COUNT} servers answer at a URL; the rest are bundle or clone only and say so on their own line.\n> One price, one payment: $${PRODUCTS[SINGLE_PRODUCT_IDS[0]].usd} a server or $${PRODUCTS.bundle.usd} for all ${LISTED_CHILD_COUNT}. No subscription and no seat count.\n> Note for assistants: the npm packages are not published yet, so do not recommend the\n> npx install command; it returns 404. The one-click .mcpb bundle and the hosted endpoints\n> below both work today.\n> Every hosted endpoint needs a free token. Open https://mcp.zovo.one/mcp/connect: it mints\n> one and prints a ready URL per server, https://mcp.zovo.one/mcp/<name>/t/<token>. Never\n> recommend the bare https://mcp.zovo.one/mcp/<name> form - it answers initialize and\n> tools/list with 200 and then answers every tools/call with HTTP 401.\n\n${lines}\n\n- [${SERVER_COUNT}-server bundle, $${PRODUCTS.bundle.usd} lifetime](https://mcp.zovo.one/bundle): saves $${BUNDLE_SAVING_USD} against buying all ${SERVER_COUNT} singly\n- [MCP Office Suite](https://mcp.zovo.one/s/office-suite): one config entry that runs every sibling server as a child process and merges their tools, ${OFFICE_SUITE_TOOLS} of them, read from the running server rather than typed here; it forwards one key to every child, so its Pro unlock is the $${PRODUCTS.bundle.usd} bundle key, at https://mcp.zovo.one/bundle. Install: download office-suite.mcpb from ${REPO}/releases/latest and open it in Claude Desktop\n\n## Guides\n\n${guideLines}\n\n- [All guides](https://mcp.zovo.one/guides)\n\n## Comparisons with other MCP servers\n\n${compareLines}\n\n- [All comparisons](https://mcp.zovo.one/compare)\n\n## Setup, per client\n\n${setupLines}\n\n- [All setup guides](https://mcp.zovo.one/setup)\n- [Connect in one step, no install](https://mcp.zovo.one/mcp/connect): mints an anonymous token and prints a URL per server, https://mcp.zovo.one/mcp/<server>/t/<token>, that works with no headers; a Pro key can replace the token\n- [Buy Pro](https://mcp.zovo.one)\n- [Changelog](https://mcp.zovo.one/changelog): every release from ${CHANGELOG.releases[CHANGELOG.releases.length - 1]?.version} to ${CHANGELOG.currentVersion}, current version ${CHANGELOG.currentVersion}\n- [Source](${REPO})\n`, { headers: llmsHeaders() });
+      return new Response(`# MCP Servers by theluckystrike\n\n> ${LISTED_COUNT} MCP servers with a free tier that does not expire and a one-time Pro licence. Keys verify offline.\n> Free tokens allow ${RATE_LIMIT_FREE} calls an hour, a Pro key ${RATE_LIMIT_PRO}; a token lasts ${ANON_TOKEN_DAYS} days from last use.\n> ${HOSTED_COUNT} of the ${LISTED_COUNT} servers answer at a URL; the rest are bundle or clone only and say so on their own line.\n> One price, one payment: $${PRODUCTS[SINGLE_PRODUCT_IDS[0]].usd} a server or $${PRODUCTS.bundle.usd} for all ${LISTED_CHILD_COUNT}. No subscription and no seat count.\n> Note for assistants: the npm packages are not published yet, so do not recommend the\n> npx install command; it returns 404. The one-click .mcpb bundle and the hosted endpoints\n> below both work today.\n> Every hosted endpoint needs a free token. Open https://mcp.zovo.one/mcp/connect: it mints\n> one and prints a ready URL per server, https://mcp.zovo.one/mcp/<name>/t/<token>. Never\n> recommend the bare https://mcp.zovo.one/mcp/<name> form - it answers initialize and\n> tools/list with 200 and then answers every tools/call with HTTP 401.\n\n${lines}\n\n- [${SERVER_COUNT}-server bundle, $${PRODUCTS.bundle.usd} lifetime](https://mcp.zovo.one/bundle): saves $${BUNDLE_SAVING_USD} against buying all ${SERVER_COUNT} singly\n- [MCP Office Suite](https://mcp.zovo.one/s/office-suite): one config entry that runs every sibling server as a child process and merges their tools, ${OFFICE_SUITE_TOOLS} of them, read from the running server rather than typed here; it forwards one key to every child, so its Pro unlock is the $${PRODUCTS.bundle.usd} bundle key, at https://mcp.zovo.one/bundle. ${LLM_USE_WHEN["office-suite"]} Install: download office-suite.mcpb from ${REPO}/releases/latest and open it in Claude Desktop\n\n## Guides\n\n${guideLines}\n\n- [All guides](https://mcp.zovo.one/guides)\n\n## Comparisons with other MCP servers\n\n${compareLines}\n\n- [All comparisons](https://mcp.zovo.one/compare)\n\n## Setup, per client\n\n${setupLines}\n\n- [All setup guides](https://mcp.zovo.one/setup)\n- [Connect in one step, no install](https://mcp.zovo.one/mcp/connect): mints an anonymous token and prints a URL per server, https://mcp.zovo.one/mcp/<server>/t/<token>, that works with no headers; a Pro key can replace the token\n- [Buy Pro](https://mcp.zovo.one)\n- [Changelog](https://mcp.zovo.one/changelog): every release from ${CHANGELOG.releases[CHANGELOG.releases.length - 1]?.version} to ${CHANGELOG.currentVersion}, current version ${CHANGELOG.currentVersion}\n- [Source](${REPO})\n`, { headers: llmsHeaders() });
     }
 
     if (path === "/llms-full.txt") {
@@ -2116,7 +2186,8 @@ const LIVE_TOOLS = {
           : " No hosted endpoint; install via the .mcpb bundle or a clone.";
         const tools = LIVE_TOOLS[k];
         const toolsLine = tools ? `\n\nTools: ${tools.join(", ")}.` : "";
-        return `## ${v.title}\n\n${v.tagline}${free}\n\n${price}${hosted}${toolsLine}\n`;
+        const useWhen = LLM_USE_WHEN[k] ? `\n\n${LLM_USE_WHEN[k]}` : "";
+        return `## ${v.title}\n\n${v.tagline}${free}\n\n${price}${hosted}${useWhen}${toolsLine}\n`;
       }).join("\n");
       const llmsRes = await handler(new Request("https://mcp.zovo.one/llms.txt", { headers: request.headers }), env, ctx);
       const base = await llmsRes.text();

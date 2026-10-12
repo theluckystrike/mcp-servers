@@ -1,0 +1,213 @@
+{
+ "generated": "2026-10-12",
+ "source": "docs/outreach/R1..R4 (18 drafts)",
+ "note": "All R1-R4 draft targets are GitHub/Reddit/dev.to comment channels with no public email -> channel:manual. Email rows (to!=null) can be added for future drafts; the send engine emails only channel:email rows.",
+ "targets": [
+  {
+   "draft_ref": "R1/01-github-discussions-config-start.md",
+   "channel": "manual",
+   "target": "GitHub Discussions: modelcontextprotocol org discussion #325 (comment)",
+   "subject": "mcp-server-startup-config-checklist",
+   "status": "ready",
+   "to": null,
+   "body_text": null,
+   "thread_url": "https://github.com/orgs/modelcontextprotocol/discussions/325",
+   "campaign": "mcp-server-startup-config-checklist"
+  },
+  {
+   "draft_ref": "R1/02-github-tool-ceiling.md",
+   "channel": "manual",
+   "target": "GitHub Issue: modelcontextprotocol/servers #541 (comment)",
+   "subject": "mcp-server-startup-config-checklist",
+   "status": "ready",
+   "to": null,
+   "body_text": null,
+   "thread_url": "https://github.com/modelcontextprotocol/servers/issues/541",
+   "campaign": "mcp-server-startup-config-checklist"
+  },
+  {
+   "draft_ref": "R1/03-reddit-claudeai-not-listed.md",
+   "channel": "manual",
+   "target": "Reddit r/ClaudeAI thread 1n35e7p (comment)",
+   "subject": "mcp-server-startup-config-checklist",
+   "status": "ready",
+   "to": null,
+   "body_text": null,
+   "thread_url": "https://www.reddit.com/r/ClaudeAI/comments/1n35e7p/mcp_servers_not_showing_in_claude_mcp_list_or_mcp/",
+   "campaign": "mcp-server-startup-config-checklist"
+  },
+  {
+   "draft_ref": "R1/04-reddit-localllama-pdf-read.md",
+   "channel": "manual",
+   "target": "Reddit r/LocalLLaMA thread 1uyzxxm (comment)",
+   "subject": "pdf-merge-split-stamp-from-chat",
+   "status": "ready",
+   "to": null,
+   "body_text": null,
+   "thread_url": "https://www.reddit.com/r/LocalLLaMA/comments/1uyzxxm/mcp_servers_for_reading_pdf_files/",
+   "campaign": "pdf-merge-split-stamp-from-chat"
+  },
+  {
+   "draft_ref": "R1/05-reddit-ollama-invoice-local.md",
+   "channel": "manual",
+   "target": "Reddit r/ollama thread 1tawcds (comment)",
+   "subject": "invoice-pdf-from-chat",
+   "status": "ready",
+   "to": null,
+   "body_text": null,
+   "thread_url": "https://www.reddit.com/r/ollama/comments/1tawcds/use_case_invoice_processing_with_local_llm_which/",
+   "campaign": "invoice-pdf-from-chat"
+  },
+  {
+   "draft_ref": "R1/06-reddit-netsuite-bill-capture.md",
+   "channel": "manual",
+   "target": "Reddit r/Netsuite thread 1ozq0ox (comment)",
+   "subject": "invoice-pdf-from-chat",
+   "status": "ready",
+   "to": null,
+   "body_text": null,
+   "thread_url": "https://www.reddit.com/r/Netsuite/comments/1ozq0ox/using_mcp_for_bill_capture/",
+   "campaign": "invoice-pdf-from-chat"
+  },
+  {
+   "draft_ref": "R1/07-devto-claude-desktop-windows.md",
+   "channel": "manual",
+   "target": "dev.to MCP/Claude Desktop tutorial comment (pick live at post time)",
+   "subject": "mcp-on-windows-paths-and-npx",
+   "status": "ready",
+   "to": null,
+   "body_text": null,
+   "thread_url": null,
+   "campaign": "mcp-on-windows-paths-and-npx"
+  },
+  {
+   "draft_ref": "R2/draft-01-kimai-invoice-pdf.md",
+   "channel": "manual",
+   "target": "GitHub Issue: kimai/cli #32",
+   "subject": "invoice",
+   "status": "ready",
+   "to": null,
+   "body_text": null,
+   "thread_url": "https://github.com/kimai/cli/issues/32",
+   "campaign": "invoice"
+  },
+  {
+   "draft_ref": "R2/draft-02-tally-invoice-pdf.md",
+   "channel": "manual",
+   "target": "GitHub Issue: gasparyanvazgen/tally #18",
+   "subject": "invoice",
+   "status": "ready",
+   "to": null,
+   "body_text": null,
+   "thread_url": "https://github.com/gasparyanvazgen/tally/issues/18",
+   "campaign": "invoice"
+  },
+  {
+   "draft_ref": "R2/draft-03-brandrei-expense-tracker.md",
+   "channel": "manual",
+   "target": "GitHub Issue: Brandrei/skills-integrate-mcp-with-copilot #13",
+   "subject": "expense-tracker",
+   "status": "ready",
+   "to": null,
+   "body_text": null,
+   "thread_url": "https://github.com/Brandrei/skills-integrate-mcp-with-copilot/issues/13",
+   "campaign": "expense-tracker"
+  },
+  {
+   "draft_ref": "R3/draft-01-loan-amortization.md",
+   "channel": "manual",
+   "target": "GitHub Issue: nextjedi/life-mathematics #3",
+   "subject": "loan-calculator",
+   "status": "ready",
+   "to": null,
+   "body_text": null,
+   "thread_url": "https://github.com/nextjedi/life-mathematics/issues/3",
+   "campaign": "loan-calculator",
+   "note": "POSTED 2026-09-28 comment 5870052662"
+  },
+  {
+   "draft_ref": "R3/draft-02-pomodoro.md",
+   "channel": "manual",
+   "target": "GitHub Issue: Luqueze/stu-ai-web #2",
+   "subject": "pomodoro",
+   "status": "ready",
+   "to": null,
+   "body_text": null,
+   "thread_url": "https://github.com/Luqueze/stu-ai-web/issues/2",
+   "campaign": "pomodoro",
+   "note": "POSTED 2026-09-28 comment 5870053041"
+  },
+  {
+   "draft_ref": "R3/draft-03-budget-categories.md",
+   "channel": "manual",
+   "target": "GitHub Issue: tomalcorn/finance-tracker #296",
+   "subject": "budget",
+   "status": "ready",
+   "to": null,
+   "body_text": null,
+   "thread_url": "https://github.com/tomalcorn/finance-tracker/issues/296",
+   "campaign": "budget",
+   "note": "POSTED 2026-09-28 comment 5870053429"
+  },
+  {
+   "draft_ref": "R3/draft-04-receipts-sololedger.md",
+   "channel": "manual",
+   "target": "GitHub Issue: vivek-OZ/sololedger #5",
+   "subject": "receipts",
+   "status": "ready",
+   "to": null,
+   "body_text": null,
+   "thread_url": "https://github.com/vivek-OZ/sololedger/issues/5",
+   "campaign": "receipts",
+   "note": "POSTED 2026-09-28 comment 5870053759"
+  },
+  {
+   "draft_ref": "R3/draft-05-tax-retirement.md",
+   "channel": "manual",
+   "target": "GitHub Issue: JapanFinance/kei3 #56",
+   "subject": "tax-calculator",
+   "status": "ready",
+   "to": null,
+   "body_text": null,
+   "thread_url": "https://github.com/JapanFinance/kei3/issues/56",
+   "campaign": "tax-calculator",
+   "note": "SKIPPED 2026-09-28 (issue paused by maintainer)"
+  },
+  {
+   "draft_ref": "R3/draft-06-payroll-domain.md",
+   "channel": "manual",
+   "target": "GitHub Issue: ccweerasinghe1994/hr-dashboard-v2 #126",
+   "subject": "payroll",
+   "status": "ready",
+   "to": null,
+   "body_text": null,
+   "thread_url": "https://github.com/ccweerasinghe1994/hr-dashboard-v2/issues/126",
+   "campaign": "payroll",
+   "note": "POSTED 2026-09-28 comment 5870054455"
+  },
+  {
+   "draft_ref": "R4/draft-07-stripe-policy.md",
+   "channel": "manual",
+   "target": "GitHub Issue: writ-agent/writ #28",
+   "subject": "stripe-billing",
+   "status": "ready",
+   "to": null,
+   "body_text": null,
+   "thread_url": "https://github.com/writ-agent/writ/issues/28",
+   "campaign": "stripe-billing",
+   "note": "POSTED 2026-09-28 comment 5870170051"
+  },
+  {
+   "draft_ref": "R4/draft-08-tax-brackets.md",
+   "channel": "manual",
+   "target": "GitHub Issue: ledgerfield/ledgerfield #29",
+   "subject": "tax-calc",
+   "status": "ready",
+   "to": null,
+   "body_text": null,
+   "thread_url": "https://github.com/ledgerfield/ledgerfield/issues/29",
+   "campaign": "tax-calc",
+   "note": "POSTED 2026-09-28 comment 5870170500"
+  }
+ ]
+}

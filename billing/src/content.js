@@ -9808,6 +9808,158 @@ ${FOOT}`,
     ],
   },
 
+  "how-much-do-mcp-servers-cost": {
+    title: "How much do MCP servers cost? One-time licenses vs monthly subscriptions",
+    description: `What MCP servers actually cost: free tiers, one-time license pricing ($${SINGLE_USD} a server here), the subscription model other MCP vendors use, and how to decide which to buy.`,
+    html: `<h1>How much do MCP servers cost?</h1>
+<p>There is no single price for an MCP server. The protocol is free and open - what you pay for is
+the tools themselves. In practice the market has split into three models, and knowing which one a
+seller uses tells you what the bill looks like a year from now.</p>
+
+<h2>The three pricing models</h2>
+<p><strong>Free and open source.</strong> You clone or npx-install the server, run it locally, and
+pay nothing. Cost is your own setup time: you manage Node, config files and updates yourself. Most
+registry listings are this.</p>
+<p><strong>One-time license.</strong> You pay once per server and keep it for life. These servers
+are the model here: every server has a free tier you can install and use today, and
+<strong>$${SINGLE_USD} once</strong> unlocks Pro on that server forever. No renewal, no metering, and
+the license keys work offline via Ed25519 signed tokens - the server keeps working even if this
+site disappears. <strong>$${BUNDLE_USD} once</strong> buys all ${LISTED_CHILD_COUNT} servers, which saves
+$${LISTED_CHILD_COUNT * SINGLE_USD - BUNDLE_USD} against buying them separately.</p>
+<p><strong>Monthly subscription.</strong> A growing number of hosted MCP vendors charge $10-30 per
+month per server or per seat. That is the SaaS model ported to MCP: lower entry price, but $15 a
+month is $180 a year, every year - more than a one-time license after the first year, for one
+server instead of ${LISTED_CHILD_COUNT}.</p>
+
+<h2>Which model should you buy?</h2>
+<p>If you will use a server for more than about a year, one-time wins on price alone. If your needs
+genuinely require a hosted cloud dependency - live data feeds, multi-user sync - subscription is
+the honest price of that infrastructure. If you are experimenting, start with free tiers: every
+server here runs free indefinitely at <a href="/guides/mcp-server-free-vs-pro">the limits described
+here</a>, so you never buy something you have not already used.</p>
+<p>Buying a license takes two minutes: pick a server on its
+<a href="/s/office-suite">product page</a>, pay through Stripe, and the license key arrives by
+email with the exact <code>claude mcp add</code> line to run. There is no account to create.</p>`,
+    faq: [
+      { q: "How much does an MCP server cost?", a: `It ranges from free to about $30 a month. These servers are $${SINGLE_USD} once per server (or $${BUNDLE_USD} once for all ${LISTED_CHILD_COUNT}) with a permanent free tier on each - you only pay if you outgrow it.` },
+      { q: "Is there a subscription?", a: "No. Licenses are one-time and lifetime. The license keys are signed offline, so paid tools keep working without any phone-home." },
+      { q: "Can I try before buying?", a: "Yes - every server's free tier is the real server with usage limits, installable the same way. You upgrade only when a limit actually stops you." },
+    ],
+  },
+
+  "bank-statement-pdf-to-excel-in-chat": {
+    title: "Turn a bank statement PDF into Excel rows from chat",
+    description: "How to read a bank statement PDF with an MCP server, get the transactions as clean rows, categorise them, and paste the result straight into Excel or your bookkeeping sheet.",
+    html: `<h1>Turn a bank statement PDF into Excel rows from chat</h1>
+<p>The most common bookkeeping ask is also the most fiddly: your bank only exports PDF statements,
+your accountant wants a spreadsheet, and copy-paste from a PDF produces one mangled line per
+transaction. The bank-statement MCP server does the extraction and the tidying in chat.</p>
+
+<h2>From PDF to rows in two steps</h2>
+<p>Point the server at the PDF - a local file path in Claude Desktop or Claude Code - and ask it to
+extract the transactions. It reads the statement layout, pulls out date, description, amount and
+balance, and returns one row per transaction with the running balance cross-checked so you can see
+immediately whether a line was misread. Then ask for CSV: the output pastes straight into Excel
+with correct columns, dates as dates, negatives as negatives.</p>
+<p>Follow-ups are where it beats a converter website: "categorise these into rent, software, travel
+and client payments" runs each row through the categoriser and returns the same rows with a
+category column - the exact workflow in the
+<a href="/guides/mcp-server-that-reads-bank-statements-and-categorizes">bank statement categorisation
+guide</a>. Nothing is uploaded anywhere; parsing happens locally.</p>
+${install("bank-statement")}
+
+<h2>Getting it into Excel without mangling dates</h2>
+<p>Paste the CSV rows into a sheet, select the date column, and set its format to your locale's date
+format - that is the one manual step. If you then want the numbers checked, the
+<a href="/guides/reconcile-a-bank-export-with-your-invoices">reconciliation guide</a> covers matching
+the statement rows against invoices you issued, and the
+<a href="/guides/how-to-categorize-bank-transactions">categorisation guide</a> covers building a
+category scheme your accountant will accept.</p>
+<p>Free tier handles occasional statements. Pro is a one-time payment per server or part of the
+<a href="/s/office-suite">bundle</a>, and removes the monthly processing cap.</p>`,
+    faq: [
+      { q: "Does it work with scanned statements?", a: "It reads text-layer PDFs, which is what almost every bank generates. A photographed or scanned image without a text layer needs OCR first." },
+      { q: "Is my statement uploaded to a server?", a: "No. The server runs locally and reads the file from disk. Nothing leaves your machine." },
+      { q: "Can it categorise the transactions too?", a: "Yes - the same server categorises extracted rows into schemes like rent, software, travel and income, and you can refine the mapping in chat." },
+    ],
+  },
+
+  "barcode-and-qr-code-generation-from-chat": {
+    title: "Generate barcodes and QR codes from chat with an MCP server",
+    description: "Create barcodes and QR codes in Claude or Cursor - asset tags, inventory labels, payment QR codes - as PNG files you can drop straight into documents and labels.",
+    html: `<h1>Generate barcodes and QR codes from chat with an MCP server</h1>
+<p>Two everyday jobs need encoded images: labelling things (asset tags, shelf bins, inventory
+counts) and linking things (payment QR codes, Wi-Fi cards, invoice payment links). Both are one
+tool call with the barcode MCP server, and the output is a PNG file on disk ready to paste into
+whatever you are building.</p>
+
+<h2>What you can generate</h2>
+<p>"Generate a Code 128 barcode for SKU-4471 and save it as sku-4471.png" writes the image locally.
+Common one-dimensional symbologies are covered, so label sheets and inventory workflows work
+without a designer or an online generator with its ads and upload limits. For two-dimensional
+codes, QR generation handles URLs and structured payloads - the
+<a href="/guides/sepa-payment-qr-codes-on-invoices-from-chat">SEPA payment QR guide</a> shows the
+most useful case: embedding an EPC06 payment payload so a customer scans the invoice and their
+banking app fills in the transfer.</p>
+<p>The practical difference from a web generator is that chat can do the surrounding work in the
+same conversation: generate 200 barcodes from a list in your spreadsheet, name each file by SKU,
+and hand back a zip - no copy-paste loop, no upload of your item list to a stranger's form.</p>
+${install("barcode")}
+
+<h2>Where this fits an inventory workflow</h2>
+<p>The pairing that saves the most time is barcodes plus the inventory count flow in the
+<a href="/guides/barcode-inventory-count-from-chat">barcode inventory count guide</a>: print labels
+from chat, scan them during the count, and let the server reconcile counts against the catalogue.
+Free tier covers day-to-day generation; Pro is a one-time payment per server or part of the
+<a href="/s/office-suite">bundle</a>.</p>`,
+    faq: [
+      { q: "Can Claude generate a QR code?", a: "Yes, with this server installed - ask for a QR encoding any URL or text and it saves a PNG locally. For invoice payment QR codes specifically, see the SEPA guide." },
+      { q: "Which barcode formats are supported?", a: "The common retail and inventory symbologies including Code 128 and EAN-family codes, covering label sheets, SKU tags and shelf bins." },
+      { q: "Can I batch-generate barcodes from a list?", a: "Yes - paste or point the server at your SKU list and it generates one file per item, named by the SKU, optionally zipped for download." },
+    ],
+  },
+
+  "spreadsheet-mcp-servers-compared": {
+    title: "Spreadsheet MCP servers compared: building Excel files from chat",
+    description: "Compare the ways to get spreadsheet work done in Claude and Cursor: an MCP spreadsheet server that builds real xlsx files, vs CSV pasting, vs Excel-specific MCP servers.",
+    html: `<h1>Spreadsheet MCP servers compared</h1>
+<p>"Best MCP server for spreadsheets" has three different answers depending on whether you want to
+<b>read</b> a spreadsheet, <b>build</b> one, or <b>ask questions</b> of one. Here is how the options
+compare honestly.</p>
+
+<h2>Option 1: build a real xlsx from chat data</h2>
+<p>The spreadsheet MCP server builds genuine Excel files: "make an xlsx with one sheet per month
+from this sales data" writes a formatted workbook to disk - headers, typed columns, one file you
+can email. It is the right tool when the deliverable is a file, which it usually is. The
+<a href="/guides/csv-to-excel-and-back-in-claude">CSV-to-Excel guide</a> covers the common case, and
+round-tripping matters: the server reads xlsx back too, so edits survive.</p>
+<h2>Option 2: ask questions without building anything</h2>
+<p>If you do not need a new file, reading beats writing: point the server at an existing workbook
+and ask "which region missed target". That flow - and why it beats writing formulas - is in the
+<a href="/guides/ask-a-spreadsheet-questions-in-chat">ask-a-spreadsheet guide</a> and the
+<a href="/guides/answer-questions-about-a-spreadsheet-without-formulas">no-formulas guide</a>.
+One server does both directions, which is the main advantage over single-purpose Excel MCP
+servers that only read.</p>
+<h2>Option 3: Excel-specific or cloud-connectors</h2>
+<p>Servers that drive Excel itself (or Google Sheets via API) suit live collaboration in an
+existing team sheet. They cost more setup: OAuth, Microsoft or Google accounts, and the failure
+modes that come with remote APIs. For a local file workflow they add moving parts without adding
+capability - the same trade-off as <a href="/guides/local-mcp-servers-versus-hosted-connectors">local
+servers vs hosted connectors</a> generally.</p>
+${install("spreadsheet")}
+
+<h2>The verdict</h2>
+<p>For most chat-first spreadsheet work - build a file, read a file, answer questions - a local
+spreadsheet server is the simplest correct choice, and the free tier covers light use. Pro is a
+one-time payment per server or part of the <a href="/s/office-suite">bundle</a> with the whole
+${LISTED_CHILD_COUNT}-server set.</p>`,
+    faq: [
+      { q: "Can an MCP server create Excel files?", a: "Yes - the spreadsheet server writes real .xlsx workbooks to disk from data in your conversation, with headers and typed columns, no formulas needed." },
+      { q: "Can it read an existing spreadsheet?", a: "Yes - it reads xlsx and CSV, so you can ask questions about an existing workbook or edit it and write it back." },
+      { q: "How does it compare to Google Sheets MCP servers?", a: "Cloud connectors drive live shared sheets but need OAuth and network setup. For local files this server is install-and-go with no accounts, and works offline." },
+    ],
+  },
+
 };
 
 export const GUIDE_PRODUCT_LINKS = {
@@ -9835,6 +9987,10 @@ export const GUIDE_PRODUCT_LINKS = {
   "freelancer-invoice-and-billable-hours-in-chat": ["time-tracker", "invoice"],
   "price-drop-alerts-and-pdf-cleanup-from-chat": ["price-tracker", "pdf"],
   "convert-usd-to-ghs-zar-kes-in-claude": ["currency"],
+  "bank-statement-pdf-to-excel-in-chat": ["bank-statement", "spreadsheet"],
+  "barcode-and-qr-code-generation-from-chat": ["barcode", "image"],
+  "spreadsheet-mcp-servers-compared": ["spreadsheet"],
+  "how-much-do-mcp-servers-cost": ["office-suite"],
   "loan-amortization-schedule-excel-from-chat": ["amortization"],
 };
 
@@ -9887,7 +10043,9 @@ export const PRODUCT_GUIDE_LINKS = {
   "service-agreement": ["service-agreements-from-chat", "change-orders-and-contract-value-from-chat"],
   "maintenance-log": ["equipment-maintenance-log-from-chat"],
   "mileage-log": ["mileage-log-for-tax-from-chat", "vehicle-mileage-log-from-chat"],
-  "office-suite": ["one-install-office-suite", "best-mcp-servers-for-small-business-accounting", "small-business-accounting-mcp-roundup"],
+  "office-suite": ["one-install-office-suite", "best-mcp-servers-for-small-business-accounting", "small-business-accounting-mcp-roundup", "how-much-do-mcp-servers-cost"],
+  "bank-statement": ["bank-statement-csv-categorize-reconcile", "bank-statement-pdf-to-excel-in-chat", "how-to-categorize-bank-transactions"],
+  barcode: ["barcode-and-qr-code-generation-from-chat", "barcode-inventory-count-from-chat"],
 };
 
 export const GUIDE_RELATED = {
@@ -10002,6 +10160,10 @@ export const GUIDE_RELATED = {
   "x-mcp-header-tool-parameters": ["how-a-directory-scores-your-mcp-server", "mcp-stateful-tools-and-handles", "search-console-url-inspection-coverage-is-unstable"],
   "zip-and-unzip-mcp-servers-compared": ["currency-conversion-mcp-servers-compared", "image-resize-compress-watermark-from-chat", "send-a-month-of-paperwork-as-one-zip"],
   "zip-archives-safely-from-chat": ["combine-receipts-into-one-pdf-for-your-accountant", "image-resize-compress-watermark-from-chat", "send-a-month-of-paperwork-as-one-zip"],
+  "how-much-do-mcp-servers-cost": ["mcp-server-free-vs-pro", "how-to-find-and-pay-for-mcp-servers", "paid-mcp-servers-and-how-you-pay-for-one"],
+  "bank-statement-pdf-to-excel-in-chat": ["bank-statement-csv-categorize-reconcile", "csv-to-excel-and-back-in-claude", "how-to-categorize-bank-transactions"],
+  "barcode-and-qr-code-generation-from-chat": ["barcode-inventory-count-from-chat", "sepa-payment-qr-codes-on-invoices-from-chat", "combine-receipts-into-one-pdf-for-your-accountant"],
+  "spreadsheet-mcp-servers-compared": ["csv-to-excel-and-back-in-claude", "ask-a-spreadsheet-questions-in-chat", "local-mcp-servers-versus-hosted-connectors"],
 };
 
 /**

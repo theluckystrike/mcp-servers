@@ -1,0 +1,482 @@
+[
+  {
+    "ts": "2026-10-12T00:33:53.555Z",
+    "to": null,
+    "status": "skipped:manual",
+    "resend_id": null,
+    "campaign": "invoice",
+    "draft_ref": "EXAMPLE/manual-row"
+  },
+  {
+    "ts": "2026-10-12T00:33:53.556Z",
+    "to": "someone@example.com",
+    "status": "dry-run",
+    "resend_id": null,
+    "campaign": "invoice",
+    "draft_ref": "EXAMPLE/email-row"
+  },
+  {
+    "ts": "2026-10-12T00:34:51.606Z",
+    "to": null,
+    "status": "skipped:manual",
+    "resend_id": null,
+    "campaign": "mcp-server-startup-config-checklist",
+    "draft_ref": "R1/01-github-discussions-config-start.md"
+  },
+  {
+    "ts": "2026-10-12T00:34:51.607Z",
+    "to": null,
+    "status": "skipped:manual",
+    "resend_id": null,
+    "campaign": "mcp-server-startup-config-checklist",
+    "draft_ref": "R1/02-github-tool-ceiling.md"
+  },
+  {
+    "ts": "2026-10-12T00:34:51.607Z",
+    "to": null,
+    "status": "skipped:manual",
+    "resend_id": null,
+    "campaign": "mcp-server-startup-config-checklist",
+    "draft_ref": "R1/03-reddit-claudeai-not-listed.md"
+  },
+  {
+    "ts": "2026-10-12T00:34:51.607Z",
+    "to": null,
+    "status": "skipped:manual",
+    "resend_id": null,
+    "campaign": "pdf-merge-split-stamp-from-chat",
+    "draft_ref": "R1/04-reddit-localllama-pdf-read.md"
+  },
+  {
+    "ts": "2026-10-12T00:34:51.608Z",
+    "to": null,
+    "status": "skipped:manual",
+    "resend_id": null,
+    "campaign": "invoice-pdf-from-chat",
+    "draft_ref": "R1/05-reddit-ollama-invoice-local.md"
+  },
+  {
+    "ts": "2026-10-12T00:34:51.608Z",
+    "to": null,
+    "status": "skipped:manual",
+    "resend_id": null,
+    "campaign": "invoice-pdf-from-chat",
+    "draft_ref": "R1/06-reddit-netsuite-bill-capture.md"
+  },
+  {
+    "ts": "2026-10-12T00:34:51.608Z",
+    "to": null,
+    "status": "skipped:manual",
+    "resend_id": null,
+    "campaign": "mcp-on-windows-paths-and-npx",
+    "draft_ref": "R1/07-devto-claude-desktop-windows.md"
+  },
+  {
+    "ts": "2026-10-12T00:34:51.608Z",
+    "to": null,
+    "status": "skipped:manual",
+    "resend_id": null,
+    "campaign": "invoice",
+    "draft_ref": "R2/draft-01-kimai-invoice-pdf.md"
+  },
+  {
+    "ts": "2026-10-12T00:34:51.608Z",
+    "to": null,
+    "status": "skipped:manual",
+    "resend_id": null,
+    "campaign": "invoice",
+    "draft_ref": "R2/draft-02-tally-invoice-pdf.md"
+  },
+  {
+    "ts": "2026-10-12T00:34:51.608Z",
+    "to": null,
+    "status": "skipped:manual",
+    "resend_id": null,
+    "campaign": "expense-tracker",
+    "draft_ref": "R2/draft-03-brandrei-expense-tracker.md"
+  },
+  {
+    "ts": "2026-10-12T00:34:51.608Z",
+    "to": null,
+    "status": "skipped:manual",
+    "resend_id": null,
+    "campaign": "loan-calculator",
+    "draft_ref": "R3/draft-01-loan-amortization.md"
+  },
+  {
+    "ts": "2026-10-12T00:34:51.608Z",
+    "to": null,
+    "status": "skipped:manual",
+    "resend_id": null,
+    "campaign": "pomodoro",
+    "draft_ref": "R3/draft-02-pomodoro.md"
+  },
+  {
+    "ts": "2026-10-12T00:34:51.609Z",
+    "to": null,
+    "status": "skipped:manual",
+    "resend_id": null,
+    "campaign": "budget",
+    "draft_ref": "R3/draft-03-budget-categories.md"
+  },
+  {
+    "ts": "2026-10-12T00:34:51.609Z",
+    "to": null,
+    "status": "skipped:manual",
+    "resend_id": null,
+    "campaign": "receipts",
+    "draft_ref": "R3/draft-04-receipts-sololedger.md"
+  },
+  {
+    "ts": "2026-10-12T00:34:51.609Z",
+    "to": null,
+    "status": "skipped:manual",
+    "resend_id": null,
+    "campaign": "tax-calculator",
+    "draft_ref": "R3/draft-05-tax-retirement.md"
+  },
+  {
+    "ts": "2026-10-12T00:34:51.609Z",
+    "to": null,
+    "status": "skipped:manual",
+    "resend_id": null,
+    "campaign": "payroll",
+    "draft_ref": "R3/draft-06-payroll-domain.md"
+  },
+  {
+    "ts": "2026-10-12T00:34:51.609Z",
+    "to": null,
+    "status": "skipped:manual",
+    "resend_id": null,
+    "campaign": "stripe-billing",
+    "draft_ref": "R4/draft-07-stripe-policy.md"
+  },
+  {
+    "ts": "2026-10-12T00:34:51.609Z",
+    "to": null,
+    "status": "skipped:manual",
+    "resend_id": null,
+    "campaign": "tax-calc",
+    "draft_ref": "R4/draft-08-tax-brackets.md"
+  },
+  {
+    "ts": "2026-10-12T00:34:51.640Z",
+    "to": null,
+    "status": "skipped:manual",
+    "resend_id": null,
+    "campaign": "invoice",
+    "draft_ref": "EXAMPLE/manual-row"
+  },
+  {
+    "ts": "2026-10-12T00:34:51.640Z",
+    "to": "someone@example.com",
+    "status": "dry-run",
+    "resend_id": null,
+    "campaign": "invoice",
+    "draft_ref": "EXAMPLE/email-row"
+  },
+  {
+    "ts": "2026-10-12T00:35:17.640Z",
+    "to": null,
+    "status": "skipped:manual",
+    "resend_id": null,
+    "campaign": "mcp-server-startup-config-checklist",
+    "draft_ref": "R1/01-github-discussions-config-start.md"
+  },
+  {
+    "ts": "2026-10-12T00:35:17.641Z",
+    "to": null,
+    "status": "skipped:manual",
+    "resend_id": null,
+    "campaign": "mcp-server-startup-config-checklist",
+    "draft_ref": "R1/02-github-tool-ceiling.md"
+  },
+  {
+    "ts": "2026-10-12T00:35:17.641Z",
+    "to": null,
+    "status": "skipped:manual",
+    "resend_id": null,
+    "campaign": "mcp-server-startup-config-checklist",
+    "draft_ref": "R1/03-reddit-claudeai-not-listed.md"
+  },
+  {
+    "ts": "2026-10-12T00:35:17.641Z",
+    "to": null,
+    "status": "skipped:manual",
+    "resend_id": null,
+    "campaign": "pdf-merge-split-stamp-from-chat",
+    "draft_ref": "R1/04-reddit-localllama-pdf-read.md"
+  },
+  {
+    "ts": "2026-10-12T00:35:17.641Z",
+    "to": null,
+    "status": "skipped:manual",
+    "resend_id": null,
+    "campaign": "invoice-pdf-from-chat",
+    "draft_ref": "R1/05-reddit-ollama-invoice-local.md"
+  },
+  {
+    "ts": "2026-10-12T00:35:17.641Z",
+    "to": null,
+    "status": "skipped:manual",
+    "resend_id": null,
+    "campaign": "invoice-pdf-from-chat",
+    "draft_ref": "R1/06-reddit-netsuite-bill-capture.md"
+  },
+  {
+    "ts": "2026-10-12T00:35:17.642Z",
+    "to": null,
+    "status": "skipped:manual",
+    "resend_id": null,
+    "campaign": "mcp-on-windows-paths-and-npx",
+    "draft_ref": "R1/07-devto-claude-desktop-windows.md"
+  },
+  {
+    "ts": "2026-10-12T00:35:17.642Z",
+    "to": null,
+    "status": "skipped:manual",
+    "resend_id": null,
+    "campaign": "invoice",
+    "draft_ref": "R2/draft-01-kimai-invoice-pdf.md"
+  },
+  {
+    "ts": "2026-10-12T00:35:17.642Z",
+    "to": null,
+    "status": "skipped:manual",
+    "resend_id": null,
+    "campaign": "invoice",
+    "draft_ref": "R2/draft-02-tally-invoice-pdf.md"
+  },
+  {
+    "ts": "2026-10-12T00:35:17.642Z",
+    "to": null,
+    "status": "skipped:manual",
+    "resend_id": null,
+    "campaign": "expense-tracker",
+    "draft_ref": "R2/draft-03-brandrei-expense-tracker.md"
+  },
+  {
+    "ts": "2026-10-12T00:35:17.642Z",
+    "to": null,
+    "status": "skipped:manual",
+    "resend_id": null,
+    "campaign": "loan-calculator",
+    "draft_ref": "R3/draft-01-loan-amortization.md"
+  },
+  {
+    "ts": "2026-10-12T00:35:17.642Z",
+    "to": null,
+    "status": "skipped:manual",
+    "resend_id": null,
+    "campaign": "pomodoro",
+    "draft_ref": "R3/draft-02-pomodoro.md"
+  },
+  {
+    "ts": "2026-10-12T00:35:17.643Z",
+    "to": null,
+    "status": "skipped:manual",
+    "resend_id": null,
+    "campaign": "budget",
+    "draft_ref": "R3/draft-03-budget-categories.md"
+  },
+  {
+    "ts": "2026-10-12T00:35:17.643Z",
+    "to": null,
+    "status": "skipped:manual",
+    "resend_id": null,
+    "campaign": "receipts",
+    "draft_ref": "R3/draft-04-receipts-sololedger.md"
+  },
+  {
+    "ts": "2026-10-12T00:35:17.643Z",
+    "to": null,
+    "status": "skipped:manual",
+    "resend_id": null,
+    "campaign": "tax-calculator",
+    "draft_ref": "R3/draft-05-tax-retirement.md"
+  },
+  {
+    "ts": "2026-10-12T00:35:17.643Z",
+    "to": null,
+    "status": "skipped:manual",
+    "resend_id": null,
+    "campaign": "payroll",
+    "draft_ref": "R3/draft-06-payroll-domain.md"
+  },
+  {
+    "ts": "2026-10-12T00:35:17.643Z",
+    "to": null,
+    "status": "skipped:manual",
+    "resend_id": null,
+    "campaign": "stripe-billing",
+    "draft_ref": "R4/draft-07-stripe-policy.md"
+  },
+  {
+    "ts": "2026-10-12T00:35:17.643Z",
+    "to": null,
+    "status": "skipped:manual",
+    "resend_id": null,
+    "campaign": "tax-calc",
+    "draft_ref": "R4/draft-08-tax-brackets.md"
+  },
+  {
+    "ts": "2026-10-12T00:35:17.675Z",
+    "to": null,
+    "status": "skipped:manual",
+    "resend_id": null,
+    "campaign": "invoice",
+    "draft_ref": "EXAMPLE/manual-row"
+  },
+  {
+    "ts": "2026-10-12T00:35:17.676Z",
+    "to": "someone@example.com",
+    "status": "dry-run",
+    "resend_id": null,
+    "campaign": "invoice",
+    "draft_ref": "EXAMPLE/email-row"
+  },
+  {
+    "ts": "2026-10-12T00:36:00.682Z",
+    "to": null,
+    "status": "skipped:manual",
+    "resend_id": null,
+    "campaign": "mcp-server-startup-config-checklist",
+    "draft_ref": "R1/01-github-discussions-config-start.md"
+  },
+  {
+    "ts": "2026-10-12T00:36:00.683Z",
+    "to": null,
+    "status": "skipped:manual",
+    "resend_id": null,
+    "campaign": "mcp-server-startup-config-checklist",
+    "draft_ref": "R1/02-github-tool-ceiling.md"
+  },
+  {
+    "ts": "2026-10-12T00:36:00.683Z",
+    "to": null,
+    "status": "skipped:manual",
+    "resend_id": null,
+    "campaign": "mcp-server-startup-config-checklist",
+    "draft_ref": "R1/03-reddit-claudeai-not-listed.md"
+  },
+  {
+    "ts": "2026-10-12T00:36:00.683Z",
+    "to": null,
+    "status": "skipped:manual",
+    "resend_id": null,
+    "campaign": "pdf-merge-split-stamp-from-chat",
+    "draft_ref": "R1/04-reddit-localllama-pdf-read.md"
+  },
+  {
+    "ts": "2026-10-12T00:36:00.684Z",
+    "to": null,
+    "status": "skipped:manual",
+    "resend_id": null,
+    "campaign": "invoice-pdf-from-chat",
+    "draft_ref": "R1/05-reddit-ollama-invoice-local.md"
+  },
+  {
+    "ts": "2026-10-12T00:36:00.684Z",
+    "to": null,
+    "status": "skipped:manual",
+    "resend_id": null,
+    "campaign": "invoice-pdf-from-chat",
+    "draft_ref": "R1/06-reddit-netsuite-bill-capture.md"
+  },
+  {
+    "ts": "2026-10-12T00:36:00.684Z",
+    "to": null,
+    "status": "skipped:manual",
+    "resend_id": null,
+    "campaign": "mcp-on-windows-paths-and-npx",
+    "draft_ref": "R1/07-devto-claude-desktop-windows.md"
+  },
+  {
+    "ts": "2026-10-12T00:36:00.685Z",
+    "to": null,
+    "status": "skipped:manual",
+    "resend_id": null,
+    "campaign": "invoice",
+    "draft_ref": "R2/draft-01-kimai-invoice-pdf.md"
+  },
+  {
+    "ts": "2026-10-12T00:36:00.686Z",
+    "to": null,
+    "status": "skipped:manual",
+    "resend_id": null,
+    "campaign": "invoice",
+    "draft_ref": "R2/draft-02-tally-invoice-pdf.md"
+  },
+  {
+    "ts": "2026-10-12T00:36:00.686Z",
+    "to": null,
+    "status": "skipped:manual",
+    "resend_id": null,
+    "campaign": "expense-tracker",
+    "draft_ref": "R2/draft-03-brandrei-expense-tracker.md"
+  },
+  {
+    "ts": "2026-10-12T00:36:00.687Z",
+    "to": null,
+    "status": "skipped:manual",
+    "resend_id": null,
+    "campaign": "loan-calculator",
+    "draft_ref": "R3/draft-01-loan-amortization.md"
+  },
+  {
+    "ts": "2026-10-12T00:36:00.687Z",
+    "to": null,
+    "status": "skipped:manual",
+    "resend_id": null,
+    "campaign": "pomodoro",
+    "draft_ref": "R3/draft-02-pomodoro.md"
+  },
+  {
+    "ts": "2026-10-12T00:36:00.687Z",
+    "to": null,
+    "status": "skipped:manual",
+    "resend_id": null,
+    "campaign": "budget",
+    "draft_ref": "R3/draft-03-budget-categories.md"
+  },
+  {
+    "ts": "2026-10-12T00:36:00.688Z",
+    "to": null,
+    "status": "skipped:manual",
+    "resend_id": null,
+    "campaign": "receipts",
+    "draft_ref": "R3/draft-04-receipts-sololedger.md"
+  },
+  {
+    "ts": "2026-10-12T00:36:00.688Z",
+    "to": null,
+    "status": "skipped:manual",
+    "resend_id": null,
+    "campaign": "tax-calculator",
+    "draft_ref": "R3/draft-05-tax-retirement.md"
+  },
+  {
+    "ts": "2026-10-12T00:36:00.688Z",
+    "to": null,
+    "status": "skipped:manual",
+    "resend_id": null,
+    "campaign": "payroll",
+    "draft_ref": "R3/draft-06-payroll-domain.md"
+  },
+  {
+    "ts": "2026-10-12T00:36:00.688Z",
+    "to": null,
+    "status": "skipped:manual",
+    "resend_id": null,
+    "campaign": "stripe-billing",
+    "draft_ref": "R4/draft-07-stripe-policy.md"
+  },
+  {
+    "ts": "2026-10-12T00:36:00.688Z",
+    "to": null,
+    "status": "skipped:manual",
+    "resend_id": null,
+    "campaign": "tax-calc",
+    "draft_ref": "R4/draft-08-tax-brackets.md"
+  }
+]

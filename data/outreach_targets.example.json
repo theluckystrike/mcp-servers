@@ -1,0 +1,24 @@
+{
+  "generated": "2026-10-12",
+  "note": "EXAMPLE input showing the shape of an email-eligible row. Copy rows like this into data/outreach_targets.json (channel:email + to + subject + body) when a target with a public email is confirmed. This fixture is for --dry-run testing only.",
+  "targets": [
+    {
+      "draft_ref": "EXAMPLE/email-row",
+      "channel": "email",
+      "target": "Example maintainer (public email on repo README)",
+      "to": "someone@example.com",
+      "subject": "invoice",
+      "status": "ready",
+      "campaign": "invoice",
+      "body": "<p>Hi — saw your issue about invoice PDF generation. We maintain a free browser tool for exactly this: <a href=\"https://mcp.zovo.one\">mcp.zovo.one</a>.</p>"
+    },
+    {
+      "draft_ref": "EXAMPLE/manual-row",
+      "channel": "manual",
+      "target": "GitHub Issue: example/repo #1 (comment only)",
+      "subject": "invoice",
+      "status": "ready",
+      "campaign": "invoice"
+    }
+  ]
+}
