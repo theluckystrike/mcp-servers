@@ -126,3 +126,8 @@ STATUS: SHIPPED (verified green)
 - test suites: billing 173/173, scripts 45/45, expense-tracker bank-sibling 9/9 (time-bomb fixed to relative dates), zip contract 7/7 (dist rebuilt)
 - known wrangler quirk: versions list / deployments list hit CF malformed-response (Cloudflare-side); deploy itself is the reliable signal
 - NOT hosted (no remote endpoint this wave, stdio-only; /mcp/hourly-rate bare = 404 by design) — hosted wave deferred with SERVER_COUNT/copy pass
+## reprobe2 result (run 18:43, exit 0)
+18 servers × 1 token each (limit=100 single page): 894 rows probed, 367 ours.
+hourly-rate not in plan2 token set → direct search probe just now:
+search=hourly → io.github.theluckystrike/hourly-rate@0.22.5 LIVE (registry search endpoint healthy again).
+/servers/{name} detail endpoint 404s (not in v0 API shape) — search endpoint is authoritative, matches earlier probe.
