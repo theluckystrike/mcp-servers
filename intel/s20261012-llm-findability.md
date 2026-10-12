@@ -19,3 +19,21 @@ Make mcp.zovo.one maximally findable by AI crawlers and assistants: audit/upgrad
 - GAP: zero "Use when:" task-phrasing anywhere in live llms.txt (grep=0). Blind-recommendation R1–R7 scored 0/18 — assistants pick servers from task phrasing.
 - robots.txt live: `User-agent: *` + `Allow: /` — none of GPTBot/ClaudeBot/Claude-Web/PerplexityBot/Google-Extended/CCBot/Bytespider blocked; sitemap declared; but no explicit AI-crawler groups.
 - Fix: `LLM_USE_WHEN` map (54 entries) added to billing/src/index.js; wired into /llms.txt lines (after tagline) and /llms-full.txt sections; robots.txt now names the 8 AI crawler groups (7 required + anthropic-ai) restating identical Allow/Disallow + Sitemap with an llms.txt pointer comment.
+
+---
+
+## Addendum (parent session, 2026-10-12, post-deploy reconciliation)
+
+Registry distribution pass executed after the llms.txt deploy:
+
+- Full registry publish run: 122 duplicates + 1 published (delivery-schedule@0.22.6).
+- Per-name /versions/latest audit found 41 STALE + 1 HTTP-404 manifests. All fixed by re-publishing
+  (root causes: local manifests lagging registry versions, one variant manifest stuck on the
+  reserved `server.variant.json` filename — renamed to `server.template.json` and activated;
+  delivery-schedule had a manifest-declared v0.22.5 asset URL that 404'd — repointed to the
+  public v0.22.0 asset and bumped to 0.22.6).
+- Final audit: every checked name returns OK at its manifest version (0 stale, 0 missing).
+- KPI `raw.registry` now covers 149 names (was 121); "Registry entries at latest version" = 108.
+- IndexNow pinged all 287 storefront URLs (accepted 287, failed 0) — includes the 47 /mcp/ pages.
+- Live surface check: llms.txt / sitemap.xml / robots.txt all 200 post-deploy.
+- Commit: 8448dcd0.
