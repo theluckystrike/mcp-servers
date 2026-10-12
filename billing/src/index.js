@@ -1869,7 +1869,12 @@ ${relatedGuidesBlock(slug)}`;
       // and it moves on its own each release instead of going stale like a constant. If no
       // release has a valid date, lastmod is omitted rather than fabricated.
       const siteDate = ((CHANGELOG && CHANGELOG.releases) || []).map((r) => r && r.date).find((d) => /^\d{4}-\d{2}-\d{2}$/.test(d || ""));
-      const urls = ["/", "/servers", "/mcp/connect", "/bundle", "/changelog", "/guides", "/compare", "/privacy", "/suites/freelancer", "/suites/documents", "/suites/field-ops", ...Object.keys(PAGES).map((k) => `/s/${k}`), ...Object.keys(GUIDES).map((k) => `/guides/${k}`), ...Object.keys(COMPARE).map((k) => `/compare/${k}`), ...setupUrls().filter((u) => u.split("/").filter(Boolean).length <= 2)].map((u) => `<url><loc>https://mcp.zovo.one${u}</loc>${siteDate ? `<lastmod>${siteDate}</lastmod>` : ""}</url>`).join("");
+      // Per-server landing pages: every id in HOSTED_ID_LIST answers at /mcp/<id>
+      // (verified live 2026-10-12: 46 of 54 probed slugs return 200; the 8 that
+      // return 404 — budget, loan-calculator, office-suite, payroll, pomodoro,
+      // receipts, stripe-billing, tax-calc — are not in HOSTED_ID_LIST). robots.txt
+      // does not disallow /mcp/, so these are public and safe to list.
+      const urls = ["/", "/servers", "/mcp/connect", "/bundle", "/changelog", "/guides", "/compare", "/privacy", "/suites/freelancer", "/suites/documents", "/suites/field-ops", ...Object.keys(PAGES).map((k) => `/s/${k}`), ...Object.keys(GUIDES).map((k) => `/guides/${k}`), ...Object.keys(COMPARE).map((k) => `/compare/${k}`), ...setupUrls().filter((u) => u.split("/").filter(Boolean).length <= 2), ...HOSTED_ID_LIST.map((k) => `/mcp/${k}`)].map((u) => `<url><loc>https://mcp.zovo.one${u}</loc>${siteDate ? `<lastmod>${siteDate}</lastmod>` : ""}</url>`).join("");
       return new Response(`<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls}</urlset>`, { headers: { "content-type": "application/xml" } });
     }
     // MCP registry domain verification. The registry fetches
