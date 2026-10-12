@@ -1,0 +1,12 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.theluckystrike/freelance-rate-calculator",
+  "description": "Freelance hourly rate calculator: break-even and what-if scenarios included.",
+  "version": "1.0.0",
+  "repository": {
+    "url": "https://github.com/theluckystrike/mcp-servers",
+    "source": "github",
+    "subfolder": "servers/hourly-rate"
+  },
+  "packages": []
+}

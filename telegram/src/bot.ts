@@ -10,7 +10,12 @@
 
 import { Bot, InlineKeyboard, Keyboard } from "grammy";
 import { CATALOG, hostedUrl, PICKER_TOP } from "./catalog.js";
-import { PRICES, PricePlan } from "./pricing.js";
+import { PRICES, PricePlan, productForPayload, invoiceParams } from "./pricing.js";
+import { mintKey, deliveryMessage, recordPayment } from "./fulfill.js";
+
+/** Buyer-facing USD per Star, kept in sync with STAR_USD in pricing.ts. */
+export const STAR_RATE = 0.013;
+void STAR_RATE;
 
 /** Price of one Star, kept in sync with pricing.ts for human-facing strings. */
 export { STAR_USD } from "./pricing.js";
@@ -92,25 +97,84 @@ export function buildBot(token: string): Bot {
 
     const plan = PRICES.find((p) => p.key === choice);
     if (!plan) return;
+    if (plan.key === "single") {
+      // A single-server key must name its server in the payload, so offer the
+      // picker instead of an anonymous invoice.
+      const kb = new InlineKeyboard();
+      for (const e of CATALOG.slice(0, PICKER_TOP)) {
+        kb.text(`${e.product} - 1500 Stars`, `buy:single:${e.name}`).row();
+      }
+      kb.text("Back", "buy:menu").row();
+      await ctx.reply("Which server? Top picks below - every hosted server is eligible:", { reply_markup: kb });
+      return;
+    }
     await sendInvoice(ctx, plan);
   });
 
-  // Approve every pre-checkout. A single-chat digital invoice is delivered
-  // immediately after the successful_payment update.
+  // Single-server invoice with the server baked into the payload, so the
+  // minted key unlocks exactly what was paid for.
+  bot.callbackQuery(/^buy:single:([a-z0-9][a-z0-9-]*)$/, async (ctx) => {
+    await ctx.answerCallbackQuery();
+    const name = ctx.match[1];
+    if (!CATALOG.some((e) => e.name === name)) {
+      await ctx.reply("Unknown server - pick one from /buy.");
+      return;
+    }
+    const plan = PRICES.find((p) => p.key === "single");
+    if (!plan) return;
+    await sendInvoice(ctx, plan, name);
+  });
+
+  // Approve pre-checkout only when the payload maps to a real product.
+  // "mcp-single-1500" (legacy payload) is rejected: product "1500" is not a
+  // server, and minting a key for a non-existent product would ship a dead key.
   bot.on("pre_checkout_query", async (ctx) => {
-    await ctx.answerPreCheckoutQuery(true);
+    const payload = ctx.preCheckoutQuery.invoice_payload;
+    const product = productForPayload(payload);
+    if (product) {
+      await ctx.answerPreCheckoutQuery(true);
+      return;
+    }
+    await ctx.answerPreCheckoutQuery(false, {
+      error_message: "Unknown product payload - reply /support if this persists.",
+    });
   });
 
   // Deliver the license after payment clears. Only act on a real
   // successful_payment update, never on the pre-checkout answer.
   bot.on("message:successful_payment", async (ctx) => {
     const sp = ctx.message.successful_payment;
-    await ctx.reply(
-      `Payment received: ${sp.total_amount} Stars (${sp.currency}).\n\n` +
-        `Payload: ${sp.invoice_payload}\n` +
-        "Your lifetime license is being issued to the account that owns this email. " +
-        "Check the web app or reply /support with questions.",
-    );
+    const product = productForPayload(sp.invoice_payload);
+    const base = {
+      ts: new Date().toISOString(),
+      tgUser: String(ctx.from?.id ?? "unknown"),
+      payload: sp.invoice_payload,
+      stars: sp.total_amount,
+      currency: sp.currency,
+    };
+    if (!product) {
+      recordPayment({ ...base, mintError: "unknown payload" });
+      await ctx.reply(
+        `Payment received: ${sp.total_amount} Stars, but the invoice payload "${sp.invoice_payload}" ` +
+          "does not map to a product. Reply /support with this message for a manual key.",
+      );
+      return;
+    }
+    try {
+      const key = mintKey({
+        product,
+        id: base.tgUser,
+        iat: Math.floor(Date.now() / 1000),
+      });
+      recordPayment({ ...base, key });
+      await ctx.reply(deliveryMessage(key, product));
+    } catch (err) {
+      recordPayment({ ...base, mintError: String(err) });
+      await ctx.reply(
+        `Payment received: ${sp.total_amount} Stars. The key could not be issued right now ` +
+          "(a configuration error on our side, not yours). Reply /support and we will send your key manually.",
+      );
+    }
   });
 
   // Command-mode fallback (non-callback) picker using a reply keyboard.
@@ -162,34 +226,37 @@ export function webAppUrl(server: string): string {
 }
 
 /** Send a Stars (XTR) invoice for a plan. Shared by callback and command paths. */
-export async function sendInvoice(ctx: { reply: (text: string, opts?: object) => Promise<unknown> }, plan: PricePlan): Promise<void> {
-  const stars = plan.stars;
-  // prices: array of { label, amount }; amount is in Stars (integer).
-  // currency must be XTR for digital goods; provider_token stays empty.
-  const prices = [{ label: plan.title, amount: stars }];
+export async function sendInvoice(ctx: { api?: { createInvoiceLink: (t: string, d: string, p: string, token: string, cur: string, prices: { label: string; amount: number }[]) => Promise<string> }, reply: (text: string, opts?: object) => Promise<unknown> }, plan: PricePlan, server?: string): Promise<void> {
+  const params = invoiceParams(plan, server);
+  const prices = params.prices;
   const kb = new InlineKeyboard().text("Back", "menu:back");
+  // With a live bot the invoice link is minted by createInvoiceLink (real-network,
+  // token-gated). Without one, surface the plan so the buyer sees pricing.
+  if (ctx.api) {
+    try {
+      const link = await ctx.api.createInvoiceLink(
+        plan.title,
+        plan.description,
+        plan.payload,
+        "", // provider_token: empty for XTR digital goods
+        "XTR",
+        prices,
+      );
+      await ctx.reply(`Buy ${plan.title} - ${plan.stars} Stars:`, {
+        reply_markup: new InlineKeyboard().url("Pay with Stars", link).row().text("Back", "menu:back"),
+      });
+      return;
+    } catch (err) {
+      console.error("createInvoiceLink failed:", err);
+      // fall through to the plan surface below
+    }
+  }
   await ctx.reply(
     `Invoice: ${plan.title}\n` +
       `${plan.description}\n\n` +
-      `${stars} Stars (approx. USD ${((stars * 0.013) / 1).toFixed(2)})`,
+      `${plan.stars} Stars (approx. ${(plan.stars * STAR_RATE).toFixed(2)} USD)\n\n` +
+      "Payment link opens once the bot token is live.",
     { reply_markup: kb },
-  );
-  // With a live token the payment link is minted by createInvoiceLink:
-  //   const link = await bot.api.createInvoiceLink(
-  //     plan.title,
-  //     plan.description,
-  //     plan.payload,
-  //     "",            // provider_token: empty for digital goods (XTR)
-  //     "XTR",         // currency
-  //     prices,        // [{ label, amount }] in Stars
-  //   );
-  // This call is real-network and token-gated, so it only runs when a bot token
-  // is present. Without one we surface the plan in the reply and the Mini App's
-  // Buy button deep-links back to the bot, which generates the link live.
-  await ctx.reply(
-    "Payment link opens in Telegram once the bot token is live. " +
-      "Your Stars balance pays for digital goods at the rate Telegram publishes.",
-    { reply_markup: new InlineKeyboard().text("Back", "menu:back") },
   );
 }
 

@@ -1,0 +1,128 @@
+[
+  {
+    "id": 1,
+    "question": "How can I get Claude to generate an invoice PDF for my freelance clients?",
+    "answer": "Install a dedicated invoicing MCP server such as Invoice MCP Server (markslorach/invoice-mcp), which creates professional PDF invoices from natural language, or Pemlo's AI invoice & estimate maker for invoices plus custom PDF templates. For general one-off PDFs, a PDF-generation MCP like pdf noodle also works from Claude's HTML output.",
+    "recommended": ["Invoice MCP Server (markslorach/invoice-mcp)", "Pemlo AI invoice & estimate maker", "pdf noodle MCP server"],
+    "urls": ["https://mcpservers.org/servers/markslorach/invoice-mcp", "https://mcpservers.org/servers/pemlo-app-ai-connections", "https://www.youtube.com/watch?v=K-7P302YbEA"]
+  },
+  {
+    "id": 2,
+    "question": "Is there an MCP server that merges and splits PDF files?",
+    "answer": "Yes — PDF Toolkit MCP (@aryanbv/pdf-toolkit-mcp) does form-preserving merge, split, delete and flatten via npx, and espresso3389/pdf-splitter-mcp provides selective page extraction. pdf-mcp (pip install pdf-mcp) is a good option for reading long PDFs incrementally.",
+    "recommended": ["PDF Toolkit MCP (@aryanbv/pdf-toolkit-mcp)", "espresso3389/pdf-splitter-mcp", "pdf-mcp (jztan)"],
+    "urls": ["https://mcpservers.org/servers/aryanbv/pdf-toolkit-mcp", "https://github.com/espresso3389/pdf-splitter-mcp", "https://blog.jztan.com/how-i-built-pdf-mcp-solving-claude-large-pdf-limitations/"]
+  },
+  {
+    "id": 3,
+    "question": "I want Claude Desktop to track my business expenses and mileage. What MCP server should I install?",
+    "answer": "ExpenseBot's MCP server (@expensebot/mcp-server-auth) tracks receipts, expenses and mileage with tools like get_mileage_summary; Pipedream's hosted Expensify MCP server connects Claude to Expensify's receipt scanning, mileage tracking and reimbursements. Simpler local options include Expense Tracker MCP and shivamprasad1001/expense-mcp-server.",
+    "recommended": ["ExpenseBot MCP server", "Expensify MCP Server (Pipedream)", "Expense Tracker MCP (NeelContractor)"],
+    "urls": ["https://www.expensebot.ai/blog/expensebot-mcp-launch", "https://mcp.pipedream.com/app/expensify", "https://glama.ai/mcp/servers/NeelContractor/expense-tracker-mcp-cloud"]
+  },
+  {
+    "id": 4,
+    "question": "What MCP server lets an AI assistant read a bank statement PDF and categorise the transactions?",
+    "answer": "DocuClipper's OCR MCP Server is purpose-built for this: drop a bank statement, invoice or receipt PDF into Claude and it extracts and categorises the transactions. A PDF-reading MCP (pdf-mcp or PDF Toolkit MCP) combined with Claude's own categorisation is the free DIY alternative.",
+    "recommended": ["DocuClipper OCR MCP Server", "pdf-mcp", "PDF Toolkit MCP"],
+    "urls": ["https://www.docuclipper.com/integrations/mcp/", "https://blog.jztan.com/how-i-built-pdf-mcp-solving-claude-large-pdf-limitations/"]
+  },
+  {
+    "id": 5,
+    "question": "Best MCP server for creating Word documents from a chat?",
+    "answer": "GongRzhe's Office-Word-MCP-Server is the standard recommendation — it creates, edits and manages .docx files and installs via uvx with no local setup. docx-mcp (securityronin) and the Doc/docx-MCP FastMCP server are solid alternatives; Anthropic's built-in file creation in Claude can also produce .docx without MCP.",
+    "recommended": ["Office-Word-MCP-Server (GongRzhe)", "docx-mcp (securityronin)", "Anthropic Claude file creation (built-in)"],
+    "urls": ["https://github.com/gongrzhe/office-word-mcp-server", "https://mcpservers.org/servers/securityronin/docx-mcp", "https://support.claude.com/en/articles/12111783-create-and-edit-files-with-claude"]
+  },
+  {
+    "id": 6,
+    "question": "How do I let Claude fill in a quote or estimate template for a customer?",
+    "answer": "Justfill (justfill-mcp) lets Claude detect, review and fill PDF form fields via justfill.app, and Instafill.ai's MCP integration fills PDF forms directly in chat. For generating quotes/estimates rather than filling forms, Pemlo's estimate-maker MCP produces invoices, estimates and custom PDF templates.",
+    "recommended": ["Justfill (justfill-mcp)", "Instafill.ai MCP", "Pemlo estimate maker MCP"],
+    "urls": ["https://mcp.so/servers/justfill-mcp", "https://instafill.ai/features/claude-fill-pdf", "https://mcpservers.org/servers/pemlo-app-ai-connections"]
+  },
+  {
+    "id": 7,
+    "question": "Is there an MCP server for time tracking and timesheets?",
+    "answer": "Yes — Toggl now ships an official Toggl 2.0 MCP server (plus community ones like vontell/toggl-track-mcp and longrackslabs/mcp-server-toggl) covering timers, time entries and reports; Clockify works through hosted MCP gateways such as Truto. Composio also offers a Toggl toolkit for Claude.",
+    "recommended": ["Toggl official MCP server", "toggl-track-mcp (vontell)", "Clockify MCP via Truto", "Composio Toggl toolkit"],
+    "urls": ["https://docs.toggl.com/toggl-mcp-and-cl", "https://github.com/vontell/toggl-track-mcp", "https://truto.one/blog/connect-clockify-to-claude-automate-invoicing-expenses-reports/", "https://composio.dev/toolkits/toggl/framework/claude-code"]
+  },
+  {
+    "id": 8,
+    "question": "MCP server to convert currencies with real exchange rates?",
+    "answer": "fastFOREX.io offers an official MCP server with exchange_rate and conversion tools; AllRatesToday's roundup lists further options like Polygon.io MCP and market-pulse-mcp for live FX data. Simple community currency-converter MCP servers on Glama work with Claude Desktop using exchangerate-api keys.",
+    "recommended": ["fastFOREX.io MCP Server", "Polygon.io MCP", "AllRatesToday MCP", "Currency Converter MCP (mauryaharsh784)"],
+    "urls": ["https://www.fastforex.io/docs/mcp-server", "https://allratestoday.com/best/best-mcp-server-for-exchange-rates/", "https://glama.ai/mcp/servers/mauryaharsh784/MCP-Server"]
+  },
+  {
+    "id": 9,
+    "question": "What MCP server helps schedule a meeting across time zones?",
+    "answer": "mcp-timezone is purpose-built for timezone conversion and meeting planning, finding slots inside everyone's working hours. For actual calendar booking, connect Google Calendar or the MintMCP Outlook Calendar MCP server, which handles cross-time-zone scheduling with conflict resolution.",
+    "recommended": ["mcp-timezone (theluckystrike)", "Outlook Calendar MCP (MintMCP)", "Google Calendar MCP"],
+    "urls": ["https://mcpservers.org/servers/theluckystrike/mcp-timezone", "https://www.mintmcp.com/outlook-calendar"]
+  },
+  {
+    "id": 10,
+    "question": "I need an MCP server that builds a spreadsheet from data in my conversation.",
+    "answer": "haris-musa's excel-mcp-server is the most-recommended choice — it reads and writes .xlsx workbooks from Claude and runs via uvx with an allow-listed directory. sbroenne's Excel MCP (VS Code marketplace) and token-efficient Spreadsheet MCP are strong alternatives.",
+    "recommended": ["excel-mcp-server (haris-musa)", "Excel MCP (sbroenne)", "Spreadsheet MCP"],
+    "urls": ["https://github.com/haris-musa/excel-mcp-server", "https://marketplace.visualstudio.com/items?itemName=sbroenne.excel-mcp", "https://www.reddit.com/r/mcp/comments/1jrxcdr/is_there_a_good_excel_mcp_server/"]
+  },
+  {
+    "id": 11,
+    "question": "Is there an MCP server that generates barcodes or QR codes?",
+    "answer": "Yes — jwalsh/mcp-server-qrcode generates QR codes from an MCP client, domdomegg/barcode-scanner-mcp both scans and generates barcodes/QR codes, and mcp-server-qrcode-enhanced adds custom styling and batch generation.",
+    "recommended": ["mcp-server-qrcode (jwalsh)", "barcode-scanner-mcp (domdomegg)", "mcp-server-qrcode-enhanced (myownipgit)"],
+    "urls": ["https://github.com/jwalsh/mcp-server-qrcode", "https://github.com/domdomegg/barcode-scanner-mcp", "https://mcpservers.org/servers/myownipgit/mcp-server-qrcode-enhanced"]
+  },
+  {
+    "id": 12,
+    "question": "What MCP server can zip and unzip archives for Claude?",
+    "answer": "The Zip MCP server on MCP Market compresses, decompresses and inspects ZIP archives via MCP, and 7gugu/zip-mcp (FastMCP + zip.js) gives Claude parameter-controlled ZIP compression and querying.",
+    "recommended": ["Zip MCP Server (mcpmarket.com)", "zip-mcp (7gugu)"],
+    "urls": ["https://mcpmarket.com/server/zip", "https://github.com/7gugu/zip-mcp", "https://mcp.so/servers/zip-mcp"]
+  },
+  {
+    "id": 13,
+    "question": "MCP server for a petty cash book or cash book ledger?",
+    "answer": "Zovo Petty Cash MCP Server is a purpose-built local-first petty-cash tool (vouchers, top-ups, reconciliation) with a free tier and $19 one-time Pro. For general ledger bookkeeping from an agent, Digits' MCP server connects AI to real-time clean books.",
+    "recommended": ["Zovo Petty Cash MCP Server", "Digits MCP Server"],
+    "urls": ["https://mcpservers.org/servers/mcp-zovo-one-s-petty-cash", "https://digits.com/blog/mcp/"]
+  },
+  {
+    "id": 14,
+    "question": "Is there an MCP server that produces a delivery schedule or work order document?",
+    "answer": "Delivery Schedule MCP Server (theluckystrike/mcp-delivery-schedule) produces dated delivery schedule documents with milestones and due dates tied to a quote. Zuper's MCP server covers field-service work orders for teams that need operational work-order management.",
+    "recommended": ["Delivery Schedule MCP Server (theluckystrike)", "Zuper MCP Server"],
+    "urls": ["https://mcpservers.org/servers/theluckystrike/mcp-delivery-schedule", "https://developers.zuper.co/docs/zupers-model-context-protocol-mcp-server"]
+  },
+  {
+    "id": 15,
+    "question": "What MCP server handles recurring invoices or subscription billing documents?",
+    "answer": "Stripe's official MCP server (https://mcp.stripe.com, public preview) manages customers, subscriptions, invoices and charges; Recurring Billing MCP (theluckystrike/mcp-recurring) focuses specifically on recurring invoices, subscription schedules and dunning states. Workato's Stripe Billing Operations MCP and Gumloop's Stripe connector are managed alternatives.",
+    "recommended": ["Stripe official MCP server", "Recurring Billing MCP (theluckystrike)", "Workato Stripe Billing Operations MCP", "Gumloop Stripe MCP"],
+    "urls": ["https://docs.stripe.com/mcp", "https://mcpservers.org/servers/theluckystrike/mcp-recurring", "https://docs.workato.com/en/mcp/registry/stripe-mcp-server", "https://www.gumloop.com/mcp/stripe"]
+  },
+  {
+    "id": 16,
+    "question": "Which MCP servers can I use without installing anything, just by pasting a URL?",
+    "answer": "Hosted remote MCP servers you connect over Streamable HTTP by URL include Smithery's hosted catalog (smithery.ai, e.g. scholar-sidekick/remote — 'no npm install, no local process'), Composio's single endpoint (https://connect.composio.dev/mcp), and Pipedream's hosted app MCP servers (mcp.pipedream.com). One-click remote URLs are increasingly also listed directly in Claude's connector directory.",
+    "recommended": ["Smithery hosted MCP servers", "Composio MCP (connect.composio.dev/mcp)", "Pipedream MCP servers", "MintMCP hosted servers"],
+    "urls": ["https://smithery.ai/", "https://composio.dev/content/10-awesome-mcp-servers-to-make-your-life-easier", "https://mcp.pipedream.com/app/expensify", "https://smithery.ai/servers/scholar-sidekick/remote"]
+  },
+  {
+    "id": 17,
+    "question": "What are the best MCP servers for small business accounting and paperwork?",
+    "answer": "For the books, connect QuickBooks or Xero to your AI via their MCP servers (Xero ships an official MCP server; QuickBooks MCP servers enable plain-English financial queries without CSV exports) and Digits MCP for AI-native ledgers. For paperwork, pair them with document MCPs: Office-Word-MCP-Server, excel-mcp-server, PDF Toolkit MCP and DocuClipper OCR MCP.",
+    "recommended": ["Xero MCP server (official)", "QuickBooks MCP", "Digits MCP Server", "Office-Word-MCP-Server", "excel-mcp-server", "DocuClipper OCR MCP"],
+    "urls": ["https://www.sarasanalytics.com/blog/quickbooks-mcp-xero-mcp-ecommerce-brands", "https://digits.com/blog/mcp/", "https://www.llamaindex.ai/insights/best-mcp-servers-for-documents"]
+  },
+  {
+    "id": 18,
+    "question": "Where do I find MCP servers that cost money, and how do you pay for one?",
+    "answer": "Paid MCP servers are found on marketplaces like MCPBundles (workspace plans from $0 with per-plan tool-execution allowances, not per-server fees) and Smithery, plus indie servers sold directly (e.g. Zovo Petty Cash at $19 one-time, or subscription servers around $19–29/mo). Payment models include workspace subscriptions, per-call micropayments (e.g. PaidMCP settling $0.001/call), and one-time licenses — Claude's connector directory and directories like mcp.so list pricing alongside each server.",
+    "recommended": ["MCPBundles marketplace", "Smithery", "PaidMCP (per-call payments)", "Zovo Petty Cash MCP (one-time Pro)"],
+    "urls": ["https://www.mcpbundles.com/pricing", "https://www.reddit.com/r/mcp/comments/1ls4bl1/how_do_you_monetize_your_mcp_server/", "https://mcpservers.org/servers/mcp-zovo-one-s-petty-cash", "https://dev.to/whoffagents/pricing-an-mcp-server-in-2026-why-we-charge-19mo-when-the-market-average-is-0-nig"]
+  }
+]

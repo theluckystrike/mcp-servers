@@ -1,0 +1,27 @@
+{
+  "name": "mcp-hourly-rate",
+  "version": "1.0.0",
+  "description": "MCP server: hourly-rate",
+  "type": "module",
+  "main": "src/index.js",
+  "bin": {
+    "mcp-hourly-rate": "src/index.js"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.mjs"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "hourly-rate",
+    "freelance",
+    "rate-calculator",
+    "pricing",
+    "break-even"
+  ],
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.4",
+    "zod": "^3.23.8"
+  },
+  "license": "MIT"
+}

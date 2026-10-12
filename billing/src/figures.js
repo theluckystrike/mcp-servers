@@ -32,6 +32,7 @@ export const SERVER_IDS = [
   "dunning-letters",
   "expense-tracker",
   "goods-receipt",
+  "hourly-rate",
   "image",
   "invoice",
   "job-card",
@@ -90,6 +91,7 @@ export const CHILD_IDS = [
   "dunning-letters",
   "expense-tracker",
   "goods-receipt",
+  "hourly-rate",
   "image",
   "invoice",
   "job-card",
@@ -197,6 +199,7 @@ export const TOOLS = {
   "dunning-letters": 9,
   "expense-tracker": 12,
   "goods-receipt": 9,
+  "hourly-rate": 3,
   "image": 10,
   "invoice": 11,
   "job-card": 9,
@@ -370,8 +373,8 @@ export const FREE_IDS = [
  * ever see: SERVER_DIR_COUNT can be ahead of it while a new server is being built. */
 export const LISTED_COUNT = 54;
 export const LISTED_CHILD_COUNT = 53;
-export const SERVER_DIR_COUNT = 54;
-export const CHILD_COUNT = 53;
+export const SERVER_DIR_COUNT = 55;
+export const CHILD_COUNT = 54;
 export const HOSTED_COUNT = 46;
 
 /** Hosted limits, read from remote/src/index.ts. */

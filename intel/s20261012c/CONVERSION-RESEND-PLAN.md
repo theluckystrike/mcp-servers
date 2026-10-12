@@ -1,0 +1,11 @@
+# CONVERSION + RESEND EMAIL CAPTURE PLAN — mcp.zovo.one
+STATUS: in progress
+
+(sections pending)
+
+## 1. EMAIL CAPTURE
+## 2. RESEND WIRING
+## 3. DRIP SEQUENCE
+## 4. EXIT-OFFER
+## 5. OWNER CHECKLIST
+## 6. KPI MAPPING

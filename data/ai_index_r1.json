@@ -1,6 +1,6 @@
 {
   "status": "MEASURED",
-  "generated_at": "2026-09-26T07:32:44.488Z",
+  "generated_at": "2026-10-12T01:37:32.361Z",
   "instrument": "scripts/ai-index-probe.mjs",
   "control_policy": "An endpoint is UNMEASURED until it passes liveness AND discrimination. site: results are void unless the site_operator control passes. A zero from an UNMEASURED endpoint is reported as null, never as absence.",
   "endpoints": {
@@ -12,8 +12,8 @@
         "liveness:python asyncio semaphore example": {
           "command": "curl -sS -A \"<chrome-ua>\" 'https://search.brave.com/search?q=python%20asyncio%20semaphore%20example'",
           "http": 200,
-          "bytes": 299005,
-          "first200": "<!doctype html> <html class=\"\" lang=\"en-us\"> <head> <meta charset=\"utf-8\" /> <!-- Register error handler before SvelteKit loads. See $lib/errorHandler/errorHandler.ts --> <script nonce=\"3VyqNgzRRDajmt",
+          "bytes": 290764,
+          "first200": "<!doctype html> <html class=\"\" lang=\"en-us\"> <head> <meta charset=\"utf-8\" /> <!-- Register error handler before SvelteKit loads. See $lib/errorHandler/errorHandler.ts --> <script nonce=\"ckuGpmh3KCHETq",
           "attempts": 1,
           "results_parsed": 25,
           "must_contain_host": "docs.python.org",
@@ -22,25 +22,25 @@
             "https://docs.python.org/3/library/asyncio-sync.html",
             "https://www.reddit.com/r/Python/comments/xw4f0k/reasoning_about_asynciosemaphore_article_by_guido/",
             "https://www.reddit.com/r/learnpython/comments/1jae6se/multireader_single_writer_using_a_semaphore_how/",
-            "https://www.reddit.com/r/PinoyProgrammer/comments/18ebriq/using_semaphore/",
+            "https://www.reddit.com/r/learnpython/comments/9yvlvb/when_should_i_use_semaphores/",
             "https://www.reddit.com/r/Python/comments/12ii45y/limiting_concurrency_in_python_asyncio_the_story/"
           ]
         },
         "liveness:model context protocol": {
           "command": "curl -sS -A \"<chrome-ua>\" 'https://search.brave.com/search?q=model%20context%20protocol'",
           "http": 200,
-          "bytes": 388039,
-          "first200": "<!doctype html> <html class=\"\" lang=\"en-us\"> <head> <meta charset=\"utf-8\" /> <!-- Register error handler before SvelteKit loads. See $lib/errorHandler/errorHandler.ts --> <script nonce=\"36z61C3k8bVktE",
+          "bytes": 310411,
+          "first200": "<!doctype html> <html class=\"\" lang=\"en-us\"> <head> <meta charset=\"utf-8\" /> <!-- Register error handler before SvelteKit loads. See $lib/errorHandler/errorHandler.ts --> <script nonce=\"LcQEq6S6otMRum",
           "attempts": 1,
-          "results_parsed": 23,
+          "results_parsed": 26,
           "must_contain_host": "modelcontextprotocol.io",
           "pass": true,
           "top5": [
             "https://modelcontextprotocol.io/docs/2026-07-28/getting-started/intro",
             "https://www.anthropic.com/news/model-context-protocol",
-            "https://www.reddit.com/r/LLMDevs/comments/1jbqegg/model_context_protocol_mcp_clearly_explained/",
-            "https://www.reddit.com/r/ArtificialInteligence/comments/1m09hzm/mcp_model_context_protocol_is_not_really_anything/",
-            "https://www.reddit.com/r/ClaudeAI/comments/1ioxu5r/still_confused_about_how_mcp_works_heres_the/"
+            "https://www.reddit.com/r/mcp/comments/1vqyypv/i_made_a_beginnerfriendly_visual_guide_to_model/",
+            "https://www.reddit.com/r/AI_Agents/comments/1rjtp3q/the_truth_about_mcp_vs_cli/",
+            "https://www.reddit.com/r/linux/comments/1pidsib/anthropic_donates_model_context_protocol_mcp_to/"
           ]
         },
         "discrimination": {
@@ -70,15 +70,15 @@
             "superfastpython.com",
             "olzhasar.com"
           ],
-          "host_jaccard": 0.077,
+          "host_jaccard": 0.08,
           "threshold": "< 0.5",
           "pass": true
         },
         "site_operator": {
           "command": "curl -sS -A \"<chrome-ua>\" 'https://search.brave.com/search?q=site%3Agithub.com%20model%20context%20protocol'",
           "http": 200,
-          "bytes": 249595,
-          "first200": "<!doctype html> <html class=\"\" lang=\"en-us\"> <head> <meta charset=\"utf-8\" /> <!-- Register error handler before SvelteKit loads. See $lib/errorHandler/errorHandler.ts --> <script nonce=\"6A/ARiNE9mHIcS",
+          "bytes": 230934,
+          "first200": "<!doctype html> <html class=\"\" lang=\"en-us\"> <head> <meta charset=\"utf-8\" /> <!-- Register error handler before SvelteKit loads. See $lib/errorHandler/errorHandler.ts --> <script nonce=\"r3DmQhFlUHK0Xa",
           "attempts": 1,
           "results_parsed": 25,
           "on_host": 20,
@@ -90,10 +90,10 @@
           "query": "MCP servers for Claude invoices time tracking",
           "command": "curl -sS -A \"<chrome-ua>\" 'https://search.brave.com/search?q=MCP%20servers%20for%20Claude%20invoices%20time%20tracking'",
           "http": 200,
-          "bytes": 412011,
-          "first200": "<!doctype html> <html class=\"\" lang=\"en-us\"> <head> <meta charset=\"utf-8\" /> <!-- Register error handler before SvelteKit loads. See $lib/errorHandler/errorHandler.ts --> <script nonce=\"VQlH4Y1r4316ba",
+          "bytes": 376087,
+          "first200": "<!doctype html> <html class=\"\" lang=\"en-us\"> <head> <meta charset=\"utf-8\" /> <!-- Register error handler before SvelteKit loads. See $lib/errorHandler/errorHandler.ts --> <script nonce=\"y6rCURUYisY8Dp",
           "attempts": 1,
-          "results_parsed": 24,
+          "results_parsed": 33,
           "must_contain_host": "mcp.zovo.one",
           "rank": 1,
           "pass": true,
@@ -113,60 +113,61 @@
         "liveness:python asyncio semaphore example": {
           "command": "curl -sS -A \"<chrome-ua>\" 'https://www.bing.com/search?q=python%20asyncio%20semaphore%20example&format=rss'",
           "http": 200,
-          "bytes": 5672,
+          "bytes": 4804,
           "first200": "<?xml version=\"1.0\" encoding=\"utf-8\" ?><rss version=\"2.0\"><channel><title>Bing: python asyncio semaphore example</title><link>http://www.bing.com:80/search?q=python+asyncio+semaphore+example</link><de",
           "attempts": 1,
-          "results_parsed": 10,
+          "results_parsed": 8,
           "must_contain_host": "docs.python.org",
           "pass": true,
           "top5": [
-            "https://superfastpython.com/asyncio-semaphore/",
-            "https://www.soumendrak.com/blog/semaphores-python-async-programming/",
-            "https://runebook.dev/en/docs/python/library/asyncio-sync/asyncio.Semaphore",
-            "https://www.slingacademy.com/article/python-asyncio-semaphore-class/",
-            "https://stackoverflow.com/questions/66724841/using-a-semaphore-with-asyncio-in-python"
+            "https://www.python.org/",
+            "https://www.python.org/downloads/",
+            "https://www.w3schools.com/python/",
+            "https://www.online-python.com/",
+            "https://www.programiz.com/python-programming/online-compiler/"
           ]
         },
         "liveness:model context protocol": {
           "command": "curl -sS -A \"<chrome-ua>\" 'https://www.bing.com/search?q=model%20context%20protocol&format=rss'",
           "http": 200,
-          "bytes": 5317,
+          "bytes": 4961,
           "first200": "<?xml version=\"1.0\" encoding=\"utf-8\" ?><rss version=\"2.0\"><channel><title>Bing: model context protocol</title><link>http://www.bing.com:80/search?q=model+context+protocol</link><description>Search res",
           "attempts": 1,
           "results_parsed": 10,
           "must_contain_host": "modelcontextprotocol.io",
-          "pass": true,
+          "pass": false,
           "top5": [
-            "https://modelcontextprotocol.io/docs/2026-07-28/getting-started/intro",
-            "https://github.com/modelcontextprotocol",
-            "https://modelcontextprotocol.io/docs/2026-07-28/learn/architecture",
-            "https://en.wikipedia.org/wiki/Model_Context_Protocol",
-            "https://www.geeksforgeeks.org/artificial-intelligence/model-context-protocol-mcp/"
+            "https://roboticcoding.com/robotics-programming-for-beginners/",
+            "https://www.toptal.com/developers/robotics/programming-a-robot-an-introductory-tutorial",
+            "https://www.trossenrobotics.com/post/robotics-programming-basics",
+            "https://ibuyrobotics.com/learn/cool-robotics-projects/coding-your-robot",
+            "https://ibuyrobotics.com/learn/buyer-guides/robot-programming-intro"
           ]
         },
         "discrimination": {
           "query_a": "sourdough starter hydration ratio",
           "query_b": "python asyncio semaphore example",
           "hosts_a": [
-            "facebook.com",
-            "business.facebook.com",
-            "adsmanager.facebook.com",
-            "developers.facebook.com",
-            "creators.facebook.com",
-            "l.facebook.com",
-            "creatorstudio.facebook.com"
+            "en.wikipedia.org",
+            "theclevercarrot.com",
+            "sourdoughtalk.com",
+            "thesourdoughlady.net",
+            "mirlandraskitchen.com",
+            "kingarthurbaking.com",
+            "alexandracooks.com",
+            "sourdough.co.uk",
+            "thekitchn.com",
+            "bbc.co.uk"
           ],
           "hosts_b": [
-            "superfastpython.com",
-            "soumendrak.com",
-            "runebook.dev",
-            "slingacademy.com",
-            "stackoverflow.com",
-            "docs.python.org",
-            "thecodeforge.io",
-            "github.com"
+            "python.org",
+            "w3schools.com",
+            "online-python.com",
+            "programiz.com",
+            "en.wikipedia.org",
+            "docs.python.org"
           ],
-          "host_jaccard": 0,
+          "host_jaccard": 0.067,
           "threshold": "< 0.5",
           "pass": true
         },
@@ -174,7 +175,7 @@
           "query": "MCP servers for Claude invoices time tracking",
           "command": "curl -sS -A \"<chrome-ua>\" 'https://www.bing.com/search?q=MCP%20servers%20for%20Claude%20invoices%20time%20tracking&format=rss'",
           "http": 200,
-          "bytes": 5087,
+          "bytes": 5292,
           "first200": "<?xml version=\"1.0\" encoding=\"utf-8\" ?><rss version=\"2.0\"><channel><title>Bing: MCP servers for Claude invoices time tracking</title><link>http://www.bing.com:80/search?q=MCP+servers+for+Claude+invoic",
           "attempts": 1,
           "results_parsed": 10,
@@ -189,6 +190,9 @@
         "domain control FAILED: cannot be used to claim mcp.zovo.one is absent"
       ],
       "site_mode": "NOT_ATTEMPTED",
+      "notes": [
+        "liveness miss for \"model context protocol\": modelcontextprotocol.io absent (HTTP 200, 4961 bytes)"
+      ],
       "holds_our_domain": false
     },
     "bing_html": {
@@ -199,62 +203,57 @@
         "liveness:python asyncio semaphore example": {
           "command": "curl -sS -A \"<chrome-ua>\" 'https://www.bing.com/search?q=python%20asyncio%20semaphore%20example'",
           "http": 200,
-          "bytes": 125315,
-          "first200": "<!DOCTYPE html><html dir=\"ltr\" lang=\"en\" xml:lang=\"en\" xmlns=\"http://www.w3.org/1999/xhtml\" xmlns:Web=\"http://schemas.live.com/Web/\"><script type=\"text/javascript\" nonce=\"zxD5Koms7sVov1AooaaxotPyGff+S",
+          "bytes": 126351,
+          "first200": "<!DOCTYPE html><html dir=\"ltr\" lang=\"en\" xml:lang=\"en\" xmlns=\"http://www.w3.org/1999/xhtml\" xmlns:Web=\"http://schemas.live.com/Web/\"><script type=\"text/javascript\" nonce=\"3sEohk4Dshmfw/TeG1uxrIRmfMFdA",
           "attempts": 1,
-          "results_parsed": 10,
+          "results_parsed": 8,
           "must_contain_host": "docs.python.org",
           "pass": true,
           "top5": [
-            "https://superfastpython.com/asyncio-semaphore/",
-            "https://www.soumendrak.com/blog/semaphores-python-async-programming/",
-            "https://runebook.dev/en/docs/python/library/asyncio-sync/asyncio.Semaphore",
-            "https://www.slingacademy.com/article/python-asyncio-semaphore-class/",
-            "https://stackoverflow.com/questions/66724841/using-a-semaphore-with-asyncio-in-python"
+            "https://www.python.org/",
+            "https://www.python.org/downloads/",
+            "https://www.w3schools.com/python/",
+            "https://www.online-python.com/",
+            "https://www.programiz.com/python-programming/online-compiler/"
           ]
         },
         "liveness:model context protocol": {
           "command": "curl -sS -A \"<chrome-ua>\" 'https://www.bing.com/search?q=model%20context%20protocol'",
           "http": 200,
-          "bytes": 123126,
-          "first200": "<!DOCTYPE html><html dir=\"ltr\" lang=\"en\" xml:lang=\"en\" xmlns=\"http://www.w3.org/1999/xhtml\" xmlns:Web=\"http://schemas.live.com/Web/\"><script type=\"text/javascript\" nonce=\"OSWfOiUxVmT808rcoklITAC5nZ2R9",
+          "bytes": 117575,
+          "first200": "<!DOCTYPE html><html dir=\"ltr\" lang=\"en\" xml:lang=\"en\" xmlns=\"http://www.w3.org/1999/xhtml\" xmlns:Web=\"http://schemas.live.com/Web/\"><script type=\"text/javascript\" nonce=\"aryB29mzUaqAMaXMPWNsgEpmnlj8C",
           "attempts": 1,
-          "results_parsed": 10,
+          "results_parsed": 1,
           "must_contain_host": "modelcontextprotocol.io",
-          "pass": true,
+          "pass": false,
           "top5": [
-            "https://modelcontextprotocol.io/docs/2026-07-28/getting-started/intro",
-            "https://github.com/modelcontextprotocol",
-            "https://modelcontextprotocol.io/docs/2026-07-28/learn/architecture",
-            "https://en.wikipedia.org/wiki/Model_Context_Protocol",
-            "https://www.geeksforgeeks.org/artificial-intelligence/model-context-protocol-mcp/"
+            "https://sextop1.biz/phim-sex-chau-au/page/4/"
           ]
         },
         "discrimination": {
           "query_a": "sourdough starter hydration ratio",
           "query_b": "python asyncio semaphore example",
           "hosts_a": [
-            "geeksforgeeks.org",
-            "teachingagile.com",
-            "asana.com",
-            "instituteprojectmanagement.com",
             "en.wikipedia.org",
-            "atlassian.com",
-            "thedigitalprojectmanager.com",
-            "tutorialspoint.com",
-            "agilealliance.org"
+            "theclevercarrot.com",
+            "sourdoughtalk.com",
+            "thesourdoughlady.net",
+            "mirlandraskitchen.com",
+            "kingarthurbaking.com",
+            "alexandracooks.com",
+            "sourdough.co.uk",
+            "thekitchn.com",
+            "bbc.co.uk"
           ],
           "hosts_b": [
-            "superfastpython.com",
-            "soumendrak.com",
-            "runebook.dev",
-            "slingacademy.com",
-            "stackoverflow.com",
-            "docs.python.org",
-            "thecodeforge.io",
-            "github.com"
+            "python.org",
+            "w3schools.com",
+            "online-python.com",
+            "programiz.com",
+            "en.wikipedia.org",
+            "docs.python.org"
           ],
-          "host_jaccard": 0,
+          "host_jaccard": 0.067,
           "threshold": "< 0.5",
           "pass": true
         },
@@ -262,8 +261,8 @@
           "query": "MCP servers for Claude invoices time tracking",
           "command": "curl -sS -A \"<chrome-ua>\" 'https://www.bing.com/search?q=MCP%20servers%20for%20Claude%20invoices%20time%20tracking'",
           "http": 200,
-          "bytes": 124275,
-          "first200": "<!DOCTYPE html><html dir=\"ltr\" lang=\"en\" xml:lang=\"en\" xmlns=\"http://www.w3.org/1999/xhtml\" xmlns:Web=\"http://schemas.live.com/Web/\"><script type=\"text/javascript\" nonce=\"YfXsYaP1DEIkL4AzYa36/15fbA4Jd",
+          "bytes": 124442,
+          "first200": "<!DOCTYPE html><html dir=\"ltr\" lang=\"en\" xml:lang=\"en\" xmlns=\"http://www.w3.org/1999/xhtml\" xmlns:Web=\"http://schemas.live.com/Web/\"><script type=\"text/javascript\" nonce=\"YDNAD9gngGiZBhHJAhlQoW6iW876C",
           "attempts": 1,
           "results_parsed": 10,
           "must_contain_host": "mcp.zovo.one",
@@ -277,6 +276,9 @@
         "domain control FAILED: cannot be used to claim mcp.zovo.one is absent"
       ],
       "site_mode": "NOT_ATTEMPTED",
+      "notes": [
+        "liveness miss for \"model context protocol\": modelcontextprotocol.io absent (HTTP 200, 117575 bytes)"
+      ],
       "holds_our_domain": false
     },
     "marginalia": {
@@ -287,7 +289,7 @@
         "liveness:python asyncio semaphore example": {
           "command": "curl -sS -A \"<chrome-ua>\" 'https://old-search.marginalia.nu/search?query=python%20asyncio%20semaphore%20example'",
           "http": 200,
-          "bytes": 55151,
+          "bytes": 54708,
           "first200": "<!DOCTYPE html> <html lang=\"en-US\"> <head> <meta charset=\"UTF-8\"> <title>Marginalia Search - python asyncio semaphore example</title> <link rel=\"stylesheet\" href=\"/serp.css\" /> <link rel=\"search\" type",
           "attempts": 2,
           "results_parsed": 53,
@@ -304,9 +306,9 @@
         "liveness:model context protocol": {
           "command": "curl -sS -A \"<chrome-ua>\" 'https://old-search.marginalia.nu/search?query=model%20context%20protocol'",
           "http": 200,
-          "bytes": 52516,
+          "bytes": 53574,
           "first200": "<!DOCTYPE html> <html lang=\"en-US\"> <head> <meta charset=\"UTF-8\"> <title>Marginalia Search - model context protocol</title> <link rel=\"stylesheet\" href=\"/serp.css\" /> <link rel=\"search\" type=\"applicat",
-          "attempts": 2,
+          "attempts": 4,
           "results_parsed": 28,
           "must_contain_host": "modelcontextprotocol.io",
           "pass": false,
@@ -331,7 +333,7 @@
             "bretwhissel.net",
             "culturesforhealth.com",
             "missvickie.com",
-            "thewowstyle.com"
+            "zerowastechef.com"
           ],
           "hosts_b": [
             "discuss.python.org",
@@ -340,8 +342,8 @@
             "patricksoftwareblog.com",
             "nullprogram.com",
             "stackoverflow.com",
-            "integralist.co.uk",
             "blog.changs.co.uk",
+            "integralist.co.uk",
             "dataleadsfuture.com",
             "scribu.net"
           ],
@@ -353,11 +355,10 @@
           "query": "MCP servers for Claude invoices time tracking",
           "command": "curl -sS -A \"<chrome-ua>\" 'https://old-search.marginalia.nu/search?query=MCP%20servers%20for%20Claude%20invoices%20time%20tracking'",
           "http": 200,
-          "bytes": 1065,
-          "first200": "<html lang=\"en-US\"> <head> <title>Error</title> <link rel=\"stylesheet\" href=\"/serp.css\"> </head> <body> <div class=\"infobox\"> <h1>Wait For A Moment</h1> <p>The search engine is currently barraged by q",
-          "attempts": 4,
-          "soft_block": true,
-          "results_parsed": 0,
+          "bytes": 53047,
+          "first200": "<!DOCTYPE html> <html lang=\"en-US\"> <head> <meta charset=\"UTF-8\"> <title>Marginalia Search - MCP servers for Claude invoices time tracking</title> <link rel=\"stylesheet\" href=\"/serp.css\" /> <link rel=",
+          "attempts": 3,
+          "results_parsed": 50,
           "must_contain_host": "mcp.zovo.one",
           "rank": null,
           "pass": false,
@@ -370,7 +371,7 @@
       ],
       "site_mode": "NOT_ATTEMPTED",
       "notes": [
-        "liveness miss for \"model context protocol\": modelcontextprotocol.io absent (HTTP 200, 52516 bytes)"
+        "liveness miss for \"model context protocol\": modelcontextprotocol.io absent (HTTP 200, 53574 bytes)"
       ],
       "holds_our_domain": false
     },
@@ -394,7 +395,7 @@
         "liveness:model context protocol": {
           "command": "curl -sS -A \"<chrome-ua>\" 'https://html.duckduckgo.com/html/?q=model%20context%20protocol'",
           "http": 202,
-          "bytes": 14165,
+          "bytes": 14167,
           "first200": "<!-- <!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\"> --> <!DOCTYPE html> <html lang=\"en\"> <head> <link rel=\"canonical\" href=\"https://duckduckgo.c",
           "attempts": 4,
           "soft_block": true,
@@ -416,12 +417,12 @@
       "verdict": "UNMEASURED",
       "reasons": [
         "discrimination FAILED: one or both queries parsed zero results",
-        "liveness FAILED: no control query returned its known host across 2 attempts (liveness miss for \"python asyncio semaphore example\": docs.python.org absent (HTTP 202, 14205 bytes, soft-block); liveness miss for \"model context protocol\": modelcontextprotocol.io absent (HTTP 202, 14165 bytes, soft-block))"
+        "liveness FAILED: no control query returned its known host across 2 attempts (liveness miss for \"python asyncio semaphore example\": docs.python.org absent (HTTP 202, 14205 bytes, soft-block); liveness miss for \"model context protocol\": modelcontextprotocol.io absent (HTTP 202, 14167 bytes, soft-block))"
       ],
       "site_mode": "UNMEASURED",
       "notes": [
         "liveness miss for \"python asyncio semaphore example\": docs.python.org absent (HTTP 202, 14205 bytes, soft-block)",
-        "liveness miss for \"model context protocol\": modelcontextprotocol.io absent (HTTP 202, 14165 bytes, soft-block)"
+        "liveness miss for \"model context protocol\": modelcontextprotocol.io absent (HTTP 202, 14167 bytes, soft-block)"
       ],
       "holds_our_domain": null
     },
@@ -494,7 +495,7 @@
         "liveness:python asyncio semaphore example": {
           "command": "curl -sS -A \"<chrome-ua>\" 'https://www.startpage.com/sp/search?q=python%20asyncio%20semaphore%20example'",
           "http": 200,
-          "bytes": 22104,
+          "bytes": 22105,
           "first200": "<!DOCTYPE html> <html lang=\"en\"> <head> <script id=\"anubis_version\" type=\"application/json\">\"v1.26.4\" </script><script id=\"anubis_challenge\" type=\"application/json\">{\"rules\":{\"algorithm\":\"fast\",\"diffi",
           "attempts": 4,
           "soft_block": true,
@@ -506,7 +507,7 @@
         "liveness:model context protocol": {
           "command": "curl -sS -A \"<chrome-ua>\" 'https://www.startpage.com/sp/search?q=model%20context%20protocol'",
           "http": 200,
-          "bytes": 22104,
+          "bytes": 22105,
           "first200": "<!DOCTYPE html> <html lang=\"en\"> <head> <script id=\"anubis_version\" type=\"application/json\">\"v1.26.4\" </script><script id=\"anubis_challenge\" type=\"application/json\">{\"rules\":{\"algorithm\":\"fast\",\"diffi",
           "attempts": 4,
           "soft_block": true,
@@ -528,12 +529,12 @@
       "verdict": "UNMEASURED",
       "reasons": [
         "discrimination FAILED: one or both queries parsed zero results",
-        "liveness FAILED: no control query returned its known host across 2 attempts (liveness miss for \"python asyncio semaphore example\": docs.python.org absent (HTTP 200, 22104 bytes, soft-block); liveness miss for \"model context protocol\": modelcontextprotocol.io absent (HTTP 200, 22104 bytes, soft-block))"
+        "liveness FAILED: no control query returned its known host across 2 attempts (liveness miss for \"python asyncio semaphore example\": docs.python.org absent (HTTP 200, 22105 bytes, soft-block); liveness miss for \"model context protocol\": modelcontextprotocol.io absent (HTTP 200, 22105 bytes, soft-block))"
       ],
       "site_mode": "UNMEASURED",
       "notes": [
-        "liveness miss for \"python asyncio semaphore example\": docs.python.org absent (HTTP 200, 22104 bytes, soft-block)",
-        "liveness miss for \"model context protocol\": modelcontextprotocol.io absent (HTTP 200, 22104 bytes, soft-block)"
+        "liveness miss for \"python asyncio semaphore example\": docs.python.org absent (HTTP 200, 22105 bytes, soft-block)",
+        "liveness miss for \"model context protocol\": modelcontextprotocol.io absent (HTTP 200, 22105 bytes, soft-block)"
       ],
       "holds_our_domain": null
     },
@@ -596,7 +597,7 @@
         "liveness:python asyncio semaphore example": {
           "command": "curl -sS -A \"<chrome-ua>\" 'https://search.seznam.cz/?q=python%20asyncio%20semaphore%20example'",
           "http": 200,
-          "bytes": 168381,
+          "bytes": 177173,
           "first200": "<!DOCTYPE html> <html lang=\"cs\" class=\"hw-desktop forceScrollbar\"><head><meta charSet=\"utf-8\"/><meta name=\"format-detection\" content=\"telephone=no\"/><meta name=\"viewport\" content=\"width=device-width, ",
           "attempts": 1,
           "results_parsed": 0,
@@ -607,7 +608,7 @@
         "liveness:model context protocol": {
           "command": "curl -sS -A \"<chrome-ua>\" 'https://search.seznam.cz/?q=model%20context%20protocol'",
           "http": 200,
-          "bytes": 283657,
+          "bytes": 283709,
           "first200": "<!DOCTYPE html> <html lang=\"cs\" class=\"hw-desktop forceScrollbar\"><head><meta charSet=\"utf-8\"/><meta name=\"format-detection\" content=\"telephone=no\"/><meta name=\"viewport\" content=\"width=device-width, ",
           "attempts": 1,
           "results_parsed": 0,
@@ -628,12 +629,12 @@
       "verdict": "UNMEASURED",
       "reasons": [
         "discrimination FAILED: one or both queries parsed zero results",
-        "liveness FAILED: no control query returned its known host across 2 attempts (liveness miss for \"python asyncio semaphore example\": docs.python.org absent (HTTP 200, 168381 bytes); liveness miss for \"model context protocol\": modelcontextprotocol.io absent (HTTP 200, 283657 bytes))"
+        "liveness FAILED: no control query returned its known host across 2 attempts (liveness miss for \"python asyncio semaphore example\": docs.python.org absent (HTTP 200, 177173 bytes); liveness miss for \"model context protocol\": modelcontextprotocol.io absent (HTTP 200, 283709 bytes))"
       ],
       "site_mode": "NOT_ATTEMPTED",
       "notes": [
-        "liveness miss for \"python asyncio semaphore example\": docs.python.org absent (HTTP 200, 168381 bytes)",
-        "liveness miss for \"model context protocol\": modelcontextprotocol.io absent (HTTP 200, 283657 bytes)"
+        "liveness miss for \"python asyncio semaphore example\": docs.python.org absent (HTTP 200, 177173 bytes)",
+        "liveness miss for \"model context protocol\": modelcontextprotocol.io absent (HTTP 200, 283709 bytes)"
       ],
       "holds_our_domain": null
     },
@@ -645,39 +646,49 @@
         "liveness:python asyncio semaphore example": {
           "command": "curl -sS -A \"<chrome-ua>\" 'https://yandex.com/search/?text=python%20asyncio%20semaphore%20example'",
           "http": 200,
-          "bytes": 41581,
-          "first200": "<!doctype html><html lang=\"en\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><title>Verification</title><link rel=\"preload\" href=\"/tmgrdfrend.fp.js\" as",
+          "bytes": 14205,
+          "first200": "<!doctype html><html prefix=\"og: http://ogp.me/ns#\" lang=\"en\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\"><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale",
           "attempts": 1,
-          "results_parsed": 2,
+          "results_parsed": 9,
           "must_contain_host": "docs.python.org",
           "pass": false,
           "top5": [
-            "https://yandex.com/support/common/browsers-settings/browsers-java-js-settings.html",
-            "https://yandex.com/support/smart-captcha?form-unique_key=9471814638331908228/#help"
+            "https://yastatic.net/s3/home-static/_/a5/a557b72322add07a6b41fc8f71cfffc8.png",
+            "https://yastatic.net/s3/home-static/_/92/929b10d17990e806734f68758ec917ec.png",
+            "https://yastatic.net/s3/home-static/_/7c/7ccfee6f1e81b14c5bef535d1ad7b7e0.png",
+            "https://yastatic.net/s3/home-static/_/75/759c668aa6747fee858fb5ae0c207474.png",
+            "https://yastatic.net/s3/home-static/_/90/9034470dfcb0bea0db29a281007b8a38.png"
           ]
         },
         "liveness:model context protocol": {
           "command": "curl -sS -A \"<chrome-ua>\" 'https://yandex.com/search/?text=model%20context%20protocol'",
           "http": 200,
-          "bytes": 41541,
-          "first200": "<!doctype html><html lang=\"en\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><title>Verification</title><link rel=\"preload\" href=\"/tmgrdfrend.fp.js\" as",
+          "bytes": 14171,
+          "first200": "<!doctype html><html prefix=\"og: http://ogp.me/ns#\" lang=\"en\"><meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\"><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale",
           "attempts": 1,
-          "results_parsed": 2,
+          "results_parsed": 9,
           "must_contain_host": "modelcontextprotocol.io",
           "pass": false,
           "top5": [
-            "https://yandex.com/support/common/browsers-settings/browsers-java-js-settings.html",
-            "https://yandex.com/support/smart-captcha?form-unique_key=9471814940454206749/#help"
+            "https://yastatic.net/s3/home-static/_/a5/a557b72322add07a6b41fc8f71cfffc8.png",
+            "https://yastatic.net/s3/home-static/_/92/929b10d17990e806734f68758ec917ec.png",
+            "https://yastatic.net/s3/home-static/_/7c/7ccfee6f1e81b14c5bef535d1ad7b7e0.png",
+            "https://yastatic.net/s3/home-static/_/75/759c668aa6747fee858fb5ae0c207474.png",
+            "https://yastatic.net/s3/home-static/_/90/9034470dfcb0bea0db29a281007b8a38.png"
           ]
         },
         "discrimination": {
           "query_a": "sourdough starter hydration ratio",
           "query_b": "python asyncio semaphore example",
           "hosts_a": [
-            "yandex.com"
+            "yastatic.net",
+            "yandex.com",
+            "yandex.cloud"
           ],
           "hosts_b": [
-            "yandex.com"
+            "yastatic.net",
+            "yandex.com",
+            "yandex.cloud"
           ],
           "host_jaccard": 1,
           "threshold": "< 0.5",
@@ -687,12 +698,12 @@
       "verdict": "UNMEASURED",
       "reasons": [
         "discrimination FAILED: two unrelated queries returned host-overlap 1.000 — endpoint is not reading the query",
-        "liveness FAILED: no control query returned its known host across 2 attempts (liveness miss for \"python asyncio semaphore example\": docs.python.org absent (HTTP 200, 41581 bytes); liveness miss for \"model context protocol\": modelcontextprotocol.io absent (HTTP 200, 41541 bytes))"
+        "liveness FAILED: no control query returned its known host across 2 attempts (liveness miss for \"python asyncio semaphore example\": docs.python.org absent (HTTP 200, 14205 bytes); liveness miss for \"model context protocol\": modelcontextprotocol.io absent (HTTP 200, 14171 bytes))"
       ],
       "site_mode": "UNMEASURED",
       "notes": [
-        "liveness miss for \"python asyncio semaphore example\": docs.python.org absent (HTTP 200, 41581 bytes)",
-        "liveness miss for \"model context protocol\": modelcontextprotocol.io absent (HTTP 200, 41541 bytes)"
+        "liveness miss for \"python asyncio semaphore example\": docs.python.org absent (HTTP 200, 14205 bytes)",
+        "liveness miss for \"model context protocol\": modelcontextprotocol.io absent (HTTP 200, 14171 bytes)"
       ],
       "holds_our_domain": null
     }
@@ -703,12 +714,14 @@
         "query": "site:mcp.zovo.one",
         "command": "curl -sS -A \"<chrome-ua>\" 'https://search.brave.com/search?q=site%3Amcp.zovo.one'",
         "http": 200,
-        "bytes": 101888,
-        "first200": "<!doctype html> <html class=\"\" lang=\"en-us\"> <head> <meta charset=\"utf-8\" /> <!-- Register error handler before SvelteKit loads. See $lib/errorHandler/errorHandler.ts --> <script nonce=\"5rmSxJyJwV1Auz",
+        "bytes": 108527,
+        "first200": "<!doctype html> <html class=\"\" lang=\"en-us\"> <head> <meta charset=\"utf-8\" /> <!-- Register error handler before SvelteKit loads. See $lib/errorHandler/errorHandler.ts --> <script nonce=\"64zrCXKEqouna7",
         "attempts": 1,
-        "urls_found": 1,
+        "urls_found": 3,
         "urls": [
-          "https://mcp.zovo.one/"
+          "https://mcp.zovo.one/",
+          "https://mcp.zovo.one/mcp/time-tracker",
+          "https://mcp.zovo.one/s/invoice"
         ],
         "present": true
       },
@@ -716,30 +729,29 @@
         "query": "site:zovo.one",
         "command": "curl -sS -A \"<chrome-ua>\" 'https://search.brave.com/search?q=site%3Azovo.one'",
         "http": 200,
-        "bytes": 204878,
-        "first200": "<!doctype html> <html class=\"\" lang=\"en-us\"> <head> <meta charset=\"utf-8\" /> <!-- Register error handler before SvelteKit loads. See $lib/errorHandler/errorHandler.ts --> <script nonce=\"fiU0IMQsOu+hBn",
+        "bytes": 192204,
+        "first200": "<!doctype html> <html class=\"\" lang=\"en-us\"> <head> <meta charset=\"utf-8\" /> <!-- Register error handler before SvelteKit loads. See $lib/errorHandler/errorHandler.ts --> <script nonce=\"YqsqJzE4R8dAmX",
         "attempts": 1,
-        "urls_found": 20,
+        "urls_found": 19,
         "urls": [
+          "https://mcp.zovo.one/s/invoice",
           "https://zovo.one/",
           "https://zovo.one/about",
           "https://zovo.one/best-for",
           "https://zovo.one/community",
           "https://zovo.one/free",
-          "https://zovo.one/free-tools/ai-video-generator",
-          "https://zovo.one/free-tools/binary-search-visualizer",
           "https://zovo.one/free-tools/developer-tools",
-          "https://zovo.one/free-tools/html-css-playground",
-          "https://zovo.one/free-tools/markdown-editor",
+          "https://zovo.one/free-tools/image-compressor",
           "https://zovo.one/free-tools/seo-tools",
-          "https://zovo.one/free-tools/speech-to-text",
           "https://zovo.one/free-tools/tuner",
+          "https://zovo.one/free-tools/url-encoder",
+          "https://zovo.one/free/developer-tools",
           "https://zovo.one/guides",
+          "https://zovo.one/industries/freelancers",
           "https://zovo.one/open-source",
           "https://zovo.one/pricing",
           "https://zovo.one/privacy-policy",
           "https://zovo.one/services",
-          "https://zovo.one/support",
           "https://zovo.one/tools"
         ],
         "present": true
@@ -759,7 +771,7 @@
     },
     "ddg_html": {
       "unmeasured": true,
-      "reason": "discrimination FAILED: one or both queries parsed zero results; liveness FAILED: no control query returned its known host across 2 attempts (liveness miss for \"python asyncio semaphore example\": docs.python.org absent (HTTP 202, 14205 bytes, soft-block); liveness miss for \"model context protocol\": modelcontextprotocol.io absent (HTTP 202, 14165 bytes, soft-block))"
+      "reason": "discrimination FAILED: one or both queries parsed zero results; liveness FAILED: no control query returned its known host across 2 attempts (liveness miss for \"python asyncio semaphore example\": docs.python.org absent (HTTP 202, 14205 bytes, soft-block); liveness miss for \"model context protocol\": modelcontextprotocol.io absent (HTTP 202, 14167 bytes, soft-block))"
     },
     "mojeek": {
       "unmeasured": true,
@@ -767,7 +779,7 @@
     },
     "startpage": {
       "unmeasured": true,
-      "reason": "discrimination FAILED: one or both queries parsed zero results; liveness FAILED: no control query returned its known host across 2 attempts (liveness miss for \"python asyncio semaphore example\": docs.python.org absent (HTTP 200, 22104 bytes, soft-block); liveness miss for \"model context protocol\": modelcontextprotocol.io absent (HTTP 200, 22104 bytes, soft-block))"
+      "reason": "discrimination FAILED: one or both queries parsed zero results; liveness FAILED: no control query returned its known host across 2 attempts (liveness miss for \"python asyncio semaphore example\": docs.python.org absent (HTTP 200, 22105 bytes, soft-block); liveness miss for \"model context protocol\": modelcontextprotocol.io absent (HTTP 200, 22105 bytes, soft-block))"
     },
     "ecosia": {
       "unmeasured": true,
@@ -775,24 +787,34 @@
     },
     "seznam": {
       "unmeasured": true,
-      "reason": "discrimination FAILED: one or both queries parsed zero results; liveness FAILED: no control query returned its known host across 2 attempts (liveness miss for \"python asyncio semaphore example\": docs.python.org absent (HTTP 200, 168381 bytes); liveness miss for \"model context protocol\": modelcontextprotocol.io absent (HTTP 200, 283657 bytes))"
+      "reason": "discrimination FAILED: one or both queries parsed zero results; liveness FAILED: no control query returned its known host across 2 attempts (liveness miss for \"python asyncio semaphore example\": docs.python.org absent (HTTP 200, 177173 bytes); liveness miss for \"model context protocol\": modelcontextprotocol.io absent (HTTP 200, 283709 bytes))"
     },
     "yandex": {
       "unmeasured": true,
-      "reason": "discrimination FAILED: two unrelated queries returned host-overlap 1.000 — endpoint is not reading the query; liveness FAILED: no control query returned its known host across 2 attempts (liveness miss for \"python asyncio semaphore example\": docs.python.org absent (HTTP 200, 41581 bytes); liveness miss for \"model context protocol\": modelcontextprotocol.io absent (HTTP 200, 41541 bytes))"
+      "reason": "discrimination FAILED: two unrelated queries returned host-overlap 1.000 — endpoint is not reading the query; liveness FAILED: no control query returned its known host across 2 attempts (liveness miss for \"python asyncio semaphore example\": docs.python.org absent (HTTP 200, 14205 bytes); liveness miss for \"model context protocol\": modelcontextprotocol.io absent (HTTP 200, 14171 bytes))"
     }
   },
   "buyer_intent": {
     "brave": {
       "mcp server invoice": {
         "command": "curl -sS -A \"<chrome-ua>\" 'https://search.brave.com/search?q=mcp%20server%20invoice'",
-        "http": 429,
-        "attempts": 4,
-        "results_parsed": null,
-        "top10": null,
-        "ours_in_top10": null,
-        "unmeasured": true,
-        "reason": "response not usable (HTTP 429, soft-block) after 4 attempts"
+        "http": 200,
+        "attempts": 1,
+        "results_parsed": 22,
+        "top10": [
+          "https://github.com/markslorach/invoice-mcp",
+          "https://mcpservers.org/servers/markslorach/invoice-mcp",
+          "https://www.youtube.com/watch?v=KqGDA6SRZLg",
+          "https://www.invoicemyclients.com/features/mcp-server",
+          "https://mcpmarket.com/server/invoice",
+          "https://mcpservers.org/servers/mcp-zovo-one-s-invoice",
+          "https://zapier.com/mcp/zoho-invoice",
+          "https://github.com/sho-kuroda/invoice-mcp",
+          "https://medium.com/@jsapan4/building-an-mcp-powered-invoice-analytics-tool-in-python-4f6d5ae47fab",
+          "https://invoicedataextraction.com/blog/mcp-server-invoice-extraction"
+        ],
+        "ours_in_top10": [],
+        "zero_results": false
       },
       "mcp server pdf merge": {
         "command": "curl -sS -A \"<chrome-ua>\" 'https://search.brave.com/search?q=mcp%20server%20pdf%20merge'",
@@ -940,12 +962,18 @@
         "command": "curl -sS -A \"<chrome-ua>\" 'https://www.bing.com/search?q=mcp%20server%20invoice&format=rss'",
         "http": 200,
         "attempts": 1,
-        "results_parsed": 4,
+        "results_parsed": 10,
         "top10": [
-          "https://chat.zalo.me/",
-          "https://task.chat.zalo.me/",
-          "https://dual-qos.chat.zalo.me/",
-          "https://tt-profile-wpa.chat.zalo.me/api/social/profile/me-v2"
+          "https://modelcontextprotocol.io/",
+          "https://www.geeksforgeeks.org/artificial-intelligence/model-context-protocol-mcp/",
+          "https://github.com/modelcontextprotocol",
+          "https://en.wikipedia.org/wiki/Model_Context_Protocol",
+          "https://base.vn/blog/model-context-protocol-mcp-la-gi/",
+          "https://mcpservers.org/",
+          "https://finance.vietstock.vn/MCP-ctcp-in-va-bao-bi-my-chau.htm",
+          "https://modelcontextprotocol.io/docs/2026-07-28/develop/build-server",
+          "https://github.com/awslabs/mcp",
+          "https://www.blender.org/lab/mcp-server/"
         ],
         "ours_in_top10": [],
         "zero_results": false
@@ -956,16 +984,16 @@
         "attempts": 1,
         "results_parsed": 10,
         "top10": [
-          "https://thuvienphapluat.vn/cong-van/Cong-nghe-thong-tin/Cong-van-5588-BGDDT-GDPT-2026-huong-dan-giao-duc-tri-tue-nhan-tao-cho-hoc-sinh-pho-thong-721955.aspx",
-          "https://thuvienphapluat.vn/phap-luat/ho-tro-phap-luat/cong-van-5588bgddtgdpt-huong-dan-trien-khai-giao-duc-tri-tue-nhan-tao-cho-hoc-sinh-pho-thong-tu-nam-287656.html",
-          "https://tailieugiaoduc.edu.vn/cong-van-5588bgddt-5015.html",
-          "https://hethongphapluat.com/cong-van-5588-bgddt-gdpt-nam-2026-huong-dan-thuc-hien-noi-dung-giao-duc-tri-tue-nhan-tao-cho-hoc-sinh-pho-thong-tu-nam-hoc-2026-2027-do-bo-giao-duc-va-dao-tao-ban-hanh.html",
-          "https://luatvietnam.vn/giao-duc/cong-van-5588-bgddt-gdpt-2026-huong-dan-trien-khai-giao-duc-tri-tue-nhan-tao-cho-hoc-sinh-pho-thong-445427-d6.html",
-          "https://congluatviet.vn/van-ban/cong-van-2026-huong-dan-giao-duc-tri-tue-nhan-tao-cho-hoc-sinh-pho-thong-5588-bgddt-gdpt",
-          "https://aigiaoduc.vn/goc-thuc-chien/meo-ai-hom-nay/cong-van-5588-lam-ngay-12-tiet-giao-duc-ai-tu-lop-1-den-lop-12-theo-quy-trinh-nay.html",
-          "https://hoatieu.vn/phap-luat/cong-van-5588-bgddt-gdpt-huong-dan-trien-khai-giao-duc-tri-tue-nhan-tao-cho-hoc-sinh-pho-thong-tu-nam-hoc-2026-2027-258173",
-          "https://luatvietnam.vn/tin-van-ban-moi/cong-van-5588-bgddt-khong-duoc-yeu-cau-phu-huynh-hoc-sinh-mua-tai-khoan-thiet-bi-tham-gia-hoat-dong-giao-duc-ai-bat-buoc-186-111856-article.html",
-          "https://ai-hay.vn/van-ban-5588-huong-dan-day-12-tiet-ai-va-tham-muu-dua-vao-ke-hoach-giao-duc-pN1UmId0FV0"
+          "https://modelcontextprotocol.io/",
+          "https://www.geeksforgeeks.org/artificial-intelligence/model-context-protocol-mcp/",
+          "https://github.com/modelcontextprotocol",
+          "https://en.wikipedia.org/wiki/Model_Context_Protocol",
+          "https://base.vn/blog/model-context-protocol-mcp-la-gi/",
+          "https://mcpservers.org/",
+          "https://finance.vietstock.vn/MCP-ctcp-in-va-bao-bi-my-chau.htm",
+          "https://modelcontextprotocol.io/docs/2026-07-28/develop/build-server",
+          "https://github.com/awslabs/mcp",
+          "https://www.blender.org/lab/mcp-server/"
         ],
         "ours_in_top10": [],
         "zero_results": false
@@ -976,16 +1004,16 @@
         "attempts": 1,
         "results_parsed": 10,
         "top10": [
-          "https://zhidao.baidu.com/question/580670653.html",
-          "https://zhidao.baidu.com/question/324109290.html",
-          "https://www.bdgest.com/",
-          "https://www.sps-forum.de/",
-          "https://zhidao.baidu.com/",
-          "https://zhidao.baidu.com/question/2051823165382750347.html",
-          "https://zhidao.baidu.com/question/1810346377233113427.html",
-          "https://zhidao.baidu.com/question/380796392041683244.html",
-          "https://zhidao.baidu.com/question/18198372.html",
-          "https://zhidao.baidu.com/question/65633907.html"
+          "https://vietnam.travel/things-to-do/21-must-try-vietnamese-dishes",
+          "https://www.tasteatlas.com/best-rated-dishes-in-vietnam",
+          "https://foodvietnamese.com/best-food-in-vietnam/",
+          "https://www.asiaodysseytravel.com/vietnam/food.html",
+          "https://www.willflyforfood.net/vietnamese-food-guide-45-must-try-dishes-in-vietnam/",
+          "https://vietnamnomad.com/eat-drink/15-best-vietnamese-food/",
+          "https://guidesandstories.com/best-food-in-vietnam/",
+          "https://www.hungryhuy.com/vietnamese-food-guide/",
+          "https://theplanetd.com/traditional-vietnamese-food/",
+          "https://hnvjourneys.com/blog/cuisine/vietnamese-food-top-30-must-try-dishes"
         ],
         "ours_in_top10": [],
         "zero_results": false
@@ -994,11 +1022,18 @@
         "command": "curl -sS -A \"<chrome-ua>\" 'https://www.bing.com/search?q=mcp%20server%20generate%20quotes&format=rss'",
         "http": 200,
         "attempts": 1,
-        "results_parsed": 3,
+        "results_parsed": 10,
         "top10": [
-          "https://translate.google.com.vn/?hl=en",
-          "https://translate.google.com.vn/details",
-          "https://translate.google.com.vn/.well-known/assetlinks.json"
+          "https://modelcontextprotocol.io/",
+          "https://www.geeksforgeeks.org/artificial-intelligence/model-context-protocol-mcp/",
+          "https://github.com/modelcontextprotocol",
+          "https://en.wikipedia.org/wiki/Model_Context_Protocol",
+          "https://base.vn/blog/model-context-protocol-mcp-la-gi/",
+          "https://mcpservers.org/",
+          "https://finance.vietstock.vn/MCP-ctcp-in-va-bao-bi-my-chau.htm",
+          "https://modelcontextprotocol.io/docs/2026-07-28/develop/build-server",
+          "https://github.com/awslabs/mcp",
+          "https://www.blender.org/lab/mcp-server/"
         ],
         "ours_in_top10": [],
         "zero_results": false
@@ -1007,11 +1042,18 @@
         "command": "curl -sS -A \"<chrome-ua>\" 'https://www.bing.com/search?q=mcp%20timezone%20meeting%20planner&format=rss'",
         "http": 200,
         "attempts": 1,
-        "results_parsed": 3,
+        "results_parsed": 10,
         "top10": [
-          "https://translate.google.com.vn/?hl=en",
-          "https://translate.google.com.vn/details",
-          "https://translate.google.com.vn/.well-known/assetlinks.json"
+          "https://modelcontextprotocol.io/",
+          "https://www.geeksforgeeks.org/artificial-intelligence/model-context-protocol-mcp/",
+          "https://github.com/modelcontextprotocol",
+          "https://en.wikipedia.org/wiki/Model_Context_Protocol",
+          "https://base.vn/blog/model-context-protocol-mcp-la-gi/",
+          "https://mcpservers.org/",
+          "https://finance.vietstock.vn/MCP-ctcp-in-va-bao-bi-my-chau.htm",
+          "https://modelcontextprotocol.io/docs/2026-07-28/develop/build-server",
+          "https://github.com/awslabs/mcp",
+          "https://www.blender.org/lab/mcp-server/"
         ],
         "ours_in_top10": [],
         "zero_results": false
@@ -1022,16 +1064,16 @@
         "attempts": 1,
         "results_parsed": 10,
         "top10": [
-          "https://en.wikipedia.org/wiki/Ordinal_indicator",
-          "https://grokipedia.com/page/Ordinal_indicator",
-          "https://www.wikiwand.com/en/Ordinal_indicator",
-          "https://en.wikipedia.org/wiki/Ordinal_numeral",
-          "https://www.numberanalytics.com/blog/ultimate-guide-ordinal-indicators-digital-typography",
-          "https://in.tradingview.com/scripts/ordinal/",
-          "https://english.stackexchange.com/questions/192804/what-do-we-call-the-rd-in-3%CA%B3%E1%B5%88-and-the-th-in-9%E1%B5%97%CA%B0",
-          "https://everything.explained.today/Ordinal_indicator/",
-          "https://en-academic.com/dic.nsf/enwiki/262432",
-          "https://www.definitions.net/definition/ordinal%20indicator"
+          "https://modelcontextprotocol.io/",
+          "https://www.geeksforgeeks.org/artificial-intelligence/model-context-protocol-mcp/",
+          "https://github.com/modelcontextprotocol",
+          "https://en.wikipedia.org/wiki/Model_Context_Protocol",
+          "https://base.vn/blog/model-context-protocol-mcp-la-gi/",
+          "https://mcpservers.org/",
+          "https://finance.vietstock.vn/MCP-ctcp-in-va-bao-bi-my-chau.htm",
+          "https://modelcontextprotocol.io/docs/2026-07-28/develop/build-server",
+          "https://github.com/awslabs/mcp",
+          "https://www.blender.org/lab/mcp-server/"
         ],
         "ours_in_top10": [],
         "zero_results": false
@@ -1040,10 +1082,18 @@
         "command": "curl -sS -A \"<chrome-ua>\" 'https://www.bing.com/search?q=mcp%20server%20read%20excel%20spreadsheet&format=rss'",
         "http": 200,
         "attempts": 1,
-        "results_parsed": 2,
+        "results_parsed": 10,
         "top10": [
-          "https://www.elevenforum.com/t/open-file-explorer-in-windows-11.20591/",
-          "https://www.elevenforum.com/t/search-in-windows-11-file-explorer.21789/"
+          "https://modelcontextprotocol.io/",
+          "https://www.geeksforgeeks.org/artificial-intelligence/model-context-protocol-mcp/",
+          "https://github.com/modelcontextprotocol",
+          "https://en.wikipedia.org/wiki/Model_Context_Protocol",
+          "https://base.vn/blog/model-context-protocol-mcp-la-gi/",
+          "https://mcpservers.org/",
+          "https://finance.vietstock.vn/MCP-ctcp-in-va-bao-bi-my-chau.htm",
+          "https://modelcontextprotocol.io/docs/2026-07-28/develop/build-server",
+          "https://github.com/awslabs/mcp",
+          "https://www.blender.org/lab/mcp-server/"
         ],
         "ours_in_top10": [],
         "zero_results": false
@@ -1054,16 +1104,16 @@
         "attempts": 1,
         "results_parsed": 10,
         "top10": [
-          "https://en.wikipedia.org/wiki/Mathematical_model",
-          "https://scienceinsights.org/what-is-a-mathematical-model-definition-and-examples/",
-          "https://ubcmath.github.io/MATH360/process/overview.html",
-          "https://www.mathsisfun.com/algebra/mathematical-models.html",
-          "https://people.maths.bris.ac.uk/~madjl/course_text.pdf",
-          "https://www.britannica.com/science/mathematical-model",
-          "https://www.sciencedirect.com/topics/mathematics/mathematical-modeling",
-          "https://www.sciencedirect.com/topics/engineering/mathematical-model",
-          "https://www.sciencedaily.com/terms/mathematical_model.htm",
-          "https://scienceinsights.org/what-is-mathematical-modeling-and-how-is-it-used/"
+          "https://vietnam.travel/things-to-do/21-must-try-vietnamese-dishes",
+          "https://www.tasteatlas.com/best-rated-dishes-in-vietnam",
+          "https://foodvietnamese.com/best-food-in-vietnam/",
+          "https://www.asiaodysseytravel.com/vietnam/food.html",
+          "https://www.willflyforfood.net/vietnamese-food-guide-45-must-try-dishes-in-vietnam/",
+          "https://vietnamnomad.com/eat-drink/15-best-vietnamese-food/",
+          "https://vietnamdiscovery.com/top-vietnam/best-vietnamese-foods/",
+          "https://theplanetd.com/traditional-vietnamese-food/",
+          "https://www.tasteatlas.com/best-rated-street-food-in-vietnam",
+          "https://hnvjourneys.com/blog/cuisine/vietnamese-food-top-30-must-try-dishes"
         ],
         "ours_in_top10": [],
         "zero_results": false
@@ -1074,16 +1124,16 @@
         "attempts": 1,
         "results_parsed": 10,
         "top10": [
-          "https://support.google.com/mail/?hl=en",
-          "https://support.google.com/a/users/answer/9303071?hl=en",
-          "https://support.google.com/docs/answer/2839588?hl=vi",
-          "https://support.google.com/surveys/answer/2372144?hl=en",
-          "https://support.google.com/docs/thread/383639301/h%E1%BB%97-tr%E1%BB%A3-gg-form-b%E1%BB%8B-kh%C3%B3a?hl=en",
-          "https://support.google.com/docs/thread/3080777/how-do-you-change-the-date-format-in-google-forms?hl=en",
-          "https://support.google.com/docs/answer/6281888?hl=th&co=GENIE.Platform%3DDesktop",
-          "https://support.google.com/docs/answer/141062?hl=fr",
-          "https://support.google.com/docs/answer/2917686?hl=vi",
-          "https://support.google.com/chrome/thread/3106621/google-bi%E1%BB%83u-m%E1%BA%ABu-l%E1%BB%97i?hl=vi"
+          "https://modelcontextprotocol.io/",
+          "https://www.geeksforgeeks.org/artificial-intelligence/model-context-protocol-mcp/",
+          "https://github.com/modelcontextprotocol",
+          "https://en.wikipedia.org/wiki/Model_Context_Protocol",
+          "https://base.vn/blog/model-context-protocol-mcp-la-gi/",
+          "https://mcpservers.org/",
+          "https://finance.vietstock.vn/MCP-ctcp-in-va-bao-bi-my-chau.htm",
+          "https://modelcontextprotocol.io/docs/2026-07-28/develop/build-server",
+          "https://github.com/awslabs/mcp",
+          "https://www.blender.org/lab/mcp-server/"
         ],
         "ours_in_top10": [],
         "zero_results": false
@@ -1092,10 +1142,18 @@
         "command": "curl -sS -A \"<chrome-ua>\" 'https://www.bing.com/search?q=mcp%20server%20resume%20builder&format=rss'",
         "http": 200,
         "attempts": 1,
-        "results_parsed": 2,
+        "results_parsed": 10,
         "top10": [
-          "https://translate.google.com.vn/",
-          "https://translate.google.com.vn/details"
+          "https://modelcontextprotocol.io/",
+          "https://www.geeksforgeeks.org/artificial-intelligence/model-context-protocol-mcp/",
+          "https://github.com/modelcontextprotocol",
+          "https://en.wikipedia.org/wiki/Model_Context_Protocol",
+          "https://base.vn/blog/model-context-protocol-mcp-la-gi/",
+          "https://mcpservers.org/",
+          "https://finance.vietstock.vn/MCP-ctcp-in-va-bao-bi-my-chau.htm",
+          "https://modelcontextprotocol.io/docs/2026-07-28/develop/build-server",
+          "https://github.com/awslabs/mcp",
+          "https://www.blender.org/lab/mcp-server/"
         ],
         "ours_in_top10": [],
         "zero_results": false
@@ -1104,16 +1162,18 @@
         "command": "curl -sS -A \"<chrome-ua>\" 'https://www.bing.com/search?q=mcp%20server%20recurring%20invoices&format=rss'",
         "http": 200,
         "attempts": 1,
-        "results_parsed": 8,
+        "results_parsed": 10,
         "top10": [
-          "https://support.google.com/docs/answer/7068618?hl=en&co=GENIE.Platform%3DDesktop",
-          "https://support.google.com/docs/?hl=en",
-          "https://support.google.com/a/users/answer/9282664?hl=en",
-          "https://support.google.com/docs/answer/2494822?hl=en&co=GENIE.Platform%3DDesktop",
-          "https://support.google.com/docs/thread/409775344/google-docs-shortcuts?hl=en",
-          "https://support.google.com/docs/community?hl=en",
-          "https://support.google.com/docs/answer/116338?hl=ja&co=GENIE.Platform%3DDesktop",
-          "https://support.google.com/docs/answer/2375082?hl=en-GB"
+          "https://modelcontextprotocol.io/",
+          "https://www.geeksforgeeks.org/artificial-intelligence/model-context-protocol-mcp/",
+          "https://github.com/modelcontextprotocol",
+          "https://en.wikipedia.org/wiki/Model_Context_Protocol",
+          "https://base.vn/blog/model-context-protocol-mcp-la-gi/",
+          "https://mcpservers.org/",
+          "https://finance.vietstock.vn/MCP-ctcp-in-va-bao-bi-my-chau.htm",
+          "https://modelcontextprotocol.io/docs/2026-07-28/develop/build-server",
+          "https://github.com/awslabs/mcp",
+          "https://www.blender.org/lab/mcp-server/"
         ],
         "ours_in_top10": [],
         "zero_results": false
@@ -1124,16 +1184,16 @@
         "attempts": 1,
         "results_parsed": 10,
         "top10": [
-          "https://chatgpt.com/",
-          "https://chatgpt.com/features",
-          "https://openai.com/index/chatgpt/",
-          "https://openai.com/",
-          "https://en.wikipedia.org/wiki/ChatGPT",
-          "https://chatgpt.com/vi-VN/",
-          "https://chatgpt.com/auth/login",
-          "https://chatgpt.com/download/",
-          "https://openai.com/gpt-5/",
-          "https://openai.com/index/chatgpt-can-now-see-hear-and-speak/"
+          "https://modelcontextprotocol.io/",
+          "https://www.geeksforgeeks.org/artificial-intelligence/model-context-protocol-mcp/",
+          "https://github.com/modelcontextprotocol",
+          "https://en.wikipedia.org/wiki/Model_Context_Protocol",
+          "https://base.vn/blog/model-context-protocol-mcp-la-gi/",
+          "https://mcpservers.org/",
+          "https://finance.vietstock.vn/MCP-ctcp-in-va-bao-bi-my-chau.htm",
+          "https://modelcontextprotocol.io/docs/2026-07-28/develop/build-server",
+          "https://github.com/awslabs/mcp",
+          "https://www.blender.org/lab/mcp-server/"
         ],
         "ours_in_top10": [],
         "zero_results": false
@@ -1144,16 +1204,16 @@
         "attempts": 1,
         "results_parsed": 10,
         "top10": [
-          "https://en.wikipedia.org/wiki/The_Super_Mario_Bros._Movie",
-          "https://www.imdb.com/title/tt6718170/",
-          "https://www.mariowiki.com/The_Super_Mario_Bros._Movie",
-          "https://mario.fandom.com/wiki/The_Super_Mario_Bros._Movie",
-          "https://supermariobrosfilm.fandom.com/wiki/The_Super_Mario_Bros._Movie",
-          "https://www.youtube.com/watch?v=TnGl01FkMMo",
-          "https://moviesanywhere.com/movie/super-mario-bros-2023",
-          "https://www.justwatch.com/us/movie/super-mario-bros-the-movie",
-          "https://www.behindthevoiceactors.com/movies/The-Super-Mario-Bros-Movie/",
-          "https://www.themoviedb.org/movie/502356-the-super-mario-bros-movie"
+          "https://modelcontextprotocol.io/",
+          "https://www.geeksforgeeks.org/artificial-intelligence/model-context-protocol-mcp/",
+          "https://github.com/modelcontextprotocol",
+          "https://en.wikipedia.org/wiki/Model_Context_Protocol",
+          "https://base.vn/blog/model-context-protocol-mcp-la-gi/",
+          "https://mcpservers.org/",
+          "https://finance.vietstock.vn/MCP-ctcp-in-va-bao-bi-my-chau.htm",
+          "https://modelcontextprotocol.io/docs/2026-07-28/develop/build-server",
+          "https://github.com/awslabs/mcp",
+          "https://www.blender.org/lab/mcp-server/"
         ],
         "ours_in_top10": [],
         "zero_results": false
@@ -1164,16 +1224,16 @@
         "attempts": 1,
         "results_parsed": 10,
         "top10": [
-          "https://detail.chiebukuro.yahoo.co.jp/qa/question_detail/q13317752273",
-          "https://detail.chiebukuro.yahoo.co.jp/qa/question_detail/q1018333575",
-          "https://www.zhihu.com/topic/29367883",
-          "https://www.zhihu.com/question/383719766",
-          "https://sensorstechforum.com/de/pokki-start-menu/",
-          "https://sensorstechforum.com/pt/pokki-start-menu/",
-          "https://detail.chiebukuro.yahoo.co.jp/qa/question_detail/q10326824005",
-          "https://detail.chiebukuro.yahoo.co.jp/qa/question_detail/q14310038869",
-          "https://detail.chiebukuro.yahoo.co.jp/qa/question_detail/q12300625972",
-          "https://detail.chiebukuro.yahoo.co.jp/qa/question_detail/q11303248366"
+          "https://modelcontextprotocol.io/",
+          "https://www.geeksforgeeks.org/artificial-intelligence/model-context-protocol-mcp/",
+          "https://github.com/modelcontextprotocol",
+          "https://en.wikipedia.org/wiki/Model_Context_Protocol",
+          "https://base.vn/blog/model-context-protocol-mcp-la-gi/",
+          "https://mcpservers.org/",
+          "https://finance.vietstock.vn/MCP-ctcp-in-va-bao-bi-my-chau.htm",
+          "https://modelcontextprotocol.io/docs/2026-07-28/develop/build-server",
+          "https://github.com/awslabs/mcp",
+          "https://www.blender.org/lab/mcp-server/"
         ],
         "ours_in_top10": [],
         "zero_results": false
@@ -1184,16 +1244,16 @@
         "attempts": 1,
         "results_parsed": 10,
         "top10": [
-          "https://vietnam.travel/things-to-do/21-must-try-vietnamese-dishes",
-          "https://www.tasteatlas.com/best-rated-dishes-in-vietnam",
-          "https://foodvietnamese.com/best-food-in-vietnam/",
-          "https://www.asiaodysseytravel.com/vietnam/food.html",
-          "https://www.govietnam.tours/vietnamese-food-guide-21-dishes-you-cant-miss/",
-          "https://vietnamdiscovery.com/top-vietnam/best-vietnamese-foods/",
-          "https://www.theculinarytourists.com/must-try-foods/vietnam-top10",
-          "https://theplanetd.com/traditional-vietnamese-food/",
-          "https://cookingwithlane.com/popular-vietnamese-foods/",
-          "https://www.willflyforfood.net/vietnamese-food-guide-45-must-try-dishes-in-vietnam/"
+          "https://modelcontextprotocol.io/",
+          "https://www.geeksforgeeks.org/artificial-intelligence/model-context-protocol-mcp/",
+          "https://github.com/modelcontextprotocol",
+          "https://en.wikipedia.org/wiki/Model_Context_Protocol",
+          "https://base.vn/blog/model-context-protocol-mcp-la-gi/",
+          "https://mcpservers.org/",
+          "https://finance.vietstock.vn/MCP-ctcp-in-va-bao-bi-my-chau.htm",
+          "https://modelcontextprotocol.io/docs/2026-07-28/develop/build-server",
+          "https://github.com/awslabs/mcp",
+          "https://www.blender.org/lab/mcp-server/"
         ],
         "ours_in_top10": [],
         "zero_results": false
@@ -1206,16 +1266,16 @@
         "attempts": 1,
         "results_parsed": 10,
         "top10": [
-          "https://openai.com/ko-KR/gpt-5/",
-          "https://openai.com/ko-KR/",
-          "https://help.openai.com/en/collections/3943089-account-login-and-billing",
-          "https://platform.openai.com/playground/chat?models=gpt-4o",
-          "https://help.openai.com/en/collections/3742473-chatgpt",
-          "https://devday.openai.com/",
-          "https://platform.openai.com/apps",
-          "https://community.openai.com/",
-          "https://community.openai.com/t/i-never-subscribed-to-chat-gpt-but-they-charge-me-twice/176974",
-          "https://developers.openai.com/api/docs/models/gpt-realtime-2"
+          "https://modelcontextprotocol.io/",
+          "https://www.geeksforgeeks.org/artificial-intelligence/model-context-protocol-mcp/",
+          "https://github.com/modelcontextprotocol",
+          "https://en.wikipedia.org/wiki/Model_Context_Protocol",
+          "https://base.vn/blog/model-context-protocol-mcp-la-gi/",
+          "https://mcpservers.org/",
+          "https://finance.vietstock.vn/MCP-ctcp-in-va-bao-bi-my-chau.htm",
+          "https://modelcontextprotocol.io/docs/2026-07-28/develop/build-server",
+          "https://github.com/awslabs/mcp",
+          "https://www.blender.org/lab/mcp-server/"
         ],
         "ours_in_top10": [],
         "zero_results": false
@@ -1226,16 +1286,16 @@
         "attempts": 1,
         "results_parsed": 10,
         "top10": [
-          "https://www.zhihu.com/",
-          "https://jingyan.baidu.com/article/eae07827d1ff0e5fec5485bb.html",
-          "https://www.zhihu.com/question/564794300",
-          "https://jingyan.baidu.com/article/15622f244e9c16bcfcbea5fd.html",
-          "https://www.zhihu.com/question/20498753",
-          "https://www.zhihu.com/question/55617612",
-          "https://jingyan.baidu.com/article/1876c852a779bfc80b13769e.html",
-          "https://jingyan.baidu.com/article/7082dc1c0cb152e40a89bd13.html",
-          "https://www.zhihu.com/question/1897947157379647166",
-          "https://jingyan.baidu.com/article/3c48dd344bd945a00be358b5.html"
+          "https://modelcontextprotocol.io/",
+          "https://www.geeksforgeeks.org/artificial-intelligence/model-context-protocol-mcp/",
+          "https://github.com/modelcontextprotocol",
+          "https://en.wikipedia.org/wiki/Model_Context_Protocol",
+          "https://base.vn/blog/model-context-protocol-mcp-la-gi/",
+          "https://mcpservers.org/",
+          "https://finance.vietstock.vn/MCP-ctcp-in-va-bao-bi-my-chau.htm",
+          "https://modelcontextprotocol.io/docs/2026-07-28/develop/build-server",
+          "https://github.com/awslabs/mcp",
+          "https://www.blender.org/lab/mcp-server/"
         ],
         "ours_in_top10": [],
         "zero_results": false
@@ -1247,15 +1307,15 @@
         "results_parsed": 10,
         "top10": [
           "https://vietnam.travel/things-to-do/21-must-try-vietnamese-dishes",
-          "https://foodvietnamese.com/best-food-in-vietnam/",
           "https://www.tasteatlas.com/best-rated-dishes-in-vietnam",
-          "https://vietnamdiscovery.com/top-vietnam/best-vietnamese-foods/",
+          "https://foodvietnamese.com/best-food-in-vietnam/",
           "https://www.asiaodysseytravel.com/vietnam/food.html",
-          "https://theplanetd.com/traditional-vietnamese-food/",
           "https://www.willflyforfood.net/vietnamese-food-guide-45-must-try-dishes-in-vietnam/",
-          "https://vietnamnomad.com/eat-drink/15-best-vietnamese-food/",
+          "https://theplanetd.com/traditional-vietnamese-food/",
+          "https://www.tasteatlas.com/best-rated-street-food-in-vietnam",
           "https://www.theculinarytourists.com/must-try-foods/vietnam-top10",
-          "https://cookingwithlane.com/popular-vietnamese-foods/"
+          "https://vietnamnomad.com/eat-drink/15-best-vietnamese-food/",
+          "https://www.2foodtrippers.com/what-to-eat-in-vietnam/"
         ],
         "ours_in_top10": [],
         "zero_results": false
@@ -1266,16 +1326,16 @@
         "attempts": 1,
         "results_parsed": 10,
         "top10": [
-          "https://forums.commentcamarche.net/forum/affich-16382721-qui-sont-les-6-amis-affiches-sur-le-profil-facebook",
-          "https://forums.commentcamarche.net/forum/affich-32384193-supprimer-definitivement-un-compte-facebook-verrouille",
-          "https://es.ccm.net/aplicaciones-e-internet/redes-sociales-y-mensajeria/1704-codigo-de-confirmacion-de-facebook-que-hacer-si-no-te-llega/",
-          "https://es.ccm.net/aplicaciones-e-internet/redes-sociales-y-mensajeria/1702-como-reactivar-tu-cuenta-de-facebook-si-la-eliminaste/",
-          "https://www.zdnet.fr/pratique/comment-supprimer-definitivement-votre-compte-facebook-39932301.htm",
-          "https://www.zdnet.fr/facebook-4000085268q.htm",
-          "https://forums.commentcamarche.net/forum/affich-11538947-facebook-page-blanche",
-          "https://forums.commentcamarche.net/forum/affich-8126991-pas-de-son-video-facebook",
-          "https://forums.commentcamarche.net/forum/affich-26438353-messages-de-facebook-sur-boite-mail",
-          "https://forums.commentcamarche.net/forum/affich-25495048-invitation-envoyee-sur-facebook-comment-y-acceder"
+          "https://modelcontextprotocol.io/",
+          "https://www.geeksforgeeks.org/artificial-intelligence/model-context-protocol-mcp/",
+          "https://github.com/modelcontextprotocol",
+          "https://en.wikipedia.org/wiki/Model_Context_Protocol",
+          "https://base.vn/blog/model-context-protocol-mcp-la-gi/",
+          "https://mcpservers.org/",
+          "https://finance.vietstock.vn/MCP-ctcp-in-va-bao-bi-my-chau.htm",
+          "https://modelcontextprotocol.io/docs/2026-07-28/develop/build-server",
+          "https://github.com/awslabs/mcp",
+          "https://www.blender.org/lab/mcp-server/"
         ],
         "ours_in_top10": [],
         "zero_results": false
@@ -1284,16 +1344,18 @@
         "command": "curl -sS -A \"<chrome-ua>\" 'https://www.bing.com/search?q=mcp%20timezone%20meeting%20planner'",
         "http": 200,
         "attempts": 1,
-        "results_parsed": 8,
+        "results_parsed": 10,
         "top10": [
-          "https://www.how2shout.com/how-to/how-to-get-help-in-windows-11.html",
-          "https://www.wikihow.com/Get-Help-in-Windows-11",
-          "https://thetechgorilla.com/how-to-get-help-in-windows-11/",
-          "https://www.needsomefun.net/how-to-get-help-in-windows-11/",
-          "https://www.addictivetips.com/windows-tips/how-to-get-help-in-windows/",
-          "https://www.technobezz.com/how-to-get-help-in-windows-11",
-          "https://www.techcommuters.com/how-to-get-help-in-windows-11/",
-          "https://www.kapilarya.com/how-to-get-help-in-windows-11"
+          "https://modelcontextprotocol.io/",
+          "https://www.geeksforgeeks.org/artificial-intelligence/model-context-protocol-mcp/",
+          "https://github.com/modelcontextprotocol",
+          "https://en.wikipedia.org/wiki/Model_Context_Protocol",
+          "https://base.vn/blog/model-context-protocol-mcp-la-gi/",
+          "https://mcpservers.org/",
+          "https://finance.vietstock.vn/MCP-ctcp-in-va-bao-bi-my-chau.htm",
+          "https://modelcontextprotocol.io/docs/2026-07-28/develop/build-server",
+          "https://github.com/awslabs/mcp",
+          "https://www.blender.org/lab/mcp-server/"
         ],
         "ours_in_top10": [],
         "zero_results": false
@@ -1304,16 +1366,16 @@
         "attempts": 1,
         "results_parsed": 10,
         "top10": [
-          "https://masothue.com/4001026657-cong-ty-tnhh-dau-tu-bao-ly",
-          "https://vntax.net/4001026657-cong-ty-tnhh-dau-tu-bao-ly",
-          "https://www.facebook.com/samngoclinhbaoly/posts/-c%C3%B4ng-ty-tnhh-%C4%91%E1%BA%A7u-t%C6%B0-b%E1%BA%A3o-ly-s%C3%A2m-ng%E1%BB%8Dc-linh-b%E1%BA%A3o-lytuy%E1%BB%83n-d%E1%BB%A5ng-nhi%E1%BB%81u-v%E1%BB%8B-tr%C3%AD-%C4%91%E1%BA%A7u-n%C4%83m-/1356243043211044/",
-          "https://vieclamdanang.vn/cong-ty-tnhh-mot-thanh-vien-bao-ly.html",
-          "https://masothue.com/0108464896-cong-ty-tnhh-dau-tu-va-quan-ly-bao-lam-holdings",
-          "https://agjob.vn/index.php/nha-tuyen-dung/cong-ty-tnhh-dau-tu-bao-ly-tuyen-dung",
-          "https://agjob.vn/nha-tuyen-dung/cong-ty-tnhh-dau-tu-bao-ly-tuyen-dung",
-          "https://danang43.edu.vn/cong-ty-tnhh-mot-thanh-vien-bao-ly-tuyen-dung-8117.html",
-          "https://www.facebook.com/vieclamdanang43/posts/c%C3%B4ng-ty-tnhh-%C4%91%E1%BA%A7u-t%C6%B0-b%E1%BA%A3o-ly-tuy%E1%BB%83n-d%E1%BB%A5ng-nh%C3%A2n-vi%C3%AAn-content-creator-9-20trth-nh%C3%A2n-vi/1382258687278595/",
-          "https://vn.joboko.com/cong-ty-tnhh-dau-tu-bao-ly-xci899639"
+          "https://modelcontextprotocol.io/",
+          "https://www.geeksforgeeks.org/artificial-intelligence/model-context-protocol-mcp/",
+          "https://github.com/modelcontextprotocol",
+          "https://en.wikipedia.org/wiki/Model_Context_Protocol",
+          "https://base.vn/blog/model-context-protocol-mcp-la-gi/",
+          "https://mcpservers.org/",
+          "https://finance.vietstock.vn/MCP-ctcp-in-va-bao-bi-my-chau.htm",
+          "https://modelcontextprotocol.io/docs/2026-07-28/develop/build-server",
+          "https://github.com/awslabs/mcp",
+          "https://www.blender.org/lab/mcp-server/"
         ],
         "ours_in_top10": [],
         "zero_results": false
@@ -1324,16 +1386,16 @@
         "attempts": 1,
         "results_parsed": 10,
         "top10": [
-          "https://viettelpost.com.vn/tra-cuu-hanh-trinh-don/",
-          "https://viettelpost.com.vn/",
-          "https://en.viettelpost.com.vn/tra-cuu-hanh-trinh-don",
-          "https://en.viettelpost.com.vn/",
-          "https://mail.viettelpost.com.vn/",
-          "https://sv2023.viettelpost.com.vn/",
-          "https://viettelpost.com.vn/tra-cuoc-va-thoi-gian-van-chuyen/",
-          "https://viettelpost.com.vn/tim-kiem-buu-cuc/",
-          "https://viettelpost.com.vn/lien-he/",
-          "https://viettelpost.com.vn/dich_vu/van-chuyen-hoa-toc/"
+          "https://modelcontextprotocol.io/",
+          "https://www.geeksforgeeks.org/artificial-intelligence/model-context-protocol-mcp/",
+          "https://github.com/modelcontextprotocol",
+          "https://en.wikipedia.org/wiki/Model_Context_Protocol",
+          "https://base.vn/blog/model-context-protocol-mcp-la-gi/",
+          "https://mcpservers.org/",
+          "https://finance.vietstock.vn/MCP-ctcp-in-va-bao-bi-my-chau.htm",
+          "https://modelcontextprotocol.io/docs/2026-07-28/develop/build-server",
+          "https://github.com/awslabs/mcp",
+          "https://www.blender.org/lab/mcp-server/"
         ],
         "ours_in_top10": [],
         "zero_results": false
@@ -1344,16 +1406,16 @@
         "attempts": 1,
         "results_parsed": 10,
         "top10": [
-          "https://kaikeiplus.jp/topic/kaikeishi/3097/",
-          "https://kaikeiplus.jp/topic/zeirishi/921/",
-          "https://kaikeiplus.jp/topic/zeirishi/359/",
-          "https://kaikeiplus.jp/topic/kaikeishi/635/",
-          "https://kaikeiplus.jp/topic/interview/13/",
-          "https://kaikeiplus.jp/topic/kaikeishi/643/",
-          "https://kaikeiplus.jp/topic/zeirishi/1103/",
-          "https://kaikeiplus.jp/jobs/tokyo",
-          "https://kaikeiplus.jp/office/390/",
-          "https://kaikeiplus.jp/office/17205/"
+          "https://www.zhihu.com/question/24790852",
+          "https://www.zhihu.com/question/19581089",
+          "https://zhidao.baidu.com/question/1830391065414523220.html",
+          "https://zhidao.baidu.com/question/2215483994157458188.html",
+          "https://www.zhihu.com/question/359009187",
+          "https://www.zhihu.com/question/347202458/answers/updated",
+          "https://www.zhihu.com/question/479609668",
+          "https://www.zhihu.com/question/21425170",
+          "https://www.zhihu.com/question/28220417",
+          "https://www.zhihu.com/question/27264726"
         ],
         "ours_in_top10": [],
         "zero_results": false
@@ -1364,16 +1426,16 @@
         "attempts": 1,
         "results_parsed": 10,
         "top10": [
-          "https://devforum.zoom.us/c/api-and-webhooks/8",
-          "https://www.zhihu.com/question/379827193",
-          "https://www.zhihu.com/question/526676715",
-          "https://devforum.zoom.us/t/how-do-i-add-a-1000-users-to-my-zoom-app/141483",
-          "https://www.zhihu.com/question/481108836",
-          "https://devforum.zoom.us/c/zoom-apps/39",
-          "https://devforum.zoom.us/latest",
-          "https://devforum.zoom.us/t/zoom-office-365-graph-api-and-domain-association-errors/135596",
-          "https://devforum.zoom.us/t/restricting-participants-to-only-those-invited/102388",
-          "https://devforum.zoom.us/t/zoom/74767"
+          "https://modelcontextprotocol.io/",
+          "https://www.geeksforgeeks.org/artificial-intelligence/model-context-protocol-mcp/",
+          "https://github.com/modelcontextprotocol",
+          "https://en.wikipedia.org/wiki/Model_Context_Protocol",
+          "https://base.vn/blog/model-context-protocol-mcp-la-gi/",
+          "https://mcpservers.org/",
+          "https://finance.vietstock.vn/MCP-ctcp-in-va-bao-bi-my-chau.htm",
+          "https://modelcontextprotocol.io/docs/2026-07-28/develop/build-server",
+          "https://github.com/awslabs/mcp",
+          "https://www.blender.org/lab/mcp-server/"
         ],
         "ours_in_top10": [],
         "zero_results": false
@@ -1384,16 +1446,16 @@
         "attempts": 1,
         "results_parsed": 10,
         "top10": [
-          "https://dailychickens.com/silkie-chicken-eggs/",
-          "https://www.backyardchickens.com/articles/silkie-eggs-all-you-need-to-know-and-more.77941/",
-          "https://chickenstarter.com/silkie-chickens-egg-guide/",
-          "https://chickenjournal.com/silkie-chicken/",
-          "https://silverhomestead.com/silkie-chickens/",
-          "https://www.freedomrangerhatchery.com/shop/product/silkie-hatching-eggs/",
-          "https://grassfieldhomestead.com/the-ultimate-silkie-chicken-eggs-guide-production-colors-and-incubation-secrets/",
-          "https://backyardchickencoach.com/do-silkie-chickens-lay-eggs/",
-          "https://bradleysfinediner.com/fresh-meat/poultry/chicken/what-color-are-silkie-chicken-eggs/",
-          "https://akersfarm.com/products/silkie-hatching-eggs-hens-choice"
+          "https://modelcontextprotocol.io/",
+          "https://www.geeksforgeeks.org/artificial-intelligence/model-context-protocol-mcp/",
+          "https://github.com/modelcontextprotocol",
+          "https://en.wikipedia.org/wiki/Model_Context_Protocol",
+          "https://base.vn/blog/model-context-protocol-mcp-la-gi/",
+          "https://mcpservers.org/",
+          "https://finance.vietstock.vn/MCP-ctcp-in-va-bao-bi-my-chau.htm",
+          "https://modelcontextprotocol.io/docs/2026-07-28/develop/build-server",
+          "https://github.com/awslabs/mcp",
+          "https://www.blender.org/lab/mcp-server/"
         ],
         "ours_in_top10": [],
         "zero_results": false
@@ -1404,16 +1466,16 @@
         "attempts": 1,
         "results_parsed": 10,
         "top10": [
-          "https://www.walmart.com/store-finder",
-          "https://www.walmart.com/",
-          "https://isitnearme.com/walmart-near-me/",
-          "https://corporate.walmart.com/askwalmart/how-do-i-find-information-about-my-local-stores",
-          "https://www.storeopeninghours.com/retailers/walmart",
-          "https://www.walmartlocator.com/walmart-map/",
-          "https://www.storesinfo.com/walmart/store-locator/",
-          "https://www.walmart.com/all-departments",
-          "https://www.walmartlocator.com/store-directory/",
-          "https://mapsnearme.com/walmart"
+          "https://modelcontextprotocol.io/",
+          "https://www.geeksforgeeks.org/artificial-intelligence/model-context-protocol-mcp/",
+          "https://github.com/modelcontextprotocol",
+          "https://en.wikipedia.org/wiki/Model_Context_Protocol",
+          "https://base.vn/blog/model-context-protocol-mcp-la-gi/",
+          "https://mcpservers.org/",
+          "https://finance.vietstock.vn/MCP-ctcp-in-va-bao-bi-my-chau.htm",
+          "https://modelcontextprotocol.io/docs/2026-07-28/develop/build-server",
+          "https://github.com/awslabs/mcp",
+          "https://www.blender.org/lab/mcp-server/"
         ],
         "ours_in_top10": [],
         "zero_results": false
@@ -1424,16 +1486,16 @@
         "attempts": 1,
         "results_parsed": 10,
         "top10": [
-          "https://thuvienphapluat.vn/van-ban/Thuong-mai/Nghi-dinh-37-2026-ND-CP-bien-phap-to-chuc-Luat-Chat-luong-san-pham-hang-hoa-691138.aspx",
-          "https://hethongphapluat.com/nghi-dinh-37-2026-nd-cp-huong-dan-luat-chat-luong-san-pham-hang-hoa/dieu-42",
-          "https://chinhphu.vn/?pageid=27160&docid=216764",
-          "https://vncheck.vn/blog/nghi-dinh-37-2026-nd-cp-nhan-dien-tu-qr-nfc-datamatrix-rfid",
-          "https://thuvienphapluat.vn/phap-luat/chi-tiet-cac-noi-dung-bat-buoc-phai-the-hien-tren-nhan-thuc-pham-theo-nghi-dinh-37-2026-moi-nhat-642231-278450.html",
-          "https://luatvietnam.vn/thuong-mai/nghi-dinh-37-2026-nd-cp-quy-dinh-chi-tiet-luat-chat-luong-san-pham-hang-hoa-424821-d1.html",
-          "https://mst.gov.vn/hoi-dap/ve-ghi-nhan-hang-hoa-theo-nghi-dinh-372026nd-cp-17760.htm",
-          "https://congbao.chinhphu.vn/van-ban/nghi-dinh-so-37-2026-nd-cp-468865.htm",
-          "https://insonnguyen.vn/nghi-dinh-37-2026-quy-dinh-tem-phu/",
-          "https://mst.gov.vn/hoi-dap/ghi-nhan-hang-hoa-theo-nghi-dinh-372026nd-cp-17805.htm"
+          "https://modelcontextprotocol.io/",
+          "https://www.geeksforgeeks.org/artificial-intelligence/model-context-protocol-mcp/",
+          "https://github.com/modelcontextprotocol",
+          "https://en.wikipedia.org/wiki/Model_Context_Protocol",
+          "https://base.vn/blog/model-context-protocol-mcp-la-gi/",
+          "https://mcpservers.org/",
+          "https://finance.vietstock.vn/MCP-ctcp-in-va-bao-bi-my-chau.htm",
+          "https://modelcontextprotocol.io/docs/2026-07-28/develop/build-server",
+          "https://github.com/awslabs/mcp",
+          "https://www.blender.org/lab/mcp-server/"
         ],
         "ours_in_top10": [],
         "zero_results": false
@@ -1444,16 +1506,16 @@
         "attempts": 1,
         "results_parsed": 10,
         "top10": [
-          "https://support.google.com/?hl=en",
-          "https://support.google.com/a/users/answer/9303071?hl=en",
-          "https://support.google.com/a/users/answer/13022292?hl=en",
-          "https://support.google.com/docs/?hl=en",
-          "https://support.google.com/drive/answer/10838124?hl=en",
-          "https://support.google.com/docs/answer/7068618?hl=en&co=GENIE.Platform%3DDesktop",
-          "https://support.google.com/docs/answer/3093343?hl=en",
-          "https://support.google.com/docs/answer/6388102?hl=en&co=GENIE.Platform%3DDesktop",
-          "https://support.google.com/a/users/answer/9282664?hl=en",
-          "https://support.google.com/docs/answer/13447609?hl=en"
+          "https://modelcontextprotocol.io/",
+          "https://www.geeksforgeeks.org/artificial-intelligence/model-context-protocol-mcp/",
+          "https://github.com/modelcontextprotocol",
+          "https://en.wikipedia.org/wiki/Model_Context_Protocol",
+          "https://base.vn/blog/model-context-protocol-mcp-la-gi/",
+          "https://mcpservers.org/",
+          "https://finance.vietstock.vn/MCP-ctcp-in-va-bao-bi-my-chau.htm",
+          "https://modelcontextprotocol.io/docs/2026-07-28/develop/build-server",
+          "https://github.com/awslabs/mcp",
+          "https://www.blender.org/lab/mcp-server/"
         ],
         "ours_in_top10": [],
         "zero_results": false
@@ -1464,16 +1526,16 @@
         "attempts": 1,
         "results_parsed": 10,
         "top10": [
-          "https://github.com/0xk1h0/ChatGPT_DAN",
-          "https://github.com/miuuyy/codex-chatgpt-web",
-          "https://www.zhihu.com/question/2075903044676315058",
-          "https://www.reddit.com/r/GuildWars3/",
-          "https://www.zhihu.com/question/2078984478073136308",
-          "https://www.reddit.com/r/ChatGPT/top/",
-          "https://github.com/topics/chatgpt-api",
-          "https://github.com/f/prompts.chat",
-          "https://github.com/rasbt/LLMs-from-scratch",
-          "https://github.com/TheR1D/shell_gpt"
+          "https://modelcontextprotocol.io/",
+          "https://www.geeksforgeeks.org/artificial-intelligence/model-context-protocol-mcp/",
+          "https://github.com/modelcontextprotocol",
+          "https://en.wikipedia.org/wiki/Model_Context_Protocol",
+          "https://base.vn/blog/model-context-protocol-mcp-la-gi/",
+          "https://mcpservers.org/",
+          "https://finance.vietstock.vn/MCP-ctcp-in-va-bao-bi-my-chau.htm",
+          "https://modelcontextprotocol.io/docs/2026-07-28/develop/build-server",
+          "https://github.com/awslabs/mcp",
+          "https://www.blender.org/lab/mcp-server/"
         ],
         "ours_in_top10": [],
         "zero_results": false
@@ -1484,16 +1546,16 @@
         "attempts": 1,
         "results_parsed": 10,
         "top10": [
-          "https://es.ccm.net/forum/affich-1938141-facebook-no-me-permite-crear-una-cuenta",
-          "https://forums.commentcamarche.net/forum/affich-38130243-facebook-verrouille-et-code-recu-par-whatsapp",
-          "https://forums.commentcamarche.net/forum/affich-37996695-facebook-disparition-des-jeux",
-          "https://es.ccm.net/aplicaciones-e-internet/redes-sociales-y-mensajeria/1704-codigo-de-confirmacion-de-facebook-que-hacer-si-no-te-llega/",
-          "https://www.zdnet.fr/facebook-4000085268q.htm",
-          "https://www.zdnet.fr/pratique/comment-supprimer-definitivement-votre-compte-facebook-39932301.htm",
-          "https://forums.commentcamarche.net/forum/affich-25495048-invitation-envoyee-sur-facebook-comment-y-acceder",
-          "https://forums.commentcamarche.net/forum/affich-20437295-identifier-l-administrateur-d-1-page-facebook",
-          "https://es.ccm.net/aplicaciones-e-internet/redes-sociales-y-mensajeria/3476-como-eliminar-una-pagina-de-facebook/",
-          "https://es.ccm.net/aplicaciones-e-internet/redes-sociales-y-mensajeria/4000-permitir-que-usuarios-te-etiqueten-en-fotos-publicadas-en-tu-pagina-de-facebook/"
+          "https://modelcontextprotocol.io/",
+          "https://www.geeksforgeeks.org/artificial-intelligence/model-context-protocol-mcp/",
+          "https://github.com/modelcontextprotocol",
+          "https://en.wikipedia.org/wiki/Model_Context_Protocol",
+          "https://base.vn/blog/model-context-protocol-mcp-la-gi/",
+          "https://mcpservers.org/",
+          "https://finance.vietstock.vn/MCP-ctcp-in-va-bao-bi-my-chau.htm",
+          "https://modelcontextprotocol.io/docs/2026-07-28/develop/build-server",
+          "https://github.com/awslabs/mcp",
+          "https://www.blender.org/lab/mcp-server/"
         ],
         "ours_in_top10": [],
         "zero_results": false
@@ -1503,8 +1565,8 @@
       "mcp server invoice": {
         "command": "curl -sS -A \"<chrome-ua>\" 'https://old-search.marginalia.nu/search?query=mcp%20server%20invoice'",
         "http": 200,
-        "attempts": 2,
-        "results_parsed": 48,
+        "attempts": 1,
+        "results_parsed": 43,
         "top10": [
           "https://www.zoho.com/au/invoice/help/ai/zoho-mcp-integration.html",
           "https://www.zoho.com/au/books/help/mcp/zoho-books-mcp.html",
@@ -1523,8 +1585,8 @@
       "mcp server pdf merge": {
         "command": "curl -sS -A \"<chrome-ua>\" 'https://old-search.marginalia.nu/search?query=mcp%20server%20pdf%20merge'",
         "http": 200,
-        "attempts": 4,
-        "results_parsed": 47,
+        "attempts": 2,
+        "results_parsed": 51,
         "top10": [
           "https://www.merge.dev/connectors/adobe_pdf_services",
           "https://www.merge.dev/connectors/canva",
@@ -1544,18 +1606,18 @@
         "command": "curl -sS -A \"<chrome-ua>\" 'https://old-search.marginalia.nu/search?query=claude%20mcp%20expense%20tracker'",
         "http": 200,
         "attempts": 4,
-        "results_parsed": 37,
+        "results_parsed": 39,
         "top10": [
+          "https://glama.ai/mcp/servers/parnajaswanth227/Expense_Tracker",
+          "https://glama.ai/mcp/servers/shaikhspeare/wanderlog-mcp",
+          "https://glama.ai/mcp/servers/Vellarasan/hevy-mcp",
+          "https://glama.ai/mcp/servers/Savvly/savvly-mcp",
+          "https://glama.ai/mcp/servers/koalyptus/job-hunting-organizer",
           "https://www.merge.dev/connectors/excel",
           "https://www.merge.dev/connectors/freshbooks",
           "https://www.merge.dev/blog/knowledge-base-integration",
-          "https://micro.mu/mcp",
           "https://identosphere.net/web3/",
-          "https://davorg.theplanetarium.org/",
-          "https://midday.ai/mcp/",
-          "https://amitkoth.com/claude-code-vs-cursor-enterprise/",
-          "https://ocdevel.com/mlg/mla-29",
-          "https://rize.io/blog/clockify-alternatives"
+          "https://davorg.theplanetarium.org/"
         ],
         "ours_in_top10": [],
         "zero_results": false
@@ -1563,16 +1625,16 @@
       "mcp server generate quotes": {
         "command": "curl -sS -A \"<chrome-ua>\" 'https://old-search.marginalia.nu/search?query=mcp%20server%20generate%20quotes'",
         "http": 200,
-        "attempts": 2,
+        "attempts": 1,
         "results_parsed": 39,
         "top10": [
           "https://picsart.com/api-platform/docs/mcp",
           "https://andrewbaker.ninja/2026/03/01/how-to-set-up-mcp-filesystem-access-in-claude-desktop/",
           "https://forum.cursor.com/t/help-getting-my-own-mcp-server-running/120533",
           "https://forum.cursor.com/t/guide-a-simpler-more-autonomous-ai-workflow-for-cursor-new-update/70688",
-          "https://developer.microsoft.com/blog/10-microsoft-mcp-servers-to-accelerate-your-development-workflow",
           "https://24days.in/umbraco-cms/2025/mcp-usable-or-phase/",
           "https://www.philschmid.de/mcp-cli",
+          "https://developer.microsoft.com/blog/10-microsoft-mcp-servers-to-accelerate-your-development-workflow",
           "https://www.merge.dev/connectors/doordash",
           "https://www.merge.dev/connectors/straker",
           "https://www.merge.dev/connectors/google_meet"
@@ -1583,9 +1645,10 @@
       "mcp timezone meeting planner": {
         "command": "curl -sS -A \"<chrome-ua>\" 'https://old-search.marginalia.nu/search?query=mcp%20timezone%20meeting%20planner'",
         "http": 200,
-        "attempts": 1,
-        "results_parsed": 26,
+        "attempts": 2,
+        "results_parsed": 31,
         "top10": [
+          "https://glama.ai/mcp/connectors/com.moltlinestudio/timeops",
           "https://product.akiflow.com/changelog/robot-meeting-assistant-everywhere",
           "https://product.akiflow.com/changelog/compass-work-with-ai-task-locations-and-a-stronger-mobile",
           "https://product.akiflow.com/changelog",
@@ -1594,8 +1657,7 @@
           "https://ik.am/entries/846/en",
           "https://ik.am/entries/843/en",
           "https://ik.am/entries/843",
-          "https://www.merge.dev/changelog",
-          "https://gptme.org/docs/releases/v0.32.0.html"
+          "https://www.merge.dev/changelog"
         ],
         "ours_in_top10": [],
         "zero_results": false
@@ -1604,7 +1666,7 @@
         "command": "curl -sS -A \"<chrome-ua>\" 'https://old-search.marginalia.nu/search?query=mcp%20server%20time%20tracking'",
         "http": 200,
         "attempts": 1,
-        "results_parsed": 56,
+        "results_parsed": 55,
         "top10": [
           "https://super-productivity.com/blog/best-open-source-time-tracking-apps-2026/",
           "https://super-productivity.com/compare/vikunja-vs-super-productivity/",
@@ -1623,6 +1685,26 @@
       "mcp server read excel spreadsheet": {
         "command": "curl -sS -A \"<chrome-ua>\" 'https://old-search.marginalia.nu/search?query=mcp%20server%20read%20excel%20spreadsheet'",
         "http": 200,
+        "attempts": 1,
+        "results_parsed": 42,
+        "top10": [
+          "https://www.merge.dev/connectors/excel",
+          "https://www.merge.dev/changelog",
+          "https://grid.is/engine",
+          "https://grid.is/agent-tools",
+          "https://grid.is/ai-integration",
+          "https://grid.is/",
+          "https://sel2in.com/news/prog/ai_llm_mcp_servers",
+          "https://www.metabase.com/integrations/excel",
+          "https://www.metabase.com/lp/metabase-vs-omni",
+          "https://awesome.ecosyste.ms/lists/wilsonfreitas/awesome-quant"
+        ],
+        "ours_in_top10": [],
+        "zero_results": false
+      },
+      "claude mcp currency converter": {
+        "command": "curl -sS -A \"<chrome-ua>\" 'https://old-search.marginalia.nu/search?query=claude%20mcp%20currency%20converter'",
+        "http": 200,
         "attempts": 4,
         "results_parsed": null,
         "top10": null,
@@ -1630,42 +1712,22 @@
         "unmeasured": true,
         "reason": "response not usable (HTTP 200, soft-block) after 4 attempts"
       },
-      "claude mcp currency converter": {
-        "command": "curl -sS -A \"<chrome-ua>\" 'https://old-search.marginalia.nu/search?query=claude%20mcp%20currency%20converter'",
-        "http": 200,
-        "attempts": 3,
-        "results_parsed": 37,
-        "top10": [
-          "https://blog.logrocket.com/build-dynamic-currency-converter-ecommerce-react-app/",
-          "https://sourceforge.net/software/currency-exchange/",
-          "https://sourceforge.net/software/product/TradingView/",
-          "https://sourceforge.net/software/document-management/china/",
-          "https://sourceforge.net/software/document-management/middle-east/",
-          "https://sourceforge.net/software/document-management/for-startup/",
-          "https://codewithandrea.com/newsletter/february-2026/",
-          "https://next-edge-demo.netlify.app/item?id&#x3D;49233423",
-          "https://daily.dev/tags/claude-code/best-of/2026/08",
-          "https://daily.dev/tags/webdev/best-of/2026/03"
-        ],
-        "ours_in_top10": [],
-        "zero_results": false
-      },
       "mcp server word document docx": {
         "command": "curl -sS -A \"<chrome-ua>\" 'https://old-search.marginalia.nu/search?query=mcp%20server%20word%20document%20docx'",
         "http": 200,
-        "attempts": 2,
-        "results_parsed": 54,
+        "attempts": 1,
+        "results_parsed": 58,
         "top10": [
           "https://www.textcontrol.com/blog/2024/10/25/create-word-document-with-net-c-sharp/",
           "https://www.textcontrol.com/blog/2025/02/07/mail-merge-ms-word-docx-documents-and-convert-to-pdf-in-net-c-sharp/",
           "https://jsr.io/%40sigmasd/pdf-read-mcp",
-          "https://carbone.io/integration/claude.html",
-          "https://carbone.io/integration/deepseek.html",
-          "https://carbone.io/integration/gemini.html",
-          "https://carbone.io/integration/chatgpt.html",
-          "https://carbone.io/integration/copilot.html",
           "https://www.mirkosertic.de/blog/2026/02/lucene-mcp-server/",
-          "https://developer.microsoft.com/blog/10-microsoft-mcp-servers-to-accelerate-your-development-workflow"
+          "https://glama.ai/mcp/servers/docmake-io/mcp",
+          "https://glama.ai/mcp/servers/needle-ai/needle-mcp/schema",
+          "https://glama.ai/mcp/servers/needle-ai/needle-mcp/tools/needle_add_file",
+          "https://glama.ai/mcp/servers/leanzero-srl/leanzero-mcp-doc-processor",
+          "https://glama.ai/mcp/categories/workplace-and-productivity",
+          "https://www.vespper.com/compare/docx-mcp-servers"
         ],
         "ours_in_top10": [],
         "zero_results": false
@@ -1673,17 +1735,17 @@
       "mcp server resume builder": {
         "command": "curl -sS -A \"<chrome-ua>\" 'https://old-search.marginalia.nu/search?query=mcp%20server%20resume%20builder'",
         "http": 200,
-        "attempts": 2,
-        "results_parsed": 34,
+        "attempts": 1,
+        "results_parsed": 37,
         "top10": [
           "https://softwareengineering.stackexchange.com/questions/29738",
           "https://www.ruby-toolbox.com/projects/mcp",
+          "https://srijanshukla.com/resume/",
           "https://blog.railway.com/p/railway-for-agents",
           "https://www.figma.com/solutions/ai-resume-website-builder/",
           "https://www.figma.com/solutions/ai-personal-website-builder/",
           "https://camel.apache.org/blog/2026/07/camel421-whatsnew/",
           "https://orochena.net/resume",
-          "https://toddschiller.com/blog/extensibility-radar-2026-07-31.html",
           "https://techstackups.com/articles/freestyle-ax-audit/",
           "https://dylanhuang.com/blog/"
         ],
@@ -1693,8 +1755,8 @@
       "mcp server recurring invoices": {
         "command": "curl -sS -A \"<chrome-ua>\" 'https://old-search.marginalia.nu/search?query=mcp%20server%20recurring%20invoices'",
         "http": 200,
-        "attempts": 1,
-        "results_parsed": 55,
+        "attempts": 3,
+        "results_parsed": 58,
         "top10": [
           "https://www.merge.dev/connectors/stripe",
           "https://www.merge.dev/connectors/square",
@@ -1714,18 +1776,18 @@
         "command": "curl -sS -A \"<chrome-ua>\" 'https://old-search.marginalia.nu/search?query=mcp%20server%20bank%20statement%20csv'",
         "http": 200,
         "attempts": 1,
-        "results_parsed": 41,
+        "results_parsed": 45,
         "top10": [
+          "https://glama.ai/mcp/connectors/ai.mainbook/bank-statement-converter",
+          "https://glama.ai/mcp/servers/iseppo/e-arveldaja-mcp",
+          "https://glama.ai/mcp/connectors/com.moltlinestudio/taxlots",
+          "https://glama.ai/mcp/connectors/com.helpyself/tools",
+          "https://glama.ai/mcp/servers/xoomar-code/xoomar-mcp",
           "https://budgetbakers.com/en/products/wallet/integrations/mcp/",
           "https://www.appsoftware.com/portfolio",
           "https://www.metabase.com/integrations/xero",
           "https://www.metabase.com/integrations/wise",
-          "https://idp-software.com/vendors/koncile/",
-          "https://qua.name/veer66/",
-          "https://blog.christianposta.com/understanding-mcp-and-a2a-attack-vectors-for-ai-agents/",
-          "https://mikelev.in/futureproof/terminal-native-mcp-practice/",
-          "https://mikelev.in/futureproof/building-the-black-box-oauth-fdr-ai-workflows/",
-          "https://mikelev.in/futureproof/agentic-coding-wrangling-ai-assistants/"
+          "https://idp-software.com/vendors/koncile/"
         ],
         "ours_in_top10": [],
         "zero_results": false
@@ -1733,19 +1795,19 @@
       "mcp server barcode qr code": {
         "command": "curl -sS -A \"<chrome-ua>\" 'https://old-search.marginalia.nu/search?query=mcp%20server%20barcode%20qr%20code'",
         "http": 200,
-        "attempts": 1,
-        "results_parsed": 48,
+        "attempts": 2,
+        "results_parsed": 51,
         "top10": [
           "https://www.textcontrol.com/blog/2024/07/11/enhancing-documents-with-qr-codes-and-barcodes-in-net-csharp-a-comprehensive-guide/",
           "https://www.textcontrol.com/blog/2025/07/15/adding-qr-codes-to-pdf-documents-in-csharp-dotnet/",
           "https://www.cuspera.com/products/scanova-x-2943",
           "https://www.cuspera.com/products/sendlane-x-2050",
+          "https://fluix.io/blog/fluix-qr-code-barcode-scanning",
           "https://wiki.thingsandstuff.org/Data",
-          "https://glama.ai/mcp/categories/image-and-video-processing",
-          "https://fast.io/resources/best-openclaw-skills-ai-qr-code-barcode-generation/",
-          "https://fast.io/resources/openclaw-raspberry-pi-barcode-scanner-inventory-agent/",
-          "https://discourse.julialang.org/t/examples-of-julia-based-end-user-tools/136677",
-          "https://community.devexpress.com/Blogs/news/archive/2026/07/09/beyond-prompts-teaching-ai-how-to-build-with-devexpress.aspx"
+          "https://glama.ai/mcp/servers/Nizoka/pdfnative-mcp",
+          "https://glama.ai/mcp/connectors/eu.tracepass/tracepass",
+          "https://glama.ai/mcp/connectors/com.helpyself/tools",
+          "https://glama.ai/mcp/servers/zhr1008/szlcsc-mcp"
         ],
         "ours_in_top10": [],
         "zero_results": false
@@ -1754,7 +1816,7 @@
         "command": "curl -sS -A \"<chrome-ua>\" 'https://old-search.marginalia.nu/search?query=mcp%20server%20kanban%20board'",
         "http": 200,
         "attempts": 1,
-        "results_parsed": 44,
+        "results_parsed": 42,
         "top10": [
           "https://vulnerablemcp.info/vuln/cve-2026-0756-github-kanban-mcp-rce.html",
           "https://magnus919.com/2026/05/architecture-by-leverage-the-five-sentence-design-philosophy-that-changed-how-i-build-agents/",
@@ -1773,19 +1835,19 @@
       "mcp server for freelancers": {
         "command": "curl -sS -A \"<chrome-ua>\" 'https://old-search.marginalia.nu/search?query=mcp%20server%20for%20freelancers'",
         "http": 200,
-        "attempts": 2,
-        "results_parsed": 51,
+        "attempts": 1,
+        "results_parsed": 54,
         "top10": [
-          "https://mokkapps.de/blog/how-to-setup-an-mcp-server-for-an-existing-nuxt-app",
-          "https://mokkapps.de/",
           "https://www.zoho.com/au/invoice/help/ai/zoho-mcp-integration.html",
           "https://recurpost.com/features/schedule/mcp/",
           "https://www.amillionmonkeys.co.uk/blog/mcp-for-solo-developers",
           "https://ritza.co/articles/gen-articles/mcp-server-monetization-the-emerging-commercial-landscape/",
           "https://shiflett.org/feeds/blog",
+          "https://mokkapps.de/",
           "https://www.tyme-app.com/en/blog/",
           "https://www.tyme-app.com/en/invoicing-tools/",
-          "https://www.toools.design/blog-posts/best-mcp-servers-for-designers"
+          "https://www.toools.design/blog-posts/best-mcp-servers-for-designers",
+          "https://simon-frey.com/blog/vibeops-kubernetes/"
         ],
         "ours_in_top10": [],
         "zero_results": false
@@ -1793,7 +1855,7 @@
     },
     "ddg_html": {
       "unmeasured": true,
-      "reason": "discrimination FAILED: one or both queries parsed zero results; liveness FAILED: no control query returned its known host across 2 attempts (liveness miss for \"python asyncio semaphore example\": docs.python.org absent (HTTP 202, 14205 bytes, soft-block); liveness miss for \"model context protocol\": modelcontextprotocol.io absent (HTTP 202, 14165 bytes, soft-block))"
+      "reason": "discrimination FAILED: one or both queries parsed zero results; liveness FAILED: no control query returned its known host across 2 attempts (liveness miss for \"python asyncio semaphore example\": docs.python.org absent (HTTP 202, 14205 bytes, soft-block); liveness miss for \"model context protocol\": modelcontextprotocol.io absent (HTTP 202, 14167 bytes, soft-block))"
     },
     "mojeek": {
       "unmeasured": true,
@@ -1801,7 +1863,7 @@
     },
     "startpage": {
       "unmeasured": true,
-      "reason": "discrimination FAILED: one or both queries parsed zero results; liveness FAILED: no control query returned its known host across 2 attempts (liveness miss for \"python asyncio semaphore example\": docs.python.org absent (HTTP 200, 22104 bytes, soft-block); liveness miss for \"model context protocol\": modelcontextprotocol.io absent (HTTP 200, 22104 bytes, soft-block))"
+      "reason": "discrimination FAILED: one or both queries parsed zero results; liveness FAILED: no control query returned its known host across 2 attempts (liveness miss for \"python asyncio semaphore example\": docs.python.org absent (HTTP 200, 22105 bytes, soft-block); liveness miss for \"model context protocol\": modelcontextprotocol.io absent (HTTP 200, 22105 bytes, soft-block))"
     },
     "ecosia": {
       "unmeasured": true,
@@ -1809,41 +1871,45 @@
     },
     "seznam": {
       "unmeasured": true,
-      "reason": "discrimination FAILED: one or both queries parsed zero results; liveness FAILED: no control query returned its known host across 2 attempts (liveness miss for \"python asyncio semaphore example\": docs.python.org absent (HTTP 200, 168381 bytes); liveness miss for \"model context protocol\": modelcontextprotocol.io absent (HTTP 200, 283657 bytes))"
+      "reason": "discrimination FAILED: one or both queries parsed zero results; liveness FAILED: no control query returned its known host across 2 attempts (liveness miss for \"python asyncio semaphore example\": docs.python.org absent (HTTP 200, 177173 bytes); liveness miss for \"model context protocol\": modelcontextprotocol.io absent (HTTP 200, 283709 bytes))"
     },
     "yandex": {
       "unmeasured": true,
-      "reason": "discrimination FAILED: two unrelated queries returned host-overlap 1.000 — endpoint is not reading the query; liveness FAILED: no control query returned its known host across 2 attempts (liveness miss for \"python asyncio semaphore example\": docs.python.org absent (HTTP 200, 41581 bytes); liveness miss for \"model context protocol\": modelcontextprotocol.io absent (HTTP 200, 41541 bytes))"
+      "reason": "discrimination FAILED: two unrelated queries returned host-overlap 1.000 — endpoint is not reading the query; liveness FAILED: no control query returned its known host across 2 attempts (liveness miss for \"python asyncio semaphore example\": docs.python.org absent (HTTP 200, 14205 bytes); liveness miss for \"model context protocol\": modelcontextprotocol.io absent (HTTP 200, 14171 bytes))"
     }
   },
   "endpoints_skipped": [],
-  "sitemap_urls_live": 228,
+  "sitemap_urls_live": 287,
   "depth": {
     "brave": {
       "mcp.zovo.one": {
         "domain": "mcp.zovo.one",
-        "probes_usable": 3,
+        "probes_usable": 7,
         "probes_total": 7,
-        "distinct_urls_retrievable": 1,
+        "distinct_urls_retrievable": 3,
         "urls": [
-          "https://mcp.zovo.one/"
+          "https://mcp.zovo.one/",
+          "https://mcp.zovo.one/mcp/time-tracker",
+          "https://mcp.zovo.one/s/invoice"
         ],
-        "sitemap_urls": 228,
-        "pct_of_sitemap": 0.44,
-        "is_a_channel": "NO — host present but only 1 URL(s); a single page is a listing, not a channel",
+        "sitemap_urls": 287,
+        "pct_of_sitemap": 1.05,
+        "is_a_channel": "MAYBE — multiple URLs retrievable",
         "probes": [
           {
             "probe": "site:paginated p1",
             "query": "site:mcp.zovo.one",
             "command": "curl -sS -A \"<chrome-ua>\" 'https://search.brave.com/search?q=site%3Amcp.zovo.one'",
             "http": 200,
-            "bytes": 101887,
-            "first200": "<!doctype html> <html class=\"\" lang=\"en-us\"> <head> <meta charset=\"utf-8\" /> <!-- Register error handler before SvelteKit loads. See $lib/errorHandler/errorHandler.ts --> <script nonce=\"08rEs9VkRuQ0wP",
+            "bytes": 108526,
+            "first200": "<!doctype html> <html class=\"\" lang=\"en-us\"> <head> <meta charset=\"utf-8\" /> <!-- Register error handler before SvelteKit loads. See $lib/errorHandler/errorHandler.ts --> <script nonce=\"QuRF6zEZEuRfNt",
             "attempts": 1,
-            "results_parsed": 1,
-            "on_host": 1,
+            "results_parsed": 3,
+            "on_host": 3,
             "urls": [
-              "https://mcp.zovo.one/"
+              "https://mcp.zovo.one/mcp/time-tracker",
+              "https://mcp.zovo.one/",
+              "https://mcp.zovo.one/s/invoice"
             ],
             "usable": true
           },
@@ -1852,8 +1918,8 @@
             "query": "site:mcp.zovo.one [&offset=1]",
             "command": "curl -sS -A \"<chrome-ua>\" 'https://search.brave.com/search?q=site%3Amcp.zovo.one&offset=1'",
             "http": 200,
-            "bytes": 94790,
-            "first200": "<!doctype html> <html class=\"\" lang=\"en-us\"> <head> <meta charset=\"utf-8\" /> <!-- Register error handler before SvelteKit loads. See $lib/errorHandler/errorHandler.ts --> <script nonce=\"VL4uGKOKQa53qU",
+            "bytes": 94763,
+            "first200": "<!doctype html> <html class=\"\" lang=\"en-us\"> <head> <meta charset=\"utf-8\" /> <!-- Register error handler before SvelteKit loads. See $lib/errorHandler/errorHandler.ts --> <script nonce=\"UjKsalu+UGeac7",
             "attempts": 1,
             "results_parsed": 0,
             "on_host": 0,
@@ -1865,8 +1931,23 @@
             "query": "site:mcp.zovo.one/s",
             "command": "curl -sS -A \"<chrome-ua>\" 'https://search.brave.com/search?q=site%3Amcp.zovo.one%2Fs'",
             "http": 200,
-            "bytes": 96719,
-            "first200": "<!doctype html> <html class=\"\" lang=\"en-us\"> <head> <meta charset=\"utf-8\" /> <!-- Register error handler before SvelteKit loads. See $lib/errorHandler/errorHandler.ts --> <script nonce=\"mabGPWerNZOrot",
+            "bytes": 100733,
+            "first200": "<!doctype html> <html class=\"\" lang=\"en-us\"> <head> <meta charset=\"utf-8\" /> <!-- Register error handler before SvelteKit loads. See $lib/errorHandler/errorHandler.ts --> <script nonce=\"Eyi2nfty8mC9pP",
+            "attempts": 1,
+            "results_parsed": 1,
+            "on_host": 1,
+            "urls": [
+              "https://mcp.zovo.one/s/invoice"
+            ],
+            "usable": true
+          },
+          {
+            "probe": "section:/guides",
+            "query": "site:mcp.zovo.one/guides",
+            "command": "curl -sS -A \"<chrome-ua>\" 'https://search.brave.com/search?q=site%3Amcp.zovo.one%2Fguides'",
+            "http": 200,
+            "bytes": 95679,
+            "first200": "<!doctype html> <html class=\"\" lang=\"en-us\"> <head> <meta charset=\"utf-8\" /> <!-- Register error handler before SvelteKit loads. See $lib/errorHandler/errorHandler.ts --> <script nonce=\"BzlT+hxKCmXOz2",
             "attempts": 1,
             "results_parsed": 0,
             "on_host": 0,
@@ -1874,166 +1955,308 @@
             "usable": true
           },
           {
-            "probe": "section:/guides",
-            "query": "site:mcp.zovo.one/guides",
-            "command": "curl -sS -A \"<chrome-ua>\" 'https://search.brave.com/search?q=site%3Amcp.zovo.one%2Fguides'",
-            "http": 429,
-            "bytes": 73995,
-            "first200": "<!doctype html> <html class=\"\" lang=\"en-us\"> <head> <meta charset=\"utf-8\" /> <!-- Register error handler before SvelteKit loads. See $lib/errorHandler/errorHandler.ts --> <script nonce=\"w/xyOkYnHM+U1O",
-            "attempts": 4,
-            "soft_block": true,
-            "results_parsed": 0,
-            "on_host": 0,
-            "urls": [],
-            "usable": false
-          },
-          {
             "probe": "section:/setup",
             "query": "site:mcp.zovo.one/setup",
             "command": "curl -sS -A \"<chrome-ua>\" 'https://search.brave.com/search?q=site%3Amcp.zovo.one%2Fsetup'",
-            "http": 429,
-            "bytes": 73995,
-            "first200": "<!doctype html> <html class=\"\" lang=\"en-us\"> <head> <meta charset=\"utf-8\" /> <!-- Register error handler before SvelteKit loads. See $lib/errorHandler/errorHandler.ts --> <script nonce=\"LxzsirrJT6eEM2",
-            "attempts": 4,
-            "soft_block": true,
+            "http": 200,
+            "bytes": 95659,
+            "first200": "<!doctype html> <html class=\"\" lang=\"en-us\"> <head> <meta charset=\"utf-8\" /> <!-- Register error handler before SvelteKit loads. See $lib/errorHandler/errorHandler.ts --> <script nonce=\"dU83mSkqduvbJP",
+            "attempts": 1,
             "results_parsed": 0,
             "on_host": 0,
             "urls": [],
-            "usable": false
+            "usable": true
           },
           {
             "probe": "section:/compare",
             "query": "site:mcp.zovo.one/compare",
             "command": "curl -sS -A \"<chrome-ua>\" 'https://search.brave.com/search?q=site%3Amcp.zovo.one%2Fcompare'",
-            "http": 429,
-            "bytes": 73995,
-            "first200": "<!doctype html> <html class=\"\" lang=\"en-us\"> <head> <meta charset=\"utf-8\" /> <!-- Register error handler before SvelteKit loads. See $lib/errorHandler/errorHandler.ts --> <script nonce=\"n0o2Njc5XFwpER",
-            "attempts": 4,
-            "soft_block": true,
+            "http": 200,
+            "bytes": 95699,
+            "first200": "<!doctype html> <html class=\"\" lang=\"en-us\"> <head> <meta charset=\"utf-8\" /> <!-- Register error handler before SvelteKit loads. See $lib/errorHandler/errorHandler.ts --> <script nonce=\"Aiihdnhlw0g9wu",
+            "attempts": 1,
             "results_parsed": 0,
             "on_host": 0,
             "urls": [],
-            "usable": false
+            "usable": true
           },
           {
             "probe": "section:/bundle",
             "query": "site:mcp.zovo.one/bundle",
             "command": "curl -sS -A \"<chrome-ua>\" 'https://search.brave.com/search?q=site%3Amcp.zovo.one%2Fbundle'",
-            "http": 429,
-            "bytes": 73995,
-            "first200": "<!doctype html> <html class=\"\" lang=\"en-us\"> <head> <meta charset=\"utf-8\" /> <!-- Register error handler before SvelteKit loads. See $lib/errorHandler/errorHandler.ts --> <script nonce=\"9hsTZqjA0RokEz",
-            "attempts": 4,
-            "soft_block": true,
+            "http": 200,
+            "bytes": 95679,
+            "first200": "<!doctype html> <html class=\"\" lang=\"en-us\"> <head> <meta charset=\"utf-8\" /> <!-- Register error handler before SvelteKit loads. See $lib/errorHandler/errorHandler.ts --> <script nonce=\"uue4ic2jH8bH8X",
+            "attempts": 1,
             "results_parsed": 0,
             "on_host": 0,
             "urls": [],
-            "usable": false
+            "usable": true
           }
         ]
       },
       "zovo.one": {
         "domain": "zovo.one",
-        "unmeasured": true,
-        "reason": "all 7 depth probes were blocked or errored (statuses: 429)",
-        "distinct_urls_retrievable": null,
+        "probes_usable": 8,
+        "probes_total": 8,
+        "distinct_urls_retrievable": 60,
+        "urls": [
+          "https://mcp.zovo.one/s/invoice",
+          "https://tg.zovo.one/",
+          "https://zovo.one/",
+          "https://zovo.one/about",
+          "https://zovo.one/all-extensions",
+          "https://zovo.one/alternatives",
+          "https://zovo.one/answers",
+          "https://zovo.one/best-for",
+          "https://zovo.one/changelog",
+          "https://zovo.one/community",
+          "https://zovo.one/compare",
+          "https://zovo.one/compare/adblock-vs-adblock-plus",
+          "https://zovo.one/compare/adblock-vs-ublock-origin",
+          "https://zovo.one/compare/color-picker-vs-colorzilla",
+          "https://zovo.one/compare/dark-mode-vs-midnight-lizard",
+          "https://zovo.one/compare/dark-mode-vs-night-eye",
+          "https://zovo.one/compare/dark-mode-vs-turn-off-the-lights",
+          "https://zovo.one/compare/ditto-vs-copyq",
+          "https://zovo.one/compare/lighthouse-vs-stylus",
+          "https://zovo.one/compare/onetab-vs-workona",
+          "https://zovo.one/compare/password-generator-vs-1password",
+          "https://zovo.one/compare/privacy-badger-vs-adblock-plus",
+          "https://zovo.one/compare/qr-code-generator-vs-qr-code-reader",
+          "https://zovo.one/compare/qr-code-vs-qr-code-generator",
+          "https://zovo.one/compare/tab-suspender-vs-onetab",
+          "https://zovo.one/compare/tab-suspender-vs-tab-wrangler",
+          "https://zovo.one/compare/tab-wrangler-vs-onetab",
+          "https://zovo.one/compare/ublock-origin-vs-adblock-plus",
+          "https://zovo.one/compare/unit-converter-vs-unit-converter-plus",
+          "https://zovo.one/compare/word-counter-vs-wordcounter-net",
+          "https://zovo.one/download",
+          "https://zovo.one/extensions",
+          "https://zovo.one/features",
+          "https://zovo.one/free",
+          "https://zovo.one/free-tools/background-remover",
+          "https://zovo.one/free-tools/developer-tools",
+          "https://zovo.one/free-tools/image-compressor",
+          "https://zovo.one/free-tools/invoice-generator",
+          "https://zovo.one/free-tools/json-viewer",
+          "https://zovo.one/free-tools/markdown-editor",
+          "https://zovo.one/free-tools/seo-tools",
+          "https://zovo.one/free-tools/tuner",
+          "https://zovo.one/free-tools/url-encoder",
+          "https://zovo.one/free-tools/whois-lookup",
+          "https://zovo.one/free-tools/word-clock",
+          "https://zovo.one/free-tools/word-frequency-counter",
+          "https://zovo.one/free/developer-tools",
+          "https://zovo.one/guides",
+          "https://zovo.one/guides/generate-secure-passwords",
+          "https://zovo.one/industries/freelancers",
+          "https://zovo.one/open-source",
+          "https://zovo.one/pricing",
+          "https://zovo.one/privacy-policy",
+          "https://zovo.one/services",
+          "https://zovo.one/services/featured",
+          "https://zovo.one/services/help",
+          "https://zovo.one/tools",
+          "https://zovo.one/use-cases/research",
+          "https://zovo.one/why",
+          "https://zovo.one/zovo-labs"
+        ],
+        "sitemap_urls": null,
+        "pct_of_sitemap": null,
+        "is_a_channel": "MAYBE — multiple URLs retrievable",
         "probes": [
           {
             "probe": "site:paginated p1",
             "query": "site:zovo.one",
             "command": "curl -sS -A \"<chrome-ua>\" 'https://search.brave.com/search?q=site%3Azovo.one'",
-            "http": 429,
-            "bytes": 73995,
-            "first200": "<!doctype html> <html class=\"\" lang=\"en-us\"> <head> <meta charset=\"utf-8\" /> <!-- Register error handler before SvelteKit loads. See $lib/errorHandler/errorHandler.ts --> <script nonce=\"y+hjuHWH7R3Zme",
-            "attempts": 4,
-            "soft_block": true,
-            "results_parsed": 0,
-            "on_host": 0,
-            "urls": [],
-            "usable": false
+            "http": 200,
+            "bytes": 192205,
+            "first200": "<!doctype html> <html class=\"\" lang=\"en-us\"> <head> <meta charset=\"utf-8\" /> <!-- Register error handler before SvelteKit loads. See $lib/errorHandler/errorHandler.ts --> <script nonce=\"wW2UxkjRttH4jK",
+            "attempts": 1,
+            "results_parsed": 19,
+            "on_host": 19,
+            "urls": [
+              "https://zovo.one/",
+              "https://zovo.one/about",
+              "https://zovo.one/tools",
+              "https://zovo.one/services",
+              "https://zovo.one/open-source",
+              "https://zovo.one/free",
+              "https://zovo.one/free-tools/tuner",
+              "https://zovo.one/pricing",
+              "https://mcp.zovo.one/s/invoice",
+              "https://zovo.one/best-for",
+              "https://zovo.one/free-tools/developer-tools",
+              "https://zovo.one/guides",
+              "https://zovo.one/free-tools/seo-tools",
+              "https://zovo.one/privacy-policy",
+              "https://zovo.one/free-tools/image-compressor",
+              "https://zovo.one/community",
+              "https://zovo.one/free-tools/url-encoder",
+              "https://zovo.one/free/developer-tools",
+              "https://zovo.one/industries/freelancers"
+            ],
+            "usable": true
           },
           {
             "probe": "site:paginated p2",
             "query": "site:zovo.one [&offset=1]",
             "command": "curl -sS -A \"<chrome-ua>\" 'https://search.brave.com/search?q=site%3Azovo.one&offset=1'",
-            "http": 429,
-            "bytes": 73995,
-            "first200": "<!doctype html> <html class=\"\" lang=\"en-us\"> <head> <meta charset=\"utf-8\" /> <!-- Register error handler before SvelteKit loads. See $lib/errorHandler/errorHandler.ts --> <script nonce=\"PyYPTwBaTEpJS1",
-            "attempts": 4,
-            "soft_block": true,
-            "results_parsed": 0,
-            "on_host": 0,
-            "urls": [],
-            "usable": false
+            "http": 200,
+            "bytes": 189372,
+            "first200": "<!doctype html> <html class=\"\" lang=\"en-us\"> <head> <meta charset=\"utf-8\" /> <!-- Register error handler before SvelteKit loads. See $lib/errorHandler/errorHandler.ts --> <script nonce=\"+gk4ksbiNqhBOM",
+            "attempts": 1,
+            "results_parsed": 20,
+            "on_host": 20,
+            "urls": [
+              "https://zovo.one/free-tools/markdown-editor",
+              "https://zovo.one/zovo-labs",
+              "https://zovo.one/free-tools/invoice-generator",
+              "https://zovo.one/use-cases/research",
+              "https://zovo.one/download",
+              "https://zovo.one/changelog",
+              "https://tg.zovo.one/",
+              "https://zovo.one/free-tools/whois-lookup",
+              "https://zovo.one/extensions",
+              "https://zovo.one/all-extensions",
+              "https://zovo.one/free-tools/background-remover",
+              "https://zovo.one/why",
+              "https://zovo.one/free-tools/json-viewer",
+              "https://zovo.one/features",
+              "https://zovo.one/free-tools/word-frequency-counter",
+              "https://zovo.one/free-tools/word-clock",
+              "https://zovo.one/alternatives",
+              "https://zovo.one/answers",
+              "https://zovo.one/services/featured",
+              "https://zovo.one/services/help"
+            ],
+            "usable": true
+          },
+          {
+            "probe": "site:paginated p3",
+            "query": "site:zovo.one [&offset=2]",
+            "command": "curl -sS -A \"<chrome-ua>\" 'https://search.brave.com/search?q=site%3Azovo.one&offset=2'",
+            "http": 200,
+            "bytes": 189372,
+            "first200": "<!doctype html> <html class=\"\" lang=\"en-us\"> <head> <meta charset=\"utf-8\" /> <!-- Register error handler before SvelteKit loads. See $lib/errorHandler/errorHandler.ts --> <script nonce=\"XvpcHFnKh0ZgqG",
+            "attempts": 1,
+            "results_parsed": 20,
+            "on_host": 20,
+            "urls": [
+              "https://zovo.one/free-tools/markdown-editor",
+              "https://zovo.one/zovo-labs",
+              "https://zovo.one/free-tools/invoice-generator",
+              "https://zovo.one/use-cases/research",
+              "https://zovo.one/download",
+              "https://zovo.one/changelog",
+              "https://tg.zovo.one/",
+              "https://zovo.one/free-tools/whois-lookup",
+              "https://zovo.one/extensions",
+              "https://zovo.one/all-extensions",
+              "https://zovo.one/free-tools/background-remover",
+              "https://zovo.one/why",
+              "https://zovo.one/free-tools/json-viewer",
+              "https://zovo.one/features",
+              "https://zovo.one/free-tools/word-frequency-counter",
+              "https://zovo.one/free-tools/word-clock",
+              "https://zovo.one/alternatives",
+              "https://zovo.one/answers",
+              "https://zovo.one/services/featured",
+              "https://zovo.one/services/help"
+            ],
+            "usable": true
           },
           {
             "probe": "section:/s",
             "query": "site:zovo.one/s",
             "command": "curl -sS -A \"<chrome-ua>\" 'https://search.brave.com/search?q=site%3Azovo.one%2Fs'",
-            "http": 429,
-            "bytes": 73995,
-            "first200": "<!doctype html> <html class=\"\" lang=\"en-us\"> <head> <meta charset=\"utf-8\" /> <!-- Register error handler before SvelteKit loads. See $lib/errorHandler/errorHandler.ts --> <script nonce=\"ho+gx+pNp5ZL88",
-            "attempts": 4,
-            "soft_block": true,
-            "results_parsed": 0,
-            "on_host": 0,
-            "urls": [],
-            "usable": false
+            "http": 200,
+            "bytes": 100641,
+            "first200": "<!doctype html> <html class=\"\" lang=\"en-us\"> <head> <meta charset=\"utf-8\" /> <!-- Register error handler before SvelteKit loads. See $lib/errorHandler/errorHandler.ts --> <script nonce=\"cpJhAnI0SGrtCp",
+            "attempts": 1,
+            "results_parsed": 1,
+            "on_host": 1,
+            "urls": [
+              "https://mcp.zovo.one/s/invoice"
+            ],
+            "usable": true
           },
           {
             "probe": "section:/guides",
             "query": "site:zovo.one/guides",
             "command": "curl -sS -A \"<chrome-ua>\" 'https://search.brave.com/search?q=site%3Azovo.one%2Fguides'",
-            "http": 429,
-            "bytes": 73995,
-            "first200": "<!doctype html> <html class=\"\" lang=\"en-us\"> <head> <meta charset=\"utf-8\" /> <!-- Register error handler before SvelteKit loads. See $lib/errorHandler/errorHandler.ts --> <script nonce=\"zKjISGaLyy4IOT",
-            "attempts": 4,
-            "soft_block": true,
-            "results_parsed": 0,
-            "on_host": 0,
-            "urls": [],
-            "usable": false
+            "http": 200,
+            "bytes": 122079,
+            "first200": "<!doctype html> <html class=\"\" lang=\"en-us\"> <head> <meta charset=\"utf-8\" /> <!-- Register error handler before SvelteKit loads. See $lib/errorHandler/errorHandler.ts --> <script nonce=\"sd0Uq0wuWtqgPL",
+            "attempts": 1,
+            "results_parsed": 2,
+            "on_host": 2,
+            "urls": [
+              "https://zovo.one/guides",
+              "https://zovo.one/guides/generate-secure-passwords"
+            ],
+            "usable": true
           },
           {
             "probe": "section:/setup",
             "query": "site:zovo.one/setup",
             "command": "curl -sS -A \"<chrome-ua>\" 'https://search.brave.com/search?q=site%3Azovo.one%2Fsetup'",
-            "http": 429,
-            "bytes": 73995,
-            "first200": "<!doctype html> <html class=\"\" lang=\"en-us\"> <head> <meta charset=\"utf-8\" /> <!-- Register error handler before SvelteKit loads. See $lib/errorHandler/errorHandler.ts --> <script nonce=\"uG5VPFeIQudoyb",
-            "attempts": 4,
-            "soft_block": true,
+            "http": 200,
+            "bytes": 95579,
+            "first200": "<!doctype html> <html class=\"\" lang=\"en-us\"> <head> <meta charset=\"utf-8\" /> <!-- Register error handler before SvelteKit loads. See $lib/errorHandler/errorHandler.ts --> <script nonce=\"fXD9E+TKlQehfa",
+            "attempts": 1,
             "results_parsed": 0,
             "on_host": 0,
             "urls": [],
-            "usable": false
+            "usable": true
           },
           {
             "probe": "section:/compare",
             "query": "site:zovo.one/compare",
             "command": "curl -sS -A \"<chrome-ua>\" 'https://search.brave.com/search?q=site%3Azovo.one%2Fcompare'",
-            "http": 429,
-            "bytes": 73995,
-            "first200": "<!doctype html> <html class=\"\" lang=\"en-us\"> <head> <meta charset=\"utf-8\" /> <!-- Register error handler before SvelteKit loads. See $lib/errorHandler/errorHandler.ts --> <script nonce=\"OIEwKRgAcBOzb0",
-            "attempts": 4,
-            "soft_block": true,
-            "results_parsed": 0,
-            "on_host": 0,
-            "urls": [],
-            "usable": false
+            "http": 200,
+            "bytes": 164516,
+            "first200": "<!doctype html> <html class=\"\" lang=\"en-us\"> <head> <meta charset=\"utf-8\" /> <!-- Register error handler before SvelteKit loads. See $lib/errorHandler/errorHandler.ts --> <script nonce=\"h2eoInxiRuG2jm",
+            "attempts": 1,
+            "results_parsed": 20,
+            "on_host": 20,
+            "urls": [
+              "https://zovo.one/compare",
+              "https://zovo.one/compare/adblock-vs-adblock-plus",
+              "https://zovo.one/compare/adblock-vs-ublock-origin",
+              "https://zovo.one/compare/color-picker-vs-colorzilla",
+              "https://zovo.one/compare/unit-converter-vs-unit-converter-plus",
+              "https://zovo.one/compare/password-generator-vs-1password",
+              "https://zovo.one/compare/tab-suspender-vs-onetab",
+              "https://zovo.one/compare/dark-mode-vs-turn-off-the-lights",
+              "https://zovo.one/compare/dark-mode-vs-midnight-lizard",
+              "https://zovo.one/compare/dark-mode-vs-night-eye",
+              "https://zovo.one/compare/lighthouse-vs-stylus",
+              "https://zovo.one/compare/qr-code-generator-vs-qr-code-reader",
+              "https://zovo.one/compare/onetab-vs-workona",
+              "https://zovo.one/compare/tab-suspender-vs-tab-wrangler",
+              "https://zovo.one/compare/ditto-vs-copyq",
+              "https://zovo.one/compare/ublock-origin-vs-adblock-plus",
+              "https://zovo.one/compare/tab-wrangler-vs-onetab",
+              "https://zovo.one/compare/privacy-badger-vs-adblock-plus",
+              "https://zovo.one/compare/word-counter-vs-wordcounter-net",
+              "https://zovo.one/compare/qr-code-vs-qr-code-generator"
+            ],
+            "usable": true
           },
           {
             "probe": "section:/bundle",
             "query": "site:zovo.one/bundle",
             "command": "curl -sS -A \"<chrome-ua>\" 'https://search.brave.com/search?q=site%3Azovo.one%2Fbundle'",
-            "http": 429,
-            "bytes": 73995,
-            "first200": "<!doctype html> <html class=\"\" lang=\"en-us\"> <head> <meta charset=\"utf-8\" /> <!-- Register error handler before SvelteKit loads. See $lib/errorHandler/errorHandler.ts --> <script nonce=\"lapJNcfBctF71Y",
-            "attempts": 4,
-            "soft_block": true,
+            "http": 200,
+            "bytes": 95599,
+            "first200": "<!doctype html> <html class=\"\" lang=\"en-us\"> <head> <meta charset=\"utf-8\" /> <!-- Register error handler before SvelteKit loads. See $lib/errorHandler/errorHandler.ts --> <script nonce=\"ob6b4FVf1iCuZG",
+            "attempts": 1,
             "results_parsed": 0,
             "on_host": 0,
             "urls": [],
-            "usable": false
+            "usable": true
           }
         ]
       }
@@ -2052,7 +2275,7 @@
     },
     "ddg_html": {
       "unmeasured": true,
-      "reason": "discrimination FAILED: one or both queries parsed zero results; liveness FAILED: no control query returned its known host across 2 attempts (liveness miss for \"python asyncio semaphore example\": docs.python.org absent (HTTP 202, 14205 bytes, soft-block); liveness miss for \"model context protocol\": modelcontextprotocol.io absent (HTTP 202, 14165 bytes, soft-block))"
+      "reason": "discrimination FAILED: one or both queries parsed zero results; liveness FAILED: no control query returned its known host across 2 attempts (liveness miss for \"python asyncio semaphore example\": docs.python.org absent (HTTP 202, 14205 bytes, soft-block); liveness miss for \"model context protocol\": modelcontextprotocol.io absent (HTTP 202, 14167 bytes, soft-block))"
     },
     "mojeek": {
       "unmeasured": true,
@@ -2060,7 +2283,7 @@
     },
     "startpage": {
       "unmeasured": true,
-      "reason": "discrimination FAILED: one or both queries parsed zero results; liveness FAILED: no control query returned its known host across 2 attempts (liveness miss for \"python asyncio semaphore example\": docs.python.org absent (HTTP 200, 22104 bytes, soft-block); liveness miss for \"model context protocol\": modelcontextprotocol.io absent (HTTP 200, 22104 bytes, soft-block))"
+      "reason": "discrimination FAILED: one or both queries parsed zero results; liveness FAILED: no control query returned its known host across 2 attempts (liveness miss for \"python asyncio semaphore example\": docs.python.org absent (HTTP 200, 22105 bytes, soft-block); liveness miss for \"model context protocol\": modelcontextprotocol.io absent (HTTP 200, 22105 bytes, soft-block))"
     },
     "ecosia": {
       "unmeasured": true,
@@ -2068,16 +2291,16 @@
     },
     "seznam": {
       "unmeasured": true,
-      "reason": "discrimination FAILED: one or both queries parsed zero results; liveness FAILED: no control query returned its known host across 2 attempts (liveness miss for \"python asyncio semaphore example\": docs.python.org absent (HTTP 200, 168381 bytes); liveness miss for \"model context protocol\": modelcontextprotocol.io absent (HTTP 200, 283657 bytes))"
+      "reason": "discrimination FAILED: one or both queries parsed zero results; liveness FAILED: no control query returned its known host across 2 attempts (liveness miss for \"python asyncio semaphore example\": docs.python.org absent (HTTP 200, 177173 bytes); liveness miss for \"model context protocol\": modelcontextprotocol.io absent (HTTP 200, 283709 bytes))"
     },
     "yandex": {
       "unmeasured": true,
-      "reason": "discrimination FAILED: two unrelated queries returned host-overlap 1.000 — endpoint is not reading the query; liveness FAILED: no control query returned its known host across 2 attempts (liveness miss for \"python asyncio semaphore example\": docs.python.org absent (HTTP 200, 41581 bytes); liveness miss for \"model context protocol\": modelcontextprotocol.io absent (HTTP 200, 41541 bytes))"
+      "reason": "discrimination FAILED: two unrelated queries returned host-overlap 1.000 — endpoint is not reading the query; liveness FAILED: no control query returned its known host across 2 attempts (liveness miss for \"python asyncio semaphore example\": docs.python.org absent (HTTP 200, 14205 bytes); liveness miss for \"model context protocol\": modelcontextprotocol.io absent (HTTP 200, 14171 bytes))"
     }
   },
   "buyer_intent_meta": {
     "query_count": 15,
-    "servers_dir_entries": 47
+    "servers_dir_entries": 54
   },
   "summary": {
     "endpoints_tested": 10,
@@ -2100,15 +2323,15 @@
       "brave"
     ],
     "mcp_zovo_one_present_in": [
-      "brave (1 URL(s))"
+      "brave (3 URL(s))"
     ],
     "buyer_intent_top10_hits_total": 0,
     "buyer_intent_queries": 15,
-    "buyer_intent_query_runs_measured": 44,
-    "buyer_intent_query_runs_unmeasured": 16,
+    "buyer_intent_query_runs_measured": 45,
+    "buyer_intent_query_runs_unmeasured": 15,
     "depth_distinct_urls": {
-      "brave:mcp.zovo.one": 1,
-      "brave:zovo.one": "UNMEASURED"
+      "brave:mcp.zovo.one": 3,
+      "brave:zovo.one": 60
     },
     "endpoints_holding_our_domain": [
       "brave"

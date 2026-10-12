@@ -40,7 +40,7 @@ export const PRICES: PricePlan[] = [
   {
     key: "bundle",
     title: "All servers, lifetime",
-    description: "Unlock the full fleet, all 42 servers, lifetime license.",
+    description: "Unlock the full fleet, every hosted server, lifetime license.",
     usd: 39,
     stars: 3000,
     payload: "mcp-bundle-3000",
@@ -53,3 +53,47 @@ export const planForPayload = (payload: string): PricePlan | undefined =>
 /** USD-equivalent of an invoice amount in Stars, for logging and docs. */
 export const starsUsd = (stars: number): string =>
   `$${((stars * STAR_USD) / 1).toFixed(2)}`;
+
+/**
+ * Which product a paid invoice payload unlocks: "*" (bundle, every server) or
+ * the single server name. Single payloads carry the chosen server so a one-server
+ * key never silently unlocks the fleet. Unknown payloads return undefined.
+ */
+export function productForPayload(payload: string): string | undefined {
+  if (payload === "mcp-bundle-3000") return "*";
+  const m = /^mcp-single-([a-z0-9][a-z0-9-]*)$/.exec(payload);
+  return m ? m[1] : undefined;
+}
+
+/** Provider-token-free XTR invoice parameters (pure; asserted by offline-test). */
+export interface InvoiceParams {
+  title: string;
+  description: string;
+  payload: string;
+  provider_token: "";
+  currency: "XTR";
+  prices: { label: string; amount: number }[];
+}
+
+/** Build invoice parameters for a plan; `server` names the product for single buys. */
+export function invoiceParams(plan: PricePlan, server?: string): InvoiceParams {
+  if (plan.key === "bundle") {
+    return {
+      title: "All servers, lifetime",
+      description: plan.description,
+      payload: plan.payload,
+      provider_token: "",
+      currency: "XTR",
+      prices: [{ label: plan.title, amount: plan.stars }],
+    };
+  }
+  const name = server && /^[a-z0-9][a-z0-9-]*$/.test(server) ? server : "your-choice";
+  return {
+    title: `${name}, lifetime`,
+    description: `Unlock the ${name} MCP server, lifetime license.`,
+    payload: `mcp-single-${name}`,
+    provider_token: "",
+    currency: "XTR",
+    prices: [{ label: plan.title, amount: plan.stars }],
+  };
+}
