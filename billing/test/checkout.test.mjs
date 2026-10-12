@@ -42,7 +42,7 @@ test("the bundle description names the count, the one key and the saving", () =>
   const serversDir = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "servers");
   const onDisk = readdirSync(serversDir)
     .filter((n) => n !== "office-suite" && existsSync(join(serversDir, n, "package.json")));
-  const notYetSellable = new Set(["budget", "loan-calculator", "payroll", "pomodoro", "receipts", "stripe-billing", "tax-calc"]);
+  const notYetSellable = new Set(["budget", "loan-calculator", "payroll", "pomodoro", "receipts", "stripe-billing", "tax-calc", "hourly-rate"]);
   const sellableOnDisk = onDisk.filter((n) => !notYetSellable.has(n));
   assert.equal(SERVER_COUNT, sellableOnDisk.length,
     `PRODUCTS sells ${SERVER_COUNT} servers, eligible servers/ ships ${sellableOnDisk.length}: ${sellableOnDisk.join(", ")}`);
