@@ -124,7 +124,7 @@ ol,ul{margin:4px 0;padding-left:20px}li{margin-bottom:6px}
 <h2>Monetization funnel</h2>
 <div class="card"><div class="funnel" id="funnel"></div><div class="dim" id="funnel-note" style="margin-top:10px"></div></div>
 
-<h2>Session log — 2026-10-10</h2>
+<h2>Session log — 2026-10-12</h2>
 <div class="card" id="session-log"></div>
 
 <h2>Top levers — next session</h2>
