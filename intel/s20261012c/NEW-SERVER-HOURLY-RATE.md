@@ -115,3 +115,14 @@ timed out (deleg_3b62a944, 26/30 iterations, 900s). Final state:
    (root npm install was broken repo-wide), then hung waiting on a spawn that could
    never answer (no node_modules). The install fix above was the unlock for the whole
    estate, not just this server.
+
+## FINAL VERDICT (2026-10-12 13:20)
+STATUS: SHIPPED (verified green)
+- server wired: servers/hourly-rate (donor: tax-calc pattern), tests green
+- v0.22.5: GitHub release created + hourly-rate.mcpb uploaded (gh release upload verified, asset listed)
+- official MCP registry LIVE: io.github.theluckystrike/hourly-rate@0.22.5 confirmed via public search probe
+- storefront: /s/hourly-rate LIVE 200 ("<title>MCP Hourly Rate Calculator, free, no install | zovo.one") after wrangler deploy (2 attempts; CF POST subdomain 504 malformed-response on first, 200 on retry)
+- PR #37 merged (squash) to main; branch sprint/s20261012c-hourly-rate deleted; main pushed
+- test suites: billing 173/173, scripts 45/45, expense-tracker bank-sibling 9/9 (time-bomb fixed to relative dates), zip contract 7/7 (dist rebuilt)
+- known wrangler quirk: versions list / deployments list hit CF malformed-response (Cloudflare-side); deploy itself is the reliable signal
+- NOT hosted (no remote endpoint this wave, stdio-only; /mcp/hourly-rate bare = 404 by design) — hosted wave deferred with SERVER_COUNT/copy pass
