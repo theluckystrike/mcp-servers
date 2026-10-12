@@ -75,20 +75,20 @@ payload = {
     "gsc": {"window": gsc.get("window"), "totals": gsc.get("totals"), "host_probe_clicks": gsc.get("host_probe", {}).get("clicks"), "host_probe_impressions": gsc.get("host_probe", {}).get("impressions")},
     "session": {
         "date": "2026-10-12",
-        "title": "Session 2026-10-12 — 5-agent sprint: sitemap, paid-gap, outreach, surfaces, llms.txt",
+        "title": "Session 2026-10-12 — 5-agent sprint + registry reconciliation pass",
         "items": [
             "SITEMAP FIXED + DEPLOYED (5b09cf92, worker 62793d4d): sitemap.xml now offers 47 /mcp/ landing URLs (was 1) out of 287 total; IndexNow submitted. Per-server hosted landing pages are finally offered to crawlers.",
             "PAID-GAP RESOLVED — was misdiagnosis, not defect (intel/s20261012-paid-gap.md): 77 of 97 'checkout sessions' were other storefronts' (shared Stripe account); real mcp.zovo.one sessions ~17-20, ALL expired unpaid. Worker fulfillment verified correct (webhook + /success mints Ed25519 license server-side). Conclusion: no buyers yet — traffic + conversion is the lever, not the funnel plumbing. kpi.mjs fixed to scope human_sessions to the storefront (97→17).",
             "llms.txt UPGRADED (a26eeed8, worker 82f5517b): all 54 servers now have task-oriented 'Use when' phrasing — the exact failure mode from blind-recommendation R1-R7 (0/18). robots.txt verified open to all 7 AI crawlers. 167/168 tests pass (1 pre-existing).",
             "Outreach send engine SHIPPED: scripts/outreach_send.mjs (dry-run verified, rate-limited 10/run + 3s gaps, outbox.json audit log) + data/outreach_targets.json: 18 targets from R1-R4 drafts, all channel:manual (GitHub/Reddit/dev.to comment threads, no public emails). Resend: zovo.one verified, live send works.",
             "Surfaces sweep: distribution.json reclassified after live probes (R-s20261012): 22 live / 14 submitted-pending / 11 blocked / 7 dead / 7 n-a / 13 other. Wins: mcpHQ PR #72 MERGED, habitoai MERGED, Glama auto-indexing, allmcps.com links us directly. 3 stale PRs bumped (DhanushNehru #95, ever-works #181, rohitg00 #338).",
+            "REGISTRY RECONCILIATION (8448dcd0): full publish pass — 149/149 names now on the official registry at their manifest versions (was 121 tracked / 41 stale / 1 missing). Root causes fixed: delivery-schedule pointed at a 404 release asset (repointed to public v0.22.0, bumped 0.22.6); job-card-template variant stuck on reserved server.variant.json filename (activated as server.template.json). IndexNow re-pinged all 287 URLs (287 accepted).",
             "Next big unlock: ONE $1 live test purchase to prove end-to-end license delivery, then all effort on traffic. Email-based outreach needs real email targets (directory contacts / buyer replies) — engine is ready.",
         ],
         "next_levers": [
             "1. $1 live Stripe test purchase → verify license key arrives → clears the last unproven link in the monetization chain.",
             "2. Traffic: ClaudeBot coverage was 34/237 — after sitemap fix, re-measure crawler coverage in 7d; submit landing URLs to GSC.",
-            "3. Registry at latest version still 0/149 — release-version drift; republish at current release.",
-            "4. Email outreach: source real email targets (curators, directory contacts) → outreach_send.mjs --live is ready.",
+            "3. Email outreach: source real email targets (curators, directory contacts) → outreach_send.mjs --live is ready.",
         ],
     },
 }
