@@ -13,7 +13,7 @@
     {
       "registryType": "mcpb",
       "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.22.0/onboarding.mcpb",
-      "version": "0.22.5",
+      "version": "0.22.6",
       "transport": {
         "type": "stdio"
       },
@@ -26,20 +26,6 @@
         }
       ],
       "fileSha256": "b1d74c53ecc98f4a38d53d79febed0296de762baf3b76a8136352c41179d4e3f"
-    }
-  ],
-  "remotes": [
-    {
-      "type": "streamable-http",
-      "url": "https://mcp.zovo.one/mcp/onboarding",
-      "headers": [
-        {
-          "description": "Bearer <Pro license key or anonymous token from GET https://mcp.zovo.one/mcp/token>",
-          "isRequired": true,
-          "isSecret": true,
-          "name": "Authorization"
-        }
-      ]
     }
   ]
 }

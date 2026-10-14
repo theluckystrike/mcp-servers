@@ -13,7 +13,7 @@
     {
       "registryType": "mcpb",
       "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.22.0/catalogue.mcpb",
-      "version": "0.22.5",
+      "version": "0.22.6",
       "transport": {
         "type": "stdio"
       },
@@ -26,20 +26,6 @@
         }
       ],
       "fileSha256": "032f2abd4e2179045048b8a4918fe4fafa05098c9d1d28d0f71ab1594b84f534"
-    }
-  ],
-  "remotes": [
-    {
-      "type": "streamable-http",
-      "url": "https://mcp.zovo.one/mcp/catalogue",
-      "headers": [
-        {
-          "description": "Bearer <Pro license key or anonymous token from GET https://mcp.zovo.one/mcp/token>",
-          "isRequired": true,
-          "isSecret": true,
-          "name": "Authorization"
-        }
-      ]
     }
   ]
 }

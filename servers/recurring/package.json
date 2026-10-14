@@ -1,6 +1,6 @@
 {
   "name": "@theluckystrike/mcp-recurring",
-  "version": "0.22.5",
+  "version": "0.22.6",
   "description": "Bill the same clients every month without remembering to. Define a recurring invoice once, then generate the real PDFs that are due into your invoice server, with month-end safe dates, an audit log and a revenue forecast. Everything stays on your machine.",
   "type": "module",
   "bin": {

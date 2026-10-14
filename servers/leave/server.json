@@ -13,7 +13,7 @@
     {
       "registryType": "mcpb",
       "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.22.0/leave.mcpb",
-      "version": "0.22.5",
+      "version": "0.22.6",
       "transport": {
         "type": "stdio"
       },
@@ -26,20 +26,6 @@
         }
       ],
       "fileSha256": "452603da24651aa38d86d7c6788865a76e7d79c14376a3ffa71e195218a5e5f3"
-    }
-  ],
-  "remotes": [
-    {
-      "type": "streamable-http",
-      "url": "https://mcp.zovo.one/mcp/leave",
-      "headers": [
-        {
-          "description": "Bearer <Pro license key or anonymous token from GET https://mcp.zovo.one/mcp/token>",
-          "isRequired": true,
-          "isSecret": true,
-          "name": "Authorization"
-        }
-      ]
     }
   ]
 }

@@ -13,7 +13,7 @@
     {
       "registryType": "mcpb",
       "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.22.0/packing-list.mcpb",
-      "version": "0.22.5",
+      "version": "0.22.8",
       "transport": {
         "type": "stdio"
       },
@@ -26,20 +26,6 @@
         }
       ],
       "fileSha256": "6cdac0100709c6663534837e97fef439125306e6d3d461ce1edef3b22bef4cf6"
-    }
-  ],
-  "remotes": [
-    {
-      "type": "streamable-http",
-      "url": "https://mcp.zovo.one/mcp/packing-slip",
-      "headers": [
-        {
-          "description": "Bearer <Pro license key or anonymous token from GET https://mcp.zovo.one/mcp/token>",
-          "isRequired": true,
-          "isSecret": true,
-          "name": "Authorization"
-        }
-      ]
     }
   ]
 }

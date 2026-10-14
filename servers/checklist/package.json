@@ -1,6 +1,6 @@
 {
   "name": "@theluckystrike/mcp-checklist",
-  "version": "0.22.5",
+  "version": "0.22.6",
   "description": "Reusable checklists and the dated runs of them: pass, fail, not applicable, and a sign-off.",
   "type": "module",
   "bin": {

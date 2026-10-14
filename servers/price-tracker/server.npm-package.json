@@ -16,11 +16,5 @@
       }
     ]
   },
-  "version": "0.22.6",
-  "remotes": [
-    {
-      "type": "streamable-http",
-      "url": "https://mcp.zovo.one/mcp/price-tracker"
-    }
-  ]
+  "version": "0.22.6"
 }

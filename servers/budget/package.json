@@ -1,6 +1,6 @@
 {
   "name": "mcp-budget",
-  "version": "1.0.0",
+  "version": "0.22.6",
   "description": "MCP server: budget",
   "type": "module",
   "main": "src/index.js",

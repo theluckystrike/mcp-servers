@@ -1,6 +1,6 @@
 {
   "name": "@theluckystrike/mcp-image",
-  "version": "0.22.5",
+  "version": "0.22.6",
   "description": "Resize, convert, compress, crop, thumbnail and watermark images from chat: no upload, no account, no native dependency. Every file stays on your machine.",
   "type": "module",
   "bin": {

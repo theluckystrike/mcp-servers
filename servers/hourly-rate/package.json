@@ -1,6 +1,6 @@
 {
   "name": "@theluckystrike/mcp-hourly-rate",
-  "version": "0.22.5",
+  "version": "0.22.6",
   "description": "Freelance hourly-rate calculator with break-even and what-if scenarios.",
   "type": "module",
   "main": "dist/index.js",

@@ -12,25 +12,11 @@
     {
       "registryType": "mcpb",
       "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.22.0/tax-calc.mcpb",
-      "version": "1.0.1",
+      "version": "0.22.6",
       "transport": {
         "type": "stdio"
       },
       "fileSha256": "25e7ab4b8f75486b800e3f01c5ce67ee84dd2fbd9bef7ffcc3b9a9711b91ef6b"
-    }
-  ],
-  "remotes": [
-    {
-      "type": "streamable-http",
-      "url": "https://mcp.zovo.one/mcp/tax-calc",
-      "headers": [
-        {
-          "description": "Bearer <Pro license key or anonymous token from GET https://mcp.zovo.one/mcp/token>",
-          "isRequired": true,
-          "isSecret": true,
-          "name": "Authorization"
-        }
-      ]
     }
   ]
 }

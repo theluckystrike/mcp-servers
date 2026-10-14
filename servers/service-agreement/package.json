@@ -1,6 +1,6 @@
 {
   "name": "@theluckystrike/mcp-service-agreement",
-  "version": "0.22.5",
+  "version": "0.22.6",
   "description": "Service agreements for freelancers: scope, deliverables, rate, termination and liability caps.",
   "type": "module",
   "bin": {

@@ -1,6 +1,6 @@
 {
   "name": "@theluckystrike/mcp-catalogue",
-  "version": "0.22.5",
+  "version": "0.22.6",
   "description": "A price list and rate card the quotes and invoice servers read by SKU.",
   "type": "module",
   "bin": {

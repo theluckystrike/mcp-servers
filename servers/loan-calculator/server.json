@@ -12,25 +12,11 @@
     {
       "registryType": "mcpb",
       "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.22.0/loan-calculator.mcpb",
-      "version": "0.22.0",
+      "version": "0.22.6",
       "transport": {
         "type": "stdio"
       },
       "fileSha256": "bc1c9400378842a60f916fe7be35002320e650189437390f5a9c65b72fe1b823"
-    }
-  ],
-  "remotes": [
-    {
-      "type": "streamable-http",
-      "url": "https://mcp.zovo.one/mcp/loan-calculator",
-      "headers": [
-        {
-          "description": "Bearer <Pro license key or anonymous token from GET https://mcp.zovo.one/mcp/token>",
-          "isRequired": true,
-          "isSecret": true,
-          "name": "Authorization"
-        }
-      ]
     }
   ]
 }

@@ -1,6 +1,6 @@
 {
   "name": "@theluckystrike/mcp-change-order",
-  "version": "0.22.5",
+  "version": "0.22.6",
   "description": "Change orders against a quote or work order: deltas, approval, running contract value.",
   "type": "module",
   "bin": {

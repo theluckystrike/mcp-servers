@@ -1,6 +1,6 @@
 {
   "name": "@theluckystrike/mcp-onboarding",
-  "version": "0.22.5",
+  "version": "0.22.6",
   "description": "New-hire onboarding: task templates per role, day-one to day-ninety plans.",
   "type": "module",
   "bin": {

@@ -1,6 +1,6 @@
 {
   "name": "@theluckystrike/mcp-purchase-requisition",
-  "version": "0.22.5",
+  "version": "0.22.8",
   "description": "Reusable purchase-requisitions and dated runs: pass, fail, n/a, and a sign-off.",
   "type": "module",
   "bin": {

@@ -1,6 +1,6 @@
 {
   "name": "@theluckystrike/mcp-packing-list",
-  "version": "0.22.5",
+  "version": "0.22.8",
   "description": "Packing slips: cartons, contents, weights, chargeable weight and what is still to pack.",
   "type": "module",
   "bin": {

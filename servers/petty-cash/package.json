@@ -1,6 +1,6 @@
 {
   "name": "@theluckystrike/mcp-petty-cash",
-  "version": "0.22.5",
+  "version": "0.22.6",
   "description": "A petty cash float on the imprest system: vouchers, reconciliation and the replenishment.",
   "type": "module",
   "bin": {

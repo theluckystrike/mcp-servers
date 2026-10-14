@@ -1,6 +1,6 @@
 {
   "name": "@theluckystrike/mcp-goods-receipt",
-  "version": "0.22.5",
+  "version": "0.22.6",
   "description": "Goods receipt notes against purchase orders: over/under tolerances, damaged and short units, discrepancies, and CSV export.",
   "type": "module",
   "bin": {

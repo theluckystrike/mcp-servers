@@ -1,6 +1,6 @@
 {
   "name": "@theluckystrike/mcp-mileage-log",
-  "version": "0.22.5",
+  "version": "0.22.6",
   "description": "Mileage log for deductible driving: trips, effective-dated rates, summaries and CSV export.",
   "type": "module",
   "bin": {

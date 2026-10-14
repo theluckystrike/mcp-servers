@@ -13,7 +13,7 @@
     {
       "registryType": "mcpb",
       "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.22.0/docx.mcpb",
-      "version": "0.22.5",
+      "version": "0.22.6",
       "fileSha256": "2f4f144c08ac4e0babf214ebf5eee9ead60956435219e1ce34faf25b8a4a92d0",
       "transport": {
         "type": "stdio"

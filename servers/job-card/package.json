@@ -1,6 +1,6 @@
 {
   "name": "@theluckystrike/mcp-job-card",
-  "version": "0.22.5",
+  "version": "0.22.6",
   "description": "Job cards for trades and field service: hours and materials per job, open to invoiced.",
   "type": "module",
   "bin": {

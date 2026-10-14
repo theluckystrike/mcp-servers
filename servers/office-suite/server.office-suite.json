@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/office-suite",
   "description": "Whole freelancer office in one MCP server: time tracking, price watching, spreadsheets, invoicing.",
-  "version": "0.22.5",
+  "version": "0.22.6",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
@@ -13,7 +13,7 @@
     {
       "registryType": "mcpb",
       "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.22.0/office-suite.mcpb",
-      "version": "0.22.5",
+      "version": "0.22.6",
       "fileSha256": "435c59d96f9bcf3ffb39547a56c64f48c2239df0f5746c7d681d6d446b157f8a",
       "transport": {
         "type": "stdio"

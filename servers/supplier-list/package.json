@@ -1,6 +1,6 @@
 {
   "name": "@theluckystrike/mcp-supplier-list",
-  "version": "0.22.5",
+  "version": "0.22.6",
   "description": "A supplier directory that does not rot: contacts, terms, lead times, review dates.",
   "type": "module",
   "bin": {

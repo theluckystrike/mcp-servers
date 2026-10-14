@@ -1,6 +1,6 @@
 {
   "name": "@theluckystrike/mcp-bank-statement",
-  "version": "0.22.5",
+  "version": "0.22.6",
   "mcpName": "io.github.theluckystrike/bank-statement-csv-categorize-reconcile-ledger",
   "description": "Import a bank CSV export, categorise it, summarise it per currency, find recurring charges and reconcile it against your expense ledger. Everything stays on your machine.",
   "type": "module",

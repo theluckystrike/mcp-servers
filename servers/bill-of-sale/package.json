@@ -1,6 +1,6 @@
 {
   "name": "@theluckystrike/mcp-bill-of-sale",
-  "version": "0.22.5",
+  "version": "0.22.6",
   "description": "Bills of sale for equipment, vehicles and stock: draft, finalize, print with signature lines.",
   "type": "module",
   "bin": {

@@ -1,6 +1,6 @@
 {
   "name": "@theluckystrike/mcp-pdf",
-  "version": "0.22.5",
+  "version": "0.22.6",
   "description": "Merge, split, extract, rotate, reorder and stamp PDF files from chat: mark an invoice PAID, pull pages out of a scan, join a set of documents into one. Everything stays on your machine.",
   "type": "module",
   "bin": {

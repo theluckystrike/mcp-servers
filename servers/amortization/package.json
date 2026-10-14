@@ -1,6 +1,6 @@
 {
   "name": "@theluckystrike/mcp-amortization",
-  "version": "0.22.5",
+  "version": "0.22.6",
   "description": "Loan and lease schedules: payment, interest, early settlement and the journal, to the minor unit.",
   "type": "module",
   "bin": {
