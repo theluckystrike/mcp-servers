@@ -237,7 +237,7 @@ export async function runScheduledMonitor(env, scheduledTime, ctx, route = app.f
   // +48h and +7d emails outside the monitor's own try/catch — a drip failure must never
   // mark the operations monitor unhealthy. Logs outcomes to console (visible in
   // wrangler tail) and stamps each subscriber so every email sends exactly once.
-  ctx.waitUntil(runDripSweep(env).catch((e) => {
+  if (ctx?.waitUntil) ctx.waitUntil(runDripSweep(env).catch((e) => {
     console.error(JSON.stringify({ event: "drip_sweep_failed", error: String(e?.message || e).slice(0, 300) }));
   }));
   return report;
