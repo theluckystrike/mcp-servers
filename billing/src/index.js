@@ -1542,8 +1542,14 @@ async function unsubVerify(env, email, sig) {
   return expected === sig; // fixed-length hex/b64 compare; not secret-dependent timing-critical
 }
 async function unsubUrl(origin, env, email) {
-  const sig = await unsubSign(env, email.toLowerCase());
-  return `${origin}/api/unsub?e=${encodeURIComponent(b64url(new TextEncoder().encode(email.toLowerCase())))}&s=${sig}`;
+  const secret = env.UNSUB_SECRET || env.STRIPE_WEBHOOK_SECRET || "";
+  if (!secret) return null;
+  const enc = new TextEncoder();
+  const key = await crypto.subtle.importKey("raw", enc.encode(secret), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
+  const sigBuf = await crypto.subtle.sign("HMAC", key, enc.encode(`unsub:${email.toLowerCase()}`));
+  const sig = base64url(new Uint8Array(sigBuf));
+  const eB64 = base64url(enc.encode(email.toLowerCase()));
+  return `${origin}/api/unsub?e=${encodeURIComponent(eB64)}&s=${sig}`;
 }
 
 const worker = {
@@ -2538,12 +2544,14 @@ const LLM_USE_WHEN = {
                 "",
                 "Reply with the paperwork you hate most and I'll point you at the exact server for it.",
                 "",
-                `Unsubscribe: ${await unsubUrl(url.origin, env, email)}`,
+                `Unsubscribe: ${await unsubUrl(url.origin, env, email) ?? "(ask us any time: support@zovo.one)"}`,
               ].join("\n"),
-              headers: {
-                "List-Unsubscribe": `<${await unsubUrl(url.origin, env, email)}>`,
-                "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
-              },
+              ...(await unsubUrl(url.origin, env, email) ? {
+                headers: {
+                  "List-Unsubscribe": `<${await unsubUrl(url.origin, env, email)}>`,
+                  "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+                },
+              } : {}),
               reply_to: "support@zovo.one",
             }),
           });
