@@ -259,7 +259,7 @@ export const VALIDATION = { at: "2026-09-24", pass: 1254, total: 1254, servers: 
  * same way: test/checkout-r1.test.mjs counts the `test(` declarations on disk and fails
  * if this disagrees. The page said 25 when there were 99.
  */
-export const BILLING_TEST_COUNT = 164;
+export const BILLING_TEST_COUNT = 171;
 /**
  * The npm publish is pending: `npx -y @theluckystrike/mcp-<server>` returns E404 today,
  * and publishing needs an operator browser login (docs/HUMAN_GATED_PACK.md section 1).
@@ -567,7 +567,26 @@ a.grid{display:inline-block;width:31%;min-width:200px;margin:0 1% 6px 0;font-siz
 .det{font-size:13px;color:var(--mut);margin:.3em 0 0;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 @media(max-width:640px){a.grid{width:100%}}
 </style></head><body><nav class="pg" aria-label="Popular guides">${PRIORITY_GUIDES.filter((s) => GUIDES[s]).slice(0, 10).map((s) => `<a href="/guides/${s}">${esc(GUIDES[s].title)}</a>`).join(" &middot; ")}</nav>${body}
-<footer>Home: <a href="/">All servers</a> &middot; <a href="/guides">Guides</a> &middot; <a href="/setup">Setup</a> &middot; <a href="/compare">Compare</a> &middot; <a href="/changelog">Changelog</a> &middot; <a href="https://tg.zovo.one">Tiny Telegram Tools</a> &middot; Support: support@zovo.one &middot; Built by <a href="${REPO}">theluckystrike</a></footer>
+<footer>Home: <a href="/">All servers</a> &middot; <a href="/guides">Guides</a> &middot; <a href="/setup">Setup</a> &middot; <a href="/compare">Compare</a> &middot; <a href="/changelog">Changelog</a> &middot; <a href="https://tg.zovo.one">Tiny Telegram Tools</a> &middot; Support: support@zovo.one &middot; Built by <a href="${REPO}">theluckystrike</a>
+<form id="subform" method="post" action="/api/subscribe" style="margin-top:14px;display:flex;gap:8px;max-width:420px">
+  <input type="email" name="email" required placeholder="you@example.com" aria-label="Email address"
+    style="flex:1;padding:8px 10px;background:#111;border:1px solid var(--bd);color:var(--fg);font:inherit;font-size:13px;border-radius:0">
+  <button type="submit" style="padding:8px 14px;border:1px solid var(--ac);background:transparent;color:var(--ac);font:inherit;font-size:13px;font-weight:600;cursor:pointer;border-radius:0">Get setup tips</button>
+</form>
+<p class="muted" style="font-size:12px;margin:6px 0 0">One email when you sign up, one tip two days later. No newsletter, no spam.</p>
+<script>document.getElementById("subform").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const f = e.target, btn = f.querySelector("button");
+  try {
+    const r = await fetch("/api/subscribe", { method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ email: f.email.value, src: "footer" }) });
+    const j = await r.json().catch(() => ({}));
+    btn.textContent = j.ok === false ? j.reason || "Try again" : "Check your inbox";
+    if (j.ok !== false) f.email.value = "";
+  } catch { btn.textContent = "Try again"; }
+});</script>
+</footer>
 ${COPY_BUTTON_SCRIPT}
 </body></html>`;
 }
@@ -2439,6 +2458,62 @@ const LLM_USE_WHEN = {
         }
       }
       return Response.json({ received: true });
+    }
+
+    // Conversion funnel E1 (intel/s20261012c/CONVERSION-RESEND-PLAN.md): footer email
+    // capture. Stores the address + first-seen metadata in the LICENSES KV under sub:<email>
+    // and sends the welcome email through Resend (same key the license mailer uses).
+    // Never throws at the caller: a failed Resend send still returns ok:true with the
+    // outcome recorded, so the UI never blocks on email infra.
+    if (path === "/api/subscribe" && method === "POST") {
+      let body;
+      try { body = await request.json(); } catch { body = null; }
+      const email = typeof body?.email === "string" ? body.email.trim().toLowerCase() : "";
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 200) {
+        return Response.json({ ok: false, reason: "invalid email" }, { status: 400 });
+      }
+      const source = typeof body?.source === "string" ? body.source.slice(0, 60) : "footer";
+      const ref = `sub:${email}`;
+      const existing = await env.LICENSES.get(ref);
+      if (existing) {
+        return Response.json({ ok: true, status: "already_subscribed" });
+      }
+      const record = JSON.stringify({ email, source, at: new Date().toISOString() });
+      await env.LICENSES.put(ref, record, { expirationTtl: 60 * 60 * 24 * 365 * 5 });
+      let outcome = "stored_no_email";
+      if (env.RESEND_API_KEY) {
+        try {
+          const res = await fetch("https://api.resend.com/emails", {
+            method: "POST",
+            headers: { "authorization": `Bearer ${env.RESEND_API_KEY}`, "content-type": "application/json" },
+            body: JSON.stringify({
+              from: "MCP Servers <hello@zovo.one>",
+              to: [email],
+              subject: "55 free MCP servers for paperwork — start here",
+              text: [
+                "Welcome — this is the single most useful starting point.",
+                "",
+                "1. Browse the fleet: https://mcp.zovo.one/servers",
+                "2. Fastest start (no install): pick a server with a hosted endpoint and paste its URL into Claude Desktop / Cursor / VS Code:",
+                "   https://mcp.zovo.one/pricing",
+                "3. Free tier is unlimited in daily use; Pro ($19 single, $39 for all 47) is a one-time key, no subscription.",
+                "",
+                "In two days I'll send the one server most people keep installed, with its setup copy-paste.",
+                "",
+                "Reply with the paperwork you hate most and I'll point you at the exact server for it.",
+              ].join("\n"),
+              reply_to: "support@zovo.one",
+            }),
+          });
+          outcome = res.ok ? "sent" : `send_failed_${res.status}`;
+          if (!res.ok) console.error(`subscribe welcome email failed ${res.status}: ${(await res.text()).slice(0, 200)}`);
+        } catch (e) {
+          outcome = "send_error";
+          console.error(`subscribe welcome email error: ${safeLogError(e)}`);
+        }
+      }
+      console.log(JSON.stringify({ event: "subscribe", source, outcome }));
+      return Response.json({ ok: true, status: "subscribed" });
     }
 
     if (path === "/verify" && method === "GET") {

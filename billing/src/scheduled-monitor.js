@@ -233,7 +233,88 @@ export async function runScheduledMonitor(env, scheduledTime, ctx, route = app.f
   }
   await env.REMOTE_DATA.put(STATUS_KEY, JSON.stringify(report));
   if (!report.ok) throw new Error(report.error);
+  // Conversion funnel E2/E3 drip (intel/s20261012c/CONVERSION-RESEND-PLAN.md): fire the
+  // +48h and +7d emails outside the monitor's own try/catch — a drip failure must never
+  // mark the operations monitor unhealthy. Logs outcomes to console (visible in
+  // wrangler tail) and stamps each subscriber so every email sends exactly once.
+  ctx.waitUntil(runDripSweep(env).catch((e) => {
+    console.error(JSON.stringify({ event: "drip_sweep_failed", error: String(e?.message || e).slice(0, 300) }));
+  }));
   return report;
+}
+
+const DRIP_STEPS = [
+  { key: "e2", ageHours: 48, subject: "The one server most people keep installed",
+    text: [
+      "Two days ago you signed up for the MCP server fleet.",
+      "",
+      "The server people keep installed longest is MCP Invoice Pro: it turns a job card into a real invoice — client, line items, totals, currency — and prints a PDF with a signature line.",
+      "",
+      "Free tier, no key needed: run it locally with npx, or paste the hosted URL:",
+      "  https://mcp.zovo.one/s/invoice",
+      "",
+      "Setup in Claude Desktop takes 30 seconds (copy-paste JSON is on that page).",
+      "",
+      "If invoices are not your bottleneck, reply with the paperwork you hate most and I'll point you at the right server.",
+    ].join("\n") },
+  { key: "e3", ageHours: 168, subject: "One key, all 47 servers — founding tier ends soon",
+    text: [
+      "A week ago you signed up for the MCP server fleet.",
+      "",
+      "If you have been using the free tiers, the bundle is the step up: one license key, every Pro tier unlocked, 47 servers, one-time $39 — no subscription.",
+      "Founding pricing ends 2026-11-08; after that the bundle goes to $59.",
+      "",
+      "  https://mcp.zovo.one/pricing",
+      "",
+      "Anything blocking you? Reply — a real person reads it.",
+    ].join("\n") },
+];
+
+/** Sweep the sub:* KV namespace and send E2 (+48h) / E3 (+7d) to subscribers whose
+ *  timestamp crossed the step threshold. Each step is stamped onto the record, so the
+ *  every-5-minutes cron sends each email at most once per subscriber. Failures are
+ *  logged, not thrown: email is a conversion nicety, never an operations dependency. */
+export async function runDripSweep(env, now = Date.now()) {
+  if (!env.RESEND_API_KEY) return { skipped: "no_api_key" };
+  let cursor;
+  const outcomes = { e2: 0, e3: 0, errors: 0 };
+  do {
+    const page = await env.LICENSES.list({ prefix: "sub:", cursor });
+    for (const key of page.keys) {
+      const name = key.name;
+      if (name.endsWith(":e2") || name.endsWith(":e3")) continue;
+      let record;
+      try { record = JSON.parse(await env.LICENSES.get(name) || "null"); } catch { continue; }
+      if (!record?.at || !record.email) continue;
+      const ageH = (now - Date.parse(record.at)) / 3600_000;
+      for (const step of DRIP_STEPS) {
+        const stepKey = `${name}:${step.key}`;
+        if (await env.LICENSES.get(stepKey)) continue;
+        if (ageH < step.ageHours) continue;
+        try {
+          const res = await fetch("https://api.resend.com/emails", {
+            method: "POST",
+            headers: { "authorization": `Bearer ${env.RESEND_API_KEY}`, "content-type": "application/json" },
+            body: JSON.stringify({ from: "MCP Servers <hello@zovo.one>", to: [record.email],
+              subject: step.subject, text: step.text, reply_to: "support@zovo.one" }),
+          });
+          if (res.ok) {
+            await env.LICENSES.put(stepKey, new Date().toISOString());
+            outcomes[step.key]++;
+          } else {
+            outcomes.errors++;
+            console.error(`drip ${step.key} send failed for ${name}: ${res.status}`);
+          }
+        } catch { outcomes.errors++; }
+      }
+    }
+    if (page.list_complete) break;
+    cursor = page.cursor;
+  } while (cursor);
+  if (outcomes.e2 || outcomes.e3 || outcomes.errors) {
+    console.log(JSON.stringify({ event: "drip_sweep", ...outcomes }));
+  }
+  return outcomes;
 }
 
 export async function recordWebhookStatus(env, status, timestamp = Date.now()) {
