@@ -1,0 +1,29 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.theluckystrike/kanban",
+  "description": "A local task board per project: columns, due dates, estimates, priorities, overdue, weekly review.",
+  "version": "0.22.6",
+  "repository": {
+    "url": "https://github.com/theluckystrike/mcp-servers",
+    "source": "github",
+    "subfolder": "servers/kanban"
+  },
+  "websiteUrl": "https://mcp.zovo.one/s/kanban",
+  "packages": [
+    {
+      "registryType": "mcpb",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.22.0/kanban.mcpb",
+      "version": "0.22.5",
+      "fileSha256": "02823576ba9c11a516c5524fd981fae9e8a0ed8c6276879e30aa559321e8fc10",
+      "transport": {
+        "type": "stdio"
+      }
+    }
+  ],
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.zovo.one/mcp/kanban"
+    }
+  ]
+}

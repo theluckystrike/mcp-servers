@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/backlink-checker",
   "description": "Does a page link to your domain? Dofollow/nofollow, anchor, status, robots guards. Live, no store.",
-  "version": "0.22.5",
+  "version": "0.22.6",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
@@ -26,6 +26,20 @@
         }
       ],
       "fileSha256": "1bb475c662fc38d44f18536fb63a70bb93dfdf11862dbf9e4d402c2d13e0c9ef"
+    }
+  ],
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.zovo.one/mcp/backlink-checker",
+      "headers": [
+        {
+          "description": "Bearer <Pro license key or anonymous token from GET https://mcp.zovo.one/mcp/token>",
+          "isRequired": true,
+          "isSecret": true,
+          "name": "Authorization"
+        }
+      ]
     }
   ]
 }

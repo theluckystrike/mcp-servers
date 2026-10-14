@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/stripe-billing",
   "description": "Read your Stripe billing data from AI chat: balances, invoices, subscriptions. Read-only.",
-  "version": "1.0.1",
+  "version": "0.22.6",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
@@ -17,6 +17,20 @@
         "type": "stdio"
       },
       "fileSha256": "f371cbf173a881fd462da68578ea12d8f6804dd365e049397bade2805f0960af"
+    }
+  ],
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.zovo.one/mcp/stripe-billing",
+      "headers": [
+        {
+          "description": "Bearer <Pro license key or anonymous token from GET https://mcp.zovo.one/mcp/token>",
+          "isRequired": true,
+          "isSecret": true,
+          "name": "Authorization"
+        }
+      ]
     }
   ]
 }

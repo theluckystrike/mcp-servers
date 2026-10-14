@@ -2,7 +2,7 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/delivery-note",
   "description": "Delivery notes vs a quote or work order: dated deliverables, due dates, sign-off.",
-  "version": "0.22.5",
+  "version": "0.22.7",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",

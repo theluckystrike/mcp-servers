@@ -1,0 +1,29 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.theluckystrike/image",
+  "description": "Resize, convert, compress, crop, thumbnail and watermark images from your AI chat.",
+  "version": "0.22.6",
+  "repository": {
+    "url": "https://github.com/theluckystrike/mcp-servers",
+    "source": "github",
+    "subfolder": "servers/image"
+  },
+  "websiteUrl": "https://mcp.zovo.one/s/image",
+  "packages": [
+    {
+      "registryType": "mcpb",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.22.0/image.mcpb",
+      "version": "0.22.5",
+      "fileSha256": "e348a233a815a5c423ba0f3e29292425e63282df7ae78eaa332859179c0fbdca",
+      "transport": {
+        "type": "stdio"
+      }
+    }
+  ],
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.zovo.one/mcp/image"
+    }
+  ]
+}

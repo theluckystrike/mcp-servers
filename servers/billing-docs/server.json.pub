@@ -1,0 +1,29 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.theluckystrike/billing-docs",
+  "description": "Credit notes against your invoices and purchase orders to suppliers, with VAT and A4 PDFs.",
+  "version": "0.22.6",
+  "repository": {
+    "url": "https://github.com/theluckystrike/mcp-servers",
+    "source": "github",
+    "subfolder": "servers/billing-docs"
+  },
+  "websiteUrl": "https://mcp.zovo.one/s/billing-docs",
+  "packages": [
+    {
+      "registryType": "mcpb",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.22.0/billing-docs.mcpb",
+      "version": "0.22.5",
+      "fileSha256": "640c50fb6bb88486d6b06660694dda52e5bcbdf57aabd66920f1d53345be64e2",
+      "transport": {
+        "type": "stdio"
+      }
+    }
+  ],
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.zovo.one/mcp/billing-docs"
+    }
+  ]
+}
