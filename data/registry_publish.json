@@ -1,14 +1,9 @@
 {
-  "at": "2026-10-14T05:51:04.750Z",
-  "published": [],
-  "duplicate": [
-    "io.github.theluckystrike/onboarding-purchase-requisition-inspection-runs@0.22.7"
+  "at": "2026-10-14T09:05:34.252Z",
+  "published": [
+    "io.github.theluckystrike/onboarding-purchase-requisition-inspection-runs@0.22.8",
+    "io.github.theluckystrike/purchase-requisition@0.22.8"
   ],
-  "failed": [
-    {
-      "name": "io.github.theluckystrike/purchase-requisition",
-      "version": "0.22.6",
-      "error": "Publishing to https://registry.modelcontextprotocol.io...\nError: publish failed: server returned status 400: {\"title\":\"Bad Request\",\"status\":400,\"detail\":\"Failed to publish server\",\"errors\":[{\"message\":\"remote URL https://mcp.zovo.one/mcp/purchase-requisition is already used by server io.github.thel"
-    }
-  ]
+  "duplicate": [],
+  "failed": []
 }
