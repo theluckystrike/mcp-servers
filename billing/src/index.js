@@ -1513,6 +1513,39 @@ export async function verifySig(env, body, header) {
   return matched;
 }
 
+// ---- Email unsubscribe (opt-out) -------------------------------------------
+// Every marketing email carries a signed one-click link. Opt-out state is the
+// KV key unsub:<email> (LICENSES namespace, 5y TTL). The drip sweep and the
+// welcome sender both check it before sending. Secret: UNSUB_SECRET, falling
+// back to STRIPE_WEBHOOK_SECRET so the flow works with zero new secret setup.
+function unsubSecret(env) {
+  return env.UNSUB_SECRET || env.STRIPE_WEBHOOK_SECRET || "";
+}
+function b64url(bytes) {
+  let s = "";
+  for (const b of new Uint8Array(bytes)) s += String.fromCharCode(b);
+  return btoa(s).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+function b64urlDecode(str) {
+  const b64 = str.replace(/-/g, "+").replace(/_/g, "/") + "===".slice((str.length + 3) % 4);
+  return atob(b64);
+}
+async function unsubSign(env, email) {
+  const enc = new TextEncoder();
+  const mac = await crypto.subtle.importKey("raw", enc.encode(unsubSecret(env)), { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
+  const sig = await crypto.subtle.sign("HMAC", mac, enc.encode(`unsub:${email}`));
+  return b64url(sig);
+}
+async function unsubVerify(env, email, sig) {
+  if (!email || !sig || email.length > 200) return false;
+  const expected = await unsubSign(env, email.toLowerCase());
+  return expected === sig; // fixed-length hex/b64 compare; not secret-dependent timing-critical
+}
+async function unsubUrl(origin, env, email) {
+  const sig = await unsubSign(env, email.toLowerCase());
+  return `${origin}/api/unsub?e=${encodeURIComponent(b64url(new TextEncoder().encode(email.toLowerCase())))}&s=${sig}`;
+}
+
 const worker = {
   async fetch(request, env, ctx) {
     const handler = worker.fetch;
@@ -2474,6 +2507,9 @@ const LLM_USE_WHEN = {
       }
       const source = typeof body?.source === "string" ? body.source.slice(0, 60) : "footer";
       const ref = `sub:${email}`;
+      if (await env.LICENSES.get(`unsub:${email}`)) {
+        return Response.json({ ok: true, status: "unsubscribed" });
+      }
       const existing = await env.LICENSES.get(ref);
       if (existing) {
         return Response.json({ ok: true, status: "already_subscribed" });
@@ -2501,7 +2537,13 @@ const LLM_USE_WHEN = {
                 "In two days I'll send the one server most people keep installed, with its setup copy-paste.",
                 "",
                 "Reply with the paperwork you hate most and I'll point you at the exact server for it.",
+                "",
+                `Unsubscribe: ${await unsubUrl(url.origin, env, email)}`,
               ].join("\n"),
+              headers: {
+                "List-Unsubscribe": `<${await unsubUrl(url.origin, env, email)}>`,
+                "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+              },
               reply_to: "support@zovo.one",
             }),
           });
@@ -2514,6 +2556,21 @@ const LLM_USE_WHEN = {
       }
       console.log(JSON.stringify({ event: "subscribe", source, outcome }));
       return Response.json({ ok: true, status: "subscribed" });
+    }
+
+    // One-click unsubscribe. Signed link only (no auth session) — signature is
+    // HMAC over the lowercased address with UNSUB_SECRET (or webhook secret).
+    // Marks unsub:<email> in LICENSES KV; drip sweep + welcome both honor it.
+    if (path === "/api/unsub" && method === "GET") {
+      let email = "";
+      try { email = new TextDecoder().decode(Uint8Array.from(b64urlDecode(url.searchParams.get("e") || ""), (c) => c.charCodeAt(0))); } catch { email = ""; }
+      const sig = url.searchParams.get("s") || "";
+      const ok = await unsubVerify(env, email, sig);
+      const html = (msg) => `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${msg}</title></head><body style="font-family:system-ui,sans-serif;max-width:34rem;margin:3rem auto;padding:0 1rem"><h1>${msg}</h1><p style="color:#555">You will not receive any further email from mcp.zovo.one. If this was a mistake, just subscribe again on <a href="https://mcp.zovo.one">mcp.zovo.one</a>.</p></body></html>`;
+      if (!ok) return new Response(html("Invalid unsubscribe link"), { status: 400, headers: { "content-type": "text/html; charset=utf-8" } });
+      await env.LICENSES.put(`unsub:${email}`, new Date().toISOString(), { expirationTtl: 60 * 60 * 24 * 365 * 5 });
+      console.log(JSON.stringify({ event: "unsubscribe" }));
+      return new Response(html("Unsubscribed"), { status: 200, headers: { "content-type": "text/html; charset=utf-8" } });
     }
 
     if (path === "/verify" && method === "GET") {

@@ -286,17 +286,32 @@ export async function runDripSweep(env, now = Date.now()) {
       let record;
       try { record = JSON.parse(await env.LICENSES.get(name) || "null"); } catch { continue; }
       if (!record?.at || !record.email) continue;
+      if (await env.LICENSES.get(`unsub:${record.email}`)) continue;
       const ageH = (now - Date.parse(record.at)) / 3600_000;
       for (const step of DRIP_STEPS) {
         const stepKey = `${name}:${step.key}`;
         if (await env.LICENSES.get(stepKey)) continue;
         if (ageH < step.ageHours) continue;
         try {
+          const origin = "https://mcp.zovo.one";
+          const email = record.email.toLowerCase();
+          const enc = new TextEncoder();
+          const mac = await crypto.subtle.importKey("raw", enc.encode(env.UNSUB_SECRET || env.STRIPE_WEBHOOK_SECRET || ""),
+            { name: "HMAC", hash: "SHA-256" }, false, ["sign"]);
+          const sigBuf = await crypto.subtle.sign("HMAC", mac, enc.encode(`unsub:${email}`));
+          const sig = btoa(String.fromCharCode(...new Uint8Array(sigBuf))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+          const eB64 = btoa(String.fromCharCode(...enc.encode(email))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+          const unsub = `${origin}/api/unsub?e=${encodeURIComponent(eB64)}&s=${sig}`;
           const res = await fetch("https://api.resend.com/emails", {
             method: "POST",
             headers: { "authorization": `Bearer ${env.RESEND_API_KEY}`, "content-type": "application/json" },
             body: JSON.stringify({ from: "MCP Servers <hello@zovo.one>", to: [record.email],
-              subject: step.subject, text: step.text, reply_to: "support@zovo.one" }),
+              subject: step.subject, text: `${step.text}\n\nUnsubscribe: ${unsub}`,
+              headers: {
+                "List-Unsubscribe": `<${unsub}>`,
+                "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+              },
+              reply_to: "support@zovo.one" }),
           });
           if (res.ok) {
             await env.LICENSES.put(stepKey, new Date().toISOString());
