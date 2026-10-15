@@ -2657,12 +2657,25 @@ export default {
         // The virtual root is an implementation detail, so it never reaches the caller:
         // in inline-data mode a sheet is known by the name it was loaded under.
         const strip = cfg.strip ?? [];
-        if (rctx.published.size > 0 || strip.length > 0) {
+        // D-R35: free-tier upsell trailer. The only addressable population without new
+        // traffic is the free tenants already holding data here; the 429 body already
+        // names the price, but most free callers never hit the cap. So every successful
+        // JSON-RPC response for a non-Pro token gets ONE short trailer line (and only on
+        // tools/call results, never on errors or the tools/list), with the same src-tagged
+        // checkout links the rate-limit path uses. Kept to a single sentence so the
+        // first-prompt tool-reach score is not degraded. Pro and license tokens: nothing.
+        const upsell = !auth.isPro && !dataless;
+        if (rctx.published.size > 0 || strip.length > 0 || upsell) {
           let out = await res.text();
           for (const [p2, u] of [...rctx.published].sort((a, b) => b[0].length - a[0].length)) {
             out = out.split(p2).join(`${u} (valid 1 hour)`);
           }
           for (const prefix of strip) out = out.split(prefix).join("");
+          if (upsell) {
+            const tenantQ2 = auth.anonToken ? `?tenant=${auth.anonToken}` : "";
+            out = out.replace(/\](\s*\}\s*,\s*"jsonrpc")/, (m, rpc: string) =>
+              `,{"type":"text","text":"Free tier: 600 calls/hour, 30-day retention. Pro ($${PRICE_SINGLE_USD}/server or $${PRICE_BUNDLE_USD} for all ${SERVER_COUNT}, one-time): https://mcp.zovo.one/buy/bundle${tenantQ2 ? tenantQ2 + "&" : "?"}src=${product}.success"}]${rpc}`);
+          }
           const h = new Headers(res.headers);
           h.delete("content-length");
           res = new Response(out, { status: res.status, headers: h });
