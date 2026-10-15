@@ -1,5 +1,5 @@
 {
-  "at": "2026-10-15T12:48:26.423Z",
+  "at": "2026-10-15T13:06:52.592Z",
   "checked": 0,
   "listed": [],
   "absent_count": 0,
@@ -10,7 +10,7 @@
   "negative_control": "glama-watch-negative-control-does-not-exist",
   "negative_control_badge_bytes": 2436,
   "connector_namespace": "io.github.theluckystrike",
-  "connector_count": 56,
+  "connector_count": 59,
   "connector_count_note": "Cumulative across runs. The anonymous listing page renders at most 20 rows and rotates which 20, so a single page is a floor, not a total.",
   "connectors_on_listing_page": 20,
   "connectors_listed": [
@@ -23,6 +23,7 @@
     "calendar-ics-reader-events-freebusy-conflicts",
     "cash-book",
     "catalogue",
+    "change-order",
     "contract-clause-library-proposal-template-docx",
     "credit-memo",
     "currency-converter-ecb-rates-daily-keyless",
@@ -47,6 +48,7 @@
     "mileage-log",
     "onboarding",
     "pdf-merge-split-stamp-extract-pages",
+    "pdf-split-merge-compress",
     "per-diem",
     "petty-cash",
     "price-drop-alert-tracker",
@@ -66,6 +68,7 @@
     "task-board-todo-kanban",
     "time-tracker-timesheet-billable-hours",
     "time-tracking",
+    "time-tracking-billing-hours",
     "timesheets",
     "timezone-world-clock-meeting-slots-overlap-ics",
     "work-order",
@@ -1011,6 +1014,144 @@
         "tool_min": 4.2,
         "worst_tool": "rate_set",
         "definition_quality": 4.26
+      }
+    },
+    "change-order": {
+      "surface": "connector",
+      "tools": [
+        {
+          "name": "change_order_add_line",
+          "title": "Add a changed line",
+          "grade": "A",
+          "score": 3.9,
+          "dimensions": {
+            "Behavior": 3,
+            "Conciseness": 5,
+            "Completeness": 3,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "change_order_create",
+          "title": "Raise a change order",
+          "grade": "A",
+          "score": 4.2,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "change_order_document",
+          "title": "Change order document",
+          "grade": "A",
+          "score": 4.1,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 4,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "change_order_get",
+          "title": "Show one change order",
+          "grade": "B",
+          "score": 3.3,
+          "dimensions": {
+            "Behavior": 1,
+            "Conciseness": 4,
+            "Completeness": 3,
+            "Parameters": 2,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "change_order_invoice_payload",
+          "title": "Invoice payload for an approved delta",
+          "grade": "B",
+          "score": 3.1,
+          "dimensions": {
+            "Behavior": 1,
+            "Conciseness": 4,
+            "Completeness": 2,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 3
+          }
+        },
+        {
+          "name": "change_order_list",
+          "title": "List change orders",
+          "grade": "A",
+          "score": 3.9,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 4,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 3
+          }
+        },
+        {
+          "name": "change_order_status",
+          "title": "Move a change order along",
+          "grade": "A",
+          "score": 4.4,
+          "dimensions": {
+            "Behavior": 5,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 4,
+            "Purpose": 5,
+            "Usage Guidelines": 3
+          }
+        },
+        {
+          "name": "contract_value",
+          "title": "Running contract value",
+          "grade": "A",
+          "score": 3.8,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 4,
+            "Usage Guidelines": 3
+          }
+        },
+        {
+          "name": "license_activate",
+          "title": "Activate license",
+          "grade": "A",
+          "score": 4.5,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 5,
+            "Parameters": 4,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        }
+      ],
+      "coherence": {},
+      "derived": {
+        "tool_mean": 3.911,
+        "tool_min": 3.1,
+        "worst_tool": "change_order_invoice_payload",
+        "definition_quality": 3.587
       }
     },
     "contract-clause-library-proposal-template-docx": {
@@ -3767,6 +3908,212 @@
         "definition_quality": 3.794
       }
     },
+    "pdf-split-merge-compress": {
+      "surface": "connector",
+      "tools": [
+        {
+          "name": "license_activate",
+          "title": "Activate license",
+          "grade": "A",
+          "score": 4.5,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 5,
+            "Parameters": 4,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "pdf_count",
+          "title": "Count pages in several PDFs",
+          "grade": "B",
+          "score": 3.4,
+          "dimensions": {
+            "Behavior": 1,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 3
+          }
+        },
+        {
+          "name": "pdf_delete_upload",
+          "title": "Delete a stored PDF",
+          "grade": "A",
+          "score": 3.9,
+          "dimensions": {
+            "Behavior": 3,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 2,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "pdf_files",
+          "title": "List uploaded and generated PDFs",
+          "grade": "A",
+          "score": 4.5,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 5,
+            "Parameters": 4,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "pdf_info",
+          "title": "Inspect a PDF",
+          "grade": "B",
+          "score": 3.3,
+          "dimensions": {
+            "Behavior": 1,
+            "Conciseness": 5,
+            "Completeness": 3,
+            "Parameters": 3,
+            "Purpose": 4,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "pdf_merge",
+          "title": "Merge PDFs into one file",
+          "grade": "A",
+          "score": 4,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 3
+          }
+        },
+        {
+          "name": "pdf_pages",
+          "title": "Extract pages into a new PDF",
+          "grade": "A",
+          "score": 4.6,
+          "dimensions": {
+            "Behavior": 5,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 4,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "pdf_reorder",
+          "title": "Reorder the pages of a PDF",
+          "grade": "A",
+          "score": 4.1,
+          "dimensions": {
+            "Behavior": 3,
+            "Conciseness": 4,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 5
+          }
+        },
+        {
+          "name": "pdf_rotate",
+          "title": "Rotate pages",
+          "grade": "A",
+          "score": 4.2,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "pdf_split",
+          "title": "Split a PDF into several files",
+          "grade": "A",
+          "score": 4.2,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "pdf_stamp",
+          "title": "Stamp text on a PDF",
+          "grade": "A",
+          "score": 4.4,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 4,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "pdf_upload",
+          "title": "Upload a PDF to work on",
+          "grade": "A",
+          "score": 4.9,
+          "dimensions": {
+            "Behavior": 5,
+            "Conciseness": 4,
+            "Completeness": 5,
+            "Parameters": 5,
+            "Purpose": 5,
+            "Usage Guidelines": 5
+          }
+        },
+        {
+          "name": "pdf_watermark_business",
+          "title": "Stamp your business details in the footer",
+          "grade": "A",
+          "score": 3.6,
+          "dimensions": {
+            "Behavior": 3,
+            "Conciseness": 4,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 4,
+            "Usage Guidelines": 4
+          }
+        }
+      ],
+      "tdqs_grade": "A",
+      "tdqs_score": 3.9,
+      "scored_at": "2026-09-26 07:25",
+      "tools_total": 15,
+      "coherence": {
+        "Disambiguation": 4,
+        "Naming Consistency": 4,
+        "Tool Count": 4,
+        "Completeness": 4
+      },
+      "derived": {
+        "tool_mean": 4.123,
+        "tool_min": 3.3,
+        "worst_tool": "pdf_info",
+        "definition_quality": 3.794,
+        "coherence_mean": 4,
+        "overall": 3.856,
+        "tier": "A"
+      }
+    },
     "per-diem": {
       "surface": "connector",
       "tools": [
@@ -6047,6 +6394,156 @@
         "tier": "A"
       }
     },
+    "time-tracking-billing-hours": {
+      "surface": "connector",
+      "tools": [
+        {
+          "name": "entry_add",
+          "title": "Add time entry",
+          "grade": "A",
+          "score": 4.4,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 4,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "entry_edit",
+          "title": "Edit time entry",
+          "grade": "A",
+          "score": 4.5,
+          "dimensions": {
+            "Behavior": 5,
+            "Conciseness": 5,
+            "Completeness": 3,
+            "Parameters": 4,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "entry_log",
+          "title": "Log work time",
+          "grade": "A",
+          "score": 3.8,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 4,
+            "Usage Guidelines": 3
+          }
+        },
+        {
+          "name": "entry_mark_billed",
+          "title": "Mark time entries as billed",
+          "grade": "A",
+          "score": 4.2,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "export_csv",
+          "title": "Export entries to CSV",
+          "grade": "A",
+          "score": 4.2,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "license_activate",
+          "title": "Activate license",
+          "grade": "A",
+          "score": 4.5,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 5,
+            "Parameters": 4,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "project_set_rate",
+          "title": "Set project rate",
+          "grade": "A",
+          "score": 4,
+          "dimensions": {
+            "Behavior": 3,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        },
+        {
+          "name": "timer_start",
+          "title": "Start timer",
+          "grade": "A",
+          "score": 4,
+          "dimensions": {
+            "Behavior": 4,
+            "Conciseness": 5,
+            "Completeness": 4,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 3
+          }
+        },
+        {
+          "name": "timer_stop",
+          "title": "Stop timer",
+          "grade": "A",
+          "score": 4.5,
+          "dimensions": {
+            "Behavior": 5,
+            "Conciseness": 5,
+            "Completeness": 5,
+            "Parameters": 3,
+            "Purpose": 5,
+            "Usage Guidelines": 4
+          }
+        }
+      ],
+      "tdqs_grade": "A",
+      "tdqs_score": 3.8,
+      "scored_at": "2026-10-15 11:25",
+      "tools_total": 20,
+      "coherence": {
+        "Disambiguation": 3,
+        "Naming Consistency": 3,
+        "Tool Count": 3,
+        "Completeness": 4
+      },
+      "derived": {
+        "tool_mean": 4.233,
+        "tool_min": 3.8,
+        "worst_tool": "entry_log",
+        "definition_quality": 4.06,
+        "coherence_mean": 3.25,
+        "overall": 3.817,
+        "tier": "A"
+      }
+    },
     "timesheets": {
       "surface": "connector",
       "tools": [
@@ -6684,6 +7181,17 @@
       "coherence_mean": null,
       "freshness": null
     },
+    "change-order": {
+      "surface": "connector",
+      "grade": null,
+      "tdqs": null,
+      "tool_mean": 3.911,
+      "tool_min": 3.1,
+      "worst_tool": "change_order_invoice_payload",
+      "overall": null,
+      "coherence_mean": null,
+      "freshness": null
+    },
     "contract-clause-library-proposal-template-docx": {
       "surface": "connector",
       "grade": null,
@@ -6926,6 +7434,17 @@
       "coherence_mean": null,
       "freshness": null
     },
+    "pdf-split-merge-compress": {
+      "surface": "connector",
+      "grade": "A",
+      "tdqs": 3.9,
+      "tool_mean": 4.123,
+      "tool_min": 3.3,
+      "worst_tool": "pdf_info",
+      "overall": 3.856,
+      "coherence_mean": 4,
+      "freshness": "2026-09-26 07:25"
+    },
     "per-diem": {
       "surface": "connector",
       "grade": null,
@@ -7134,6 +7653,17 @@
       "overall": 4.27,
       "coherence_mean": 4.5,
       "freshness": "2026-09-23 15:35"
+    },
+    "time-tracking-billing-hours": {
+      "surface": "connector",
+      "grade": "A",
+      "tdqs": 3.8,
+      "tool_mean": 4.233,
+      "tool_min": 3.8,
+      "worst_tool": "entry_log",
+      "overall": 3.817,
+      "coherence_mean": 3.25,
+      "freshness": "2026-10-15 11:25"
     },
     "timesheets": {
       "surface": "connector",

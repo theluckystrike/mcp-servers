@@ -23,3 +23,9 @@
 ## Read
 - Search-index footprint is the bottleneck for organic traffic: 3 indexable URLs. Sitemap has 289. IndexNow resubmitted; next lever is watching for Brave/Bing pickup after re-index window.
 - Glama connector surface is the one directory we KNOW carries our servers with scoring (TDQS); restoring glama-watch lets us track score movement.
+
+## R35d addendum (2026-10-15) — directory submission surfaces probed
+- glama-watch sweep re-run: 59 connectors cumulative, 57 graded, all A-tier. Exit 0.
+- mcp.so: submission API found (POST /api/marketplace-submissions, type=server, plan=premium $39 paid listing tier). REQUIRES GitHub sign-in session (unauthenticated POST -> {"code":-1,"message":"Unauthorized"}). Free path exists via sign-in; paid premium tier is the conversion play.
+- mcpmarket.com /api/submit: 200 HTML page (form-based; not scripted this pass).
+- mcp-pulse.org, gluon.ai: no submit endpoints reachable (000).
