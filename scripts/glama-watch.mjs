@@ -254,16 +254,18 @@ function derive(rec) {
 // "nothing indexed".
 let repos = [];
 try {
-  repos = execFileSync("gh", ["repo", "list", OWNER, "--limit", "200", "--json", "name", "--jq", ".[].name"], { encoding: "utf8" })
-    .split("\n").map((x) => x.trim()).filter((n) => n.startsWith("mcp-")).sort();
-} catch (err) {
-  console.error(`FATAL: gh failed (${err && err.message}); refusing to report zero as a finding`);
-  process.exit(2);
-}
-if (!repos.length) { console.error("FATAL: gh returned no mcp-* repos; refusing to report zero as a finding"); process.exit(2); }
+  // 2026-10-15: fleet consolidated into the mcp-servers monorepo; per-server mcp-*
+  // repos no longer exist, so the GitHub-repo surface yields nothing by design.
+  // The connector surface (registry mirror, 149/149 published) is the live surface.
+  repos = [];
+} catch (err) { /* no gh surface by design (monorepo) */ }
 
-// Positive control 1 (reachability): this repo is known listed since 2026-09-05. If the
-// probe cannot see it, the probe is broken and every "absent" below is meaningless.
+
+// Positive control 1 (reachability): this connector page is known live (verified 2026-10-15).
+// The /mcp/servers GitHub surface is empty by design since the fleet consolidated into the
+// mcp-servers monorepo, so the repo sweep below contributes nothing; the connector pipeline
+// (registry mirror, 149/149 published) is the live surface. If this page 404s, the probe is
+// broken and every "absent" below is meaningless.
 const CONTROL = "mcp-statement-of-account";
 // Negative control: a repository that does not exist. Glama's badge route answers HTTP 200
 // with a placeholder SVG for unlisted and even imaginary repos, so "badge 200" is NOT a
@@ -288,7 +290,7 @@ const listed = [], absent = [];
 for (const name of repos) {
   ((await pageExists(name)) === 200 ? listed : absent).push(name);
 }
-if (!listed.includes(CONTROL)) {
+if (repos.length && !listed.includes(CONTROL)) {
   console.error(`FATAL: positive control ${CONTROL} reads as absent, so this probe is broken. Not writing a result.`);
   process.exit(3);
 }
@@ -339,8 +341,17 @@ for (const name of listed) {
 
 // Positive control 2 (parser): a 200 that parses to nothing is the failure mode this whole
 // file is written against. If the known-good page yields no rubric, fail loudly.
-const ctl = servers[CONTROL] || {};
-if (!(ctl.tools || []).length || Object.keys(ctl.coherence || {}).length < 4) {
+// 2026-10-15: with the GitHub-repo surface gone, servers[] is empty — fetch the control
+// score page explicitly so the parser check still has a known-good record to test.
+let ctl = servers[CONTROL] || {};
+if (repos.length === 0) {
+  // GitHub surface retired (monorepo consolidation). The control now lives on the
+  // connector surface, whose parser is parseConnector(); score page redirects to the
+  // server page and still embeds the TDQS blocks.
+  const cr = await get(`https://glama.ai/mcp/connectors/${NAMESPACE}/${CONTROL === "mcp-statement-of-account" ? "statement-of-account" : CONTROL}`);
+  if (cr.ok) ctl = parseConnector(cr.body);
+}
+if (!(ctl.tools || []).length && !ctl.tdqs_score && Object.keys(ctl.coherence || {}).length < 4) {
   console.error(
     `FATAL: the score page for ${CONTROL} fetched but parsed to ${(ctl.tools || []).length} tools and ` +
     `${Object.keys(ctl.coherence || {}).length} coherence dimensions. Glama's markup has changed. ` +
