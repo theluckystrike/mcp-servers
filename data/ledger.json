@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-09T09:20:55.049Z",
+  "generated_at": "2026-10-15T11:31:04.347Z",
   "session": {
     "count": 102,
     "history": [
@@ -345,7 +345,7 @@
       },
       {
         "at": "2026-09-17T12:42:53.589Z",
-        "note": "loop 36: blind R4 run \u2014 mcpservers.org now surfaces estate server pages (verified live: invoice renders all tools); Telegram Mini App defects fixed (SDK tag + grid container, 42 cards render, go-live.sh tested 9/9); STRATEGY-36 written"
+        "note": "loop 36: blind R4 run — mcpservers.org now surfaces estate server pages (verified live: invoice renders all tools); Telegram Mini App defects fixed (SDK tag + grid container, 42 cards render, go-live.sh tested 9/9); STRATEGY-36 written"
       },
       {
         "at": "2026-09-17T13:15:45.775Z",
@@ -417,7 +417,7 @@
     {
       "id": "amortization",
       "npm_name": "@theluckystrike/mcp-amortization",
-      "version": "0.22.5",
+      "version": "0.22.6",
       "dir": "servers/amortization",
       "tools": [
         "loan_create",
@@ -453,7 +453,7 @@
     {
       "id": "asset-register",
       "npm_name": "@theluckystrike/mcp-asset-register",
-      "version": "0.22.5",
+      "version": "0.22.6",
       "dir": "servers/asset-register",
       "tools": [
         "asset_add",
@@ -489,7 +489,7 @@
     {
       "id": "backlink-checker",
       "npm_name": "@theluckystrike/mcp-backlink-checker",
-      "version": "0.22.5",
+      "version": "0.22.6",
       "dir": "servers/backlink-checker",
       "tools": [
         "link_check",
@@ -524,7 +524,7 @@
     {
       "id": "bank-statement",
       "npm_name": "@theluckystrike/mcp-bank-statement",
-      "version": "0.22.5",
+      "version": "0.22.6",
       "dir": "servers/bank-statement",
       "tools": [
         "statement_import",
@@ -563,7 +563,7 @@
     {
       "id": "barcode",
       "npm_name": "@theluckystrike/mcp-barcode",
-      "version": "0.22.5",
+      "version": "0.22.6",
       "dir": "servers/barcode",
       "tools": [
         "qr_create",
@@ -600,7 +600,7 @@
     {
       "id": "bill-of-sale",
       "npm_name": "@theluckystrike/mcp-bill-of-sale",
-      "version": "0.22.5",
+      "version": "0.22.6",
       "dir": "servers/bill-of-sale",
       "tools": [
         "sale_create",
@@ -637,7 +637,7 @@
     {
       "id": "billing-docs",
       "npm_name": "@theluckystrike/mcp-billing-docs",
-      "version": "0.22.5",
+      "version": "0.22.6",
       "dir": "servers/billing-docs",
       "tools": [
         "credit_note_create",
@@ -680,7 +680,7 @@
     {
       "id": "budget",
       "npm_name": "mcp-budget",
-      "version": "1.0.0",
+      "version": "0.22.6",
       "dir": "servers/budget",
       "tools": [],
       "tool_count": 0,
@@ -708,7 +708,7 @@
     {
       "id": "calendar",
       "npm_name": "@theluckystrike/mcp-calendar",
-      "version": "0.22.5",
+      "version": "0.22.6",
       "dir": "servers/calendar",
       "tools": [
         "ics_import",
@@ -747,7 +747,7 @@
     {
       "id": "cash-book",
       "npm_name": "@theluckystrike/mcp-cash-book",
-      "version": "0.22.5",
+      "version": "0.22.6",
       "dir": "servers/cash-book",
       "tools": [
         "ledger_build",
@@ -783,7 +783,7 @@
     {
       "id": "catalogue",
       "npm_name": "@theluckystrike/mcp-catalogue",
-      "version": "0.22.5",
+      "version": "0.22.6",
       "dir": "servers/catalogue",
       "tools": [
         "sku_set",
@@ -822,7 +822,7 @@
     {
       "id": "change-order",
       "npm_name": "@theluckystrike/mcp-change-order",
-      "version": "0.22.5",
+      "version": "0.22.6",
       "dir": "servers/change-order",
       "tools": [
         "change_order_create",
@@ -860,7 +860,7 @@
     {
       "id": "checklist",
       "npm_name": "@theluckystrike/mcp-checklist",
-      "version": "0.22.5",
+      "version": "0.22.6",
       "dir": "servers/checklist",
       "tools": [
         "checklist_create",
@@ -903,7 +903,7 @@
     {
       "id": "clauses",
       "npm_name": "@theluckystrike/mcp-clauses",
-      "version": "0.22.5",
+      "version": "0.22.6",
       "dir": "servers/clauses",
       "tools": [
         "clause_add",
@@ -942,7 +942,7 @@
     {
       "id": "credit-note",
       "npm_name": "@theluckystrike/mcp-credit-note",
-      "version": "0.22.5",
+      "version": "0.22.8",
       "dir": "servers/credit-note",
       "tools": [
         "credit_note_create",
@@ -979,7 +979,7 @@
     {
       "id": "currency",
       "npm_name": "@theluckystrike/mcp-currency",
-      "version": "0.22.5",
+      "version": "0.22.6",
       "dir": "servers/currency",
       "tools": [
         "rates_latest",
@@ -1016,7 +1016,7 @@
     {
       "id": "delivery-schedule",
       "npm_name": "@theluckystrike/mcp-delivery-schedule",
-      "version": "0.22.5",
+      "version": "0.22.7",
       "dir": "servers/delivery-schedule",
       "tools": [
         "delivery_schedule_create",
@@ -1055,7 +1055,7 @@
     {
       "id": "deposits",
       "npm_name": "@theluckystrike/mcp-deposits",
-      "version": "0.22.5",
+      "version": "0.22.6",
       "dir": "servers/deposits",
       "tools": [
         "deposit_record",
@@ -1093,7 +1093,7 @@
     {
       "id": "docx",
       "npm_name": "@theluckystrike/mcp-docx",
-      "version": "0.22.5",
+      "version": "0.22.6",
       "dir": "servers/docx",
       "tools": [
         "business_set",
@@ -1131,7 +1131,7 @@
     {
       "id": "dunning-letters",
       "npm_name": "@theluckystrike/mcp-dunning-letters",
-      "version": "0.22.5",
+      "version": "0.22.6",
       "dir": "servers/dunning-letters",
       "tools": [
         "invoice_register",
@@ -1169,7 +1169,7 @@
     {
       "id": "expense-tracker",
       "npm_name": "@theluckystrike/mcp-expense-tracker",
-      "version": "0.22.5",
+      "version": "0.22.6",
       "dir": "servers/expense-tracker",
       "tools": [
         "expense_add",
@@ -1210,7 +1210,7 @@
     {
       "id": "goods-receipt",
       "npm_name": "@theluckystrike/mcp-goods-receipt",
-      "version": "0.22.5",
+      "version": "0.22.6",
       "dir": "servers/goods-receipt",
       "tools": [
         "po_add",
@@ -1246,9 +1246,37 @@
       }
     },
     {
+      "id": "hourly-rate",
+      "npm_name": "@theluckystrike/mcp-hourly-rate",
+      "version": "0.22.6",
+      "dir": "servers/hourly-rate",
+      "tools": [],
+      "tool_count": 0,
+      "free_limits": "pending",
+      "price_usd": 19,
+      "build_ok": true,
+      "test_summary": "pending",
+      "result_status": "pending",
+      "loc": 174,
+      "files_present": {
+        "readme": true,
+        "server_json": true,
+        "smithery_yaml": true,
+        "dockerfile": true,
+        "license": false
+      },
+      "distribution": {
+        "npm": "unknown",
+        "registry": "unknown",
+        "github": "unknown",
+        "smithery": "unknown",
+        "glama": "unknown"
+      }
+    },
+    {
       "id": "image",
       "npm_name": "@theluckystrike/mcp-image",
-      "version": "0.22.5",
+      "version": "0.22.6",
       "dir": "servers/image",
       "tools": [
         "image_info",
@@ -1287,7 +1315,7 @@
     {
       "id": "invoice",
       "npm_name": "@theluckystrike/mcp-invoice",
-      "version": "0.22.5",
+      "version": "0.22.6",
       "dir": "servers/invoice",
       "tools": [
         "business_set",
@@ -1327,7 +1355,7 @@
     {
       "id": "job-card",
       "npm_name": "@theluckystrike/mcp-job-card",
-      "version": "0.22.5",
+      "version": "0.22.6",
       "dir": "servers/job-card",
       "tools": [
         "job_card_create",
@@ -1365,7 +1393,7 @@
     {
       "id": "kanban",
       "npm_name": "@theluckystrike/mcp-kanban",
-      "version": "0.22.5",
+      "version": "0.22.6",
       "dir": "servers/kanban",
       "tools": [
         "task_add",
@@ -1409,7 +1437,7 @@
     {
       "id": "leave",
       "npm_name": "@theluckystrike/mcp-leave",
-      "version": "0.22.5",
+      "version": "0.22.6",
       "dir": "servers/leave",
       "tools": [
         "leave_employee_add",
@@ -1448,7 +1476,7 @@
     {
       "id": "loan-calculator",
       "npm_name": "mcp-loan-calculator",
-      "version": "1.0.0",
+      "version": "0.22.6",
       "dir": "servers/loan-calculator",
       "tools": [],
       "tool_count": 0,
@@ -1476,7 +1504,7 @@
     {
       "id": "maintenance-log",
       "npm_name": "@theluckystrike/mcp-maintenance-log",
-      "version": "0.22.5",
+      "version": "0.22.6",
       "dir": "servers/maintenance-log",
       "tools": [
         "asset_add",
@@ -1511,7 +1539,7 @@
     {
       "id": "mileage-log",
       "npm_name": "@theluckystrike/mcp-mileage-log",
-      "version": "0.22.5",
+      "version": "0.22.6",
       "dir": "servers/mileage-log",
       "tools": [
         "trip_add",
@@ -1547,7 +1575,7 @@
     {
       "id": "office-suite",
       "npm_name": "@theluckystrike/mcp-office-suite",
-      "version": "0.22.5",
+      "version": "0.22.6",
       "dir": "servers/office-suite",
       "tools": [],
       "tool_count": 0,
@@ -1556,7 +1584,7 @@
       "build_ok": true,
       "test_summary": "# pass 1 / # fail 0",
       "result_status": "DONE",
-      "loc": 450,
+      "loc": 451,
       "files_present": {
         "readme": true,
         "server_json": true,
@@ -1575,7 +1603,7 @@
     {
       "id": "onboarding",
       "npm_name": "@theluckystrike/mcp-onboarding",
-      "version": "0.22.5",
+      "version": "0.22.6",
       "dir": "servers/onboarding",
       "tools": [
         "onboarding_hire_add",
@@ -1611,7 +1639,7 @@
     {
       "id": "packing-list",
       "npm_name": "@theluckystrike/mcp-packing-list",
-      "version": "0.22.5",
+      "version": "0.22.8",
       "dir": "servers/packing-list",
       "tools": [
         "packing_list_create",
@@ -1652,7 +1680,7 @@
     {
       "id": "payroll",
       "npm_name": "mcp-payroll",
-      "version": "1.0.0",
+      "version": "0.22.6",
       "dir": "servers/payroll",
       "tools": [],
       "tool_count": 0,
@@ -1680,7 +1708,7 @@
     {
       "id": "pdf",
       "npm_name": "@theluckystrike/mcp-pdf",
-      "version": "0.22.5",
+      "version": "0.22.6",
       "dir": "servers/pdf",
       "tools": [
         "pdf_info",
@@ -1719,7 +1747,7 @@
     {
       "id": "per-diem",
       "npm_name": "@theluckystrike/mcp-per-diem",
-      "version": "0.22.5",
+      "version": "0.22.6",
       "dir": "servers/per-diem",
       "tools": [
         "perdiem_rates",
@@ -1755,7 +1783,7 @@
     {
       "id": "petty-cash",
       "npm_name": "@theluckystrike/mcp-petty-cash",
-      "version": "0.22.5",
+      "version": "0.22.6",
       "dir": "servers/petty-cash",
       "tools": [
         "float_open",
@@ -1791,7 +1819,7 @@
     {
       "id": "pomodoro",
       "npm_name": "mcp-pomodoro",
-      "version": "1.0.0",
+      "version": "0.22.6",
       "dir": "servers/pomodoro",
       "tools": [],
       "tool_count": 0,
@@ -1819,7 +1847,7 @@
     {
       "id": "price-tracker",
       "npm_name": "@theluckystrike/mcp-price-tracker",
-      "version": "0.22.5",
+      "version": "0.22.6",
       "dir": "servers/price-tracker",
       "tools": [
         "price_check",
@@ -1856,7 +1884,7 @@
     {
       "id": "purchase-requisition",
       "npm_name": "@theluckystrike/mcp-purchase-requisition",
-      "version": "0.22.5",
+      "version": "0.22.8",
       "dir": "servers/purchase-requisition",
       "tools": [
         "purchase-requisition_create",
@@ -1899,7 +1927,7 @@
     {
       "id": "quotes",
       "npm_name": "@theluckystrike/mcp-quotes",
-      "version": "0.22.5",
+      "version": "0.22.6",
       "dir": "servers/quotes",
       "tools": [
         "quote_create",
@@ -1938,7 +1966,7 @@
     {
       "id": "receipts",
       "npm_name": "mcp-receipts",
-      "version": "1.0.0",
+      "version": "0.22.6",
       "dir": "servers/receipts",
       "tools": [],
       "tool_count": 0,
@@ -1966,7 +1994,7 @@
     {
       "id": "recurring",
       "npm_name": "@theluckystrike/mcp-recurring",
-      "version": "0.22.5",
+      "version": "0.22.6",
       "dir": "servers/recurring",
       "tools": [
         "schedule_create",
@@ -2007,7 +2035,7 @@
     {
       "id": "resume",
       "npm_name": "@theluckystrike/mcp-resume",
-      "version": "0.22.5",
+      "version": "0.22.6",
       "dir": "servers/resume",
       "tools": [
         "profile_set",
@@ -2044,7 +2072,7 @@
     {
       "id": "service-agreement",
       "npm_name": "@theluckystrike/mcp-service-agreement",
-      "version": "0.22.5",
+      "version": "0.22.6",
       "dir": "servers/service-agreement",
       "tools": [
         "agreement_create",
@@ -2080,7 +2108,7 @@
     {
       "id": "spreadsheet",
       "npm_name": "@theluckystrike/mcp-spreadsheet",
-      "version": "0.22.5",
+      "version": "0.22.6",
       "dir": "servers/spreadsheet",
       "tools": [
         "sheet_info",
@@ -2117,7 +2145,7 @@
     {
       "id": "statement-of-account",
       "npm_name": "@theluckystrike/mcp-statement-of-account",
-      "version": "0.22.5",
+      "version": "0.22.6",
       "dir": "servers/statement-of-account",
       "tools": [
         "statement_build",
@@ -2152,7 +2180,7 @@
     {
       "id": "stripe-billing",
       "npm_name": "mcp-stripe-billing",
-      "version": "1.0.0",
+      "version": "0.22.6",
       "dir": "servers/stripe-billing",
       "tools": [],
       "tool_count": 0,
@@ -2180,7 +2208,7 @@
     {
       "id": "supplier-list",
       "npm_name": "@theluckystrike/mcp-supplier-list",
-      "version": "0.22.5",
+      "version": "0.22.6",
       "dir": "servers/supplier-list",
       "tools": [
         "supplier_add",
@@ -2217,7 +2245,7 @@
     {
       "id": "tax-calc",
       "npm_name": "mcp-tax-calc",
-      "version": "1.0.0",
+      "version": "0.22.6",
       "dir": "servers/tax-calc",
       "tools": [],
       "tool_count": 0,
@@ -2245,7 +2273,7 @@
     {
       "id": "time-tracker",
       "npm_name": "@theluckystrike/mcp-time-tracker",
-      "version": "0.22.5",
+      "version": "0.22.6",
       "dir": "servers/time-tracker",
       "tools": [
         "timer_start",
@@ -2292,7 +2320,7 @@
     {
       "id": "timezone",
       "npm_name": "@theluckystrike/mcp-timezone",
-      "version": "0.22.5",
+      "version": "0.22.6",
       "dir": "servers/timezone",
       "tools": [
         "now",
@@ -2330,7 +2358,7 @@
     {
       "id": "work-order",
       "npm_name": "@theluckystrike/mcp-work-order",
-      "version": "0.22.5",
+      "version": "0.22.6",
       "dir": "servers/work-order",
       "tools": [
         "work_order_create",
@@ -2369,7 +2397,7 @@
     {
       "id": "zip",
       "npm_name": "@theluckystrike/mcp-zip",
-      "version": "0.22.5",
+      "version": "0.22.6",
       "dir": "servers/zip",
       "tools": [
         "zip_create",
@@ -2516,6 +2544,11 @@
         "id": "goods-receipt",
         "price_usd": 19,
         "url": "https://mcp.zovo.one/buy/goods-receipt"
+      },
+      {
+        "id": "hourly-rate",
+        "price_usd": 19,
+        "url": "https://mcp.zovo.one/buy/hourly-rate"
       },
       {
         "id": "image",
@@ -2682,11 +2715,11 @@
   "docs": [
     {
       "file": "docs/AGENT_PAYMENTS_R1.md",
-      "first_line": "Agent-native payments for the hosted MCP endpoints \u2014 research, design, verdict"
+      "first_line": "Agent-native payments for the hosted MCP endpoints — research, design, verdict"
     },
     {
       "file": "docs/AI_INDEX_R1.md",
-      "first_line": "AI-assistant index measurement \u2014 R1 (2026-09-10)"
+      "first_line": "AI-assistant index measurement — R1 (2026-09-10)"
     },
     {
       "file": "docs/AMORTIZATION_AUDIT.md",
@@ -2742,7 +2775,7 @@
     },
     {
       "file": "docs/BILLING_BIND_RESULT.md",
-      "first_line": "In-product upgrade path (billing <-> hosted endpoints bind) \u2014 RESULT"
+      "first_line": "In-product upgrade path (billing <-> hosted endpoints bind) — RESULT"
     },
     {
       "file": "docs/BILLING_DOCS_AUDIT.md",
@@ -2762,15 +2795,15 @@
     },
     {
       "file": "docs/BLIND_RECOMMENDATION_R1.md",
-      "first_line": "Blind MCP Recommendation Run \u2014 R1"
+      "first_line": "Blind MCP Recommendation Run — R1"
     },
     {
       "file": "docs/BLIND_RECOMMENDATION_R2.md",
-      "first_line": "Blind Recommendation Run R2 \u2014 18 Buyer Questions"
+      "first_line": "Blind Recommendation Run R2 — 18 Buyer Questions"
     },
     {
       "file": "docs/BLIND_RECOMMENDATION_R7.md",
-      "first_line": "Blind Recommendation \u2014 Round 7 (S130, 2026-09-21) \u2014 TRUE BLIND PASS"
+      "first_line": "Blind Recommendation — Round 7 (S130, 2026-09-21) — TRUE BLIND PASS"
     },
     {
       "file": "docs/CALENDAR_AUDIT.md",
@@ -2822,27 +2855,27 @@
     },
     {
       "file": "docs/CODEX_REVIEW.md",
-      "first_line": "1. `packages/mcp-license/src/index.ts:94-96` \u2014 P0 \u2014 Pro enforcement is a local boolean in code controlled by the user; modifying `isPro()` unlocks every gated call. Fix: move Pro operations to a service controlled by the vendor or treat offline licensing as non-enforceable."
+      "first_line": "1. `packages/mcp-license/src/index.ts:94-96` — P0 — Pro enforcement is a local boolean in code controlled by the user; modifying `isPro()` unlocks every gated call. Fix: move Pro operations to a service controlled by the vendor or treat offline licensing as non-enforceable."
     },
     {
       "file": "docs/CODEX_REVIEW_REMOTE.md",
-      "first_line": "1. `remote/src/index.ts:173` \u2014 P1 \u2014 `/mcp/token` is unauthenticated and unlimited, so callers can mint new tenants to reset hourly limits and free-tier quotas while generating unlimited KV records. Fix: rate-limit token issuance by IP/device and require a durable abuse-control identity or challenge."
+      "first_line": "1. `remote/src/index.ts:173` — P1 — `/mcp/token` is unauthenticated and unlimited, so callers can mint new tenants to reset hourly limits and free-tier quotas while generating unlimited KV records. Fix: rate-limit token issuance by IP/device and require a durable abuse-control identity or challenge."
     },
     {
       "file": "docs/CODEX_REVIEW_REMOTE_V2.md",
-      "first_line": "1. `remote/src/shims/fs.ts:75` \u2014 High \u2014 Paths are raw map keys; traversal segments are not rejected, and names ending `.tmp` are silently excluded from persistence. Trigger: `sheet_load` with `name=\"../data.json\"` or `\"x.tmp\"`. Fix: normalize paths, enforce `/sheets/` confinement, and reject reserved suffixes."
+      "first_line": "1. `remote/src/shims/fs.ts:75` — High — Paths are raw map keys; traversal segments are not rejected, and names ending `.tmp` are silently excluded from persistence. Trigger: `sheet_load` with `name=\"../data.json\"` or `\"x.tmp\"`. Fix: normalize paths, enforce `/sheets/` confinement, and reject reserved suffixes."
     },
     {
       "file": "docs/CODEX_REVIEW_V2.md",
-      "first_line": "1. [servers/expense-tracker/src/money.ts:61](/Users/mike/mcp-servers/servers/expense-tracker/src/money.ts:61) \u2014 P1 \u2014 Rounding net instead of the VAT component loses VAT on half-cent cases. Fix: calculate `vat = roundHalfUp(gross * rate / (100 + rate))`, then `net = gross - vat`. Trigger: `expense_add {amount:0.03,currency:\"EUR\",vat_rate:20}` reports VAT `EUR 0.00` instead of `EUR 0.01`."
+      "first_line": "1. [servers/expense-tracker/src/money.ts:61](/Users/mike/mcp-servers/servers/expense-tracker/src/money.ts:61) — P1 — Rounding net instead of the VAT component loses VAT on half-cent cases. Fix: calculate `vat = roundHalfUp(gross * rate / (100 + rate))`, then `net = gross - vat`. Trigger: `expense_add {amount:0.03,currency:\"EUR\",vat_rate:20}` reports VAT `EUR 0.00` instead of `EUR 0.01`."
     },
     {
       "file": "docs/CODEX_REVIEW_V3.md",
-      "first_line": "1. `servers/time-tracker/src/index.ts:65` \u2014 P0 \u2014 Any read or JSON parse failure is treated as an empty database; the next mutation overwrites the existing history. Minimal input: malformed `data.json` followed by `timer_start`. Fix: treat only `ENOENT` as empty and fail without saving on corruption or permission errors."
+      "first_line": "1. `servers/time-tracker/src/index.ts:65` — P0 — Any read or JSON parse failure is treated as an empty database; the next mutation overwrites the existing history. Minimal input: malformed `data.json` followed by `timer_start`. Fix: treat only `ENOENT` as empty and fail without saving on corruption or permission errors."
     },
     {
       "file": "docs/CODEX_REVIEW_V4.md",
-      "first_line": "1. [servers/currency/src/rates.ts:39](/Users/mike/mcp-servers/servers/currency/src/rates.ts:39) \u2014 P1 \u2014 The six-decimal cross rate is used for conversion, producing `KWD 12.000` instead of `KWD 11.667`. Fix: multiply by `toPerEur / fromPerEur` at full precision and round only the target minor units. Trigger: `convertAmount({VND:30000,KWD:0.35}, 1000000, \"VND\", \"KWD\")`."
+      "first_line": "1. [servers/currency/src/rates.ts:39](/Users/mike/mcp-servers/servers/currency/src/rates.ts:39) — P1 — The six-decimal cross rate is used for conversion, producing `KWD 12.000` instead of `KWD 11.667`. Fix: multiply by `toPerEur / fromPerEur` at full precision and round only the target minor units. Trigger: `convertAmount({VND:30000,KWD:0.35}, 1000000, \"VND\", \"KWD\")`."
     },
     {
       "file": "docs/COMPARE_RESULT.md",
@@ -2894,7 +2927,7 @@
     },
     {
       "file": "docs/CONTENT_R2.md",
-      "first_line": "CONTENT_R2 \u2014 14 reference pages about MCP, organic content round 2, 2026-09-08"
+      "first_line": "CONTENT_R2 — 14 reference pages about MCP, organic content round 2, 2026-09-08"
     },
     {
       "file": "docs/CONTENT_R20_RESULT.md",
@@ -2906,7 +2939,7 @@
     },
     {
       "file": "docs/CONTENT_R3.md",
-      "first_line": "CONTENT_R3 \u2014 13 new reference pages about MCP, organic content round 3, 2026-09-09"
+      "first_line": "CONTENT_R3 — 13 new reference pages about MCP, organic content round 3, 2026-09-09"
     },
     {
       "file": "docs/CONTENT_R3_RESULT.md",
@@ -2974,15 +3007,15 @@
     },
     {
       "file": "docs/DIRECTORIES_RESULT.md",
-      "first_line": "Directories submission \u2014 RESULT"
+      "first_line": "Directories submission — RESULT"
     },
     {
       "file": "docs/DISCOVERABILITY_R1.md",
-      "first_line": "Discoverability audit R1 \u2014 2026-09-17"
+      "first_line": "Discoverability audit R1 — 2026-09-17"
     },
     {
       "file": "docs/DISTRIBUTION.md",
-      "first_line": "Distribution runbook \u2014 4 MCP servers (theluckystrike)"
+      "first_line": "Distribution runbook — 4 MCP servers (theluckystrike)"
     },
     {
       "file": "docs/DISTRIBUTION_R2.md",
@@ -3066,55 +3099,55 @@
     },
     {
       "file": "docs/DIST_R26_RESULT.md",
-      "first_line": "Distribution round 26 \u2014 one server per PR, and the first honestly green Glama gate"
+      "first_line": "Distribution round 26 — one server per PR, and the first honestly green Glama gate"
     },
     {
       "file": "docs/DIST_R27_S48_T24.md",
-      "first_line": "DIST R27 / S48 T24 \u2014 mcpservers.org free-tier submissions (2026-09-20, executed in-process by orchestrator)"
+      "first_line": "DIST R27 / S48 T24 — mcpservers.org free-tier submissions (2026-09-20, executed in-process by orchestrator)"
     },
     {
       "file": "docs/DIST_R29_S49.md",
-      "first_line": "DIST R29 \u2014 S49 (2026-09-20, session 99, in-process)"
+      "first_line": "DIST R29 — S49 (2026-09-20, session 99, in-process)"
     },
     {
       "file": "docs/DIST_R30_S50.md",
-      "first_line": "S50 \u2014 mcpservers.org batch E (2026-09-20)"
+      "first_line": "S50 — mcpservers.org batch E (2026-09-20)"
     },
     {
       "file": "docs/DIST_R31_S51.md",
-      "first_line": "S51 \u2014 mcpservers.org batch F (2026-09-20)"
+      "first_line": "S51 — mcpservers.org batch F (2026-09-20)"
     },
     {
       "file": "docs/DIST_R32_S52.md",
-      "first_line": "DIST R32 \u2014 S52 (mcpservers.org batch G)"
+      "first_line": "DIST R32 — S52 (mcpservers.org batch G)"
     },
     {
       "file": "docs/DIST_R33_S53.md",
-      "first_line": "DIST R33 \u2014 S53 (2026-09-20)"
+      "first_line": "DIST R33 — S53 (2026-09-20)"
     },
     {
       "file": "docs/DIST_R34_S54.md",
-      "first_line": "DIST_R34 \u2014 S54 (2026-09-20)"
+      "first_line": "DIST_R34 — S54 (2026-09-20)"
     },
     {
       "file": "docs/DIST_R35_S57.md",
-      "first_line": "DIST R35 \u2014 S57 (2026-09-20): mcpservers.org badge verification + honest probe"
+      "first_line": "DIST R35 — S57 (2026-09-20): mcpservers.org badge verification + honest probe"
     },
     {
       "file": "docs/DIST_R36_S58.md",
-      "first_line": "DIST R36 \u2014 S58 (2026-09-20): mcpservers.org resubmission wave"
+      "first_line": "DIST R36 — S58 (2026-09-20): mcpservers.org resubmission wave"
     },
     {
       "file": "docs/DIST_R37_S59.md",
-      "first_line": "DIST_R37 \u2014 S59 (2026-09-20)"
+      "first_line": "DIST_R37 — S59 (2026-09-20)"
     },
     {
       "file": "docs/DIST_R38_S60.md",
-      "first_line": "DIST R38 \u2014 S60 (2026-09-20)"
+      "first_line": "DIST R38 — S60 (2026-09-20)"
     },
     {
       "file": "docs/DIST_R39_S61.md",
-      "first_line": "DIST R39 \u2014 S61 (2026-09-20)"
+      "first_line": "DIST R39 — S61 (2026-09-20)"
     },
     {
       "file": "docs/DIST_R3_RESULT.md",
@@ -3122,11 +3155,11 @@
     },
     {
       "file": "docs/DIST_R40_S61b.md",
-      "first_line": "DIST R40 \u2014 S61b (2026-09-20)"
+      "first_line": "DIST R40 — S61b (2026-09-20)"
     },
     {
       "file": "docs/DIST_R41_S62c.md",
-      "first_line": "DIST R41 \u2014 S62-c: mcpfinder expansion (2026-09-20)"
+      "first_line": "DIST R41 — S62-c: mcpfinder expansion (2026-09-20)"
     },
     {
       "file": "docs/DIST_R42_S62d.md",
@@ -3142,7 +3175,7 @@
     },
     {
       "file": "docs/DIST_R6_NOTES.md",
-      "first_line": "DIST_R6_NOTES \u2014 r5/r6 distribution round"
+      "first_line": "DIST_R6_NOTES — r5/r6 distribution round"
     },
     {
       "file": "docs/DIST_R6_RESULT.md",
@@ -3150,7 +3183,7 @@
     },
     {
       "file": "docs/DIST_R7_NOTES.md",
-      "first_line": "DIST R7 \u2014 PR re-audit + glama sweep + dead-surface reprobe (2026-09-21)"
+      "first_line": "DIST R7 — PR re-audit + glama sweep + dead-surface reprobe (2026-09-21)"
     },
     {
       "file": "docs/DIST_R7_RESULT.md",
@@ -3186,11 +3219,11 @@
     },
     {
       "file": "docs/FORMS_RESULT.md",
-      "first_line": "Free directory submissions (forms + PR lists) \u2014 RESULT"
+      "first_line": "Free directory submissions (forms + PR lists) — RESULT"
     },
     {
       "file": "docs/FUNNEL_R1.md",
-      "first_line": "Funnel R1 (loop 35): 65 checkout sessions, 0 paid \u2014 broken funnel or zero demand?"
+      "first_line": "Funnel R1 (loop 35): 65 checkout sessions, 0 paid — broken funnel or zero demand?"
     },
     {
       "file": "docs/GEMINI_EXT_R1.md",
@@ -3206,11 +3239,11 @@
     },
     {
       "file": "docs/GLAMA_R1.md",
-      "first_line": "Glama round 1 \u2014 is the awesome-mcp-servers PR really hard-blocked?"
+      "first_line": "Glama round 1 — is the awesome-mcp-servers PR really hard-blocked?"
     },
     {
       "file": "docs/GLAMA_R2.md",
-      "first_line": "Glama round 2 \u2014 why 1 of 33, and what to do instead"
+      "first_line": "Glama round 2 — why 1 of 33, and what to do instead"
     },
     {
       "file": "docs/GOOGLE_INDEX_R1.md",
@@ -3290,19 +3323,19 @@
     },
     {
       "file": "docs/INTEL_R15.md",
-      "first_line": "INTEL ROUND 15 \u2014 MCP Registry Empty-Slot Scoring"
+      "first_line": "INTEL ROUND 15 — MCP Registry Empty-Slot Scoring"
     },
     {
       "file": "docs/INTEL_R2.md",
-      "first_line": "INTEL_R2 \u2014 Submission, directory, and registry-slot re-measurement"
+      "first_line": "INTEL_R2 — Submission, directory, and registry-slot re-measurement"
     },
     {
       "file": "docs/INTEL_R3.md",
-      "first_line": "INTEL_R3 \u2014 re-measuring the three servers now in build (currency, docx, timezone)"
+      "first_line": "INTEL_R3 — re-measuring the three servers now in build (currency, docx, timezone)"
     },
     {
       "file": "docs/INTEL_R4.md",
-      "first_line": "INTEL_R4 \u2014 next two servers after resume/cover-letter"
+      "first_line": "INTEL_R4 — next two servers after resume/cover-letter"
     },
     {
       "file": "docs/INTEL_R5.md",
@@ -3358,7 +3391,7 @@
     },
     {
       "file": "docs/LOOP34_BRIEF.md",
-      "first_line": "LOOP 34 BRIEF \u2014 distribution, surfaces, and the rename test"
+      "first_line": "LOOP 34 BRIEF — distribution, surfaces, and the rename test"
     },
     {
       "file": "docs/LOOP34_FIELDS_R1.md",
@@ -3366,11 +3399,11 @@
     },
     {
       "file": "docs/LOOP34_RESULT.md",
-      "first_line": "LOOP 34 RESULT \u2014 2026-09-12"
+      "first_line": "LOOP 34 RESULT — 2026-09-12"
     },
     {
       "file": "docs/LOOP35_BRIEF.md",
-      "first_line": "LOOP 35 BRIEF \u2014 2026-09-12 (orchestrated, 10 agents wave A+B)"
+      "first_line": "LOOP 35 BRIEF — 2026-09-12 (orchestrated, 10 agents wave A+B)"
     },
     {
       "file": "docs/LOOP36_FIELDS_R1.md",
@@ -3390,11 +3423,11 @@
     },
     {
       "file": "docs/MIRROR_SYNC_R1.md",
-      "first_line": "Mirror sync round 1 \u2014 the full re-sync, and the five defects it was hiding"
+      "first_line": "Mirror sync round 1 — the full re-sync, and the five defects it was hiding"
     },
     {
       "file": "docs/MONETIZATION_MAP.md",
-      "first_line": "Cold Monetization Map \u2014 47-Server Estate (mcp.zovo.one)"
+      "first_line": "Cold Monetization Map — 47-Server Estate (mcp.zovo.one)"
     },
     {
       "file": "docs/NAMESPACE_R1.md",
@@ -3402,11 +3435,11 @@
     },
     {
       "file": "docs/NAMING_R2_RESULT.md",
-      "first_line": "NAMING_R2_RESULT.md \u2014 registry name variants, round 2, 2026-09-03"
+      "first_line": "NAMING_R2_RESULT.md — registry name variants, round 2, 2026-09-03"
     },
     {
       "file": "docs/NAMING_R3_RESULT.md",
-      "first_line": "NAMING_R3_RESULT.md \u2014 registry name variants, round 3, 2026-09-04"
+      "first_line": "NAMING_R3_RESULT.md — registry name variants, round 3, 2026-09-04"
     },
     {
       "file": "docs/NAMING_R4_RESULT.md",
@@ -3426,7 +3459,7 @@
     },
     {
       "file": "docs/NAMING_RESULT.md",
-      "first_line": "NAMING_RESULT.md \u2014 registry name rewrite, 2026-09-02"
+      "first_line": "NAMING_RESULT.md — registry name rewrite, 2026-09-02"
     },
     {
       "file": "docs/NEW_USER_E2E_R1.md",
@@ -3434,7 +3467,7 @@
     },
     {
       "file": "docs/NEXT-SPRINT.md",
-      "first_line": "NEXT-SPRINT \u2014 S46 handoff (from S45 close, 2026-09-19)"
+      "first_line": "NEXT-SPRINT — S46 handoff (from S45 close, 2026-09-19)"
     },
     {
       "file": "docs/NEXT_SPRINT_S53.md",
@@ -3442,11 +3475,11 @@
     },
     {
       "file": "docs/NPM_AUTH_RESULT.md",
-      "first_line": "npm auth acquisition attempt \u2014 RESULT"
+      "first_line": "npm auth acquisition attempt — RESULT"
     },
     {
       "file": "docs/NPM_UNBLOCK_R2.md",
-      "first_line": "npm unblock, round 2 \u2014 exhausting every path to a first publish"
+      "first_line": "npm unblock, round 2 — exhausting every path to a first publish"
     },
     {
       "file": "docs/OPERATOR_ACTIONS_LOOP33.md",
@@ -3466,11 +3499,11 @@
     },
     {
       "file": "docs/ORGANIC_R4.md",
-      "first_line": "ORGANIC R4 \u2014 2026-09-20 (S48, executed in-process by orchestrator)"
+      "first_line": "ORGANIC R4 — 2026-09-20 (S48, executed in-process by orchestrator)"
     },
     {
       "file": "docs/OUTREACH_RESEND_SETUP.md",
-      "first_line": "Resend Outbound Email Setup \u2014 mike@zovo.one (zovo.one on Cloudflare)"
+      "first_line": "Resend Outbound Email Setup — mike@zovo.one (zovo.one on Cloudflare)"
     },
     {
       "file": "docs/PACKAGING_RESULT.md",
@@ -3606,7 +3639,7 @@
     },
     {
       "file": "docs/PUBLISH_UNBLOCK.md",
-      "first_line": "PUBLISH UNBLOCK \u2014 MCP official registry + npm"
+      "first_line": "PUBLISH UNBLOCK — MCP official registry + npm"
     },
     {
       "file": "docs/QUALITY_LOOP35.md",
@@ -3622,7 +3655,7 @@
     },
     {
       "file": "docs/RATING-S130.md",
-      "first_line": "RATING-S130 \u2014 2026-09-21"
+      "first_line": "RATING-S130 — 2026-09-21"
     },
     {
       "file": "docs/RATING-S131.md",
@@ -3630,15 +3663,15 @@
     },
     {
       "file": "docs/RATING-S43.md",
-      "first_line": "RATING-S43 \u2014 2026-09-18"
+      "first_line": "RATING-S43 — 2026-09-18"
     },
     {
       "file": "docs/RATING-S45.md",
-      "first_line": "RATING-S45 \u2014 Organic Traffic Disruption + MCP Visibility"
+      "first_line": "RATING-S45 — Organic Traffic Disruption + MCP Visibility"
     },
     {
       "file": "docs/README_DEPTH_RESULT.md",
-      "first_line": "README depth pass \u2014 2026-09-02"
+      "first_line": "README depth pass — 2026-09-02"
     },
     {
       "file": "docs/RECOMMENDATION_SOURCES_R1.md",
@@ -3654,11 +3687,11 @@
     },
     {
       "file": "docs/REGISTRY_REMOTE_R1.md",
-      "first_line": "Registry remote R1 \u2014 2026-09-17"
+      "first_line": "Registry remote R1 — 2026-09-17"
     },
     {
       "file": "docs/REGISTRY_VARIANTS_R2.md",
-      "first_line": "REGISTRY_VARIANTS_R2 \u2014 Next variant-name batch (manifests only)"
+      "first_line": "REGISTRY_VARIANTS_R2 — Next variant-name batch (manifests only)"
     },
     {
       "file": "docs/REGISTRY_VISIBILITY_R1.md",
@@ -3778,7 +3811,7 @@
     },
     {
       "file": "docs/REPO_SIGNALS_R1.md",
-      "first_line": "Repository signals round 1 \u2014 Glama Maintenance, and what a mirror is allowed to claim"
+      "first_line": "Repository signals round 1 — Glama Maintenance, and what a mirror is allowed to claim"
     },
     {
       "file": "docs/RESUME_AUDIT.md",
@@ -3790,31 +3823,31 @@
     },
     {
       "file": "docs/S128_A_THREESERVERS.md",
-      "first_line": "S128_A_THREESERVERS \u2014 3 new MCP servers"
+      "first_line": "S128_A_THREESERVERS — 3 new MCP servers"
     },
     {
       "file": "docs/S128_B_REDISTRO.md",
-      "first_line": "S128_B_REDISTRO \u2014 free-directory re-probe (2026-09-21, orchestrator after delegated agent burned budget on reads only)"
+      "first_line": "S128_B_REDISTRO — free-directory re-probe (2026-09-21, orchestrator after delegated agent burned budget on reads only)"
     },
     {
       "file": "docs/S128_C_ORGANIC.md",
-      "first_line": "S128_C_ORGANIC \u2014 llms-full tool lists + coverage-2026 asset (2026-09-21, orchestrator)"
+      "first_line": "S128_C_ORGANIC — llms-full tool lists + coverage-2026 asset (2026-09-21, orchestrator)"
     },
     {
       "file": "docs/S128_D_MONETIZE.md",
-      "first_line": "S128_D \u2014 Monetization Map & Checkout Hardening"
+      "first_line": "S128_D — Monetization Map & Checkout Hardening"
     },
     {
       "file": "docs/S128_E_MEASURE.md",
-      "first_line": "S128_E_MEASURE \u2014 KPI re-measure 2026-09-21 (orchestrator, runtime-verified)"
+      "first_line": "S128_E_MEASURE — KPI re-measure 2026-09-21 (orchestrator, runtime-verified)"
     },
     {
       "file": "docs/S128_RESULT.md",
-      "first_line": "S128 RESULT \u2014 2026-09-21 (orchestrator solo session; delegated batches returned no artifacts, verified work done directly)"
+      "first_line": "S128 RESULT — 2026-09-21 (orchestrator solo session; delegated batches returned no artifacts, verified work done directly)"
     },
     {
       "file": "docs/S48-PLAN.md",
-      "first_line": "S48 \u2014 MCP estate sprint plan (2026-09-20, orchestrator-led, multi-hour loop)"
+      "first_line": "S48 — MCP estate sprint plan (2026-09-20, orchestrator-led, multi-hour loop)"
     },
     {
       "file": "docs/SEARCH_ARRIVALS_R1.md",
@@ -3826,11 +3859,11 @@
     },
     {
       "file": "docs/SEO_INDEXATION_R2.md",
-      "first_line": "SEO Indexation R2 \u2014 mcp.zovo.one (2026-10-07)"
+      "first_line": "SEO Indexation R2 — mcp.zovo.one (2026-10-07)"
     },
     {
       "file": "docs/SEO_LANDING_R1.md",
-      "first_line": "SEO_LANDING_R1.md \u2014 /servers landing surface (deleg_bcbe50a1... wait \u2014 deleg_261ea153)"
+      "first_line": "SEO_LANDING_R1.md — /servers landing surface (deleg_bcbe50a1... wait — deleg_261ea153)"
     },
     {
       "file": "docs/SETUP_PAGES_RESULT.md",
@@ -3838,7 +3871,7 @@
     },
     {
       "file": "docs/SPEC_RESULT.md",
-      "first_line": "S4 \u2014 contract specs per server"
+      "first_line": "S4 — contract specs per server"
     },
     {
       "file": "docs/STATEMENT_AUDIT.md",
@@ -3854,15 +3887,15 @@
     },
     {
       "file": "docs/STRATEGY-43.md",
-      "first_line": "STRATEGY-43 \u2014 2026-09-18 (continuation day, after Sprint 42 close)"
+      "first_line": "STRATEGY-43 — 2026-09-18 (continuation day, after Sprint 42 close)"
     },
     {
       "file": "docs/STRATEGY-44.md",
-      "first_line": "STRATEGY-44.md \u2014 2026-09-18 (wave 2)"
+      "first_line": "STRATEGY-44.md — 2026-09-18 (wave 2)"
     },
     {
       "file": "docs/STRATEGY-45.md",
-      "first_line": "Sprint 45 \u2014 Organic Traffic Disruption + MCP Server Visibility"
+      "first_line": "Sprint 45 — Organic Traffic Disruption + MCP Server Visibility"
     },
     {
       "file": "docs/SURFACE_SWEEP_R3.md",
@@ -3870,15 +3903,15 @@
     },
     {
       "file": "docs/T10_REPROBE_R1.md",
-      "first_line": "T10 \u2014 Re-probe round R1 (2026-09-18)"
+      "first_line": "T10 — Re-probe round R1 (2026-09-18)"
     },
     {
       "file": "docs/T11_GLAMA_SLUGS_S45.md",
-      "first_line": "T11 GLAMA SLUG REPAIR \u2014 S45 (late wave)"
+      "first_line": "T11 GLAMA SLUG REPAIR — S45 (late wave)"
     },
     {
       "file": "docs/T12_DIRECTORY_CENSUS_R2_S45.md",
-      "first_line": "T12 DIRECTORY CENSUS R2 \u2014 S45"
+      "first_line": "T12 DIRECTORY CENSUS R2 — S45"
     },
     {
       "file": "docs/T13_SOCIAL_META_S46.md",
@@ -3894,15 +3927,15 @@
     },
     {
       "file": "docs/T15_CRAWL_GAPS_S46_COMPLETE.md",
-      "first_line": "T15 CRAWL GAPS \u2014 SPRINT 46 COMPLETE (2026-09-19, loop 40)"
+      "first_line": "T15 CRAWL GAPS — SPRINT 46 COMPLETE (2026-09-19, loop 40)"
     },
     {
       "file": "docs/T17_DISTRO_S47.md",
-      "first_line": "T17 \u2014 Census of Free MCP Distribution Surfaces (Actionable Today)"
+      "first_line": "T17 — Census of Free MCP Distribution Surfaces (Actionable Today)"
     },
     {
       "file": "docs/T17_TOPIC_INTEL_S47.md",
-      "first_line": "T17 TOPIC INTEL S47 \u2014 New MCP Server Topic Ranking"
+      "first_line": "T17 TOPIC INTEL S47 — New MCP Server Topic Ranking"
     },
     {
       "file": "docs/T18_LEAVE_S47.md",
@@ -3910,7 +3943,7 @@
     },
     {
       "file": "docs/T18_ONBOARDING_S47.md",
-      "first_line": "T18 \u2014 Onboarding MCP server scaffold"
+      "first_line": "T18 — Onboarding MCP server scaffold"
     },
     {
       "file": "docs/T19_LEAVE_FIX_S47.md",
@@ -3922,19 +3955,19 @@
     },
     {
       "file": "docs/T1_GLAMA_R1.md",
-      "first_line": "T1 Glama.ai Distribution Audit + Expansion \u2014 Round 1"
+      "first_line": "T1 Glama.ai Distribution Audit + Expansion — Round 1"
     },
     {
       "file": "docs/T1_GPTBOT_DELTA_R1.md",
-      "first_line": "T1 GPTBot Crawl-Delta Analysis \u2014 R1"
+      "first_line": "T1 GPTBot Crawl-Delta Analysis — R1"
     },
     {
       "file": "docs/T1_MCPMARKET_VERIFY_R1.md",
-      "first_line": "T1 \u2014 MCP Market (mcpmarket.com) Listing Verification \u2014 Round 1"
+      "first_line": "T1 — MCP Market (mcpmarket.com) Listing Verification — Round 1"
     },
     {
       "file": "docs/T1_OUTREACH_W2_S45.md",
-      "first_line": "T1 OUTREACH WAVE 2 \u2014 S45"
+      "first_line": "T1 OUTREACH WAVE 2 — S45"
     },
     {
       "file": "docs/T1_TEMPLATE_REACH_S45.md",
@@ -3942,23 +3975,23 @@
     },
     {
       "file": "docs/T20_BILLING_WIRING_S47.md",
-      "first_line": "T20 BILLING WIRING \u2014 leave + onboarding \u2014 S47"
+      "first_line": "T20 BILLING WIRING — leave + onboarding — S47"
     },
     {
       "file": "docs/T20_ESTATE_WIRING_S47.md",
-      "first_line": "T20 Estate Wiring \u2014 servers 'leave' and 'onboarding'"
+      "first_line": "T20 Estate Wiring — servers 'leave' and 'onboarding'"
     },
     {
       "file": "docs/T21_LEAVE_TESTS_S47.md",
-      "first_line": "T21_LEAVE_TESTS_S47 \u2014 Port servers/leave test suite to leave_* tools"
+      "first_line": "T21_LEAVE_TESTS_S47 — Port servers/leave test suite to leave_* tools"
     },
     {
       "file": "docs/T21_ONBOARD_TESTS_S47.md",
-      "first_line": "T21 \u2014 Onboarding Test Port (checklist_* -> onboarding_*)"
+      "first_line": "T21 — Onboarding Test Port (checklist_* -> onboarding_*)"
     },
     {
       "file": "docs/T22_LEAVE_FIX_S48.md",
-      "first_line": "T22 \u2014 Leave MCP Server: Drive Test Suite to Zero Failures (S48)"
+      "first_line": "T22 — Leave MCP Server: Drive Test Suite to Zero Failures (S48)"
     },
     {
       "file": "docs/T22_ONBOARD_FIX_S48.md",
@@ -3966,51 +3999,51 @@
     },
     {
       "file": "docs/T23_DISTRO_S48.md",
-      "first_line": "S48 distribution \u2014 T23: wire leave + onboarding into site estate"
+      "first_line": "S48 distribution — T23: wire leave + onboarding into site estate"
     },
     {
       "file": "docs/T24_GOODSRECEIPT_BUILD_S48.md",
-      "first_line": "T24_GOODSRECEIPT_BUILD_S48 \u2014 goods-receipt MCP server build"
+      "first_line": "T24_GOODSRECEIPT_BUILD_S48 — goods-receipt MCP server build"
     },
     {
       "file": "docs/T24_PURREQ_BUILD_S48.md",
-      "first_line": "T24 \u2014 Purchase Requisition MCP Server Build (S48)"
+      "first_line": "T24 — Purchase Requisition MCP Server Build (S48)"
     },
     {
       "file": "docs/T25_LEAVE_0FAIL_S48.md",
-      "first_line": "T25: S48-2 leave tests \u2192 0-fail (main-agent direct fix pass)"
+      "first_line": "T25: S48-2 leave tests → 0-fail (main-agent direct fix pass)"
     },
     {
       "file": "docs/T26_GOODSRECEIPT_TESTS_S48.md",
-      "first_line": "T26 \u2014 S48-3 goods-receipt: build + tests 0-fail"
+      "first_line": "T26 — S48-3 goods-receipt: build + tests 0-fail"
     },
     {
       "file": "docs/T27_PURREQ_0FAIL_S48.md",
-      "first_line": "T27 \u2014 Purchase-Requisition 0-Fail \u2014 S48-3"
+      "first_line": "T27 — Purchase-Requisition 0-Fail — S48-3"
     },
     {
       "file": "docs/T28_ONBOARDING_0FAIL_S48.md",
-      "first_line": "T28: ONBOARDING 0-FAIL TEST SUITE \u2014 S48-1"
+      "first_line": "T28: ONBOARDING 0-FAIL TEST SUITE — S48-1"
     },
     {
       "file": "docs/T29-S48-CLOSE.md",
-      "first_line": "S48 \u2014 STATUS: closed \u2014 RESULT: verified-green"
+      "first_line": "S48 — STATUS: closed — RESULT: verified-green"
     },
     {
       "file": "docs/T2_BING_DELTA_R1.md",
-      "first_line": "T2 \u2014 Bing/bingbot delta: why 35/141 despite IndexNow"
+      "first_line": "T2 — Bing/bingbot delta: why 35/141 despite IndexNow"
     },
     {
       "file": "docs/T2_EDNA_SEND_R1.md",
-      "first_line": "T2 EDNA SEND R1 \u2014 2026-09-18 (sprint 43)"
+      "first_line": "T2 EDNA SEND R1 — 2026-09-18 (sprint 43)"
     },
     {
       "file": "docs/T2_ETAG_R1.md",
-      "first_line": "T2 \u2014 Content-Derived Strong ETag (T5 4b)"
+      "first_line": "T2 — Content-Derived Strong ETag (T5 4b)"
     },
     {
       "file": "docs/T2_GOOGLE_R1.md",
-      "first_line": "T2 Google Coverage Push \u2014 Round 1"
+      "first_line": "T2 Google Coverage Push — Round 1"
     },
     {
       "file": "docs/T2_MCP_PLAYGROUND_S45.md",
@@ -4018,27 +4051,27 @@
     },
     {
       "file": "docs/T2_PLAYGROUND_W2_S45.md",
-      "first_line": "T2 PLAYGROUND WAVE 2 \u2014 S45"
+      "first_line": "T2 PLAYGROUND WAVE 2 — S45"
     },
     {
       "file": "docs/T30-S49-CHECKOUT-VERIFIED.md",
-      "first_line": "S49 \u2014 Hosted checkout verification \u2014 STATUS: closed \u2014 RESULT: verified-green"
+      "first_line": "S49 — Hosted checkout verification — STATUS: closed — RESULT: verified-green"
     },
     {
       "file": "docs/T3_GLAMA_REPROBE_R2.md",
-      "first_line": "T3 \u2014 Glama Re-probe R2 (post 16 short-slug registry publishes)"
+      "first_line": "T3 — Glama Re-probe R2 (post 16 short-slug registry publishes)"
     },
     {
       "file": "docs/T3_INTERNAL_LINKS_R2.md",
-      "first_line": "T3 \u2014 Internal-Link Fan-In Wave 2: compare + setup pages and guide-to-guide links to /s pages"
+      "first_line": "T3 — Internal-Link Fan-In Wave 2: compare + setup pages and guide-to-guide links to /s pages"
     },
     {
       "file": "docs/T3_LINKFANIN_R1.md",
-      "first_line": "T3 \u2014 Internal-Link Fan-In Audit & Fix (R1)"
+      "first_line": "T3 — Internal-Link Fan-In Audit & Fix (R1)"
     },
     {
       "file": "docs/T3_PLATFORM_RECHECK_S45.md",
-      "first_line": "T3 Platform Recheck \u2014 S45"
+      "first_line": "T3 Platform Recheck — S45"
     },
     {
       "file": "docs/T3_SITEMAP_S45.md",
@@ -4046,19 +4079,19 @@
     },
     {
       "file": "docs/T3_SURFACES_R1.md",
-      "first_line": "T3_SURFACES_R1 \u2014 New distribution-surface sweep, round 1"
+      "first_line": "T3_SURFACES_R1 — New distribution-surface sweep, round 1"
     },
     {
       "file": "docs/T4_BLIND_R6.md",
-      "first_line": "T4 \u2014 Blind recommendation test, round 6 (R6)"
+      "first_line": "T4 — Blind recommendation test, round 6 (R6)"
     },
     {
       "file": "docs/T4_CRAWL_R1.md",
-      "first_line": "T4 Crawler Coverage Probe \u2014 R1"
+      "first_line": "T4 Crawler Coverage Probe — R1"
     },
     {
       "file": "docs/T4_GITHUB_GROWTH_S45.md",
-      "first_line": "T4 S45: GitHub Repo Surface as Distribution Channel \u2014 README/Catalog Optimization for Clone Users"
+      "first_line": "T4 S45: GitHub Repo Surface as Distribution Channel — README/Catalog Optimization for Clone Users"
     },
     {
       "file": "docs/T4_MCPMUX_FOLLOWUP_R1.md",
@@ -4070,71 +4103,71 @@
     },
     {
       "file": "docs/T5_DIRS_R2.md",
-      "first_line": "T5 \u2014 Directory Sweep R2 Execution"
+      "first_line": "T5 — Directory Sweep R2 Execution"
     },
     {
       "file": "docs/T5_FIXES_R1.md",
-      "first_line": "T5 \u2014 Homepage Last-Modified / ETag Validator Fix (Sprint 41)"
+      "first_line": "T5 — Homepage Last-Modified / ETag Validator Fix (Sprint 41)"
     },
     {
       "file": "docs/T5_GUIDE_MESH_S45.md",
-      "first_line": "T5 S45: guide\u2192guide RELATED mesh expansion"
+      "first_line": "T5 S45: guide→guide RELATED mesh expansion"
     },
     {
       "file": "docs/T5_SUBMIT_R1.md",
-      "first_line": "T5_SUBMIT_R1 \u2014 mcp.so directory submissions (2026-09-18)"
+      "first_line": "T5_SUBMIT_R1 — mcp.so directory submissions (2026-09-18)"
     },
     {
       "file": "docs/T5_SURFACES_R2.md",
-      "first_line": "T5 SURFACES R2 \u2014 unlinked third-party surfaces carrying our servers (2026-09-18)"
+      "first_line": "T5 SURFACES R2 — unlinked third-party surfaces carrying our servers (2026-09-18)"
     },
     {
       "file": "docs/T6_GLAMA_R2.md",
-      "first_line": "T6 \u2014 Glama Reconciliation R2 + Badge Expansion"
+      "first_line": "T6 — Glama Reconciliation R2 + Badge Expansion"
     },
     {
       "file": "docs/T6_MCPMARKET_COVERAGE_R1.md",
-      "first_line": "T6 \u2014 MCPmarket Deep Coverage Check + Missing-Server Probe (R1)"
+      "first_line": "T6 — MCPmarket Deep Coverage Check + Missing-Server Probe (R1)"
     },
     {
       "file": "docs/T6_MONETIZATION_MAP_R1.md",
-      "first_line": "T6 \u2014 Monetization / Payment-Visibility Map across `/s/<slug>` pages"
+      "first_line": "T6 — Monetization / Payment-Visibility Map across `/s/<slug>` pages"
     },
     {
       "file": "docs/T6_SEARCH_FANIN_S45.md",
-      "first_line": "T6 W2: SEARCH-CRAWLER TARGETED FAN-IN \u2014 S45"
+      "first_line": "T6 W2: SEARCH-CRAWLER TARGETED FAN-IN — S45"
     },
     {
       "file": "docs/T6_TRAFFIC_R2_S45.md",
-      "first_line": "S45 T6 \u2014 Traffic re-measure (2026-09-18 ~12:35Z)"
+      "first_line": "S45 T6 — Traffic re-measure (2026-09-18 ~12:35Z)"
     },
     {
       "file": "docs/T7_CHECKOUT_TRUST_R1.md",
-      "first_line": "T7 \u2014 Checkout Trust Rework (R1)"
+      "first_line": "T7 — Checkout Trust Rework (R1)"
     },
     {
       "file": "docs/T7_COMMENTS_R1.md",
-      "first_line": "T7_COMMENTS_R1 \u2014 Community Answer Drafts (Round 1)"
+      "first_line": "T7_COMMENTS_R1 — Community Answer Drafts (Round 1)"
     },
     {
       "file": "docs/T7_GLAMA_REPROBE_R2.md",
-      "first_line": "T7 \u2014 Glama Reprobe R2 + new-server discovery"
+      "first_line": "T7 — Glama Reprobe R2 + new-server discovery"
     },
     {
       "file": "docs/T8_CONTENT_GAP_R1.md",
-      "first_line": "T8 \u2014 Organic Content Gap: 3 New Guides (R1)"
+      "first_line": "T8 — Organic Content Gap: 3 New Guides (R1)"
     },
     {
       "file": "docs/T8_KPI_R1.md",
-      "first_line": "T8 \u2014 KPI Refresh & Delta Report (R1)"
+      "first_line": "T8 — KPI Refresh & Delta Report (R1)"
     },
     {
       "file": "docs/T9_DIRECTORY_PIPELINE_R1.md",
-      "first_line": "T9_DIRECTORY_PIPELINE_R1 \u2014 submission-channel census (2026-09-18)"
+      "first_line": "T9_DIRECTORY_PIPELINE_R1 — submission-channel census (2026-09-18)"
     },
     {
       "file": "docs/T9_OFFPAGE_S44_R1.md",
-      "first_line": "T9 Off-Page Intel Sweep \u2014 R1"
+      "first_line": "T9 Off-Page Intel Sweep — R1"
     },
     {
       "file": "docs/TIMEZONE_AUDIT.md",
@@ -4154,23 +4187,23 @@
     },
     {
       "file": "docs/TRAFFIC_R1.md",
-      "first_line": "Traffic reality, loop 29 (2026-09-07) \u2014 agent B, measurement"
+      "first_line": "Traffic reality, loop 29 (2026-09-07) — agent B, measurement"
     },
     {
       "file": "docs/TRAFFIC_R2.md",
-      "first_line": "Traffic reality, loop 30 (2026-09-08) \u2014 measurement"
+      "first_line": "Traffic reality, loop 30 (2026-09-08) — measurement"
     },
     {
       "file": "docs/TRAFFIC_R3.md",
-      "first_line": "Traffic reality, loop 32 (2026-09-09) \u2014 measurement"
+      "first_line": "Traffic reality, loop 32 (2026-09-09) — measurement"
     },
     {
       "file": "docs/USER_VALUE.md",
-      "first_line": "User value audit \u2014 2026-09-02"
+      "first_line": "User value audit — 2026-09-02"
     },
     {
       "file": "docs/USER_VALUE_R10.md",
-      "first_line": "User value audit, round 10 \u2014 2026-09-03"
+      "first_line": "User value audit, round 10 — 2026-09-03"
     },
     {
       "file": "docs/USER_VALUE_R11.md",
@@ -4202,11 +4235,11 @@
     },
     {
       "file": "docs/USER_VALUE_R16_TIMEZONE.md",
-      "first_line": "User value audit, round 16 (timezone re-run) \u2014 2026-09-05"
+      "first_line": "User value audit, round 16 (timezone re-run) — 2026-09-05"
     },
     {
       "file": "docs/USER_VALUE_R17.md",
-      "first_line": "User value audit, round 17 \u2014 2026-09-05"
+      "first_line": "User value audit, round 17 — 2026-09-05"
     },
     {
       "file": "docs/USER_VALUE_R18_CALENDAR.md",
@@ -4218,11 +4251,11 @@
     },
     {
       "file": "docs/USER_VALUE_R18_QUOTES.md",
-      "first_line": "User value audit, round 18 (quotes re-run) \u2014 2026-09-05"
+      "first_line": "User value audit, round 18 (quotes re-run) — 2026-09-05"
     },
     {
       "file": "docs/USER_VALUE_R2.md",
-      "first_line": "User value audit, round 2 \u2014 2026-09-02"
+      "first_line": "User value audit, round 2 — 2026-09-02"
     },
     {
       "file": "docs/USER_VALUE_R20_BANK.md",
@@ -4258,7 +4291,7 @@
     },
     {
       "file": "docs/USER_VALUE_R3.md",
-      "first_line": "User value audit, round 3 \u2014 2026-09-02"
+      "first_line": "User value audit, round 3 — 2026-09-02"
     },
     {
       "file": "docs/USER_VALUE_R30_CASH_BOOK.md",
@@ -4286,27 +4319,27 @@
     },
     {
       "file": "docs/USER_VALUE_R4.md",
-      "first_line": "User value audit, round 4 \u2014 2026-09-02"
+      "first_line": "User value audit, round 4 — 2026-09-02"
     },
     {
       "file": "docs/USER_VALUE_R5.md",
-      "first_line": "User value audit, round 5 \u2014 2026-09-03"
+      "first_line": "User value audit, round 5 — 2026-09-03"
     },
     {
       "file": "docs/USER_VALUE_R6.md",
-      "first_line": "User value audit, round 6 \u2014 2026-09-03"
+      "first_line": "User value audit, round 6 — 2026-09-03"
     },
     {
       "file": "docs/USER_VALUE_R7.md",
-      "first_line": "User value audit, round 7 \u2014 2026-09-03"
+      "first_line": "User value audit, round 7 — 2026-09-03"
     },
     {
       "file": "docs/USER_VALUE_R8.md",
-      "first_line": "User value audit, round 8 \u2014 2026-09-03"
+      "first_line": "User value audit, round 8 — 2026-09-03"
     },
     {
       "file": "docs/USER_VALUE_R9.md",
-      "first_line": "User value audit, round 9 \u2014 2026-09-03"
+      "first_line": "User value audit, round 9 — 2026-09-03"
     },
     {
       "file": "docs/VARIANTS_LOOP35.md",
@@ -4330,11 +4363,11 @@
     },
     {
       "file": "docs/WHITESPACE_R1.md",
-      "first_line": "WHITESPACE_R1 \u2014 Whitespace-query content wiring for mcp.zovo.one billing worker"
+      "first_line": "WHITESPACE_R1 — Whitespace-query content wiring for mcp.zovo.one billing worker"
     },
     {
       "file": "docs/WHITESPACE_R2.md",
-      "first_line": "WHITESPACE R2 \u2014 Buyer-Intent Guide Blocks (Batch 2)"
+      "first_line": "WHITESPACE R2 — Buyer-Intent Guide Blocks (Batch 2)"
     },
     {
       "file": "docs/WIRING_LOOP34.md",
@@ -4366,7 +4399,7 @@
     },
     {
       "file": "docs/notes_s59_npm.md",
-      "first_line": "S59 \u2014 npm publish blocked on expired npm token (2026-09-20)"
+      "first_line": "S59 — npm publish blocked on expired npm token (2026-09-20)"
     }
   ],
   "revenue": {
