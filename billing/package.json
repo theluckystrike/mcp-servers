@@ -1,5 +1,6 @@
 {
   "name": "mcp-billing",
+  "repository": {"type": "git", "url": "theluckystrike/mcp-servers.git"},
   "private": true,
   "type": "module",
   "version": "1.0.0",
