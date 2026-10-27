@@ -68,6 +68,17 @@ export interface Env { REMOTE_DATA: KVNamespace; FUNNEL: DurableObjectNamespace;
 const PUBLIC_KEY_B64 = "VZXpvTpJn2XzaEn9ijFXk1vjPjtZvzAHZazC0Z+0pHU=";
 const GUIDE = "https://mcp.zovo.one/guides/mcp-server-free-vs-pro";
 const ANON_TTL = 60 * 60 * 24 * 30;   // 30 days, refreshed on every write
+/**
+ * The tok: TTL refresh used to be a KV write on every tool call. It is now written at most
+ * once a day per token, with one extra day of TTL, so a token still lives at least 30 days
+ * after its last use. Tokens written before TOK_SLACK_SINCE carry the old TTL without the
+ * extra day, so they are refreshed on their next use regardless of age.
+ */
+const TOK_REFRESH_MS = 86_400_000;
+const TOK_TTL = ANON_TTL + TOK_REFRESH_MS / 1000;
+const TOK_SLACK_SINCE = Date.parse("2026-10-27T12:00:00Z");
+/** meta:<tenant> last_seen is stamped at most this often; the sweep cutoff is 35 days. */
+const TOUCH_EVERY_MS = 6 * 3_600_000;
 const DOWNLOAD_TTL = 60 * 60;         // 1 hour
 const RATE_LIMIT_FREE = 600;          // calls per hour per token
 const RATE_LIMIT_PRO = 6000;
@@ -833,6 +844,8 @@ interface Auth {
   via?: "Authorization: Bearer" | "URL path segment (/mcp/<server>/t/<token>)" | "URL query parameter (?token=)";
   /** True when an anonymous tenant is Pro because of a bound purchase, not a pasted key. */
   bound?: boolean;
+  /** The tok:<token> value read during authentication: ms of its last TTL refresh. */
+  tokStamp?: number;
 }
 
 /**
@@ -999,21 +1012,61 @@ async function authenticate(req: Request, env: Env, product: string, urlToken = 
     if (seen === null) return json({ error: "unknown_token", message: "Mint a new one at GET https://mcp.zovo.one/mcp/token", guide: GUIDE }, 401);
     // Binding lookup rechecks each candidate key's signature, product and expiry.
     const d = decideBinding(verified);
-    return { tenant: `anon:${id}`, isPro: d.isPro, kind: "anon", limit: d.limit, anonToken: token, bound: d.bound, via };
+    return { tenant: `anon:${id}`, isPro: d.isPro, kind: "anon", limit: d.limit, anonToken: token, bound: d.bound, via, tokStamp: Number(seen) || 0 };
   }
   return json({ error: "invalid_token", message: "Token is neither an MCPL1 licence key nor an anonymous token.", guide: GUIDE }, 401);
 }
 
+/*
+ * KV write budget (2026-10-27). Directory liveness probes (mcpbeat, SentinelOracle,
+ * AgentRankProbe, rokmcp and others) send tokenless initialize / tools/list POSTs around
+ * 100k times a day, and every one of them used to write rl:discovery:<ip>:<hour>. That was
+ * about 0.8 KV writes per request and almost all of the namespace's 3M+ writes a month.
+ *
+ * Discovery is now counted in isolate memory only: it touches no tenant data, tools/list
+ * is served from module scope, and the per-hour ceiling is the same number, enforced per
+ * isolate. Authenticated counters stay in KV so the free and Pro ceilings still hold
+ * across isolates, but this isolate batches its increments: the first call it sees for a
+ * key writes at once (exactly as before), later calls are folded in and written every
+ * RL_FLUSH_EVERY calls or RL_FLUSH_MS, whichever comes first. The KV counter was already
+ * approximate (reads are edge-cached, concurrent requests both write n+1), and the most
+ * this adds is RL_FLUSH_EVERY - 1 unwritten calls per isolate.
+ */
+const RL_FLUSH_EVERY = 20;
+const RL_FLUSH_MS = 5 * 60_000;
+const LOCAL_MAP_MAX = 2000;
+const discoveryCounts = new Map<string, number>();
+const rlLocal = new Map<string, { flushed: number; pending: number; at: number }>();
+
+/** Drop entries from earlier hour buckets once a map grows; keys end in `:<bucket>`. */
+function pruneBuckets<V>(m: Map<string, V>, bucket: number): void {
+  if (m.size < LOCAL_MAP_MAX) return;
+  const suffix = `:${bucket}`;
+  for (const k of m.keys()) if (!k.endsWith(suffix)) m.delete(k);
+  if (m.size >= LOCAL_MAP_MAX) m.clear();
+}
+
 /**
  * The read decides; the counter write is deferred with waitUntil so it is not on the
- * caller's clock. The counter was already approximate - two concurrent requests read the
- * same value and both write n+1 - so deferring the write loses nothing that was ever
- * guaranteed, and takes a KV write out of every single call.
+ * caller's clock, and batched per isolate (see the KV write budget note above).
  */
 async function rateLimit(env: Env, auth: Auth, ctx: ExecutionContext, product?: string): Promise<Response | null> {
-  const bucket = Math.floor(Date.now() / 3_600_000);
+  const now = Date.now();
+  const bucket = Math.floor(now / 3_600_000);
   const key = `rl:${auth.tenant}:${bucket}`;
-  const n = Number((await env.REMOTE_DATA.get(key)) ?? "0") + 1;
+  const isDiscoveryTenant = auth.tenant.startsWith("discovery:");
+  let n: number;
+  let entry: { flushed: number; pending: number; at: number } | undefined;
+  let kvN = 0;
+  if (isDiscoveryTenant) {
+    pruneBuckets(discoveryCounts, bucket);
+    n = (discoveryCounts.get(key) ?? 0) + 1;
+  } else {
+    pruneBuckets(rlLocal, bucket);
+    kvN = Number((await env.REMOTE_DATA.get(key)) ?? "0") || 0;
+    entry = rlLocal.get(key);
+    n = Math.max(kvN, entry?.flushed ?? 0) + (entry?.pending ?? 0) + 1;
+  }
   if (n > auth.limit) {
     // D-R53: every other cap on this worker names what it costs to lift and links to
     // checkout with the tenant attached. This one used to name only the number, and the
@@ -1058,7 +1111,24 @@ async function rateLimit(env: Env, auth: Auth, ctx: ExecutionContext, product?: 
       guide: GUIDE,
     }, 429, { "retry-after": String(retryAfter) });
   }
-  ctx.waitUntil(env.REMOTE_DATA.put(key, String(n), { expirationTtl: 7200 }));
+  if (isDiscoveryTenant) {
+    discoveryCounts.set(key, n);
+    return null;
+  }
+  if (!entry) {
+    // First call this isolate has seen for the key: write now, as every call used to.
+    rlLocal.set(key, { flushed: n, pending: 0, at: now });
+    ctx.waitUntil(env.REMOTE_DATA.put(key, String(n), { expirationTtl: 7200 }));
+    return null;
+  }
+  entry.flushed = Math.max(kvN, entry.flushed);
+  entry.pending += 1;
+  if (entry.pending >= RL_FLUSH_EVERY || now - entry.at >= RL_FLUSH_MS) {
+    entry.flushed += entry.pending;
+    entry.pending = 0;
+    entry.at = now;
+    ctx.waitUntil(env.REMOTE_DATA.put(key, String(entry.flushed), { expirationTtl: 7200 }));
+  }
   return null;
 }
 
@@ -1231,9 +1301,28 @@ async function flush(env: Env, tenant: string, server: string, after: string, be
   await env.REMOTE_DATA.put(dataKey(tenant, server), after);
 }
 
-/** Last-seen stamp for the orphan sweep. Data documents carry no TTL; tokens do. */
+/**
+ * Last-seen stamp for the orphan sweep. Data documents carry no TTL; tokens do.
+ * The sweep deletes after 35 days without a stamp, so a stamp more than once every
+ * TOUCH_EVERY_MS buys nothing: this isolate remembers its own recent stamps, and
+ * otherwise reads the stored one and writes only when it is older than that.
+ */
+const touchedAt = new Map<string, number>();
 async function touch(env: Env, tenant: string): Promise<void> {
-  await env.REMOTE_DATA.put(`meta:${tenant}`, JSON.stringify({ last_seen: Date.now() }));
+  const now = Date.now();
+  if (now - (touchedAt.get(tenant) ?? 0) < TOUCH_EVERY_MS) return;
+  if (touchedAt.size >= LOCAL_MAP_MAX) touchedAt.clear();
+  let last = 0;
+  try { last = Number(JSON.parse((await env.REMOTE_DATA.get(`meta:${tenant}`)) ?? "{}").last_seen ?? 0) || 0; } catch { last = 0; }
+  if (now - last < TOUCH_EVERY_MS) { touchedAt.set(tenant, last); return; }
+  await env.REMOTE_DATA.put(`meta:${tenant}`, JSON.stringify({ last_seen: now }));
+  touchedAt.set(tenant, now);
+}
+
+/** Refresh tok:<token> only when the stamp read at authentication is old (see TOK_TTL). */
+function tokNeedsRefresh(stamp: number | undefined, now = Date.now()): boolean {
+  const s = stamp ?? 0;
+  return s < TOK_SLACK_SINCE || now - s >= TOK_REFRESH_MS;
 }
 
 /* -------------------------------------------------- shared ECB rate cache */
@@ -2207,7 +2296,7 @@ async function mintAnonToken(req: Request, env: Env, execution: ExecutionContext
   const b = new Uint8Array(16);
   crypto.getRandomValues(b);
   const token = "anon_" + Array.from(b, (x) => x.toString(16).padStart(2, "0")).join("");
-  await env.REMOTE_DATA.put(`tok:${token}`, String(Date.now()), { expirationTtl: ANON_TTL });
+  await env.REMOTE_DATA.put(`tok:${token}`, String(Date.now()), { expirationTtl: TOK_TTL });
   // Measurement is best effort and never controls token validity or mint success.
   execution.waitUntil(saveMintCohort(env.REMOTE_DATA, token, req).catch(() => {
     console.error(JSON.stringify({ event: "hosted_funnel_mint_record_failed" }));
@@ -2395,7 +2484,13 @@ export default {
         return json({ error: "invalid_redirect_uri", message: "redirect_uris must be http(s) URLs." }, 400);
       }
       const clientId = await oauthClientId(metadata);
-      await env.REMOTE_DATA.put(`oauth_client:${clientId}`, JSON.stringify({ metadata, at: Date.now() }), { expirationTtl: 60 * 60 * 24 * 365 });
+      // Same metadata, same id: rewrite only when missing or older than 30 days, so the
+      // 365-day TTL is still pushed out for a client that keeps registering.
+      let storedAt = 0;
+      try { storedAt = Number((JSON.parse((await env.REMOTE_DATA.get(`oauth_client:${clientId}`)) ?? "{}") as { at?: number }).at ?? 0) || 0; } catch { storedAt = 0; }
+      if (Date.now() - storedAt >= 30 * 86_400_000) {
+        await env.REMOTE_DATA.put(`oauth_client:${clientId}`, JSON.stringify({ metadata, at: Date.now() }), { expirationTtl: 60 * 60 * 24 * 365 });
+      }
       return json({
         client_id: clientId,
         client_id_issued_at: Math.floor(Date.now() / 1000),
@@ -2587,7 +2682,10 @@ export default {
 
     // Lazy hydration. initialize, ping and the empty list methods cannot read or write a
     // tenant document, so they pay for none of the three KV reads and none of the writes.
-    const dataless = req.method === "POST" && rpc.method !== null && DATALESS_METHODS.has(rpc.method);
+    // A GET, HEAD or DELETE cannot carry a JSON-RPC call, so no tool can run on it: it is
+    // dataless too. Clients with a token in the URL re-open the GET stream every few
+    // seconds, and each one used to hydrate three documents and write two stamps.
+    const dataless = req.method !== "POST" || (rpc.method !== null && DATALESS_METHODS.has(rpc.method));
 
     const files = dataless ? new Map<string, string>() : await hydrate(env, auth.tenant, product);
     // /mcp/recurring works inside the invoice store: its document is hydrated on top of
@@ -2702,8 +2800,8 @@ export default {
           // Sweep stamp and token TTL refresh are bookkeeping, not the answer: deferred,
           // so a tool call does not wait on two KV writes nobody reads in this request.
           ctx.waitUntil(touch(env, auth.tenant));
-          if (auth.kind === "anon") {
-            ctx.waitUntil(env.REMOTE_DATA.put(`tok:anon_${auth.tenant.slice(5)}`, String(Date.now()), { expirationTtl: ANON_TTL }));
+          if (auth.kind === "anon" && tokNeedsRefresh(auth.tokStamp)) {
+            ctx.waitUntil(env.REMOTE_DATA.put(`tok:anon_${auth.tenant.slice(5)}`, String(Date.now()), { expirationTtl: TOK_TTL }));
           }
         }
         if (successfulBusinessCall) {
