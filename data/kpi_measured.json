@@ -1,0 +1,73 @@
+{
+ "measured_at": "2026-10-28T03:14:29Z",
+ "gsc": {
+  "property": "sc-domain:zovo.one",
+  "reachable": true,
+  "indexed": null,
+  "submitted": null,
+  "inspect": {
+   "verdict": "NEUTRAL",
+   "coverage": "URL is unknown to Google"
+  },
+  "inspect_others": {
+   "hub_page": {
+    "verdict": null,
+    "coverage": null
+   },
+   "csg_page": {
+    "verdict": null,
+    "coverage": null
+   }
+  },
+  "sitemap_lines": [
+   "https://mcp.zovo.one/sitemap.xml | errors 0 | warnings 0 | submitted ['299'] | indexed ['0'] | last 2026-10-26T06:46:14.435Z"
+  ]
+ },
+ "hosted": {
+  "checked": "now",
+  "live": 46,
+  "total": 58,
+  "tools": 549,
+  "dead": [
+   "budget",
+   "duplicate-invoice-check",
+   "hourly-rate",
+   "loan-calculator",
+   "office-suite",
+   "payroll",
+   "pomodoro",
+   "receipts",
+   "stripe-billing",
+   "supplier-statement-check",
+   "tax-calc",
+   "three-way-match"
+  ],
+  "source": "live"
+ },
+ "surfaces": {
+  "hub_us": {
+   "status": 200
+  },
+  "hub_us_sitemap": {
+   "status": 200,
+   "urls": 71
+  },
+  "csg_mcp": {
+   "status": 200
+  },
+  "csg_sitemap": {
+   "status": 200,
+   "urls": 2023
+  },
+  "buy_invoice": {
+   "status": 200
+  },
+  "connect": {
+   "status": 200
+  }
+ },
+ "estate": {
+  "servers": 58,
+  "bundle_price_usd": 39
+ }
+}

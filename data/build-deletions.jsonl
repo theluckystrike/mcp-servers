@@ -743,3 +743,5 @@
 {"at":"2026-10-26T09:19:54.842Z","path":"/Users/mike/mcp-servers-work/r38-dashboard-browser-8l4l0Z","bytes":8550601,"lsof_clear":true,"reason":"Completed ownedR38 dashboard QA; browser closed"}
 {"at": "2026-10-26T09:20:38.825317+00:00", "path": "/Users/mike/mcp-servers-work/node-compile-cache", "bytes": 13296864, "lsof_clear": true, "reason": "Owned R38 V8 compile cache; all Node work and browsers finished"}
 {"at": "2026-10-26T09:21:19.027203+00:00", "path": "/Users/mike/mcp-servers-work/r38-final-pr-body.md", "bytes": 1267, "lsof_clear": true, "reason": "Exact final PR description retained in memory and sent through structured GitHub API input"}
+{"at":"2026-10-27T03:06:57.233Z","path":"/Users/mike/mcp-servers-work/traffic-users-browser-7QUzBb","bytes":8708648,"lsof_clear":true,"reason":"Completed owned traffic/users tab browser QA; browser closed"}
+{"at":"2026-10-27T03:07:47.771Z","path":"/Users/mike/mcp-servers-work/traffic-users-browser-5HVph4","bytes":8570178,"lsof_clear":true,"reason":"Completed mobile table follow-up; owned browser closed"}

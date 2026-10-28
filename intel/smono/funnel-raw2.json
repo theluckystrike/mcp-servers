@@ -1,0 +1,106 @@
+{
+ "log": [
+  {
+   "step": "forms-on-buy",
+   "forms": [
+    {
+     "i": 0,
+     "action": "https://mcp.zovo.one/buy/invoice",
+     "method": "post",
+     "html": "<form method=\"post\" action=\"/buy/invoice\"><input type=\"hidden\" name=\"intent\" value=\"checkout\"><input type=\"hidden\" name=\"order_token\" value=\"1793151889304.e915f205-7f2b-445b-8d19-f5d369591ef2\">\n<button class=\"buy\" type=\"submit\">Continue to Stripe — $19 one-time</button></form>"
+    },
+    {
+     "i": 1,
+     "action": "https://mcp.zovo.one/api/subscribe",
+     "method": "post",
+     "html": "<form id=\"subform\" method=\"post\" action=\"/api/subscribe\" style=\"margin-top:14px;display:flex;gap:8px;max-width:420px\">\n  <input type=\"email\" name=\"email\" required=\"\" placeholder=\"you@example.com\" aria-label=\"Email address\" style=\"flex:1;padding:8px 10px;background:#111;border:1px solid var(--bd);color:var(--fg);font:inherit;font-size:13px;border-radius:0\">\n  <button type=\"submit\" style=\"padding:8p"
+    }
+   ]
+  },
+  {
+   "step": "submit-buttons",
+   "count": 2
+  },
+  {
+   "step": "clicked-submit-0",
+   "clickedText": "Continue to Stripe — $19 one-time",
+   "ms": 3898,
+   "after": {
+    "url": "https://mcp.zovo.one/s/invoice",
+    "iframes": [],
+    "text": "Assemble a contract from your own clause library, in chat · Zip and unzip archives safely from Claude or Cursor · Ask questions about an Excel or CSV file from Cursor or Claude · Connect MCP servers to Claude.ai, Claude Desktop, Cursor and VS Code without installing anything · Create an invoice PDF "
+   }
+  },
+  {
+   "step": "clicked-submit-1",
+   "clickedText": "Get setup tips",
+   "ms": 3053,
+   "after": {
+    "url": "https://mcp.zovo.one/buy/invoice",
+    "iframes": [],
+    "text": "Assemble a contract from your own clause library, in chat · Zip and unzip archives safely from Claude or Cursor · Ask questions about an Excel or CSV file from Cursor or Claude · Connect MCP servers to Claude.ai, Claude Desktop, Cursor and VS Code without installing anything · Create an invoice PDF "
+   }
+  },
+  {
+   "step": "bundle",
+   "bundle": {
+    "title": "Buy MCP Servers Bundle (all servers, lifetime)",
+    "text": "Assemble a contract from your own clause library, in chat · Zip and unzip archives safely from Claude or Cursor · Ask questions about an Excel or CSV file from Cursor or Claude · Connect MCP servers to Claude.ai, Claude Desktop, Cursor and VS Code without installing anything · Create an invoice PDF from a chat message with an MCP server · Send a quote from chat, then turn the yes into an invoice · Resize, compress and watermark images from a chat message · Log expenses and mileage in Claude, split VAT, rebill to an invoice · Bill a retainer on a schedule without a billing SaaS · Write a resume and a cover letter from chat, without inventing anything\nMCP Servers Bundle (all servers, lifetime)",
+    "price": [
+     "$39",
+     "$892",
+     "$39",
+     "$39",
+     "$931"
+    ]
+   }
+  }
+ ],
+ "net": [
+  {
+   "url": "https://mcp.zovo.one/buy/invoice",
+   "method": "GET",
+   "status": 200,
+   "location": null,
+   "xmcpbuy": "checkout-intent-required",
+   "server": "cloudflare",
+   "setcookie": null
+  },
+  {
+   "url": "https://mcp.zovo.one/buy/invoice",
+   "method": "POST",
+   "status": 303,
+   "location": "https://mcp.zovo.one/s/invoice",
+   "xmcpbuy": "scripted-ua-no-session",
+   "server": "cloudflare",
+   "setcookie": null
+  },
+  {
+   "url": "https://mcp.zovo.one/buy/invoice",
+   "method": "GET",
+   "status": 200,
+   "location": null,
+   "xmcpbuy": "checkout-intent-required",
+   "server": "cloudflare",
+   "setcookie": null
+  },
+  {
+   "url": "https://mcp.zovo.one/buy/invoice",
+   "method": "GET",
+   "status": 200,
+   "location": null,
+   "xmcpbuy": "checkout-intent-required",
+   "server": "cloudflare",
+   "setcookie": null
+  },
+  {
+   "url": "https://mcp.zovo.one/buy/bundle",
+   "method": "GET",
+   "status": 200,
+   "location": null,
+   "xmcpbuy": "checkout-intent-required",
+   "server": "cloudflare",
+   "setcookie": null
+  }
+ ]
+}

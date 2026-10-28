@@ -1,0 +1,330 @@
+{
+ "steps": [
+  {
+   "tag": "landing",
+   "url": "https://mcp.zovo.one/",
+   "ms": 3650
+  },
+  {
+   "step": "landing-eval",
+   "landing": {
+    "title": "MCP servers for Claude: invoices, time tracking and freelance tools",
+    "bodyText": "Assemble a contract from your own clause library, in chat · Zip and unzip archives safely from Claude or Cursor · Ask questions about an Excel or CSV file from Cursor or Claude · Connect MCP servers to Claude.ai, Claude Desktop, Cursor and VS Code without installing anything · Create an invoice PDF from a chat message with an MCP server · Send a quote from chat, then turn the yes into an invoice · Resize, compress and watermark images from a chat message · Log expenses and mileage in Claude, split VAT, rebill to an invoice · Bill a retainer on a schedule without a billing SaaS · Write a resume and a cover letter from chat, without inventing anything\n58 MCP servers for Claude, for freelancers and small businesses\nTry an invoice review before installing\n\nRun a free comparison in this browser, with synthetic examples or your own structured records. The engine runs on your device and sends no field values or diagnostic requests.\n\nCompare supplier statement open items with your AP ledger · Review duplicate invoice references · Match invoice lines to a PO and receipts\n\nComplete evidence is free. The optional Pro upgrade removes the saved-report count cap. These checks do not extract PDFs or approve payment.\n\nEach row below is one MCP server. 46 of the 58 answer at a URL, so you can use them with nothing installed. Get a free token with one request, then paste the URL into whatever asks for a remote MCP server.\n\ncurl -X POST https://mcp.zovo.one/mcp/token\n\nIt returns a token shaped anon_<32 hex>. No account, no email, no OAuth. The token is good for 30 days and allows 600 calls an hour. Servers without a hosted URL run from the .mcpb bundle or a clone.\n\nEvery server, what it does, and the URL to paste\nSERVER\tWHAT IT DOES\tPASTE THIS URL\tPRO\nMCP Amortization\t\n\nLoan and lease schedules from the terms of the agreement\n\nthe level payment, the effective annual rate beside the nominal one, and every period's opening balance, interest, principal and closing balance in integer minor units. Compounding and payment frequency are two different clocks, so the periodic rate is always the equivalent rate taken through the compounding clock. It posts nothing and stores no schedule.\n\n\thttps://mcp.zovo.one/mcp/amortization/t/<token>\t$19\nMCP Asset Register\t\n\nA fixed asset register that depreciates on the rates the tax authorities publish\n\nthe Polish KST annex rates from the CIT and PIT acts, the UK capital allowance pools with the annual investment allowance, and the US MACRS GDS half-year tables for 3, 5 and 7 year property. The tables are bundled files rather than a feed, and the annex positions that could not be stated with confidence are refused by name rather than guessed.\n\n\thttps://mcp.zovo.one/mcp/asset-register/t/<token>\t$19\nMCP Backlink Checker\t\n\nBacklink checks from Claude or Cursor\n\ndoes a page link to your domain, dofollow or nofollow, anchor text, HTTP status, robots guards. Nothing stored.\n\n\thttps://mcp.zovo.one/mcp/backlink-checker/t/<token>\t$19\nMCP Bank St",
+    "priceText": [
+     "$19",
+     "$19",
+     "$19",
+     "$19",
+     "$19",
+     "$19",
+     "$19",
+     "$19",
+     "$19",
+     "$19"
+    ],
+    "trialMentions": [
+     "trial",
+     "Free tier",
+     "trial",
+     "trial",
+     "free tier"
+    ],
+    "buyLinks": [
+     "MCP Amortization -> /s/amortization",
+     "MCP Asset Register -> /s/asset-register",
+     "MCP Backlink Checker -> /s/backlink-checker",
+     "MCP Bank Statement -> /s/bank-statement",
+     "MCP Barcode -> /s/barcode",
+     "MCP Bill of Sale -> /s/bill-of-sale",
+     "MCP Billing Docs -> /s/billing-docs",
+     "MCP Budget -> /s/budget",
+     "MCP Calendar -> /s/calendar",
+     "MCP Cash Book -> /s/cash-book",
+     "MCP Catalogue -> /s/catalogue",
+     "MCP Change Order -> /s/change-order",
+     "MCP Checklist -> /s/checklist",
+     "MCP Clause Library -> /s/clauses",
+     "MCP Credit Note -> /s/credit-note",
+     "MCP Currency Converter -> /s/currency",
+     "MCP Delivery Schedule -> /s/delivery-schedule",
+     "MCP Deposits -> /s/deposits",
+     "MCP Docx -> /s/docx",
+     "MCP Dunning Letters -> /s/dunning-letters",
+     "MCP Duplicate Invoice Check -> /s/duplicate-invoice-check",
+     "MCP Expense Tracker -> /s/expense-tracker",
+     "MCP Goods Receipt -> /s/goods-receipt",
+     "MCP Hourly Rate Calculator, free, no install -> /s/hourly-rate",
+     "MCP Image Tools -> /s/image",
+     "MCP Invoice -> /s/invoice",
+     "MCP Job Card -> /s/job-card",
+     "MCP Kanban -> /s/kanban",
+     "MCP Leave -> /s/leave",
+     "MCP Loan Calculator -> /s/loan-calculator"
+    ],
+    "inputsOnLanding": 1,
+    "licenceKeyMention": false
+   }
+  },
+  {
+   "step": "click-1-landing-to-buy",
+   "clickedText": null,
+   "landedUrl": "https://mcp.zovo.one/buy/invoice?src=store.home.table.invoice",
+   "ms": 30344
+  },
+  {
+   "step": "buy-page-state",
+   "url": "https://mcp.zovo.one/buy/invoice?src=store.home.table.invoice",
+   "text": "Assemble a contract from your own clause library, in chat · Zip and unzip archives safely from Claude or Cursor · Ask questions about an Excel or CSV file from Cursor or Claude · Connect MCP servers to Claude.ai, Claude Desktop, Cursor and VS Code without installing anything · Create an invoice PDF from a chat message with an MCP server · Send a quote from chat, then turn the yes into an invoice · Resize, compress and watermark images from a chat message · Log expenses and mileage in Claude, split VAT, rebill to an invoice · Bill a retainer on a schedule without a billing SaaS · Write a resume and a cover letter from chat, without inventing anything\nMCP Invoice Pro\n\n$19.00 USD · one payment · lifetime licence\n\nNumbered invoices with tax lines, rendered to a professional PDF, all local.\n\nWhat you get for $19\nYour Pro key is shown on the confirmation page after payment. Save the key and bookmark that page; reloading it shows the same key.\nPro unlocks: unlimited, no branding, logo, custom prefix.\nFree tier, no key: 3 invoices a month with a small footer line; overdue report included.\nAll 49 servers instead for $39 — one key, lifetime, a $892 saving: the bundle.\nContinue to Stripe — $19 one-time\n\nNo payment session has been created yet. Stripe collects the card on the next page.\n\nMCP Invoice Pro, lifetime licence\nLifetime licence. One payment of $19— or $39 for all 49 together. No subscription, no renewals, no per-seat charge. Pro removes the listed free-tier limits; hosted rate limits still apply.\nYour key is shown on the confirmation page after payment. Save the key and bookmark that page. Reloading it shows the same key; if you lose it, contact support@zovo.one with your Stripe receipt.\nLocal install option. Run the tools on your machine and keep their data there. Features that fetch public pages or exchange rates contact those services. Hosted endpoints store data on our infrastructure.\nKeep the files you already have. The tools read and write plain Markdown, CSV and PDF; there is no proprietary store and no lock-in.\n14-day refund on the first payment, from support@zovo.one.\nOpen source. Read the server code at github.com/theluckystrike/mcp-servers.\n\nFAQ · Changelog · Source at github.com/theluckystrike/mcp-servers\n\nBack\n\nHome: All servers · Guides · Setup · Compare · Changelog · Tiny Telegram Tools · Support: support@zovo.one · Built by theluckystrike\nGet setup tips\n\nSetup tips by email: a welcome message, an invoice setup tip after about two days, and a ",
+   "fields": [
+    {
+     "tag": "INPUT",
+     "type": "hidden",
+     "name": "intent",
+     "placeholder": null,
+     "label": null
+    },
+    {
+     "tag": "INPUT",
+     "type": "hidden",
+     "name": "order_token",
+     "placeholder": null,
+     "label": null
+    },
+    {
+     "tag": "BUTTON",
+     "type": "submit",
+     "name": null,
+     "placeholder": null,
+     "label": null
+    },
+    {
+     "tag": "INPUT",
+     "type": "email",
+     "name": "email",
+     "placeholder": "you@example.com",
+     "label": null
+    },
+    {
+     "tag": "BUTTON",
+     "type": "submit",
+     "name": null,
+     "placeholder": null,
+     "label": null
+    }
+   ]
+  },
+  {
+   "step": "click-2-checkout",
+   "clickedText": "Continue to Stripe — $19 one-time",
+   "landedUrl": "https://mcp.zovo.one/s/invoice",
+   "ms": 3615
+  },
+  {
+   "step": "payment-page-state",
+   "url": "https://mcp.zovo.one/s/invoice",
+   "text": "Assemble a contract from your own clause library, in chat · Zip and unzip archives safely from Claude or Cursor · Ask questions about an Excel or CSV file from Cursor or Claude · Connect MCP servers to Claude.ai, Claude Desktop, Cursor and VS Code without installing anything · Create an invoice PDF from a chat message with an MCP server · Send a quote from chat, then turn the yes into an invoice · Resize, compress and watermark images from a chat message · Log expenses and mileage in Claude, split VAT, rebill to an invoice · Bill a retainer on a schedule without a billing SaaS · Write a resume and a cover letter from chat, without inventing anything\n\nAll servers · Buy Pro $19 · All 49 for $39 · Source\n\nTwo ways to run it, both free to start. Open mcp.zovo.one/mcp/connect, copy the invoice URL and paste it into any client that takes a URL. It already carries a free token, so there is nothing to install, no account and no header to set. The URL is https://mcp.zovo.one/mcp/invoice/t/<token>. The token is not optional: the bare https://mcp.zovo.one/mcp/invoice connects and lists its tools and then answers every tool call with HTTP 401, so use the link from /mcp/connect or send Authorization: Bearer <token>. Or download invoice.mcpb and double-click it in Claude Desktop.\n\nGenerate & send invoices from Claude with a free MCP server\n\nListed on the AI Product Index - live remote endpoint at mcp.zovo.one/s/invoice, free tier, no signup.\n\nFeatured on Awesome MCP Servers - directory listing | live hosted endpoint, free tier, no signup.\n\nSay \"make an invoice for Acme, 12 hours at 90 EUR, due in 14 days\" and get a real PDF you can send. This MCP server stores your business profile and your clients, allocates a sequential invoice number that is never reused, computes the subtotal, any discount, one tax line per VAT rate and the total in integer minor units, and renders an A4 PDF with your issuer and payment details, a wrapping item table and a proper totals block. It also tracks payments and, on Pro, reports what is overdue and by how many days. Everything is stored in plain JSON files on your own machine; nothing is uploaded anywhere.\n\nIn the official MCP Registry (io.github.theluckystrike/invoice-pdf-billing-generator).\n\nCreate numbered invoices with tax lines and a real PDF from chat, no invoicing SaaS required.\n\n60-second install\n\nnpm publish for @theluckystrike/mcp-invoice is pending. Until then, the .mcpb one-click bundle or a clone+build is the working path, both",
+   "fields": [
+    {
+     "tag": "INPUT",
+     "name": "email",
+     "id": null,
+     "type": "email",
+     "src": null,
+     "required": true
+    }
+   ]
+  },
+  {
+   "step": "stripe-detected",
+   "iframesStripe": [],
+   "urlHasStripe": false
+  },
+  {
+   "tag": "direct-/buy/invoice",
+   "url": "https://mcp.zovo.one/buy/invoice",
+   "ms": 393,
+   "elapsedMs": 398,
+   "text": "Assemble a contract from your own clause library, in chat · Zip and unzip archives safely from Claude or Cursor · Ask questions about an Excel or CSV file from Cursor or Claude · Connect MCP servers to Claude.ai, Claude Desktop, Cursor and VS Code without installing anything · Create an invoice PDF from a chat message with an MCP server · Send a quote from chat, then turn the yes into an invoice · Resize, compress and watermark images from a chat message · Log expenses and mileage in Claude, split VAT, rebill to an invoice · Bill a retainer on a schedule without a billing SaaS · Write a resume and a cover letter from chat, without inventing anything\nMCP Invoice Pro\n\n$19.00 USD · one payment · lifetime licence\n\nNumbered invoices with tax lines, rendered to a professional PDF, all local.\n\nWhat you get for $19\nYour Pro key is shown on the confirmation page after payment. Save the key and bookmark that page; reloading it shows the same key.\nPro unlocks: unlimited, no branding, logo, custom prefix.\nFree tier, no key: 3 invoices a month with a small footer line; overdue report included.\nAll 49 servers instead for $39 — one key, lifetime, a $892 saving: the bundle.\nContinue to Stripe — $1",
+   "links": [
+    "/guides/contract-clauses-library-assembly",
+    "/guides/zip-archives-safely-from-chat",
+    "/guides/read-excel-in-cursor",
+    "/guides/connect-mcp-servers-without-installing",
+    "/guides/invoice-pdf-from-chat",
+    "/guides/quotes-and-estimates-to-invoice-in-claude",
+    "/guides/image-resize-compress-watermark-from-chat",
+    "/guides/expense-tracking-in-claude",
+    "/guides/recurring-invoices-on-a-schedule",
+    "/guides/resume-and-cover-letter-from-chat",
+    "/buy/bundle?src=store.buy.invoice&acq=unattributed",
+    "https://github.com/theluckystrike/mcp-servers",
+    "/#faq",
+    "/changelog",
+    "https://github.com/theluckystrike/mcp-servers",
+    "/s/invoice",
+    "/",
+    "/guides",
+    "/setup",
+    "/compare",
+    "/changelog",
+    "https://tg.zovo.one",
+    "https://github.com/theluckystrike/mcp-servers"
+   ]
+  },
+  {
+   "tag": "direct-/buy/zip",
+   "url": "https://mcp.zovo.one/buy/zip",
+   "ms": 289,
+   "elapsedMs": 295,
+   "text": "Assemble a contract from your own clause library, in chat · Zip and unzip archives safely from Claude or Cursor · Ask questions about an Excel or CSV file from Cursor or Claude · Connect MCP servers to Claude.ai, Claude Desktop, Cursor and VS Code without installing anything · Create an invoice PDF from a chat message with an MCP server · Send a quote from chat, then turn the yes into an invoice · Resize, compress and watermark images from a chat message · Log expenses and mileage in Claude, split VAT, rebill to an invoice · Bill a retainer on a schedule without a billing SaaS · Write a resume and a cover letter from chat, without inventing anything\nMCP Zip Pro\n\n$19.00 USD · one payment · lifetime licence\n\nCreate, inspect and extract zip archives safely from chat: bomb and traversal guards decided from the central directory, CRC checked per entry, bundle a month of invoices and exports.\n\nWhat you get for $19\nYour Pro key is shown on the confirmation page after payment. Save the key and bookmark that page; reloading it shows the same key.\nPro unlocks: unlimited size, entries and archives.\nFree tier, no key: archives to 25 MB and 200 entries, 20 archives a month.\nAll 49 servers inste",
+   "links": [
+    "/guides/contract-clauses-library-assembly",
+    "/guides/zip-archives-safely-from-chat",
+    "/guides/read-excel-in-cursor",
+    "/guides/connect-mcp-servers-without-installing",
+    "/guides/invoice-pdf-from-chat",
+    "/guides/quotes-and-estimates-to-invoice-in-claude",
+    "/guides/image-resize-compress-watermark-from-chat",
+    "/guides/expense-tracking-in-claude",
+    "/guides/recurring-invoices-on-a-schedule",
+    "/guides/resume-and-cover-letter-from-chat",
+    "/buy/bundle?src=store.buy.zip&acq=unattributed",
+    "https://github.com/theluckystrike/mcp-servers",
+    "/#faq",
+    "/changelog",
+    "https://github.com/theluckystrike/mcp-servers",
+    "/s/zip",
+    "/",
+    "/guides",
+    "/setup",
+    "/compare",
+    "/changelog",
+    "https://tg.zovo.one",
+    "https://github.com/theluckystrike/mcp-servers"
+   ]
+  },
+  {
+   "tag": "direct-/s/invoice",
+   "url": "https://mcp.zovo.one/s/invoice",
+   "ms": 279,
+   "elapsedMs": 284,
+   "text": "Assemble a contract from your own clause library, in chat · Zip and unzip archives safely from Claude or Cursor · Ask questions about an Excel or CSV file from Cursor or Claude · Connect MCP servers to Claude.ai, Claude Desktop, Cursor and VS Code without installing anything · Create an invoice PDF from a chat message with an MCP server · Send a quote from chat, then turn the yes into an invoice · Resize, compress and watermark images from a chat message · Log expenses and mileage in Claude, split VAT, rebill to an invoice · Bill a retainer on a schedule without a billing SaaS · Write a resume and a cover letter from chat, without inventing anything\n\nAll servers · Buy Pro $19 · All 49 for $39 · Source\n\nTwo ways to run it, both free to start. Open mcp.zovo.one/mcp/connect, copy the invoice URL and paste it into any client that takes a URL. It already carries a free token, so there is nothing to install, no account and no header to set. The URL is https://mcp.zovo.one/mcp/invoice/t/<token>. The token is not optional: the bare https://mcp.zovo.one/mcp/invoice connects and lists its tools and then answers every tool call with HTTP 401, so use the link from /mcp/connect or send Authoriz",
+   "links": [
+    "/guides/contract-clauses-library-assembly",
+    "/guides/zip-archives-safely-from-chat",
+    "/guides/read-excel-in-cursor",
+    "/guides/connect-mcp-servers-without-installing",
+    "/guides/invoice-pdf-from-chat",
+    "/guides/quotes-and-estimates-to-invoice-in-claude",
+    "/guides/image-resize-compress-watermark-from-chat",
+    "/guides/expense-tracking-in-claude",
+    "/guides/recurring-invoices-on-a-schedule",
+    "/guides/resume-and-cover-letter-from-chat",
+    "/",
+    "/buy/invoice?src=store.s.invoice",
+    "/bundle",
+    "https://github.com/theluckystrike/mcp-servers/tree/main/servers/invoice",
+    "https://mcp.zovo.one/mcp/connect",
+    "https://mcp.zovo.one/downloads",
+    "https://index.percall.dev/l/zovo-invoice.html",
+    "https://mcp.zovo.one/s/invoice",
+    "mcpservers.org",
+    "https://mcpservers.org/servers/github-com-theluckystrike-mcp-servers-tree-main-servers-invoice",
+    "https://mcp.zovo.one/s/invoice",
+    "https://registry.modelcontextprotocol.io/v0.1/servers/io.github.theluckystrike%2Finvoice-pdf-billing-generator/versions/latest",
+    "https://github.com/theluckystrike/mcp-servers/releases/latest",
+    "mailto:billing@beta.example",
+    "../expense-tracker"
+   ]
+  },
+  {
+   "tag": "direct-/pricing",
+   "url": "https://mcp.zovo.one/pricing",
+   "ms": 286,
+   "elapsedMs": 291,
+   "text": "Assemble a contract from your own clause library, in chat · Zip and unzip archives safely from Claude or Cursor · Ask questions about an Excel or CSV file from Cursor or Claude · Connect MCP servers to Claude.ai, Claude Desktop, Cursor and VS Code without installing anything · Create an invoice PDF from a chat message with an MCP server · Send a quote from chat, then turn the yes into an invoice · Resize, compress and watermark images from a chat message · Log expenses and mileage in Claude, split VAT, rebill to an invoice · Bill a retainer on a schedule without a billing SaaS · Write a resume and a cover letter from chat, without inventing anything\nPricing\n\nEvery server has a free tier you can use right now. Pro is a one-time payment, not a subscription: one key, lifetime, no recurring charge.\n\nWHAT YOU GET\tPRICE\nAny one Pro server — lifetime licence, one key\t$19 — Choose a server\nAll 49 servers, one key, lifetime\t$39\nHow your key arrives\n\nYour key is shown on the confirmation page after payment. Save it and bookmark that page; reloading it shows the same key. If you lose it, contact support@zovo.one with your Stripe receipt.\n\nEach server page lists its free-tier limits and Pro fe",
+   "links": [
+    "/guides/contract-clauses-library-assembly",
+    "/guides/zip-archives-safely-from-chat",
+    "/guides/read-excel-in-cursor",
+    "/guides/connect-mcp-servers-without-installing",
+    "/guides/invoice-pdf-from-chat",
+    "/guides/quotes-and-estimates-to-invoice-in-claude",
+    "/guides/image-resize-compress-watermark-from-chat",
+    "/guides/expense-tracking-in-claude",
+    "/guides/recurring-invoices-on-a-schedule",
+    "/guides/resume-and-cover-letter-from-chat",
+    "/#servers",
+    "/buy/bundle?src=store.pricing.bundle",
+    "/#servers",
+    "/buy/bundle?src=store.pricing.cta",
+    "/mcp/connect?acq=store.product",
+    "/",
+    "/guides",
+    "/setup",
+    "/compare",
+    "/changelog",
+    "https://tg.zovo.one",
+    "https://github.com/theluckystrike/mcp-servers"
+   ]
+  },
+  {
+   "tag": "mobile-/",
+   "url": "https://mcp.zovo.one/",
+   "ms": 2583,
+   "elapsedMs": 2595,
+   "mobile": {
+    "hScroll": true,
+    "scrollWidth": 701,
+    "buyLink": true,
+    "text": "Assemble a contract from your own clause library, in chat · Zip and unzip archives safely from Claude or Cursor · Ask questions about an Excel or CSV file from Cursor or Claude · Connect MCP servers to Claude.ai, Claude Desktop, Cursor and VS Code without installing anything · Create an invoice PDF from a chat message with an MCP server · Send a quote from chat, then turn the yes into an invoice · Resize, compress and watermark images from a chat message · Log expenses and mileage in Claude, spl"
+   }
+  },
+  {
+   "tag": "mobile-/buy/invoice",
+   "url": "https://mcp.zovo.one/buy/invoice",
+   "ms": 293,
+   "elapsedMs": 320,
+   "mobile": {
+    "hScroll": false,
+    "scrollWidth": 390,
+    "buyLink": true,
+    "text": "Assemble a contract from your own clause library, in chat · Zip and unzip archives safely from Claude or Cursor · Ask questions about an Excel or CSV file from Cursor or Claude · Connect MCP servers to Claude.ai, Claude Desktop, Cursor and VS Code without installing anything · Create an invoice PDF from a chat message with an MCP server · Send a quote from chat, then turn the yes into an invoice · Resize, compress and watermark images from a chat message · Log expenses and mileage in Claude, spl"
+   }
+  },
+  {
+   "tag": "nojs-/",
+   "url": "https://mcp.zovo.one/",
+   "ms": 1629,
+   "nojsHtmlSnippet": " MCP servers for Claude: invoices, time tracking and freelance tools {\"@context\":\"https://schema.org\",\"@type\":\"SoftwareApplication\",\"name\":\"MCP Servers Bundle\",\"applicationCategory\":\"DeveloperApplication\",\"operatingSystem\":\"macOS, Windows, Linux\",\"description\":\"58 MCP servers for Claude: invoicing, time tracking, expenses, spreadsheets and more for freelancers and small businesses. Free tier needs no key. Connect by URL in under a minute, or install the .mcpb. Bundle $39 lifetime, or $19 per server.\",\"url\":\"https://mcp.zovo.one/\",\"author\":{\"@type\":\"Person\",\"name\":\"theluckystrike\",\"url\":\"https:"
+  },
+  {
+   "tag": "nojs-/buy/invoice",
+   "url": "https://mcp.zovo.one/buy/invoice",
+   "ms": 820,
+   "nojsHtmlSnippet": " Buy MCP Invoice Pro :root{color-scheme:dark;--bg:#0a0a0a;--fg:#e8e8e8;--mut:#888;--bd:#222;--ac:#06b6d4;--ok:#22c55e;--warn:#eab308;--pur:#a855f7;--red:#ef4444} body{background:var(--bg);color:var(--fg);font:16px/1.6 \"IBM Plex Sans\",-apple-system,BlinkMacSystemFont,\"Segoe UI\",Roboto,sans-serif;max-width:860px;margin:0 auto;padding:32px 20px} h1,h2,h3,th{font-family:\"Space Mono\",ui-monospace,Menlo,monospace} h1{font-size:32px;margin:0 0 12px;letter-spacing:-.5px}h2{font-size:19px;margin:32px 0 8px;color:var(--fg)} a{color:var(--ac);text-decoration:none}a:hover{text-decoration:underline} .muted"
+  }
+ ],
+ "console": [
+  {
+   "tag": "desktop",
+   "type": "http404",
+   "url": "https://mcp.zovo.one/assets/demo-invoice.gif"
+  },
+  {
+   "tag": "desktop",
+   "type": "error",
+   "text": "Failed to load resource: the server responded with a status of 404 ()"
+  },
+  {
+   "tag": "direct-/s/invoice",
+   "type": "http404",
+   "url": "https://mcp.zovo.one/assets/demo-invoice.gif"
+  },
+  {
+   "tag": "direct-/s/invoice",
+   "type": "error",
+   "text": "Failed to load resource: the server responded with a status of 404 ()"
+  }
+ ]
+}

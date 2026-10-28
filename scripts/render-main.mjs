@@ -7,6 +7,7 @@ import { buildSnapshot, inventoryForServer } from "./collect-ledger-tool-invento
 import { offerForServer, canonicalProducts } from "./dashboard-offers.mjs";
 import { renderRevenueReview } from "./revenue-review-panel.mjs";
 import { renderSessionHealth } from "./render-session-health.mjs";
+import { renderTrafficUsers } from "./render-traffic-users.mjs";
 
 const ROOT = new URL("..", import.meta.url).pathname.replace(/\/$/, "");
 const rd = (p) => existsSync(join(ROOT, p)) ? readFileSync(join(ROOT, p), "utf8") : "";
@@ -52,6 +53,9 @@ const uvi = js("data/user_value_index.json", null);
 const kpi = js("data/kpi.json", null);
 const currentSession = js("data/current_session.json", null);
 const revenueReview = js("data/revenue_review.json", null);
+const trafficUserSources = js("data/traffic-users.json", {});
+const trafficUserAudit = js(trafficUserSources.snapshot || "", null);
+const trafficUserSubscribers = js(trafficUserSources.subscribers || "", null);
 const paymentMetric = revenueReview?.metrics?.[0] || currentSession?.metrics?.find(x => x.label === "Paid checkout amount");
 const watch = js(currentSession?.watch_path || "data/r36_watch.json", null);
 const slog = js("data/sprint_log.json", null);
@@ -174,7 +178,8 @@ details summary{cursor:pointer;color:var(--acc);font-size:12.5px}
 <div class="sub">theluckystrike &middot; rendered ${esc(new Date().toISOString())} &middot; ledger snapshot ${esc(ledger.generated_at)} &middot; folder /Users/mike/mcp-servers</div>
 <div class="links"><a href="docs/how-it-works.html">How it works</a><a href="dashboard/index.html">Ledger view</a><a href="docs/DISTRIBUTION.md">Distribution runbook</a><a href="docs/AUDIT.md">Audit</a><a href="docs/CODEX_REVIEW.md">Codex review</a>${newestDigest ? `<a href="docs/${esc(newestDigest)}">Weekly digest</a>` : ""}<a href="https://mcp.zovo.one">Storefront</a><a href="https://github.com/theluckystrike/mcp-servers">GitHub</a></div>
 
-<div class="tabs"><button class="on" data-tab="truth">Reality check</button><button data-tab="overview">Overview</button><button data-tab="servers">What each server does</button><button data-tab="validation">Validation archive${lastRun ? ` (${lastRun.pass}/${lastRun.total})` : ""}</button><button data-tab="promotion">Promotion playbook</button><button data-tab="uservalue">User value history${uv7 ? ` (R7 ${uv7.totals?.score}/${uv7.totals?.max})` : uv5 ? ` (R5 ${uv5.totals?.score ?? uv5.totals?.r5}/${uv5.totals?.max})` : uv4 ? ` (R4 ${uv4.totals?.r4 ?? uv4.totals?.score}/${uv4.totals?.max})` : uv2 ? ` (${uv2.totals.score}/${uv2.totals.max})` : ""}</button><button data-tab="organic">Organic history (${orgHeadline}/100)</button><button data-tab="sprints">Sprint notes${slog ? ` (${slog.sessions})` : ""}</button><button data-tab="kpi">KPIs${kpi ? ` (${kpi.kpis.filter(k => !k.stale).length} current / ${kpi.kpis.length} recorded)` : ""}</button></div>
+<div class="tabs"><button class="on" data-tab="truth">Reality check</button><button data-tab="traffic">Traffic &amp; users</button><button data-tab="overview">Overview</button><button data-tab="servers">What each server does</button><button data-tab="validation">Validation archive${lastRun ? ` (${lastRun.pass}/${lastRun.total})` : ""}</button><button data-tab="promotion">Promotion playbook</button><button data-tab="uservalue">User value history${uv7 ? ` (R7 ${uv7.totals?.score}/${uv7.totals?.max})` : uv5 ? ` (R5 ${uv5.totals?.score ?? uv5.totals?.r5}/${uv5.totals?.max})` : uv4 ? ` (R4 ${uv4.totals?.r4 ?? uv4.totals?.score}/${uv4.totals?.max})` : uv2 ? ` (${uv2.totals.score}/${uv2.totals.max})` : ""}</button><button data-tab="organic">Organic history (${orgHeadline}/100)</button><button data-tab="sprints">Sprint notes${slog ? ` (${slog.sessions})` : ""}</button><button data-tab="kpi">KPIs${kpi ? ` (${kpi.kpis.filter(k => !k.stale).length} current / ${kpi.kpis.length} recorded)` : ""}</button></div>
+<div class="tab" id="tab-traffic">${renderTrafficUsers(trafficUserAudit, trafficUserSubscribers, trafficUserSources)}</div>
 <div class="tab on" id="tab-truth">
 ${renderRevenueReview(revenueReview)}
 ${currentPanel}

@@ -1,0 +1,332 @@
+[
+ {
+  "ep": "/",
+  "status": 200,
+  "ms": 3447,
+  "title": "MCP servers for Claude: invoices, time tracking and freelance tools",
+  "h1": "58 MCP servers for Claude, for freelancers and small businesses",
+  "prices": [
+   "$19",
+   "$19",
+   "$19",
+   "$19",
+   "$19",
+   "$19",
+   "$19",
+   "$19"
+  ],
+  "buyLinks": [
+   {
+    "href": "/buy/supplier-statement-check?src=store.home.table.supplier-statement-check",
+    "text": "Buy"
+   },
+   {
+    "href": "/buy/duplicate-invoice-check?src=store.home.table.duplicate-invoice-check",
+    "text": "Buy"
+   },
+   {
+    "href": "/buy/time-tracker?src=store.home.table.time-tracker",
+    "text": "Buy"
+   },
+   {
+    "href": "/buy/price-tracker?src=store.home.table.price-tracker",
+    "text": "Buy"
+   },
+   {
+    "href": "/buy/spreadsheet?src=store.home.table.spreadsheet",
+    "text": "Buy"
+   },
+   {
+    "href": "/buy/invoice?src=store.home.table.invoice",
+    "text": "Buy"
+   }
+  ],
+  "inputs": [
+   {
+    "name": "email",
+    "type": "email",
+    "required": true
+   }
+  ],
+  "trial": " Every line carries the server, the document id and the date it came from, and the trial balance is proved to the minor ",
+  "licenceKey": "MENTIONED",
+  "text": "Assemble a contract from your own clause library, in chat · Zip and unzip archives safely from Claude or Cursor · Ask questions about an Excel or CSV file from Cursor or Claude · Connect MCP servers to Claude.ai, Claude Desktop, Cursor and VS Code without installing anything · Create an invoice PDF from a chat message with an MCP server · Send a quote from chat, then turn the yes into an invoice ·"
+ },
+ {
+  "ep": "/pricing",
+  "status": 200,
+  "ms": 321,
+  "title": "Pricing | zovo.one",
+  "h1": "Pricing",
+  "prices": [
+   "$19",
+   "$39",
+   "$39"
+  ],
+  "buyLinks": [
+   {
+    "href": "/buy/bundle?src=store.pricing.bundle",
+    "text": "$39"
+   },
+   {
+    "href": "/buy/bundle?src=store.pricing.cta",
+    "text": "Buy the bundle — $39 one-time"
+   }
+  ],
+  "inputs": [
+   {
+    "name": "email",
+    "type": "email",
+    "required": true
+   }
+  ],
+  "trial": "Every server has a free tier you can use right now",
+  "licenceKey": null,
+  "text": "Assemble a contract from your own clause library, in chat · Zip and unzip archives safely from Claude or Cursor · Ask questions about an Excel or CSV file from Cursor or Claude · Connect MCP servers to Claude.ai, Claude Desktop, Cursor and VS Code without installing anything · Create an invoice PDF from a chat message with an MCP server · Send a quote from chat, then turn the yes into an invoice ·"
+ },
+ {
+  "ep": "/s/invoice",
+  "status": 200,
+  "ms": 783,
+  "title": "MCP Server for Invoices — Generate Invoices from Claude | zovo.one",
+  "h1": "Generate & send invoices from Claude with a free MCP server",
+  "prices": [
+   "$19",
+   "$39",
+   "$19",
+   "$39",
+   "$39"
+  ],
+  "buyLinks": [
+   {
+    "href": "/buy/invoice?src=store.s.invoice",
+    "text": "Buy Pro $19"
+   },
+   {
+    "href": "https://mcp.zovo.one/buy/bundle?src=store.s.invoice.bundle",
+    "text": "the 49-server bundle for $39"
+   }
+  ],
+  "inputs": [
+   {
+    "name": "email",
+    "type": "email",
+    "required": true
+   }
+  ],
+  "trial": "one/s/invoice, free tier, no signup",
+  "licenceKey": "MENTIONED",
+  "text": "Assemble a contract from your own clause library, in chat · Zip and unzip archives safely from Claude or Cursor · Ask questions about an Excel or CSV file from Cursor or Claude · Connect MCP servers to Claude.ai, Claude Desktop, Cursor and VS Code without installing anything · Create an invoice PDF from a chat message with an MCP server · Send a quote from chat, then turn the yes into an invoice ·"
+ },
+ {
+  "ep": "/buy/zip",
+  "status": 200,
+  "ms": 340,
+  "title": "Buy MCP Zip Pro",
+  "h1": "MCP Zip Pro",
+  "prices": [
+   "$19.00",
+   "$19",
+   "$39",
+   "$892",
+   "$19",
+   "$19",
+   "$39"
+  ],
+  "buyLinks": [
+   {
+    "href": "/buy/bundle?src=store.buy.zip&acq=unattributed",
+    "text": "the bundle"
+   }
+  ],
+  "inputs": [
+   {
+    "name": "email",
+    "type": "email",
+    "required": true
+   }
+  ],
+  "trial": "Free tier, no key: archives to 25 MB and 200 entries, 20 archives a month",
+  "licenceKey": null,
+  "text": "Assemble a contract from your own clause library, in chat · Zip and unzip archives safely from Claude or Cursor · Ask questions about an Excel or CSV file from Cursor or Claude · Connect MCP servers to Claude.ai, Claude Desktop, Cursor and VS Code without installing anything · Create an invoice PDF from a chat message with an MCP server · Send a quote from chat, then turn the yes into an invoice ·"
+ },
+ {
+  "ep": "desktop-console-errors",
+  "cerr": [
+   "REQFAIL https://mcp.zovo.one/cdn-cgi/challenge-platform/h/g/jsd/oneshot/c787ce48cf6b/0.6170782450094155:1793 net::ERR_ABORTED",
+   "Failed to load resource: the server responded with a status of 404 ()"
+  ]
+ },
+ {
+  "ep": "mobile390:/",
+  "status": 200,
+  "ms": 2777,
+  "title": "MCP servers for Claude: invoices, time tracking and freelance tools",
+  "h1": "58 MCP servers for Claude, for freelancers and small businesses",
+  "prices": [
+   "$19",
+   "$19",
+   "$19",
+   "$19",
+   "$19",
+   "$19",
+   "$19",
+   "$19"
+  ],
+  "buyLinks": [
+   {
+    "href": "/buy/supplier-statement-check?src=store.home.table.supplier-statement-check",
+    "text": "Buy"
+   },
+   {
+    "href": "/buy/duplicate-invoice-check?src=store.home.table.duplicate-invoice-check",
+    "text": "Buy"
+   },
+   {
+    "href": "/buy/time-tracker?src=store.home.table.time-tracker",
+    "text": "Buy"
+   },
+   {
+    "href": "/buy/price-tracker?src=store.home.table.price-tracker",
+    "text": "Buy"
+   },
+   {
+    "href": "/buy/spreadsheet?src=store.home.table.spreadsheet",
+    "text": "Buy"
+   },
+   {
+    "href": "/buy/invoice?src=store.home.table.invoice",
+    "text": "Buy"
+   }
+  ],
+  "inputs": [
+   {
+    "name": "email",
+    "type": "email",
+    "required": true
+   }
+  ],
+  "trial": " Every line carries the server, the document id and the date it came from, and the trial balance is proved to the minor ",
+  "licenceKey": "MENTIONED",
+  "text": "Assemble a contract from your own clause library, in chat · Zip and unzip archives safely from Claude or Cursor · Ask questions about an Excel or CSV file from Cursor or Claude · Connect MCP servers to Claude.ai, Claude Desktop, Cursor and VS Code without installing anything · Create an invoice PDF from a chat message with an MCP server · Send a quote from chat, then turn the yes into an invoice ·",
+  "hscroll": true
+ },
+ {
+  "ep": "mobile390:/buy/invoice",
+  "status": 200,
+  "ms": 314,
+  "title": "Buy MCP Invoice Pro",
+  "h1": "MCP Invoice Pro",
+  "prices": [
+   "$19.00",
+   "$19",
+   "$39",
+   "$892",
+   "$19",
+   "$19",
+   "$39"
+  ],
+  "buyLinks": [
+   {
+    "href": "/buy/bundle?src=store.buy.invoice&acq=unattributed",
+    "text": "the bundle"
+   }
+  ],
+  "inputs": [
+   {
+    "name": "email",
+    "type": "email",
+    "required": true
+   }
+  ],
+  "trial": "Free tier, no key: 3 invoices a month with a small footer line; overdue report included",
+  "licenceKey": null,
+  "text": "Assemble a contract from your own clause library, in chat · Zip and unzip archives safely from Claude or Cursor · Ask questions about an Excel or CSV file from Cursor or Claude · Connect MCP servers to Claude.ai, Claude Desktop, Cursor and VS Code without installing anything · Create an invoice PDF from a chat message with an MCP server · Send a quote from chat, then turn the yes into an invoice ·",
+  "hscroll": false
+ },
+ {
+  "ep": "js-off:/",
+  "status": 200,
+  "ms": 859,
+  "title": "MCP servers for Claude: invoices, time tracking and freelance tools",
+  "h1": "58 MCP servers for Claude, for freelancers and small businesses",
+  "prices": [
+   "$19",
+   "$19",
+   "$19",
+   "$19",
+   "$19",
+   "$19",
+   "$19",
+   "$19"
+  ],
+  "buyLinks": [
+   {
+    "href": "/buy/supplier-statement-check?src=store.home.table.supplier-statement-check",
+    "text": "Buy"
+   },
+   {
+    "href": "/buy/duplicate-invoice-check?src=store.home.table.duplicate-invoice-check",
+    "text": "Buy"
+   },
+   {
+    "href": "/buy/time-tracker?src=store.home.table.time-tracker",
+    "text": "Buy"
+   },
+   {
+    "href": "/buy/price-tracker?src=store.home.table.price-tracker",
+    "text": "Buy"
+   },
+   {
+    "href": "/buy/spreadsheet?src=store.home.table.spreadsheet",
+    "text": "Buy"
+   },
+   {
+    "href": "/buy/invoice?src=store.home.table.invoice",
+    "text": "Buy"
+   }
+  ],
+  "inputs": [
+   {
+    "name": "email",
+    "type": "email",
+    "required": true
+   }
+  ],
+  "trial": " Every line carries the server, the document id and the date it came from, and the trial balance is proved to the minor ",
+  "licenceKey": "MENTIONED",
+  "text": "Assemble a contract from your own clause library, in chat · Zip and unzip archives safely from Claude or Cursor · Ask questions about an Excel or CSV file from Cursor or Claude · Connect MCP servers to Claude.ai, Claude Desktop, Cursor and VS Code without installing anything · Create an invoice PDF from a chat message with an MCP server · Send a quote from chat, then turn the yes into an invoice ·"
+ },
+ {
+  "ep": "js-off:/buy/invoice",
+  "status": 200,
+  "ms": 282,
+  "title": "Buy MCP Invoice Pro",
+  "h1": "MCP Invoice Pro",
+  "prices": [
+   "$19.00",
+   "$19",
+   "$39",
+   "$892",
+   "$19",
+   "$19",
+   "$39"
+  ],
+  "buyLinks": [
+   {
+    "href": "/buy/bundle?src=store.buy.invoice&acq=unattributed",
+    "text": "the bundle"
+   }
+  ],
+  "inputs": [
+   {
+    "name": "email",
+    "type": "email",
+    "required": true
+   }
+  ],
+  "trial": "Free tier, no key: 3 invoices a month with a small footer line; overdue report included",
+  "licenceKey": null,
+  "text": "Assemble a contract from your own clause library, in chat · Zip and unzip archives safely from Claude or Cursor · Ask questions about an Excel or CSV file from Cursor or Claude · Connect MCP servers to Claude.ai, Claude Desktop, Cursor and VS Code without installing anything · Create an invoice PDF from a chat message with an MCP server · Send a quote from chat, then turn the yes into an invoice ·"
+ }
+]
