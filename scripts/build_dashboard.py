@@ -141,6 +141,12 @@ kpi_cards = [
 ]
 
 SHIPPED = [
+    ("2 new awesome-list PRs opened (mergeable)", "https://github.com/AlexMili/Awesome-MCP/pull/339",
+     "Distribution was stuck on lists that already listed us. Two lists where a code search returned zero "
+     "mentions of Zovo now have real PRs: AlexMili/Awesome-MCP #339 and lobstercare/mcp-hub #113, each a "
+     "single line in the repo's own format. Both verified OPEN + MERGEABLE, 1 file changed. Pitfall recorded: "
+     "gh repo fork silently no-ops when you own a repo of the same name, so the fork parent must be verified "
+     "before pushing."),
     ("Server pages now link their walk-through", "https://theluckystrike.github.io/mcp/time-tracker/",
      "The 11 how-to guides were orphans: nothing in the catalogue linked to them. Ten server pages now carry "
      "a descriptive-anchor link to the guide that shows the job end to end (e.g. time-tracker -> 'MCP server "

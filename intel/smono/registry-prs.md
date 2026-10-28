@@ -54,3 +54,26 @@ Sites: https://mcp.zovo.one (storefront), https://tg.zovo.one (Telegram apps)
 |---|---|
 
 ## Evidence log
+
+
+## OPENED THIS TURN (verified via gh pr view, not claimed)
+
+| PR | Repo (stars) | State | Files | URL |
+|---|---|---|---|---|
+| #339 | AlexMili/Awesome-MCP (153) | OPEN, MERGEABLE | 1 (+2/-1) | https://github.com/AlexMili/Awesome-MCP/pull/339 |
+| #113 | lobstercare/mcp-hub (63) | OPEN, MERGEABLE | 1 (+1) | https://github.com/lobstercare/mcp-hub/pull/113 |
+
+Both are one-line additions in the lists' own format, to sections where we were NOT already present
+(verified by code search: zovo_hits=0 in both repos before the PR).
+
+Skipped as spam: mcpHQ/awesome-mcp-servers and MobinX/awesome-mcp-list already list Zovo servers;
+TensorBlock already documents zovo in docs/search.md and docs/developer-productivity--utilities.md.
+
+### PITFALL FOUND (cost one wrong push)
+`gh repo fork <owner>/<repo>` SILENTLY FAILS when you already own a repo with the same name — it does
+not error, and the next `git push` lands in a fork of a DIFFERENT upstream. Here `gh repo fork
+AlexMili/Awesome-MCP` produced no fork at all, and the push went into theluckystrike/awesome-mcp,
+whose parent is abordage/awesome-mcp; `gh pr create` then failed with "No commits between".
+Fix: always pass an explicit `--fork-name <unique>` and verify
+`gh api repos/<you>/<fork> --jq .parent.full_name` matches the intended upstream BEFORE pushing.
+Stray branch was deleted from the wrong fork.
