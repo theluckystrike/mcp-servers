@@ -85,6 +85,20 @@ def meta_desc(text, limit=150):
     return cut + "…"
 
 
+GUIDE_FOR = {
+    "bank-statement": "convert-bank-statement-to-csv",
+    "purchase-requisition": "create-purchase-order-chatgpt",
+    "spreadsheet": "edit-excel-file-claude",
+    "docx": "fill-word-template-ai",
+    "invoice": "generate-invoice-pdf-claude",
+    "quotes": "generate-quote-pdf-cursor",
+    "currency": "mcp-server-currency-conversion",
+    "expense-tracker": "mcp-server-expense-tracking",
+    "time-tracker": "mcp-server-time-tracking",
+    "mileage-log": "track-mileage-ai-assistant",
+}
+
+
 def page_body(s, cat, siblings, total=58, base="https://claudecodeguides.com", layout="default",
               canonical_base=""):
     tools = s["tools"]
@@ -113,6 +127,14 @@ def page_body(s, cat, siblings, total=58, base="https://claudecodeguides.com", l
             "or build from source below. The other %d servers in the suite are already hosted."
             % hosted_n
         )
+    guide_slug = GUIDE_FOR.get(s["id"])
+    guide_md = ""
+    if guide_slug:
+        gp = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                          "content", "aeo", guide_slug + ".md")
+        m = re.search(r'^title:\s*"?([^"\n]+)', open(gp, encoding="utf-8").read(), re.M) if os.path.exists(gp) else None
+        label = m.group(1).strip() if m else "step-by-step guide"
+        guide_md = "\n- **Walk-through with real output:** [%s](/mcp/guides/%s/)" % (label, guide_slug)
     related = [x for x in siblings if x["id"] != s["id"]][:4]
     rel_md = "\n".join(
         "- [%s MCP server](/mcp/%s/) — %s" % (r["human"], r["slug"], r["description"][:110])
@@ -235,7 +257,7 @@ permalink: /mcp/%(slug)s/
 ## Install it
 
 %(install_hosted)s
-%(mcpb)s
+%(mcpb)s%(guide)s
 - **From source:** `git clone https://github.com/theluckystrike/mcp-servers` then build `servers/%(sid)s`.
 - **npm:** the package `%(npm)s` is staged and publishes shortly; the `.mcpb` bundle is the supported install until then.
 
@@ -282,6 +304,7 @@ hosted endpoint's saved-report cap, never the tools. All %(total)d servers toget
         "buy": s["buy_url"],
         "faq": faq_md,
         "related": rel_md,
+        "guide": guide_md,
         "canon": (
             "canonical_url: %s/mcp/%s/\ncanonical: %s/mcp/%s/\n"
             % (canonical_base, s["slug"], canonical_base, s["slug"])

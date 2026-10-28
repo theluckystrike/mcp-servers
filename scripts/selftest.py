@@ -88,6 +88,20 @@ def main():
                     open(os.path.join(tmp2, "mcp", f), encoding="utf-8").read()]
             check(not miss, "%d pages lack the canonical_url pointer" % len(miss))
 
+        # guide links must point at files that exist, for ids that exist
+        import importlib.util as _iu
+        _spec = _iu.spec_from_file_location("bh", "scripts/build_hub.py")
+        _bh = _iu.module_from_spec(_spec)
+        _spec.loader.exec_module(_bh)
+        ids = {x["id"] for x in servers}
+        for sid, gslug in _bh.GUIDE_FOR.items():
+            check(sid in ids, "GUIDE_FOR references unknown server id %r" % sid)
+            check(os.path.exists(os.path.join("content", "aeo", gslug + ".md")),
+                  "GUIDE_FOR points at a missing guide: %s" % gslug)
+            page = os.path.join(hub, next(x["slug"] for x in servers if x["id"] == sid) + ".md")
+            check(os.path.exists(page) and "guides/%s" % gslug in open(page, encoding="utf-8").read(),
+                  "page for %s does not link its guide %s" % (sid, gslug))
+
         buy_bad = 0
         buy_n = 0
         for name in pages:

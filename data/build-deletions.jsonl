@@ -745,3 +745,4 @@
 {"at": "2026-10-26T09:21:19.027203+00:00", "path": "/Users/mike/mcp-servers-work/r38-final-pr-body.md", "bytes": 1267, "lsof_clear": true, "reason": "Exact final PR description retained in memory and sent through structured GitHub API input"}
 {"at":"2026-10-27T03:06:57.233Z","path":"/Users/mike/mcp-servers-work/traffic-users-browser-7QUzBb","bytes":8708648,"lsof_clear":true,"reason":"Completed owned traffic/users tab browser QA; browser closed"}
 {"at":"2026-10-27T03:07:47.771Z","path":"/Users/mike/mcp-servers-work/traffic-users-browser-5HVph4","bytes":8570178,"lsof_clear":true,"reason":"Completed mobile table follow-up; owned browser closed"}
+{"path":"/Users/mike/mcp-servers-work/r37-cap-KLco1E","bytes":1122,"lsof":"no open handles","at":"2026-10-28T04:09:16.221Z","purpose":"R37 real free-cap stdio regression"}

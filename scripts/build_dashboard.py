@@ -141,6 +141,11 @@ kpi_cards = [
 ]
 
 SHIPPED = [
+    ("Server pages now link their walk-through", "https://theluckystrike.github.io/mcp/time-tracker/",
+     "The 11 how-to guides were orphans: nothing in the catalogue linked to them. Ten server pages now carry "
+     "a descriptive-anchor link to the guide that shows the job end to end (e.g. time-tracker -> 'MCP server "
+     "for time tracking'), with selftest asserting the server id exists, the guide file exists and the page "
+     "actually links it. Verified live on GitHub Pages."),
     ("58 competing mirrors consolidated", "https://theluckystrike.github.io/mcp/invoice/",
      "The same server existed at three URLs, each self-canonical: mcp.zovo.one/s/<id> (4,714 words), "
      "theluckystrike.github.io/mcp/<id> (525) and claudecodeguides.com/mcp/<id> (744). Duplicate clusters, "
