@@ -78,6 +78,16 @@ def main():
         # truth-in-advertising gate: a page may only promise a hosted URL if the
         # endpoint actually answered a real MCP handshake (data/hosted_live.json).
         hosted_pages = 0
+        # a weaker mirror must not compete with the canonical pages
+        with tempfile.TemporaryDirectory() as tmp2:
+            run("scripts/build_hub.py", "--site", tmp2, "--base-url", "https://mirror.invalid",
+                "--layout", "page", "--canonical-base", "https://strong.invalid")
+            miss = [f for f in os.listdir(os.path.join(tmp2, "mcp"))
+                    if f.endswith(".md") and f != "index.md"
+                    and "canonical_url: https://strong.invalid/mcp/" not in
+                    open(os.path.join(tmp2, "mcp", f), encoding="utf-8").read()]
+            check(not miss, "%d pages lack the canonical_url pointer" % len(miss))
+
         buy_bad = 0
         buy_n = 0
         for name in pages:
@@ -109,6 +119,10 @@ def main():
             head = src.split("---")[1]
             for line in head.strip().splitlines():
                 check(line.count('"') % 2 == 0, "%s has an unbalanced quote: %r" % (name, line))
+            body_part = src.split("---", 2)[-1]
+            if "application/ld+json" in body_part:
+                check(body_part.find("<script") > body_part.find("\n# "),
+                      "%s puts JSON-LD before the H1 (csg layout drops pre-H1 content)" % name)
             blocks = jsonld_blocks(src)
             check(len(blocks) == 1, "%s has %d JSON-LD blocks" % (name, len(blocks)))
             for b in blocks:

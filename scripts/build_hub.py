@@ -85,7 +85,8 @@ def meta_desc(text, limit=150):
     return cut + "…"
 
 
-def page_body(s, cat, siblings, total=58, base="https://claudecodeguides.com", layout="default"):
+def page_body(s, cat, siblings, total=58, base="https://claudecodeguides.com", layout="default",
+              canonical_base=""):
     tools = s["tools"]
     rows = []
     for t in tools:
@@ -218,14 +219,14 @@ layout: %(layout)s
 title: "%(title)s MCP server: install, tools and pricing"
 description: "%(descshort)s"
 permalink: /mcp/%(slug)s/
-date: 2026-10-28
+%(canon)sdate: 2026-10-28
 ---
+
+# %(human)s MCP server
 
 <script type="application/ld+json">
 %(ld)s
 </script>
-
-# %(human)s MCP server
 
 %(long)s
 
@@ -281,6 +282,10 @@ hosted endpoint's saved-report cap, never the tools. All %(total)d servers toget
         "buy": s["buy_url"],
         "faq": faq_md,
         "related": rel_md,
+        "canon": (
+            "canonical_url: %s/mcp/%s/\ncanonical: %s/mcp/%s/\n"
+            % (canonical_base, s["slug"], canonical_base, s["slug"])
+        ) if canonical_base else "",
         "total": total,
         "layout": layout,
         "bundle": 39,
@@ -397,6 +402,8 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--site", required=True, help="path to a clone of claude-skills-guide")
     ap.add_argument("--base-url", default="https://claudecodeguides.com")
+    ap.add_argument("--canonical-base", default="",
+                    help="emit canonical: <base>/mcp/<slug>/ so a weaker mirror does not compete")
     ap.add_argument("--layout", default="default")
     ap.add_argument("--catalog", default=os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data", "mcp_catalog.json"))
     args = ap.parse_args()
@@ -422,7 +429,8 @@ def main():
     written = 0
     for name, rows in cat_map:
         for s in rows:
-            body = page_body(s, name, [x for _, rs in cat_map for x in rs], total, args.base_url, args.layout)
+            body = page_body(s, name, [x for _, rs in cat_map for x in rs], total, args.base_url, args.layout,
+                             args.canonical_base)
             p = os.path.join(out_dir, s["slug"] + ".md")
             open(p, "w", encoding="utf-8").write(body)
             written += 1

@@ -141,6 +141,12 @@ kpi_cards = [
 ]
 
 SHIPPED = [
+    ("58 competing mirrors consolidated", "https://theluckystrike.github.io/mcp/invoice/",
+     "The same server existed at three URLs, each self-canonical: mcp.zovo.one/s/<id> (4,714 words), "
+     "theluckystrike.github.io/mcp/<id> (525) and claudecodeguides.com/mcp/<id> (744). Duplicate clusters, "
+     "zero consolidation. The github.io mirror now carries canonical_url -> the claudecodeguides copy "
+     "(verified live), so signals land on the domain with 2,023 sitemap URLs instead of being split three ways. "
+     "The page layout had canonical hardcoded, so it now honours page.canonical_url."),
     ("Every buy button pointed at a 404", "https://theluckystrike.github.io/mcp/invoice/",
      "The generator emitted &src=... instead of ?src=..., so all 58 buy links resolved to "
      "https://mcp.zovo.one/buy/<id>&src=... which returns 404 — the only revenue click on the whole public "
