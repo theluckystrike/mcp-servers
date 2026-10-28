@@ -141,6 +141,9 @@ kpi_cards = [
 ]
 
 SHIPPED = [
+    ("Fixed 10 live guide pages that published '{% raw %}' as their title",
+     "https://claudecodeguides.com/mcp/guides/generate-invoice-pdf-claude/",
+     "Front matter sat inside a Liquid raw block, so Jekyll published the tags literally. Moved front matter above the block; proven in an isolated build that titles parse and JSON braces survive."),
     ("2 new awesome-list PRs opened (mergeable)", "https://github.com/AlexMili/Awesome-MCP/pull/339",
      "Distribution was stuck on lists that already listed us. Two lists where a code search returned zero "
      "mentions of Zovo now have real PRs: AlexMili/Awesome-MCP #339 and lobstercare/mcp-hub #113, each a "
