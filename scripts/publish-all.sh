@@ -157,8 +157,17 @@ while IFS='|' read -r dir name version bin; do
   fi
 
   if [ "$GO" = "1" ]; then
+    # A package with a missing build would publish an immutable broken version: skip it.
+    if [ "$status" != "ok" ]; then
+      printf '%-4s %-38s %-10s %-24s\n' "$n" "$name" "$version" "SKIPPED ($status)"
+      continue
+    fi
     (cd "$dir" && npm publish --access public) 2>&1 | sed 's/^/      /'
-    printf '%-4s %-38s %-10s %-24s\n' "$n" "$name" "$version" "PUBLISHED"
+    if npm view "$name@$version" version >/dev/null 2>&1; then
+      printf '%-4s %-38s %-10s %-24s\n' "$n" "$name" "$version" "PUBLISHED"
+    else
+      printf '%-4s %-38s %-10s %-24s\n' "$n" "$name" "$version" "FAILED (not on registry)"
+    fi
   else
     echo "  --- $name@$version dry-run pack contents ---"
     (cd "$dir" && npm publish --access public --dry-run) 2>&1 | sed 's/^/      /'
