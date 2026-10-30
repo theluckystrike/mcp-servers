@@ -1,0 +1,809 @@
+{
+ "repo": "dscr-loan-calculator-mcp",
+ "repo_url": "https://github.com/theluckystrike/dscr-loan-calculator-mcp",
+ "hosted_url": "https://dscr-loan-calculator-mcp.lipmichal.workers.dev/mcp",
+ "worker_version_id": "f8783ed9-30ff-4040-b054-be0e25649e54",
+ "rollback": "npx wrangler delete --name dscr-loan-calculator-mcp",
+ "registry_name": "io.github.theluckystrike/dscr-loan-calculator-mcp",
+ "registry_visible": true,
+ "tools": [
+  "calculate_dscr",
+  "max_loan_for_target_dscr",
+  "rent_needed_for_target_dscr",
+  "compare_scenarios",
+  "amortization_summary"
+ ],
+ "fixtures": 23,
+ "tests_passed": "26/26 (node --test: 23 fixtures + count check + error cases + exact tier boundaries); negative control (fixture 599.55 -> 599.56) failed 1 as expected",
+ "live_calls_ok": {
+  "calculate_dscr": true,
+  "max_loan_for_target_dscr": true,
+  "rent_needed_for_target_dscr": true,
+  "compare_scenarios": true,
+  "amortization_summary": true
+ },
+ "npx_github_ok": true,
+ "sources": [
+  {
+   "url": "https://selling-guide.fanniemae.com/sel/b3-6-03/monthly-housing-expense-subject-property",
+   "fetched": "2026-10-30",
+   "used_for": "PITIA definition"
+  },
+  {
+   "url": "https://griffinfunding.com/blog/dscr-loans/dscr-calculator/",
+   "fetched": "2026-10-30",
+   "used_for": "DSCR = gross rent / PITIA, bands 1.25+, 1.00-1.24, 0.75-0.99, below 0.75, no-ratio programs"
+  },
+  {
+   "url": "https://defymortgage.com/dscr-loans/",
+   "fetched": "2026-10-30",
+   "used_for": "most lenders look for 1.25; Defy minimum 0.75; LTV up to 85% vs 80% typical"
+  },
+  {
+   "url": "https://www.lendingone.com/loan-programs/dscr-loans/",
+   "fetched": "2026-10-30",
+   "used_for": "1.0 break-even; thresholds vary, approval below 1.0 possible"
+  }
+ ],
+ "money_site": "https://dscrradar.com",
+ "open_issues": [
+  "GitHub search 'dscr mcp' returned 0 results at 07:09 (repo created 07:07, likely not yet indexed); 'dscr loan calculator mcp' already returns the repo at rank 1. Recheck later.",
+  "Server quotes no live rates by design; users supply the rate. Rate context is on dscrradar.com/dscr-loan-rates via the more link.",
+  "visiolending.com (cited on dscrradar) returned 403 to fetches, so it was not used as a source.",
+  "Glama listing not verified (glama.json added; Glama indexes on its own schedule)."
+ ],
+ "minutes": 14,
+ "live_raw_responses": {
+  "resp-2.json": {
+   "result": {
+    "tools": [
+     {
+      "name": "calculate_dscr",
+      "title": "Calculate DSCR for a rental property loan",
+      "description": "Debt service coverage ratio for a DSCR (investor) mortgage: qualifying rent / PITIA. Computes exact principal and interest with the annuity formula (monthly compounding, half-up cents) or the interest-only payment, adds tax, insurance, HOA and other housing costs per the Fannie Mae PITIA definition, and places the result in the common lender bands (1.25+, 1.00-1.24, 0.75-0.99, under 0.75) with sourced notes that minimums vary by lender. Returns JSON plus a plain summary and a dscrradar.com link.",
+      "inputSchema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "monthly_rent": {
+         "type": "number",
+         "exclusiveMinimum": 0,
+         "description": "Gross monthly market rent in USD (lease or appraiser rent schedule)."
+        },
+        "vacancy_pct": {
+         "type": "number",
+         "minimum": 0,
+         "maximum": 50,
+         "description": "Vacancy allowance in percent of gross rent. Default 0. Many lenders use gross rent with no vacancy."
+        },
+        "loan_amount": {
+         "type": "number",
+         "exclusiveMinimum": 0,
+         "description": "Loan amount in USD. Give this, or purchase_price plus down_payment_pct."
+        },
+        "purchase_price": {
+         "type": "number",
+         "exclusiveMinimum": 0,
+         "description": "Purchase price in USD. Used with down_payment_pct when loan_amount is not given."
+        },
+        "down_payment_pct": {
+         "type": "number",
+         "minimum": 0,
+         "maximum": 99,
+         "description": "Down payment in percent of price, e.g. 25."
+        },
+        "annual_rate_pct": {
+         "type": "number",
+         "minimum": 0,
+         "maximum": 30,
+         "description": "Annual note rate in percent, e.g. 7.25. Up to 3 decimals."
+        },
+        "term_years": {
+         "type": "integer",
+         "minimum": 1,
+         "maximum": 40,
+         "description": "Amortization term in years. Default 30."
+        },
+        "interest_only": {
+         "type": "boolean",
+         "description": "Qualify on the interest-only payment (loan x rate / 12). Default false."
+        },
+        "annual_property_tax": {
+         "type": "number",
+         "minimum": 0,
+         "description": "Annual property tax in USD. Default 0, but lenders always include it."
+        },
+        "annual_insurance": {
+         "type": "number",
+         "minimum": 0,
+         "description": "Annual hazard insurance premium in USD. Default 0, but lenders always include it."
+        },
+        "monthly_hoa": {
+         "type": "number",
+         "minimum": 0,
+         "description": "Monthly HOA or association dues in USD. Default 0."
+        },
+        "monthly_other_housing": {
+         "type": "number",
+         "minimum": 0,
+         "description": "Other monthly housing costs in PITIA, such as flood insurance, ground rent or special assessments. Default 0."
+        }
+       },
+       "required": [
+        "monthly_rent",
+        "annual_rate_pct"
+       ]
+      },
+      "annotations": {
+       "title": "Calculate DSCR",
+       "readOnlyHint": true,
+       "destructiveHint": false,
+       "idempotentHint": true,
+       "openWorldHint": false
+      },
+      "execution": {
+       "taskSupport": "forbidden"
+      }
+     },
+     {
+      "name": "max_loan_for_target_dscr",
+      "title": "Largest loan that meets a target DSCR",
+      "description": "Solves for the largest whole-dollar loan whose PITIA keeps the DSCR at or above a target (default 1.25), given rent, rate, term, interest-only choice, tax, insurance and HOA. Optional purchase_price and max_ltv_pct give the minimum down payment and which limit binds. Exact cents arithmetic, checked against the rounded payment.",
+      "inputSchema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "monthly_rent": {
+         "type": "number",
+         "exclusiveMinimum": 0,
+         "description": "Gross monthly market rent in USD."
+        },
+        "vacancy_pct": {
+         "type": "number",
+         "minimum": 0,
+         "maximum": 50,
+         "description": "Vacancy allowance in percent of gross rent. Default 0. Many lenders use gross rent with no vacancy."
+        },
+        "target_dscr": {
+         "type": "number",
+         "minimum": 0.5,
+         "maximum": 3,
+         "description": "Target DSCR, e.g. 1.25 or 1.0. Default 1.25."
+        },
+        "annual_rate_pct": {
+         "type": "number",
+         "minimum": 0,
+         "maximum": 30,
+         "description": "Annual note rate in percent, e.g. 7.25. Up to 3 decimals."
+        },
+        "term_years": {
+         "type": "integer",
+         "minimum": 1,
+         "maximum": 40,
+         "description": "Amortization term in years. Default 30."
+        },
+        "interest_only": {
+         "type": "boolean",
+         "description": "Qualify on the interest-only payment (loan x rate / 12). Default false."
+        },
+        "annual_property_tax": {
+         "type": "number",
+         "minimum": 0,
+         "description": "Annual property tax in USD. Default 0, but lenders always include it."
+        },
+        "annual_insurance": {
+         "type": "number",
+         "minimum": 0,
+         "description": "Annual hazard insurance premium in USD. Default 0, but lenders always include it."
+        },
+        "monthly_hoa": {
+         "type": "number",
+         "minimum": 0,
+         "description": "Monthly HOA or association dues in USD. Default 0."
+        },
+        "monthly_other_housing": {
+         "type": "number",
+         "minimum": 0,
+         "description": "Other monthly housing costs in PITIA, such as flood insurance, ground rent or special assessments. Default 0."
+        },
+        "purchase_price": {
+         "type": "number",
+         "exclusiveMinimum": 0,
+         "description": "Optional purchase price in USD, to report LTV and minimum down payment."
+        },
+        "max_ltv_pct": {
+         "type": "number",
+         "minimum": 1,
+         "maximum": 100,
+         "description": "Optional lender LTV cap in percent, e.g. 80. Needs purchase_price."
+        }
+       },
+       "required": [
+        "monthly_rent",
+        "annual_rate_pct"
+       ]
+      },
+      "annotations": {
+       "title": "Max loan for target DSCR",
+       "readOnlyHint": true,
+       "destructiveHint": false,
+       "idempotentHint": true,
+       "openWorldHint": false
+      },
+      "execution": {
+       "taskSupport": "forbidden"
+      }
+     },
+     {
+      "name": "rent_needed_for_target_dscr",
+      "title": "Rent needed to reach a target DSCR",
+      "description": "Solves for the smallest monthly rent (to the cent, and rounded up to whole dollars) that reaches a target DSCR (default 1.25) for a given loan, rate, term, tax, insurance, HOA and vacancy. Also returns the rent for 0.75, 1.00 and 1.25. Rounds up, never down, so the rent always meets the target.",
+      "inputSchema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "loan_amount": {
+         "type": "number",
+         "exclusiveMinimum": 0,
+         "description": "Loan amount in USD. Give this, or purchase_price plus down_payment_pct."
+        },
+        "purchase_price": {
+         "type": "number",
+         "exclusiveMinimum": 0,
+         "description": "Purchase price in USD. Used with down_payment_pct when loan_amount is not given."
+        },
+        "down_payment_pct": {
+         "type": "number",
+         "minimum": 0,
+         "maximum": 99,
+         "description": "Down payment in percent of price, e.g. 25."
+        },
+        "annual_rate_pct": {
+         "type": "number",
+         "minimum": 0,
+         "maximum": 30,
+         "description": "Annual note rate in percent, e.g. 7.25. Up to 3 decimals."
+        },
+        "term_years": {
+         "type": "integer",
+         "minimum": 1,
+         "maximum": 40,
+         "description": "Amortization term in years. Default 30."
+        },
+        "interest_only": {
+         "type": "boolean",
+         "description": "Qualify on the interest-only payment (loan x rate / 12). Default false."
+        },
+        "vacancy_pct": {
+         "type": "number",
+         "minimum": 0,
+         "maximum": 50,
+         "description": "Vacancy allowance in percent of gross rent. Default 0. Many lenders use gross rent with no vacancy."
+        },
+        "target_dscr": {
+         "type": "number",
+         "minimum": 0.5,
+         "maximum": 3,
+         "description": "Target DSCR, e.g. 1.25 or 1.0. Default 1.25."
+        },
+        "annual_property_tax": {
+         "type": "number",
+         "minimum": 0,
+         "description": "Annual property tax in USD. Default 0, but lenders always include it."
+        },
+        "annual_insurance": {
+         "type": "number",
+         "minimum": 0,
+         "description": "Annual hazard insurance premium in USD. Default 0, but lenders always include it."
+        },
+        "monthly_hoa": {
+         "type": "number",
+         "minimum": 0,
+         "description": "Monthly HOA or association dues in USD. Default 0."
+        },
+        "monthly_other_housing": {
+         "type": "number",
+         "minimum": 0,
+         "description": "Other monthly housing costs in PITIA, such as flood insurance, ground rent or special assessments. Default 0."
+        }
+       },
+       "required": [
+        "annual_rate_pct"
+       ]
+      },
+      "annotations": {
+       "title": "Rent needed for target DSCR",
+       "readOnlyHint": true,
+       "destructiveHint": false,
+       "idempotentHint": true,
+       "openWorldHint": false
+      },
+      "execution": {
+       "taskSupport": "forbidden"
+      }
+     },
+     {
+      "name": "compare_scenarios",
+      "title": "Compare DSCR loan scenarios",
+      "description": "Compares 1 to 5 financing scenarios (rate, down payment, term, interest-only) on one property: loan amount, P&I, PITIA, DSCR, lender band, rent minus PITIA and total interest over the term. Names the scenario with the highest DSCR.",
+      "inputSchema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "purchase_price": {
+         "type": "number",
+         "exclusiveMinimum": 0,
+         "description": "Purchase price in USD."
+        },
+        "monthly_rent": {
+         "type": "number",
+         "exclusiveMinimum": 0,
+         "description": "Gross monthly market rent in USD."
+        },
+        "vacancy_pct": {
+         "type": "number",
+         "minimum": 0,
+         "maximum": 50,
+         "description": "Vacancy allowance in percent of gross rent. Default 0. Many lenders use gross rent with no vacancy."
+        },
+        "annual_property_tax": {
+         "type": "number",
+         "minimum": 0,
+         "description": "Annual property tax in USD. Default 0, but lenders always include it."
+        },
+        "annual_insurance": {
+         "type": "number",
+         "minimum": 0,
+         "description": "Annual hazard insurance premium in USD. Default 0, but lenders always include it."
+        },
+        "monthly_hoa": {
+         "type": "number",
+         "minimum": 0,
+         "description": "Monthly HOA or association dues in USD. Default 0."
+        },
+        "monthly_other_housing": {
+         "type": "number",
+         "minimum": 0,
+         "description": "Other monthly housing costs in PITIA, such as flood insurance, ground rent or special assessments. Default 0."
+        },
+        "scenarios": {
+         "minItems": 1,
+         "maxItems": 5,
+         "type": "array",
+         "items": {
+          "type": "object",
+          "properties": {
+           "label": {
+            "description": "Short name, e.g. \"25% down 30-yr\".",
+            "type": "string",
+            "maxLength": 60
+           },
+           "annual_rate_pct": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 30,
+            "description": "Annual note rate in percent, e.g. 7.25. Up to 3 decimals."
+           },
+           "down_payment_pct": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 99,
+            "description": "Down payment in percent of price."
+           },
+           "term_years": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 40,
+            "description": "Amortization term in years. Default 30."
+           },
+           "interest_only": {
+            "type": "boolean",
+            "description": "Qualify on the interest-only payment (loan x rate / 12). Default false."
+           }
+          },
+          "required": [
+           "annual_rate_pct",
+           "down_payment_pct"
+          ]
+         },
+         "description": "1 to 5 scenarios."
+        }
+       },
+       "required": [
+        "purchase_price",
+        "monthly_rent",
+        "scenarios"
+       ]
+      },
+      "annotations": {
+       "title": "Compare DSCR scenarios",
+       "readOnlyHint": true,
+       "destructiveHint": false,
+       "idempotentHint": true,
+       "openWorldHint": false
+      },
+      "execution": {
+       "taskSupport": "forbidden"
+      }
+     },
+     {
+      "name": "amortization_summary",
+      "title": "Amortization summary for a loan",
+      "description": "Exact month-by-month amortization: monthly payment, number of payments, final payment, total interest, total paid and the remaining balance after chosen years. Supports an interest-only period followed by amortization over the remaining term, as many DSCR loans use. Interest is rounded half up to the cent each month, like a lender schedule.",
+      "inputSchema": {
+       "$schema": "http://json-schema.org/draft-07/schema#",
+       "type": "object",
+       "properties": {
+        "loan_amount": {
+         "type": "number",
+         "exclusiveMinimum": 0,
+         "description": "Loan amount in USD."
+        },
+        "annual_rate_pct": {
+         "type": "number",
+         "minimum": 0,
+         "maximum": 30,
+         "description": "Annual note rate in percent, e.g. 7.25. Up to 3 decimals."
+        },
+        "term_years": {
+         "type": "integer",
+         "minimum": 1,
+         "maximum": 40,
+         "description": "Amortization term in years. Default 30."
+        },
+        "interest_only_years": {
+         "type": "integer",
+         "minimum": 0,
+         "maximum": 39,
+         "description": "Interest-only years at the start, e.g. 10. Default 0. Must be less than term_years."
+        },
+        "balance_after_years": {
+         "maxItems": 10,
+         "type": "array",
+         "items": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 40
+         },
+         "description": "Years after which to report the balance. Default [1, 5, 10]."
+        }
+       },
+       "required": [
+        "loan_amount",
+        "annual_rate_pct"
+       ]
+      },
+      "annotations": {
+       "title": "Amortization summary",
+       "readOnlyHint": true,
+       "destructiveHint": false,
+       "idempotentHint": true,
+       "openWorldHint": false
+      },
+      "execution": {
+       "taskSupport": "forbidden"
+      }
+     }
+    ]
+   },
+   "jsonrpc": "2.0",
+   "id": 2
+  },
+  "resp-3.json": {
+   "result": {
+    "content": [
+     {
+      "type": "text",
+      "text": "A $300,000.00 loan at 7% over 30 years has a monthly payment of $1,995.91 and PITIA of $2,395.91. Qualifying rent of $2,500.00 gives a DSCR of 1.04 (exact 1.043445), in the 1.00 to 1.24 band. Rent covers PITIA. Many DSCR programs accept 1.00 or more; lenders that want 1.25 will not. DSCR minimums and pricing bands vary by lender and change over time. These tiers are common market labels, not an approval decision.\n\n{\n  \"loan_amount\": 300000,\n  \"purchase_price\": null,\n  \"annual_rate_pct\": 7,\n  \"term_years\": 30,\n  \"interest_only\": false,\n  \"gross_monthly_rent\": 2500,\n  \"vacancy_pct\": 0,\n  \"qualifying_monthly_rent\": 2500,\n  \"monthly\": {\n    \"principal_and_interest\": 1995.91,\n    \"property_tax\": 300,\n    \"insurance\": 100,\n    \"hoa\": 0,\n    \"other_housing\": 0,\n    \"pitia\": 2395.91\n  },\n  \"dscr\": 1.04,\n  \"dscr_exact\": 1.043445,\n  \"tier\": {\n    \"code\": \"1.00_to_1.24\",\n    \"label\": \"1.00 to 1.24\",\n    \"note\": \"Rent covers PITIA. Many DSCR programs accept 1.00 or more; lenders that want 1.25 will not.\"\n  },\n  \"monthly_rent_minus_pitia\": 104.09,\n  \"amortizing_comparison\": null,\n  \"formula\": \"DSCR = gross rent x (1 - vacancy) / PITIA\",\n  \"rounding\": \"Monthly compounding (annual rate / 12). P&I, interest-only payment, monthly tax and monthly insurance are each rounded half up to the cent before they are added. DSCR is truncated to 2 decimals; tiers use the exact ratio.\",\n  \"tiers_vary_by_lender\": \"DSCR minimums and pricing bands vary by lender and change over time. These tiers are common market labels, not an approval decision.\",\n  \"lender_sources\": [\n    \"https://griffinfunding.com/blog/dscr-loans/dscr-calculator/\",\n    \"https://defymortgage.com/dscr-loans/\",\n    \"https://www.lendingone.com/loan-programs/dscr-loans/\"\n  ],\n  \"as_of\": \"2026-10-30\",\n  \"source\": \"https://selling-guide.fanniemae.com/sel/b3-6-03/monthly-housing-expense-subject-property\",\n  \"more\": \"https://dscrradar.com/dscr-loan-calculator/?utm_source=mcp&utm_medium=dscr-loan-calculator-mcp\",\n  \"summary\": \"A $300,000.00 loan at 7% over 30 years has a monthly payment of $1,995.91 and PITIA of $2,395.91. Qualifying rent of $2,500.00 gives a DSCR of 1.04 (exact 1.043445), in the 1.00 to 1.24 band. Rent covers PITIA. Many DSCR programs accept 1.00 or more; lenders that want 1.25 will not. DSCR minimums and pricing bands vary by lender and change over time. These tiers are common market labels, not an approval decision.\"\n}"
+     }
+    ],
+    "structuredContent": {
+     "loan_amount": 300000,
+     "purchase_price": null,
+     "annual_rate_pct": 7,
+     "term_years": 30,
+     "interest_only": false,
+     "gross_monthly_rent": 2500,
+     "vacancy_pct": 0,
+     "qualifying_monthly_rent": 2500,
+     "monthly": {
+      "principal_and_interest": 1995.91,
+      "property_tax": 300,
+      "insurance": 100,
+      "hoa": 0,
+      "other_housing": 0,
+      "pitia": 2395.91
+     },
+     "dscr": 1.04,
+     "dscr_exact": 1.043445,
+     "tier": {
+      "code": "1.00_to_1.24",
+      "label": "1.00 to 1.24",
+      "note": "Rent covers PITIA. Many DSCR programs accept 1.00 or more; lenders that want 1.25 will not."
+     },
+     "monthly_rent_minus_pitia": 104.09,
+     "amortizing_comparison": null,
+     "formula": "DSCR = gross rent x (1 - vacancy) / PITIA",
+     "rounding": "Monthly compounding (annual rate / 12). P&I, interest-only payment, monthly tax and monthly insurance are each rounded half up to the cent before they are added. DSCR is truncated to 2 decimals; tiers use the exact ratio.",
+     "tiers_vary_by_lender": "DSCR minimums and pricing bands vary by lender and change over time. These tiers are common market labels, not an approval decision.",
+     "lender_sources": [
+      "https://griffinfunding.com/blog/dscr-loans/dscr-calculator/",
+      "https://defymortgage.com/dscr-loans/",
+      "https://www.lendingone.com/loan-programs/dscr-loans/"
+     ],
+     "as_of": "2026-10-30",
+     "source": "https://selling-guide.fanniemae.com/sel/b3-6-03/monthly-housing-expense-subject-property",
+     "more": "https://dscrradar.com/dscr-loan-calculator/?utm_source=mcp&utm_medium=dscr-loan-calculator-mcp",
+     "summary": "A $300,000.00 loan at 7% over 30 years has a monthly payment of $1,995.91 and PITIA of $2,395.91. Qualifying rent of $2,500.00 gives a DSCR of 1.04 (exact 1.043445), in the 1.00 to 1.24 band. Rent covers PITIA. Many DSCR programs accept 1.00 or more; lenders that want 1.25 will not. DSCR minimums and pricing bands vary by lender and change over time. These tiers are common market labels, not an approval decision."
+    }
+   },
+   "jsonrpc": "2.0",
+   "id": 3
+  },
+  "resp-4.json": {
+   "result": {
+    "content": [
+     {
+      "type": "text",
+      "text": "At a target DSCR of 1.25, qualifying rent of $3,000.00 supports PITIA up to $2,400.00, which leaves $1,850.00 for principal and interest. At 7.5% over 30 years, the largest loan is $264,583, which needs a down payment of at least $135,417.00 on a $400,000.00 purchase. DSCR minimums and pricing bands vary by lender and change over time. These tiers are common market labels, not an approval decision.\n\n{\n  \"target_dscr\": 1.25,\n  \"qualifying_monthly_rent\": 3000,\n  \"max_pitia_at_target\": 2400,\n  \"monthly_tax_insurance_hoa_other\": 550,\n  \"max_principal_and_interest\": 1850,\n  \"max_loan_amount\": 264583,\n  \"max_loan_by_dscr\": 264583,\n  \"max_loan_by_ltv\": null,\n  \"binding_constraint\": \"target_dscr\",\n  \"at_max_loan\": {\n    \"principal_and_interest\": 1850,\n    \"pitia\": 2400,\n    \"dscr\": 1.25,\n    \"dscr_exact\": 1.25\n  },\n  \"purchase_price\": 400000,\n  \"ltv_pct\": 66.15,\n  \"min_down_payment\": 135417,\n  \"annual_rate_pct\": 7.5,\n  \"term_years\": 30,\n  \"interest_only\": false,\n  \"method\": \"Largest whole-dollar loan whose rounded P&I plus tax, insurance, HOA and other costs keeps qualifying rent / PITIA at or above the target.\",\n  \"rounding\": \"Monthly compounding (annual rate / 12). P&I, interest-only payment, monthly tax and monthly insurance are each rounded half up to the cent before they are added. DSCR is truncated to 2 decimals; tiers use the exact ratio.\",\n  \"tiers_vary_by_lender\": \"DSCR minimums and pricing bands vary by lender and change over time. These tiers are common market labels, not an approval decision.\",\n  \"lender_sources\": [\n    \"https://griffinfunding.com/blog/dscr-loans/dscr-calculator/\",\n    \"https://defymortgage.com/dscr-loans/\",\n    \"https://www.lendingone.com/loan-programs/dscr-loans/\"\n  ],\n  \"as_of\": \"2026-10-30\",\n  \"source\": \"https://selling-guide.fanniemae.com/sel/b3-6-03/monthly-housing-expense-subject-property\",\n  \"more\": \"https://dscrradar.com/dscr-loan-down-payment/?utm_source=mcp&utm_medium=dscr-loan-calculator-mcp\",\n  \"summary\": \"At a target DSCR of 1.25, qualifying rent of $3,000.00 supports PITIA up to $2,400.00, which leaves $1,850.00 for principal and interest. At 7.5% over 30 years, the largest loan is $264,583, which needs a down payment of at least $135,417.00 on a $400,000.00 purchase. DSCR minimums and pricing bands vary by lender and change over time. These tiers are common market labels, not an approval decision.\"\n}"
+     }
+    ],
+    "structuredContent": {
+     "target_dscr": 1.25,
+     "qualifying_monthly_rent": 3000,
+     "max_pitia_at_target": 2400,
+     "monthly_tax_insurance_hoa_other": 550,
+     "max_principal_and_interest": 1850,
+     "max_loan_amount": 264583,
+     "max_loan_by_dscr": 264583,
+     "max_loan_by_ltv": null,
+     "binding_constraint": "target_dscr",
+     "at_max_loan": {
+      "principal_and_interest": 1850,
+      "pitia": 2400,
+      "dscr": 1.25,
+      "dscr_exact": 1.25
+     },
+     "purchase_price": 400000,
+     "ltv_pct": 66.15,
+     "min_down_payment": 135417,
+     "annual_rate_pct": 7.5,
+     "term_years": 30,
+     "interest_only": false,
+     "method": "Largest whole-dollar loan whose rounded P&I plus tax, insurance, HOA and other costs keeps qualifying rent / PITIA at or above the target.",
+     "rounding": "Monthly compounding (annual rate / 12). P&I, interest-only payment, monthly tax and monthly insurance are each rounded half up to the cent before they are added. DSCR is truncated to 2 decimals; tiers use the exact ratio.",
+     "tiers_vary_by_lender": "DSCR minimums and pricing bands vary by lender and change over time. These tiers are common market labels, not an approval decision.",
+     "lender_sources": [
+      "https://griffinfunding.com/blog/dscr-loans/dscr-calculator/",
+      "https://defymortgage.com/dscr-loans/",
+      "https://www.lendingone.com/loan-programs/dscr-loans/"
+     ],
+     "as_of": "2026-10-30",
+     "source": "https://selling-guide.fanniemae.com/sel/b3-6-03/monthly-housing-expense-subject-property",
+     "more": "https://dscrradar.com/dscr-loan-down-payment/?utm_source=mcp&utm_medium=dscr-loan-calculator-mcp",
+     "summary": "At a target DSCR of 1.25, qualifying rent of $3,000.00 supports PITIA up to $2,400.00, which leaves $1,850.00 for principal and interest. At 7.5% over 30 years, the largest loan is $264,583, which needs a down payment of at least $135,417.00 on a $400,000.00 purchase. DSCR minimums and pricing bands vary by lender and change over time. These tiers are common market labels, not an approval decision."
+    }
+   },
+   "jsonrpc": "2.0",
+   "id": 4
+  },
+  "resp-5.json": {
+   "result": {
+    "content": [
+     {
+      "type": "text",
+      "text": "PITIA on a $300,000.00 loan at 7% over 30 years is $2,395.91 a month. To reach a DSCR of 1.25, the property needs gross rent of at least $2,994.89 a month ($2,995 in whole dollars). Break-even (1.00) needs $2,395.91. DSCR minimums and pricing bands vary by lender and change over time. These tiers are common market labels, not an approval decision.\n\n{\n  \"loan_amount\": 300000,\n  \"annual_rate_pct\": 7,\n  \"term_years\": 30,\n  \"interest_only\": false,\n  \"vacancy_pct\": 0,\n  \"monthly\": {\n    \"principal_and_interest\": 1995.91,\n    \"property_tax\": 300,\n    \"insurance\": 100,\n    \"hoa\": 0,\n    \"other_housing\": 0,\n    \"pitia\": 2395.91\n  },\n  \"target_dscr\": 1.25,\n  \"rent_needed\": 2994.89,\n  \"rent_needed_whole_dollars\": 2995,\n  \"qualifying_rent_needed\": 2994.89,\n  \"common_targets\": [\n    {\n      \"target_dscr\": 0.75,\n      \"qualifying_rent\": 1796.94,\n      \"gross_rent\": 1796.94,\n      \"gross_rent_whole_dollars\": 1797\n    },\n    {\n      \"target_dscr\": 1,\n      \"qualifying_rent\": 2395.91,\n      \"gross_rent\": 2395.91,\n      \"gross_rent_whole_dollars\": 2396\n    },\n    {\n      \"target_dscr\": 1.25,\n      \"qualifying_rent\": 2994.89,\n      \"gross_rent\": 2994.89,\n      \"gross_rent_whole_dollars\": 2995\n    }\n  ],\n  \"method\": \"Smallest rent in cents whose qualifying rent (after vacancy, rounded half up) divided by PITIA is at or above the target. Rounded up, never down.\",\n  \"rounding\": \"Monthly compounding (annual rate / 12). P&I, interest-only payment, monthly tax and monthly insurance are each rounded half up to the cent before they are added. DSCR is truncated to 2 decimals; tiers use the exact ratio.\",\n  \"tiers_vary_by_lender\": \"DSCR minimums and pricing bands vary by lender and change over time. These tiers are common market labels, not an approval decision.\",\n  \"lender_sources\": [\n    \"https://griffinfunding.com/blog/dscr-loans/dscr-calculator/\",\n    \"https://defymortgage.com/dscr-loans/\",\n    \"https://www.lendingone.com/loan-programs/dscr-loans/\"\n  ],\n  \"as_of\": \"2026-10-30\",\n  \"source\": \"https://selling-guide.fanniemae.com/sel/b3-6-03/monthly-housing-expense-subject-property\",\n  \"more\": \"https://dscrradar.com/rent-to-qualify/?utm_source=mcp&utm_medium=dscr-loan-calculator-mcp\",\n  \"summary\": \"PITIA on a $300,000.00 loan at 7% over 30 years is $2,395.91 a month. To reach a DSCR of 1.25, the property needs gross rent of at least $2,994.89 a month ($2,995 in whole dollars). Break-even (1.00) needs $2,395.91. DSCR minimums and pricing bands vary by lender and change over time. These tiers are common market labels, not an approval decision.\"\n}"
+     }
+    ],
+    "structuredContent": {
+     "loan_amount": 300000,
+     "annual_rate_pct": 7,
+     "term_years": 30,
+     "interest_only": false,
+     "vacancy_pct": 0,
+     "monthly": {
+      "principal_and_interest": 1995.91,
+      "property_tax": 300,
+      "insurance": 100,
+      "hoa": 0,
+      "other_housing": 0,
+      "pitia": 2395.91
+     },
+     "target_dscr": 1.25,
+     "rent_needed": 2994.89,
+     "rent_needed_whole_dollars": 2995,
+     "qualifying_rent_needed": 2994.89,
+     "common_targets": [
+      {
+       "target_dscr": 0.75,
+       "qualifying_rent": 1796.94,
+       "gross_rent": 1796.94,
+       "gross_rent_whole_dollars": 1797
+      },
+      {
+       "target_dscr": 1,
+       "qualifying_rent": 2395.91,
+       "gross_rent": 2395.91,
+       "gross_rent_whole_dollars": 2396
+      },
+      {
+       "target_dscr": 1.25,
+       "qualifying_rent": 2994.89,
+       "gross_rent": 2994.89,
+       "gross_rent_whole_dollars": 2995
+      }
+     ],
+     "method": "Smallest rent in cents whose qualifying rent (after vacancy, rounded half up) divided by PITIA is at or above the target. Rounded up, never down.",
+     "rounding": "Monthly compounding (annual rate / 12). P&I, interest-only payment, monthly tax and monthly insurance are each rounded half up to the cent before they are added. DSCR is truncated to 2 decimals; tiers use the exact ratio.",
+     "tiers_vary_by_lender": "DSCR minimums and pricing bands vary by lender and change over time. These tiers are common market labels, not an approval decision.",
+     "lender_sources": [
+      "https://griffinfunding.com/blog/dscr-loans/dscr-calculator/",
+      "https://defymortgage.com/dscr-loans/",
+      "https://www.lendingone.com/loan-programs/dscr-loans/"
+     ],
+     "as_of": "2026-10-30",
+     "source": "https://selling-guide.fanniemae.com/sel/b3-6-03/monthly-housing-expense-subject-property",
+     "more": "https://dscrradar.com/rent-to-qualify/?utm_source=mcp&utm_medium=dscr-loan-calculator-mcp",
+     "summary": "PITIA on a $300,000.00 loan at 7% over 30 years is $2,395.91 a month. To reach a DSCR of 1.25, the property needs gross rent of at least $2,994.89 a month ($2,995 in whole dollars). Break-even (1.00) needs $2,395.91. DSCR minimums and pricing bands vary by lender and change over time. These tiers are common market labels, not an approval decision."
+    }
+   },
+   "jsonrpc": "2.0",
+   "id": 5
+  },
+  "resp-6.json": {
+   "result": {
+    "content": [
+     {
+      "type": "text",
+      "text": "On a $400,000.00 purchase with qualifying rent of $3,200.00 a month: Scenario 1: 7.5%, 25% down, 30 yr gives PITIA $2,647.64 and DSCR 1.20 (1.00 to 1.24); Scenario 2: 7%, 20% down, 30 yr gives PITIA $2,678.97 and DSCR 1.19 (1.00 to 1.24); Scenario 3: 8%, 30% down, 30 yr IO gives PITIA $2,416.67 and DSCR 1.32 (1.25 or higher). The highest DSCR is Scenario 3. DSCR minimums and pricing bands vary by lender and change over time. These tiers are common market labels, not an approval decision.\n\n{\n  \"purchase_price\": 400000,\n  \"gross_monthly_rent\": 3200,\n  \"vacancy_pct\": 0,\n  \"qualifying_monthly_rent\": 3200,\n  \"monthly_tax_insurance_hoa_other\": 550,\n  \"scenarios\": [\n    {\n      \"label\": \"Scenario 1\",\n      \"annual_rate_pct\": 7.5,\n      \"down_payment_pct\": 25,\n      \"term_years\": 30,\n      \"interest_only\": false,\n      \"down_payment\": 100000,\n      \"loan_amount\": 300000,\n      \"principal_and_interest\": 2097.64,\n      \"pitia\": 2647.64,\n      \"dscr\": 1.2,\n      \"dscr_exact\": 1.208624,\n      \"tier\": {\n        \"code\": \"1.00_to_1.24\",\n        \"label\": \"1.00 to 1.24\",\n        \"note\": \"Rent covers PITIA. Many DSCR programs accept 1.00 or more; lenders that want 1.25 will not.\"\n      },\n      \"monthly_rent_minus_pitia\": 552.36,\n      \"total_interest_full_term\": 455155.38\n    },\n    {\n      \"label\": \"Scenario 2\",\n      \"annual_rate_pct\": 7,\n      \"down_payment_pct\": 20,\n      \"term_years\": 30,\n      \"interest_only\": false,\n      \"down_payment\": 80000,\n      \"loan_amount\": 320000,\n      \"principal_and_interest\": 2128.97,\n      \"pitia\": 2678.97,\n      \"dscr\": 1.19,\n      \"dscr_exact\": 1.194489,\n      \"tier\": {\n        \"code\": \"1.00_to_1.24\",\n        \"label\": \"1.00 to 1.24\",\n        \"note\": \"Rent covers PITIA. Many DSCR programs accept 1.00 or more; lenders that want 1.25 will not.\"\n      },\n      \"monthly_rent_minus_pitia\": 521.03,\n      \"total_interest_full_term\": 446426.56\n    },\n    {\n      \"label\": \"Scenario 3\",\n      \"annual_rate_pct\": 8,\n      \"down_payment_pct\": 30,\n      \"term_years\": 30,\n      \"interest_only\": true,\n      \"down_payment\": 120000,\n      \"loan_amount\": 280000,\n      \"principal_and_interest\": 1866.67,\n      \"pitia\": 2416.67,\n      \"dscr\": 1.32,\n      \"dscr_exact\": 1.324136,\n      \"tier\": {\n        \"code\": \"1.25_plus\",\n        \"label\": \"1.25 or higher\",\n        \"note\": \"Rent covers PITIA with at least a 25% cushion. Many lenders look for at least 1.25, and this band may support better pricing.\"\n      },\n      \"monthly_rent_minus_pitia\": 783.33,\n      \"total_interest_full_term\": null\n    }\n  ],\n  \"highest_dscr\": \"Scenario 3\",\n  \"rounding\": \"Monthly compounding (annual rate / 12). P&I, interest-only payment, monthly tax and monthly insurance are each rounded half up to the cent before they are added. DSCR is truncated to 2 decimals; tiers use the exact ratio.\",\n  \"tiers_vary_by_lender\": \"DSCR minimums and pricing bands vary by lender and change over time. These tiers are common market labels, not an approval decision.\",\n  \"lender_sources\": [\n    \"https://griffinfunding.com/blog/dscr-loans/dscr-calculator/\",\n    \"https://defymortgage.com/dscr-loans/\",\n    \"https://www.lendingone.com/loan-programs/dscr-loans/\"\n  ],\n  \"as_of\": \"2026-10-30\",\n  \"source\": \"https://selling-guide.fanniemae.com/sel/b3-6-03/monthly-housing-expense-subject-property\",\n  \"more\": \"https://dscrradar.com/dscr-loan-rates/?utm_source=mcp&utm_medium=dscr-loan-calculator-mcp\",\n  \"summary\": \"On a $400,000.00 purchase with qualifying rent of $3,200.00 a month: Scenario 1: 7.5%, 25% down, 30 yr gives PITIA $2,647.64 and DSCR 1.20 (1.00 to 1.24); Scenario 2: 7%, 20% down, 30 yr gives PITIA $2,678.97 and DSCR 1.19 (1.00 to 1.24); Scenario 3: 8%, 30% down, 30 yr IO gives PITIA $2,416.67 and DSCR 1.32 (1.25 or higher). The highest DSCR is Scenario 3. DSCR minimums and pricing bands vary by lender and change over time. These tiers are common market labels, not an approval decision.\"\n}"
+     }
+    ],
+    "structuredContent": {
+     "purchase_price": 400000,
+     "gross_monthly_rent": 3200,
+     "vacancy_pct": 0,
+     "qualifying_monthly_rent": 3200,
+     "monthly_tax_insurance_hoa_other": 550,
+     "scenarios": [
+      {
+       "label": "Scenario 1",
+       "annual_rate_pct": 7.5,
+       "down_payment_pct": 25,
+       "term_years": 30,
+       "interest_only": false,
+       "down_payment": 100000,
+       "loan_amount": 300000,
+       "principal_and_interest": 2097.64,
+       "pitia": 2647.64,
+       "dscr": 1.2,
+       "dscr_exact": 1.208624,
+       "tier": {
+        "code": "1.00_to_1.24",
+        "label": "1.00 to 1.24",
+        "note": "Rent covers PITIA. Many DSCR programs accept 1.00 or more; lenders that want 1.25 will not."
+       },
+       "monthly_rent_minus_pitia": 552.36,
+       "total_interest_full_term": 455155.38
+      },
+      {
+       "label": "Scenario 2",
+       "annual_rate_pct": 7,
+       "down_payment_pct": 20,
+       "term_years": 30,
+       "interest_only": false,
+       "down_payment": 80000,
+       "loan_amount": 320000,
+       "principal_and_interest": 2128.97,
+       "pitia": 2678.97,
+       "dscr": 1.19,
+       "dscr_exact": 1.194489,
+       "tier": {
+        "code": "1.00_to_1.24",
+        "label": "1.00 to 1.24",
+        "note": "Rent covers PITIA. Many DSCR programs accept 1.00 or more; lenders that want 1.25 will not."
+       },
+       "monthly_rent_minus_pitia": 521.03,
+       "total_interest_full_term": 446426.56
+      },
+      {
+       "label": "Scenario 3",
+       "annual_rate_pct": 8,
+       "down_payment_pct": 30,
+       "term_years": 30,
+       "interest_only": true,
+       "down_payment": 120000,
+       "loan_amount": 280000,
+       "principal_and_interest": 1866.67,
+       "pitia": 2416.67,
+       "dscr": 1.32,
+       "dscr_exact": 1.324136,
+       "tier": {
+        "code": "1.25_plus",
+        "label": "1.25 or higher",
+        "note": "Rent covers PITIA with at least a 25% cushion. Many lenders look for at least 1.25, and this band may support better pricing."
+       },
+       "monthly_rent_minus_pitia": 783.33,
+       "total_interest_full_term": null
+      }
+     ],
+     "highest_dscr": "Scenario 3",
+     "rounding": "Monthly compounding (annual rate / 12). P&I, interest-only payment, monthly tax and monthly insurance are each rounded half up to the cent before they are added. DSCR is truncated to 2 decimals; tiers use the exact ratio.",
+     "tiers_vary_by_lender": "DSCR minimums and pricing bands vary by lender and change over time. These tiers are common market labels, not an approval decision.",
+     "lender_sources": [
+      "https://griffinfunding.com/blog/dscr-loans/dscr-calculator/",
+      "https://defymortgage.com/dscr-loans/",
+      "https://www.lendingone.com/loan-programs/dscr-loans/"
+     ],
+     "as_of": "2026-10-30",
+     "source": "https://selling-guide.fanniemae.com/sel/b3-6-03/monthly-housing-expense-subject-property",
+     "more": "https://dscrradar.com/dscr-loan-rates/?utm_source=mcp&utm_medium=dscr-loan-calculator-mcp",
+     "summary": "On a $400,000.00 purchase with qualifying rent of $3,200.00 a month: Scenario 1: 7.5%, 25% down, 30 yr gives PITIA $2,647.64 and DSCR 1.20 (1.00 to 1.24); Scenario 2: 7%, 20% down, 30 yr gives PITIA $2,678.97 and DSCR 1.19 (1.00 to 1.24); Scenario 3: 8%, 30% down, 30 yr IO gives PITIA $2,416.67 and DSCR 1.32 (1.25 or higher). The highest DSCR is Scenario 3. DSCR minimums and pricing bands vary by lender and change over time. These tiers are common market labels, not an approval decision."
+    }
+   },
+   "jsonrpc": "2.0",
+   "id": 6
+  },
+  "resp-7.json": {
+   "result": {
+    "content": [
+     {
+      "type": "text",
+      "text": "A $500,000.00 loan at 7.5% over 30 years, interest-only for the first 10 years at $3,125.00 a month, then has a principal and interest payment of $4,027.97 a month for 240 months. Total interest over the full term is $841,710.72 and total paid is $1,341,710.72; the final payment is $4,025.89. Remaining balance: $500,000.00 after 10 years, $339,334.32 after 20 years.\n\n{\n  \"loan_amount\": 500000,\n  \"annual_rate_pct\": 7.5,\n  \"term_years\": 30,\n  \"interest_only_years\": 10,\n  \"interest_only_payment\": 3125,\n  \"monthly_principal_and_interest\": 4027.97,\n  \"amortizing_months\": 240,\n  \"number_of_payments\": 360,\n  \"final_payment\": 4025.89,\n  \"total_interest\": 841710.72,\n  \"total_paid\": 1341710.72,\n  \"balances\": [\n    {\n      \"after_years\": 10,\n      \"balance\": 500000,\n      \"principal_paid\": 0,\n      \"interest_paid\": 375000\n    },\n    {\n      \"after_years\": 20,\n      \"balance\": 339334.32,\n      \"principal_paid\": 160665.68,\n      \"interest_paid\": 697690.72\n    }\n  ],\n  \"method\": \"Month-by-month schedule. Each month interest = balance x rate / 12, rounded half up to the cent; principal = payment - interest. The final payment clears the remaining balance.\",\n  \"rounding\": \"Monthly compounding (annual rate / 12). P&I, interest-only payment, monthly tax and monthly insurance are each rounded half up to the cent before they are added. DSCR is truncated to 2 decimals; tiers use the exact ratio.\",\n  \"as_of\": \"2026-10-30\",\n  \"source\": \"https://selling-guide.fanniemae.com/sel/b3-6-03/monthly-housing-expense-subject-property\",\n  \"more\": \"https://dscrradar.com/investment-property-calculator/?utm_source=mcp&utm_medium=dscr-loan-calculator-mcp\",\n  \"summary\": \"A $500,000.00 loan at 7.5% over 30 years, interest-only for the first 10 years at $3,125.00 a month, then has a principal and interest payment of $4,027.97 a month for 240 months. Total interest over the full term is $841,710.72 and total paid is $1,341,710.72; the final payment is $4,025.89. Remaining balance: $500,000.00 after 10 years, $339,334.32 after 20 years.\"\n}"
+     }
+    ],
+    "structuredContent": {
+     "loan_amount": 500000,
+     "annual_rate_pct": 7.5,
+     "term_years": 30,
+     "interest_only_years": 10,
+     "interest_only_payment": 3125,
+     "monthly_principal_and_interest": 4027.97,
+     "amortizing_months": 240,
+     "number_of_payments": 360,
+     "final_payment": 4025.89,
+     "total_interest": 841710.72,
+     "total_paid": 1341710.72,
+     "balances": [
+      {
+       "after_years": 10,
+       "balance": 500000,
+       "principal_paid": 0,
+       "interest_paid": 375000
+      },
+      {
+       "after_years": 20,
+       "balance": 339334.32,
+       "principal_paid": 160665.68,
+       "interest_paid": 697690.72
+      }
+     ],
+     "method": "Month-by-month schedule. Each month interest = balance x rate / 12, rounded half up to the cent; principal = payment - interest. The final payment clears the remaining balance.",
+     "rounding": "Monthly compounding (annual rate / 12). P&I, interest-only payment, monthly tax and monthly insurance are each rounded half up to the cent before they are added. DSCR is truncated to 2 decimals; tiers use the exact ratio.",
+     "as_of": "2026-10-30",
+     "source": "https://selling-guide.fanniemae.com/sel/b3-6-03/monthly-housing-expense-subject-property",
+     "more": "https://dscrradar.com/investment-property-calculator/?utm_source=mcp&utm_medium=dscr-loan-calculator-mcp",
+     "summary": "A $500,000.00 loan at 7.5% over 30 years, interest-only for the first 10 years at $3,125.00 a month, then has a principal and interest payment of $4,027.97 a month for 240 months. Total interest over the full term is $841,710.72 and total paid is $1,341,710.72; the final payment is $4,025.89. Remaining balance: $500,000.00 after 10 years, $339,334.32 after 20 years."
+    }
+   },
+   "jsonrpc": "2.0",
+   "id": 7
+  },
+  "resp-8.json": {
+   "result": {
+    "content": [
+     {
+      "type": "text",
+      "text": "Give loan_amount, or give both purchase_price and down_payment_pct."
+     }
+    ],
+    "isError": true
+   },
+   "jsonrpc": "2.0",
+   "id": 8
+  }
+ },
+ "temp_dirs_deleted": [
+  "~/dscr-loan-calculator-mcp-work (fetch html, smoke outputs; raw live responses copied into live_raw_responses first)",
+  "/private/tmp/claude-501/npxtest.KiiL (empty)"
+ ]
+}

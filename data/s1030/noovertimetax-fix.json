@@ -1,0 +1,199 @@
+{
+ "date": "2026-10-30",
+ "deployed_source": {
+  "repo": "github.com/theluckystrike/noovertimetax (private) main @ 83c4cb7, cloned fresh to ~/noovertimetax-work/repo",
+  "evidence": "Clean build of 83c4cb7 gave byte-identical Calculator.DnjnmUK4.js, client.DrE9CFQR.js, page.DCTgdEH6.js to live; HTML differs only in random astro-island uid; live worker script (CF API content/v2) identical to src/worker.js; robots.txt identical; live sitemap has the same 31 URLs.",
+  "not_deployed": {
+   "/Users/mike/Desktop/portfolio-empire/noovertimetax": "Has 1 unpushed commit 24cd256 (5 sprint pages: double-time, W-4 2026, Schedule 1-A, W-2 code TT, income-limit). Those pages return 404 live. Its Schedule 1-A page already states the round-down rule. Not shipped. git objects are dataless (git show times out).",
+   "~/satellite-repos/examnoovertimetax-site": "Different site, Worker 'examnoovertimetax' (workers.dev). Its phaseout-core.js already uses Math.floor. Not related to noovertimetax.com."
+  }
+ },
+ "old_version": "c48b5275-6fc3-4512-8ca2-49d408c89092",
+ "new_version": "b0417928-88c1-4e55-b540-fe60e8d1e58d",
+ "rollback": "CLOUDFLARE_ACCOUNT_ID=dd3f2a29b7707e21a87f26a622c0bb9d npx wrangler rollback c48b5275-6fc3-4512-8ca2-49d408c89092 --name noovertimetax",
+ "fixes": [
+  {
+   "id": 1,
+   "what": "Overtime and tips phase-out rounds DOWN (Math.floor of excess/1000) per Schedule 1-A lines 11 and 19. Car-loan interest keeps Math.ceil (Part IV).",
+   "files": [
+    "src/lib/tax.ts",
+    "src/data/provisions.ts (stepRound: 'down'|'up')"
+   ]
+  },
+  {
+   "id": 2,
+   "what": "2026 HoH brackets set to Rev. Proc. 2025-32 Table 2 (fetched from irs.gov): 17,700 / 67,450 / 105,700 / 201,750 / 256,200 / 640,600. Old: 17,600 / 67,100 / 105,700 / 201,775 / 256,200 / 639,000. Single and MFJ 2026 and all 2025 tables re-checked and already correct. Site has no MFS table.",
+   "files": [
+    "src/data/provisions.ts"
+   ]
+  },
+  {
+   "id": 3,
+   "what": "Senior deduction: 6% reduction applied to each qualifying person's $6,000 (perPerson: 6000). MFJ both 65+ at $160,000 = $10,800 (was $11,400); MFJ fully out at $250,000 (was $350,000).",
+   "files": [
+    "src/lib/tax.ts",
+    "src/data/provisions.ts"
+   ]
+  },
+  {
+   "id": 4,
+   "what": "Extra: calculator island crashed (rendered nothing) when a deduction was fully phased out, because it formatted p.phaseout[filing].endsAt, which does not exist. Added phaseoutEnd(); callout now shows e.g. 'Fully phased out at $275,000'.",
+   "files": [
+    "src/components/Calculator.jsx",
+    "src/lib/tax.ts"
+   ]
+  },
+  {
+   "id": 5,
+   "what": "Copy: replaced 'or fraction/part of $1,000' with 'each full $1,000' (magi-phaseout, are-you-better-off, tips-vs-overtime, warehouse, server, police, about); senior page FAQ and body explain per-spouse reduction with the $10,800 example; MFJ senior callout says both spouses 65+, $6,000 each; about page states all three rounding rules; verified badge Jun 2026 -> Oct 2026.",
+   "files": [
+    "src/content/pages/**",
+    "src/components/Calculator.jsx"
+   ]
+  },
+  {
+   "id": 6,
+   "what": "Fixed 2 pre-existing astro check type errors (console.assert(p) -> console.assert(Boolean(p))). astro check now 0 errors 0 warnings.",
+   "files": [
+    "src/lib/tax.ts"
+   ]
+  }
+ ],
+ "tests": {
+  "file": "tests/tax.test.mjs",
+  "command": "npm test",
+  "result": "9/9 pass",
+  "cases": [
+   "OT single MAGI 150,001 -> 12,500 (150,999 -> 12,500; 151,000 -> 12,400)",
+   "OT joint 300,999 -> 25,000; 301,000 -> 24,900",
+   "OT single 160,500 -> 11,500; 274,999 -> 100; 275,000 -> 0",
+   "tips round down (150,001 single, 300,999 joint, 152,500 HoH)",
+   "car loan rounds up (100,001 -> -200; MFJ 249,001 -> 0)",
+   "senior MFJ both 65+ at 160,000 -> 10,800",
+   "senior MFJ out at 250,000; single 85,000 -> 5,400; single out at 175,000",
+   "2026 HoH boundaries 17,700/17,701, 67,450/67,451, 201,750/201,751, 640,600/640,601",
+   "2026 single + MFJ tables"
+  ]
+ },
+ "live_checks": {
+  "method": "Headless Chrome (agent-chrome :9341) driving the deployed calculator via CDP, reading the rendered result card; then closed.",
+  "before_deploy": {
+   "ot_single_150001": {
+    "qualifies": "$12,400",
+    "marginal_rate": "24%",
+    "savings": "$2,976"
+   },
+   "ot_joint_300999": {
+    "qualifies": "$24,900",
+    "marginal_rate": "24%",
+    "savings": "$5,976"
+   },
+   "senior_joint_160000": {
+    "qualifies": "$11,400",
+    "marginal_rate": "22%",
+    "savings": "$2,508"
+   },
+   "hoh_2026_magi_91450": {
+    "qualifies": "$7,280",
+    "marginal_rate": "22%",
+    "savings": "$1,602"
+   },
+   "ot_single_300000_fully_out": {
+    "qualifies": null,
+    "marginal_rate": null,
+    "savings": null
+   }
+  },
+  "after_deploy": {
+   "ot_single_150001": {
+    "qualifies": "$12,500",
+    "marginal_rate": "24%",
+    "savings": "$3,000"
+   },
+   "ot_joint_300999": {
+    "qualifies": "$25,000",
+    "marginal_rate": "24%",
+    "savings": "$6,000"
+   },
+   "senior_joint_160000": {
+    "qualifies": "$10,800",
+    "marginal_rate": "22%",
+    "savings": "$2,376"
+   },
+   "hoh_2026_magi_91450": {
+    "qualifies": "$7,280",
+    "marginal_rate": "12%",
+    "savings": "$874"
+   },
+   "ot_single_300000_fully_out": {
+    "qualifies": "$0",
+    "marginal_rate": "35%",
+    "savings": "$0"
+   }
+  },
+  "hoh_case_note": "HoH 2026 MAGI 91,450 -> taxable 67,300 (MAGI - 24,150). Official 12% bracket; old table gave 22%.",
+  "homepage_200": true,
+  "www_200": true,
+  "sitemap_pages_200_with_h1": "31/31",
+  "live_bundle": "/_astro/Calculator.LWq5aQni.js",
+  "copy_live": [
+   "learn/magi-phaseout: '$150,999 loses nothing and one at $151,000 loses $100'",
+   "senior page: '2 x ($6,000 - $600) = $10,800'"
+  ],
+  "callouts": {
+   "senior_mfj_260000": "Fully phased out at $250,000",
+   "ot_single_300000": "Fully phased out at $275,000"
+  },
+  "worker_routes": {
+   "/sitemap.xml": "301 -> /sitemap-index.xml",
+   "/google1a218412aeef37cf.html": "200",
+   "/does-not-exist": "404"
+  }
+ },
+ "commit": {
+  "sha": "1c65d36cd92e598e2c2667c8c0f5311d991f219b",
+  "branch": "main",
+  "pushed": true,
+  "pushes": 1,
+  "note": "[skip ci] used so the push-triggered deploy workflow did not redeploy over the recorded version; confirmed no Actions run started."
+ },
+ "open_issues": [
+  "Repo workflow deploy.yml redeploys main on every push AND weekly (Mon 12:17 UTC). Main now holds the fix, so the next cron run (2026-11-02) will ship the same code with a new version ID. The 2026-10-26 cron run failed (likely Actions budget). Workflow has no paths/concurrency/timeout-minutes.",
+  "Desktop copy /Users/mike/Desktop/portfolio-empire/noovertimetax has unpushed commit 24cd256 (5 sprint pages) that is not on GitHub and not live. Its local main is now behind origin/main. Rebase onto 1c65d36 before pushing it; git objects there are dataless (iCloud) and time out.",
+  "package.json 'deploy' script still says 'wrangler pages deploy' (wrong, the site is a Worker). Left unchanged to keep scope.",
+  "Senior calculator assumes both spouses are 65+ on MFJ (no 'one spouse' option). Copy now says so.",
+  "Car-loan copy says fully gone at $150,000 single; with round-up it is gone from $149,001. Statement is still true, not changed.",
+  "Site has no married-filing-separately option, so the MFS $0 rule is not modelled.",
+  "wrangler 3.114.0 is old (4.x available)."
+ ],
+ "cleanup": {
+  "lsof_before_delete": "no open files (Chrome crashpad + 2 GoogleUpdater crash handlers that held cwd there were stopped first)",
+  "deleted": [
+   {
+    "path": "/Users/mike/noovertimetax-work/repo",
+    "size_kb": 349172
+   },
+   {
+    "path": "/Users/mike/noovertimetax-work/irs",
+    "size_kb": 324
+   },
+   {
+    "path": "/Users/mike/noovertimetax-work/live",
+    "size_kb": 216
+   },
+   {
+    "path": "/Users/mike/noovertimetax-work/check",
+    "size_kb": 16
+   },
+   {
+    "path": "/Users/mike/noovertimetax-work/chrome-profile",
+    "size_kb": 6260
+   },
+   {
+    "path": "/Users/mike/noovertimetax-work (whole folder incl. build logs; total of the rows above plus logs)",
+    "size_kb": 356000
+   }
+  ],
+  "total_mb": 348
+ }
+}

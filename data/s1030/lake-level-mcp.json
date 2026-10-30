@@ -1,0 +1,34 @@
+{
+ "repo": "lake-level-mcp",
+ "repo_url": "https://github.com/theluckystrike/lake-level-mcp",
+ "hosted_url": "https://lake-level-mcp.lipmichal.workers.dev/mcp",
+ "worker_version_id": "76415815-d5d4-480f-b53f-f8bcf89c1669",
+ "rollback": "npx wrangler delete --name lake-level-mcp",
+ "registry_name": "io.github.theluckystrike/lake-level-mcp",
+ "registry_visible": true,
+ "tools": [
+  "search_lakes",
+  "get_lake_level",
+  "get_lake_history",
+  "compare_lakes"
+ ],
+ "fixtures": 17,
+ "tests_passed": true,
+ "live_calls_ok": {
+  "compare_lakes": true,
+  "get_lake_level": true,
+  "get_lake_history": true,
+  "search_lakes": true
+ },
+ "npx_github_ok": true,
+ "sources": [
+  "see DATA_SOURCES.md (USGS, USACE, CDEC, USBR, TWDB)"
+ ],
+ "money_site": "https://lakelevelnow.com",
+ "open_issues": [
+  "Builder agent stalled after its last commit at 07:19 and was stopped at 08:30; the orchestrator finished the live calls, npx test, registry publish and this report.",
+  "44 lakes in 12 states, the site's own list; lakes outside it are not covered.",
+  "Lake Mead reading of 2026-10-30 was dated 2026-10-28 (USBR publishes with a lag)."
+ ],
+ "minutes": 95
+}

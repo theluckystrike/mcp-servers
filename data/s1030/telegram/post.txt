@@ -1,0 +1,22 @@
+Nine new free MCP servers for Claude and ChatGPT
+
+We built nine small servers that give your AI assistant facts it cannot know on its own. Each one is free, needs no account and no API key, and works when you paste one link into Claude or ChatGPT.
+
+No tax on overtime. The new 2025 to 2028 federal deductions for overtime, tips and seniors, checked line by line against the IRS form.
+Minimum wage. Every US state rate for 2026 and the increases already set for 2027.
+Paycheck calculator. Take-home pay after federal, state and payroll taxes for 2025 and 2026.
+UK income tax. Take-home pay for 2025/26 and 2026/27, with Scotland, student loans and the 100k trap.
+Gold price per gram. Live spot price by karat in about 160 currencies.
+Lake levels. Live water levels for US lakes and reservoirs.
+DSCR loan calculator. Loan math for rental property investors.
+Cups to grams. Baking conversions from measured weights for 271 ingredients.
+US business days. Federal and bank holidays, due dates and business day counts.
+
+To add one in Claude, open Settings, then Connectors, then Add custom connector, and paste the link from the list.
+
+Full list with links
+https://theluckystrike.github.io/mcp/data-servers/
+
+While we built the tax server we found three calculation errors on noovertimetax.com and fixed them, so the site now matches the IRS rules.
+
+Which data should your assistant know next? Tell us in Feature requests.

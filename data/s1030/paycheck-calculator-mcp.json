@@ -1,0 +1,392 @@
+{
+  "repo": "paycheck-calculator-mcp",
+  "repo_url": "https://github.com/theluckystrike/paycheck-calculator-mcp",
+  "hosted_url": "https://paycheck-calculator-mcp.lipmichal.workers.dev/mcp",
+  "worker_version_id": "af727f06-c8db-4fa3-8d72-709c9551ead4",
+  "rollback": "npx wrangler delete --name paycheck-calculator-mcp (brand-new worker; prior version 4e7c246f-419e-4f96-9490-a773f46ec136 was a federal-only build from this session)",
+  "registry_name": "io.github.theluckystrike/paycheck-calculator-mcp",
+  "registry_visible": true,
+  "tools": [
+    "calculate_take_home_pay",
+    "compare_states_take_home",
+    "salary_to_hourly",
+    "hourly_to_salary",
+    "get_federal_tax_brackets"
+  ],
+  "fixtures": 33,
+  "tests_passed": "33/33 (node --test test/*.test.mjs; 18 federal/conversion, 15 state)",
+  "live_calls_ok": {
+    "calculate_take_home_pay": true,
+    "compare_states_take_home": true,
+    "salary_to_hourly": true,
+    "hourly_to_salary": true,
+    "get_federal_tax_brackets": true
+  },
+  "npx_github_ok": true,
+  "stdio_local_ok": true,
+  "exact_state_method": [
+    "CA",
+    "NY",
+    "NJ",
+    "IL",
+    "PA",
+    "GA",
+    "NC"
+  ],
+  "schedule_but_labeled_estimate": [
+    "MI",
+    "VA",
+    "OH"
+  ],
+  "sources": [
+    "https://www.irs.gov/pub/irs-drop/rp-24-40.pdf",
+    "https://www.irs.gov/pub/irs-drop/rp-25-32.pdf",
+    "https://www.irs.gov/pub/irs-prior/p15--2025.pdf",
+    "https://www.irs.gov/pub/irs-pdf/p15.pdf",
+    "https://www.irs.gov/taxtopics/tc751",
+    "https://www.irs.gov/pub/irs-pdf/i8959.pdf",
+    "https://www.irs.gov/pub/irs-pdf/p15b.pdf",
+    "https://www.ftb.ca.gov/about-ftb/newsroom/tax-news/2026/10.html",
+    "https://www.ftb.ca.gov/forms/2025/2025-540-booklet.html",
+    "https://www.ftb.ca.gov/forms/2025/2025-540-ca-instructions.html",
+    "https://www.ftb.ca.gov/forms/2026/2026-540-es-instructions.html",
+    "https://www.tax.ny.gov/pdf/current_forms/it/it2105i.pdf",
+    "https://www.tax.ny.gov/pdf/publications/withholding/nys50_t_nys.pdf",
+    "https://www.nj.gov/treasury/taxation/pdf/current/1040esi.pdf",
+    "https://www.nj.gov/treasury/taxation/pdf/current/njwt.pdf",
+    "https://tax.illinois.gov/content/dam/soi/en/web/tax/forms/withholding/documents/currentyear/il-700-t.pdf",
+    "https://www.pa.gov/agencies/revenue/resources/tax-rates",
+    "https://dor.georgia.gov/document/document/2026-employers-tax-guide-updated-june-2026/download",
+    "https://www.ncdor.gov/taxes-forms/individual-income-tax/tax-rate-schedules",
+    "statewage.com src/lib/tax.ts commit 4e2fe39 (estimates for other states)"
+  ],
+  "money_site": "https://statewage.com (more = /states/<slug>/?utm_source=mcp&utm_medium=paycheck-calculator-mcp)",
+  "open_issues": [
+    "Brief asked for exact schedules in 10 states; 7 are exact (CA NY NJ IL PA GA NC). MI and VA are implemented from their schedules but labeled method=estimate: michigan.gov returned 403 and tax.virginia.gov refused connections, so values rest on search excerpts, not fetched documents.",
+    "Ohio 2026 sources conflict: R.C. 5747.02 as amended by H.B. 96 ($332 + 2.75% over $26,050) vs the Department's 2026 IT 1040ES (2.75%/3.125%). Statute version used, labeled estimate; codes.ohio.gov unreachable. Ohio joint filing and $20 exemption credits not applied.",
+    "ssa.gov returned 403 for every URL (Akamai); the 2025/2026 wage bases ($176,100 / $184,500) come from IRS Pub 15 (2025, 2026) and Topic 751 instead.",
+    "CA exemption-credit phase-out uses 2025 thresholds (FTB publishes 2026 in late December). NJ HSA taxability is inferred (NJ excludes only Archer MSA). PA 3.07% page has no year label.",
+    "Federal/NY tax computed from rate schedules; the IRS Tax Table (<$100k) and NY tax table (<$65k) use $50 bands and can differ by a few dollars. Stated in every result's assumptions.",
+    "Registry already holds an older io.github.theluckystrike/paycheck-calculator 1.0.0 (another estate server); this one is a separate name.",
+    "Local taxes (NYC, Yonkers, OH cities, PA EIT, MD/IN counties) and state payroll taxes (CA SDI, NJ SUI/DI/FLI) are out of scope and stated so.",
+    "Pushes used: 2 of 3. GitHub search ranking not checked (search API rate-limited, not called)."
+  ],
+  "live_raw": {
+    "calculate_take_home_pay": {
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "California, single, 2026: gross $85,000.00 a year ($3,269.23 biweekly). Federal income tax $9,870.00 on taxable income $68,900.00 after the $16,100.00 standard deduction (marginal 22%). Social Security $5,270.00 (6.2% up to the $184,500.00 wage base), Medicare $1,232.50. State income tax $3,515.86 (exact 2026 schedule). Take-home $65,111.64 a year, $2,504.29 per biweekly paycheck; effective tax rate 23.4%.\n\nEstimate of annual tax on wages, not tax advice and not your employer's W-4 withholding. Uses the standard deduction and no credits. Local taxes (NYC, Yonkers, Ohio cities, Pennsylvania EIT, Maryland and Indiana counties) and state payroll taxes such as CA SDI are not included."
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"state\": \"CA\",\n  \"state_name\": \"California\",\n  \"filing_status\": \"single\",\n  \"tax_year\": 2026,\n  \"pay_frequency\": \"biweekly\",\n  \"periods_per_year\": 26,\n  \"gross\": {\n    \"annual\": 85000,\n    \"per_period\": 3269.23\n  },\n  \"pretax\": {\n    \"k401_annual\": 0,\n    \"hsa_annual\": 0\n  },\n  \"federal\": {\n    \"taxable_income\": 68900,\n    \"standard_deduction\": 16100,\n    \"income_tax\": 9870,\n    \"marginal_rate\": 0.22,\n    \"social_security\": 5270,\n    \"social_security_wages\": 85000,\n    \"social_security_wage_base\": 184500,\n    \"medicare\": 1232.5,\n    \"additional_medicare\": 0,\n    \"additional_medicare_threshold\": 200000,\n    \"additional_medicare_employer_withholding\": 0,\n    \"method\": \"exact\"\n  },\n  \"state_tax\": {\n    \"state\": \"CA\",\n    \"method\": \"exact\",\n    \"rules_year\": 2026,\n    \"taxable_income\": 79100,\n    \"tax\": 3515.86,\n    \"marginal_rate\": 0.093,\n    \"steps\": [\n      \"CA AGI $85,000 = wages minus 401(k); California does not exclude HSA contributions.\",\n      \"Taxable $79,100 after the $5,900 standard deduction; 2026 schedule tax $3,673.86.\",\n      \"Minus personal exemption credit $158 (1 x $158).\"\n    ],\n    \"notes\": [\n      \"2026 rate schedules X, Y and Z, standard deduction ($5,900 / $11,800) and exemption credit ($158 / $316) from FTB's 2026 indexing notice.\",\n      \"The exemption credit phase-out uses the 2025 Form 540 thresholds; FTB publishes the 2026 ones in late December.\",\n      \"California does not recognize HSAs, so payroll HSA money is taxed. SDI (1.3% of wages) is a payroll tax and is not included.\",\n      \"Dependent credits ($491 each) and other credits are not included.\"\n    ],\n    \"source\": \"https://www.ftb.ca.gov/about-ftb/newsroom/tax-news/2026/10.html\"\n  },\n  \"totals\": {\n    \"total_tax_annual\": 19888.36,\n    \"effective_tax_rate\": 0.234\n  },\n  \"net\": {\n    \"annual\": 65111.64,\n    \"per_period\": 2504.29\n  },\n  \"per_period\": {\n    \"federal_income_tax\": 379.62,\n    \"social_security\": 202.69,\n    \"medicare\": 47.4,\n    \"state_income_tax\": 135.23,\n    \"k401\": 0,\n    \"hsa\": 0,\n    \"net\": 2504.29\n  },\n  \"assumptions\": [\n    \"Annual liability for tax year 2026, spread evenly over 26 pay periods. Your employer's withholding (IRS Pub. 15-T, W-4) can differ.\",\n    \"This pay is treated as the household's only income, with the standard deduction and no credits or other adjustments.\",\n    \"401(k) is a traditional pre-tax deferral: it lowers income tax but not Social Security or Medicare. HSA is a payroll (cafeteria plan) contribution: it lowers income tax, Social Security and Medicare (IRS Pub. 15-B).\",\n    \"Additional Medicare tax uses the single threshold of $200,000. Employers withhold it on wages over $200,000 regardless of filing status; the difference settles on Form 8959.\",\n    \"Income tax is computed from the rate schedules. The IRS Tax Table (taxable income under $100,000) and New York's tax table (under $65,000) use $50 bands, so a filed return can differ by a few dollars.\",\n    \"Local income taxes are out of scope.\"\n  ],\n  \"summary\": \"California, single, 2026: gross $85,000.00 a year ($3,269.23 biweekly). Federal income tax $9,870.00 on taxable income $68,900.00 after the $16,100.00 standard deduction (marginal 22%). Social Security $5,270.00 (6.2% up to the $184,500.00 wage base), Medicare $1,232.50. State income tax $3,515.86 (exact 2026 schedule). Take-home $65,111.64 a year, $2,504.29 per biweekly paycheck; effective tax rate 23.4%.\",\n  \"as_of\": \"2026-10-30\",\n  \"source\": \"https://www.irs.gov/pub/irs-drop/rp-25-32.pdf ; https://www.irs.gov/pub/irs-pdf/p15.pdf ; https://www.irs.gov/pub/irs-pdf/i8959.pdf ; https://www.ftb.ca.gov/about-ftb/newsroom/tax-news/2026/10.html\",\n  \"more\": \"https://statewage.com/states/california/?utm_source=mcp&utm_medium=paycheck-calculator-mcp\",\n  \"disclaimer\": \"Estimate of annual tax on wages, not tax advice and not your employer's W-4 withholding. Uses the standard deduction and no credits. Local taxes (NYC, Yonkers, Ohio cities, Pennsylvania EIT, Maryland and Indiana counties) and state payroll taxes such as CA SDI are not included.\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "state": "CA",
+          "state_name": "California",
+          "filing_status": "single",
+          "tax_year": 2026,
+          "pay_frequency": "biweekly",
+          "periods_per_year": 26,
+          "gross": {
+            "annual": 85000,
+            "per_period": 3269.23
+          },
+          "pretax": {
+            "k401_annual": 0,
+            "hsa_annual": 0
+          },
+          "federal": {
+            "taxable_income": 68900,
+            "standard_deduction": 16100,
+            "income_tax": 9870,
+            "marginal_rate": 0.22,
+            "social_security": 5270,
+            "social_security_wages": 85000,
+            "social_security_wage_base": 184500,
+            "medicare": 1232.5,
+            "additional_medicare": 0,
+            "additional_medicare_threshold": 200000,
+            "additional_medicare_employer_withholding": 0,
+            "method": "exact"
+          },
+          "state_tax": {
+            "state": "CA",
+            "method": "exact",
+            "rules_year": 2026,
+            "taxable_income": 79100,
+            "tax": 3515.86,
+            "marginal_rate": 0.093,
+            "steps": [
+              "CA AGI $85,000 = wages minus 401(k); California does not exclude HSA contributions.",
+              "Taxable $79,100 after the $5,900 standard deduction; 2026 schedule tax $3,673.86.",
+              "Minus personal exemption credit $158 (1 x $158)."
+            ],
+            "notes": [
+              "2026 rate schedules X, Y and Z, standard deduction ($5,900 / $11,800) and exemption credit ($158 / $316) from FTB's 2026 indexing notice.",
+              "The exemption credit phase-out uses the 2025 Form 540 thresholds; FTB publishes the 2026 ones in late December.",
+              "California does not recognize HSAs, so payroll HSA money is taxed. SDI (1.3% of wages) is a payroll tax and is not included.",
+              "Dependent credits ($491 each) and other credits are not included."
+            ],
+            "source": "https://www.ftb.ca.gov/about-ftb/newsroom/tax-news/2026/10.html"
+          },
+          "totals": {
+            "total_tax_annual": 19888.36,
+            "effective_tax_rate": 0.234
+          },
+          "net": {
+            "annual": 65111.64,
+            "per_period": 2504.29
+          },
+          "per_period": {
+            "federal_income_tax": 379.62,
+            "social_security": 202.69,
+            "medicare": 47.4,
+            "state_income_tax": 135.23,
+            "k401": 0,
+            "hsa": 0,
+            "net": 2504.29
+          },
+          "assumptions": [
+            "Annual liability for tax year 2026, spread evenly over 26 pay periods. Your employer's withholding (IRS Pub. 15-T, W-4) can differ.",
+            "This pay is treated as the household's only income, with the standard deduction and no credits or other adjustments.",
+            "401(k) is a traditional pre-tax deferral: it lowers income tax but not Social Security or Medicare. HSA is a payroll (cafeteria plan) contribution: it lowers income tax, Social Security and Medicare (IRS Pub. 15-B).",
+            "Additional Medicare tax uses the single threshold of $200,000. Employers withhold it on wages over $200,000 regardless of filing status; the difference settles on Form 8959.",
+            "Income tax is computed from the rate schedules. The IRS Tax Table (taxable income under $100,000) and New York's tax table (under $65,000) use $50 bands, so a filed return can differ by a few dollars.",
+            "Local income taxes are out of scope."
+          ],
+          "summary": "California, single, 2026: gross $85,000.00 a year ($3,269.23 biweekly). Federal income tax $9,870.00 on taxable income $68,900.00 after the $16,100.00 standard deduction (marginal 22%). Social Security $5,270.00 (6.2% up to the $184,500.00 wage base), Medicare $1,232.50. State income tax $3,515.86 (exact 2026 schedule). Take-home $65,111.64 a year, $2,504.29 per biweekly paycheck; effective tax rate 23.4%.",
+          "as_of": "2026-10-30",
+          "source": "https://www.irs.gov/pub/irs-drop/rp-25-32.pdf ; https://www.irs.gov/pub/irs-pdf/p15.pdf ; https://www.irs.gov/pub/irs-pdf/i8959.pdf ; https://www.ftb.ca.gov/about-ftb/newsroom/tax-news/2026/10.html",
+          "more": "https://statewage.com/states/california/?utm_source=mcp&utm_medium=paycheck-calculator-mcp",
+          "disclaimer": "Estimate of annual tax on wages, not tax advice and not your employer's W-4 withholding. Uses the standard deduction and no credits. Local taxes (NYC, Yonkers, Ohio cities, Pennsylvania EIT, Maryland and Indiana counties) and state payroll taxes such as CA SDI are not included."
+        }
+      },
+      "jsonrpc": "2.0",
+      "id": 1
+    },
+    "salary_to_hourly": {
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "$62,400.00 a year over 2,080 hours (40 h x 52 weeks) is $30.00 an hour: $1,200.00 a week, $2,400.00 biweekly, $2,600.00 semimonthly, $5,200.00 a month, before tax.\n\nEstimate of annual tax on wages, not tax advice and not your employer's W-4 withholding. Uses the standard deduction and no credits. Local taxes (NYC, Yonkers, Ohio cities, Pennsylvania EIT, Maryland and Indiana counties) and state payroll taxes such as CA SDI are not included."
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"annual_salary\": 62400,\n  \"hours_per_week\": 40,\n  \"weeks_per_year\": 52,\n  \"hours_per_year\": 2080,\n  \"hourly\": 30,\n  \"weekly\": 1200,\n  \"biweekly\": 2400,\n  \"semimonthly\": 2600,\n  \"monthly\": 5200,\n  \"summary\": \"$62,400.00 a year over 2,080 hours (40 h x 52 weeks) is $30.00 an hour: $1,200.00 a week, $2,400.00 biweekly, $2,600.00 semimonthly, $5,200.00 a month, before tax.\",\n  \"as_of\": \"2026-10-30\",\n  \"source\": \"https://statewage.com/salary-to-hourly/\",\n  \"more\": \"https://statewage.com/salary-to-hourly/?utm_source=mcp&utm_medium=paycheck-calculator-mcp\",\n  \"disclaimer\": \"Estimate of annual tax on wages, not tax advice and not your employer's W-4 withholding. Uses the standard deduction and no credits. Local taxes (NYC, Yonkers, Ohio cities, Pennsylvania EIT, Maryland and Indiana counties) and state payroll taxes such as CA SDI are not included.\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "annual_salary": 62400,
+          "hours_per_week": 40,
+          "weeks_per_year": 52,
+          "hours_per_year": 2080,
+          "hourly": 30,
+          "weekly": 1200,
+          "biweekly": 2400,
+          "semimonthly": 2600,
+          "monthly": 5200,
+          "summary": "$62,400.00 a year over 2,080 hours (40 h x 52 weeks) is $30.00 an hour: $1,200.00 a week, $2,400.00 biweekly, $2,600.00 semimonthly, $5,200.00 a month, before tax.",
+          "as_of": "2026-10-30",
+          "source": "https://statewage.com/salary-to-hourly/",
+          "more": "https://statewage.com/salary-to-hourly/?utm_source=mcp&utm_medium=paycheck-calculator-mcp",
+          "disclaimer": "Estimate of annual tax on wages, not tax advice and not your employer's W-4 withholding. Uses the standard deduction and no credits. Local taxes (NYC, Yonkers, Ohio cities, Pennsylvania EIT, Maryland and Indiana counties) and state payroll taxes such as CA SDI are not included."
+        }
+      },
+      "jsonrpc": "2.0",
+      "id": 3
+    },
+    "hourly_to_salary": {
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "$32.00 an hour for 40 h a week plus 5 overtime hours at 1.5x is $1,520.00 a week, $6,586.67 a month and $79,040.00 a year over 52 weeks, before tax.\n\nEstimate of annual tax on wages, not tax advice and not your employer's W-4 withholding. Uses the standard deduction and no credits. Local taxes (NYC, Yonkers, Ohio cities, Pennsylvania EIT, Maryland and Indiana counties) and state payroll taxes such as CA SDI are not included."
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"hourly_rate\": 32,\n  \"hours_per_week\": 40,\n  \"overtime_hours_per_week\": 5,\n  \"overtime_multiplier\": 1.5,\n  \"weeks_per_year\": 52,\n  \"weekly\": 1520,\n  \"annual_salary\": 79040,\n  \"monthly\": 6586.67,\n  \"summary\": \"$32.00 an hour for 40 h a week plus 5 overtime hours at 1.5x is $1,520.00 a week, $6,586.67 a month and $79,040.00 a year over 52 weeks, before tax.\",\n  \"as_of\": \"2026-10-30\",\n  \"source\": \"https://statewage.com/salary-to-hourly/\",\n  \"more\": \"https://statewage.com/salary-to-hourly/?utm_source=mcp&utm_medium=paycheck-calculator-mcp\",\n  \"disclaimer\": \"Estimate of annual tax on wages, not tax advice and not your employer's W-4 withholding. Uses the standard deduction and no credits. Local taxes (NYC, Yonkers, Ohio cities, Pennsylvania EIT, Maryland and Indiana counties) and state payroll taxes such as CA SDI are not included.\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "hourly_rate": 32,
+          "hours_per_week": 40,
+          "overtime_hours_per_week": 5,
+          "overtime_multiplier": 1.5,
+          "weeks_per_year": 52,
+          "weekly": 1520,
+          "annual_salary": 79040,
+          "monthly": 6586.67,
+          "summary": "$32.00 an hour for 40 h a week plus 5 overtime hours at 1.5x is $1,520.00 a week, $6,586.67 a month and $79,040.00 a year over 52 weeks, before tax.",
+          "as_of": "2026-10-30",
+          "source": "https://statewage.com/salary-to-hourly/",
+          "more": "https://statewage.com/salary-to-hourly/?utm_source=mcp&utm_medium=paycheck-calculator-mcp",
+          "disclaimer": "Estimate of annual tax on wages, not tax advice and not your employer's W-4 withholding. Uses the standard deduction and no credits. Local taxes (NYC, Yonkers, Ohio cities, Pennsylvania EIT, Maryland and Indiana counties) and state payroll taxes such as CA SDI are not included."
+        }
+      },
+      "jsonrpc": "2.0",
+      "id": 4
+    },
+    "get_federal_tax_brackets": {
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "2025 federal brackets for head of household: 10% over $0.00, 12% over $17,000.00, 22% over $64,850.00, 24% over $103,350.00, 32% over $197,300.00, 35% over $250,500.00, 37% over $626,350.00. Standard deduction $23,625.00. Social Security wage base $176,100.00. Rev. Proc. 2024-40 Tables 1-4; standard deduction from IRC 63(c)(7) as amended by P.L. 119-21 (One Big Beautiful Bill Act), restated in Rev. Proc. 2025-32 section 3.01.\n\nEstimate of annual tax on wages, not tax advice and not your employer's W-4 withholding. Uses the standard deduction and no credits. Local taxes (NYC, Yonkers, Ohio cities, Pennsylvania EIT, Maryland and Indiana counties) and state payroll taxes such as CA SDI are not included."
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"tax_year\": 2025,\n  \"filing_status\": \"head_of_household\",\n  \"brackets\": [\n    {\n      \"rate\": 0.1,\n      \"over\": 0,\n      \"up_to\": 17000,\n      \"tax_on_lower_brackets\": 0\n    },\n    {\n      \"rate\": 0.12,\n      \"over\": 17000,\n      \"up_to\": 64850,\n      \"tax_on_lower_brackets\": 1700\n    },\n    {\n      \"rate\": 0.22,\n      \"over\": 64850,\n      \"up_to\": 103350,\n      \"tax_on_lower_brackets\": 7442\n    },\n    {\n      \"rate\": 0.24,\n      \"over\": 103350,\n      \"up_to\": 197300,\n      \"tax_on_lower_brackets\": 15912\n    },\n    {\n      \"rate\": 0.32,\n      \"over\": 197300,\n      \"up_to\": 250500,\n      \"tax_on_lower_brackets\": 38460\n    },\n    {\n      \"rate\": 0.35,\n      \"over\": 250500,\n      \"up_to\": 626350,\n      \"tax_on_lower_brackets\": 55484\n    },\n    {\n      \"rate\": 0.37,\n      \"over\": 626350,\n      \"up_to\": null,\n      \"tax_on_lower_brackets\": 187031.5\n    }\n  ],\n  \"standard_deduction\": 23625,\n  \"social_security\": {\n    \"rate\": 0.062,\n    \"wage_base\": 176100\n  },\n  \"medicare\": {\n    \"rate\": 0.0145,\n    \"additional_rate\": 0.009,\n    \"additional_threshold\": 200000,\n    \"employer_withholding_threshold\": 200000\n  },\n  \"legal_basis\": \"Rev. Proc. 2024-40 Tables 1-4; standard deduction from IRC 63(c)(7) as amended by P.L. 119-21 (One Big Beautiful Bill Act), restated in Rev. Proc. 2025-32 section 3.01.\",\n  \"source\": \"https://www.irs.gov/pub/irs-drop/rp-24-40.pdf ; https://www.irs.gov/pub/irs-drop/rp-25-32.pdf\",\n  \"summary\": \"2025 federal brackets for head of household: 10% over $0.00, 12% over $17,000.00, 22% over $64,850.00, 24% over $103,350.00, 32% over $197,300.00, 35% over $250,500.00, 37% over $626,350.00. Standard deduction $23,625.00. Social Security wage base $176,100.00. Rev. Proc. 2024-40 Tables 1-4; standard deduction from IRC 63(c)(7) as amended by P.L. 119-21 (One Big Beautiful Bill Act), restated in Rev. Proc. 2025-32 section 3.01.\",\n  \"as_of\": \"2026-10-30\",\n  \"more\": \"https://statewage.com/tax-bracket-calculator/?utm_source=mcp&utm_medium=paycheck-calculator-mcp\",\n  \"disclaimer\": \"Estimate of annual tax on wages, not tax advice and not your employer's W-4 withholding. Uses the standard deduction and no credits. Local taxes (NYC, Yonkers, Ohio cities, Pennsylvania EIT, Maryland and Indiana counties) and state payroll taxes such as CA SDI are not included.\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "tax_year": 2025,
+          "filing_status": "head_of_household",
+          "brackets": [
+            {
+              "rate": 0.1,
+              "over": 0,
+              "up_to": 17000,
+              "tax_on_lower_brackets": 0
+            },
+            {
+              "rate": 0.12,
+              "over": 17000,
+              "up_to": 64850,
+              "tax_on_lower_brackets": 1700
+            },
+            {
+              "rate": 0.22,
+              "over": 64850,
+              "up_to": 103350,
+              "tax_on_lower_brackets": 7442
+            },
+            {
+              "rate": 0.24,
+              "over": 103350,
+              "up_to": 197300,
+              "tax_on_lower_brackets": 15912
+            },
+            {
+              "rate": 0.32,
+              "over": 197300,
+              "up_to": 250500,
+              "tax_on_lower_brackets": 38460
+            },
+            {
+              "rate": 0.35,
+              "over": 250500,
+              "up_to": 626350,
+              "tax_on_lower_brackets": 55484
+            },
+            {
+              "rate": 0.37,
+              "over": 626350,
+              "up_to": null,
+              "tax_on_lower_brackets": 187031.5
+            }
+          ],
+          "standard_deduction": 23625,
+          "social_security": {
+            "rate": 0.062,
+            "wage_base": 176100
+          },
+          "medicare": {
+            "rate": 0.0145,
+            "additional_rate": 0.009,
+            "additional_threshold": 200000,
+            "employer_withholding_threshold": 200000
+          },
+          "legal_basis": "Rev. Proc. 2024-40 Tables 1-4; standard deduction from IRC 63(c)(7) as amended by P.L. 119-21 (One Big Beautiful Bill Act), restated in Rev. Proc. 2025-32 section 3.01.",
+          "source": "https://www.irs.gov/pub/irs-drop/rp-24-40.pdf ; https://www.irs.gov/pub/irs-drop/rp-25-32.pdf",
+          "summary": "2025 federal brackets for head of household: 10% over $0.00, 12% over $17,000.00, 22% over $64,850.00, 24% over $103,350.00, 32% over $197,300.00, 35% over $250,500.00, 37% over $626,350.00. Standard deduction $23,625.00. Social Security wage base $176,100.00. Rev. Proc. 2024-40 Tables 1-4; standard deduction from IRC 63(c)(7) as amended by P.L. 119-21 (One Big Beautiful Bill Act), restated in Rev. Proc. 2025-32 section 3.01.",
+          "as_of": "2026-10-30",
+          "more": "https://statewage.com/tax-bracket-calculator/?utm_source=mcp&utm_medium=paycheck-calculator-mcp",
+          "disclaimer": "Estimate of annual tax on wages, not tax advice and not your employer's W-4 withholding. Uses the standard deduction and no credits. Local taxes (NYC, Yonkers, Ohio cities, Pennsylvania EIT, Maryland and Indiana counties) and state payroll taxes such as CA SDI are not included."
+        }
+      },
+      "jsonrpc": "2.0",
+      "id": 5
+    },
+    "compare_states_take_home": {
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "On $120,000.00 a year (married filing jointly, 2026), federal income tax is $10,040.00 and FICA $9,180.00 in every state. Highest take-home: Texas at $100,780.00 (state tax $0.00). Lowest: New York at $95,417.15, $5,362.85 less a year. 0 of 4 state figures are estimates; check the method field.\n\nEstimate of annual tax on wages, not tax advice and not your employer's W-4 withholding. Uses the standard deduction and no credits. Local taxes (NYC, Yonkers, Ohio cities, Pennsylvania EIT, Maryland and Indiana counties) and state payroll taxes such as CA SDI are not included."
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"tax_year\": 2026,\n  \"filing_status\": \"married_filing_jointly\",\n  \"pay_frequency\": \"biweekly\",\n  \"gross_annual\": 120000,\n  \"federal_income_tax\": 10040,\n  \"fica\": 9180,\n  \"states\": [\n    {\n      \"rank\": 1,\n      \"state\": \"TX\",\n      \"state_name\": \"Texas\",\n      \"state_income_tax\": 0,\n      \"method\": \"no_wage_income_tax\",\n      \"net_annual\": 100780,\n      \"net_per_period\": 3876.15,\n      \"behind_best_annual\": 0,\n      \"more\": \"https://statewage.com/states/texas/?utm_source=mcp&utm_medium=paycheck-calculator-mcp\"\n    },\n    {\n      \"rank\": 2,\n      \"state\": \"WA\",\n      \"state_name\": \"Washington\",\n      \"state_income_tax\": 0,\n      \"method\": \"no_wage_income_tax\",\n      \"net_annual\": 100780,\n      \"net_per_period\": 3876.15,\n      \"behind_best_annual\": 0,\n      \"more\": \"https://statewage.com/states/washington/?utm_source=mcp&utm_medium=paycheck-calculator-mcp\"\n    },\n    {\n      \"rank\": 3,\n      \"state\": \"NJ\",\n      \"state_name\": \"New Jersey\",\n      \"state_income_tax\": 3744.5,\n      \"method\": \"exact\",\n      \"net_annual\": 97035.5,\n      \"net_per_period\": 3732.13,\n      \"behind_best_annual\": 3744.5,\n      \"more\": \"https://statewage.com/states/new-jersey/?utm_source=mcp&utm_medium=paycheck-calculator-mcp\"\n    },\n    {\n      \"rank\": 4,\n      \"state\": \"NY\",\n      \"state_name\": \"New York\",\n      \"state_income_tax\": 5362.85,\n      \"method\": \"exact\",\n      \"net_annual\": 95417.15,\n      \"net_per_period\": 3669.89,\n      \"behind_best_annual\": 5362.85,\n      \"more\": \"https://statewage.com/states/new-york/?utm_source=mcp&utm_medium=paycheck-calculator-mcp\"\n    }\n  ],\n  \"summary\": \"On $120,000.00 a year (married filing jointly, 2026), federal income tax is $10,040.00 and FICA $9,180.00 in every state. Highest take-home: Texas at $100,780.00 (state tax $0.00). Lowest: New York at $95,417.15, $5,362.85 less a year. 0 of 4 state figures are estimates; check the method field.\",\n  \"as_of\": \"2026-10-30\",\n  \"source\": \"https://www.irs.gov/pub/irs-drop/rp-25-32.pdf ; https://www.irs.gov/pub/irs-pdf/p15.pdf ; https://www.irs.gov/pub/irs-pdf/i8959.pdf ; https://statewage.com/states/\",\n  \"more\": \"https://statewage.com/states/?utm_source=mcp&utm_medium=paycheck-calculator-mcp\",\n  \"disclaimer\": \"Estimate of annual tax on wages, not tax advice and not your employer's W-4 withholding. Uses the standard deduction and no credits. Local taxes (NYC, Yonkers, Ohio cities, Pennsylvania EIT, Maryland and Indiana counties) and state payroll taxes such as CA SDI are not included.\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "tax_year": 2026,
+          "filing_status": "married_filing_jointly",
+          "pay_frequency": "biweekly",
+          "gross_annual": 120000,
+          "federal_income_tax": 10040,
+          "fica": 9180,
+          "states": [
+            {
+              "rank": 1,
+              "state": "TX",
+              "state_name": "Texas",
+              "state_income_tax": 0,
+              "method": "no_wage_income_tax",
+              "net_annual": 100780,
+              "net_per_period": 3876.15,
+              "behind_best_annual": 0,
+              "more": "https://statewage.com/states/texas/?utm_source=mcp&utm_medium=paycheck-calculator-mcp"
+            },
+            {
+              "rank": 2,
+              "state": "WA",
+              "state_name": "Washington",
+              "state_income_tax": 0,
+              "method": "no_wage_income_tax",
+              "net_annual": 100780,
+              "net_per_period": 3876.15,
+              "behind_best_annual": 0,
+              "more": "https://statewage.com/states/washington/?utm_source=mcp&utm_medium=paycheck-calculator-mcp"
+            },
+            {
+              "rank": 3,
+              "state": "NJ",
+              "state_name": "New Jersey",
+              "state_income_tax": 3744.5,
+              "method": "exact",
+              "net_annual": 97035.5,
+              "net_per_period": 3732.13,
+              "behind_best_annual": 3744.5,
+              "more": "https://statewage.com/states/new-jersey/?utm_source=mcp&utm_medium=paycheck-calculator-mcp"
+            },
+            {
+              "rank": 4,
+              "state": "NY",
+              "state_name": "New York",
+              "state_income_tax": 5362.85,
+              "method": "exact",
+              "net_annual": 95417.15,
+              "net_per_period": 3669.89,
+              "behind_best_annual": 5362.85,
+              "more": "https://statewage.com/states/new-york/?utm_source=mcp&utm_medium=paycheck-calculator-mcp"
+            }
+          ],
+          "summary": "On $120,000.00 a year (married filing jointly, 2026), federal income tax is $10,040.00 and FICA $9,180.00 in every state. Highest take-home: Texas at $100,780.00 (state tax $0.00). Lowest: New York at $95,417.15, $5,362.85 less a year. 0 of 4 state figures are estimates; check the method field.",
+          "as_of": "2026-10-30",
+          "source": "https://www.irs.gov/pub/irs-drop/rp-25-32.pdf ; https://www.irs.gov/pub/irs-pdf/p15.pdf ; https://www.irs.gov/pub/irs-pdf/i8959.pdf ; https://statewage.com/states/",
+          "more": "https://statewage.com/states/?utm_source=mcp&utm_medium=paycheck-calculator-mcp",
+          "disclaimer": "Estimate of annual tax on wages, not tax advice and not your employer's W-4 withholding. Uses the standard deduction and no credits. Local taxes (NYC, Yonkers, Ohio cities, Pennsylvania EIT, Maryland and Indiana counties) and state payroll taxes such as CA SDI are not included."
+        }
+      },
+      "jsonrpc": "2.0",
+      "id": 2
+    }
+  },
+  "minutes": 62
+}

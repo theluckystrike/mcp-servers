@@ -140,74 +140,47 @@ kpi_cards = [
     ("Repo stars", str(val("repo_stars", "2")), "Social proof is the weakest signal in the funnel."),
 ]
 
-SHIPPED = [
-    ("Fixed 10 live guide pages that published '{% raw %}' as their title",
-     "https://claudecodeguides.com/mcp/guides/generate-invoice-pdf-claude/",
-     "Front matter sat inside a Liquid raw block, so Jekyll published the tags literally. Moved front matter above the block; proven in an isolated build that titles parse and JSON braces survive."),
-    ("2 new awesome-list PRs opened (mergeable)", "https://github.com/AlexMili/Awesome-MCP/pull/339",
-     "Distribution was stuck on lists that already listed us. Two lists where a code search returned zero "
-     "mentions of Zovo now have real PRs: AlexMili/Awesome-MCP #339 and lobstercare/mcp-hub #113, each a "
-     "single line in the repo's own format. Both verified OPEN + MERGEABLE, 1 file changed. Pitfall recorded: "
-     "gh repo fork silently no-ops when you own a repo of the same name, so the fork parent must be verified "
-     "before pushing."),
-    ("Server pages now link their walk-through", "https://theluckystrike.github.io/mcp/time-tracker/",
-     "The 11 how-to guides were orphans: nothing in the catalogue linked to them. Ten server pages now carry "
-     "a descriptive-anchor link to the guide that shows the job end to end (e.g. time-tracker -> 'MCP server "
-     "for time tracking'), with selftest asserting the server id exists, the guide file exists and the page "
-     "actually links it. Verified live on GitHub Pages."),
-    ("58 competing mirrors consolidated", "https://theluckystrike.github.io/mcp/invoice/",
-     "The same server existed at three URLs, each self-canonical: mcp.zovo.one/s/<id> (4,714 words), "
-     "theluckystrike.github.io/mcp/<id> (525) and claudecodeguides.com/mcp/<id> (744). Duplicate clusters, "
-     "zero consolidation. The github.io mirror now carries canonical_url -> the claudecodeguides copy "
-     "(verified live), so signals land on the domain with 2,023 sitemap URLs instead of being split three ways. "
-     "The page layout had canonical hardcoded, so it now honours page.canonical_url."),
-    ("Every buy button pointed at a 404", "https://theluckystrike.github.io/mcp/invoice/",
-     "The generator emitted &src=... instead of ?src=..., so all 58 buy links resolved to "
-     "https://mcp.zovo.one/buy/<id>&src=... which returns 404 — the only revenue click on the whole public "
-     "surface was dead. Fixed to ?src=hub.<slug>, every CTA is now attributable, and selftest.py fails the "
-     "build if any buy link is untagged or malformed. Verified live on GitHub Pages."),
-    ("Hosted endpoint claim made truthful", "https://theluckystrike.github.io/mcp/budget/",
-     "Every page used to promise a hosted URL even where the worker had no route. A 58-endpoint MCP "
-     "handshake sweep found 46 live / 12 missing; pages, FAQ copy and JSON-LD offers are now driven by "
-     "data/hosted_live.json, so the 12 local-only servers say so. Regression gate added to selftest.py."),
-    ("claudecodeguides.com deploy unblocked", "https://github.com/theluckystrike/claude-skills-guide/actions",
-     "The CI deploy had been failing for days with Cloudflare 'Authentication error 10000': the repo secret "
-     "was stale. Rotated CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID to the working credentials, excluded "
-     "vendor+bundle from the Jekyll build, pushed the hub + 10 guides — and the deploy went green: "
-     "https://claudecodeguides.com/mcp/ answers 200, its sitemap.xml grew from 1,953 to 2,023 URLs, and IndexNow "
-     "accepted all 71 /mcp/ URLs. (Correction: 1,953 was the sitemap size, not an indexation count — that domain "
-     "is not in our GSC properties, so its indexation is unmeasured.)"),
-    ("Public MCP catalogue, 70 pages", "https://theluckystrike.github.io/mcp/",
-     "58 server pages + 11 how-to guides + index, unique copy, SoftwareApplication + FAQPage JSON-LD, sitemap-mcp.xml in the "
-     "sitemap index, nav + homepage card. Deploys on git push (GitHub Pages), so this is the one web surface "
-     "that can change without a Cloudflare token."),
-    ("Checkout proven end-to-end", "https://mcp.zovo.one/buy/invoice",
-     "Real browser headers → 303 → checkout.stripe.com/c/pay/cs_live_…. The rail was never broken; the "
-     "earlier “404 on POST” reading was the bot guard answering a scripted probe."),
-    ("mcp-servers README → catalogue", "https://github.com/theluckystrike/mcp-servers/pull/95",
-     "PR #95 adds the catalogue link above the fold. Blocked from merging by the required “Billing preflight” "
-     "check, which needs one approval."),
-    ("Repo description cleaned", "https://github.com/theluckystrike/mcp-servers",
-     "Removed the stray “mcprush.com-…” verification string, replaced with an accurate description plus the "
-     "catalogue URL."),
-    ("AEO answer set (10 pages)", "content/aeo/",
-     "Answer-shaped drafts for the queries buyers actually type: “generate invoice PDF from Claude”, "
-     "“edit Excel in Claude”, “convert bank statement to CSV”. Ready to publish on the catalogue."),
-    ("Launch kit", "content/launch/", "Show HN, r/mcp, r/ClaudeAI, dev.to, X thread, 5-email welcome sequence."),
-]
+import glob
+import html as _html
 
-NEXT = [
-    ("npm login  (5 minutes, unblocks the most)", "red",
-     "58 packages with real READMEs on the registry the MCP directory indexes. Then "
-     "`npm publish --access public` in each servers/*/ dir. Tokens: 0 → 58 indexable pages, and every LLM "
-     "that reads npm learns the names."),
-    ("Merge PR #95, then 3 more contextual links", "amber",
-     "One dofollow link from an indexed page is worth more than 58 new pages on a domain Google has not "
-     "discovered. Targets that already exist and are already indexed: claudecodeguides.com (1,953 URLs), "
-     "chrometipsguide.com, bestchromeextensions.com."),
-    ("Publish the 10 AEO pages on the catalogue", "green",
-     "They are written. They cost nothing to publish because the catalogue deploys on push."),
-]
+SESSIONS = sorted((json.load(open(f)) for f in glob.glob(os.path.join(ROOT, "data/sessions/*.json"))),
+                  key=lambda x: x["id"], reverse=True)
+SATS = [json.load(open(f)) for f in sorted(glob.glob(os.path.join(ROOT, "data/s1030/*-mcp.json")))]
+
+
+def esc(x):
+    return _html.escape(str(x), quote=True)
+
+
+def sat_rows():
+    """One row per data satellite, straight from its builder report."""
+    out = []
+    for r in SATS:
+        live = r.get("live_calls_ok") or {}
+        ok = sum(1 for v in live.values() if v)
+        tag = "ok" if live and ok == len(live) and r.get("registry_visible") else "warn"
+        out.append(
+            f'<tr><td><a href="{esc(r.get("repo_url", ""))}">{esc(r.get("repo", ""))}</a></td>'
+            f'<td class="num">{len(r.get("tools") or [])}</td>'
+            f'<td class="num">{esc(fx.get("node_tests", "") if isinstance(fx := r.get("fixtures", ""), dict) else fx)}</td>'
+            f'<td><span class="tag {tag}">{ok}/{len(live)} live calls</span></td>'
+            f'<td>{"yes" if r.get("registry_visible") else "no"}</td>'
+            f'<td><code>{esc(r.get("hosted_url", ""))}</code></td>'
+            f'<td><a href="{esc(r.get("money_site", ""))}">{esc(r.get("money_site", ""))}</a></td></tr>')
+    return "\n".join(out)
+
+
+def session_html(sess, open_):
+    items = "".join(f'<li><h3><a href="{esc(x["url"])}">{esc(x["title"])}</a></h3><p>{esc(x["detail"])}</p></li>'
+                    for x in sess.get("shipped", []))
+    nxt = "".join(f'<li><h3>{i + 1}. {esc(x["title"])} <span class="tag {STATUS_CLS[x["colour"]]}">'
+                  f'{"do first" if i == 0 else "queued"}</span></h3><p>{esc(x["detail"])}</p></li>'
+                  for i, x in enumerate(sess.get("next", [])))
+    return (f'<details{" open" if open_ else ""}><summary><b>{esc(sess["title"])}</b></summary>'
+            f'<p class="verdict">{esc(sess["verdict"])}</p>'
+            f'<h3 class="sec">Shipped</h3><ul class="actions">{items}</ul>'
+            f'<h3 class="sec">Next, in order of return per hour</h3><ul class="actions">{nxt}</ul></details>')
+
 
 now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
 total_tools = sum(len(s.get("tools") or []) for s in CAT["servers"])
@@ -260,6 +233,10 @@ html = f"""<!doctype html>
  ul.actions p {{ margin:6px 0 0; color:var(--dim); font-size:13.5px }}
  code {{ background:#0a0c10; border:1px solid var(--line); border-radius:5px; padding:1px 5px;
    font:12.5px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace }}
+ details {{ background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:12px 16px; margin-bottom:12px }}
+ summary {{ cursor:pointer }}
+ .verdict {{ color:var(--ink); font-size:14.5px }}
+ h3.sec {{ margin:18px 0 8px; color:var(--dim) }}
  footer {{ margin-top:48px; color:var(--mute); font-size:12.5px; border-top:1px solid var(--line); padding-top:16px }}
 </style></head>
 <body><div class="wrap">
@@ -269,29 +246,23 @@ html = f"""<!doctype html>
 <a href="https://mcp.zovo.one/">storefront</a></p>
 
 <h2>The constraint, in one line</h2>
-<div class="rail"><p style="margin:0;font-size:14.5px;color:var(--ink)">
-Stripe works. The catalogue works. <b>Google has indexed none of it.</b> 299 URLs submitted,
-0 indexed, “URL is unknown to Google”. With 0 indexed pages there is no organic traffic, and with
-no traffic the 58 servers and the checkout are irrelevant. Every hour spent on rails, copy or new
-servers is worth less than one hour spent on being discoverable.</p></div>
+<div class="rail"><p style="margin:0;font-size:14.5px;color:var(--ink)">{esc(SESSIONS[0]["verdict"])}</p></div>
+
+<h2>Data satellites (one-server repos, hosted, no token)</h2>
+<table><tr><th>repo</th><th class="num">tools</th><th class="num">fixtures</th><th>hosted</th><th>registry</th><th>URL</th><th>feeds</th></tr>
+{sat_rows() or '<tr><td colspan="7" class="dim">No satellite reports yet.</td></tr>'}
+</table>
 
 <h2>KPIs (measured, not claimed)</h2>
 <div class="kpis">
-{''.join(f'<div class="kpi"><div class="l">{l}</div><div class="v">{v}</div><div class="n">{n}</div></div>' for l, v, n in kpi_cards)}
+{''.join(f'<div class="kpi"><div class="l">{esc(l)}</div><div class="v">{esc(v)}</div><div class="n">{esc(n)}</div></div>' for l, v, n in (SESSIONS[0].get('kpis') and [(k['label'], k['value'], k['note']) for k in SESSIONS[0]['kpis']] or kpi_cards))}
 </div>
 
 <h2>Payment rails</h2>
 {rail_html()}
 
-<h2>Shipped this session</h2>
-<ul class="actions">
-{''.join(f'<li><h3><a href="{u}">{t}</a></h3><p>{d}</p></li>' for t, u, d in SHIPPED)}
-</ul>
-
-<h2>Next, in order of return per hour</h2>
-<ul class="actions">
-{''.join(f'<li><h3>{i+1}. {t} <span class="tag {STATUS_CLS[c]}">{"do first" if i==0 else "queued"}</span></h3><p>{d}</p></li>' for i,(t,c,d) in enumerate(NEXT))}
-</ul>
+<h2>Sessions, newest first</h2>
+{''.join(session_html(x, i == 0) for i, x in enumerate(SESSIONS))}
 
 <h2>The catalogue — every server, its price and its checkout</h2>
 {''.join(section_html(n, r) for n, r in sections)}

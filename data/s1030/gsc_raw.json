@@ -1,0 +1,402 @@
+{
+ "latest_dates_zovo_all": [
+  [
+   "2026-10-24",
+   66,
+   1
+  ],
+  [
+   "2026-10-25",
+   64,
+   2
+  ],
+  [
+   "2026-10-26",
+   79,
+   0
+  ],
+  [
+   "2026-10-27",
+   82,
+   3
+  ],
+  [
+   "2026-10-28",
+   64,
+   4
+  ],
+  [
+   "2026-10-29",
+   23,
+   1
+  ]
+ ],
+ "28d_final_ending_d3": {
+  "control_zovo_all_pages": {
+   "clicks": 51,
+   "impressions": 4133,
+   "rows": 281
+  },
+  "mcp_zovo_one": {
+   "total": {
+    "clicks": 0,
+    "impressions": 36,
+    "rows": 6
+   },
+   "top_pages": [
+    [
+     "https://mcp.zovo.one/",
+     24,
+     0,
+     3.9
+    ],
+    [
+     "https://mcp.zovo.one/mcp/connect",
+     7,
+     0,
+     1.4
+    ],
+    [
+     "https://mcp.zovo.one/mcp/time-tracker",
+     2,
+     0,
+     1.5
+    ],
+    [
+     "https://mcp.zovo.one/mcp/price-tracker",
+     1,
+     0,
+     1
+    ],
+    [
+     "https://mcp.zovo.one/mcp/token",
+     1,
+     0,
+     1
+    ],
+    [
+     "https://mcp.zovo.one/mcp/zip",
+     1,
+     0,
+     1
+    ]
+   ],
+   "top_queries": [
+    [
+     "site:zovo.one",
+     2,
+     0,
+     5
+    ]
+   ]
+  },
+  "path_mcp": {
+   "total": {
+    "clicks": 0,
+    "impressions": 12,
+    "rows": 5
+   },
+   "top_pages": [
+    [
+     "https://mcp.zovo.one/mcp/connect",
+     7,
+     0,
+     1.4
+    ],
+    [
+     "https://mcp.zovo.one/mcp/time-tracker",
+     2,
+     0,
+     1.5
+    ],
+    [
+     "https://mcp.zovo.one/mcp/price-tracker",
+     1,
+     0,
+     1
+    ],
+    [
+     "https://mcp.zovo.one/mcp/token",
+     1,
+     0,
+     1
+    ],
+    [
+     "https://mcp.zovo.one/mcp/zip",
+     1,
+     0,
+     1
+    ]
+   ],
+   "top_queries": []
+  },
+  "s_invoice": {
+   "total": {
+    "clicks": 0,
+    "impressions": 0,
+    "rows": 0
+   },
+   "top_pages": [],
+   "top_queries": []
+  }
+ },
+ "28d_all_ending_d1": {
+  "control_zovo_all_pages": {
+   "clicks": 56,
+   "impressions": 3663,
+   "rows": 273
+  },
+  "mcp_zovo_one": {
+   "total": {
+    "clicks": 0,
+    "impressions": 36,
+    "rows": 6
+   },
+   "top_pages": [
+    [
+     "https://mcp.zovo.one/",
+     25,
+     0,
+     3.9
+    ],
+    [
+     "https://mcp.zovo.one/mcp/connect",
+     7,
+     0,
+     1.4
+    ],
+    [
+     "https://mcp.zovo.one/mcp/price-tracker",
+     1,
+     0,
+     1
+    ],
+    [
+     "https://mcp.zovo.one/mcp/time-tracker",
+     1,
+     0,
+     2
+    ],
+    [
+     "https://mcp.zovo.one/mcp/token",
+     1,
+     0,
+     1
+    ],
+    [
+     "https://mcp.zovo.one/mcp/zip",
+     1,
+     0,
+     1
+    ]
+   ],
+   "top_queries": [
+    [
+     "site:zovo.one",
+     2,
+     0,
+     5
+    ]
+   ]
+  },
+  "path_mcp": {
+   "total": {
+    "clicks": 0,
+    "impressions": 11,
+    "rows": 5
+   },
+   "top_pages": [
+    [
+     "https://mcp.zovo.one/mcp/connect",
+     7,
+     0,
+     1.4
+    ],
+    [
+     "https://mcp.zovo.one/mcp/price-tracker",
+     1,
+     0,
+     1
+    ],
+    [
+     "https://mcp.zovo.one/mcp/time-tracker",
+     1,
+     0,
+     2
+    ],
+    [
+     "https://mcp.zovo.one/mcp/token",
+     1,
+     0,
+     1
+    ],
+    [
+     "https://mcp.zovo.one/mcp/zip",
+     1,
+     0,
+     1
+    ]
+   ],
+   "top_queries": []
+  },
+  "s_invoice": {
+   "total": {
+    "clicks": 0,
+    "impressions": 0,
+    "rows": 0
+   },
+   "top_pages": [],
+   "top_queries": []
+  }
+ },
+ "7d_all": {
+  "control_zovo_all_pages": {
+   "clicks": 19,
+   "impressions": 622,
+   "rows": 85
+  },
+  "mcp_zovo_one": {
+   "total": {
+    "clicks": 0,
+    "impressions": 3,
+    "rows": 1
+   },
+   "top_pages": [
+    [
+     "https://mcp.zovo.one/",
+     3,
+     0,
+     7
+    ]
+   ],
+   "top_queries": []
+  },
+  "path_mcp": {
+   "total": {
+    "clicks": 0,
+    "impressions": 0,
+    "rows": 0
+   },
+   "top_pages": [],
+   "top_queries": []
+  },
+  "s_invoice": {
+   "total": {
+    "clicks": 0,
+    "impressions": 0,
+    "rows": 0
+   },
+   "top_pages": [],
+   "top_queries": []
+  }
+ },
+ "r38_window_Sep26_Oct23": {
+  "control_zovo_all_pages": {
+   "clicks": 46,
+   "impressions": 4988,
+   "rows": 308
+  },
+  "mcp_zovo_one": {
+   "total": {
+    "clicks": 0,
+    "impressions": 38,
+    "rows": 6
+   },
+   "top_pages": [
+    [
+     "https://mcp.zovo.one/",
+     26,
+     0,
+     3.7
+    ],
+    [
+     "https://mcp.zovo.one/mcp/connect",
+     7,
+     0,
+     1.4
+    ],
+    [
+     "https://mcp.zovo.one/mcp/time-tracker",
+     2,
+     0,
+     1.5
+    ],
+    [
+     "https://mcp.zovo.one/mcp/price-tracker",
+     1,
+     0,
+     1
+    ],
+    [
+     "https://mcp.zovo.one/mcp/token",
+     1,
+     0,
+     1
+    ],
+    [
+     "https://mcp.zovo.one/mcp/zip",
+     1,
+     0,
+     1
+    ]
+   ],
+   "top_queries": [
+    [
+     "site:zovo.one",
+     3,
+     0,
+     3.7
+    ]
+   ]
+  },
+  "path_mcp": {
+   "total": {
+    "clicks": 0,
+    "impressions": 12,
+    "rows": 5
+   },
+   "top_pages": [
+    [
+     "https://mcp.zovo.one/mcp/connect",
+     7,
+     0,
+     1.4
+    ],
+    [
+     "https://mcp.zovo.one/mcp/time-tracker",
+     2,
+     0,
+     1.5
+    ],
+    [
+     "https://mcp.zovo.one/mcp/price-tracker",
+     1,
+     0,
+     1
+    ],
+    [
+     "https://mcp.zovo.one/mcp/token",
+     1,
+     0,
+     1
+    ],
+    [
+     "https://mcp.zovo.one/mcp/zip",
+     1,
+     0,
+     1
+    ]
+   ],
+   "top_queries": []
+  },
+  "s_invoice": {
+   "total": {
+    "clicks": 0,
+    "impressions": 0,
+    "rows": 0
+   },
+   "top_pages": [],
+   "top_queries": []
+  }
+ }
+}

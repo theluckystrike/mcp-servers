@@ -1,0 +1,40 @@
+{
+  "repo": "gold-price-per-gram-mcp",
+  "status": "go",
+  "go_decision": "GO. goldgramprice.com uses the keyless gold-api.com feed (scripts/fetch-spot.mjs; src/data/metals.json source=gold-api.com). gold-api.com/terms (effective 2026-09-10) allows commercial use, free real-time API with no rate limit; bans several requests per second, handled by a 300 s edge cache. FX from api.frankfurter.dev v2 (free, no key, commercial use allowed, 160+ central-bank currencies). The site's optional paid keys (goldapi.io, metalpriceapi.com) are not used; no secret in the repo.",
+  "repo_url": "https://github.com/theluckystrike/gold-price-per-gram-mcp",
+  "hosted_url": "https://gold-price-per-gram-mcp.lipmichal.workers.dev/mcp",
+  "worker_version_id": "5f7770d6-6bbe-45da-a04a-c3e1fe7aea2c",
+  "rollback": "npx wrangler delete --name gold-price-per-gram-mcp",
+  "registry_name": "io.github.theluckystrike/gold-price-per-gram-mcp",
+  "registry_visible": true,
+  "tools": ["get_gold_price_per_gram", "get_metal_prices", "calculate_jewelry_value", "convert_gold_units"],
+  "fixtures": 22,
+  "tests_passed": "22/22 (node --test)",
+  "local_stdio_ok": true,
+  "live_calls_ok": {"get_gold_price_per_gram": true, "get_metal_prices": true, "calculate_jewelry_value": true, "convert_gold_units": true},
+  "live_raw_responses": "/Users/mike/mcp-servers/satellites/gold-price-per-gram-mcp/.live/ (git-excluded)",
+  "npx_github_ok": true,
+  "more_links_200": "13/13 goldgramprice.com URLs with UTM returned 200",
+  "github": {"visibility": "public", "description_chars": 116, "topics": 15, "pushes": 1},
+  "sources": [
+    "https://api.gold-api.com/price/XAU (XAG, XPT, XPD) fetched 2026-10-30",
+    "https://gold-api.com/terms fetched 2026-10-30",
+    "https://api.frankfurter.dev/v2/rates?base=USD fetched 2026-10-30",
+    "https://frankfurter.dev/ fetched 2026-10-30",
+    "https://www.nist.gov/system/files/documents/2024/01/14/NIST%20HB%2044%202024%20Appendix%20C%20General%20Tables%20of%20Units%20of%20Measurement.pdf fetched 2026-10-30",
+    "https://www.ecfr.gov/current/title-16/chapter-I/subchapter-B/part-23/section-23.3 fetched 2026-10-30",
+    "https://en.wikipedia.org/wiki/Tola_(unit) fetched 2026-10-30",
+    "https://en.wikipedia.org/wiki/Baht_(unit) fetched 2026-10-30",
+    "https://en.wikipedia.org/wiki/Tael fetched 2026-10-30"
+  ],
+  "money_site": "https://goldgramprice.com",
+  "open_issues": [
+    "Tola, Thai baht, chi/luong and tael constants are cited from Wikipedia; no primary source (Thai Gold Traders Association, HK CGSE, Vietnam SBV) was reachable in the time box. NIST covers grain, troy ounce, pennyweight, avoirdupois ounce.",
+    "Hong Kong gold tael 37.429 g is a rounded trade value and is marked exact:false.",
+    "goldgramprice.com has no 21K, 9K or currency pages; 21K/9K deep-link to /gold-calculator/. US city pages exist (/gold-prices/<city>/) but no tool takes a city.",
+    "Frankfurter rates are daily blended central-bank reference rates, not live FX; per-currency rate dates differ (EUR 2026-10-30, AED/INR 2026-10-29 in the fixture).",
+    "gold-api.com is a single third-party spot source with no warranty; if it is down the tools return a clear upstream error (no fallback source)."
+  ],
+  "minutes": 43
+}

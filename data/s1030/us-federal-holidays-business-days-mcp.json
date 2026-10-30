@@ -1,0 +1,40 @@
+{
+  "repo": "us-federal-holidays-business-days-mcp",
+  "repo_url": "https://github.com/theluckystrike/us-federal-holidays-business-days-mcp",
+  "hosted_url": "https://us-federal-holidays-business-days-mcp.lipmichal.workers.dev/mcp",
+  "worker_version_id": "4ee8a05a-77f3-416a-8839-d252b409ac31",
+  "rollback": "npx wrangler delete --name us-federal-holidays-business-days-mcp (brand-new worker, no prior version)",
+  "registry_name": "io.github.theluckystrike/us-federal-holidays-business-days-mcp",
+  "registry_visible": true,
+  "tools": ["list_federal_holidays", "is_business_day", "add_business_days", "count_business_days", "invoice_due_date"],
+  "fixtures": {
+    "node_tests": 30,
+    "opm_table_rows_checked": 212,
+    "fixture_tests_from_published_tables_and_hand_arithmetic": 29,
+    "note": "test/opm-table.test.mjs parses every OPM table row 2011-2030 from the saved 2026-10-30 snapshot (212/212 match); test/fixtures.test.mjs has 29 tests incl. K.8 2026-2030 legal dates (30 values), K.8 Saturday/Sunday footnotes, OPM 2021 Juneteenth 06-18, OPM 2022 New Year 2021-12-31, Fed open 2021-12-31, 1975 Veterans Day, 1986 MLK, Inauguration 2013/2025/2029"
+  },
+  "tests_passed": true,
+  "live_calls_ok": {
+    "list_federal_holidays": true,
+    "is_business_day": true,
+    "add_business_days": true,
+    "count_business_days": true,
+    "invoice_due_date": true
+  },
+  "npx_github_ok": true,
+  "sources": [
+    {"url": "https://www.opm.gov/policy-data-oversight/pay-leave/federal-holidays/", "fetched": "2026-10-30"},
+    {"url": "https://www.federalreserve.gov/aboutthefed/k8.htm", "fetched": "2026-10-30"},
+    {"url": "https://www.law.cornell.edu/uscode/text/5/6103", "fetched": "2026-10-30"}
+  ],
+  "money_site": "https://mcp.zovo.one/?utm_source=mcp&utm_medium=us-federal-holidays-business-days-mcp",
+  "pushes": 1,
+  "evidence": "evidence/live-2026-10-30/*.json in the repo (raw live responses from the hosted URL)",
+  "open_issues": [
+    "One-off executive-order closures (Christmas Eve, days of mourning such as 2025-01-09) are not built in; callers pass extra_closed_dates.",
+    "fed_banking applies the K.8 rule (Saturday holiday -> Banks open Friday) to all years 1971-2100; the Fed publishes tables only for 2026-2030, so earlier/later years are rule-derived, not table-checked.",
+    "Not submitted to Glama or other directories beyond the official registry (glama.json is in the repo for pickup).",
+    "uscode.house.gov returned 404 for the 6103 URL tried; statute text and amendment notes were taken from Cornell LII instead."
+  ],
+  "minutes": 27
+}
