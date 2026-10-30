@@ -14,7 +14,7 @@ Fresh completed-history MCP Stripe Checkout gross is $0 with 0 paid matches and 
 
 Hosted readers and billing were deployed in that order through a staged configuration comparison and the supported billing gate. Actual edge probes retain two singles and bundle access across old-key replay; independent bindings follow signed license validity, while anonymous token/data retention still applies. Already-lost purchases require valid-key reactivation; missing history is not reconstructed. Real paid fulfillment and inbox delivery remain untested. Resend is connected and zovo.one can send; the local research queue has no eligible email contacts and no outreach was sent. Further access needs are in `docs/OUTREACH_RESEND_SETUP.md`.
 
-The original R38 observation deadline is 2026-10-26T09:11:29.917Z. Do not reset it after a restart. The loop finished at 09:11:34 UTC with 48 samples and passing final checks. A confirmed process gap is recorded in `data/r38_watch.json`; actual PID liveness, not a statefile, establishes an active watch. Source, exact archives, live behavior, platform publication and commercial results have separate receipts in `intel/R38-session.md`. Use `/Users/mike/bin/buildslot` with the user's 20 GB floor and bounded wait; its path is not on this shell's default PATH. npm uses `npm_config_cache=/Users/mike/.npm-cache-local`. npm is logged in as theluckystrike since 2026-10-30 (61 of 68 packages live, see below); Smithery is unauthenticated; no newly created account or fabricated install route is claimed.
+The original R38 observation deadline is 2026-10-26T09:11:29.917Z. Do not reset it after a restart. The loop finished at 09:11:34 UTC with 48 samples and passing final checks. A confirmed process gap is recorded in `data/r38_watch.json`; actual PID liveness, not a statefile, establishes an active watch. Source, exact archives, live behavior, platform publication and commercial results have separate receipts in `intel/R38-session.md`. Use `/Users/mike/bin/buildslot` with the user's 20 GB floor and bounded wait; its path is not on this shell's default PATH. npm uses `npm_config_cache=/Users/mike/.npm-cache-local`. npm is logged in as theluckystrike since 2026-10-30 (all 68 packages live, see below); Smithery is unauthenticated; no newly created account or fabricated install route is claimed.
 
 
 ## Prior revenue review, 2026-10-17
@@ -90,9 +90,11 @@ test reaches from the other direction.
    stateful sequence fail against a different worker version. Re-run before believing it.
 9. **The registry binds one hosted URL to exactly one server name**, so a hosted server cannot
    be published under two namespaces and there is no A/B test. `(name, version)` is immutable.
-10. **npm publishing needs a per-publish 2FA approval.** Since 2026-10-30, 61 of 68 packages are live
-    (52 estate packages plus 9 satellites). The 7 unbuilt servers (budget, loan-calculator, payroll, pomodoro, receipts,
-    stripe-billing, tax-calc) are skipped on purpose, and `publish-all.sh --go` refuses any package without dist/.
+10. **npm publishing needs a per-publish 2FA approval.** Since 2026-10-30 all 68 packages are live
+    (59 estate packages plus 9 satellites). Seven plain-JS servers (budget, loan-calculator, payroll, pomodoro, receipts,
+    stripe-billing, tax-calc) run from src/ with no build; they were renamed to @theluckystrike/mcp-<id> because
+    mcp-budget and mcp-payroll belong to other npm users. `publish-all.sh --go` refuses a package only when it
+    has a build script and no dist/, or its bin file is missing. One approval with the 5-minute box ticked covered all 7.
     The account requires 2FA on every publish, and npm runs its web 2FA flow only on a TTY, so the scripts wrap
     each `npm publish` in `script -a -q "$NPM_TTY_LOG"` with `npm_config_browser=false`. Watch that log for
     `https://www.npmjs.com/auth/cli/<id>` and open each URL for the owner. Each approval link expires after about

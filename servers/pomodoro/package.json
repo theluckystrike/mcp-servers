@@ -1,5 +1,5 @@
 {
-  "name": "mcp-pomodoro",
+  "name": "@theluckystrike/mcp-pomodoro",
   "version": "0.22.6",
   "description": "MCP server: pomodoro",
   "type": "module",

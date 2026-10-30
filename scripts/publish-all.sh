@@ -152,7 +152,8 @@ while IFS='|' read -r dir name version bin; do
   if [ -n "$bin" ] && [ ! -f "$dir/$bin" ]; then
     status="WARN: bin missing ($bin)"
   fi
-  if [ ! -d "$dir/dist" ]; then
+  # Only built packages need dist/: plain-JS servers run from src/ and have no build script.
+  if [ ! -d "$dir/dist" ] && node -e "process.exit(require('$dir/package.json').scripts?.build ? 0 : 1)"; then
     status="WARN: dist/ missing"
   fi
 

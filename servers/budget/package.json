@@ -1,5 +1,5 @@
 {
-  "name": "mcp-budget",
+  "name": "@theluckystrike/mcp-budget",
   "version": "0.22.6",
   "description": "MCP server: budget",
   "type": "module",

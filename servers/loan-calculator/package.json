@@ -1,5 +1,5 @@
 {
-  "name": "mcp-loan-calculator",
+  "name": "@theluckystrike/mcp-loan-calculator",
   "version": "0.22.6",
   "description": "MCP server: loan-calculator",
   "type": "module",

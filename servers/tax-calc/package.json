@@ -1,5 +1,5 @@
 {
-  "name": "mcp-tax-calc",
+  "name": "@theluckystrike/mcp-tax-calc",
   "version": "0.22.6",
   "description": "MCP server: tax-calc",
   "type": "module",
