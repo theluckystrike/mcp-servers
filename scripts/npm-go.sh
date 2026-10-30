@@ -8,6 +8,8 @@
 set -uo pipefail
 export npm_config_cache="${npm_config_cache:-/Users/mike/.npm-cache-local}"
 export PATH="/opt/homebrew/bin:$PATH"
+# npm prints the 2FA approval URL into this typescript file; a watcher opens it for the owner.
+export NPM_TTY_LOG="${NPM_TTY_LOG:-$HOME/mcp-servers/data/s1030/npm-tty.log}" npm_config_browser=false
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 LOG="$ROOT/data/s1030/npm-publish.log"
 DRY=0; [ "${1:-}" = "--dry" ] && DRY=1
@@ -31,7 +33,7 @@ for dir in "$ROOT"/satellites/*/; do
   if [ "$DRY" = 1 ]; then
     (cd "$dir" && npm publish --access public --dry-run >/dev/null 2>&1) && { echo "DRY-OK $name@$ver"; ok=$((ok+1)); } || { echo "DRY-FAIL $name"; fail=$((fail+1)); }
   else
-    (cd "$dir" && npm publish --access public 2>&1 | tail -2 | tee -a "$LOG") && npm view "$name@$ver" version >/dev/null 2>&1 \
+    (cd "$dir" && script -a -q "${NPM_TTY_LOG:-/dev/null}" npm publish --access public < /dev/null > /dev/null 2>&1) && npm view "$name@$ver" version >/dev/null 2>&1 \
       && { echo "OK $name@$ver" | tee -a "$LOG"; ok=$((ok+1)); } || { echo "FAIL $name" | tee -a "$LOG"; fail=$((fail+1)); }
   fi
 done

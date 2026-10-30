@@ -162,7 +162,8 @@ while IFS='|' read -r dir name version bin; do
       printf '%-4s %-38s %-10s %-24s\n' "$n" "$name" "$version" "SKIPPED ($status)"
       continue
     fi
-    (cd "$dir" && npm publish --access public) 2>&1 | sed 's/^/      /'
+    # script(1) gives npm a terminal, so it runs the web 2FA flow instead of failing with EOTP.
+    (cd "$dir" && script -a -q "${NPM_TTY_LOG:-/dev/null}" npm publish --access public < /dev/null > /dev/null 2>&1)
     if npm view "$name@$version" version >/dev/null 2>&1; then
       printf '%-4s %-38s %-10s %-24s\n' "$n" "$name" "$version" "PUBLISHED"
     else

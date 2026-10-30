@@ -4,6 +4,11 @@
  "verdict": "58 back-office servers have earned $0 because models now do those jobs natively, and even the official directories give a listing only a few calls a week. MCP pays as distribution, not as a product. So this session shipped 9 free servers that know what a model cannot (2025-2028 tax rules, 2027 wages, live prices and levels, exact calendars), each in a GitHub field with 0 to 3 competitors, each citing a money site with UTM tags.",
  "kpis": [
   {
+   "label": "npm packages live",
+   "value": "61 / 68",
+   "note": "Was 0 at session start. The 7 not live have no build. Checked per name@version against registry.npmjs.org."
+  },
+  {
    "label": "MCP paid orders, all time",
    "value": "0",
    "note": "Stripe completed history, MCP host only. Positive control is 187 paid sessions on the shared account, so the zero is real. Untagged MCP checkout sessions are 7 in 28d and 3 in 7d, all expired."
@@ -56,6 +61,11 @@
  ],
  "shipped": [
   {
+   "title": "npm: 61 of 68 packages published",
+   "url": "https://www.npmjs.com/~theluckystrike",
+   "detail": "The owner approved the web login and the per-publish 2FA prompts on Desktop 2. 52 estate packages (including mcp-license) and all 9 satellites are live. The 7 servers with no build are skipped on purpose, not published broken. Verified with npm view per name@version (data/s1030/npm-registry-check.tsv). npx -y minimum-wage-mcp and npx -y @theluckystrike/mcp-invoice both answer initialize from a clean folder. The satellite READMEs now install with npx -y <name>."
+  },
+  {
    "title": "Glama: 12 servers claimed, built and released",
    "url": "https://glama.ai/mcp/servers/zovo-one/mcp-barcode/score",
    "detail": "Signed in with the owner's existing GitHub session. 6 older mirrors were already claimed and scored (83%). Submitted and built barcode, pdf, spreadsheet and the 9 satellites. All 12 now have a Glama release and a score (10 at 83%, 2 at 67%)."
@@ -69,11 +79,6 @@
    "title": "35 directory submissions with proof",
    "url": "https://mcp.directory",
    "detail": "mcp.directory 9/9, mcpservers.org 9/9, mcprepository.com 9/9, mcpmarket.com 8/9 (gold got 429, retry later). PulseMCP has paused submissions since 09-03 and will ingest the official registry, where all 9 already are. allmcps.com has a CAPTCHA (owner)."
-  },
-  {
-   "title": "npm: one-step publish ready, waiting on one owner login",
-   "url": "https://www.npmjs.com/~theluckystrike",
-   "detail": "scripts/npm-go.sh publishes 51 estate packages plus 9 satellites. publish-all.sh now skips the 7 packages with no build and checks every publish against the registry. Dry run: 60 of 60 ok. A background job publishes automatically within 30 s of the web login being approved."
   },
   {
    "title": "no-tax-on-overtime-mcp (field size 0)",
@@ -133,9 +138,9 @@
  ],
  "next": [
   {
-   "title": "Owner: approve the npm web login once",
-   "colour": "red",
-   "detail": "Open the link in data/s1030/npm-login-url.txt and sign in. Publishing of 60 packages then starts by itself. If the link has expired, run scripts/npm-go.sh in a terminal."
+   "title": "Build and publish the 7 missing servers",
+   "colour": "amber",
+   "detail": "budget, loan-calculator, payroll, pomodoro, receipts, stripe-billing and tax-calc have no dist/. Build each through buildslot, then run scripts/npm-go.sh. Each publish needs one 2FA approval, opened on Desktop 2."
   },
   {
    "title": "Wait for the punkpeye merges and the directory reviews",
