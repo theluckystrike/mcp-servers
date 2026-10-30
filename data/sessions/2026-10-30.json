@@ -3,33 +3,159 @@
  "title": "Session 2026-10-30, data satellites (MCP as a traffic feeder)",
  "verdict": "58 back-office servers have earned $0 because models now do those jobs natively, and even the official directories give a listing only a few calls a week. MCP pays as distribution, not as a product. So this session shipped 9 free servers that know what a model cannot (2025-2028 tax rules, 2027 wages, live prices and levels, exact calendars), each in a GitHub field with 0 to 3 competitors, each citing a money site with UTM tags.",
  "kpis": [
-  {"label": "MCP paid orders, all time", "value": "0", "note": "Stripe completed history, MCP host only. Positive control is 187 paid sessions on the shared account, so the zero is real. Untagged MCP checkout sessions are 7 in 28d and 3 in 7d, all expired."},
-  {"label": "Google, mcp.zovo.one, 28d", "value": "36 impr / 0 clicks", "note": "Finalized 09-30 to 10-27 (R38 was 38 / 0). The homepage is indexed (PASS, crawled 10-26). /s/invoice is still not indexed; the sitemap shows 299 submitted and 0 indexed."},
-  {"label": "GitHub, mcp-servers repo, 14d", "value": "136 views / 50 uniques", "note": "Up from 83 / 43. It is the estate's main human surface. The other 64 mirror repos have at most 6 uniques each, and 24 have 0. Referrers are Google 8, github.com 23, geminicli.com 3."},
-  {"label": "Hosted ordinary calls, 7d", "value": "20", "note": "Flat against R38's 19. There were 3 checkout handoffs, and 2,429 offer views that are not people."},
-  {"label": "Buy clicks to a dead route, 7d", "value": "37 of 38", "note": "All 59 live buy links resolve now (checked this session). The dead clicks fit the 10-28 malformed &src links and our own browser checks. The cause is not separated because there are no timestamps."},
-  {"label": "List PRs merged since 10-20", "value": "3", "note": "AlexMili/Awesome-MCP 339, TensorBlock 4697, Piebald-AI 102. 36 PRs are open. The punkpeye PRs have waited on a Glama claim since 10-15."},
-  {"label": "New data satellites live", "value": "9", "note": "Each is a one-server public repo with a hosted URL that needs no token, is in the official registry and runs from npx github:. Every tool was checked with a real tools/call through the printed URL."},
-  {"label": "Money-site bugs fixed", "value": "3", "note": "noovertimetax.com had wrong phase-out rounding, wrong 2026 head of household brackets and the wrong senior joint reduction. Checked against IRS Schedule 1-A and Rev. Proc. 2025-32 and deployed with a rollback."}
+  {
+   "label": "MCP paid orders, all time",
+   "value": "0",
+   "note": "Stripe completed history, MCP host only. Positive control is 187 paid sessions on the shared account, so the zero is real. Untagged MCP checkout sessions are 7 in 28d and 3 in 7d, all expired."
+  },
+  {
+   "label": "Google, mcp.zovo.one, 28d",
+   "value": "36 impr / 0 clicks",
+   "note": "Finalized 09-30 to 10-27 (R38 was 38 / 0). The homepage is indexed (PASS, crawled 10-26). /s/invoice is still not indexed; the sitemap shows 299 submitted and 0 indexed."
+  },
+  {
+   "label": "GitHub, mcp-servers repo, 14d",
+   "value": "136 views / 50 uniques",
+   "note": "Up from 83 / 43. It is the estate's main human surface. The other 64 mirror repos have at most 6 uniques each, and 24 have 0. Referrers are Google 8, github.com 23, geminicli.com 3."
+  },
+  {
+   "label": "Hosted ordinary calls, 7d",
+   "value": "20",
+   "note": "Flat against R38's 19. There were 3 checkout handoffs, and 2,429 offer views that are not people."
+  },
+  {
+   "label": "Buy clicks to a dead route, 7d",
+   "value": "37 of 38",
+   "note": "All 59 live buy links resolve now (checked this session). The dead clicks fit the 10-28 malformed &src links and our own browser checks. The cause is not separated because there are no timestamps."
+  },
+  {
+   "label": "List PRs merged since 10-20",
+   "value": "3",
+   "note": "AlexMili/Awesome-MCP 339, TensorBlock 4697, Piebald-AI 102. 36 PRs are open. The punkpeye PRs have waited on a Glama claim since 10-15."
+  },
+  {
+   "label": "New data satellites live",
+   "value": "9",
+   "note": "Each is a one-server public repo with a hosted URL that needs no token, is in the official registry and runs from npx github:. Every tool was checked with a real tools/call through the printed URL."
+  },
+  {
+   "label": "Money-site bugs fixed",
+   "value": "3",
+   "note": "noovertimetax.com had wrong phase-out rounding, wrong 2026 head of household brackets and the wrong senior joint reduction. Checked against IRS Schedule 1-A and Rev. Proc. 2025-32 and deployed with a rollback."
+  },
+  {
+   "label": "Glama releases + scores",
+   "value": "12 / 12",
+   "note": "Checked on each admin score page after the builds finished."
+  },
+  {
+   "label": "Directory submissions with proof",
+   "value": "35",
+   "note": "data/s1030/directory-submissions.json. 9 human-gated (CAPTCHA), 10 failed (PulseMCP closed, 1 rate limit)."
+  }
  ],
  "shipped": [
-  {"title": "no-tax-on-overtime-mcp (field size 0)", "url": "https://github.com/theluckystrike/no-tax-on-overtime-mcp", "detail": "Overtime, tips and senior deductions for 2025-2028 from the One Big Beautiful Bill Act, plus a savings estimate. Each figure comes from irs.gov this session. 22 tests pass. Live check: single MAGI 150,999 removes $0, 152,000 removes $200, and a senior joint return at 160,000 gets $10,800, all matching Schedule 1-A lines 19 and 33-37. Feeds noovertimetax.com."},
-  {"title": "minimum-wage-mcp (field size 2)", "url": "https://github.com/theluckystrike/minimum-wage-mcp", "detail": "50 states plus DC for 2026-2027, including 15 published 2027 changes. Rates not yet announced are flagged, not invented. AZ, CT and RI 2027 are flagged as checked only through secondary text. Live check: CA $16.90 with no tip credit. Feeds statewage.com."},
-  {"title": "paycheck-calculator-mcp (field size 0)", "url": "https://github.com/theluckystrike/paycheck-calculator-mcp", "detail": "Exact federal tax and FICA for 2025 and 2026, and exact state schedules for CA, NY, NJ, IL, PA, GA and NC. Every other state is labelled estimate. 33 fixtures pass. Live check: TX single $75,000 in 2026 nets $61,592.50, matching the hand calculation. Feeds statewage.com."},
-  {"title": "uk-income-tax-salary-mcp (field size 2-3)", "url": "https://github.com/theluckystrike/uk-income-tax-salary-mcp", "detail": "UK tax for 2025/26 and 2026/27 with Scotland, tax codes, pensions, student loan plans and the taper above 100k. 26 fixtures pass. Live check: a 50k salary nets GBP 39,519.60, matching the hand calculation. Feeds ukmoneycalc.com."},
-  {"title": "gold-price-per-gram-mcp (field size 1)", "url": "https://github.com/theluckystrike/gold-price-per-gram-mcp", "detail": "Live spot price from the keyless source the site already uses (the terms allow commercial use, cached 300 s), FX from Frankfurter, karats, 14 units and melt value. Live check: 129.22 USD/g against upstream's 129.10 a moment later. Feeds goldgramprice.com."},
-  {"title": "lake-level-mcp (field size 2)", "url": "https://github.com/theluckystrike/lake-level-mcp", "detail": "Live US lake and reservoir levels from the public gauges lakelevelnow.com uses, with history and comparisons. Each lake deep-links to its page on the site, where the Lake Level Almanac is sold."},
-  {"title": "dscr-loan-calculator-mcp (field size 2)", "url": "https://github.com/theluckystrike/dscr-loan-calculator-mcp", "detail": "DSCR, maximum loan, rent needed, scenarios and amortization. 23 fixtures from an independent Decimal script. Live check: $300k at 7% over 30 years gives $1,995.91, matching an independent formula. Feeds dscrradar.com."},
-  {"title": "cups-to-grams-mcp (field size 1)", "url": "https://github.com/theluckystrike/cups-to-grams-mcp", "detail": "271 ingredients, each with its source (USDA FoodData Central or the King Arthur chart), recipe scaling and oven temperatures. 31 tests pass. Live check: 2 cups of AP flour is 240 g. Feeds ingredientcalculator.com. Found 15 site values that differ from the cited sources by more than 5%."},
-  {"title": "us-federal-holidays-business-days-mcp (field size 0)", "url": "https://github.com/theluckystrike/us-federal-holidays-business-days-mcp", "detail": "OPM and Federal Reserve calendars, business-day arithmetic and invoice due dates. All 212 OPM table rows for 2011-2030 match. Live check: 3 business days after 2026-12-23 is 12-29. Feeds the paid mcp.zovo.one bundle."},
-  {"title": "noovertimetax.com calculator corrected", "url": "https://noovertimetax.com/", "detail": "The live calculator rounded the overtime and tips phase-out up, used wrong 2026 head of household brackets and reduced the joint senior deduction once instead of per spouse. All three are fixed with 9 tests and 7 pages of corrected copy. Live before and after: $12,400 became $12,500, $11,400 became $10,800, 22% became 12%. Rollback: wrangler rollback c48b5275-6fc3-4512-8ca2-49d408c89092 --name noovertimetax."},
-  {"title": "Fresh KPI audit", "url": "https://github.com/theluckystrike/mcp-servers", "detail": "intel/S1030-kpi.md and data/s1030/kpi_2026-10-30.json. Every value carries its command. measure.py's 525-tool reading is a transient sweep artifact; the real count is 549."}
+  {
+   "title": "Glama: 12 servers claimed, built and released",
+   "url": "https://glama.ai/mcp/servers/zovo-one/mcp-barcode/score",
+   "detail": "Signed in with the owner's existing GitHub session. 6 older mirrors were already claimed and scored (83%). Submitted and built barcode, pdf, spreadsheet and the 9 satellites. All 12 now have a Glama release and a score (10 at 83%, 2 at 67%)."
+  },
+  {
+   "title": "punkpeye/awesome-mcp-servers: 10 PRs unblocked",
+   "url": "https://github.com/punkpeye/awesome-mcp-servers/pull/14681",
+   "detail": "The maintainer's only blocker was the Glama claim and score, now done for all 10. 7 PRs rebuilt on current main (they were conflicting), a malformed double bullet fixed on 6, an outdated office-suite claim corrected (now 50 servers, 453 tools), 3 entries moved to the zovo-one URLs, and duplicate 14559 closed. All 10 show MERGEABLE."
+  },
+  {
+   "title": "35 directory submissions with proof",
+   "url": "https://mcp.directory",
+   "detail": "mcp.directory 9/9, mcpservers.org 9/9, mcprepository.com 9/9, mcpmarket.com 8/9 (gold got 429, retry later). PulseMCP has paused submissions since 09-03 and will ingest the official registry, where all 9 already are. allmcps.com has a CAPTCHA (owner)."
+  },
+  {
+   "title": "npm: one-step publish ready, waiting on one owner login",
+   "url": "https://www.npmjs.com/~theluckystrike",
+   "detail": "scripts/npm-go.sh publishes 51 estate packages plus 9 satellites. publish-all.sh now skips the 7 packages with no build and checks every publish against the registry. Dry run: 60 of 60 ok. A background job publishes automatically within 30 s of the web login being approved."
+  },
+  {
+   "title": "no-tax-on-overtime-mcp (field size 0)",
+   "url": "https://github.com/theluckystrike/no-tax-on-overtime-mcp",
+   "detail": "Overtime, tips and senior deductions for 2025-2028 from the One Big Beautiful Bill Act, plus a savings estimate. Each figure comes from irs.gov this session. 22 tests pass. Live check: single MAGI 150,999 removes $0, 152,000 removes $200, and a senior joint return at 160,000 gets $10,800, all matching Schedule 1-A lines 19 and 33-37. Feeds noovertimetax.com."
+  },
+  {
+   "title": "minimum-wage-mcp (field size 2)",
+   "url": "https://github.com/theluckystrike/minimum-wage-mcp",
+   "detail": "50 states plus DC for 2026-2027, including 15 published 2027 changes. Rates not yet announced are flagged, not invented. AZ, CT and RI 2027 are flagged as checked only through secondary text. Live check: CA $16.90 with no tip credit. Feeds statewage.com."
+  },
+  {
+   "title": "paycheck-calculator-mcp (field size 0)",
+   "url": "https://github.com/theluckystrike/paycheck-calculator-mcp",
+   "detail": "Exact federal tax and FICA for 2025 and 2026, and exact state schedules for CA, NY, NJ, IL, PA, GA and NC. Every other state is labelled estimate. 33 fixtures pass. Live check: TX single $75,000 in 2026 nets $61,592.50, matching the hand calculation. Feeds statewage.com."
+  },
+  {
+   "title": "uk-income-tax-salary-mcp (field size 2-3)",
+   "url": "https://github.com/theluckystrike/uk-income-tax-salary-mcp",
+   "detail": "UK tax for 2025/26 and 2026/27 with Scotland, tax codes, pensions, student loan plans and the taper above 100k. 26 fixtures pass. Live check: a 50k salary nets GBP 39,519.60, matching the hand calculation. Feeds ukmoneycalc.com."
+  },
+  {
+   "title": "gold-price-per-gram-mcp (field size 1)",
+   "url": "https://github.com/theluckystrike/gold-price-per-gram-mcp",
+   "detail": "Live spot price from the keyless source the site already uses (the terms allow commercial use, cached 300 s), FX from Frankfurter, karats, 14 units and melt value. Live check: 129.22 USD/g against upstream's 129.10 a moment later. Feeds goldgramprice.com."
+  },
+  {
+   "title": "lake-level-mcp (field size 2)",
+   "url": "https://github.com/theluckystrike/lake-level-mcp",
+   "detail": "Live US lake and reservoir levels from the public gauges lakelevelnow.com uses, with history and comparisons. Each lake deep-links to its page on the site, where the Lake Level Almanac is sold."
+  },
+  {
+   "title": "dscr-loan-calculator-mcp (field size 2)",
+   "url": "https://github.com/theluckystrike/dscr-loan-calculator-mcp",
+   "detail": "DSCR, maximum loan, rent needed, scenarios and amortization. 23 fixtures from an independent Decimal script. Live check: $300k at 7% over 30 years gives $1,995.91, matching an independent formula. Feeds dscrradar.com."
+  },
+  {
+   "title": "cups-to-grams-mcp (field size 1)",
+   "url": "https://github.com/theluckystrike/cups-to-grams-mcp",
+   "detail": "271 ingredients, each with its source (USDA FoodData Central or the King Arthur chart), recipe scaling and oven temperatures. 31 tests pass. Live check: 2 cups of AP flour is 240 g. Feeds ingredientcalculator.com. Found 15 site values that differ from the cited sources by more than 5%."
+  },
+  {
+   "title": "us-federal-holidays-business-days-mcp (field size 0)",
+   "url": "https://github.com/theluckystrike/us-federal-holidays-business-days-mcp",
+   "detail": "OPM and Federal Reserve calendars, business-day arithmetic and invoice due dates. All 212 OPM table rows for 2011-2030 match. Live check: 3 business days after 2026-12-23 is 12-29. Feeds the paid mcp.zovo.one bundle."
+  },
+  {
+   "title": "noovertimetax.com calculator corrected",
+   "url": "https://noovertimetax.com/",
+   "detail": "The live calculator rounded the overtime and tips phase-out up, used wrong 2026 head of household brackets and reduced the joint senior deduction once instead of per spouse. All three are fixed with 9 tests and 7 pages of corrected copy. Live before and after: $12,400 became $12,500, $11,400 became $10,800, 22% became 12%. Rollback: wrangler rollback c48b5275-6fc3-4512-8ca2-49d408c89092 --name noovertimetax."
+  },
+  {
+   "title": "Fresh KPI audit",
+   "url": "https://github.com/theluckystrike/mcp-servers",
+   "detail": "intel/S1030-kpi.md and data/s1030/kpi_2026-10-30.json. Every value carries its command. measure.py's 525-tool reading is a transient sweep artifact; the real count is 549."
+  }
  ],
  "next": [
-  {"title": "Owner, 5 minutes: npm login", "colour": "red", "detail": "This is the largest multiplier left. 58 estate packages and 9 satellites become installable by name and readable by every directory and model that indexes npm. After the login, an agent publishes all of them in one batch."},
-  {"title": "Owner, 5 minutes: claim the repos on Glama", "colour": "red", "detail": "The punkpeye/awesome-mcp-servers maintainer (97k stars) asked for exactly this. 10 PRs have waited on it since 10-15."},
-  {"title": "Measure the satellites on 2026-11-13", "colour": "amber", "detail": "Check GitHub rank for each field query, repo traffic, hosted call counts per worker (Cloudflare analytics) and GA4 sessions with utm_source=mcp on the 6 money sites. Build more only for the shapes that pull calls."},
-  {"title": "Fix the site data the satellites exposed", "colour": "amber", "detail": "ingredientcalculator.com has 15 density values more than 5% off its cited sources and two cup definitions (240 mL vs 236.6 mL). statewage.com uses effective-rate estimates where exact state schedules now exist in paycheck-calculator-mcp."},
-  {"title": "Make the billing worker accept the old malformed buy links", "colour": "green", "detail": "Treat /buy/<id>&src=<x> as /buy/<id>?src=<x>, so cached copies of the 10-28 links still reach checkout. This needs the billing deploy gate, so it waits for a calm window."}
+  {
+   "title": "Owner: approve the npm web login once",
+   "colour": "red",
+   "detail": "Open the link in data/s1030/npm-login-url.txt and sign in. Publishing of 60 packages then starts by itself. If the link has expired, run scripts/npm-go.sh in a terminal."
+  },
+  {
+   "title": "Wait for the punkpeye merges and the directory reviews",
+   "colour": "amber",
+   "detail": "10 PRs are mergeable with the Glama requirement met. mcp.directory publishes within 24 h, mcpservers.org within 2 weeks. Retry mcpmarket for gold-price-per-gram-mcp after the 429 clears. allmcps.com needs a person for its CAPTCHA."
+  },
+  {
+   "title": "Measure the satellites on 2026-11-13",
+   "colour": "amber",
+   "detail": "Check GitHub rank for each field query, repo traffic, hosted call counts per worker (Cloudflare analytics) and GA4 sessions with utm_source=mcp on the 6 money sites. Build more only for the shapes that pull calls."
+  },
+  {
+   "title": "Fix the site data the satellites exposed",
+   "colour": "amber",
+   "detail": "ingredientcalculator.com has 15 density values more than 5% off its cited sources and two cup definitions (240 mL vs 236.6 mL). statewage.com uses effective-rate estimates where exact state schedules now exist in paycheck-calculator-mcp."
+  },
+  {
+   "title": "Make the billing worker accept the old malformed buy links",
+   "colour": "green",
+   "detail": "Treat /buy/<id>&src=<x> as /buy/<id>?src=<x>, so cached copies of the 10-28 links still reach checkout. This needs the billing deploy gate, so it waits for a calm window."
+  }
  ]
 }
