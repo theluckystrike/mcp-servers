@@ -122,6 +122,7 @@ const fail = (t: string) => ({ content: [{ type: "text" as const, text: `Error: 
 export function registerZipUpload(server: { registerTool: Function }): void {
   server.registerTool("zip_upload", {
     title: "Upload a file or an archive",
+    annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false },
     description:
       "Send a file to this hosted endpoint. There is no filesystem here, so instead of a path you upload the file once with zip_upload and then pass its name wherever a path is asked for: an archive to zip_list, zip_extract, zip_extract_text or zip_add, a plain file to zip_create. " +
       "Give exactly one of content_base64 (the file's bytes, the only paste form an archive can take), content (text, for a text file to pack) or url. " +
@@ -158,6 +159,7 @@ export function registerZipUpload(server: { registerTool: Function }): void {
 
   server.registerTool("zip_files", {
     title: "List uploaded files",
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     description: "List the files stored for your token on this endpoint, with their sizes. These are the names every path argument here resolves against.",
     inputSchema: {},
   }, async () => {
@@ -173,6 +175,7 @@ export function registerZipUpload(server: { registerTool: Function }): void {
 
   server.registerTool("zip_delete_upload", {
     title: "Delete an uploaded file",
+    annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: false, openWorldHint: false },
     description: "Delete one uploaded file stored for your token. The register rows zip_history lists are kept.",
     inputSchema: { name: z.string().min(1).max(70) },
   }, async (a: { name: string }) => {

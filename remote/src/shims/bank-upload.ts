@@ -119,6 +119,7 @@ const fail = (t: string) => ({ content: [{ type: "text" as const, text: `Error: 
 export function registerBankUpload(server: { registerTool: Function }): void {
   server.registerTool("bank_upload", {
     title: "Upload a bank statement file",
+    annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false },
     description:
       "Send a bank export to this hosted endpoint. There is no filesystem here, so instead of a path you upload the file once with bank_upload and then pass its name as `path` to statement_import. " +
       "Give exactly one of content (the export as text, header row included - this is the normal case for a CSV), content_base64 (the file's bytes, which keeps a UTF-16 export from Excel readable) or url. " +
@@ -156,6 +157,7 @@ export function registerBankUpload(server: { registerTool: Function }): void {
 
   server.registerTool("bank_files", {
     title: "List uploaded statements",
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     description: "List the statement files stored for your token, with their sizes.",
     inputSchema: {},
   }, async () => {
@@ -171,6 +173,7 @@ export function registerBankUpload(server: { registerTool: Function }): void {
 
   server.registerTool("bank_delete_upload", {
     title: "Delete an uploaded statement",
+    annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: false, openWorldHint: false },
     description: "Delete one statement file stored for your token. The transactions already imported from it are kept; transactions_list and the summary still see them.",
     inputSchema: { name: z.string().min(1).max(70) },
   }, async (a: { name: string }) => {

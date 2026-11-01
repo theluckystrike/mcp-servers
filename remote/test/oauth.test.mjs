@@ -55,7 +55,7 @@ test("RFC 8414 authorization-server metadata has the endpoints an MCP client nee
   assert.equal(doc.token_endpoint, "https://mcp.zovo.one/oauth/token");
   assert.equal(doc.registration_endpoint, "https://mcp.zovo.one/oauth/register");
   assert.deepEqual(doc.response_types_supported, ["code"]);
-  assert.deepEqual(doc.grant_types_supported, ["authorization_code"]);
+  assert.deepEqual(doc.grant_types_supported, ["authorization_code", "refresh_token"]);
   // PKCE S256 is mandatory in OAuth 2.1; plain must never be advertised.
   assert.deepEqual(doc.code_challenge_methods_supported, ["S256"]);
   assert.deepEqual(doc.token_endpoint_auth_methods_supported, ["none"]);

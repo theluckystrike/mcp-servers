@@ -117,6 +117,7 @@ const fail = (t: string) => ({ content: [{ type: "text" as const, text: `Error: 
 export function registerImageUpload(server: { registerTool: Function }): void {
   server.registerTool("image_upload", {
     title: "Upload an image to work on",
+    annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false },
     description:
       "Send an image to this hosted endpoint. There is no filesystem here, so instead of a path you upload the file once with image_upload and then pass its name as `path` (or inside `paths`) to image_info, image_resize, image_convert, image_compress, image_crop, image_thumbnails, image_batch_resize and image_dominant_colors. " +
       "PNG, JPEG, BMP, GIF and TIFF are accepted and the format is read from the file's magic bytes, not from the name. " +
@@ -151,6 +152,7 @@ export function registerImageUpload(server: { registerTool: Function }): void {
 
   server.registerTool("image_files", {
     title: "List uploaded and generated images",
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     description: "List the images stored for your token: what you uploaded, and what this server has written, with their sizes.",
     inputSchema: {},
   }, async () => {
@@ -169,6 +171,7 @@ export function registerImageUpload(server: { registerTool: Function }): void {
 
   server.registerTool("image_delete_upload", {
     title: "Delete a stored image",
+    annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: false, openWorldHint: false },
     description: "Delete one image stored for your token, uploaded or generated: name is the name it is stored under. image_files lists them. A name nothing is stored under is refused and nothing is deleted.",
     inputSchema: { name: z.string().min(1).max(70) },
   }, async (a: { name: string }) => {

@@ -85,6 +85,7 @@ const fail = (t: string) => ({ content: [{ type: "text" as const, text: `Error: 
 export function registerDocxUpload(server: { registerTool: Function }): void {
   server.registerTool("doc_upload", {
     title: "Upload a .docx to work on",
+    annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false },
     description:
       "Send an existing Word document to this hosted endpoint. There is no filesystem here, so instead of a path you upload the file once with doc_upload and then pass its name as `path` to doc_read, doc_to_html and doc_fill_template. " +
       "Give exactly one of docx_base64 or url. " + URL_ARG_DESCRIPTION + ": a 13 KB base64 paste can take minutes to write out, while a url costs one line and the fetch happens here (10 second timeout, at most 3 redirects, public http(s) hosts only, 2 MB cap). " +
@@ -115,6 +116,7 @@ export function registerDocxUpload(server: { registerTool: Function }): void {
 
   server.registerTool("doc_files", {
     title: "List uploaded documents",
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     description: "List the documents uploaded for your token, with their sizes.",
     inputSchema: {},
   }, async () => {
@@ -130,6 +132,7 @@ export function registerDocxUpload(server: { registerTool: Function }): void {
 
   server.registerTool("doc_delete_upload", {
     title: "Delete an uploaded document",
+    annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: false, openWorldHint: false },
     description: "Delete one document uploaded for your token: name is the name it was uploaded under, without .docx. doc_files lists them. A name nothing is stored under is refused and nothing is deleted.",
     inputSchema: { name: z.string().min(1).max(70) },
   }, async (a: { name: string }) => {

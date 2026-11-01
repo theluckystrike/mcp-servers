@@ -90,6 +90,7 @@ const fail = (t: string) => ({ content: [{ type: "text" as const, text: `Error: 
 export function registerPdfUpload(server: { registerTool: Function }): void {
   server.registerTool("pdf_upload", {
     title: "Upload a PDF to work on",
+    annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false },
     description:
       "Send a PDF to this hosted endpoint. There is no filesystem here, so instead of a path you upload the file once with pdf_upload and then pass its name as `path` (or inside `paths`) to pdf_info, pdf_count, pdf_merge, pdf_split, pdf_pages, pdf_rotate, pdf_stamp, pdf_reorder and pdf_text. " +
       "Give exactly one of pdf_base64 or url. " + URL_ARG_DESCRIPTION + ": pasting a large base64 payload is slow to write out and can stall the turn before the call is ever sent, while a url costs one line and the fetch happens here. " +
@@ -122,6 +123,7 @@ export function registerPdfUpload(server: { registerTool: Function }): void {
 
   server.registerTool("pdf_files", {
     title: "List uploaded and generated PDFs",
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     description: "List the PDFs stored for your token: what you uploaded, and what this server has written, with their sizes.",
     inputSchema: {},
   }, async () => {
@@ -140,6 +142,7 @@ export function registerPdfUpload(server: { registerTool: Function }): void {
 
   server.registerTool("pdf_delete_upload", {
     title: "Delete a stored PDF",
+    annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: false, openWorldHint: false },
     description: "Delete one PDF stored for your token, uploaded or generated.",
     inputSchema: { name: z.string().min(1).max(70) },
   }, async (a: { name: string }) => {

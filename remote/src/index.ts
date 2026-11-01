@@ -15,6 +15,8 @@ import { appendSuccessUpgrade, readFunnelCohort, recordFunnelEvents, requestCoho
 import { STORE, type RequestCtx, type Download } from "./shims/ctx.js";
 import { PRICE_BUNDLE_USD, PRICE_SINGLE_USD, SERVER_COUNT } from "./shims/license.js";
 import { paymentDescriptor } from "./payment.js";
+import { issueRefreshToken, redeemRefreshToken } from "./oauth-refresh.js";
+import SERVER_INSTRUCTIONS from "./server-instructions.json";
 import { TMP_RE, recount } from "./shims/fs.js";
 import { createServer as createTimeTracker } from "./vendor/time-tracker/index.js";
 import { createServer as createPriceTracker } from "./vendor/price-tracker/index.js";
@@ -126,7 +128,7 @@ const OAUTH_CODE_TTL = 10 * 60;                 // authorization code, 10 minute
  * the deploy, so the only thing the version has to guarantee is that two builds never
  * share a cache entry inside one isolate.
  */
-const BUILD_VERSION = "2026-09-13.1";
+const BUILD_VERSION = "2026-11-01.1";
 
 /** Where the one-click .mcpb bundles live. The install path that works today. */
 const RELEASES = "https://github.com/theluckystrike/mcp-servers/releases/latest";
@@ -1176,7 +1178,7 @@ export function oauthAuthorizationServerDoc() {
     token_endpoint: OAUTH_TOKEN,
     registration_endpoint: OAUTH_REGISTER,
     response_types_supported: ["code"],
-    grant_types_supported: ["authorization_code"],
+    grant_types_supported: ["authorization_code", "refresh_token"],
     code_challenge_methods_supported: ["S256"],
     // No token_endpoint_auth_methods_supported: a public client (RFC 6749 §2.3.1) presents
     // no secret, so the default plain client_secret_basic would be wrong to advertise.
@@ -2058,6 +2060,97 @@ async function sweep(env: Env): Promise<{ scanned: number; expired: number; dele
   return { scanned, expired, deleted };
 }
 
+/* ------------------------------------------------- initialize instructions */
+
+/**
+ * Per-server `instructions` for the initialize result (MCP 2025-06-18 and later), read from
+ * src/server-instructions.json as {"<server>": "<text>"}. The vendored servers are built
+ * without them and stay unmodified, so the text is added to the initialize response body
+ * here. A server with no entry, or an empty one, answers exactly as before.
+ */
+export function serverInstructions(product: string): string | undefined {
+  const text = (SERVER_INSTRUCTIONS as Record<string, unknown>)[product];
+  return typeof text === "string" && text.trim() ? text : undefined;
+}
+
+/** Add `instructions` to a JSON-RPC initialize result; anything else is returned as is. */
+export function withInstructions(body: string, text: string | undefined): string {
+  if (!text) return body;
+  try {
+    const o = JSON.parse(body) as { result?: Record<string, unknown> };
+    if (!o?.result || typeof o.result !== "object") return body;
+    o.result.instructions = text;
+    return JSON.stringify(o);
+  } catch {
+    return body;
+  }
+}
+
+/* ------------------------------------------------- clean mode (/v1) */
+
+/**
+ * /mcp/<server>/v1 serves the same server in clean mode, for directories whose policy
+ * forbids promotional text in tool results (Google Connected Apps). The licence gate drops
+ * its tools, resource, prompt and links there (shims/license.ts) and the success trailer is
+ * not appended. What is left is the "install the server locally ... open it in Claude
+ * Desktop" pointer some hosted refusals carry; these rules remove it and keep the refusal
+ * and its hosted alternative. Applied to every string of a clean-mode JSON-RPC answer.
+ */
+const LOCAL_INSTALL_RULES: [RegExp, string | ((m: string, alt: string) => string)][] = [
+  // "... locally - download x.mcpb from <url> and open it in Claude Desktop - or <alternative>."
+  [/ ?[^.]*? - download [\w-]+\.mcpb from \S+\s+and open it in Claude Desktop - or ([^.]*)\./g,
+    (_m, alt) => ` ${alt.charAt(0).toUpperCase()}${alt.slice(1)}.`],
+  // "<alternative>, or install the x server locally, where ...: download ... open it in Claude Desktop."
+  [/,? or install the [\w -]+? locally\b[\s\S]*?open it in Claude Desktop(?:, where there is no cap)?/g, ""],
+  // "To work on files this size, install the x server locally: download ... open it in Claude Desktop, where there is no cap."
+  [/ ?(?:To [^.,]*, )?[Ii]nstall the [\w -]+? locally\b[\s\S]*?open it in Claude Desktop(?:, where there is no cap)?\./g, ""],
+];
+
+export function cleanText(text: string): string {
+  if (!text.includes("Claude Desktop")) return text;
+  let out = text;
+  for (const [re, by] of LOCAL_INSTALL_RULES) out = out.replace(re, by as string);
+  return out;
+}
+
+/**
+ * Clean-mode annotations: Google's rule is that a state-changing tool is marked
+ * destructiveHint: true, so every tool that is not read-only is. Read-only tools are kept.
+ */
+export function cleanToolList(tools: unknown[]): unknown[] {
+  return tools.map((t) => {
+    const a = (t as { annotations?: Record<string, unknown> }).annotations;
+    return a && a.readOnlyHint === false ? { ...(t as object), annotations: { ...a, destructiveHint: true } } : t;
+  });
+}
+
+/** A JSON-RPC error answer with HTTP 200, the way the SDK transport sends one. */
+function rpcError(id: unknown, code: number, message: string, data?: Record<string, unknown>, extra: Record<string, string> = {}): Response {
+  return new Response(JSON.stringify({ jsonrpc: "2.0", id: id ?? null, error: { code, message, ...(data ? { data } : {}) } }),
+    { status: 200, headers: { "content-type": "application/json", "cache-control": "no-store", ...extra } });
+}
+
+/** params.name of a tools/call body, or "" when there is none. */
+function rpcToolName(body: string): string {
+  try {
+    const n = (JSON.parse(body) as { params?: { name?: unknown } })?.params?.name;
+    return typeof n === "string" ? n : "";
+  } catch {
+    return "";
+  }
+}
+
+/** cleanText over every string in a JSON document; a body that is not JSON is returned as is. */
+export function cleanJson(body: string): string {
+  if (!body.includes("Claude Desktop")) return body;
+  const walk = (v: unknown): unknown =>
+    typeof v === "string" ? cleanText(v)
+      : Array.isArray(v) ? v.map(walk)
+        : v && typeof v === "object" ? Object.fromEntries(Object.entries(v).map(([k, x]) => [k, walk(x)]))
+          : v;
+  try { return JSON.stringify(walk(JSON.parse(body))); } catch { return body; }
+}
+
 /* ------------------------------------------------- tools/list, cached */
 
 /**
@@ -2072,8 +2165,8 @@ async function sweep(env: Env): Promise<{ scanned: number; expired: number; dele
  */
 const toolsCache = new Map<string, string>();
 
-async function toolsJson(product: string, cfg: ServerCfg, isPro: boolean, base: string): Promise<string> {
-  const key = `${BUILD_VERSION}:${product}:${isPro ? "pro" : "free"}`;
+async function toolsJson(product: string, cfg: ServerCfg, isPro: boolean, base: string, clean = false): Promise<string> {
+  const key = `${BUILD_VERSION}:${product}:${isPro ? "pro" : "free"}${clean ? ":clean" : ""}`;
   const hit = toolsCache.get(key);
   if (hit !== undefined) return hit;
   // An empty virtual filesystem: listing tools reads no tenant state, and a handler that
@@ -2082,7 +2175,7 @@ async function toolsJson(product: string, cfg: ServerCfg, isPro: boolean, base: 
     tenant: "cache:tools", server: product, isPro,
     files: new Map(), dirs: new Set(), downloads: [], baseUrl: base,
     publish: cfg.publish, published: new Map(), maxBytes: cfg.maxBytes ?? DEFAULT_MAX_BYTES,
-    bytes: 0, nfiles: 0, fds: new Map(), nextFd: 100,
+    bytes: 0, nfiles: 0, fds: new Map(), nextFd: 100, clean,
   };
   const text = await STORE.run(rctx, async () => {
     const server = cfg.factory();
@@ -2104,7 +2197,7 @@ async function toolsJson(product: string, cfg: ServerCfg, isPro: boolean, base: 
   });
   const tools = (JSON.parse(text) as { result?: { tools?: unknown } })?.result?.tools;
   if (!Array.isArray(tools)) throw new Error(`tools/list for ${product} did not return a tool array`);
-  const out = JSON.stringify(tools);
+  const out = clean ? cleanJson(JSON.stringify(cleanToolList(tools))) : JSON.stringify(tools);
   toolsCache.set(key, out);
   return out;
 }
@@ -2369,6 +2462,15 @@ export default {
       try { urlToken = decodeURIComponent(tokenInPath[2]); } catch { urlToken = tokenInPath[2]; }
     }
 
+    // /mcp/<server>/v1 is the same server in clean mode (see cleanJson). Only a real server
+    // name takes the suffix, so every other /mcp/... path is untouched.
+    let clean = false;
+    const v1 = path.match(/^\/mcp\/([a-z-]+)\/v1$/);
+    if (v1 && SERVERS[VARIANT_ALIASES[v1[1]] ?? v1[1]]) {
+      clean = true;
+      path = `/mcp/${v1[1]}`;
+    }
+
     if (path === "/mcp") return json(indexDoc(base));
 
     // A price-tracker fixture: a real page, on a host this suite controls, with a price in
@@ -2462,6 +2564,16 @@ export default {
     /* ---------------------------------------------------------- oauth 2.1 (MCP 2025-06-18) */
     // Discovery documents first: an MCP client that received the RFC 9728 WWW-Authenticate
     // header fetches these before it can even show the user a consent screen.
+    // Google Connected Apps domain verification. The file's content comes from the Google
+    // console and is stored as-is in KV, so it can change without a deploy.
+    if (path === "/.well-known/google-connected-apps") {
+      if (req.method !== "GET" && req.method !== "HEAD") return json({ error: "method_not_allowed" }, 405, { allow: "GET, HEAD" });
+      const body = await env.REMOTE_DATA.get("gca:verification");
+      if (body === null) return json({ error: "not_found" }, 404);
+      return new Response(req.method === "HEAD" ? null : body, {
+        headers: { "content-type": "application/json", "cache-control": "public, max-age=300" },
+      });
+    }
     if (path === "/.well-known/oauth-protected-resource") {
       return json(oauthProtectedResourceDoc());
     }
@@ -2496,7 +2608,7 @@ export default {
         client_id_issued_at: Math.floor(Date.now() / 1000),
         redirect_uris: redirectUris,
         token_endpoint_auth_method: "none",
-        grant_types: ["authorization_code"],
+        grant_types: ["authorization_code", "refresh_token"],
         response_types: ["code"],
       });
     }
@@ -2548,6 +2660,15 @@ export default {
     if (path === "/oauth/token" && req.method === "POST") {
       const form = await req.formData().catch(() => null);
       if (!form) return json({ error: "invalid_request" }, 400);
+      // RFC 6749 §6: a refresh hands back the same access token (it is the data space) and
+      // a rotated refresh token. See src/oauth-refresh.ts.
+      const grantType = String(form.get("grant_type") ?? "authorization_code");
+      if (grantType === "refresh_token") {
+        const r = await redeemRefreshToken(env.REMOTE_DATA, String(form.get("refresh_token") ?? ""), String(form.get("client_id") ?? ""), TOK_TTL);
+        if (!r.ok) return json({ error: r.error, message: r.message }, 400);
+        return json({ access_token: r.token, token_type: "Bearer", expires_in: OAUTH_ACCESS_TTL, refresh_token: r.refresh_token });
+      }
+      if (grantType !== "authorization_code") return json({ error: "unsupported_grant_type" }, 400);
       const code = String(form.get("code") ?? "");
       const verifier = String(form.get("code_verifier") ?? "");
       const clientId = String(form.get("client_id") ?? "");
@@ -2562,6 +2683,7 @@ export default {
         access_token: grant.token,
         token_type: "Bearer",
         expires_in: OAUTH_ACCESS_TTL,
+        refresh_token: await issueRefreshToken(env.REMOTE_DATA, grant.token, grant.client_id),
       });
     }
 
@@ -2586,6 +2708,11 @@ export default {
       return json({ error: "not_found", index: `${base}/mcp` }, 404);
     }
 
+    // Clean mode has no GET event stream and no endpoint page: 405 at once, token or not.
+    if (clean && (req.method === "GET" || req.method === "HEAD")) {
+      return json({ error: "method_not_allowed", message: "POST JSON-RPC requests to this endpoint." }, 405, { allow: "POST" });
+    }
+
     // A GET or HEAD with no credential in the header AND none in the URL is not a failed
     // authentication, it is a health check or a person opening the link: answer it. See
     // publicEndpointDoc() for the measured reason this exists. Everything that carries a
@@ -2598,6 +2725,12 @@ export default {
       // is the whole fix: `accept: text/html` means a person, anything else is a client
       // or a directory health check and keeps exactly the document it had before.
       const accept = req.headers.get("accept") ?? "";
+      // A client opening the optional GET event stream (Accept: text/event-stream and
+      // nothing else a document could satisfy). Streamable HTTP allows only an event
+      // stream or 405 here, and a stateless server has nothing to push.
+      if (accept.includes("text/event-stream") && !accept.includes("application/json") && !accept.includes("text/html")) {
+        return json({ error: "method_not_allowed", message: "This endpoint has no GET event stream. POST JSON-RPC requests to it." }, 405, { allow: "POST" });
+      }
       if (accept.includes("text/html")) {
         return new Response(endpointPage(base, product), {
           status: 200,
@@ -2669,12 +2802,27 @@ export default {
       auth = authed;
     }
     const limited = await rateLimit(env, auth, ctx, product);
-    if (limited) return limited;
+    if (limited) {
+      if (!clean) return limited;
+      // Clean mode: the same limit as a JSON-RPC error in an ordinary response, without the
+      // checkout links of the 429 body.
+      const retryAfter = limited.headers.get("retry-after") ?? "";
+      return rpcError(rpc.id, -32000, "Rate limit reached, try again later",
+        { limit: auth.limit, window: "1 hour", retry_after_seconds: Number(retryAfter) || undefined }, { "retry-after": retryAfter });
+    }
+
+    // Clean mode answers an unknown or hidden tool (license_status, license_activate) with a
+    // JSON-RPC error, as the MCP spec puts it, rather than the SDK's isError result.
+    if (clean && req.method === "POST" && rpc.method === "tools/call") {
+      const name = rpcToolName(bodyText);
+      const known = (JSON.parse(await toolsJson(product, cfg, auth.isPro, base, true)) as { name: string }[]).some((t) => t.name === name);
+      if (!known) return rpcError(rpc.id, -32602, `Unknown tool: ${name}`);
+    }
 
     // tools/list is answered from module scope: no KV read, no McpServer, no transport.
     // A paginated request (params.cursor) is not cached and takes the full path.
     if (req.method === "POST" && rpc.method === "tools/list" && rpc.hasId && !rpc.hasCursor) {
-      const tools = await toolsJson(product, cfg, auth.isPro, base);
+      const tools = await toolsJson(product, cfg, auth.isPro, base, clean);
       return new Response(
         `{"jsonrpc":"2.0","id":${JSON.stringify(rpc.id)},"result":{"tools":${tools}}}`,
         { headers: { "content-type": "application/json", "cache-control": "no-store" } });
@@ -2724,6 +2872,7 @@ export default {
       bytes: counted.bytes, nfiles: counted.nfiles,
       shared,
       fds: new Map(), nextFd: 100,
+      clean,
     };
     const before = JSON.stringify(persistable(files, cfg, rctx.published, ownPaths));
     // Only the read-write shares need a before-image: a read-only share is never flushed.
@@ -2766,12 +2915,15 @@ export default {
         // Success means a successful BUSINESS tools/call response, not discovery,
         // licence administration, an error, or proof of a completed customer task.
         const isToolCall = req.method === "POST" && rpc.method === "tools/call";
+        const instructions = req.method === "POST" && rpc.method === "initialize" ? serverInstructions(product) : undefined;
         let successfulBusinessCall = false;
         let upgradeAppended = false;
-        if (rctx.published.size > 0 || strip.length > 0 || isToolCall) {
+        // Never on a GET: its answer is an open event stream, and reading it to the end here
+        // waited forever on the endpoints with a strip list (pdf, image, zip, ...).
+        if (req.method !== "GET" && (rctx.published.size > 0 || strip.length > 0 || isToolCall || instructions || clean)) {
           let out = await res.text();
           successfulBusinessCall = isToolCall && successfulBusinessResponse(bodyText, out, res.status);
-          if (successfulBusinessCall && !auth.isPro) {
+          if (successfulBusinessCall && !auth.isPro && !clean) {
             const tenantQ2 = auth.anonToken ? `?tenant=${auth.anonToken}` : "";
             const trailer = `Free tier: 600 calls/hour, 30-day retention. Pro ($${PRICE_SINGLE_USD}/server or $${PRICE_BUNDLE_USD} for all ${SERVER_COUNT}, one-time): https://mcp.zovo.one/buy/bundle${tenantQ2 ? tenantQ2 + "&" : "?"}src=${product}.success`;
             const upgraded = appendSuccessUpgrade(bodyText, out, trailer, res.status);
@@ -2782,6 +2934,15 @@ export default {
             out = out.split(p2).join(`${u} (valid 1 hour)`);
           }
           for (const prefix of strip) out = out.split(prefix).join("");
+          // After the strip, so a path named in the instructions text reaches the client intact.
+          out = withInstructions(out, instructions);
+          if (clean && rpc.method === "tools/list") {
+            try {
+              const o = JSON.parse(out) as { result?: { tools?: unknown } };
+              if (o.result && Array.isArray(o.result.tools)) { o.result.tools = cleanToolList(o.result.tools); out = JSON.stringify(o); }
+            } catch { /* not JSON: left as is */ }
+          }
+          if (clean) out = cleanJson(out);
           const h = new Headers(res.headers);
           h.delete("content-length");
           res = new Response(out, { status: res.status, headers: h });

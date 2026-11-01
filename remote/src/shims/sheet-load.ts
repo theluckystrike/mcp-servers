@@ -75,6 +75,7 @@ const fail = (t: string) => ({ content: [{ type: "text" as const, text: `Error: 
 export function registerSheetLoad(server: { registerTool: Function }): void {
   server.registerTool("sheet_load", {
     title: "Load a sheet into this session",
+    annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: true, openWorldHint: false },
     description:
       "Upload data to work on. This hosted endpoint has no filesystem, so instead of a file path you send the data once with sheet_load and then pass its name as `path` to sheet_info, sheet_read, sheet_query, sheet_stats, sheet_find, sheet_add_column, sheet_convert and sheet_write. " +
       "Give exactly one of csv (raw text, comma or tab separated), xlsx_base64 (a base64-encoded .xlsx workbook) or url. " + URL_ARG_DESCRIPTION + ": the url is fetched here with a 10 second timeout, at most 3 redirects, public http(s) hosts only, and a 2 MB cap, and a fetched file is stored as an .xlsx when it carries the PK zip header and as delimited text otherwise. " +
@@ -155,6 +156,7 @@ export function registerSheetLoad(server: { registerTool: Function }): void {
 
   server.registerTool("sheet_files", {
     title: "List loaded sheets",
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
     description: "List the sheets loaded for this token, with their sizes and the storage left under the 2 MB cap.",
     inputSchema: {},
   }, async () => {
@@ -172,6 +174,7 @@ export function registerSheetLoad(server: { registerTool: Function }): void {
 
   server.registerTool("sheet_unload", {
     title: "Delete a loaded sheet",
+    annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: false, openWorldHint: false },
     description: "Delete one sheet loaded for this token, freeing its space under the 2 MB cap.",
     inputSchema: { name: z.string().min(1).max(70) },
   }, async (a: { name: string }) => {
