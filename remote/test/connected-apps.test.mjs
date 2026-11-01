@@ -363,7 +363,7 @@ test("route contract: /v1 routing, trailer, GET 405, unknown tool and rate limit
   assert.ok(src.includes("if (successfulBusinessCall && !auth.isPro && !clean) {"), "no success trailer on /v1");
   assert.ok(src.includes('if (clean && (req.method === "GET" || req.method === "HEAD")) {'));
   assert.ok(src.includes("if (!known) return rpcError(rpc.id, -32602, `Unknown tool: ${name}`);"));
-  assert.ok(src.includes('return rpcError(rpc.id, -32000, "Rate limit reached, try again later",'));
+  assert.ok(src.includes('return rpcError(rpc.id, -32300, "USER_RATE_LIMITED: rate limit reached, try again later",'));
   assert.ok(src.includes('const key = `${BUILD_VERSION}:${product}:${isPro ? "pro" : "free"}${clean ? ":clean" : ""}`;'), "separate tools/list cache entry");
   const rpcError = evalTs(fnSource("rpcError"), ["rpcError"]).rpcError;
   return rpcError(9, -32602, "Unknown tool: x").json().then((b) =>

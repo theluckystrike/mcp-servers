@@ -2807,7 +2807,7 @@ export default {
       // Clean mode: the same limit as a JSON-RPC error in an ordinary response, without the
       // checkout links of the 429 body.
       const retryAfter = limited.headers.get("retry-after") ?? "";
-      return rpcError(rpc.id, -32000, "Rate limit reached, try again later",
+      return rpcError(rpc.id, -32300, "USER_RATE_LIMITED: rate limit reached, try again later",
         { limit: auth.limit, window: "1 hour", retry_after_seconds: Number(retryAfter) || undefined }, { "retry-after": retryAfter });
     }
 
