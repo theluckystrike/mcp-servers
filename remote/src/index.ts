@@ -1215,22 +1215,46 @@ export async function verifyPkce(verifier: string, challenge: string): Promise<b
   return secretEquals(await s256Challenge(verifier), challenge);
 }
 
-/** Minimal consent page: plain HTML, no branding framework, one form per RFC 6749 §3.1. */
-export function oauthConsentPage(base: string, params: URLSearchParams): string {
+/**
+ * Consent page for /oauth/authorize. Branded McpStamp page: names the client that asked
+ * (client_name from its DCR metadata, escaped), says exactly what Allow creates, and links
+ * the Terms and Privacy pages. Allow and Deny post back to /oauth/authorize/consent; Deny
+ * returns error=access_denied to the client (RFC 6749 §4.1.2.1). No external assets.
+ */
+export function oauthConsentPage(base: string, params: URLSearchParams, clientName = ""): string {
   const esc = (x: unknown) => String(x ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-  return `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Authorize MCP access</title></head><body>
-<h1>Authorize this tool to use your data space</h1>
-<p>Signing in creates a free anonymous access token and hands it to the tool that asked.
-There is no account and nothing to fill in. The token works for 30 days and is refreshed on every use.</p>
+  const who = clientName.trim().slice(0, 60) || "An AI app";
+  const hidden = ["client_id", "redirect_uri", "code_challenge", "state"]
+    .map((k) => `<input type="hidden" name="${k}" value="${esc(params.get(k))}">`).join("\n");
+  return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Connect McpStamp</title>
+<style>
+:root{--bg:#eef0ea;--card:#fff;--fg:#1b1f1a;--muted:#5b6358;--line:#d6dacf;--accent:#1f5c3a;--accent-fg:#fff;color-scheme:light}
+@media (prefers-color-scheme:dark){:root{--bg:#141713;--card:#1d211c;--fg:#e9ece5;--muted:#a3ab9f;--line:#333a31;--accent:#6fc493;--accent-fg:#0d1a12;color-scheme:dark}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;display:flex;min-height:100vh;align-items:center;justify-content:center;padding:24px 16px}
+main{background:var(--card);border:1px solid var(--line);border-radius:14px;max-width:440px;width:100%;padding:28px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px;letter-spacing:.2px}
+.mark{width:32px;height:32px;border-radius:8px;background:var(--accent);color:var(--accent-fg);display:grid;place-items:center;font-weight:800}
+h1{font-size:21px;line-height:1.3;margin:20px 0 8px;text-wrap:balance}p{margin:0 0 12px;color:var(--muted)}
+ul{margin:4px 0 18px;padding-left:20px}li{margin:4px 0}
+.row{display:flex;gap:10px;margin-top:20px}button{flex:1;font:inherit;font-weight:600;padding:11px 14px;border-radius:10px;cursor:pointer;border:1px solid var(--line);background:transparent;color:var(--fg)}
+button.allow{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
+.legal{font-size:13px;margin-top:18px}.legal a{color:var(--fg)}
+</style></head><body><main>
+<div class="brand"><span class="mark" aria-hidden="true">M</span>McpStamp</div>
+<h1>${esc(who)} wants to use McpStamp tools for you</h1>
+<p>McpStamp makes business documents in chat: invoices, quotes, receipts, PDFs and more.</p>
+<ul>
+<li>Allow creates a private McpStamp workspace for this connection. No account, no password, no payment details.</li>
+<li>The app can read and change only what you create in this workspace, such as clients and invoices.</li>
+<li>On the free plan, data that is not changed for 30 days is deleted. You can disconnect the app at any time.</li>
+</ul>
 <form method="get" action="${esc(base)}/oauth/authorize/consent">
-<input type="hidden" name="client_id" value="${esc(params.get("client_id"))}">
-<input type="hidden" name="redirect_uri" value="${esc(params.get("redirect_uri"))}">
-<input type="hidden" name="code_challenge" value="${esc(params.get("code_challenge"))}">
-<input type="hidden" name="state" value="${esc(params.get("state"))}">
-<button type="submit">Allow</button>
+${hidden}
+<div class="row"><button type="submit" name="decision" value="deny">Cancel</button><button class="allow" type="submit" name="decision" value="allow" autofocus>Allow</button></div>
 </form>
-</body></html>`;
+<p class="legal">By allowing, you agree to the <a href="https://www.mcpstamp.com/terms/" target="_blank" rel="noopener">Terms</a> and <a href="https://www.mcpstamp.com/privacy/" target="_blank" rel="noopener">Privacy Policy</a>. Operated by autom8 LLC.</p>
+</main></body></html>`;
 }
 
 /** A terse error page for a bad /oauth/authorize request (nothing to sign in for). */
@@ -2625,7 +2649,9 @@ export default {
       // Exact-match redirect URI per RFC 6749 §3.1.2.3 - no prefix or wildcard matching.
       if (!registered.includes(redirectUri)) return htmlPage(oauthAuthorizeErrorPage("redirect_uri is not registered for this client."));
       if (!/^[A-Za-z0-9_-]{43,128}$/.test(challenge)) return htmlPage(oauthAuthorizeErrorPage("code_challenge must be an S256 (base64url, 43-128 char) value."));
-      const html = oauthConsentPage(base, url.searchParams);
+      let clientName = "";
+      try { clientName = String((JSON.parse(client) as { metadata: { client_name?: unknown } }).metadata.client_name ?? ""); } catch { clientName = ""; }
+      const html = oauthConsentPage(base, url.searchParams, clientName);
       return new Response(html, { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" } });
     }
 
@@ -2642,6 +2668,13 @@ export default {
       const registered = (JSON.parse(client) as { metadata: { redirect_uris?: string[] } }).metadata.redirect_uris ?? [];
       if (!registered.includes(redirectUri)) return htmlPage(oauthAuthorizeErrorPage("redirect_uri is not registered for this client."));
       if (!/^[A-Za-z0-9_-]{43,128}$/.test(challenge)) return htmlPage(oauthAuthorizeErrorPage("Bad code_challenge."));
+      if (url.searchParams.get("decision") === "deny") {
+        // RFC 6749 §4.1.2.1: the user said no. Nothing is minted; the client gets access_denied.
+        const denied = new URL(redirectUri);
+        denied.searchParams.set("error", "access_denied");
+        if (state) denied.searchParams.set("state", state);
+        return Response.redirect(denied.toString(), 302);
+      }
       const minted = await mintAnonToken(req, env, ctx);
       if (typeof minted !== "string") return minted; // rate-limited Response
       const code = crypto.randomUUID().replace(/-/g, "");
