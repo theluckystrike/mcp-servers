@@ -1,17 +1,17 @@
 {
  "id": "2026-11-02",
  "title": "Session 2026-11-02, six more data satellites, money-site links, paid rail staged",
- "verdict": "Every channel still shows zero verified human usage and $0 MCP revenue, so this session did not add another back-office server. It shipped eight more free servers that know what a model cannot (2026 IRS limits, live certificate data, exact statistics, USDA nutrition, AP score tables, 2027 Social Security and retirement limits, the new student loan plan), each feeding a money site that already earns. It also linked nine money sites back to their servers, cross-linked all 17 repos, opened three domain-list PRs and staged a real paid rail (Apify pay-per-event) that needs only the owner's token.",
+ "verdict": "Every channel still shows zero verified human usage and $0 MCP revenue, so this session did not add another back-office server. It shipped nine more free servers that know what a model cannot (2026 IRS limits, live certificate data, exact statistics, USDA nutrition, AP score tables, 2027 Social Security and retirement limits, the new student loan plan, the 2026 ACA subsidy cliff), each feeding a money site that already earns. It also linked nine money sites back to their servers, cross-linked all 18 repos, opened three domain-list PRs and staged a real paid rail (Apify pay-per-event) that needs only the owner's token.",
  "kpis": [
   {
    "label": "Free data satellites live",
-   "value": "17",
-   "note": "9 from 10-30 plus 8 today. Every tool answered a real tools/call on the printed hosted URL with no token; all in the official registry. data/s1102/*-mcp.json."
+   "value": "18",
+   "note": "9 from 10-30 plus 9 today. Every tool answered a real tools/call on the printed hosted URL with no token; all in the official registry. data/s1102/*-mcp.json."
   },
   {
    "label": "mcpstamp.com free server pages",
-   "value": "19 live",
-   "note": "Index, 17 server pages and the privacy page, all 200. Deployment 41fd9686. In the sitemap, pinged to IndexNow."
+   "value": "20 live",
+   "note": "Index, 18 server pages and the privacy page, all 200. Deployment aba13d7d. In the sitemap, pinged to IndexNow."
   },
   {
    "label": "MCP paid orders, all time",
@@ -55,8 +55,8 @@
   },
   {
    "label": "Directory submissions today",
-   "value": "32",
-   "note": "mcprepository, mcp.directory, mcpmarket, mcpservers.org for the 8 new servers, plus two batched PRs on lists that merged us before (Sagargupta16 273, bhavyshekhaliya 103). data/s1102/dirsub.md, lists2.md."
+   "value": "36",
+   "note": "mcprepository, mcp.directory, mcpmarket, mcpservers.org for the 9 new servers, plus two batched PRs on lists that merged us before (Sagargupta16 273, bhavyshekhaliya 103)."
   }
  ],
  "shipped": [
@@ -101,6 +101,11 @@
    "detail": "4 tools. The Repayment Assistance Plan from P.L. 119-21 (1 to 10% of AGI, $10 minimum, $50 per dependent, interest waiver, $50 principal match, 360 payments), the new PLUS limits and SAVE transition dates, copied from the enrolled law text. 21 fixtures. Spot check AGI $50,000 gives $166.67 a month, matching the statute. Links to mcpstamp.com because no owner site covers student loans."
   },
   {
+   "title": "aca-premium-tax-credit-calculator-mcp live, feeds https://taxbreakcalc.com",
+   "url": "https://github.com/theluckystrike/aca-premium-tax-credit-calculator-mcp",
+   "detail": "4 tools. The enhanced credits ended after 2025 (checked against the IRS Q&A and every public law through P.L. 119-136), so the 400% poverty-line cliff applies in 2026. Rev. Proc. 2025-25 table, HHS poverty lines 2024-2026, repayment caps repealed from 2026. 19 fixtures. Spot check 2025 coverage, 1 person, $15,060, correct."
+  },
+  {
    "title": "mcpstamp.com lists all 15 free servers",
    "url": "https://www.mcpstamp.com/free-servers/",
    "detail": "New /free-servers/ index, 15 server pages with live tool tables, a privacy page for the free servers, nav and footer links, sitemap and llms.txt. Deployment 06903a19, rollback to e8e929bc. Diffed against live first, the legal pages unchanged. IndexNow 200, sitemap submitted to Search Console 204. Source commit 6d0997c."
@@ -139,6 +144,11 @@
    "title": "Directory submissions and two list PRs",
    "url": "https://github.com/Sagargupta16/awesome-mcp-servers/pull/273",
    "detail": "24 submissions for the 6 morning servers plus 4 for the retirement server, all accepted or queued. Batched PRs on the two lists that merged lake-level after 10-30. mcpmarket retry for gold-price accepted."
+  },
+  {
+   "title": "Follow-up post to Zovo",
+   "url": "https://t.me/zovoone/36",
+   "detail": "t.me/zovoone/36 and t.me/zovo_chat/2/453 for the retirement and student loan servers, after the same admin checks and textgate control."
   }
  ],
  "next": [

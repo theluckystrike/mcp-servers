@@ -14,5 +14,17 @@
   "error": null
  },
  "posted_at": "2026-11-02T10:24:41",
- "rollback": "deleteMessage with chat_id and message_id above, via @ZovoChatBot"
+ "rollback": "deleteMessage with chat_id and message_id above, via @ZovoChatBot",
+ "channel_2": {
+  "ok": true,
+  "message_id": 36,
+  "url": "https://t.me/zovoone/36",
+  "error": null
+ },
+ "group_2": {
+  "ok": true,
+  "message_id": 453,
+  "url": "https://t.me/zovo_chat/2/453",
+  "error": null
+ }
 }
