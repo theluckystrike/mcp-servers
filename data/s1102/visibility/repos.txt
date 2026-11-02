@@ -13,3 +13,6 @@ car-loan-interest-deduction-calculator-mcp
 recipe-nutrition-calculator-mcp
 section-179-deduction-calculator-mcp
 subdomain-finder-mcp
+retirement-contribution-limits-2027-mcp
+student-loan-repayment-assistance-plan-calculator-mcp
+aca-premium-tax-credit-calculator-mcp
