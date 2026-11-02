@@ -1,17 +1,17 @@
 {
  "id": "2026-11-02",
  "title": "Session 2026-11-02, six more data satellites, money-site links, paid rail staged",
- "verdict": "Every channel still shows zero verified human usage and $0 MCP revenue, so this session did not add another back-office server. It shipped nine more free servers that know what a model cannot (2026 IRS limits, live certificate data, exact statistics, USDA nutrition, AP score tables, 2027 Social Security and retirement limits, the new student loan plan, the 2026 ACA subsidy cliff), each feeding a money site that already earns. It also linked ten money sites back to their servers, cross-linked all 18 repos, opened three domain-list PRs and staged a real paid rail (Apify pay-per-event) that needs only the owner's token.",
+ "verdict": "Every channel still shows zero verified human usage and $0 MCP revenue, so this session did not add another back-office server. It shipped eleven more free servers that know what a model cannot (2026 IRS limits, live certificate data, exact statistics, USDA nutrition, AP score tables, 2027 Social Security and retirement limits, the new student loan plan, the 2026 ACA subsidy cliff), each feeding a money site that already earns. It also linked ten money sites back to their servers, cross-linked all 20 repos, opened three domain-list PRs and staged a real paid rail (Apify pay-per-event) that needs only the owner's token.",
  "kpis": [
   {
    "label": "Free data satellites live",
-   "value": "18",
-   "note": "9 from 10-30 plus 9 today. Every tool answered a real tools/call on the printed hosted URL with no token; all in the official registry. data/s1102/*-mcp.json."
+   "value": "20",
+   "note": "9 from 10-30 plus 11 today. Every tool answered a real tools/call on the printed hosted URL with no token; all in the official registry. data/s1102/*-mcp.json."
   },
   {
    "label": "mcpstamp.com free server pages",
-   "value": "20 live",
-   "note": "Index, 18 server pages and the privacy page, all 200. Deployment aba13d7d. In the sitemap, pinged to IndexNow."
+   "value": "22 live",
+   "note": "Index, 20 server pages and the privacy page, all 200. Deployment 9ba7c5b3. In the sitemap, pinged to IndexNow."
   },
   {
    "label": "MCP paid orders, all time",
@@ -55,12 +55,12 @@
   },
   {
    "label": "Directory submissions today",
-   "value": "36",
-   "note": "mcprepository, mcp.directory, mcpmarket, mcpservers.org for the 9 new servers, plus two batched PRs on lists that merged us before (Sagargupta16 273, bhavyshekhaliya 103). Sagargupta16/awesome-mcp-servers 273 merged the same day (15 servers)."
+   "value": "44",
+   "note": "mcprepository, mcp.directory, mcpmarket, mcpservers.org for the 11 new servers. Curated list PRs: Sagargupta16 273 and 274 merged, 275 open; bhavyshekhaliya 103 open with 19 rows; 3 domain-list PRs open."
   },
   {
    "label": "Hosted servers answering at session end",
-   "value": "18 / 18",
+   "value": "20 / 20",
    "note": "78 tools. tools/list on every printed URL at 11:49, data/s1102/final-health.json."
   }
  ],
@@ -109,6 +109,11 @@
    "title": "aca-premium-tax-credit-calculator-mcp live, feeds https://taxbreakcalc.com",
    "url": "https://github.com/theluckystrike/aca-premium-tax-credit-calculator-mcp",
    "detail": "4 tools. The enhanced credits ended after 2025 (checked against the IRS Q&A and every public law through P.L. 119-136), so the 400% poverty-line cliff applies in 2026. Rev. Proc. 2025-25 table, HHS poverty lines 2024-2026, repayment caps repealed from 2026. 19 fixtures. Spot check 2025 coverage, 1 person, $15,060, correct."
+  },
+  {
+   "title": "estate-gift-tax-exemption-calculator-mcp and uk-statutory-sick-pay-maternity-pay-calculator-mcp live",
+   "url": "https://github.com/theluckystrike/estate-gift-tax-exemption-calculator-mcp",
+   "detail": "Wave 4. Estate: the $15M 2026 exemption from P.L. 119-21, gift exclusion $19,000, 40% rate table, portability; spot check gives a $5,945,800 credit, correct. UK: SSP from day one at the lower of \u00a3123.25 or 80% of earnings from 6 April 2026 (SI 2026/373), SMP \u00a3194.32, NLW \u00a312.71 and the April 2027 \u00a313.21. 16 and 20 fixtures. Feed taxbreakcalc.com and ukmoneycalc.com."
   },
   {
    "title": "mcpstamp.com lists all 15 free servers",

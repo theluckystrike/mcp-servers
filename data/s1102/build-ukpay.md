@@ -1,0 +1,4 @@
+# build-ukpay (S1102)
+Shipped uk-statutory-sick-pay-maternity-pay-calculator-mcp: https://github.com/theluckystrike/uk-statutory-sick-pay-maternity-pay-calculator-mcp (public, 14 topics, 1 push), worker https://uk-statutory-sick-pay-maternity-pay-calculator-mcp.lipmichal.workers.dev/mcp version 935e0eb9-0981-48c5-b910-c280ffea449e (rollback: npx wrangler delete --name uk-statutory-sick-pay-maternity-pay-calculator-mcp), registry io.github.theluckystrike/uk-statutory-sick-pay-maternity-pay-calculator-mcp 1.0.0 visible.
+Verified: node --test 20/20; stdio 4/4; npx -y github: from empty dir 4/4; live 4/4 tools/call through README URL with no token; GET / 200; npm view E404 (control resolves).
+Core rates confirmed from gov.uk + legislation.gov.uk on 2026-11-02 (see DATA_SOURCES.md). Open issues in uk-statutory-sick-pay-maternity-pay-calculator-mcp.json.

@@ -105,3 +105,8 @@ Goal: show each satellite MCP server to the human visitors of its money site. No
 
 ## Incident
 - A for-loop of git status hung ~30 min on a dataless repo (~/ingredient-offer-20260927); killed via TaskStop. A line in that command referenced goldgramprice local-refresh.sh but never executed because the loop never finished; verified no local-refresh process ran.
+## Recheck 2026-11-02 12:05 (orchestrator)
+- dscrradar: built HEAD ca97304 plus the six uncommitted data files from ~/dscrradar-clone in a scratch worktree. 52 of 56 pages byte-equal live, but live /dscr-loan-down-payment/ and /dscr-loan-vs-conventional/ carry internal links ("rent to qualify calculator", "75% rental income rule calculator") that no local source has. Deploying would delete them. Still held; the owner or the dscrradar session must name the source.
+- ukmoneycalc: production d1cf0083 (about 11:00) was deployed from ec77420, which is on no GitHub branch; origin/main is 07a4583 (10:51). Another session is active. Still held.
+- ingredientcalculator: unchanged, no repo and unknown production commit. Still held.
+- goldgramprice: shipped 11:47 (f362fca via its launchd refresh). recipetool: shipped 11:15 (3d35f96).

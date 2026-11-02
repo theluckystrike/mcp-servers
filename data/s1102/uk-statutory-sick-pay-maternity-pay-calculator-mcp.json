@@ -1,0 +1,56 @@
+{
+  "repo": "uk-statutory-sick-pay-maternity-pay-calculator-mcp",
+  "repo_url": "https://github.com/theluckystrike/uk-statutory-sick-pay-maternity-pay-calculator-mcp",
+  "hosted_url": "https://uk-statutory-sick-pay-maternity-pay-calculator-mcp.lipmichal.workers.dev/mcp",
+  "worker_version_id": "935e0eb9-0981-48c5-b910-c280ffea449e",
+  "rollback": "npx wrangler delete --name uk-statutory-sick-pay-maternity-pay-calculator-mcp (brand-new worker)",
+  "registry_name": "io.github.theluckystrike/uk-statutory-sick-pay-maternity-pay-calculator-mcp",
+  "registry_visible": true,
+  "registry_check": "curl -s 'https://registry.modelcontextprotocol.io/v0/servers?search=uk-statutory-sick-pay' -> io.github.theluckystrike/uk-statutory-sick-pay-maternity-pay-calculator-mcp 1.0.0",
+  "tools": [
+    "calculate_statutory_sick_pay",
+    "calculate_statutory_maternity_pay",
+    "get_minimum_wage_rates",
+    "check_eligibility"
+  ],
+  "fixtures": 20,
+  "tests_passed": "20/20 (node --test test/*.test.mjs)",
+  "live_calls_ok": {
+    "calculate_statutory_sick_pay": true,
+    "calculate_statutory_maternity_pay": true,
+    "get_minimum_wage_rates": true,
+    "check_eligibility": true
+  },
+  "live_check": "node data/s1102/build-ukpay/smoke.mjs http calls.json against the URL grepped from README.md, no token; each result !isError with structuredContent.source, as_of, more containing utm_source=mcp; GET / 200",
+  "npx_github_ok": true,
+  "npx_check": "from an empty mktemp dir: npx -y github:theluckystrike/uk-statutory-sick-pay-maternity-pay-calculator-mcp answered initialize, tools/list (4) and 4/4 tools/call",
+  "stdio_local_ok": "initialize + tools/list + 4/4 tools/call OK (node dist/stdio.js)",
+  "npm_ready": true,
+  "npm_published": false,
+  "npm_check": "npm view uk-statutory-sick-pay-maternity-pay-calculator-mcp -> E404; control npm view uk-income-tax-salary-mcp resolves; npm pack --dry-run 9 files incl dist/stdio.js",
+  "pushes": 1,
+  "repo_public": true,
+  "topics": 14,
+  "sources": [
+    "https://www.gov.uk/guidance/rates-and-thresholds-for-employers-2026-to-2027 (SSP \u00a3123.25 or 80% AWE, day tables, SMP/SPP/ShPP \u00a3194.32, SMP from 5 April 2026, LEL \u00a3129, NMW April 2026; fetched 2026-11-02)",
+    "https://www.gov.uk/guidance/rates-and-thresholds-for-employers-2025-to-2026 (SSP \u00a3118.75, LEL \u00a3125, \u00a3187.18, NMW April 2025; fetched 2026-11-02)",
+    "https://www.gov.uk/guidance/statutory-sick-pay-manually-calculate-your-employees-payments (paid from first full working day, worked examples; fetched 2026-11-02)",
+    "https://www.gov.uk/statutory-sick-pay and https://www.gov.uk/employers-sick-pay (fetched 2026-11-02)",
+    "https://www.legislation.gov.uk/ukpga/2025/36/section/10 and /section/11 (waiting days and LEL removed; fetched 2026-11-02)",
+    "https://www.legislation.gov.uk/uksi/2026/373/made (commencement 6 April 2026, transitional regs 3-6; fetched 2026-11-02)",
+    "https://www.gov.uk/maternity-pay-leave, /employers-maternity-pay-leave, /paternity-pay-leave, /adoption-pay-leave, /shared-parental-leave-and-pay (fetched 2026-11-02)",
+    "https://www.gov.uk/national-minimum-wage-rates (April 2026 \u00a312.71/\u00a310.85/\u00a38/\u00a38, April 2027 \u00a313.21/\u00a311.27/\u00a38.31/\u00a38.31; fetched 2026-11-02)"
+  ],
+  "money_site": "https://ukmoneycalc.com/calculators/maternity-pay/ (sitemap-0.xml has no sick pay or minimum wage page; SSP results link /calculators/take-home-pay/, NMW /calculators/pro-rata-salary/)",
+  "open_issues": [
+    "SSP sickness spanning 6 April 2026: SI 2026/373 transitional rules are flagged in notes but not split; 2025/26 rules applied to whole period.",
+    "Rounding: 90% of AWE rounded up to next penny is HMRC practice, not stated on any page fetched this session (disclosed in DATA_SOURCES.md). SSP partial weeks use the day-table method (ceil); gov.uk manual Example 2 rounds the daily rate first and gives \u00a382.16 vs table \u00a382.17 - disclosed in result notes.",
+    "2027/28 SSP/SMP/LEL not published on 2026-11-02: results use 2026/27 figures with rate_confirmed false.",
+    "gov.uk/employers-maternity-pay-leave still says LEL \u00a3125 (stale); employee page and 2026/27 employer table say \u00a3129 - server uses \u00a3129 for qualifying weeks ending on/after 6 April 2026.",
+    "No sick-pay or minimum-wage page on ukmoneycalc.com; a gap the money site could fill (not edited per brief).",
+    "npm not published (orchestrator batches with owner 2FA). Glama listing not submitted (glama.json in repo).",
+    "Other satellite READMEs do not yet list this server; rerun render_index.py readme across satellites when the orchestrator next refreshes blocks."
+  ],
+  "minutes": 32,
+  "live_raw_responses_dir": "/Users/mike/mcp-servers/data/s1102/build-ukpay/raw-live"
+}
