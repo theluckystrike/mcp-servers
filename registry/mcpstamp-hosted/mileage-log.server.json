@@ -1,0 +1,37 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.theluckystrike/mileage-log",
+  "title": "McpStamp Mileage Log",
+  "description": "Log drives by purpose, apply your own dated rates, get deductible totals and a CSV for taxes.",
+  "version": "0.23.0",
+  "repository": {
+    "url": "https://github.com/theluckystrike/mcp-servers",
+    "source": "github",
+    "subfolder": "servers/mileage-log"
+  },
+  "websiteUrl": "https://www.mcpstamp.com/servers/mileage-log/",
+  "packages": [
+    {
+      "registryType": "mcpb",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.22.0/mileage-log.mcpb",
+      "version": "0.22.0",
+      "fileSha256": "e0dbcf7865aaba4fd175f1a28dd1dd2a9b82d7510cc6bbee980cca31df631355",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "description": "Optional Pro license key (MCPL1....). Verified offline.",
+          "isSecret": true,
+          "name": "MCP_LICENSE_KEY"
+        }
+      ]
+    }
+  ],
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.zovo.one/mcp/mileage-log"
+    }
+  ]
+}

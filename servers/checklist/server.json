@@ -1,14 +1,15 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/checklist",
-  "description": "Reusable checklists and dated runs of them: pass, fail, not applicable, and a sign-off.",
+  "title": "McpStamp Checklists",
+  "description": "Reusable checklists with dated runs: pass, fail or N/A per step, then a frozen sign-off.",
   "version": "0.22.6",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
     "subfolder": "servers/checklist"
   },
-  "websiteUrl": "https://mcp.zovo.one/s/checklist",
+  "websiteUrl": "https://www.mcpstamp.com/servers/checklist/",
   "packages": [
     {
       "registryType": "mcpb",

@@ -1,14 +1,15 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/per-diem",
-  "description": "Daily travel allowances from bundled public rate tables: Poland, HMRC and GSA CONUS.",
+  "title": "McpStamp Per Diem",
+  "description": "Travel allowances from bundled Polish, HMRC and GSA rate tables, with partial days and meals.",
   "version": "0.22.6",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
     "subfolder": "servers/per-diem"
   },
-  "websiteUrl": "https://mcp.zovo.one/s/per-diem",
+  "websiteUrl": "https://www.mcpstamp.com/servers/per-diem/",
   "packages": [
     {
       "registryType": "mcpb",

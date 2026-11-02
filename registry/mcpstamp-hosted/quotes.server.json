@@ -1,0 +1,37 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.theluckystrike/quotes-estimates-proposals-vat-win-rate",
+  "title": "McpStamp Quotes",
+  "description": "Quotes with VAT lines and a validity date as A4 PDFs; an accepted quote becomes an invoice.",
+  "version": "0.23.0",
+  "repository": {
+    "url": "https://github.com/theluckystrike/mcp-servers",
+    "source": "github",
+    "subfolder": "servers/quotes"
+  },
+  "websiteUrl": "https://www.mcpstamp.com/servers/quotes/",
+  "packages": [
+    {
+      "registryType": "mcpb",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.22.0/quotes.mcpb",
+      "version": "0.21.0",
+      "fileSha256": "050b84d286f99600d9c6523b8968c163f488a4fba956dd0efdbf2a445a4c7f25",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "description": "Optional Pro license key (MCPL1....). Verified offline.",
+          "isSecret": true,
+          "name": "MCP_LICENSE_KEY"
+        }
+      ]
+    }
+  ],
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.zovo.one/mcp/quotes"
+    }
+  ]
+}

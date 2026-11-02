@@ -1,14 +1,15 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/carton-consignment-waybill-pack-list",
-  "description": "Pack a consignment into cartons, weigh it, and list what is inside each box for the waybill.",
+  "title": "McpStamp Packing Lists",
+  "description": "Packing lists for shipments: cartons, weights, shortfalls against the order, packing slips.",
   "version": "0.22.8",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
     "subfolder": "servers/packing-list"
   },
-  "websiteUrl": "https://mcp.zovo.one/s/packing-list",
+  "websiteUrl": "https://www.mcpstamp.com/servers/packing-list/",
   "packages": [
     {
       "registryType": "mcpb",

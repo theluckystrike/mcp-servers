@@ -1,14 +1,15 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/statement-of-account",
-  "description": "Statements of account, aging buckets and dunning letters from your invoices.",
+  "title": "McpStamp Statement of Account",
+  "description": "Client statements of account, ageing of open invoices and payment chasers as text or PDF.",
   "version": "0.22.6",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
     "subfolder": "servers/statement-of-account"
   },
-  "websiteUrl": "https://mcp.zovo.one/s/statement-of-account",
+  "websiteUrl": "https://www.mcpstamp.com/servers/statement-of-account/",
   "packages": [
     {
       "registryType": "mcpb",

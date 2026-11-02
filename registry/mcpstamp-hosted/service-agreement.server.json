@@ -1,0 +1,37 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.theluckystrike/service-agreement",
+  "title": "McpStamp Service Agreement",
+  "description": "Freelance service agreements: scope, deliverables, rate, termination, liability cap, clauses.",
+  "version": "0.23.0",
+  "repository": {
+    "url": "https://github.com/theluckystrike/mcp-servers",
+    "source": "github",
+    "subfolder": "servers/service-agreement"
+  },
+  "websiteUrl": "https://www.mcpstamp.com/servers/service-agreement/",
+  "packages": [
+    {
+      "registryType": "mcpb",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.22.0/service-agreement.mcpb",
+      "version": "0.22.0",
+      "fileSha256": "d6384bdfa00615832c41859a5875228348ac38b9e557430818b16e0319626c3f",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "description": "Optional Pro license key (MCPL1....). Verified offline.",
+          "isSecret": true,
+          "name": "MCP_LICENSE_KEY"
+        }
+      ]
+    }
+  ],
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.zovo.one/mcp/service-agreement"
+    }
+  ]
+}

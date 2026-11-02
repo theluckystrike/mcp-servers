@@ -1,0 +1,37 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.theluckystrike/kanban-todo-tasks-projects-board",
+  "title": "McpStamp Kanban Board",
+  "description": "Task boards per project: priorities, due dates, estimates, overdue tasks and a weekly review.",
+  "version": "0.23.0",
+  "repository": {
+    "url": "https://github.com/theluckystrike/mcp-servers",
+    "source": "github",
+    "subfolder": "servers/kanban"
+  },
+  "websiteUrl": "https://www.mcpstamp.com/servers/kanban/",
+  "packages": [
+    {
+      "registryType": "mcpb",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.22.0/kanban.mcpb",
+      "version": "0.21.0",
+      "fileSha256": "8c7911db9172f4a3dfd393060744b43e65efd5ee314089c2bbc1cd69ef05fe9a",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "description": "Optional Pro license key (MCPL1....). Verified offline.",
+          "isSecret": true,
+          "name": "MCP_LICENSE_KEY"
+        }
+      ]
+    }
+  ],
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.zovo.one/mcp/kanban"
+    }
+  ]
+}

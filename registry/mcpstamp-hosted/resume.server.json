@@ -1,0 +1,37 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.theluckystrike/resume-cover-letter-docx-generator",
+  "title": "McpStamp Resume and Cover Letter",
+  "description": "Store your CV once, then get tailored .docx resumes, cover letters and keyword gaps for a job.",
+  "version": "0.23.0",
+  "repository": {
+    "url": "https://github.com/theluckystrike/mcp-servers",
+    "source": "github",
+    "subfolder": "servers/resume"
+  },
+  "websiteUrl": "https://www.mcpstamp.com/servers/resume/",
+  "packages": [
+    {
+      "registryType": "mcpb",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.22.0/resume.mcpb",
+      "version": "0.21.0",
+      "fileSha256": "38519bcf2230a67e344f515d917091816defac0854851037c50318807722d4d4",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "description": "Optional Pro license key (MCPL1....). Verified offline.",
+          "isSecret": true,
+          "name": "MCP_LICENSE_KEY"
+        }
+      ]
+    }
+  ],
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.zovo.one/mcp/resume"
+    }
+  ]
+}

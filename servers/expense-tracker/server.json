@@ -1,14 +1,15 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/expense-tracker-receipts-mileage",
-  "description": "Log expenses, receipts and mileage from chat: auto-categorise, split VAT, summarise, export, rebill.",
+  "title": "McpStamp Expense Tracker",
+  "description": "Log business expenses with the VAT split and mileage, total them, export CSV or XLSX.",
   "version": "0.22.9",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
     "subfolder": "servers/expense-tracker"
   },
-  "websiteUrl": "https://mcp.zovo.one/s/expense-tracker",
+  "websiteUrl": "https://www.mcpstamp.com/servers/expense-tracker/",
   "packages": [
     {
       "registryType": "mcpb",

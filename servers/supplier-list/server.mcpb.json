@@ -1,14 +1,15 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/supplier-list",
-  "description": "A supplier directory that does not rot: contacts, terms, lead times, review dates.",
+  "title": "McpStamp Supplier List",
+  "description": "A supplier directory: contacts, payment terms, lead times, review dates and CSV export.",
   "version": "0.22.6",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
     "subfolder": "servers/supplier-list"
   },
-  "websiteUrl": "https://mcp.zovo.one/s/supplier-list",
+  "websiteUrl": "https://www.mcpstamp.com/servers/supplier-list/",
   "packages": [
     {
       "registryType": "mcpb",
@@ -31,15 +32,7 @@
   "remotes": [
     {
       "type": "streamable-http",
-      "url": "https://mcp.zovo.one/mcp/supplier-list",
-      "headers": [
-        {
-          "name": "Authorization",
-          "description": "Bearer <Pro license key or anonymous token from GET https://mcp.zovo.one/mcp/token>",
-          "isRequired": true,
-          "isSecret": true
-        }
-      ]
+      "url": "https://mcp.zovo.one/mcp/supplier-list"
     }
   ]
 }

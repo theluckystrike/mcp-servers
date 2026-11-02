@@ -1,14 +1,15 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/docx-document-generator-proposal-contract-markdown",
-  "description": "Create real Word .docx files from your AI chat: proposals, quotes, contracts, statements of work.",
+  "title": "McpStamp Word Documents",
+  "description": "Create Word .docx files from sections or markdown, fill templates, and read text from a .docx.",
   "version": "0.22.6",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
     "subfolder": "servers/docx"
   },
-  "websiteUrl": "https://mcp.zovo.one/s/docx",
+  "websiteUrl": "https://www.mcpstamp.com/servers/docx/",
   "packages": [
     {
       "registryType": "mcpb",

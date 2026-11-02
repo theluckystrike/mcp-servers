@@ -1,14 +1,15 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/goods-receipt",
-  "description": "Reusable goods-receipts and dated runs of them: pass, fail, not applicable, and a sign-off.",
+  "title": "McpStamp Goods Receipt",
+  "description": "Receive goods against purchase orders: partial, damaged or short units, and each order's status.",
   "version": "0.22.6",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
     "subfolder": "servers/goods-receipt"
   },
-  "websiteUrl": "https://mcp.zovo.one/s/goods-receipt",
+  "websiteUrl": "https://www.mcpstamp.com/servers/goods-receipt/",
   "packages": [
     {
       "registryType": "mcpb",
@@ -31,15 +32,7 @@
   "remotes": [
     {
       "type": "streamable-http",
-      "url": "https://mcp.zovo.one/mcp/goods-receipt",
-      "headers": [
-        {
-          "name": "Authorization",
-          "description": "Bearer <Pro license key or anonymous token from GET https://mcp.zovo.one/mcp/token>",
-          "isRequired": true,
-          "isSecret": true
-        }
-      ]
+      "url": "https://mcp.zovo.one/mcp/goods-receipt"
     }
   ]
 }

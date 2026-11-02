@@ -1,14 +1,15 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/bill-of-sale",
-  "description": "Bills of sale for equipment, vehicles and stock: draft, finalize, print with signature lines.",
+  "title": "McpStamp Bill of Sale",
+  "description": "Bills of sale for vehicles, equipment or phones: drafts and signing copies with signature lines.",
   "version": "0.22.6",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
     "subfolder": "servers/bill-of-sale"
   },
-  "websiteUrl": "https://mcp.zovo.one/s/bill-of-sale",
+  "websiteUrl": "https://www.mcpstamp.com/servers/bill-of-sale/",
   "packages": [
     {
       "registryType": "mcpb",

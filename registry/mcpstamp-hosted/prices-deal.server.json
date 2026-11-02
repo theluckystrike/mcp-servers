@@ -1,0 +1,37 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.theluckystrike/prices-deal",
+  "title": "McpStamp Price Deals",
+  "description": "Watch product prices across shops, set a target price and see which watched items got cheaper.",
+  "version": "0.23.0",
+  "repository": {
+    "url": "https://github.com/theluckystrike/mcp-servers",
+    "source": "github",
+    "subfolder": "servers/price-tracker"
+  },
+  "websiteUrl": "https://www.mcpstamp.com/servers/price-tracker/",
+  "packages": [
+    {
+      "registryType": "mcpb",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.22.0/price-tracker.mcpb",
+      "version": "0.21.0",
+      "fileSha256": "5813f7e1d1d072525a05c1575a7520a22cf2426bb4e62cae7eb1b084e334af23",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "description": "Optional Pro license key (MCPL1....). Verified offline.",
+          "isSecret": true,
+          "name": "MCP_LICENSE_KEY"
+        }
+      ]
+    }
+  ],
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.zovo.one/mcp/prices-deal"
+    }
+  ]
+}

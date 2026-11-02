@@ -1,14 +1,15 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/leave",
-  "description": "Employee leave and PTO requests: balances, approvals, calendars, and who-is-out summaries.",
+  "title": "McpStamp Leave Tracker",
+  "description": "Employee leave and PTO: requests, approvals, balances, who is out, and conflict checks.",
   "version": "0.22.6",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
     "subfolder": "servers/leave"
   },
-  "websiteUrl": "https://mcp.zovo.one/s/leave",
+  "websiteUrl": "https://www.mcpstamp.com/servers/leave/",
   "packages": [
     {
       "registryType": "mcpb",
