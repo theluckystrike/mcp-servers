@@ -1,0 +1,579 @@
+{
+ "date": "2026-11-02",
+ "lane": "visibility",
+ "totals": {
+  "github_queries": 30,
+  "github_rank1_queries": 26,
+  "github_satellites_rank1_on_both": 9,
+  "github_satellites_rank1_on_at_least_one": 15,
+  "web_searches": 15,
+  "web_searches_with_our_url": 1,
+  "directory_registry": 15,
+  "directory_glama": 15,
+  "directory_mcpstamp": 15,
+  "directory_checks_passed": 45,
+  "directory_checks_total": 45
+ },
+ "satellites": [
+  {
+   "repo": "lake-level-mcp",
+   "github": [
+    {
+     "query": "lake level mcp server",
+     "total_count": 2,
+     "rank": 1,
+     "top3": [
+      "theluckystrike/lake-level-mcp",
+      "Koneisto/mcp-weather"
+     ]
+    },
+    {
+     "query": "lake level mcp",
+     "total_count": 3,
+     "rank": 1,
+     "top3": [
+      "theluckystrike/lake-level-mcp",
+      "pipeworx-io/mcp-water-levels",
+      "Koneisto/mcp-weather"
+     ]
+    },
+    {
+     "query": "lake level mcp",
+     "total_count": 3,
+     "rank": 1,
+     "top3": [
+      "theluckystrike/lake-level-mcp",
+      "pipeworx-io/mcp-water-levels",
+      "Koneisto/mcp-weather"
+     ]
+    }
+   ],
+   "github_rank1_queries": 3,
+   "web": {
+    "query": "MCP server for lake level data",
+    "hit": false,
+    "position": null,
+    "url": null
+   },
+   "directory": {
+    "registry": true,
+    "glama": true,
+    "mcpstamp": true
+   },
+   "directory_count": 3
+  },
+  {
+   "repo": "no-tax-on-overtime-mcp",
+   "github": [
+    {
+     "query": "no tax on overtime mcp",
+     "total_count": 1,
+     "rank": 1,
+     "top3": [
+      "theluckystrike/no-tax-on-overtime-mcp"
+     ]
+    },
+    {
+     "query": "overtime deduction calculator mcp server",
+     "total_count": 1,
+     "rank": 1,
+     "top3": [
+      "theluckystrike/no-tax-on-overtime-mcp"
+     ]
+    }
+   ],
+   "github_rank1_queries": 2,
+   "web": {
+    "query": "MCP server for no tax on overtime deduction calculator",
+    "hit": false,
+    "position": null,
+    "url": null
+   },
+   "directory": {
+    "registry": true,
+    "glama": true,
+    "mcpstamp": true
+   },
+   "directory_count": 3
+  },
+  {
+   "repo": "minimum-wage-mcp",
+   "github": [
+    {
+     "query": "minimum wage mcp server",
+     "total_count": 3,
+     "rank": 1,
+     "top3": [
+      "theluckystrike/minimum-wage-mcp",
+      "atushi1841/japan-minimum-wage-mcp",
+      "salvador-creator/clino-mcp"
+     ]
+    },
+    {
+     "query": "state minimum wage mcp",
+     "total_count": 1,
+     "rank": 1,
+     "top3": [
+      "theluckystrike/minimum-wage-mcp"
+     ]
+    }
+   ],
+   "github_rank1_queries": 2,
+   "web": {
+    "query": "MCP server for state minimum wage lookup",
+    "hit": false,
+    "position": null,
+    "url": null
+   },
+   "directory": {
+    "registry": true,
+    "glama": true,
+    "mcpstamp": true
+   },
+   "directory_count": 3
+  },
+  {
+   "repo": "dscr-loan-calculator-mcp",
+   "github": [
+    {
+     "query": "dscr loan calculator mcp",
+     "total_count": 1,
+     "rank": 1,
+     "top3": [
+      "theluckystrike/dscr-loan-calculator-mcp"
+     ]
+    },
+    {
+     "query": "dscr mcp server",
+     "total_count": 3,
+     "rank": 1,
+     "top3": [
+      "theluckystrike/dscr-loan-calculator-mcp",
+      "onyxaholguin-cyber/sheet-and-flow-mcp",
+      "dealcalcpro2026/dealcalc-core"
+     ]
+    }
+   ],
+   "github_rank1_queries": 2,
+   "web": {
+    "query": "MCP server for DSCR loan calculator",
+    "hit": false,
+    "position": null,
+    "url": null
+   },
+   "directory": {
+    "registry": true,
+    "glama": true,
+    "mcpstamp": true
+   },
+   "directory_count": 3
+  },
+  {
+   "repo": "paycheck-calculator-mcp",
+   "github": [
+    {
+     "query": "paycheck calculator mcp server",
+     "total_count": 1,
+     "rank": 1,
+     "top3": [
+      "theluckystrike/paycheck-calculator-mcp"
+     ]
+    },
+    {
+     "query": "take home pay mcp",
+     "total_count": 5,
+     "rank": 2,
+     "top3": [
+      "Leeday-devs/takehomeapi-mcp",
+      "theluckystrike/paycheck-calculator-mcp",
+      "master-traffic-empire/mcp-calculators"
+     ]
+    }
+   ],
+   "github_rank1_queries": 1,
+   "web": {
+    "query": "Claude connector for paycheck take-home pay calculator",
+    "hit": false,
+    "position": null,
+    "url": null
+   },
+   "directory": {
+    "registry": true,
+    "glama": true,
+    "mcpstamp": true
+   },
+   "directory_count": 3
+  },
+  {
+   "repo": "uk-income-tax-salary-mcp",
+   "github": [
+    {
+     "query": "uk income tax mcp server",
+     "total_count": 3,
+     "rank": 1,
+     "top3": [
+      "theluckystrike/uk-income-tax-salary-mcp",
+      "tresor4k/calcuris-mcp",
+      "Leeday-devs/takehomeapi-mcp"
+     ]
+    },
+    {
+     "query": "uk salary tax calculator mcp",
+     "total_count": 0,
+     "rank": null,
+     "top3": []
+    }
+   ],
+   "github_rank1_queries": 1,
+   "web": {
+    "query": "MCP server for UK income tax salary calculator",
+    "hit": false,
+    "position": null,
+    "url": null
+   },
+   "directory": {
+    "registry": true,
+    "glama": true,
+    "mcpstamp": true
+   },
+   "directory_count": 3
+  },
+  {
+   "repo": "cups-to-grams-mcp",
+   "github": [
+    {
+     "query": "cups to grams mcp",
+     "total_count": 2,
+     "rank": 1,
+     "top3": [
+      "theluckystrike/cups-to-grams-mcp",
+      "xiongxingzhe/pawsandpounds-mcp"
+     ]
+    },
+    {
+     "query": "cooking conversion mcp server",
+     "total_count": 4,
+     "rank": 3,
+     "top3": [
+      "sellisd/mcp-units",
+      "nicholaswilde/recipes-mcp-rs",
+      "theluckystrike/cups-to-grams-mcp"
+     ]
+    }
+   ],
+   "github_rank1_queries": 1,
+   "web": {
+    "query": "MCP server for cups to grams cooking conversion",
+    "hit": false,
+    "position": null,
+    "url": null
+   },
+   "directory": {
+    "registry": true,
+    "glama": true,
+    "mcpstamp": true
+   },
+   "directory_count": 3
+  },
+  {
+   "repo": "gold-price-per-gram-mcp",
+   "github": [
+    {
+     "query": "gold price per gram mcp",
+     "total_count": 2,
+     "rank": 1,
+     "top3": [
+      "theluckystrike/gold-price-per-gram-mcp",
+      "sepehr071/milligold-mcp"
+     ]
+    },
+    {
+     "query": "gold price mcp server",
+     "total_count": 19,
+     "rank": 5,
+     "top3": [
+      "lisiaoliao/gold-price-mcp",
+      "blackbinbinbinbin/gold-price-mcp-server",
+      "Patrickboules/EGX-MCP"
+     ]
+    }
+   ],
+   "github_rank1_queries": 1,
+   "web": {
+    "query": "MCP server for gold price per gram",
+    "hit": false,
+    "position": null,
+    "url": null
+   },
+   "directory": {
+    "registry": true,
+    "glama": true,
+    "mcpstamp": true
+   },
+   "directory_count": 3
+  },
+  {
+   "repo": "us-federal-holidays-business-days-mcp",
+   "github": [
+    {
+     "query": "federal holidays business days mcp",
+     "total_count": 1,
+     "rank": 1,
+     "top3": [
+      "theluckystrike/us-federal-holidays-business-days-mcp"
+     ]
+    },
+    {
+     "query": "us federal holidays mcp server",
+     "total_count": 1,
+     "rank": 1,
+     "top3": [
+      "theluckystrike/us-federal-holidays-business-days-mcp"
+     ]
+    }
+   ],
+   "github_rank1_queries": 2,
+   "web": {
+    "query": "MCP server for US federal holidays and business days calculation",
+    "hit": true,
+    "position": 1,
+    "url": "https://mcpservers.org/servers/theluckystrike/us-federal-holidays-business-days-mcp"
+   },
+   "directory": {
+    "registry": true,
+    "glama": true,
+    "mcpstamp": true
+   },
+   "directory_count": 3
+  },
+  {
+   "repo": "ab-test-sample-size-calculator-mcp",
+   "github": [
+    {
+     "query": "ab test sample size mcp",
+     "total_count": 1,
+     "rank": 1,
+     "top3": [
+      "theluckystrike/ab-test-sample-size-calculator-mcp"
+     ]
+    },
+    {
+     "query": "ab test calculator mcp server",
+     "total_count": 1,
+     "rank": 1,
+     "top3": [
+      "theluckystrike/ab-test-sample-size-calculator-mcp"
+     ]
+    }
+   ],
+   "github_rank1_queries": 2,
+   "web": {
+    "query": "MCP server for A/B test sample size calculator",
+    "hit": false,
+    "position": null,
+    "url": null
+   },
+   "directory": {
+    "registry": true,
+    "glama": true,
+    "mcpstamp": true
+   },
+   "directory_count": 3
+  },
+  {
+   "repo": "ap-score-distributions-mcp",
+   "github": [
+    {
+     "query": "ap score distributions mcp",
+     "total_count": 1,
+     "rank": 1,
+     "top3": [
+      "theluckystrike/ap-score-distributions-mcp"
+     ]
+    },
+    {
+     "query": "ap exam score mcp server",
+     "total_count": 1,
+     "rank": 1,
+     "top3": [
+      "theluckystrike/ap-score-distributions-mcp"
+     ]
+    }
+   ],
+   "github_rank1_queries": 2,
+   "web": {
+    "query": "Claude connector for AP score distributions",
+    "hit": false,
+    "position": null,
+    "url": null
+   },
+   "directory": {
+    "registry": true,
+    "glama": true,
+    "mcpstamp": true
+   },
+   "directory_count": 3
+  },
+  {
+   "repo": "car-loan-interest-deduction-calculator-mcp",
+   "github": [
+    {
+     "query": "car loan interest deduction mcp",
+     "total_count": 1,
+     "rank": 1,
+     "top3": [
+      "theluckystrike/car-loan-interest-deduction-calculator-mcp"
+     ]
+    },
+    {
+     "query": "car loan interest deduction calculator mcp server",
+     "total_count": 1,
+     "rank": 1,
+     "top3": [
+      "theluckystrike/car-loan-interest-deduction-calculator-mcp"
+     ]
+    }
+   ],
+   "github_rank1_queries": 2,
+   "web": {
+    "query": "MCP server for car loan interest deduction calculator",
+    "hit": false,
+    "position": null,
+    "url": null
+   },
+   "directory": {
+    "registry": true,
+    "glama": true,
+    "mcpstamp": true
+   },
+   "directory_count": 3
+  },
+  {
+   "repo": "recipe-nutrition-calculator-mcp",
+   "github": [
+    {
+     "query": "recipe nutrition calculator mcp",
+     "total_count": 1,
+     "rank": 1,
+     "top3": [
+      "theluckystrike/recipe-nutrition-calculator-mcp"
+     ]
+    },
+    {
+     "query": "recipe nutrition mcp server",
+     "total_count": 19,
+     "rank": 7,
+     "top3": [
+      "nikopol666/kaloricke-tabulky-MCP",
+      "taraspiotr/frisco-mcp",
+      "i-am-neon/nutrition-mcp-server-python"
+     ]
+    }
+   ],
+   "github_rank1_queries": 1,
+   "web": {
+    "query": "MCP server for recipe nutrition calculator",
+    "hit": false,
+    "position": null,
+    "url": null
+   },
+   "directory": {
+    "registry": true,
+    "glama": true,
+    "mcpstamp": true
+   },
+   "directory_count": 3
+  },
+  {
+   "repo": "section-179-deduction-calculator-mcp",
+   "github": [
+    {
+     "query": "section 179 mcp",
+     "total_count": 1,
+     "rank": 1,
+     "top3": [
+      "theluckystrike/section-179-deduction-calculator-mcp"
+     ]
+    },
+    {
+     "query": "section 179 deduction calculator mcp server",
+     "total_count": 1,
+     "rank": 1,
+     "top3": [
+      "theluckystrike/section-179-deduction-calculator-mcp"
+     ]
+    }
+   ],
+   "github_rank1_queries": 2,
+   "web": {
+    "query": "MCP server for Section 179 deduction",
+    "hit": false,
+    "position": null,
+    "url": null
+   },
+   "directory": {
+    "registry": true,
+    "glama": true,
+    "mcpstamp": true
+   },
+   "directory_count": 3
+  },
+  {
+   "repo": "subdomain-finder-mcp",
+   "github": [
+    {
+     "query": "subdomain finder mcp",
+     "total_count": 2,
+     "rank": 1,
+     "top3": [
+      "theluckystrike/subdomain-finder-mcp",
+      "BACH-AI-Tools/bachai-subdomain-finder3"
+     ]
+    },
+    {
+     "query": "subdomain enumeration mcp server",
+     "total_count": 6,
+     "rank": 1,
+     "top3": [
+      "theluckystrike/subdomain-finder-mcp",
+      "schwarztim/sec-amass-mcp",
+      "Leviai-ai/netrecon-mcp"
+     ]
+    }
+   ],
+   "github_rank1_queries": 2,
+   "web": {
+    "query": "MCP server for subdomain finder",
+    "hit": false,
+    "position": null,
+    "url": null
+   },
+   "directory": {
+    "registry": true,
+    "glama": true,
+    "mcpstamp": true
+   },
+   "directory_count": 3
+  }
+ ],
+ "controls": {
+  "github_positive": "'lake level mcp' -> lake-level-mcp rank 1 of 3 (gh api search/repositories?q=lake+level+mcp&per_page=30)",
+  "glama_negative": "https://glama.ai/mcp/servers/theluckystrike/zz-fake-repo-xyz-mcp -> 404; github/github-mcp-server -> 200; our pages have title+repo name (real content)",
+  "mcpstamp_negative": "https://www.mcpstamp.com/free-servers/zz-fake-repo-xyz-mcp/ -> 404; index 200",
+  "registry_negative": "registry search zz-fake-repo-xyz-mcp -> 0 servers",
+  "web_positive": "us-federal-holidays query surfaced mcpservers.org/servers/theluckystrike/us-federal-holidays-business-days-mcp at position 1, so the search tool can return our URLs"
+ },
+ "caveats": [
+  "GitHub queries contain the repo-name phrase (by design, repos are named for the query), so rank 1 is expected; generic-phrase queries (gold price mcp server rank 5/19, recipe nutrition mcp server rank 7/19, take home pay mcp rank 2/5, cooking conversion mcp server rank 3/4) are the informative ones. uk salary tax calculator mcp returned 0 results (GitHub search is keyword AND on name/description/readme).",
+  "WebSearch tool is standard mode, US-only, 1 call per question, returns ~7-20 URLs in engine order; position = order in returned list. Results may differ from Google.",
+  "mcpservers.org listing exists for us-federal-holidays (found via search) but mcpservers.org returns 403 to curl for every URL incl. fake, so presence of the other 14 there is unmeasured (not counted).",
+  "Only 1 web search per satellite; no Glama/mcpservers/getdrio pages for ours seen in any of the other 14 results."
+ ],
+ "commands": {
+  "github": "gh api 'search/repositories?q=<q>&per_page=30' (3 s spacing), script visibility/gh_rank.sh, raw gh_raw.jsonl",
+  "registry": "curl -s 'https://registry.modelcontextprotocol.io/v0/servers?search=<repo>' and match name io.github.theluckystrike/<repo>",
+  "glama": "curl -A Mozilla/5.0 https://glama.ai/mcp/servers/theluckystrike/<repo> -> http code",
+  "mcpstamp": "curl -L https://www.mcpstamp.com/free-servers/<repo>/ -> http code",
+  "web": "WebSearch tool, standard mode, 2026-11-02"
+ }
+}

@@ -1,0 +1,51 @@
+{
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "2027 Social Security: COLA 3.6% (December 2026 benefits, payable January 2027). Wage base $192,300. Earnings test $25,560 a year under full retirement age ($1 withheld per $2 over), $67,920 in the year you reach it ($1 per $3 over). Quarter of coverage $1,970. SSI federal payment $1,029 a month for an individual.\n\nThis is general information, not tax or financial advice. Your plan document may allow less (for example no age 60-63 catch-up). Check with your plan administrator or a tax professional."
+      },
+      {
+        "type": "text",
+        "text": "{\n  \"year\": 2027,\n  \"cola_percent\": 3.6,\n  \"cola_effective\": \"December 2026 benefits, payable January 2027\",\n  \"wage_base\": 192300,\n  \"earnings_test\": {\n    \"under_full_retirement_age\": {\n      \"monthly\": 2130,\n      \"annual\": 25560,\n      \"withholding\": \"$1 of benefits for every $2 earned over the limit\"\n    },\n    \"year_reaching_full_retirement_age\": {\n      \"monthly\": 5660,\n      \"annual\": 67920,\n      \"withholding\": \"$1 for every $3 over the limit, counting only earnings before the month you reach FRA\"\n    },\n    \"from_full_retirement_age\": \"No earnings limit.\"\n  },\n  \"quarter_of_coverage\": 1970,\n  \"substantial_gainful_activity_monthly\": {\n    \"non_blind\": 1770,\n    \"blind\": 2950\n  },\n  \"ssi_federal_payment_monthly\": {\n    \"individual\": 1029,\n    \"couple\": 1544\n  },\n  \"max_benefit_at_full_retirement_age\": null,\n  \"max_benefit_note\": \"Not in SSA's Federal Register notice; it is on SSA's fact sheet (ssa.gov), which this server could not fetch on 2026-11-02, so it is left out rather than guessed.\",\n  \"source\": \"https://www.federalregister.gov/documents/2026/10/26/2026-21796/cost-of-living-increase-and-other-determinations-for-2027\",\n  \"summary\": \"2027 Social Security: COLA 3.6% (December 2026 benefits, payable January 2027). Wage base $192,300. Earnings test $25,560 a year under full retirement age ($1 withheld per $2 over), $67,920 in the year you reach it ($1 per $3 over). Quarter of coverage $1,970. SSI federal payment $1,029 a month for an individual.\",\n  \"as_of\": \"2026-11-02\",\n  \"more\": \"https://statewage.com/social-security-tax-calculator/?utm_source=mcp&utm_medium=retirement-contribution-limits-2027-mcp\",\n  \"disclaimer\": \"This is general information, not tax or financial advice. Your plan document may allow less (for example no age 60-63 catch-up). Check with your plan administrator or a tax professional.\"\n}"
+      }
+    ],
+    "structuredContent": {
+      "year": 2027,
+      "cola_percent": 3.6,
+      "cola_effective": "December 2026 benefits, payable January 2027",
+      "wage_base": 192300,
+      "earnings_test": {
+        "under_full_retirement_age": {
+          "monthly": 2130,
+          "annual": 25560,
+          "withholding": "$1 of benefits for every $2 earned over the limit"
+        },
+        "year_reaching_full_retirement_age": {
+          "monthly": 5660,
+          "annual": 67920,
+          "withholding": "$1 for every $3 over the limit, counting only earnings before the month you reach FRA"
+        },
+        "from_full_retirement_age": "No earnings limit."
+      },
+      "quarter_of_coverage": 1970,
+      "substantial_gainful_activity_monthly": {
+        "non_blind": 1770,
+        "blind": 2950
+      },
+      "ssi_federal_payment_monthly": {
+        "individual": 1029,
+        "couple": 1544
+      },
+      "max_benefit_at_full_retirement_age": null,
+      "max_benefit_note": "Not in SSA's Federal Register notice; it is on SSA's fact sheet (ssa.gov), which this server could not fetch on 2026-11-02, so it is left out rather than guessed.",
+      "source": "https://www.federalregister.gov/documents/2026/10/26/2026-21796/cost-of-living-increase-and-other-determinations-for-2027",
+      "summary": "2027 Social Security: COLA 3.6% (December 2026 benefits, payable January 2027). Wage base $192,300. Earnings test $25,560 a year under full retirement age ($1 withheld per $2 over), $67,920 in the year you reach it ($1 per $3 over). Quarter of coverage $1,970. SSI federal payment $1,029 a month for an individual.",
+      "as_of": "2026-11-02",
+      "more": "https://statewage.com/social-security-tax-calculator/?utm_source=mcp&utm_medium=retirement-contribution-limits-2027-mcp",
+      "disclaimer": "This is general information, not tax or financial advice. Your plan document may allow less (for example no age 60-63 catch-up). Check with your plan administrator or a tax professional."
+    }
+  },
+  "jsonrpc": "2.0",
+  "id": 12
+}

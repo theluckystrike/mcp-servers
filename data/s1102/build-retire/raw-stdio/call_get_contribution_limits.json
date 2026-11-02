@@ -1,0 +1,92 @@
+{
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "2026 limits: 401(k)/403(b)/TSP deferral $24,500, catch-up $8,000 at 50+ (total $32,500), $11,250 at 60-63 (total $35,750); IRA $7,500 plus $1,100 at 50+; SIMPLE $17,000 plus $4,000 at 50+; 415(c) total $72,000; HCE threshold $160,000, compensation limit $360,000; HSA $4,400 self-only / $8,750 family plus $1,000 at 55+; Social Security wage base $184,500.\n\nThis is general information, not tax or financial advice. Your plan document may allow less (for example no age 60-63 catch-up). Check with your plan administrator or a tax professional."
+      },
+      {
+        "type": "text",
+        "text": "{\n  \"year\": 2026,\n  \"account\": \"all\",\n  \"plan_limits_published\": true,\n  \"401k_403b_tsp\": {\n    \"elective_deferral\": 24500,\n    \"catch_up_50_plus\": 8000,\n    \"super_catch_up_60_63\": 11250,\n    \"total_age_50_59_or_64_plus\": 32500,\n    \"total_age_60_63\": 35750\n  },\n  \"governmental_457b\": {\n    \"elective_deferral\": 24500,\n    \"catch_up_50_plus\": 8000,\n    \"super_catch_up_60_63\": 11250,\n    \"total_age_50_59_or_64_plus\": 32500,\n    \"total_age_60_63\": 35750,\n    \"note\": \"Separate from the 401(k)/403(b) limit, so a worker with both can defer to each. Age 50+ catch-up applies to governmental 457(b) only. The special last-3-years 457 catch-up is not covered.\"\n  },\n  \"simple\": {\n    \"deferral\": 17000,\n    \"catch_up_50_plus\": 4000,\n    \"super_catch_up_60_63\": 5250,\n    \"deferral_small_employer_higher\": 18100,\n    \"catch_up_small_employer_higher\": 3850,\n    \"note\": \"Higher SIMPLE limits apply to employers with 25 or fewer employees, or 26-100 that elect a higher contribution (SECURE 2.0 sec. 117).\"\n  },\n  \"ira\": {\n    \"limit\": 7500,\n    \"catch_up_50_plus\": 1100,\n    \"total_50_plus\": 8600,\n    \"note\": \"One limit shared by all traditional and Roth IRAs; capped at taxable compensation.\",\n    \"roth_ira_phase_out_single_hoh\": [\n      153000,\n      168000\n    ],\n    \"roth_ira_phase_out_married_joint\": [\n      242000,\n      252000\n    ]\n  },\n  \"total_annual_additions_415c\": {\n    \"limit\": 72000,\n    \"note\": \"Employee plus employer contributions to one employer's defined contribution plans, capped at 100% of compensation. Catch-up contributions are on top.\"\n  },\n  \"compensation_and_hce\": {\n    \"compensation_limit_401a17\": 360000,\n    \"highly_compensated_threshold\": 160000,\n    \"key_employee_threshold\": 235000,\n    \"defined_benefit_415b\": 290000\n  },\n  \"roth_catch_up_rule\": {\n    \"rule\": \"If your FICA wages (Form W-2 box 3) from the employer sponsoring the plan were over the threshold in the prior year, your age-50+ (and age 60-63) catch-up contributions to a 401(k), 403(b) or governmental 457(b) must be Roth. SIMPLE IRAs and SEPs are exempt.\",\n    \"statute\": \"IRC 414(v)(7), added by SECURE 2.0 Act section 603\",\n    \"required_this_year\": true,\n    \"wage_threshold\": 150000,\n    \"wage_year\": 2025,\n    \"status\": \"Transition relief ended Dec. 31, 2025. The final regulations (IR-2025-91, Sept. 15, 2025) generally apply to taxable years beginning after Dec. 31, 2026; for 2026 plans apply the rule with a reasonable, good-faith interpretation of the statute. Later dates apply to some governmental and collectively bargained plans.\"\n  },\n  \"hsa\": {\n    \"self_only\": 4400,\n    \"family\": 8750,\n    \"catch_up_55_plus\": 1000,\n    \"hdhp_min_deductible_self\": 1700,\n    \"hdhp_min_deductible_family\": 3400,\n    \"hdhp_oop_max_self\": 8500,\n    \"hdhp_oop_max_family\": 17000,\n    \"source\": \"https://www.irs.gov/pub/irs-drop/rp-25-19.pdf\"\n  },\n  \"social_security_wage_base\": 184500,\n  \"summary\": \"2026 limits: 401(k)/403(b)/TSP deferral $24,500, catch-up $8,000 at 50+ (total $32,500), $11,250 at 60-63 (total $35,750); IRA $7,500 plus $1,100 at 50+; SIMPLE $17,000 plus $4,000 at 50+; 415(c) total $72,000; HCE threshold $160,000, compensation limit $360,000; HSA $4,400 self-only / $8,750 family plus $1,000 at 55+; Social Security wage base $184,500.\",\n  \"as_of\": \"2026-11-02\",\n  \"source\": \"https://www.irs.gov/pub/irs-drop/n-25-67.pdf\",\n  \"more\": \"https://statewage.com/401k-paycheck-calculator/?utm_source=mcp&utm_medium=retirement-contribution-limits-2027-mcp\",\n  \"disclaimer\": \"This is general information, not tax or financial advice. Your plan document may allow less (for example no age 60-63 catch-up). Check with your plan administrator or a tax professional.\"\n}"
+      }
+    ],
+    "structuredContent": {
+      "year": 2026,
+      "account": "all",
+      "plan_limits_published": true,
+      "401k_403b_tsp": {
+        "elective_deferral": 24500,
+        "catch_up_50_plus": 8000,
+        "super_catch_up_60_63": 11250,
+        "total_age_50_59_or_64_plus": 32500,
+        "total_age_60_63": 35750
+      },
+      "governmental_457b": {
+        "elective_deferral": 24500,
+        "catch_up_50_plus": 8000,
+        "super_catch_up_60_63": 11250,
+        "total_age_50_59_or_64_plus": 32500,
+        "total_age_60_63": 35750,
+        "note": "Separate from the 401(k)/403(b) limit, so a worker with both can defer to each. Age 50+ catch-up applies to governmental 457(b) only. The special last-3-years 457 catch-up is not covered."
+      },
+      "simple": {
+        "deferral": 17000,
+        "catch_up_50_plus": 4000,
+        "super_catch_up_60_63": 5250,
+        "deferral_small_employer_higher": 18100,
+        "catch_up_small_employer_higher": 3850,
+        "note": "Higher SIMPLE limits apply to employers with 25 or fewer employees, or 26-100 that elect a higher contribution (SECURE 2.0 sec. 117)."
+      },
+      "ira": {
+        "limit": 7500,
+        "catch_up_50_plus": 1100,
+        "total_50_plus": 8600,
+        "note": "One limit shared by all traditional and Roth IRAs; capped at taxable compensation.",
+        "roth_ira_phase_out_single_hoh": [
+          153000,
+          168000
+        ],
+        "roth_ira_phase_out_married_joint": [
+          242000,
+          252000
+        ]
+      },
+      "total_annual_additions_415c": {
+        "limit": 72000,
+        "note": "Employee plus employer contributions to one employer's defined contribution plans, capped at 100% of compensation. Catch-up contributions are on top."
+      },
+      "compensation_and_hce": {
+        "compensation_limit_401a17": 360000,
+        "highly_compensated_threshold": 160000,
+        "key_employee_threshold": 235000,
+        "defined_benefit_415b": 290000
+      },
+      "roth_catch_up_rule": {
+        "rule": "If your FICA wages (Form W-2 box 3) from the employer sponsoring the plan were over the threshold in the prior year, your age-50+ (and age 60-63) catch-up contributions to a 401(k), 403(b) or governmental 457(b) must be Roth. SIMPLE IRAs and SEPs are exempt.",
+        "statute": "IRC 414(v)(7), added by SECURE 2.0 Act section 603",
+        "required_this_year": true,
+        "wage_threshold": 150000,
+        "wage_year": 2025,
+        "status": "Transition relief ended Dec. 31, 2025. The final regulations (IR-2025-91, Sept. 15, 2025) generally apply to taxable years beginning after Dec. 31, 2026; for 2026 plans apply the rule with a reasonable, good-faith interpretation of the statute. Later dates apply to some governmental and collectively bargained plans."
+      },
+      "hsa": {
+        "self_only": 4400,
+        "family": 8750,
+        "catch_up_55_plus": 1000,
+        "hdhp_min_deductible_self": 1700,
+        "hdhp_min_deductible_family": 3400,
+        "hdhp_oop_max_self": 8500,
+        "hdhp_oop_max_family": 17000,
+        "source": "https://www.irs.gov/pub/irs-drop/rp-25-19.pdf"
+      },
+      "social_security_wage_base": 184500,
+      "summary": "2026 limits: 401(k)/403(b)/TSP deferral $24,500, catch-up $8,000 at 50+ (total $32,500), $11,250 at 60-63 (total $35,750); IRA $7,500 plus $1,100 at 50+; SIMPLE $17,000 plus $4,000 at 50+; 415(c) total $72,000; HCE threshold $160,000, compensation limit $360,000; HSA $4,400 self-only / $8,750 family plus $1,000 at 55+; Social Security wage base $184,500.",
+      "as_of": "2026-11-02",
+      "source": "https://www.irs.gov/pub/irs-drop/n-25-67.pdf",
+      "more": "https://statewage.com/401k-paycheck-calculator/?utm_source=mcp&utm_medium=retirement-contribution-limits-2027-mcp",
+      "disclaimer": "This is general information, not tax or financial advice. Your plan document may allow less (for example no age 60-63 catch-up). Check with your plan administrator or a tax professional."
+    }
+  },
+  "jsonrpc": "2.0",
+  "id": 10
+}

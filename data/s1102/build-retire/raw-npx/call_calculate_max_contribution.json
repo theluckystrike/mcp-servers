@@ -1,0 +1,66 @@
+{
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Age 61 in 2026: 401k $35,750 (incl. $11,250 age 60 63 super catch-up); ira $8,600 (incl. $1,100 age 50 plus catch-up); hsa_family $9,750 (incl. $1,000 age 55 plus catch-up). Combined employee maximum $54,100. Eligible for the age 60-63 super catch-up. Catch-up contributions must be Roth because prior-year FICA wages exceed the threshold.\n\nThis is general information, not tax or financial advice. Your plan document may allow less (for example no age 60-63 catch-up). Check with your plan administrator or a tax professional."
+      },
+      {
+        "type": "text",
+        "text": "{\n  \"year\": 2026,\n  \"age\": 61,\n  \"catch_up_tier\": \"age_60_63\",\n  \"super_catch_up_eligible\": true,\n  \"super_catch_up_rule\": \"The higher catch-up applies if you attain age 60, 61, 62 or 63 by Dec. 31 of the year (IRC 414(v)(2)(E), SECURE 2.0 sec. 109). At 64 you return to the regular age 50+ catch-up. Plans are not required to offer it.\",\n  \"contributions\": [\n    {\n      \"plan\": \"401k\",\n      \"shared_limit\": true,\n      \"base_limit\": 24500,\n      \"catch_up\": 11250,\n      \"catch_up_type\": \"age_60_63_super\",\n      \"max_employee_contribution\": 35750,\n      \"total_with_employer_415c\": 83250\n    },\n    {\n      \"plan\": \"ira\",\n      \"shared_limit\": false,\n      \"base_limit\": 7500,\n      \"catch_up\": 1100,\n      \"catch_up_type\": \"age_50_plus\",\n      \"max_employee_contribution\": 8600,\n      \"note\": \"One limit across traditional and Roth IRAs. Roth IRA eligibility phases out by income.\"\n    },\n    {\n      \"plan\": \"hsa_family\",\n      \"shared_limit\": false,\n      \"base_limit\": 8750,\n      \"catch_up\": 1000,\n      \"catch_up_type\": \"age_55_plus\",\n      \"max_employee_contribution\": 9750,\n      \"note\": \"Includes employer HSA contributions. Prorated by months of HDHP coverage; no contributions after Medicare enrollment.\"\n    }\n  ],\n  \"total_max_employee_contributions\": 54100,\n  \"roth_catch_up\": {\n    \"must_be_roth\": true,\n    \"threshold\": 150000,\n    \"wage_year\": 2025,\n    \"prior_year_fica_wages\": 195000,\n    \"status\": \"Transition relief ended Dec. 31, 2025. The final regulations (IR-2025-91, Sept. 15, 2025) generally apply to taxable years beginning after Dec. 31, 2026; for 2026 plans apply the rule with a reasonable, good-faith interpretation of the statute. Later dates apply to some governmental and collectively bargained plans.\"\n  },\n  \"notes\": [],\n  \"summary\": \"Age 61 in 2026: 401k $35,750 (incl. $11,250 age 60 63 super catch-up); ira $8,600 (incl. $1,100 age 50 plus catch-up); hsa_family $9,750 (incl. $1,000 age 55 plus catch-up). Combined employee maximum $54,100. Eligible for the age 60-63 super catch-up. Catch-up contributions must be Roth because prior-year FICA wages exceed the threshold.\",\n  \"as_of\": \"2026-11-02\",\n  \"source\": \"https://www.irs.gov/pub/irs-drop/n-25-67.pdf ; https://www.irs.gov/newsroom/treasury-irs-issue-final-regulations-on-new-roth-catch-up-rule-other-secure-2point0-act-provisions\",\n  \"more\": \"https://statewage.com/401k-paycheck-calculator/?utm_source=mcp&utm_medium=retirement-contribution-limits-2027-mcp\",\n  \"disclaimer\": \"This is general information, not tax or financial advice. Your plan document may allow less (for example no age 60-63 catch-up). Check with your plan administrator or a tax professional.\"\n}"
+      }
+    ],
+    "structuredContent": {
+      "year": 2026,
+      "age": 61,
+      "catch_up_tier": "age_60_63",
+      "super_catch_up_eligible": true,
+      "super_catch_up_rule": "The higher catch-up applies if you attain age 60, 61, 62 or 63 by Dec. 31 of the year (IRC 414(v)(2)(E), SECURE 2.0 sec. 109). At 64 you return to the regular age 50+ catch-up. Plans are not required to offer it.",
+      "contributions": [
+        {
+          "plan": "401k",
+          "shared_limit": true,
+          "base_limit": 24500,
+          "catch_up": 11250,
+          "catch_up_type": "age_60_63_super",
+          "max_employee_contribution": 35750,
+          "total_with_employer_415c": 83250
+        },
+        {
+          "plan": "ira",
+          "shared_limit": false,
+          "base_limit": 7500,
+          "catch_up": 1100,
+          "catch_up_type": "age_50_plus",
+          "max_employee_contribution": 8600,
+          "note": "One limit across traditional and Roth IRAs. Roth IRA eligibility phases out by income."
+        },
+        {
+          "plan": "hsa_family",
+          "shared_limit": false,
+          "base_limit": 8750,
+          "catch_up": 1000,
+          "catch_up_type": "age_55_plus",
+          "max_employee_contribution": 9750,
+          "note": "Includes employer HSA contributions. Prorated by months of HDHP coverage; no contributions after Medicare enrollment."
+        }
+      ],
+      "total_max_employee_contributions": 54100,
+      "roth_catch_up": {
+        "must_be_roth": true,
+        "threshold": 150000,
+        "wage_year": 2025,
+        "prior_year_fica_wages": 195000,
+        "status": "Transition relief ended Dec. 31, 2025. The final regulations (IR-2025-91, Sept. 15, 2025) generally apply to taxable years beginning after Dec. 31, 2026; for 2026 plans apply the rule with a reasonable, good-faith interpretation of the statute. Later dates apply to some governmental and collectively bargained plans."
+      },
+      "notes": [],
+      "summary": "Age 61 in 2026: 401k $35,750 (incl. $11,250 age 60 63 super catch-up); ira $8,600 (incl. $1,100 age 50 plus catch-up); hsa_family $9,750 (incl. $1,000 age 55 plus catch-up). Combined employee maximum $54,100. Eligible for the age 60-63 super catch-up. Catch-up contributions must be Roth because prior-year FICA wages exceed the threshold.",
+      "as_of": "2026-11-02",
+      "source": "https://www.irs.gov/pub/irs-drop/n-25-67.pdf ; https://www.irs.gov/newsroom/treasury-irs-issue-final-regulations-on-new-roth-catch-up-rule-other-secure-2point0-act-provisions",
+      "more": "https://statewage.com/401k-paycheck-calculator/?utm_source=mcp&utm_medium=retirement-contribution-limits-2027-mcp",
+      "disclaimer": "This is general information, not tax or financial advice. Your plan document may allow less (for example no age 60-63 catch-up). Check with your plan administrator or a tax professional."
+    }
+  },
+  "jsonrpc": "2.0",
+  "id": 11
+}

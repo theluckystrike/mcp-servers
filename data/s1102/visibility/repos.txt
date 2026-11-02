@@ -1,0 +1,15 @@
+lake-level-mcp
+no-tax-on-overtime-mcp
+minimum-wage-mcp
+dscr-loan-calculator-mcp
+paycheck-calculator-mcp
+uk-income-tax-salary-mcp
+cups-to-grams-mcp
+gold-price-per-gram-mcp
+us-federal-holidays-business-days-mcp
+ab-test-sample-size-calculator-mcp
+ap-score-distributions-mcp
+car-loan-interest-deduction-calculator-mcp
+recipe-nutrition-calculator-mcp
+section-179-deduction-calculator-mcp
+subdomain-finder-mcp

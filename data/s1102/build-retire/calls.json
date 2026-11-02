@@ -1,0 +1,6 @@
+[
+ {"name":"get_contribution_limits","arguments":{"year":2026}},
+ {"name":"calculate_max_contribution","arguments":{"age":61,"year":2026,"plans":["401k","ira","hsa_family"],"wages":210000,"prior_year_fica_wages":195000}},
+ {"name":"get_social_security_cola","arguments":{"year":2027}},
+ {"name":"compare_years","arguments":{"from_year":2026,"to_year":2027}}
+]
