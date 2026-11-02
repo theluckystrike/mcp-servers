@@ -1,0 +1,8 @@
+{
+    "title": "Subdomain Finder MCP: Certificate Transparency",
+    "sampleTool": "find_subdomains",
+    "sampleArgs": {
+        "domain": "example.com",
+        "limit": 5
+    }
+}

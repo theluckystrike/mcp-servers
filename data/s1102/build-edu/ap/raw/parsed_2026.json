@@ -1,0 +1,526 @@
+{
+ "title": "2026 AP Score Distributions \u2013 AP Students | College Board",
+ "exams": [
+  {
+   "exam": "AP Research",
+   "group": "AP Capstone",
+   "percents": {
+    "5": 17,
+    "4": 31,
+    "3": 42,
+    "2": 8,
+    "1": 2
+   },
+   "three_plus_percent": 90,
+   "row_sum": 100
+  },
+  {
+   "exam": "AP Seminar",
+   "group": "AP Capstone",
+   "percents": {
+    "5": 10,
+    "4": 21,
+    "3": 57,
+    "2": 10,
+    "1": 2
+   },
+   "three_plus_percent": 88,
+   "row_sum": 100
+  },
+  {
+   "exam": "AP 2D Art & Design",
+   "group": "AP Arts",
+   "percents": {
+    "5": 12,
+    "4": 30,
+    "3": 43,
+    "2": 12,
+    "1": 3
+   },
+   "three_plus_percent": 85,
+   "row_sum": 100
+  },
+  {
+   "exam": "AP 3D Art & Design",
+   "group": "AP Arts",
+   "percents": {
+    "5": 7,
+    "4": 25,
+    "3": 43,
+    "2": 23,
+    "1": 2
+   },
+   "three_plus_percent": 75,
+   "row_sum": 100
+  },
+  {
+   "exam": "AP Art History",
+   "group": "AP Arts",
+   "percents": {
+    "5": 15,
+    "4": 25,
+    "3": 27,
+    "2": 24,
+    "1": 9
+   },
+   "three_plus_percent": 67,
+   "row_sum": 100
+  },
+  {
+   "exam": "AP Drawing",
+   "group": "AP Arts",
+   "percents": {
+    "5": 16,
+    "4": 31,
+    "3": 36,
+    "2": 14,
+    "1": 3
+   },
+   "three_plus_percent": 83,
+   "row_sum": 100
+  },
+  {
+   "exam": "AP Music Theory",
+   "group": "AP Arts",
+   "percents": {
+    "5": 18,
+    "4": 17,
+    "3": 24,
+    "2": 26,
+    "1": 15
+   },
+   "three_plus_percent": 59,
+   "row_sum": 100
+  },
+  {
+   "exam": "AP English Language & Composition",
+   "group": "AP English",
+   "percents": {
+    "5": 15,
+    "4": 28,
+    "3": 32,
+    "2": 15,
+    "1": 10
+   },
+   "three_plus_percent": 75,
+   "row_sum": 100
+  },
+  {
+   "exam": "AP English Literature & Composition",
+   "group": "AP English",
+   "percents": {
+    "5": 16,
+    "4": 26,
+    "3": 31,
+    "2": 16,
+    "1": 11
+   },
+   "three_plus_percent": 73,
+   "row_sum": 100
+  },
+  {
+   "exam": "AP African American Studies",
+   "group": "History & Social Sciences",
+   "percents": {
+    "5": 20,
+    "4": 30,
+    "3": 27,
+    "2": 17,
+    "1": 6
+   },
+   "three_plus_percent": 77,
+   "row_sum": 100
+  },
+  {
+   "exam": "AP Comparative Government & Politics",
+   "group": "History & Social Sciences",
+   "percents": {
+    "5": 15,
+    "4": 22,
+    "3": 33,
+    "2": 18,
+    "1": 12
+   },
+   "three_plus_percent": 70,
+   "row_sum": 100
+  },
+  {
+   "exam": "AP European History",
+   "group": "History & Social Sciences",
+   "percents": {
+    "5": 16,
+    "4": 33,
+    "3": 25,
+    "2": 18,
+    "1": 8
+   },
+   "three_plus_percent": 74,
+   "row_sum": 100
+  },
+  {
+   "exam": "AP Human Geography",
+   "group": "History & Social Sciences",
+   "percents": {
+    "5": 19,
+    "4": 26,
+    "3": 21,
+    "2": 24,
+    "1": 10
+   },
+   "three_plus_percent": 66,
+   "row_sum": 100
+  },
+  {
+   "exam": "AP Macroeconomics",
+   "group": "History & Social Sciences",
+   "percents": {
+    "5": 19,
+    "4": 22,
+    "3": 25,
+    "2": 20,
+    "1": 14
+   },
+   "three_plus_percent": 66,
+   "row_sum": 100
+  },
+  {
+   "exam": "AP Microeconomics",
+   "group": "History & Social Sciences",
+   "percents": {
+    "5": 19,
+    "4": 26,
+    "3": 23,
+    "2": 20,
+    "1": 12
+   },
+   "three_plus_percent": 68,
+   "row_sum": 100
+  },
+  {
+   "exam": "AP Psychology",
+   "group": "History & Social Sciences",
+   "percents": {
+    "5": 15,
+    "4": 35,
+    "3": 24,
+    "2": 18,
+    "1": 8
+   },
+   "three_plus_percent": 74,
+   "row_sum": 100
+  },
+  {
+   "exam": "AP United States Government & Politics",
+   "group": "History & Social Sciences",
+   "percents": {
+    "5": 23,
+    "4": 28,
+    "3": 25,
+    "2": 16,
+    "1": 8
+   },
+   "three_plus_percent": 76,
+   "row_sum": 100
+  },
+  {
+   "exam": "AP United States History",
+   "group": "History & Social Sciences",
+   "percents": {
+    "5": 14,
+    "4": 37,
+    "3": 23,
+    "2": 18,
+    "1": 8
+   },
+   "three_plus_percent": 74,
+   "row_sum": 100
+  },
+  {
+   "exam": "AP World History: Modern",
+   "group": "History & Social Sciences",
+   "percents": {
+    "5": 14,
+    "4": 36,
+    "3": 16,
+    "2": 26,
+    "1": 8
+   },
+   "three_plus_percent": 66,
+   "row_sum": 100
+  },
+  {
+   "exam": "AP Calculus AB",
+   "group": "Math & Computer Sciences",
+   "percents": {
+    "5": 20,
+    "4": 28,
+    "3": 17,
+    "2": 24,
+    "1": 11
+   },
+   "three_plus_percent": 65,
+   "row_sum": 100
+  },
+  {
+   "exam": "AP Calculus BC",
+   "group": "Math & Computer Sciences",
+   "percents": {
+    "5": 46,
+    "4": 22,
+    "3": 14,
+    "2": 14,
+    "1": 4
+   },
+   "three_plus_percent": 82,
+   "row_sum": 100
+  },
+  {
+   "exam": "AP Computer Science A",
+   "group": "Math & Computer Sciences",
+   "percents": {
+    "5": 25,
+    "4": 26,
+    "3": 15,
+    "2": 11,
+    "1": 23
+   },
+   "three_plus_percent": 66,
+   "row_sum": 100
+  },
+  {
+   "exam": "AP Computer Science Principles",
+   "group": "Math & Computer Sciences",
+   "percents": {
+    "5": 10,
+    "4": 23,
+    "3": 30,
+    "2": 21,
+    "1": 16
+   },
+   "three_plus_percent": 63,
+   "row_sum": 100
+  },
+  {
+   "exam": "AP Precalculus",
+   "group": "Math & Computer Sciences",
+   "percents": {
+    "5": 29,
+    "4": 29,
+    "3": 24,
+    "2": 11,
+    "1": 7
+   },
+   "three_plus_percent": 82,
+   "row_sum": 100
+  },
+  {
+   "exam": "AP Statistics",
+   "group": "Math & Computer Sciences",
+   "percents": {
+    "5": 17,
+    "4": 23,
+    "3": 22,
+    "2": 17,
+    "1": 21
+   },
+   "three_plus_percent": 62,
+   "row_sum": 100
+  },
+  {
+   "exam": "AP Biology",
+   "group": "Sciences",
+   "percents": {
+    "5": 15,
+    "4": 25,
+    "3": 31,
+    "2": 21,
+    "1": 8
+   },
+   "three_plus_percent": 71,
+   "row_sum": 100
+  },
+  {
+   "exam": "AP Chemistry",
+   "group": "Sciences",
+   "percents": {
+    "5": 15,
+    "4": 31,
+    "3": 30,
+    "2": 18,
+    "1": 6
+   },
+   "three_plus_percent": 75,
+   "row_sum": 100
+  },
+  {
+   "exam": "AP Environmental Science",
+   "group": "Sciences",
+   "percents": {
+    "5": 13,
+    "4": 29,
+    "3": 27,
+    "2": 15,
+    "1": 16
+   },
+   "three_plus_percent": 69,
+   "row_sum": 100
+  },
+  {
+   "exam": "AP Physics 1",
+   "group": "Sciences",
+   "percents": {
+    "5": 19,
+    "4": 24,
+    "3": 25,
+    "2": 15,
+    "1": 17
+   },
+   "three_plus_percent": 68,
+   "row_sum": 100
+  },
+  {
+   "exam": "AP Physics 2",
+   "group": "Sciences",
+   "percents": {
+    "5": 20,
+    "4": 29,
+    "3": 23,
+    "2": 21,
+    "1": 7
+   },
+   "three_plus_percent": 72,
+   "row_sum": 100
+  },
+  {
+   "exam": "AP Physics C: Electricity and Magnetism",
+   "group": "Sciences",
+   "percents": {
+    "5": 24,
+    "4": 24,
+    "3": 27,
+    "2": 17,
+    "1": 8
+   },
+   "three_plus_percent": 75,
+   "row_sum": 100
+  },
+  {
+   "exam": "AP Physics C: Mechanics",
+   "group": "Sciences",
+   "percents": {
+    "5": 20,
+    "4": 25,
+    "3": 27,
+    "2": 17,
+    "1": 11
+   },
+   "three_plus_percent": 72,
+   "row_sum": 100
+  },
+  {
+   "exam": "AP Chinese Language and Culture",
+   "group": "World Languages & Cultures",
+   "percents": {
+    "5": 48,
+    "4": 19,
+    "3": 18,
+    "2": 6,
+    "1": 9
+   },
+   "three_plus_percent": 85,
+   "row_sum": 100
+  },
+  {
+   "exam": "AP French Language and Culture",
+   "group": "World Languages & Cultures",
+   "percents": {
+    "5": 15,
+    "4": 23,
+    "3": 33,
+    "2": 23,
+    "1": 6
+   },
+   "three_plus_percent": 71,
+   "row_sum": 100
+  },
+  {
+   "exam": "AP German Language and Culture",
+   "group": "World Languages & Cultures",
+   "percents": {
+    "5": 24,
+    "4": 17,
+    "3": 27,
+    "2": 22,
+    "1": 10
+   },
+   "three_plus_percent": 68,
+   "row_sum": 100
+  },
+  {
+   "exam": "AP Italian Language and Culture",
+   "group": "World Languages & Cultures",
+   "percents": {
+    "5": 19,
+    "4": 22,
+    "3": 28,
+    "2": 20,
+    "1": 11
+   },
+   "three_plus_percent": 69,
+   "row_sum": 100
+  },
+  {
+   "exam": "AP Japanese Language and Culture",
+   "group": "World Languages & Cultures",
+   "percents": {
+    "5": 47,
+    "4": 10,
+    "3": 15,
+    "2": 7,
+    "1": 21
+   },
+   "three_plus_percent": 72,
+   "row_sum": 100
+  },
+  {
+   "exam": "AP Latin",
+   "group": "World Languages & Cultures",
+   "percents": {
+    "5": 20,
+    "4": 29,
+    "3": 24,
+    "2": 17,
+    "1": 10
+   },
+   "three_plus_percent": 73,
+   "row_sum": 100
+  },
+  {
+   "exam": "AP Spanish Language and Culture",
+   "group": "World Languages & Cultures",
+   "percents": {
+    "5": 21,
+    "4": 31,
+    "3": 31,
+    "2": 14,
+    "1": 3
+   },
+   "three_plus_percent": 83,
+   "row_sum": 100
+  },
+  {
+   "exam": "AP Spanish Literature and Culture",
+   "group": "World Languages & Cultures",
+   "percents": {
+    "5": 20,
+    "4": 23,
+    "3": 28,
+    "2": 20,
+    "1": 9
+   },
+   "three_plus_percent": 71,
+   "row_sum": 100
+  }
+ ],
+ "problems": []
+}

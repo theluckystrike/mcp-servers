@@ -1,0 +1,8 @@
+{
+    "title": "Section 179 Deduction Calculator MCP Server",
+    "sampleTool": "calculate_section_179",
+    "sampleArgs": {
+        "tax_year": 2026,
+        "total_section_179_property_cost": 1500000
+    }
+}

@@ -1,0 +1,6 @@
+.tools/
+node_modules/
+storage/
+apify_storage/
+test-results/
+.env

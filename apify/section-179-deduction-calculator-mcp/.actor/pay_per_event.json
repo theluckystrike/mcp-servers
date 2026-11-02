@@ -1,0 +1,7 @@
+{
+    "tool-call": {
+        "eventTitle": "Tool call",
+        "eventDescription": "One successful MCP tool call on Section 179 Deduction Calculator MCP Server. Listing tools and initializing are free.",
+        "eventPriceUsd": 0.03
+    }
+}

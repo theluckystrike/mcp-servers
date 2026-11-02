@@ -1,0 +1,44 @@
+{
+  "actor": "Car Loan Interest Deduction Calculator MCP",
+  "mcpEndpoint": null,
+  "howToConnect": "Point an MCP client at the endpoint with header Authorization: Bearer <your Apify API token>.",
+  "toolCount": 4,
+  "tools": [
+    {
+      "name": "calculate_car_loan_interest_deduction",
+      "description": "Calculates the 2025-2028 federal deduction for car loan interest created by the One Big Beautiful Bill Act (P.L. 119-21, IRC 163(h)(4)) the way IRS Schedule 1-A Part IV does: up to $10,000 of qualified passenger vehicle loan interest, then $200 off for each $1,000 or part of $1,000 of MAGI over $100,000 ($200,000 married filing jointly), so it reaches $0 at $149,001 ($249,001 joint). Checks the eligibility tests: loan originated after Dec 31 2024, new vehicle, final assembly in the US, personal use, car/minivan/van/SUV/pickup/motorcycle under 14,000 lb GVWR, first lien, not a lease. Available whether or not you itemize. Rules copied from the 2025 Schedule 1-A, Form 1040 instructions and IRS Notice 2025-57."
+    },
+    {
+      "name": "calculate_salt_deduction",
+      "description": "Calculates the deductible state and local tax (SALT) on Schedule A under the One Big Beautiful Bill Act cap (IRC 164(b)(6)-(7)): $40,000 for 2025 and $40,400 for 2026 ($20,000 / $20,200 married filing separately), rising 1% a year through 2029, reduced by 30% of MAGI over $500,000 (2025) or $505,000 (2026) but never below $10,000, then back to a flat $10,000 in 2030. Uses the IRS State and Local Tax Deduction Worksheet. Optionally compares itemizing with the standard deduction. Amounts copied from the 2025 Schedule A instructions, the 2026 draft Schedule A and the statute."
+    },
+    {
+      "name": "get_tax_brackets_and_standard_deduction",
+      "description": "Returns the official 2025 and 2026 federal income tax brackets and standard deductions after the One Big Beautiful Bill Act: 2026 standard deduction $16,100 single, $32,200 joint, $24,150 head of household (Rev. Proc. 2025-32), 2025 $15,750 / $31,500 / $23,625, plus the additional amount for age 65 or blind. Optionally computes the tax and marginal rate on a taxable income. Says plainly that 2027 amounts are not yet published (checked against the Internal Revenue Bulletin and irs-drop on 2026-11-02)."
+    },
+    {
+      "name": "calculate_child_tax_credit",
+      "description": "Calculates the child tax credit as Schedule 8812 does after the One Big Beautiful Bill Act: $2,200 per qualifying child under 17 for 2025 and 2026, $500 per other dependent, reduced by 5% of MAGI over $400,000 joint / $200,000 others (excess rounded up to the next $1,000), limited by tax liability, with the refundable additional child tax credit of up to $1,700 per child at 15% of earned income over $2,500. Amounts from the 2025 Schedule 8812 and Rev. Proc. 2025-32."
+    }
+  ],
+  "sampleCall": {
+    "tool": "calculate_car_loan_interest_deduction",
+    "arguments": {
+      "filing_status": "single",
+      "magi": 105000,
+      "tax_year": 2026,
+      "interest_paid": 3200
+    },
+    "isError": false,
+    "result": [
+      {
+        "type": "text",
+        "text": "Interest counted $3,200, $3,200 after the $10,000 cap. MAGI $105,000 is $5,000 over the $100,000 threshold: 5 step(s) of $200 remove $1,000. Car loan interest deduction for 2026: $2,200. Assumed: the loan was originated after December 31, 2024; the original use of the vehicle starts with you (new, not used); final assembly took place in the United States; you expect personal use more than 50% of the time; the gross vehicle weight rating is under 14,000 pounds; the loan is secured by a first lien on the vehicle; the vehicle is a car, minivan, van, SUV, pickup truck or motorcycle.\n\nThis is an estimate, not tax advice. Check the IRS instructions or ask a tax professional before you file."
+      },
+      {
+        "type": "text",
+        "text": "{\n  \"eligible\": true,\n  \"failed_requirements\": [],\n  \"assumed_requirements\": [\n    \"the loan was originated after December 31, 2024\",\n    \"the original use of the vehicle starts with you (new, not used)\",\n    \"final assembly took place in the United States\",\n    \"you expect personal use more than 50% of the time\",\n    \"the gross vehicle weight rating is under 14,000 pounds\",\n    \"the loan is secured by a first lien on the vehicle\",\n    \"the vehicle is a car, minivan, van, SUV, pickup truck or motorcycle\"\n  ],\n  \"filing_status\": \"single\",\n  \"tax_year\": 2026,\n  \"magi\": 105000,\n  \"interest_paid\": 3200,\n  \"interest_deducted_elsewhere\": 0,\n  \"interest_counted\": 3200,\n  \"cap\": 10000,\n  \"amount_after_cap\": 3200,\n  \"phaseout\": {\n    \"threshold\": 100000,\n    \"excess_magi\": 5000,\n    \"steps\": 5,\n    \"reduction\": 1000,\n    \"rule\": \"$200 for each $1,000 (or part of $1,000) of MAGI over the threshold\"\n  },\n  \"deduction\": 2200,\n  \"deduction_reaches_zero_at_magi\": 149001,\n  \"schedule_1a_lines\": {\n    \"line23\": 3200,\n    \"line24\": 3200,\n    \"line25_magi\": 105000,\n    \"line26_threshold\": 100000,\n    \"line28_steps\": 5,\n    \"line29_reduction\": 1000,\n    \"line30_deduction\": 2200\n  },\n  \"notes\": [\n    \"You can claim it whether you itemize or take the standard deduction (Schedule 1-A Part IV).\",\n    \"You must enter the vehicle identification number (VIN) on the return.\",\n    \"Married filing separately can claim it; the threshold is $100,000 for every status except married filing jointly.\",\n    \"Interest on negative equity rolled in from a trade-in, insurance or a trailer does not count. Service plans, extended warranties, sales tax and vehicle fees financed with the purchase do.\",\n    \"A refinanced loan keeps qualifying up to the balance refinanced if it stays secured by a first lien on the same vehicle.\"\n  ],\n  \"summary\": \"Interest counted $3,200, $3,200 after the $10,000 cap. MAGI $105,000 is $5,000 over the $100,000 threshold: 5 step(s) of $200 remove $1,000. Car loan interest deduction for 2026: $2,200. Assumed: the loan was originated after December 31, 2024; the original use of the vehicle starts with you (new, not used); final assembly took place in the United States; you expect personal use more than 50% of the time; the gross vehicle weight rating is under 14,000 pounds; the loan is secured by a first lien on the vehicle; the vehicle is a car, minivan, van, SUV, pickup truck or motorcycle.\",\n  \"as_of\": \"2026-11-02\",\n  \"source\": \"https://www.irs.gov/pub/irs-pdf/f1040s1a.pdf ; https://www.irs.gov/pub/irs-pdf/i1040gi.pdf ; https://www.irs.gov/pub/irs-drop/n-25-57.pdf\",\n  \"more\": \"https://taxbreakcalc.com/car-loan-interest-calculator/?utm_source=mcp&utm_medium=car-loan-interest-deduction-calculator-mcp\",\n  \"disclaimer\": \"This is an estimate, not tax advice. Check the IRS instructions or ask a tax professional before you file.\"\n}"
+      }
+    ]
+  }
+}

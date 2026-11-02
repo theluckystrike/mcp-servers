@@ -1,0 +1,20 @@
+{
+    "name": "ab-test-sample-size-calculator-mcp",
+    "version": "1.0.0",
+    "type": "module",
+    "private": true,
+    "description": "A/B test sample size calculator and significance tests for AI agents (MCP server). Exact sample size per variant, test duration, z-test, chi-square, Fisher exact and Fisher-Freeman-Halton p-values, and peeking risk with Pocock and O'Brien-Fleming boundaries. No network calls.",
+    "engines": {
+        "node": ">=22"
+    },
+    "dependencies": {
+        "@modelcontextprotocol/sdk": "^1.30.0",
+        "apify": "^3.7.0",
+        "express": "^5.1.0",
+        "zod": "^3.25.76"
+    },
+    "scripts": {
+        "start": "node src/main.js"
+    },
+    "license": "MIT"
+}

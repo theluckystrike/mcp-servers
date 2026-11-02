@@ -1,0 +1,67 @@
+{
+ "repo": "recipe-nutrition-calculator-mcp",
+ "repo_url": "https://github.com/theluckystrike/recipe-nutrition-calculator-mcp",
+ "hosted_url": "https://recipe-nutrition-calculator-mcp.lipmichal.workers.dev/mcp",
+ "worker_version_id": "204d7edb-006f-41e2-b614-bd36b6f3b6bf",
+ "rollback": "npx wrangler delete --name recipe-nutrition-calculator-mcp (brand-new worker, one version)",
+ "registry_name": "io.github.theluckystrike/recipe-nutrition-calculator-mcp",
+ "registry_visible": true,
+ "tools": [
+  "lookup_ingredient_nutrition",
+  "calculate_recipe_nutrition",
+  "round_nutrition_label",
+  "scale_recipe_nutrition"
+ ],
+ "foods": 406,
+ "foods_by_dataset": {
+  "sr_legacy": 398,
+  "foundation": 8
+ },
+ "embedded_table_bytes": 190760,
+ "fixtures": 19,
+ "tests_passed": "24/24 (node --test: 19 fixtures + 5 checks)",
+ "local_stdio_ok": true,
+ "live_calls_ok": {
+  "lookup_ingredient_nutrition": true,
+  "calculate_recipe_nutrition": true,
+  "round_nutrition_label": true,
+  "scale_recipe_nutrition": true
+ },
+ "live_raw_responses": "/Users/mike/mcp-servers/satellites/recipe-nutrition-calculator-mcp/.live-raw/ (untracked)",
+ "npx_github_ok": true,
+ "pushes": 2,
+ "npm_ready": true,
+ "npm_ready_detail": "npm view recipe-nutrition-calculator-mcp -> E404 (positive control: npm view cups-to-grams-mcp version -> 1.0.0); package.json has bin, files [dist, README.md, LICENSE, DATA_SOURCES.md], mcpName, keywords incl mcp/mcp-server/model-context-protocol/claude; npm pack --dry-run 8 files, 63.4 kB. Not published (orchestrator batches npm with owner 2FA). README install lines use npx -y github:...; switch to the npm name after publish.",
+ "sources": [
+  "https://fdc.nal.usda.gov/download-datasets (fetched 2026-11-02)",
+  "https://fdc.nal.usda.gov/fdc-datasets/FoodData_Central_sr_legacy_food_csv_2018-04.zip (fetched 2026-11-02, sha256 b80817294b8850530aaedf2e515c02593b1824f763a0ff356e5c2081643e6fd0)",
+  "https://fdc.nal.usda.gov/fdc-datasets/FoodData_Central_foundation_food_csv_2026-04-30.zip (fetched 2026-11-02, sha256 70457ee9d9342f43bda2010318c85f04210c689fdeb9cd2da4c513b0e8dbc655)",
+  "https://www.ecfr.gov/api/renderer/v1/content/enhanced/current/title-21?part=101&section=101.9 (fetched 2026-11-02)",
+  "https://recipetool.net/sitemap.xml (fetched 2026-11-02, money-site page list)"
+ ],
+ "money_site": "https://recipetool.net",
+ "more_pages": [
+  "/nutrition-calculator",
+  "/tools/ingredient-calorie-calculator",
+  "/tools/nutrition-facts-label-calculator",
+  "/tools/recipe-scaler"
+ ],
+ "open_issues": [
+  "The newest Foundation Foods CSV (FoodData_Central_foundation_food_csv_2026-10-29.zip, 200, 1.1 MB) ships without food.csv, food_nutrient.csv and food_portion.csv; the 2026-04-30 release was used. Recheck the October release later.",
+  "Only 8 of the curated foods use Foundation data: most Foundation foods lack total sugars (nutrient 2000 missing on 390 of 395, 1063 on 246) or fiber (197 missing), so SR Legacy (2018) is primary. 7 Foundation-only candidates (almond flour, coconut flour, steel cut oats, farro, red onion, napa cabbage, oat milk) were dropped rather than proxied.",
+  "37 foods have one or more nutrients USDA leaves blank (mostly sugars for some spices, grains and oils); results list them under nutrients_not_reported_by_usda and totals are a lower bound for that nutrient.",
+  "Nutrition is for raw ingredients as listed; no cooking yield or retention factors. Added sugars are not in SR Legacy (round_nutrition_label takes them as input).",
+  "Ingredient matching is heuristic (token + trigram); spot-checked on ~60 typical lines, not exhaustively. Lines below the match threshold are reported as unresolved, never guessed.",
+  "%DV is computed from the unrounded amount; the eCFR text read this session does not say rounded vs unrounded.",
+  "Scout flagged this as the weakest 'model cannot do it alone' case; value is exact USDA lookups, food-specific household weights and FDA rounding."
+ ],
+ "minutes": 26,
+ "temp_cleanup": [
+  {
+   "path": "/Users/mike/mcp-servers/data/s1102/build-edu/recipe/raw",
+   "size": "87M",
+   "contents": "USDA SR Legacy and Foundation zips and CSVs; lsof +D showed 0 open files",
+   "manifest": "/Users/mike/mcp-servers/data/s1102/build-edu/deletions-manifest.tsv"
+  }
+ ]
+}

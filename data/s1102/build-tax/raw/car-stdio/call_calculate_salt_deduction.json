@@ -1,0 +1,52 @@
+{
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "State and local taxes paid $48,000. MAGI is $45,000 over the $505,000 threshold, so the cap drops by 30% of that ($13,500) to $26,900. Deductible SALT: $26,900 ($21,100 is over the cap). Itemized total $46,900 vs standard deduction $32,200: itemizing is larger.\n\nThis is an estimate, not tax advice. Check the IRS instructions or ask a tax professional before you file."
+      },
+      {
+        "type": "text",
+        "text": "{\n  \"filing_status\": \"married_filing_jointly\",\n  \"tax_year\": 2026,\n  \"magi\": 550000,\n  \"state_and_local_taxes\": 48000,\n  \"cap\": 40400,\n  \"statutory_cap_full_return\": 40400,\n  \"phase_down\": {\n    \"applies\": true,\n    \"threshold\": 505000,\n    \"excess_magi\": 45000,\n    \"reduction_30_percent\": 13500,\n    \"floor\": 10000\n  },\n  \"cap_after_phase_down\": 26900,\n  \"deduction\": 26900,\n  \"amount_lost_to_cap\": 21100,\n  \"irs_published_amounts\": true,\n  \"comparison\": {\n    \"total_itemized\": 46900,\n    \"standard_deduction\": 32200,\n    \"standard_deduction_year_used\": 2026,\n    \"standard_deduction_is_estimate\": false,\n    \"better_choice\": \"itemize\",\n    \"difference\": 14700\n  },\n  \"notes\": [\n    \"The SALT deduction only helps if you itemize on Schedule A.\",\n    \"MAGI here is Form 1040 line 11b plus excluded foreign and Puerto Rico income.\"\n  ],\n  \"summary\": \"State and local taxes paid $48,000. MAGI is $45,000 over the $505,000 threshold, so the cap drops by 30% of that ($13,500) to $26,900. Deductible SALT: $26,900 ($21,100 is over the cap). Itemized total $46,900 vs standard deduction $32,200: itemizing is larger.\",\n  \"as_of\": \"2026-11-02\",\n  \"source\": \"https://www.irs.gov/pub/irs-pdf/i1040sca.pdf ; https://www.irs.gov/pub/irs-dft/f1040sa--dft.pdf ; https://www.law.cornell.edu/uscode/text/26/164\",\n  \"more\": \"https://taxbreakcalc.com/salt-deduction-calculator/?utm_source=mcp&utm_medium=car-loan-interest-deduction-calculator-mcp\",\n  \"disclaimer\": \"This is an estimate, not tax advice. Check the IRS instructions or ask a tax professional before you file.\"\n}"
+      }
+    ],
+    "structuredContent": {
+      "filing_status": "married_filing_jointly",
+      "tax_year": 2026,
+      "magi": 550000,
+      "state_and_local_taxes": 48000,
+      "cap": 40400,
+      "statutory_cap_full_return": 40400,
+      "phase_down": {
+        "applies": true,
+        "threshold": 505000,
+        "excess_magi": 45000,
+        "reduction_30_percent": 13500,
+        "floor": 10000
+      },
+      "cap_after_phase_down": 26900,
+      "deduction": 26900,
+      "amount_lost_to_cap": 21100,
+      "irs_published_amounts": true,
+      "comparison": {
+        "total_itemized": 46900,
+        "standard_deduction": 32200,
+        "standard_deduction_year_used": 2026,
+        "standard_deduction_is_estimate": false,
+        "better_choice": "itemize",
+        "difference": 14700
+      },
+      "notes": [
+        "The SALT deduction only helps if you itemize on Schedule A.",
+        "MAGI here is Form 1040 line 11b plus excluded foreign and Puerto Rico income."
+      ],
+      "summary": "State and local taxes paid $48,000. MAGI is $45,000 over the $505,000 threshold, so the cap drops by 30% of that ($13,500) to $26,900. Deductible SALT: $26,900 ($21,100 is over the cap). Itemized total $46,900 vs standard deduction $32,200: itemizing is larger.",
+      "as_of": "2026-11-02",
+      "source": "https://www.irs.gov/pub/irs-pdf/i1040sca.pdf ; https://www.irs.gov/pub/irs-dft/f1040sa--dft.pdf ; https://www.law.cornell.edu/uscode/text/26/164",
+      "more": "https://taxbreakcalc.com/salt-deduction-calculator/?utm_source=mcp&utm_medium=car-loan-interest-deduction-calculator-mcp",
+      "disclaimer": "This is an estimate, not tax advice. Check the IRS instructions or ask a tax professional before you file."
+    }
+  },
+  "jsonrpc": "2.0",
+  "id": 11
+}

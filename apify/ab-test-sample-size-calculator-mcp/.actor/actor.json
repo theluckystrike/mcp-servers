@@ -1,0 +1,25 @@
+{
+    "$schema": "https://apify.com/schemas/v1/actor.ide.json",
+    "actorSpecification": 1,
+    "name": "ab-test-sample-size-calculator-mcp",
+    "title": "A/B Test Sample Size Calculator MCP Server",
+    "description": "A/B test sample size calculator and significance tests for AI agents (MCP server). Exact sample size per variant, test duration, z-test, chi-square, Fisher exact and Fisher-Freeman-Halton p-values, and peeking risk with Pocock and O'Brien-Fleming boundaries. No network calls.",
+    "version": "1.0",
+    "buildTag": "latest",
+    "usesStandbyMode": true,
+    "meta": {
+        "templateId": "ts-mcp-proxy",
+        "generatedBy": "adapted from apify/actor-templates ts-mcp-proxy (plain JS)"
+    },
+    "minMemoryMbytes": 256,
+    "defaultMemoryMbytes": 512,
+    "maxMemoryMbytes": 1024,
+    "input": "./input_schema.json",
+    "output": "./output_schema.json",
+    "storages": {
+        "dataset": "./dataset_schema.json"
+    },
+    "dockerfile": "../Dockerfile",
+    "readme": "../README.md",
+    "webServerMcpPath": "/mcp"
+}

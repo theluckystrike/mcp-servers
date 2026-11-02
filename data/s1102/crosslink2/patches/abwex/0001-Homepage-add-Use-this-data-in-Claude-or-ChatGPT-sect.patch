@@ -1,0 +1,33 @@
+From 7ffc94ef9557942dd23228e6ad11331e6ede7445 Mon Sep 17 00:00:00 2001
+From: theluckystrike <51033404+theluckystrike@users.noreply.github.com>
+Date: Mon, 2 Nov 2026 10:33:24 +0700
+Subject: [PATCH] Homepage: add Use this data in Claude or ChatGPT section
+
+---
+ index.html | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+diff --git a/index.html b/index.html
+index 93a2011..d8b0045 100644
+--- a/index.html
++++ b/index.html
+@@ -106,6 +106,16 @@
+ 
+  <div class="last-updated"><time datetime="2026-05-25">Last updated: May 25, 2026</time></div>
+ 
++ <section class="explainer-section" id="use-in-ai" style="padding:40px 0 8px">
++ <h2>Use this data in Claude or ChatGPT</h2>
++ <p>The sample size, duration, significance and Fisher exact math on this site is also available as a free MCP server. An AI assistant can use it to size a test, estimate how long it must run, test a result with a z-test or Fisher exact test, and check the false positive cost of peeking, with exact calculations instead of arithmetic done in its head. There is no account or API key.</p>
++ <p style="margin:0 0 6px"><strong>Claude.ai or ChatGPT.</strong> Add a custom connector with this URL.</p>
++ <pre style="margin:0 0 12px;padding:12px 14px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);font-family:var(--font-display);font-size:0.8rem;line-height:1.5;overflow-x:auto;color:var(--text);"><code>https://ab-test-sample-size-calculator-mcp.lipmichal.workers.dev/mcp</code></pre>
++ <p style="margin:0 0 6px"><strong>Claude Code.</strong></p>
++ <pre style="margin:0 0 12px;padding:12px 14px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);font-family:var(--font-display);font-size:0.8rem;line-height:1.5;overflow-x:auto;color:var(--text);"><code>claude mcp add --transport http ab-test-sample-size-calculator https://ab-test-sample-size-calculator-mcp.lipmichal.workers.dev/mcp</code></pre>
++ <p><a href="https://www.mcpstamp.com/free-servers/ab-test-sample-size-calculator-mcp/">Setup steps</a> &middot; <a href="https://github.com/theluckystrike/ab-test-sample-size-calculator-mcp">Source on GitHub</a></p>
++ </section>
++
+  <section class="faq-section">
+  <h2>Common questions</h2>
+ 
+-- 
+2.50.1 (Apple Git-155)
+

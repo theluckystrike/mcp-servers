@@ -1,0 +1,404 @@
+{
+  "lane": "money",
+  "session": "S1102",
+  "fetched_on": "2026-11-02",
+  "method_note": "WebSearch/WebFetch plus public Apify API. WebFetch pages carry no publication date; every fact is dated by fetch date 2026-11-02 unless a page date is quoted. Third-party claims are labeled. No accounts created, nothing published, no email sent, no production change.",
+  "marketplaces": [
+    {
+      "name": "Apify Store (Actors, pay-per-event, MCP via standby)",
+      "bills_end_users": true,
+      "brings_traffic": true,
+      "revenue_share": "Apify keeps 20% commission; payout = revenue - commission - platform usage costs (negative months count as $0). Standby runs: user pays platform usage on top of event price.",
+      "payout": "Invoice on the 11th, payout days 21-25 of month. Minimum $20 PayPal/Wise, $100 other (SWIFT wire; fees $10-50). KYC identity verification required (Insights > Payouts > Verify identity).",
+      "owner_steps": [
+        "Sign up https://console.apify.com/sign-up (5 min)",
+        "Settings > Integrations: copy API token and hand it over, or run apify login (2 min)",
+        "Insights > Payouts > Verify identity, government ID name must match exactly (10-15 min)",
+        "Set payout billing details + PayPal or Wise (5 min)"
+      ],
+      "owner_minutes": 35,
+      "fit_existing_servers": "High. Template ts-mcp-proxy wraps a stdio command, e.g. MCP_COMMAND=['npx','-y','@theluckystrike/mcp-<id>'] (all 68 packages are on npm). Needs Actor wrapper (main.ts, .actor/pay_per_event.json, enable Standby, set PPE pricing), no change to server code. Clients must send an Apify token as Bearer, so buyers must hold an Apify account.",
+      "traffic_evidence": {
+        "api_calls": [
+          "curl 'https://api.apify.com/v2/store?limit=1' -> total 105348 Actors in Store (positive control: apify.com/mcp/developers shows 106,519 on same day)",
+          "curl 'https://api.apify.com/v2/store?category=MCP_SERVERS&limit=1' -> total 3183",
+          "curl 'https://api.apify.com/v2/store?search=mcp%20server&limit=200' -> total 1095",
+          "Merged 919 unique Actors from two pulls; 200 have 'mcp' in username/name; sum of SUCCEEDED runs in last 30 days across those 200 = 27,442; median per Actor = 1"
+        ],
+        "top_mcp_named_actors_30d_succeeded_runs": {
+          "mrbridge/espn-mcp-server": 8047,
+          "kazkn/vinted-mcp-server": 2627,
+          "airbnb-mcp-server (makework36)": 2221,
+          "nexgendata/travel-mcp-server": 1790,
+          "smacient/google-keyword-planner-mcp": 1690,
+          "nexgendata/yahoo-finance-mcp-server": 1221
+        },
+        "top_total_users": {
+          "smacient/google-keyword-planner-mcp": 741,
+          "mrbridge/espn-mcp-server": 274,
+          "kazkn/vinted-mcp-server": 123
+        },
+        "price_points_per_tool_event_usd": "0.005 to 0.05 (typical 0.01-0.03)",
+        "vendor_claims_undated": "apify.com/mcp/developers: 36K+ monthly developers, 130k+ signups, $500k+ monthly developer payouts and $1.7M paid last month (these two figures are inconsistent, undated, not MCP-specific)"
+      },
+      "urls": [
+        "https://apify.com/mcp/developers",
+        "https://docs.apify.com/platform/actors/publishing/monetize",
+        "https://docs.apify.com/platform/actors/publishing/monetize/monthly-payouts",
+        "https://apify.com/templates/ts-mcp-proxy",
+        "https://api.apify.com/v2/store?category=MCP_SERVERS"
+      ],
+      "verdict": "Best verified combination: real billing, public usage numbers, and a template that wraps our npm packages unchanged. Market is small for non-scraper MCP: median Actor has 1 run per month."
+    },
+    {
+      "name": "MCPize",
+      "bills_end_users": true,
+      "brings_traffic": "unverified",
+      "revenue_share": "80% to developer (MCPize 20%), computed after Stripe fees. 85% only for servers monetized before 2026-06-10 (window closed). Sources conflict: marketing page says 80, some blogs 85.",
+      "payout": "Stripe Connect to bank (or PayPal per FAQ); monthly on the 1st; minimum $100 per developers page (FAQ does not state; a blog says $25).",
+      "owner_steps": [
+        "Sign up https://mcpize.com/auth (inferred URL, 5 min)",
+        "Dashboard > Settings > Payouts: connect Stripe (about 5-10 min)",
+        "Connect GitHub repo or run mcpize deploy; set price and public visibility (10 min)"
+      ],
+      "owner_minutes": 35,
+      "fit_existing_servers": "Medium-high. FAQ: GitHub import, TypeScript auto-detected without config, optional mcpize.yaml. Dockerfile requirement not stated. Existing servers are stdio packages; hosted wrapper behavior unverified.",
+      "traffic_evidence": "Only vendor claims: '350+ Monetized Servers', 1200+/900+/1K+ servers (inconsistent), 450+ publishing developers, '$10K+ top earner' (self-reported). No visitor, install, or subscriber numbers visible anywhere.",
+      "urls": [
+        "https://mcpize.com/developers/monetize-mcp-servers",
+        "https://mcpize.com/faq",
+        "https://mcpize.com"
+      ],
+      "verdict": "Billing exists, traffic unproven. Subscription model needs a buyer to find and subscribe; our prior finding says that has near-zero willingness to pay."
+    },
+    {
+      "name": "AgenticMarket (agenticmarket.dev)",
+      "bills_end_users": false,
+      "brings_traffic": "unverified",
+      "revenue_share": "Not described. Page says 'Zero platform fees', '100% free distribution', 'All servers free - no credits needed'.",
+      "payout": "none documented",
+      "owner_steps": [
+        "Sign up via 'List Your Server Free' creator dashboard (not opened, minutes unknown)"
+      ],
+      "owner_minutes": null,
+      "fit_existing_servers": "Verified via live MCP probe before listing; our remote workers would probably pass.",
+      "traffic_evidence": "Stats section: 51 MCP servers listed and active; no user count.",
+      "urls": [
+        "https://agenticmarket.dev",
+        "https://agenticmarket.dev/pricing"
+      ],
+      "verdict": "Fails the 'bills end users' test today. Free distribution only, tiny catalog. Low priority."
+    },
+    {
+      "name": "MCPBundles",
+      "bills_end_users": "no publisher monetization documented",
+      "brings_traffic": "unverified",
+      "revenue_share": "Not documented in publishing docs.",
+      "payout": "none documented",
+      "owner_steps": [
+        "Account needed; publish flow = paste public HTTPS URL, run analysis, ownership check by work email on server domain or 6-digit code to contact in /.well-known/mcpbundles.json or security.txt"
+      ],
+      "owner_minutes": 15,
+      "fit_existing_servers": "High for the 10 workers (public HTTPS, tools/list). mcp.zovo.one needs a token so does not fit paste-a-URL.",
+      "traffic_evidence": "none visible",
+      "urls": [
+        "https://www.mcpbundles.com/docs/how-to/publishing-mcp-servers"
+      ],
+      "verdict": "Directory only. Free listing, no revenue."
+    },
+    {
+      "name": "Smithery",
+      "bills_end_users": false,
+      "brings_traffic": "reduced",
+      "revenue_share": "No publisher monetization described.",
+      "payout": "none",
+      "owner_steps": [],
+      "owner_minutes": 0,
+      "fit_existing_servers": "Hosting path is gone.",
+      "traffic_evidence": "smithery.ai/future (fetched 2026-11-02): 'MCP Proxy and managed identity shut down on October 31' 2026; run.tools and server.smithery.ai URLs, Smithery API, Connect, Toolbox, accounts, API keys, CLI and SDKs end; registry remains public and non-proxied; Smithery is now part of Arcade (acquisition reported 2026-08-05 by third-party). Prior note in repo: Smithery is unauthenticated for us.",
+      "urls": [
+        "https://smithery.ai/future",
+        "https://smithery.ai"
+      ],
+      "verdict": "Monetization: none. Do not invest. Registry listing only."
+    },
+    {
+      "name": "RapidAPI",
+      "bills_end_users": "unverified",
+      "brings_traffic": "unverified",
+      "revenue_share": "not found",
+      "evidence": "WebSearch 'RapidAPI MCP server marketplace publish monetize hub 2026' returned no RapidAPI-specific MCP page. No claim made.",
+      "owner_minutes": null,
+      "verdict": "No evidence of an MCP product. Skip."
+    },
+    {
+      "name": "Cloudflare agents x402 (paidTool) and Stripe Machine Payments Protocol (MPP)",
+      "bills_end_users": true,
+      "brings_traffic": false,
+      "revenue_share": "Cloudflare: no fee stated, facilitator (default operated by Coinbase) does not hold funds. Stripe MPP: ordinary Stripe fees; settles into Stripe balance; minimum 0.50 USD for card Shared Payment Tokens, 0.01 USDC for stablecoin.",
+      "payout": "Stripe MPP: normal Stripe balance (stablecoin auto-offramped by Stripe). x402: USDC to a self-custody wallet (owner decision, Poland resident per docs/AGENT_PAYMENTS_R1.md).",
+      "owner_steps": [
+        "MPP: create Stripe profile in Dashboard (profile_ id), create Tempo deposit address via API, use API version 2026-07-29.preview (about 20 min). I would not touch the live Stripe key without explicit owner go-ahead."
+      ],
+      "owner_minutes": 20,
+      "fit_existing_servers": "Needs code: a 402 challenge in front of each Worker tool (mppx / x402-hono). That is a production change and is out of scope here.",
+      "traffic_evidence": "No marketplace or discovery on either rail. docs/AGENT_PAYMENTS_R1.md (2026-09-10): no mainstream MCP client settles an HTTP 402; median x402 price $0.01 across 28,376 indexed resources.",
+      "urls": [
+        "https://developers.cloudflare.com/agents/x402/",
+        "https://docs.stripe.com/payments/machine/mpp"
+      ],
+      "verdict": "Payment rails with no buyers attached."
+    },
+    {
+      "name": "x402 Bazaar (Coinbase CDP) and x402 ecosystem",
+      "bills_end_users": true,
+      "brings_traffic": "discovery catalog only; no human traffic to us",
+      "revenue_share": "Listing is free. Seller sets per-call price; Base mainnet USDC (CDP docs), Solana also supported by x402 docs.",
+      "payout": "Direct USDC to seller wallet.",
+      "owner_steps": [
+        "Create/choose a USDC receiving wallet (custody and tax decision), 15-30 min",
+        "Add the Bazaar extension to payment config; listing needs a real paying client to echo discovery data ('A server-side declaration alone catalogs nothing if no paying client echoes it')"
+      ],
+      "owner_minutes": 45,
+      "fit_existing_servers": "Needs code per tool, plus a payer to appear before the catalog lists it.",
+      "traffic_evidence": "Third-party figures: x402.org 30-day totals 75.41M tx, $24.24M, 94,060 buyers, 22,000 sellers (mid-Aug 2026, attribution disputed); Artemis classified avg 63.94% of tx 2025-11-09..2026-02-07 as gamed; top 1% of buyers (about 4,000 wallets) drive about 90% of adjusted volume; Visa/Artemis headline adjusted volume $19M (period not shown on page). Docs: 'The x402 Bazaar is in early development.'",
+      "urls": [
+        "https://docs.x402.org/extensions/bazaar",
+        "https://docs.cdp.coinbase.com/x402/bazaar",
+        "https://docs.cdp.coinbase.com/x402/buyer/mcp-payments"
+      ],
+      "verdict": "Mean volume per seller is about $1.1K a month but heavily skewed and wash-inflated; assume median new seller earns about $0."
+    }
+  ],
+  "official_directories": [
+    {
+      "name": "Anthropic Claude Connectors Directory",
+      "submit_url": "https://claude.ai/directory/manage (Submit new > MCP connector)",
+      "who": "Anyone on a paid Claude plan; Owner on Team/Enterprise.",
+      "requirements": [
+        "Remote HTTPS server (local only via plugin; MCPB listings deprecated)",
+        "Auth: OAuth 2.0 for account tools; no auth allowed for public data",
+        "Every tool has title and readOnlyHint or destructiveHint",
+        "Documentation URL, privacy policy URL, support contact, icon, reviewer test account",
+        "7 compliance acknowledgments; tool names max 64 chars; Streamable HTTP"
+      ],
+      "timeline": "Portal always open. Automated scan lists it as a Community connector by default with no action; some get a human review, 'review times vary with queue volume'. No SLA published. Escalation mcp-review@anthropic.com.",
+      "monetization": "None. Directory policy section 4C excludes software that 'serves advertisements, sponsored content, paid product placements' or 'exists primarily as an advertising or promotional vehicle'. RISK: our 'every tool result links to a money site with UTM' pattern must be a plain, relevant source link, not a promo block.",
+      "fit": "Public workers (https://<repo>.lipmichal.workers.dev/mcp) with no auth fit directly. mcp.zovo.one needs a token, so does not.",
+      "owner_minutes": 40,
+      "urls": [
+        "https://claude.com/docs/connectors/building/submission",
+        "https://support.claude.com/en/articles/13145358-anthropic-software-directory-policy"
+      ]
+    },
+    {
+      "name": "OpenAI ChatGPT Apps directory (Apps SDK)",
+      "submit_url": "OpenAI Platform Dashboard (platform.openai.com), Apps/plugins submission",
+      "who": "Verified individual or organization; owners submit, others need Apps Management Write. EU data residency projects cannot submit.",
+      "requirements": [
+        "Public domain MCP server",
+        "All four URLs: website, support, privacy policy, terms of service",
+        "Dedicated test account if sign-in needed (no MFA)",
+        "Exactly 5 positive and 3 negative test cases",
+        "Reviewer-accessible video walkthrough",
+        "Primary icon at least 48x48",
+        "Only one review active at a time"
+      ],
+      "timeline": "Official page gives no duration. Third-party (Dec 2025, unverified): 5-10 business days. Directory launched 2025-12-18 (third-party).",
+      "monetization": "Commerce limited to physical goods; no digital products or subscriptions; no ads; no direct links to checkout pages; no ChatGPT-specific fees. So our $19/$39 licenses cannot be sold inside it.",
+      "owner_minutes": 70,
+      "urls": [
+        "https://developers.openai.com/apps-sdk/deploy/submission",
+        "https://developers.openai.com/apps-sdk/app-submission-guidelines"
+      ]
+    },
+    {
+      "name": "Google Connected Apps Platform (Gemini + Search)",
+      "status": "Owner applied 2026-11-01 (given). Public coverage: preview launched late Oct 2026, staged rollout, apply via Connected Console, 50+ apps live. No official criteria or timeline found; all secondary sources.",
+      "owner_minutes": 0,
+      "urls": [
+        "https://www.androidheadlines.com/2026/10/google-gemini-connected-apps-platform-preview.html",
+        "https://scalevise.com/resources/google-connected-apps-platform-preview/"
+      ]
+    }
+  ],
+  "outreach": {
+    "channels": [
+      {
+        "name": "Glama MCP newsletter",
+        "audience": "60k+ developers, weekly on Fridays (vendor claim, glama.ai/newsletter, fetched 2026-11-02)",
+        "route": "One-to-one pitch of a written piece (technical deep-dive, adoption story, production lessons) to frank@glama.ai; product mention allowed if the piece has real value. Not a server-listing form.",
+        "status": "open",
+        "url": "https://glama.ai/newsletter"
+      },
+      {
+        "name": "Glama directory",
+        "audience": "114,061 servers listed, 9,637 claimed (glama.ai/mcp/servers, 2026-11-02 02:05)",
+        "route": "Add Server / claim; no fee seen",
+        "status": "open",
+        "url": "https://glama.ai/mcp/servers"
+      },
+      {
+        "name": "PulseMCP + newsletter The Agentic Loop",
+        "route": "NEW SUBMISSIONS PAUSED ('New server submissions and listing changes are still paused', pulsemcp.com 2026-11-02). Suggested: publish to Official MCP Registry (already done). No contact email on site; Discord/X/LinkedIn only.",
+        "status": "closed",
+        "url": "https://www.pulsemcp.com/submit"
+      },
+      {
+        "name": "mcp.so",
+        "route": "mcp.so/submit, listings go live after review, cost not stated; 'Advertise' link exists (paid, not used).",
+        "status": "open",
+        "url": "https://mcp.so"
+      },
+      {
+        "name": "mcpservers.org",
+        "route": "Free listing 'review within 2 weeks'; $39 premium (24h, badge, dofollow). Paid slot not used per brief. Form needs contact email.",
+        "status": "open_free",
+        "url": "https://mcpservers.org/submit"
+      },
+      {
+        "name": "Show HN",
+        "rules": "Must be something people can try, ideally without signup; no landing pages; no quickly-generated one-offs; do not ask friends to upvote; author must be around to discuss; version bumps do not qualify. Title starts 'Show HN'.",
+        "needs": "Owner's own HN account and presence in thread",
+        "url": "https://news.ycombinator.com/showhn.html"
+      },
+      {
+        "name": "Reddit r/mcp, r/ClaudeAI",
+        "rules": "NOT VERIFIED. reddit.com blocked WebFetch and curl returns a block page. Third-party preview shows r/mcp has a Self-Promotion flair; actual rules unread. Owner must read sidebar before posting.",
+        "needs": "Owner account with history; do not post from new agent accounts",
+        "url": "https://www.reddit.com/r/mcp/"
+      },
+      {
+        "name": "Product Hunt",
+        "rules": "Third-party 2026 guides only: self-hunting is fine, no soliciting upvotes, real-person accounts only, relaunch within 6 months may be reviewed. Official rules page not fetched.",
+        "needs": "Owner's real account",
+        "url": "https://www.producthunt.com"
+      }
+    ],
+    "resend": {
+      "can": [
+        "Transactional mail (license delivery, receipts)",
+        "Mail to people who explicitly opted in, with business name + postal address, disclosure of why contacted, one-click unsubscribe honored within 7 days",
+        "Welcome/setup sequence already live for signups",
+        "Keep complaint rate below 0.08% and bounce rate below 4%"
+      ],
+      "cannot": [
+        "Cold outreach",
+        "Purchased lists",
+        "Scraped contact data (verbatim AUP: 'sending unsolicited messages of any kind, including cold outreach, purchased lists, or scraped contact data')",
+        "Pitching editors or directories in bulk"
+      ],
+      "source": "https://resend.com/legal/acceptable-use (fetched 2026-11-02)",
+      "state": "Per docs/OUTREACH_RESEND_SETUP.md: key exists, zovo.one verified, 0 eligible email contacts, 0 sent. Existing setup subscribers consented only to the setup sequence."
+    },
+    "owner_must_provide": [
+      "Approval and credentials-by-action (owner posts personally) for HN, Reddit, Product Hunt, LinkedIn excluded by safe mode",
+      "Owner mailbox sends one-to-one editor pitches (Glama) from a real address; Resend not used",
+      "Consent source if any email list is to be mailed: a signup form on mcpstamp.com or zovo.one with disclosed purpose, receipts logged",
+      "Paid Claude plan account to submit connectors; OpenAI org verification (ID) for ChatGPT apps",
+      "Apify account + API token + KYC for payouts"
+    ]
+  },
+  "expected_value": {
+    "unit": "USD per month, average over first 90 days, gross to owner after platform share, direct plus indirect referral value",
+    "shared_assumptions": [
+      "Value per referred visit to a monetized site V = $0.02 (low) / $0.05 (mid) / $0.15 (high). Basis: display-ad RPM $20-$150 per 1000 sessions; conversion of lead-gen not modeled.",
+      "No Stripe sale of $19/$39 licenses is assumed: prior measurement $0 gross all time (CLAUDE.md, intel/S1030-strategy.md).",
+      "New listings have no reviews and no ranking; Apify median MCP Actor = 1 successful run per 30 days (API pull 2026-11-02).",
+      "One-off events (newsletter, Show HN) are spread over 3 months.",
+      "Owner minutes = one-time setup by the owner only. I do all packaging, drafting and pushes in the same session."
+    ],
+    "options": [
+      {
+        "rank_by_usd_per_owner_min": 1,
+        "option": "Apify Store: 10 satellites/servers as pay-per-event Actors via ts-mcp-proxy",
+        "owner_minutes": 35,
+        "monthly_low": 0,
+        "monthly_mid": 10,
+        "monthly_high": 120,
+        "usd_per_owner_min_mid": 0.29,
+        "assumptions": "Event price $0.03 (observed $0.01-0.05), Apify keeps 20%. Mid: 3 of 10 Actors reach 100 successful runs/month -> 300 x 0.03 x 0.8 = $7 plus a few. High: one Actor reaches top-decile 2,000 runs/month ($48) plus others. Low: median outcome, 0 runs. Real data: top MCP-named Actors 1.2k-8k runs/30d."
+      },
+      {
+        "rank_by_usd_per_owner_min": 2,
+        "option": "MCPize: 3-5 servers on subscription ($9-19) at 80%",
+        "owner_minutes": 35,
+        "monthly_low": 0,
+        "monthly_mid": 7,
+        "monthly_high": 60,
+        "usd_per_owner_min_mid": 0.2,
+        "assumptions": "Mid = 1 subscriber x $9 x 0.8 = $7; high = 4 subscribers; low 0. No traffic data visible so probabilities are guesses."
+      },
+      {
+        "rank_by_usd_per_owner_min": 3,
+        "option": "Show HN for one data satellite (owner posts and attends thread)",
+        "owner_minutes": 90,
+        "monthly_low": 0,
+        "monthly_mid": 15,
+        "monthly_high": 120,
+        "usd_per_owner_min_mid": 0.17,
+        "assumptions": "10% chance of 8,000 visits, 90% chance of 150 visits = 935 expected visits x $0.05 / 3 months = $15 per month. One-off, decays."
+      },
+      {
+        "rank_by_usd_per_owner_min": 4,
+        "option": "Claude connectors directory: 3 no-auth satellites as Community connectors",
+        "owner_minutes": 70,
+        "monthly_low": 0,
+        "monthly_mid": 6,
+        "monthly_high": 40,
+        "usd_per_owner_min_mid": 0.09,
+        "assumptions": "Mid: 3 connectors x 40 conversations/month = 120 tool-using sessions, 100% of results carry a source link, 1 visit per session => 120 visits x $0.05 = $6. High: 800 visits x $0.05 = $40. Low: listing stays unreviewed/unseen. Largest reach and recognition but zero direct billing; policy 4C risk for promotional links."
+      },
+      {
+        "rank_by_usd_per_owner_min": 5,
+        "option": "Glama newsletter guest piece (one-to-one pitch from owner mailbox)",
+        "owner_minutes": 30,
+        "monthly_low": 0,
+        "monthly_mid": 2,
+        "monthly_high": 30,
+        "usd_per_owner_min_mid": 0.07,
+        "assumptions": "25% acceptance chance; if run, 60k readers x 0.3-1% CTR = 180-600 visits one-off. Mid total = 0.25 x 400 visits x $0.05 = $5, spread over 3 months = about $2 per month. High = 600 visits x $0.15 = $90 total = $30 per month. Backlink and recognition value not priced."
+      }
+    ],
+    "not_in_top5": [
+      {
+        "option": "ChatGPT apps directory",
+        "owner_minutes": 70,
+        "monthly_mid": 3,
+        "why": "No digital-goods sales, no ads, verification overhead; revenue indirect only."
+      },
+      {
+        "option": "Stripe MPP pay-per-call on Workers",
+        "owner_minutes": 20,
+        "monthly_mid": 1,
+        "why": "No buyers; needs production code changes."
+      },
+      {
+        "option": "x402 Bazaar",
+        "owner_minutes": 45,
+        "monthly_mid": 2,
+        "why": "Wallet custody decision, wash-trading-dominated market, listing requires a payer."
+      }
+    ],
+    "caveat": "All monthly figures are guesses with a floor of $0. They are far below $1 per owner minute, so none of these options justify more than the owner minutes listed. The ranking is sensitive to V and the acceptance probability; Apify has the only verified usage data, the rest are assumptions."
+  },
+  "best_single_owner_unlock": {
+    "action": "Create an Apify account, verify identity for payouts, and give me an API token (or run apify login in a shell I can use).",
+    "url": "https://console.apify.com/sign-up",
+    "owner_minutes": 35,
+    "why": "Only option that both bills end users and shows public usage numbers; template ts-mcp-proxy wraps our already-published npm packages with no server code change; I then push up to 10 Actors with pay-per-event pricing and report real run counts within a week. Runner-ups: MCPize (same minutes, traffic unproven) and a Show HN by the owner. Glama newsletter pitch is cheap but low expected value."
+  },
+  "open_items": [
+    "Reddit r/mcp and r/ClaudeAI rules: unread (blocked). Owner to read sidebar.",
+    "Product Hunt official rules: not fetched.",
+    "RapidAPI MCP: no evidence found.",
+    "OpenAI review duration: no official figure.",
+    "Claude directory review duration: no SLA.",
+    "MCPize traffic and minimum payout ($100 vs $25): conflicting; ask support.",
+    "Apify API returned 880 items for limit=1000 on MCP_SERVERS category (total reports 3183); counts of MCP-named Actors are lower bounds from two pulls."
+  ],
+  "raw_evidence_files": [
+    "/Users/mike/mcp-servers/data/s1102/money/apify_mcp.json",
+    "/Users/mike/mcp-servers/data/s1102/money/apify_search_mcp.json"
+  ]
+}

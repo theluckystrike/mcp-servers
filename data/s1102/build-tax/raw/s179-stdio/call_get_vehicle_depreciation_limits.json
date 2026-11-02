@@ -1,0 +1,37 @@
+{
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "6500 lb GVWR in 2026: heavy suv section 179 cap. Section 179 on a sport utility vehicle rated over 6,000 and up to 14,000 lb GVWR is capped at $32,000 for 2026. The 280F passenger automobile caps do not apply, so 100% bonus depreciation can take the rest of the business basis. Maximum first-year deduction on a $80,000 vehicle at 90% business use: $72,000.\n\nThis is an estimate, not tax advice. Check Form 4562, its instructions and Pub. 946, or ask a tax professional before you file."
+      },
+      {
+        "type": "text",
+        "text": "{\n  \"tax_year\": 2026,\n  \"gvwr_lbs\": 6500,\n  \"category\": \"heavy_suv_section_179_cap\",\n  \"business_use_percent\": 90,\n  \"qualifies_for_179_and_bonus\": true,\n  \"bonus_eligible\": true,\n  \"section_179_cap\": 32000,\n  \"passenger_auto_limits_by_year\": null,\n  \"cost\": 80000,\n  \"first_year_maximum_deduction\": 72000,\n  \"rules\": [\n    \"Section 179 on a sport utility vehicle rated over 6,000 and up to 14,000 lb GVWR is capped at $32,000 for 2026. The 280F passenger automobile caps do not apply, so 100% bonus depreciation can take the rest of the business basis.\",\n    \"The SUV cap does not apply to a vehicle that seats more than nine behind the driver, has an open or enclosed cargo area of at least 6 feet not readily reached from the passenger area, or is a cargo van with no seating behind the driver and no body section more than 30 inches ahead of the windshield. Set exempt_from_suv_cap for those.\"\n  ],\n  \"summary\": \"6500 lb GVWR in 2026: heavy suv section 179 cap. Section 179 on a sport utility vehicle rated over 6,000 and up to 14,000 lb GVWR is capped at $32,000 for 2026. The 280F passenger automobile caps do not apply, so 100% bonus depreciation can take the rest of the business basis. Maximum first-year deduction on a $80,000 vehicle at 90% business use: $72,000.\",\n  \"as_of\": \"2026-11-02\",\n  \"source\": \"https://www.irs.gov/pub/irs-drop/rp-26-15.pdf ; https://www.irs.gov/pub/irs-drop/rp-25-32.pdf\",\n  \"more\": \"https://assetloancalculator.com/commercial-vehicle-loan-calculator/?utm_source=mcp&utm_medium=section-179-deduction-calculator-mcp\",\n  \"disclaimer\": \"This is an estimate, not tax advice. Check Form 4562, its instructions and Pub. 946, or ask a tax professional before you file.\"\n}"
+      }
+    ],
+    "structuredContent": {
+      "tax_year": 2026,
+      "gvwr_lbs": 6500,
+      "category": "heavy_suv_section_179_cap",
+      "business_use_percent": 90,
+      "qualifies_for_179_and_bonus": true,
+      "bonus_eligible": true,
+      "section_179_cap": 32000,
+      "passenger_auto_limits_by_year": null,
+      "cost": 80000,
+      "first_year_maximum_deduction": 72000,
+      "rules": [
+        "Section 179 on a sport utility vehicle rated over 6,000 and up to 14,000 lb GVWR is capped at $32,000 for 2026. The 280F passenger automobile caps do not apply, so 100% bonus depreciation can take the rest of the business basis.",
+        "The SUV cap does not apply to a vehicle that seats more than nine behind the driver, has an open or enclosed cargo area of at least 6 feet not readily reached from the passenger area, or is a cargo van with no seating behind the driver and no body section more than 30 inches ahead of the windshield. Set exempt_from_suv_cap for those."
+      ],
+      "summary": "6500 lb GVWR in 2026: heavy suv section 179 cap. Section 179 on a sport utility vehicle rated over 6,000 and up to 14,000 lb GVWR is capped at $32,000 for 2026. The 280F passenger automobile caps do not apply, so 100% bonus depreciation can take the rest of the business basis. Maximum first-year deduction on a $80,000 vehicle at 90% business use: $72,000.",
+      "as_of": "2026-11-02",
+      "source": "https://www.irs.gov/pub/irs-drop/rp-26-15.pdf ; https://www.irs.gov/pub/irs-drop/rp-25-32.pdf",
+      "more": "https://assetloancalculator.com/commercial-vehicle-loan-calculator/?utm_source=mcp&utm_medium=section-179-deduction-calculator-mcp",
+      "disclaimer": "This is an estimate, not tax advice. Check Form 4562, its instructions and Pub. 946, or ask a tax professional before you file."
+    }
+  },
+  "jsonrpc": "2.0",
+  "id": 12
+}

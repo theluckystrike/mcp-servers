@@ -4,6 +4,7 @@
 # satellites (satellites/*), skipping any name@version already on the registry.
 #
 #   scripts/npm-go.sh          # login if needed, then publish for real
+#   scripts/npm-go.sh --satellites-only   # skip the estate, publish only new satellites
 #   scripts/npm-go.sh --dry    # no login, dry-run pack of the 9 satellites only
 set -uo pipefail
 export npm_config_cache="${npm_config_cache:-/Users/mike/.npm-cache-local}"
@@ -13,6 +14,7 @@ export NPM_TTY_LOG="${NPM_TTY_LOG:-$HOME/mcp-servers/data/s1030/npm-tty.log}" np
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 LOG="$ROOT/data/s1030/npm-publish.log"
 DRY=0; [ "${1:-}" = "--dry" ] && DRY=1
+SATS_ONLY=0; [ "${1:-}" = "--satellites-only" ] && SATS_ONLY=1
 
 if [ "$DRY" = 0 ] && ! npm whoami >/dev/null 2>&1; then
   echo "Opening the npm login page. Approve it in your browser, then this script continues."
@@ -20,7 +22,7 @@ if [ "$DRY" = 0 ] && ! npm whoami >/dev/null 2>&1; then
 fi
 [ "$DRY" = 0 ] && echo "npm user: $(npm whoami)" | tee -a "$LOG"
 
-if [ "$DRY" = 0 ]; then
+if [ "$DRY" = 0 ] && [ "$SATS_ONLY" = 0 ]; then
   "$ROOT/scripts/publish-all.sh" --go 2>&1 | tee -a "$LOG"
 fi
 

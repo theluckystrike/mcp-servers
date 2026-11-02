@@ -1,0 +1,13 @@
+{
+ "lane": "build-edu",
+ "repos": [
+  "recipe-nutrition-calculator-mcp",
+  "ap-score-distributions-mcp"
+ ],
+ "reports": [
+  "/Users/mike/mcp-servers/data/s1102/recipe-nutrition-calculator-mcp.json",
+  "/Users/mike/mcp-servers/data/s1102/ap-score-distributions-mcp.json"
+ ],
+ "npm_published": false,
+ "owner_unlocks": []
+}

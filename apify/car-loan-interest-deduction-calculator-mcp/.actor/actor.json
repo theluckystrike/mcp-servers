@@ -1,0 +1,25 @@
+{
+    "$schema": "https://apify.com/schemas/v1/actor.ide.json",
+    "actorSpecification": 1,
+    "name": "car-loan-interest-deduction-calculator-mcp",
+    "title": "Car Loan Interest Deduction Calculator MCP",
+    "description": "Car loan interest deduction calculator for AI agents (MCP server). The 2025-2028 OBBBA deduction with the $10,000 cap and MAGI phase-out, plus the new SALT cap, child tax credit, 2025 and 2026 federal brackets and standard deduction. Every answer cites the IRS source.",
+    "version": "1.0",
+    "buildTag": "latest",
+    "usesStandbyMode": true,
+    "meta": {
+        "templateId": "ts-mcp-proxy",
+        "generatedBy": "adapted from apify/actor-templates ts-mcp-proxy (plain JS)"
+    },
+    "minMemoryMbytes": 256,
+    "defaultMemoryMbytes": 512,
+    "maxMemoryMbytes": 1024,
+    "input": "./input_schema.json",
+    "output": "./output_schema.json",
+    "storages": {
+        "dataset": "./dataset_schema.json"
+    },
+    "dockerfile": "../Dockerfile",
+    "readme": "../README.md",
+    "webServerMcpPath": "/mcp"
+}

@@ -1,0 +1,37 @@
+{
+    "title": "Subdomain Finder MCP: Certificate Transparency",
+    "description": "Passive subdomain finder MCP server for AI agents. Live certificate transparency lookups (certspotter, crt.sh) with DNS-over-HTTPS checks: finds subdomains, flags live hosts and dangling CNAMEs, shows certificate history and groups the attack surface. Read-only, no API key.",
+    "seoTitle": "Passive Subdomain Finder MCP Server (CT Logs)",
+    "seoDescription": "Passive subdomain finder for AI agents: live certificate transparency (certspotter, crt.sh) plus DNS checks, dangling CNAMEs and cert history. MCP server.",
+    "categories": [
+        "MCP_SERVERS",
+        "DEVELOPER_TOOLS",
+        "AGENTS"
+    ],
+    "actorStandby": {
+        "isEnabled": true,
+        "idleTimeoutSecs": 300
+    },
+    "pricingInfos": [
+        {
+            "pricingModel": "PAY_PER_EVENT",
+            "pricingPerEvent": {
+                "actorChargeEvents": {
+                    "apify-actor-start": {
+                        "eventTitle": "Actor start",
+                        "eventDescription": "Apify synthetic event: covers the first 5 seconds of compute of each run. Charged by the platform, not by the Actor code.",
+                        "eventPriceUsd": 0.00005
+                    },
+                    "tool-call": {
+                        "eventTitle": "Tool call",
+                        "eventDescription": "One successful MCP tool call on Subdomain Finder MCP: Certificate Transparency. Listing tools and initializing are free.",
+                        "eventPriceUsd": 0.03,
+                        "isPrimaryEvent": true
+                    }
+                }
+            },
+            "minimalMaxTotalChargeUsd": 0.15,
+            "isPPEPlatformUsagePaidByUser": false
+        }
+    ]
+}

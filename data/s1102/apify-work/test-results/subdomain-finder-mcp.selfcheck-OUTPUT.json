@@ -1,0 +1,38 @@
+{
+  "actor": "Subdomain Finder MCP: Certificate Transparency",
+  "mcpEndpoint": null,
+  "howToConnect": "Point an MCP client at the endpoint with header Authorization: Bearer <your Apify API token>.",
+  "toolCount": 4,
+  "tools": [
+    {
+      "name": "find_subdomains",
+      "description": "Passive subdomain enumeration for a domain from live certificate transparency logs: certspotter (unexpired certificates) with crt.sh as fallback or for expired history. Returns deduplicated hostnames with first seen and last seen issuance dates, certificate count, issuers and whether a wildcard certificate covers the name, plus the list of wildcard entries. Set resolve=true to also check the first 40 names with DNS over HTTPS and mark live hosts. Passive lookup of public certificate transparency logs; nothing is sent to the target. Use it on assets you own or are authorised to test."
+    },
+    {
+      "name": "resolve_subdomains",
+      "description": "Resolve up to 40 hostnames now through Cloudflare DNS over HTTPS (A, AAAA and the CNAME chain). Each host is marked live, nxdomain, no_records or dangling_cname (a CNAME whose target does not exist, a subdomain takeover lead), and CNAME targets on cloud platforms (S3, Azure, Heroku, GitHub Pages, Netlify, Vercel and others) are named. Also probes a random label per parent domain to detect wildcard DNS. DNS lookups only; no connection is made to the hosts."
+    },
+    {
+      "name": "get_certificate_history",
+      "description": "Certificates logged in certificate transparency for one hostname (or a whole domain with include_subdomains): issuer organisation and DN, not_before and not_after dates, every SAN on the certificate, revocation status and SHA-256 where certspotter has them. Summarises first and last issuance and the issuers used, which shows CA changes and renewal cadence. Default source certspotter (unexpired); include_expired uses crt.sh for the full history."
+    },
+    {
+      "name": "summarize_attack_surface",
+      "description": "Reads a domain's subdomains from live certificate transparency and groups them for recon triage: development and test, staging, admin and internal tools, APIs, authentication, mail, remote access (VPN), storage and CDN, legacy and backup. Each group has a count, examples and why it matters. Also returns naming clusters (for example *.eu.example.com), certificate issuers in use, wildcard entries and the 10 newest names. Passive only."
+    }
+  ],
+  "sampleCall": {
+    "tool": "find_subdomains",
+    "arguments": {
+      "domain": "example.com",
+      "limit": 5
+    },
+    "isError": false,
+    "result": [
+      {
+        "type": "text",
+        "text": "3 unique hostnames under example.com in 17 certificates from certspotter. 1 wildcard entry (*.example.com), so some hosts will never appear in CT. Newest: emudhra-lab.example.com (2026-10-20), www.example.com (2025-11-21), example.com (2025-11-20). certspotter lists unexpired certificates only. Use source \"crtsh\" with include_expired for older names.\n\n{\n  \"domain\": \"example.com\",\n  \"source\": \"https://api.certspotter.com/v1/issuances?domain=example.com&include_subdomains=true&expand=dns_names&expand=issuer\",\n  \"ct_source\": \"certspotter\",\n  \"certificates\": 17,\n  \"pages_read\": 2,\n  \"truncated\": false,\n  \"total\": 3,\n  \"returned\": 3,\n  \"wildcards\": [\n    \"*.example.com\"\n  ],\n  \"out_of_scope_names_skipped\": 15,\n  \"subdomains\": [\n    {\n      \"name\": \"example.com\",\n      \"first_seen\": \"2025-11-20\",\n      \"last_seen\": \"2026-09-26\",\n      \"valid_until\": \"2026-12-25\",\n      \"cert_count\": 9,\n      \"issuers\": [\n        \"SSL.com\",\n        \"Sectigo\"\n      ],\n      \"wildcard_cert\": true\n    },\n    {\n      \"name\": \"emudhra-lab.example.com\",\n      \"first_seen\": \"2026-10-20\",\n      \"last_seen\": \"2026-10-20\",\n      \"valid_until\": \"2027-08-01\",\n      \"cert_count\": 8,\n      \"issuers\": [\n        \"emSign\"\n      ],\n      \"wildcard_cert\": false\n    },\n    {\n      \"name\": \"www.example.com\",\n      \"first_seen\": \"2025-11-21\",\n      \"last_seen\": \"2025-12-02\",\n      \"valid_until\": \"2026-12-02\",\n      \"cert_count\": 2,\n      \"issuers\": [\n        \"Sectigo\"\n      ],\n      \"wildcard_cert\": false\n    }\n  ],\n  \"dns\": null,\n  \"notes\": [\n    \"certspotter lists unexpired certificates only. Use source \\\"crtsh\\\" with include_expired for older names.\"\n  ],\n  \"as_of\": \"2026-11-02T03:14:55.276Z\",\n  \"more\": \"https://bugbountyreality.com/tools/subdomain-finder-real/?utm_source=mcp&utm_medium=subdomain-finder-mcp\",\n  \"summary\": \"3 unique hostnames under example.com in 17 certificates from certspotter. 1 wildcard entry (*.example.com), so some hosts will never appear in CT. Newest: emudhra-lab.example.com (2026-10-20), www.example.com (2025-11-21), example.com (2025-11-20). certspotter lists unexpired certificates only. Use source \\\"crtsh\\\" with include_expired for older names.\"\n}"
+      }
+    ]
+  }
+}

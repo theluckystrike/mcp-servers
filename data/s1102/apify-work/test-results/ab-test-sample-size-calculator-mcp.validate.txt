@@ -1,0 +1,7 @@
+Info: Validating input schema at /Users/mike/mcp-servers/apify/ab-test-sample-size-calculator-mcp/.actor/input_schema.json
+Success: Input schema is valid.
+Info: Validating Dataset schema at /Users/mike/mcp-servers/apify/ab-test-sample-size-calculator-mcp/.actor/dataset_schema.json
+Success: Dataset schema is valid.
+Info: Validating Output schema at /Users/mike/mcp-servers/apify/ab-test-sample-size-calculator-mcp/.actor/output_schema.json
+Success: Output schema is valid.
+validate-schema exit=0

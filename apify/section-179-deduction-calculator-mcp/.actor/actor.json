@@ -1,0 +1,25 @@
+{
+    "$schema": "https://apify.com/schemas/v1/actor.ide.json",
+    "actorSpecification": 1,
+    "name": "section-179-deduction-calculator-mcp",
+    "title": "Section 179 Deduction Calculator MCP Server",
+    "description": "Section 179 deduction calculator for AI agents (MCP server). 2025 and 2026 IRS limits after the One Big Beautiful Bill Act, 100% bonus depreciation rules, heavy SUV and passenger auto caps, and equipment loan payment with after-tax cost. Sources cited from irs.gov.",
+    "version": "1.0",
+    "buildTag": "latest",
+    "usesStandbyMode": true,
+    "meta": {
+        "templateId": "ts-mcp-proxy",
+        "generatedBy": "adapted from apify/actor-templates ts-mcp-proxy (plain JS)"
+    },
+    "minMemoryMbytes": 256,
+    "defaultMemoryMbytes": 512,
+    "maxMemoryMbytes": 1024,
+    "input": "./input_schema.json",
+    "output": "./output_schema.json",
+    "storages": {
+        "dataset": "./dataset_schema.json"
+    },
+    "dockerfile": "../Dockerfile",
+    "readme": "../README.md",
+    "webServerMcpPath": "/mcp"
+}

@@ -1,0 +1,16 @@
+ <!-- ============ USE IN AI ASSISTANTS ============ -->
+ <section class="section" id="use-in-ai">
+ <div class="section-head">
+ <div class="section-num">&sect; 08 &ndash; Tools</div>
+ <h2 class="section-title">Use this data in Claude <em>or ChatGPT.</em></h2>
+ </div>
+ <div class="essay">
+ <p>The subdomain finder on this site is also available as a free MCP server. An AI assistant can use it to list the subdomains a domain has in public certificate transparency logs, check which of them resolve over DNS, read the certificate history and summarize the attack surface. It reads public logs and DNS only. It sends no requests to the target and runs no port scans. Use it on your own assets or inside a bug bounty scope. There is no account or API key.</p>
+ <p style="margin-bottom:8px"><strong>Claude.ai or ChatGPT.</strong> Add a custom connector with this URL.</p>
+ <pre style="margin:0 0 14px;padding:12px 14px;background:rgba(255,255,255,0.5);border:1px solid var(--rule-soft);font-family:var(--mono);font-size:12.5px;overflow-x:auto;white-space:pre;color:var(--ink);"><code>https://subdomain-finder-mcp.lipmichal.workers.dev/mcp</code></pre>
+ <p style="margin-bottom:8px"><strong>Claude Code.</strong></p>
+ <pre style="margin:0 0 14px;padding:12px 14px;background:rgba(255,255,255,0.5);border:1px solid var(--rule-soft);font-family:var(--mono);font-size:12.5px;overflow-x:auto;white-space:pre;color:var(--ink);"><code>claude mcp add --transport http subdomain-finder https://subdomain-finder-mcp.lipmichal.workers.dev/mcp</code></pre>
+ <p style="font-size:15px"><a href="https://www.mcpstamp.com/free-servers/subdomain-finder-mcp/">Setup steps</a> &middot; <a href="https://github.com/theluckystrike/subdomain-finder-mcp">Source on GitHub</a></p>
+ </div>
+ </section>
+

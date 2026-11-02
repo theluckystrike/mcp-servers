@@ -145,7 +145,7 @@ import html as _html
 
 SESSIONS = sorted((json.load(open(f)) for f in glob.glob(os.path.join(ROOT, "data/sessions/*.json"))),
                   key=lambda x: x["id"], reverse=True)
-SATS = [json.load(open(f)) for f in sorted(glob.glob(os.path.join(ROOT, "data/s1030/*-mcp.json")))]
+SATS = [json.load(open(f)) for f in sorted(glob.glob(os.path.join(ROOT, "data/s1030/*-mcp.json")) + glob.glob(os.path.join(ROOT, "data/s1102/*-mcp.json")))]
 
 
 def esc(x):

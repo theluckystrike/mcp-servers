@@ -1,0 +1,37 @@
+{
+  "actor": "Lake Level MCP Server: Live US Lake Levels",
+  "mcpEndpoint": null,
+  "howToConnect": "Point an MCP client at the endpoint with header Authorization: Bearer <your Apify API token>.",
+  "toolCount": 4,
+  "tools": [
+    {
+      "name": "search_lakes",
+      "description": "List the 44 US lakes and reservoirs this server reads live (Lake Mead, Lake Powell, Lake Travis, Shasta, Oroville, Lanier, Texoma, Kentucky Lake and more) by name, river, operator or state. Returns each slug, full-pool elevation, the gauge agency and the lakelevelnow.com page. Call with no arguments to list them all."
+    },
+    {
+      "name": "get_lake_level",
+      "description": "Current water surface elevation (ft above sea level) of a US lake or reservoir, read now from its government gauge (USGS, USACE CWMS, CDEC, Reclamation or TWDB). Returns the measurement time, change over 24 hours, 7 days and 30 days, feet below full pool, the operator seasonal target where one is published, percent full where the agency publishes storage, and the gauge id and data URL. Your training data cannot know today's level."
+    },
+    {
+      "name": "get_lake_history",
+      "description": "Daily (or weekly) water elevation series for a US lake or reservoir over the last 2 to 365 days, from the same government gauge as get_lake_level, one reading per day. Includes first, last, low, high and mean with dates. Use it for trends, drawdown and refill questions."
+    },
+    {
+      "name": "compare_lakes",
+      "description": "Current levels of 2 to 10 US lakes side by side, read live from their gauges: elevation, feet below full pool, percent full, seasonal target and 24 h / 7 day / 30 day change, ranked by distance below full pool. A lake whose gauge is down is reported with its error instead of failing the whole call."
+    }
+  ],
+  "sampleCall": {
+    "tool": "get_lake_level",
+    "arguments": {
+      "lake": "lake-mead"
+    },
+    "isError": false,
+    "result": [
+      {
+        "type": "text",
+        "text": "Lake Mead (NV) is at 1,038.85 ft above sea level per the U.S. Bureau of Reclamation gauge, measured 2026-10-31T07:00:00+00:00. That is 190.15 ft below full pool (1,229.0 ft). It is 23.8% full (Reclamation storage / 28,945,000 acre-feet capacity). Change: +0.19 ft in 24 h, +1.14 ft in 7 days, +1.00 ft in 30 days.\n\n{\n  \"lake\": {\n    \"slug\": \"lake-mead\",\n    \"name\": \"Lake Mead\",\n    \"state\": \"NV\",\n    \"river\": \"Colorado River\",\n    \"operator\": \"USBR (Hoover Dam)\"\n  },\n  \"elevation_ft\": 1038.85,\n  \"measured_at\": \"2026-10-31T07:00:00+00:00\",\n  \"age_hours\": 44.3,\n  \"fresh\": true,\n  \"change_ft\": {\n    \"h24\": 0.19,\n    \"d7\": 1.14,\n    \"d30\": 1\n  },\n  \"full_pool_ft\": 1229,\n  \"ft_below_full_pool\": 190.15,\n  \"seasonal_target\": null,\n  \"storage_af\": 6898730,\n  \"pct_full\": 23.8,\n  \"pct_full_basis\": \"Reclamation storage / 28,945,000 acre-feet capacity\",\n  \"gauge\": {\n    \"agency\": \"U.S. Bureau of Reclamation\",\n    \"id\": \"RISE item 6123\",\n    \"parameter\": \"daily reservoir elevation\",\n    \"data_url\": \"https://data.usbr.gov/rise/api/result?itemId=6123&dateTime%5Bafter%5D=2026-09-30&itemsPerPage=41\"\n  },\n  \"as_of\": \"2026-11-02T03:15:31.163Z\",\n  \"source\": \"https://data.usbr.gov/rise/api/result?itemId=6123\",\n  \"more\": \"https://lakelevelnow.com/lake/lake-mead/?utm_source=mcp&utm_medium=lake-level-mcp\",\n  \"almanac\": null,\n  \"summary\": \"Lake Mead (NV) is at 1,038.85 ft above sea level per the U.S. Bureau of Reclamation gauge, measured 2026-10-31T07:00:00+00:00. That is 190.15 ft below full pool (1,229.0 ft). It is 23.8% full (Reclamation storage / 28,945,000 acre-feet capacity). Change: +0.19 ft in 24 h, +1.14 ft in 7 days, +1.00 ft in 30 days.\"\n}"
+      }
+    ]
+  }
+}
