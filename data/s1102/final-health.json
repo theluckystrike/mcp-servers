@@ -1,0 +1,23 @@
+{
+ "checked": "2026-11-02T04:48:55Z",
+ "servers": {
+  "cups-to-grams-mcp": 4,
+  "dscr-loan-calculator-mcp": 5,
+  "gold-price-per-gram-mcp": 4,
+  "lake-level-mcp": 4,
+  "minimum-wage-mcp": 4,
+  "no-tax-on-overtime-mcp": 5,
+  "paycheck-calculator-mcp": 5,
+  "uk-income-tax-salary-mcp": 4,
+  "us-federal-holidays-business-days-mcp": 5,
+  "ab-test-sample-size-calculator-mcp": 5,
+  "aca-premium-tax-credit-calculator-mcp": 4,
+  "ap-score-distributions-mcp": 5,
+  "car-loan-interest-deduction-calculator-mcp": 4,
+  "recipe-nutrition-calculator-mcp": 4,
+  "retirement-contribution-limits-2027-mcp": 4,
+  "section-179-deduction-calculator-mcp": 4,
+  "student-loan-repayment-assistance-plan-calculator-mcp": 4,
+  "subdomain-finder-mcp": 4
+ }
+}
