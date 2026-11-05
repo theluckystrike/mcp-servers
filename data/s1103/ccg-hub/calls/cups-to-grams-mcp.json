@@ -1,0 +1,64 @@
+{
+ "result": {
+  "content": [
+   {
+    "type": "text",
+    "text": "1 us_cup of All-purpose flour = 120 g. Density 120 g per US cup from King Arthur Baking ingredient weight chart (1 cup = 120 g). Cup definition used: US cup (236.5882365 mL). Dry values assume spoon-and-level filling; scooping packs more in.\n\n{\n  \"summary\": \"1 us_cup of All-purpose flour = 120 g. Density 120 g per US cup from King Arthur Baking ingredient weight chart (1 cup = 120 g). Cup definition used: US cup (236.5882365 mL). Dry values assume spoon-and-level filling; scooping packs more in.\",\n  \"amount\": 1,\n  \"from_unit\": \"us_cup\",\n  \"to_unit\": \"g\",\n  \"result\": 120,\n  \"result_exact\": 120.00000000000001,\n  \"cup_definition_used\": {\n    \"unit\": \"us_cup\",\n    \"ml\": 236.5882365,\n    \"label\": \"US cup (236.5882365 mL)\"\n  },\n  \"unit_factors\": {\n    \"us_cup\": {\n      \"kind\": \"volume\",\n      \"per_unit\": 236.5882365,\n      \"base\": \"mL\"\n    },\n    \"g\": {\n      \"kind\": \"weight\",\n      \"per_unit\": 1,\n      \"base\": \"g\"\n    }\n  },\n  \"ingredient\": {\n    \"id\": \"all-purpose-flour\",\n    \"name\": \"All-purpose flour\",\n    \"g_per_us_cup\": 120,\n    \"g_per_us_tbsp\": 7.5,\n    \"g_per_us_tsp\": 2.5,\n    \"g_per_ml\": 0.5072099999999999,\n    \"density_source\": {\n      \"source\": \"king_arthur\",\n      \"url\": \"https://www.kingarthurbaking.com/learn/ingredient-weight-chart\",\n      \"row\": \"All-Purpose Flour\",\n      \"volume\": \"1 cup\",\n      \"grams\": 120,\n      \"g_per_cup\": 120\n    },\n    \"other_published_values\": [\n      {\n        \"source\": \"usda_fdc\",\n        \"g_per_cup\": 125,\n        \"fdc_id\": 168894,\n        \"row\": \"Wheat flour, white, all-purpose, enriched, bleached\"\n      }\n    ]\n  },\n  \"as_of\": \"2026-10-30\",\n  \"source\": \"https://www.kingarthurbaking.com/learn/ingredient-weight-chart\",\n  \"more\": \"https://ingredientcalculator.com/cups-to-grams?utm_source=mcp&utm_medium=cups-to-grams-mcp\"\n}"
+   }
+  ],
+  "structuredContent": {
+   "summary": "1 us_cup of All-purpose flour = 120 g. Density 120 g per US cup from King Arthur Baking ingredient weight chart (1 cup = 120 g). Cup definition used: US cup (236.5882365 mL). Dry values assume spoon-and-level filling; scooping packs more in.",
+   "amount": 1,
+   "from_unit": "us_cup",
+   "to_unit": "g",
+   "result": 120,
+   "result_exact": 120.00000000000001,
+   "cup_definition_used": {
+    "unit": "us_cup",
+    "ml": 236.5882365,
+    "label": "US cup (236.5882365 mL)"
+   },
+   "unit_factors": {
+    "us_cup": {
+     "kind": "volume",
+     "per_unit": 236.5882365,
+     "base": "mL"
+    },
+    "g": {
+     "kind": "weight",
+     "per_unit": 1,
+     "base": "g"
+    }
+   },
+   "ingredient": {
+    "id": "all-purpose-flour",
+    "name": "All-purpose flour",
+    "g_per_us_cup": 120,
+    "g_per_us_tbsp": 7.5,
+    "g_per_us_tsp": 2.5,
+    "g_per_ml": 0.5072099999999999,
+    "density_source": {
+     "source": "king_arthur",
+     "url": "https://www.kingarthurbaking.com/learn/ingredient-weight-chart",
+     "row": "All-Purpose Flour",
+     "volume": "1 cup",
+     "grams": 120,
+     "g_per_cup": 120
+    },
+    "other_published_values": [
+     {
+      "source": "usda_fdc",
+      "g_per_cup": 125,
+      "fdc_id": 168894,
+      "row": "Wheat flour, white, all-purpose, enriched, bleached"
+     }
+    ]
+   },
+   "as_of": "2026-10-30",
+   "source": "https://www.kingarthurbaking.com/learn/ingredient-weight-chart",
+   "more": "https://ingredientcalculator.com/cups-to-grams?utm_source=mcp&utm_medium=cups-to-grams-mcp"
+  }
+ },
+ "jsonrpc": "2.0",
+ "id": 2
+}

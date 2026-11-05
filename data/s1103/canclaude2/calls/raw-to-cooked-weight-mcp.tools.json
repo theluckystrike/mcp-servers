@@ -1,0 +1,256 @@
+{
+ "result": {
+  "tools": [
+   {
+    "name": "convert_raw_to_cooked",
+    "title": "Convert raw to cooked weight",
+    "description": "Cooked weight of raw meat or poultry using the USDA measured cooking yield for that cut and cooking method (USDA Table of Cooking Yields for Meat and Poultry). Returns the expected cooked weight in g, oz, lb and kg, the range seen across USDA samples, the weight lost, and the USDA row used. Understands ground beef lean ratios such as 80/20 or 93% lean.",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "food": {
+       "type": "string",
+       "minLength": 2,
+       "maxLength": 160,
+       "description": "Cut and species in plain words, for example \"chicken thigh\", \"80/20 ground beef patty\", \"ribeye steak\", \"pork tenderloin\", \"bacon\", \"turkey breast\", \"bison burger\"."
+      },
+      "method": {
+       "type": "string",
+       "minLength": 2,
+       "maxLength": 40,
+       "description": "Cooking method: roast, grill, braise, simmer, pan_fry, pan_broil, deep_fry, microwave. Plain words work too (grilled, baked, slow cooker, sauteed, boiled)."
+      },
+      "yield_id": {
+       "type": "integer",
+       "minimum": 1,
+       "maximum": 500,
+       "description": "Exact row id from find_cooking_yield or list_cooking_yields. Overrides food and method."
+      },
+      "raw_weight": {
+       "type": "number",
+       "exclusiveMinimum": 0,
+       "maximum": 1000000,
+       "description": "Raw weight, for example 1.5 or 500."
+      },
+      "unit": {
+       "type": "string",
+       "minLength": 1,
+       "maxLength": 12,
+       "description": "Weight unit: g, kg, oz or lb. Default g."
+      }
+     },
+     "required": [
+      "raw_weight"
+     ],
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "title": "Raw to cooked weight",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "convert_cooked_to_raw",
+    "title": "Convert cooked to raw weight",
+    "description": "Raw weight that a cooked portion of meat or poultry came from, using the USDA measured cooking yield. Use it to log a cooked portion against raw nutrition data (labels and most databases list raw meat) or to scale a recipe written in cooked weight. Returns raw weight in g, oz, lb and kg, and the raw weight if the yield was at the USDA high or low end.",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "food": {
+       "type": "string",
+       "minLength": 2,
+       "maxLength": 160,
+       "description": "Cut and species in plain words, for example \"chicken thigh\", \"80/20 ground beef patty\", \"ribeye steak\", \"pork tenderloin\", \"bacon\", \"turkey breast\", \"bison burger\"."
+      },
+      "method": {
+       "type": "string",
+       "minLength": 2,
+       "maxLength": 40,
+       "description": "Cooking method: roast, grill, braise, simmer, pan_fry, pan_broil, deep_fry, microwave. Plain words work too (grilled, baked, slow cooker, sauteed, boiled)."
+      },
+      "yield_id": {
+       "type": "integer",
+       "minimum": 1,
+       "maximum": 500,
+       "description": "Exact row id from find_cooking_yield or list_cooking_yields. Overrides food and method."
+      },
+      "cooked_weight": {
+       "type": "number",
+       "exclusiveMinimum": 0,
+       "maximum": 1000000,
+       "description": "Cooked weight, for example 150."
+      },
+      "unit": {
+       "type": "string",
+       "minLength": 1,
+       "maxLength": 12,
+       "description": "Weight unit: g, kg, oz or lb. Default g."
+      }
+     },
+     "required": [
+      "cooked_weight"
+     ],
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "title": "Cooked to raw weight",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "calculate_raw_weight_to_buy",
+    "title": "Calculate raw meat to buy",
+    "description": "How much raw meat or poultry to buy for a number of cooked servings, from the USDA cooking yield for that cut and method. Default cooked serving is 3 oz (85 g).",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "food": {
+       "type": "string",
+       "minLength": 2,
+       "maxLength": 160,
+       "description": "Cut and species in plain words, for example \"chicken thigh\", \"80/20 ground beef patty\", \"ribeye steak\", \"pork tenderloin\", \"bacon\", \"turkey breast\", \"bison burger\"."
+      },
+      "method": {
+       "type": "string",
+       "minLength": 2,
+       "maxLength": 40,
+       "description": "Cooking method: roast, grill, braise, simmer, pan_fry, pan_broil, deep_fry, microwave. Plain words work too (grilled, baked, slow cooker, sauteed, boiled)."
+      },
+      "yield_id": {
+       "type": "integer",
+       "minimum": 1,
+       "maximum": 500,
+       "description": "Exact row id from find_cooking_yield or list_cooking_yields. Overrides food and method."
+      },
+      "servings": {
+       "type": "number",
+       "exclusiveMinimum": 0,
+       "maximum": 10000,
+       "description": "Number of servings, for example 8."
+      },
+      "cooked_serving_size": {
+       "type": "number",
+       "exclusiveMinimum": 0,
+       "maximum": 10000,
+       "description": "Cooked weight per serving in the chosen unit. Default 3 oz or 85 g."
+      },
+      "unit": {
+       "type": "string",
+       "minLength": 1,
+       "maxLength": 12,
+       "description": "Unit of cooked_serving_size: g, kg, oz or lb. Default oz."
+      }
+     },
+     "required": [
+      "servings"
+     ],
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "title": "Raw meat to buy",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "find_cooking_yield",
+    "title": "Find USDA cooking yield",
+    "description": "Look up the USDA cooking yield percent for a cut of meat or poultry and a cooking method, with the yield range, sample count, moisture change and fat change measured by USDA, plus up to 4 close alternative rows with their yield_id.",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "food": {
+       "type": "string",
+       "minLength": 2,
+       "maxLength": 160,
+       "description": "Cut and species in plain words, for example \"chicken thigh\", \"80/20 ground beef patty\", \"ribeye steak\", \"pork tenderloin\", \"bacon\", \"turkey breast\", \"bison burger\"."
+      },
+      "method": {
+       "type": "string",
+       "minLength": 2,
+       "maxLength": 40,
+       "description": "Cooking method: roast, grill, braise, simmer, pan_fry, pan_broil, deep_fry, microwave. Plain words work too (grilled, baked, slow cooker, sauteed, boiled)."
+      },
+      "limit": {
+       "type": "integer",
+       "minimum": 1,
+       "maximum": 20,
+       "description": "Rows to return, default 5."
+      }
+     },
+     "required": [
+      "food"
+     ],
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "title": "USDA cooking yield",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "list_cooking_yields",
+    "title": "List USDA cooking yields",
+    "description": "List rows of the USDA Table of Cooking Yields for Meat and Poultry, filtered by category (beef, pork, poultry, chicken, turkey, lamb, veal, game, sausage) and cooking method.",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "category": {
+       "type": "string",
+       "minLength": 3,
+       "maxLength": 30,
+       "description": "beef, pork, poultry, chicken, turkey, lamb, veal, game or sausage."
+      },
+      "method": {
+       "type": "string",
+       "minLength": 2,
+       "maxLength": 40,
+       "description": "Cooking method: roast, grill, braise, simmer, pan_fry, pan_broil, deep_fry, microwave. Plain words work too (grilled, baked, slow cooker, sauteed, boiled)."
+      }
+     },
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "title": "List cooking yields",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   }
+  ]
+ },
+ "jsonrpc": "2.0",
+ "id": 2
+}

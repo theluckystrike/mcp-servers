@@ -1,0 +1,355 @@
+{
+ "result": {
+  "content": [
+   {
+    "type": "text",
+    "text": "101 unique hostnames under zovo.one in 218 certificates from certspotter (first 3 pages only; raise max_pages for more). 100 wildcard entries (*.anon.zovo.one, *.ar-aging.zovo.one, *.avery-labels.zovo.one, ...), so some hosts will never appear in CT. Newest: ar-aging.zovo.one (2026-10-26), cap-table.zovo.one (2026-10-26), client-report.zovo.one (2026-10-26), depreciation.zovo.one (2026-10-26), gradebook.zovo.one (2026-10-26). Showing 20 of 101. certspotter lists unexpired certificates only. Use source \"crtsh\" with include_expired for older names.\n\n{\n  \"domain\": \"zovo.one\",\n  \"source\": \"https://api.certspotter.com/v1/issuances?domain=zovo.one&include_subdomains=true&expand=dns_names&expand=issuer\",\n  \"ct_source\": \"certspotter\",\n  \"certificates\": 218,\n  \"pages_read\": 3,\n  \"truncated\": true,\n  \"total\": 101,\n  \"returned\": 20,\n  \"wildcards\": [\n    \"*.anon.zovo.one\",\n    \"*.ar-aging.zovo.one\",\n    \"*.avery-labels.zovo.one\",\n    \"*.baby-names.zovo.one\",\n    \"*.bank-reconciliation.zovo.one\",\n    \"*.barcode-maker.zovo.one\",\n    \"*.bill-splitter.zovo.one\",\n    \"*.bingo-cards.zovo.one\",\n    \"*.bracket-maker.zovo.one\",\n    \"*.business-cards.zovo.one\",\n    \"*.calendar-invite.zovo.one\",\n    \"*.cap-table.zovo.one\",\n    \"*.census-geocode.zovo.one\",\n    \"*.certificate-maker.zovo.one\",\n    \"*.chord-transposer.zovo.one\",\n    \"*.chore-chart.zovo.one\",\n    \"*.citation-generator.zovo.one\",\n    \"*.client-report.zovo.one\",\n    \"*.commission-calculator.zovo.one\",\n    \"*.contract-awards.zovo.one\",\n    \"*.contrast-checker.zovo.one\",\n    \"*.critical-path.zovo.one\",\n    \"*.cron-explorer.zovo.one\",\n    \"*.currency-converter.zovo.one\",\n    \"*.date-calculator.zovo.one\",\n    \"*.decision-matrix.zovo.one\",\n    \"*.depreciation.zovo.one\",\n    \"*.dns-checker.zovo.one\",\n    \"*.domain-lookup.zovo.one\",\n    \"*.doubles-mixer.zovo.one\",\n    \"*.expense-report.zovo.one\",\n    \"*.family-tree.zovo.one\",\n    \"*.fed-register.zovo.one\",\n    \"*.flashcard-studio.zovo.one\",\n    \"*.focus-timer.zovo.one\",\n    \"*.gantt-timeline.zovo.one\",\n    \"*.gift-exchange.zovo.one\",\n    \"*.golden-hour.zovo.one\",\n    \"*.gpa-calculator.zovo.one\",\n    \"*.gradebook.zovo.one\",\n    \"*.grant-finder.zovo.one\",\n    \"*.graph-paper.zovo.one\",\n    \"*.handwriting-sheets.zovo.one\",\n    \"*.inflation-calculator.zovo.one\",\n    \"*.invoice-maker.zovo.one\",\n    \"*.ip-lookup.zovo.one\",\n    \"*.json-diff.zovo.one\",\n    \"*.lei-lookup.zovo.one\",\n    \"*.loan-planner.zovo.one\",\n    \"*.mail-merge.zovo.one\",\n    \"*.mcp.zovo.one\",\n    \"*.meal-planner.zovo.one\",\n    \"*.meeting-planner.zovo.one\",\n    \"*.metronome.zovo.one\",\n    \"*.mileage-log.zovo.one\",\n    \"*.name-tags.zovo.one\",\n    \"*.name-wheel.zovo.one\",\n    \"*.npi-lookup.zovo.one\",\n    \"*.ofac-screening.zovo.one\",\n    \"*.org-chart.zovo.one\",\n    \"*.packing-checklist.zovo.one\",\n    \"*.paycheck-calculator.zovo.one\",\n    \"*.payout-summary.zovo.one\",\n    \"*.pdf-to-excel.zovo.one\",\n    \"*.per-diem.zovo.one\",\n    \"*.personality-test.zovo.one\",\n    \"*.pf-fixtures.zovo.one\",\n    \"*.printable-calendar.zovo.one\",\n    \"*.prints.zovo.one\",\n    \"*.product-recalls.zovo.one\",\n    \"*.puzzle-maker.zovo.one\",\n    \"*.qr-code-studio.zovo.one\",\n    \"*.raffle-tickets.zovo.one\",\n    \"*.rent-ledger.zovo.one\",\n    \"*.schengen-days.zovo.one\",\n    \"*.score-keeper.zovo.one\",\n    \"*.seating-chart.zovo.one\",\n    \"*.sec-filings.zovo.one\",\n    \"*.self-employment-tax.zovo.one\",\n    \"*.sheet-compare.zovo.one\",\n    \"*.sheet-join.zovo.one\",\n    \"*.sheet-validate.zovo.one\",\n    \"*.shift-scheduler.zovo.one\",\n    \"*.site-status.zovo.one\",\n    \"*.sky-keepsake.zovo.one\",\n    \"*.speed-reader.zovo.one\",\n    \"*.spending-report.zovo.one\",\n    \"*.statement-converter.zovo.one\",\n    \"*.teleprompter.zovo.one\",\n    \"*.tg.zovo.one\",\n    \"*.time-card.zovo.one\",\n    \"*.typing-test.zovo.one\",\n    \"*.vat-check.zovo.one\",\n    \"*.vehicle-recalls.zovo.one\",\n    \"*.weather-history.zovo.one\",\n    \"*.weekly-schedule.zovo.one\",\n    \"*.word-counter.zovo.one\",\n    \"*.word-guess.zovo.one\",\n    \"*.word-solver.zovo.one\",\n    \"*.zovo.one\"\n  ],\n  \"out_of_scope_names_skipped\": 0,\n  \"subdomains\": [\n    {\n      \"name\": \"zovo.one\",\n      \"first_seen\": \"2026-08-11\",\n      \"last_seen\": \"2026-11-02\",\n      \"valid_until\": \"2027-01-31\",\n      \"cert_count\": 218,\n      \"issuers\": [\n        \"Google Trust Services\",\n        \"Let's Encrypt\"\n      ],\n      \"wildcard_cert\": true\n    },\n    {\n      \"name\": \"anon.zovo.one\",\n      \"first_seen\": \"2026-10-14\",\n      \"last_seen\": \"2026-10-14\",\n      \"valid_until\": \"2027-01-12\",\n      \"cert_count\": 2,\n      \"issuers\": [\n        \"Google Trust Services\"\n      ],\n      \"wildcard_cert\": true\n    },\n    {\n      \"name\": \"api.zovo.one\",\n      \"first_seen\": \"2026-08-25\",\n      \"last_seen\": \"2026-10-24\",\n      \"valid_until\": \"2027-01-22\",\n      \"cert_count\": 6,\n      \"issuers\": [\n        \"Google Trust Services\"\n      ],\n      \"wildcard_cert\": false\n    },\n    {\n      \"name\": \"ar-aging.zovo.one\",\n      \"first_seen\": \"2026-10-26\",\n      \"last_seen\": \"2026-10-26\",\n      \"valid_until\": \"2027-01-24\",\n      \"cert_count\": 2,\n      \"issuers\": [\n        \"Google Trust Services\"\n      ],\n      \"wildcard_cert\": true\n    },\n    {\n      \"name\": \"avery-labels.zovo.one\",\n      \"first_seen\": \"2026-10-03\",\n      \"last_seen\": \"2026-10-03\",\n      \"valid_until\": \"2027-01-01\",\n      \"cert_count\": 2,\n      \"issuers\": [\n        \"Google Trust Services\"\n      ],\n      \"wildcard_cert\": true\n    },\n    {\n      \"name\": \"baby-names.zovo.one\",\n      \"first_seen\": \"2026-10-02\",\n      \"last_seen\": \"2026-10-02\",\n      \"valid_until\": \"2026-12-31\",\n      \"cert_count\": 2,\n      \"issuers\": [\n        \"Google Trust Services\"\n      ],\n      \"wildcard_cert\": true\n    },\n    {\n      \"name\": \"bank-reconciliation.zovo.one\",\n      \"first_seen\": \"2026-10-03\",\n      \"last_seen\": \"2026-10-03\",\n      \"valid_until\": \"2027-01-01\",\n      \"cert_count\": 2,\n      \"issuers\": [\n        \"Google Trust Services\"\n      ],\n      \"wildcard_cert\": true\n    },\n    {\n      \"name\": \"barcode-maker.zovo.one\",\n      \"first_seen\": \"2026-10-02\",\n      \"last_seen\": \"2026-10-02\",\n      \"valid_until\": \"2026-12-31\",\n      \"cert_count\": 2,\n      \"issuers\": [\n        \"Google Trust Services\"\n      ],\n      \"wildcard_cert\": true\n    },\n    {\n      \"name\": \"bill-splitter.zovo.one\",\n      \"first_seen\": \"2026-10-02\",\n      \"last_seen\": \"2026-10-02\",\n      \"valid_until\": \"2026-12-31\",\n      \"cert_count\": 2,\n      \"issuers\": [\n        \"Google Trust Services\"\n      ],\n      \"wildcard_cert\": true\n    },\n    {\n      \"name\": \"bingo-cards.zovo.one\",\n      \"first_seen\": \"2026-10-02\",\n      \"last_seen\": \"2026-10-02\",\n      \"valid_until\": \"2026-12-31\",\n      \"cert_count\": 2,\n      \"issuers\": [\n        \"Google Trust Services\"\n      ],\n      \"wildcard_cert\": true\n    },\n    {\n      \"name\": \"bracket-maker.zovo.one\",\n      \"first_seen\": \"2026-10-02\",\n      \"last_seen\": \"2026-10-02\",\n      \"valid_until\": \"2026-12-31\",\n      \"cert_count\": 2,\n      \"issuers\": [\n        \"Google Trust Services\"\n      ],\n      \"wildcard_cert\": true\n    },\n    {\n      \"name\": \"business-cards.zovo.one\",\n      \"first_seen\": \"2026-10-25\",\n      \"last_seen\": \"2026-10-25\",\n      \"valid_until\": \"2027-01-23\",\n      \"cert_count\": 2,\n      \"issuers\": [\n        \"Google Trust Services\"\n      ],\n      \"wildcard_cert\": true\n    },\n    {\n      \"name\": \"calendar-invite.zovo.one\",\n      \"first_seen\": \"2026-10-02\",\n      \"last_seen\": \"2026-10-02\",\n      \"valid_until\": \"2026-12-31\",\n      \"cert_count\": 2,\n      \"issuers\": [\n        \"Google Trust Services\"\n      ],\n      \"wildcard_cert\": true\n    },\n    {\n      \"name\": \"cap-table.zovo.one\",\n      \"first_seen\": \"2026-10-26\",\n      \"last_seen\": \"2026-10-26\",\n      \"valid_until\": \"2027-01-24\",\n      \"cert_count\": 2,\n      \"issuers\": [\n        \"Google Trust Services\"\n      ],\n      \"wildcard_cert\": true\n    },\n    {\n      \"name\": \"census-geocode.zovo.one\",\n      \"first_seen\": \"2026-10-21\",\n      \"last_seen\": \"2026-10-21\",\n      \"valid_until\": \"2027-01-19\",\n      \"cert_count\": 2,\n      \"issuers\": [\n        \"Google Trust Services\"\n      ],\n      \"wildcard_cert\": true\n    },\n    {\n      \"name\": \"certificate-maker.zovo.one\",\n      \"first_seen\": \"2026-10-25\",\n      \"last_seen\": \"2026-10-25\",\n      \"valid_until\": \"2027-01-23\",\n      \"cert_count\": 2,\n      \"issuers\": [\n        \"Google Trust Services\"\n      ],\n      \"wildcard_cert\": true\n    },\n    {\n      \"name\": \"chord-transposer.zovo.one\",\n      \"first_seen\": \"2026-10-11\",\n      \"last_seen\": \"2026-10-11\",\n      \"valid_until\": \"2027-01-09\",\n      \"cert_count\": 2,\n      \"issuers\": [\n        \"Google Trust Services\"\n      ],\n      \"wildcard_cert\": true\n    },\n    {\n      \"name\": \"chore-chart.zovo.one\",\n      \"first_seen\": \"2026-10-25\",\n      \"last_seen\": \"2026-10-25\",\n      \"valid_until\": \"2027-01-23\",\n      \"cert_count\": 2,\n      \"issuers\": [\n        \"Google Trust Services\"\n      ],\n      \"wildcard_cert\": true\n    },\n    {\n      \"name\": \"citation-generator.zovo.one\",\n      \"first_seen\": \"2026-10-17\",\n      \"last_seen\": \"2026-10-17\",\n      \"valid_until\": \"2027-01-15\",\n      \"cert_count\": 2,\n      \"issuers\": [\n        \"Google Trust Services\"\n      ],\n      \"wildcard_cert\": true\n    },\n    {\n      \"name\": \"client-report.zovo.one\",\n      \"first_seen\": \"2026-10-26\",\n      \"last_seen\": \"2026-10-26\",\n      \"valid_until\": \"2027-01-24\",\n      \"cert_count\": 2,\n      \"issuers\": [\n        \"Google Trust Services\"\n      ],\n      \"wildcard_cert\": true\n    }\n  ],\n  \"dns\": null,\n  \"notes\": [\n    \"certspotter lists unexpired certificates only. Use source \\\"crtsh\\\" with include_expired for older names.\"\n  ],\n  \"as_of\": \"2026-11-03T08:23:58.007Z\",\n  \"more\": \"https://bugbountyreality.com/tools/subdomain-finder-real/?utm_source=mcp&utm_medium=subdomain-finder-mcp\",\n  \"summary\": \"101 unique hostnames under zovo.one in 218 certificates from certspotter (first 3 pages only; raise max_pages for more). 100 wildcard entries (*.anon.zovo.one, *.ar-aging.zovo.one, *.avery-labels.zovo.one, ...), so some hosts will never appear in CT. Newest: ar-aging.zovo.one (2026-10-26), cap-table.zovo.one (2026-10-26), client-report.zovo.one (2026-10-26), depreciation.zovo.one (2026-10-26), gradebook.zovo.one (2026-10-26). Showing 20 of 101. certspotter lists unexpired certificates only. Use source \\\"crtsh\\\" with include_expired for older names.\"\n}"
+   }
+  ],
+  "structuredContent": {
+   "domain": "zovo.one",
+   "source": "https://api.certspotter.com/v1/issuances?domain=zovo.one&include_subdomains=true&expand=dns_names&expand=issuer",
+   "ct_source": "certspotter",
+   "certificates": 218,
+   "pages_read": 3,
+   "truncated": true,
+   "total": 101,
+   "returned": 20,
+   "wildcards": [
+    "*.anon.zovo.one",
+    "*.ar-aging.zovo.one",
+    "*.avery-labels.zovo.one",
+    "*.baby-names.zovo.one",
+    "*.bank-reconciliation.zovo.one",
+    "*.barcode-maker.zovo.one",
+    "*.bill-splitter.zovo.one",
+    "*.bingo-cards.zovo.one",
+    "*.bracket-maker.zovo.one",
+    "*.business-cards.zovo.one",
+    "*.calendar-invite.zovo.one",
+    "*.cap-table.zovo.one",
+    "*.census-geocode.zovo.one",
+    "*.certificate-maker.zovo.one",
+    "*.chord-transposer.zovo.one",
+    "*.chore-chart.zovo.one",
+    "*.citation-generator.zovo.one",
+    "*.client-report.zovo.one",
+    "*.commission-calculator.zovo.one",
+    "*.contract-awards.zovo.one",
+    "*.contrast-checker.zovo.one",
+    "*.critical-path.zovo.one",
+    "*.cron-explorer.zovo.one",
+    "*.currency-converter.zovo.one",
+    "*.date-calculator.zovo.one",
+    "*.decision-matrix.zovo.one",
+    "*.depreciation.zovo.one",
+    "*.dns-checker.zovo.one",
+    "*.domain-lookup.zovo.one",
+    "*.doubles-mixer.zovo.one",
+    "*.expense-report.zovo.one",
+    "*.family-tree.zovo.one",
+    "*.fed-register.zovo.one",
+    "*.flashcard-studio.zovo.one",
+    "*.focus-timer.zovo.one",
+    "*.gantt-timeline.zovo.one",
+    "*.gift-exchange.zovo.one",
+    "*.golden-hour.zovo.one",
+    "*.gpa-calculator.zovo.one",
+    "*.gradebook.zovo.one",
+    "*.grant-finder.zovo.one",
+    "*.graph-paper.zovo.one",
+    "*.handwriting-sheets.zovo.one",
+    "*.inflation-calculator.zovo.one",
+    "*.invoice-maker.zovo.one",
+    "*.ip-lookup.zovo.one",
+    "*.json-diff.zovo.one",
+    "*.lei-lookup.zovo.one",
+    "*.loan-planner.zovo.one",
+    "*.mail-merge.zovo.one",
+    "*.mcp.zovo.one",
+    "*.meal-planner.zovo.one",
+    "*.meeting-planner.zovo.one",
+    "*.metronome.zovo.one",
+    "*.mileage-log.zovo.one",
+    "*.name-tags.zovo.one",
+    "*.name-wheel.zovo.one",
+    "*.npi-lookup.zovo.one",
+    "*.ofac-screening.zovo.one",
+    "*.org-chart.zovo.one",
+    "*.packing-checklist.zovo.one",
+    "*.paycheck-calculator.zovo.one",
+    "*.payout-summary.zovo.one",
+    "*.pdf-to-excel.zovo.one",
+    "*.per-diem.zovo.one",
+    "*.personality-test.zovo.one",
+    "*.pf-fixtures.zovo.one",
+    "*.printable-calendar.zovo.one",
+    "*.prints.zovo.one",
+    "*.product-recalls.zovo.one",
+    "*.puzzle-maker.zovo.one",
+    "*.qr-code-studio.zovo.one",
+    "*.raffle-tickets.zovo.one",
+    "*.rent-ledger.zovo.one",
+    "*.schengen-days.zovo.one",
+    "*.score-keeper.zovo.one",
+    "*.seating-chart.zovo.one",
+    "*.sec-filings.zovo.one",
+    "*.self-employment-tax.zovo.one",
+    "*.sheet-compare.zovo.one",
+    "*.sheet-join.zovo.one",
+    "*.sheet-validate.zovo.one",
+    "*.shift-scheduler.zovo.one",
+    "*.site-status.zovo.one",
+    "*.sky-keepsake.zovo.one",
+    "*.speed-reader.zovo.one",
+    "*.spending-report.zovo.one",
+    "*.statement-converter.zovo.one",
+    "*.teleprompter.zovo.one",
+    "*.tg.zovo.one",
+    "*.time-card.zovo.one",
+    "*.typing-test.zovo.one",
+    "*.vat-check.zovo.one",
+    "*.vehicle-recalls.zovo.one",
+    "*.weather-history.zovo.one",
+    "*.weekly-schedule.zovo.one",
+    "*.word-counter.zovo.one",
+    "*.word-guess.zovo.one",
+    "*.word-solver.zovo.one",
+    "*.zovo.one"
+   ],
+   "out_of_scope_names_skipped": 0,
+   "subdomains": [
+    {
+     "name": "zovo.one",
+     "first_seen": "2026-08-11",
+     "last_seen": "2026-11-02",
+     "valid_until": "2027-01-31",
+     "cert_count": 218,
+     "issuers": [
+      "Google Trust Services",
+      "Let's Encrypt"
+     ],
+     "wildcard_cert": true
+    },
+    {
+     "name": "anon.zovo.one",
+     "first_seen": "2026-10-14",
+     "last_seen": "2026-10-14",
+     "valid_until": "2027-01-12",
+     "cert_count": 2,
+     "issuers": [
+      "Google Trust Services"
+     ],
+     "wildcard_cert": true
+    },
+    {
+     "name": "api.zovo.one",
+     "first_seen": "2026-08-25",
+     "last_seen": "2026-10-24",
+     "valid_until": "2027-01-22",
+     "cert_count": 6,
+     "issuers": [
+      "Google Trust Services"
+     ],
+     "wildcard_cert": false
+    },
+    {
+     "name": "ar-aging.zovo.one",
+     "first_seen": "2026-10-26",
+     "last_seen": "2026-10-26",
+     "valid_until": "2027-01-24",
+     "cert_count": 2,
+     "issuers": [
+      "Google Trust Services"
+     ],
+     "wildcard_cert": true
+    },
+    {
+     "name": "avery-labels.zovo.one",
+     "first_seen": "2026-10-03",
+     "last_seen": "2026-10-03",
+     "valid_until": "2027-01-01",
+     "cert_count": 2,
+     "issuers": [
+      "Google Trust Services"
+     ],
+     "wildcard_cert": true
+    },
+    {
+     "name": "baby-names.zovo.one",
+     "first_seen": "2026-10-02",
+     "last_seen": "2026-10-02",
+     "valid_until": "2026-12-31",
+     "cert_count": 2,
+     "issuers": [
+      "Google Trust Services"
+     ],
+     "wildcard_cert": true
+    },
+    {
+     "name": "bank-reconciliation.zovo.one",
+     "first_seen": "2026-10-03",
+     "last_seen": "2026-10-03",
+     "valid_until": "2027-01-01",
+     "cert_count": 2,
+     "issuers": [
+      "Google Trust Services"
+     ],
+     "wildcard_cert": true
+    },
+    {
+     "name": "barcode-maker.zovo.one",
+     "first_seen": "2026-10-02",
+     "last_seen": "2026-10-02",
+     "valid_until": "2026-12-31",
+     "cert_count": 2,
+     "issuers": [
+      "Google Trust Services"
+     ],
+     "wildcard_cert": true
+    },
+    {
+     "name": "bill-splitter.zovo.one",
+     "first_seen": "2026-10-02",
+     "last_seen": "2026-10-02",
+     "valid_until": "2026-12-31",
+     "cert_count": 2,
+     "issuers": [
+      "Google Trust Services"
+     ],
+     "wildcard_cert": true
+    },
+    {
+     "name": "bingo-cards.zovo.one",
+     "first_seen": "2026-10-02",
+     "last_seen": "2026-10-02",
+     "valid_until": "2026-12-31",
+     "cert_count": 2,
+     "issuers": [
+      "Google Trust Services"
+     ],
+     "wildcard_cert": true
+    },
+    {
+     "name": "bracket-maker.zovo.one",
+     "first_seen": "2026-10-02",
+     "last_seen": "2026-10-02",
+     "valid_until": "2026-12-31",
+     "cert_count": 2,
+     "issuers": [
+      "Google Trust Services"
+     ],
+     "wildcard_cert": true
+    },
+    {
+     "name": "business-cards.zovo.one",
+     "first_seen": "2026-10-25",
+     "last_seen": "2026-10-25",
+     "valid_until": "2027-01-23",
+     "cert_count": 2,
+     "issuers": [
+      "Google Trust Services"
+     ],
+     "wildcard_cert": true
+    },
+    {
+     "name": "calendar-invite.zovo.one",
+     "first_seen": "2026-10-02",
+     "last_seen": "2026-10-02",
+     "valid_until": "2026-12-31",
+     "cert_count": 2,
+     "issuers": [
+      "Google Trust Services"
+     ],
+     "wildcard_cert": true
+    },
+    {
+     "name": "cap-table.zovo.one",
+     "first_seen": "2026-10-26",
+     "last_seen": "2026-10-26",
+     "valid_until": "2027-01-24",
+     "cert_count": 2,
+     "issuers": [
+      "Google Trust Services"
+     ],
+     "wildcard_cert": true
+    },
+    {
+     "name": "census-geocode.zovo.one",
+     "first_seen": "2026-10-21",
+     "last_seen": "2026-10-21",
+     "valid_until": "2027-01-19",
+     "cert_count": 2,
+     "issuers": [
+      "Google Trust Services"
+     ],
+     "wildcard_cert": true
+    },
+    {
+     "name": "certificate-maker.zovo.one",
+     "first_seen": "2026-10-25",
+     "last_seen": "2026-10-25",
+     "valid_until": "2027-01-23",
+     "cert_count": 2,
+     "issuers": [
+      "Google Trust Services"
+     ],
+     "wildcard_cert": true
+    },
+    {
+     "name": "chord-transposer.zovo.one",
+     "first_seen": "2026-10-11",
+     "last_seen": "2026-10-11",
+     "valid_until": "2027-01-09",
+     "cert_count": 2,
+     "issuers": [
+      "Google Trust Services"
+     ],
+     "wildcard_cert": true
+    },
+    {
+     "name": "chore-chart.zovo.one",
+     "first_seen": "2026-10-25",
+     "last_seen": "2026-10-25",
+     "valid_until": "2027-01-23",
+     "cert_count": 2,
+     "issuers": [
+      "Google Trust Services"
+     ],
+     "wildcard_cert": true
+    },
+    {
+     "name": "citation-generator.zovo.one",
+     "first_seen": "2026-10-17",
+     "last_seen": "2026-10-17",
+     "valid_until": "2027-01-15",
+     "cert_count": 2,
+     "issuers": [
+      "Google Trust Services"
+     ],
+     "wildcard_cert": true
+    },
+    {
+     "name": "client-report.zovo.one",
+     "first_seen": "2026-10-26",
+     "last_seen": "2026-10-26",
+     "valid_until": "2027-01-24",
+     "cert_count": 2,
+     "issuers": [
+      "Google Trust Services"
+     ],
+     "wildcard_cert": true
+    }
+   ],
+   "dns": null,
+   "notes": [
+    "certspotter lists unexpired certificates only. Use source \"crtsh\" with include_expired for older names."
+   ],
+   "as_of": "2026-11-03T08:23:58.007Z",
+   "more": "https://bugbountyreality.com/tools/subdomain-finder-real/?utm_source=mcp&utm_medium=subdomain-finder-mcp",
+   "summary": "101 unique hostnames under zovo.one in 218 certificates from certspotter (first 3 pages only; raise max_pages for more). 100 wildcard entries (*.anon.zovo.one, *.ar-aging.zovo.one, *.avery-labels.zovo.one, ...), so some hosts will never appear in CT. Newest: ar-aging.zovo.one (2026-10-26), cap-table.zovo.one (2026-10-26), client-report.zovo.one (2026-10-26), depreciation.zovo.one (2026-10-26), gradebook.zovo.one (2026-10-26). Showing 20 of 101. certspotter lists unexpired certificates only. Use source \"crtsh\" with include_expired for older names."
+  }
+ },
+ "jsonrpc": "2.0",
+ "id": 2
+}

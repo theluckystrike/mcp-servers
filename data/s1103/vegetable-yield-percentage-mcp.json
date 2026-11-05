@@ -1,0 +1,53 @@
+{
+ "repo": "vegetable-yield-percentage-mcp",
+ "repo_url": "https://github.com/theluckystrike/vegetable-yield-percentage-mcp",
+ "hosted_url": "https://vegetable-yield-percentage-mcp.lipmichal.workers.dev/mcp",
+ "worker_version_id": "d0342726-0220-41dd-acf2-13c897bfefde",
+ "rollback": "npx wrangler delete --name vegetable-yield-percentage-mcp (brand-new worker, 1 version)",
+ "registry_name": "io.github.theluckystrike/vegetable-yield-percentage-mcp",
+ "registry_visible": true,
+ "registry_check": "curl -s \"https://registry.modelcontextprotocol.io/v0/servers?search=vegetable-yield-percentage-mcp\" -> 1.0.0",
+ "tools": [
+  "get_vegetable_yield",
+  "calculate_edible_weight",
+  "calculate_amount_to_buy",
+  "list_vegetable_yields"
+ ],
+ "fixtures": 15,
+ "tests_passed": "15/15 (node --test)",
+ "local_stdio_ok": true,
+ "live_calls_ok": {
+  "get_vegetable_yield": true,
+  "calculate_edible_weight": true,
+  "calculate_amount_to_buy": true,
+  "list_vegetable_yields": true
+ },
+ "live_check": "data/s1103/build-gen/bin/live.sh: initialize + tools/list + 1 tools/call per tool on hosted_url, no token; GET / 200",
+ "live_raw_responses": "/Users/mike/mcp-servers/satellites/vegetable-yield-percentage-mcp/.live/ (git-ignored)",
+ "npx_github_ok": true,
+ "pushes": 1,
+ "github": {
+  "visibility": "public",
+  "topics": 14
+ },
+ "npm_ready": true,
+ "npm_ready_detail": "npm view -> E404 (positive control cups-to-grams-mcp -> 1.0.0); npm pack --dry-run 9 files, 26.9 kB; npm publish blocked: npm whoami -> E401 (login expired), OWNER UNLOCK: npm login then npm publish in the repo dir (2FA web approval).",
+ "competitor_field": "gh search repos 2026-11-03: \"vegetable yield mcp\" 0, \"produce yield mcp\" 0, \"edible portion mcp\" 0, \"food yield\" rate-limited (positive control \"food waste mcp\" -> Kristoffer88/salling-food-waste-mcp)",
+ "sources": [
+  "https://www.ars.usda.gov/ARSUserFiles/80400535/DATA/SR/sr28/dnload/sr28asc.zip (sha256 8308fd1d...a70a; FOOD_DES Refuse/Ref_desc, WEIGHT household weights; 305 raw fruits+vegetables, 790 weights)",
+  "https://www.ars.usda.gov/ARSUserFiles/80400535/DATA/SR/sr28/sr28_doc.pdf (refuse = % as purchased; weights are edible portion)",
+  "NIST SP 811 B.9"
+ ],
+ "money_site": "https://ingredientcalculator.com (539 GSC clicks/28d)",
+ "more_pages": [
+  "/vegetable-yield-percentage-calculator"
+ ],
+ "more_links_200": "1/1 with UTM 200",
+ "open_issues": [
+  "SR28 (2015) refuse values are averages; no herbs under spices (parsley, basil), nuts or coconut.",
+  "Some items lack a USDA whole-item weight (butternut squash, asparagus); answers by weight/cups only.",
+  "Partial overlap with cups-to-grams-mcp on cup weights; this server targets yield/trim queries.",
+  "GitHub search indexing lag right after creation; re-check."
+ ],
+ "minutes": 0
+}

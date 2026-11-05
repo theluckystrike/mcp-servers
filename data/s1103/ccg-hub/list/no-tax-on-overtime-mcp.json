@@ -1,0 +1,356 @@
+{
+ "result": {
+  "tools": [
+   {
+    "name": "calculate_overtime_deduction",
+    "title": "No Tax on Overtime deduction",
+    "description": "Calculates the 2025-2028 federal deduction for qualified overtime pay under the One Big Beautiful Bill Act (P.L. 119-21, IRC 225) as IRS Schedule 1-A Part III does: the $12,500 cap ($25,000 joint), then $100 off per full $1,000 of MAGI over $150,000 ($300,000 joint). Only the FLSA half-time premium qualifies, so it converts hourly rate, overtime hours and multiplier (or total overtime pay) to the qualified amount; double time does not double it. Married filing separately gets $0. Figures copied from irs.gov in Oct 2026.",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "filing_status": {
+       "type": "string",
+       "enum": [
+        "single",
+        "married_filing_jointly",
+        "married_filing_separately",
+        "head_of_household",
+        "qualifying_surviving_spouse"
+       ],
+       "description": "Federal filing status. married_filing_separately cannot claim these deductions."
+      },
+      "magi": {
+       "type": "number",
+       "minimum": 0,
+       "maximum": 1000000000,
+       "description": "Modified adjusted gross income in USD: Form 1040 line 11b plus excluded Puerto Rico and foreign income (Schedule 1-A Part I)."
+      },
+      "tax_year": {
+       "type": "integer",
+       "minimum": 2025,
+       "maximum": 2028,
+       "description": "Tax year, 2025 to 2028. The deductions end after 2028."
+      },
+      "qualified_overtime_premium": {
+       "type": "number",
+       "minimum": 0,
+       "maximum": 1000000000,
+       "description": "Qualified overtime compensation already known, e.g. Form W-2 box 12 code TT. Use this OR the hourly fields OR total_overtime_pay."
+      },
+      "hourly_rate": {
+       "type": "number",
+       "minimum": 0,
+       "maximum": 1000000000,
+       "description": "FLSA regular rate of pay per hour, in USD."
+      },
+      "overtime_hours": {
+       "type": "number",
+       "minimum": 0,
+       "maximum": 1000000000,
+       "description": "Overtime hours over 40 in a workweek, summed for the year."
+      },
+      "total_overtime_pay": {
+       "type": "number",
+       "minimum": 0,
+       "maximum": 1000000000,
+       "description": "Total pay for the overtime hours (straight time plus premium)."
+      },
+      "multiplier": {
+       "type": "number",
+       "minimum": 1,
+       "maximum": 5,
+       "description": "Overtime pay multiplier. 1.5 = time-and-a-half (default), 2 = double time."
+      }
+     },
+     "required": [
+      "filing_status",
+      "magi",
+      "tax_year"
+     ],
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false,
+     "title": "No Tax on Overtime deduction"
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "calculate_tips_deduction",
+    "title": "No Tax on Tips deduction",
+    "description": "Calculates the 2025-2028 federal deduction for qualified tips under the One Big Beautiful Bill Act (P.L. 119-21, IRC 224) as IRS Schedule 1-A Part II does: a $25,000 cap per return for every filing status, then $100 off per full $1,000 of MAGI over $150,000 ($300,000 joint). Self-employed tips count only up to that business's net income. Married filing separately gets $0. Figures copied from irs.gov in Oct 2026.",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "filing_status": {
+       "type": "string",
+       "enum": [
+        "single",
+        "married_filing_jointly",
+        "married_filing_separately",
+        "head_of_household",
+        "qualifying_surviving_spouse"
+       ],
+       "description": "Federal filing status. married_filing_separately cannot claim these deductions."
+      },
+      "magi": {
+       "type": "number",
+       "minimum": 0,
+       "maximum": 1000000000,
+       "description": "Modified adjusted gross income in USD: Form 1040 line 11b plus excluded Puerto Rico and foreign income (Schedule 1-A Part I)."
+      },
+      "tax_year": {
+       "type": "integer",
+       "minimum": 2025,
+       "maximum": 2028,
+       "description": "Tax year, 2025 to 2028. The deductions end after 2028."
+      },
+      "employee_tips": {
+       "type": "number",
+       "minimum": 0,
+       "maximum": 1000000000,
+       "description": "Qualified tips received as an employee (2025: Form W-2 box 7 or Form 4137; 2026+: W-2 box 12 code TP)."
+      },
+      "self_employed_tips": {
+       "type": "number",
+       "minimum": 0,
+       "maximum": 1000000000,
+       "description": "Qualified tips received in your own trade or business (Form 1099-NEC, 1099-MISC or 1099-K)."
+      },
+      "self_employed_net_income": {
+       "type": "number",
+       "minimum": -1000000000,
+       "maximum": 1000000000,
+       "description": "Net income of the trade or business where the self-employed tips were earned."
+      }
+     },
+     "required": [
+      "filing_status",
+      "magi",
+      "tax_year"
+     ],
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false,
+     "title": "No Tax on Tips deduction"
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "calculate_senior_deduction",
+    "title": "Enhanced deduction for seniors (65+)",
+    "description": "Calculates the 2025-2028 enhanced deduction for seniors under the One Big Beautiful Bill Act (P.L. 119-21) as IRS Schedule 1-A Part V does: $6,000 per person age 65 or older by Dec 31, each reduced by 6% of MAGI over $75,000 ($150,000 joint). On a joint return the reduction applies to each spouse's $6,000. Married filing separately gets $0. Figures copied from irs.gov in Oct 2026.",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "filing_status": {
+       "type": "string",
+       "enum": [
+        "single",
+        "married_filing_jointly",
+        "married_filing_separately",
+        "head_of_household",
+        "qualifying_surviving_spouse"
+       ],
+       "description": "Federal filing status. married_filing_separately cannot claim these deductions."
+      },
+      "magi": {
+       "type": "number",
+       "minimum": 0,
+       "maximum": 1000000000,
+       "description": "Modified adjusted gross income in USD: Form 1040 line 11b plus excluded Puerto Rico and foreign income (Schedule 1-A Part I)."
+      },
+      "tax_year": {
+       "type": "integer",
+       "minimum": 2025,
+       "maximum": 2028,
+       "description": "Tax year, 2025 to 2028. The deductions end after 2028."
+      },
+      "taxpayer_age_65_or_older": {
+       "type": "boolean",
+       "description": "True if you are 65 or older on Dec 31 of the tax year. Ignored if taxpayer_birth_date is given."
+      },
+      "taxpayer_birth_date": {
+       "type": "string",
+       "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+       "description": "Your birth date, YYYY-MM-DD."
+      },
+      "spouse_age_65_or_older": {
+       "type": "boolean",
+       "description": "Joint returns only. True if your spouse is 65 or older on Dec 31."
+      },
+      "spouse_birth_date": {
+       "type": "string",
+       "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+       "description": "Joint returns only. Spouse birth date, YYYY-MM-DD."
+      }
+     },
+     "required": [
+      "filing_status",
+      "magi",
+      "tax_year"
+     ],
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false,
+     "title": "Enhanced deduction for seniors (65+)"
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "estimate_tax_savings",
+    "title": "Estimate federal tax saved",
+    "description": "Estimates the federal income tax saved in 2025-2028 by the One Big Beautiful Bill Act overtime, tips and senior deductions combined. It applies each deduction's cap and phase-out, then runs taxable income through the IRS bracket tables for that year (Rev. Proc. 2024-40 for 2025, Rev. Proc. 2025-32 for 2026) before and after. 2027-2028 brackets are not published yet, so it uses 2026 and says so. Federal income tax only.",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "filing_status": {
+       "type": "string",
+       "enum": [
+        "single",
+        "married_filing_jointly",
+        "married_filing_separately",
+        "head_of_household",
+        "qualifying_surviving_spouse"
+       ],
+       "description": "Federal filing status. married_filing_separately cannot claim these deductions."
+      },
+      "magi": {
+       "type": "number",
+       "minimum": 0,
+       "maximum": 1000000000,
+       "description": "Modified adjusted gross income in USD: Form 1040 line 11b plus excluded Puerto Rico and foreign income (Schedule 1-A Part I)."
+      },
+      "tax_year": {
+       "type": "integer",
+       "minimum": 2025,
+       "maximum": 2028,
+       "description": "Tax year, 2025 to 2028. The deductions end after 2028."
+      },
+      "taxable_income_before_new_deductions": {
+       "type": "number",
+       "minimum": 0,
+       "maximum": 1000000000,
+       "description": "Taxable income before these deductions. If left out it is approximated as MAGI minus the basic standard deduction."
+      },
+      "qualified_overtime_premium": {
+       "type": "number",
+       "minimum": 0,
+       "maximum": 1000000000,
+       "description": "Qualified overtime premium (W-2 box 12 code TT)."
+      },
+      "hourly_rate": {
+       "type": "number",
+       "minimum": 0,
+       "maximum": 1000000000,
+       "description": "Regular hourly rate, if you want the premium computed from hours."
+      },
+      "overtime_hours": {
+       "type": "number",
+       "minimum": 0,
+       "maximum": 1000000000,
+       "description": "Overtime hours for the year."
+      },
+      "overtime_multiplier": {
+       "type": "number",
+       "minimum": 1,
+       "maximum": 5,
+       "description": "1.5 = time-and-a-half (default)."
+      },
+      "qualified_tips": {
+       "type": "number",
+       "minimum": 0,
+       "maximum": 1000000000,
+       "description": "Qualified tips for the year."
+      },
+      "taxpayer_age_65_or_older": {
+       "type": "boolean",
+       "description": "True if you are 65+ on Dec 31 of the tax year."
+      },
+      "spouse_age_65_or_older": {
+       "type": "boolean",
+       "description": "Joint returns only. True if your spouse is 65+ on Dec 31."
+      }
+     },
+     "required": [
+      "filing_status",
+      "magi",
+      "tax_year"
+     ],
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false,
+     "title": "Estimate federal tax saved"
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "explain_eligibility",
+    "title": "Who qualifies, and how it is reported",
+    "description": "Explains who can claim the 2025-2028 One Big Beautiful Bill Act deductions for overtime, tips and seniors: years covered, excluded filing status (married filing separately), the valid-SSN rule, FLSA overtime eligibility, and exactly where the amounts are reported (Form W-2 box 12 codes TT and TP, Form 1099-NEC/1099-MISC/1099-K boxes, Schedule 1-A lines), including the 2026 change that only W-2 box 12 code TT amounts count. Taken from IRS FAQs and forms fetched Oct 2026.",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "topic": {
+       "type": "string",
+       "enum": [
+        "overtime",
+        "tips",
+        "senior",
+        "all"
+       ],
+       "description": "overtime, tips, senior or all (default all)."
+      },
+      "tax_year": {
+       "type": "integer",
+       "minimum": 2025,
+       "maximum": 2028,
+       "description": "Tax year, 2025 to 2028. The deductions end after 2028."
+      }
+     },
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false,
+     "title": "Who qualifies, and how it is reported"
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   }
+  ]
+ },
+ "jsonrpc": "2.0",
+ "id": 2
+}

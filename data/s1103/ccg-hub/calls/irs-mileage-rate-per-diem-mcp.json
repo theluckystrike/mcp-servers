@@ -1,0 +1,54 @@
+{
+ "result": {
+  "content": [
+   {
+    "type": "text",
+    "text": "IRS standard mileage rates for 2026: Jan. 1 - June 30, 2026: business 72.5 cents, medical/moving 20.5 cents, charity 14 cents (Notice 2026-10, IR-2025-128); July 1 - Dec. 31, 2026: business 76 cents, medical/moving 23.5 cents, charity 14 cents (Announcement 2026-11 (IRB 2026-29)). The rate changed mid-year, so split miles by date. Depreciation part of the business rate: 35 cents a mile.\n\nRates from IRS and GSA publications. General information, not tax advice."
+   },
+   {
+    "type": "text",
+    "text": "{\n  \"query\": \"2026\",\n  \"periods\": [\n    {\n      \"start\": \"2026-01-01\",\n      \"end\": \"2026-06-30\",\n      \"label\": \"Jan. 1 - June 30, 2026\",\n      \"business\": 72.5,\n      \"charity\": 14,\n      \"medical\": 20.5,\n      \"moving\": 20.5,\n      \"source\": \"Notice 2026-10, IR-2025-128\",\n      \"source_url\": \"https://www.irs.gov/pub/irs-drop/n-26-10.pdf\"\n    },\n    {\n      \"start\": \"2026-07-01\",\n      \"end\": \"2026-12-31\",\n      \"label\": \"July 1 - Dec. 31, 2026\",\n      \"business\": 76,\n      \"charity\": 14,\n      \"medical\": 23.5,\n      \"moving\": 23.5,\n      \"source\": \"Announcement 2026-11 (IRB 2026-29)\",\n      \"source_url\": \"https://www.irs.gov/irb/2026-29_irb\"\n    }\n  ],\n  \"depreciation_cents_per_mile\": 35,\n  \"max_auto_value\": {\n    \"amount\": 61700,\n    \"source\": \"https://www.irs.gov/pub/irs-drop/n-26-10.pdf\"\n  },\n  \"mid_year_change\": true,\n  \"summary\": \"IRS standard mileage rates for 2026: Jan. 1 - June 30, 2026: business 72.5 cents, medical/moving 20.5 cents, charity 14 cents (Notice 2026-10, IR-2025-128); July 1 - Dec. 31, 2026: business 76 cents, medical/moving 23.5 cents, charity 14 cents (Announcement 2026-11 (IRB 2026-29)). The rate changed mid-year, so split miles by date. Depreciation part of the business rate: 35 cents a mile.\",\n  \"as_of\": \"2026-11-03\",\n  \"source\": \"https://www.irs.gov/pub/irs-drop/n-26-10.pdf ; https://www.irs.gov/irb/2026-29_irb ; https://www.irs.gov/tax-professionals/standard-mileage-rates\",\n  \"more\": \"https://taxbreakcalc.com/self-employed-set-aside-calculator/?utm_source=mcp&utm_medium=irs-mileage-rate-per-diem-mcp\",\n  \"disclaimer\": \"Rates from IRS and GSA publications. General information, not tax advice.\"\n}"
+   }
+  ],
+  "structuredContent": {
+   "query": "2026",
+   "periods": [
+    {
+     "start": "2026-01-01",
+     "end": "2026-06-30",
+     "label": "Jan. 1 - June 30, 2026",
+     "business": 72.5,
+     "charity": 14,
+     "medical": 20.5,
+     "moving": 20.5,
+     "source": "Notice 2026-10, IR-2025-128",
+     "source_url": "https://www.irs.gov/pub/irs-drop/n-26-10.pdf"
+    },
+    {
+     "start": "2026-07-01",
+     "end": "2026-12-31",
+     "label": "July 1 - Dec. 31, 2026",
+     "business": 76,
+     "charity": 14,
+     "medical": 23.5,
+     "moving": 23.5,
+     "source": "Announcement 2026-11 (IRB 2026-29)",
+     "source_url": "https://www.irs.gov/irb/2026-29_irb"
+    }
+   ],
+   "depreciation_cents_per_mile": 35,
+   "max_auto_value": {
+    "amount": 61700,
+    "source": "https://www.irs.gov/pub/irs-drop/n-26-10.pdf"
+   },
+   "mid_year_change": true,
+   "summary": "IRS standard mileage rates for 2026: Jan. 1 - June 30, 2026: business 72.5 cents, medical/moving 20.5 cents, charity 14 cents (Notice 2026-10, IR-2025-128); July 1 - Dec. 31, 2026: business 76 cents, medical/moving 23.5 cents, charity 14 cents (Announcement 2026-11 (IRB 2026-29)). The rate changed mid-year, so split miles by date. Depreciation part of the business rate: 35 cents a mile.",
+   "as_of": "2026-11-03",
+   "source": "https://www.irs.gov/pub/irs-drop/n-26-10.pdf ; https://www.irs.gov/irb/2026-29_irb ; https://www.irs.gov/tax-professionals/standard-mileage-rates",
+   "more": "https://taxbreakcalc.com/self-employed-set-aside-calculator/?utm_source=mcp&utm_medium=irs-mileage-rate-per-diem-mcp",
+   "disclaimer": "Rates from IRS and GSA publications. General information, not tax advice."
+  }
+ },
+ "jsonrpc": "2.0",
+ "id": 2
+}

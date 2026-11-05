@@ -1,0 +1,54 @@
+{
+ "result": {
+  "content": [
+   {
+    "type": "text",
+    "text": "2026 Section 179 limit $2,560,000. Property cost $180,000 is under the $4,090,000 threshold, so the full limit applies. Elected $180,000. Deduction this year $180,000.\n\nThis is an estimate, not tax advice. Check Form 4562, its instructions and Pub. 946, or ask a tax professional before you file."
+   },
+   {
+    "type": "text",
+    "text": "{\n  \"tax_year\": 2026,\n  \"maximum_deduction\": 2560000,\n  \"phase_out_threshold\": 4090000,\n  \"total_section_179_property_cost\": 180000,\n  \"reduction\": 0,\n  \"dollar_limit_after_phase_out\": 2560000,\n  \"fully_phased_out_at\": 6650000,\n  \"elected_cost\": 180000,\n  \"tentative_deduction\": 180000,\n  \"business_income_limit\": 250000,\n  \"deduction\": 180000,\n  \"carryover_to_next_year\": 0,\n  \"remaining_basis_for_bonus_and_macrs\": 0,\n  \"form_4562_lines\": {\n    \"line1\": 2560000,\n    \"line2\": 180000,\n    \"line3\": 4090000,\n    \"line4\": 0,\n    \"line5\": 2560000,\n    \"line9_tentative\": 180000,\n    \"line11_business_income_limit\": 250000,\n    \"line12\": 180000,\n    \"line13_carryover\": 0\n  },\n  \"notes\": [\n    \"The reduction is dollar for dollar: every dollar of section 179 property placed in service above the threshold cuts the limit by one dollar.\",\n    \"Married filing jointly counts as one taxpayer. Married filing separately splits the limit 50/50 unless both elect otherwise.\",\n    \"The business income limit is taxable income from the active conduct of any trade or business, including wages. A disallowed amount carries forward.\",\n    \"A heavy SUV (over 6,000 and up to 14,000 lb GVWR) is capped separately; use get_vehicle_depreciation_limits.\",\n    \"Listed property (most vehicles) qualifies only if business use is more than 50%.\"\n  ],\n  \"summary\": \"2026 Section 179 limit $2,560,000. Property cost $180,000 is under the $4,090,000 threshold, so the full limit applies. Elected $180,000. Deduction this year $180,000.\",\n  \"as_of\": \"2026-11-02\",\n  \"source\": \"https://www.irs.gov/pub/irs-drop/rp-25-32.pdf\",\n  \"more\": \"https://assetloancalculator.com/section-179-deduction-calculator/?utm_source=mcp&utm_medium=section-179-deduction-calculator-mcp\",\n  \"disclaimer\": \"This is an estimate, not tax advice. Check Form 4562, its instructions and Pub. 946, or ask a tax professional before you file.\"\n}"
+   }
+  ],
+  "structuredContent": {
+   "tax_year": 2026,
+   "maximum_deduction": 2560000,
+   "phase_out_threshold": 4090000,
+   "total_section_179_property_cost": 180000,
+   "reduction": 0,
+   "dollar_limit_after_phase_out": 2560000,
+   "fully_phased_out_at": 6650000,
+   "elected_cost": 180000,
+   "tentative_deduction": 180000,
+   "business_income_limit": 250000,
+   "deduction": 180000,
+   "carryover_to_next_year": 0,
+   "remaining_basis_for_bonus_and_macrs": 0,
+   "form_4562_lines": {
+    "line1": 2560000,
+    "line2": 180000,
+    "line3": 4090000,
+    "line4": 0,
+    "line5": 2560000,
+    "line9_tentative": 180000,
+    "line11_business_income_limit": 250000,
+    "line12": 180000,
+    "line13_carryover": 0
+   },
+   "notes": [
+    "The reduction is dollar for dollar: every dollar of section 179 property placed in service above the threshold cuts the limit by one dollar.",
+    "Married filing jointly counts as one taxpayer. Married filing separately splits the limit 50/50 unless both elect otherwise.",
+    "The business income limit is taxable income from the active conduct of any trade or business, including wages. A disallowed amount carries forward.",
+    "A heavy SUV (over 6,000 and up to 14,000 lb GVWR) is capped separately; use get_vehicle_depreciation_limits.",
+    "Listed property (most vehicles) qualifies only if business use is more than 50%."
+   ],
+   "summary": "2026 Section 179 limit $2,560,000. Property cost $180,000 is under the $4,090,000 threshold, so the full limit applies. Elected $180,000. Deduction this year $180,000.",
+   "as_of": "2026-11-02",
+   "source": "https://www.irs.gov/pub/irs-drop/rp-25-32.pdf",
+   "more": "https://assetloancalculator.com/section-179-deduction-calculator/?utm_source=mcp&utm_medium=section-179-deduction-calculator-mcp",
+   "disclaimer": "This is an estimate, not tax advice. Check Form 4562, its instructions and Pub. 946, or ask a tax professional before you file."
+  }
+ },
+ "jsonrpc": "2.0",
+ "id": 2
+}

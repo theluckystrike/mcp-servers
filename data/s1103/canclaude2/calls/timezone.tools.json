@@ -1,0 +1,553 @@
+{
+ "jsonrpc": "2.0",
+ "id": 2,
+ "result": {
+  "tools": [
+   {
+    "name": "license_status",
+    "title": "License status",
+    "description": "Report this endpoint's licence state for your token as JSON: the product, the tier free or pro, why it is not Pro, and the checkout URL. Call it to explain a free-tier refusal. No arguments, nothing changes.",
+    "inputSchema": {
+     "$schema": "http://json-schema.org/draft-07/schema#",
+     "type": "object",
+     "properties": {}
+    },
+    "annotations": {
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "license_activate",
+    "title": "Activate license",
+    "description": "Turn Pro on for this connection with key, an MCPL1.<payload>.<signature> issued at checkout for this server or the bundle. Data under your token stays; a wrong or expired key changes nothing. license_status confirms it.",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "key": {
+       "type": "string",
+       "description": "License key from checkout, MCPL1.<payload>.<signature>"
+      }
+     },
+     "required": [
+      "key"
+     ],
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "readOnlyHint": false,
+     "destructiveHint": false,
+     "idempotentHint": false,
+     "openWorldHint": false
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "now",
+    "title": "Current time in zones",
+    "description": "The current time in one or more places, each with the zone it resolved to and the local date, time and offset, under one UTC instant. Accepts IANA zones, cities, countries and abbreviations.",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "zones": {
+       "type": "array",
+       "items": {
+        "type": "string",
+        "maxLength": 100
+       },
+       "maxItems": 50,
+       "description": "Places or IANA zones, e.g. ['Warsaw','New York','India']"
+      }
+     },
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "readOnlyHint": false,
+     "destructiveHint": false,
+     "idempotentHint": false,
+     "openWorldHint": false
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "convert_time",
+    "title": "Convert a time between zones",
+    "description": "Convert one time from from_zone into every zone in to_zones, marking any day change, plus the UTC instant. The time is wall-clock in from_zone unless it carries an offset or a trailing Z. '3pm tomorrow' works.",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "time": {
+       "type": "string",
+       "maxLength": 100,
+       "description": "'2026-09-10 15:00', '2026-09-10T15:00:00Z', '3pm tomorrow', 'now'"
+      },
+      "from_zone": {
+       "type": "string",
+       "maxLength": 100,
+       "description": "Place the time is given in, e.g. 'Warsaw' or 'Europe/Warsaw'"
+      },
+      "to_zones": {
+       "type": "array",
+       "items": {
+        "type": "string",
+        "maxLength": 100
+       },
+       "minItems": 1,
+       "maxItems": 50,
+       "description": "Places to convert into"
+      },
+      "gap": {
+       "type": "string",
+       "enum": [
+        "forward",
+        "backward"
+       ],
+       "description": "What to do with a time that does not exist because the clocks jumped forward: 'forward' takes the time after the jump, 'backward' the time before it. Without this, such a time is refused."
+      },
+      "fold": {
+       "type": "string",
+       "enum": [
+        "first",
+        "second"
+       ],
+       "description": "Which occurrence of a time that happens twice because the clocks went back. Default 'first'."
+      }
+     },
+     "required": [
+      "time",
+      "from_zone",
+      "to_zones"
+     ],
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "readOnlyHint": false,
+     "destructiveHint": false,
+     "idempotentHint": false,
+     "openWorldHint": false
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "overlap",
+    "title": "Daily working-hours overlap",
+    "description": "The window each day when every listed place is inside working hours. Computed on a real date, so a DST week that widens or narrows the overlap is reflected.",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "zones": {
+       "type": "array",
+       "items": {
+        "type": "string",
+        "maxLength": 100
+       },
+       "minItems": 2,
+       "maxItems": 50,
+       "description": "Places, e.g. ['Warsaw','New York','Bangalore']"
+      },
+      "work_start": {
+       "type": "string",
+       "maxLength": 16,
+       "description": "Local working day start, default 09:00"
+      },
+      "work_end": {
+       "type": "string",
+       "maxLength": 16,
+       "description": "Local working day end, default 17:00"
+      },
+      "date": {
+       "type": "string",
+       "maxLength": 100,
+       "description": "Date to compute on, YYYY-MM-DD, default today"
+      }
+     },
+     "required": [
+      "zones"
+     ],
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "readOnlyHint": false,
+     "destructiveHint": false,
+     "idempotentHint": false,
+     "openWorldHint": false
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "find_meeting_slots",
+    "title": "Find meeting slots",
+    "description": "Rank the times when every participant is inside their own working hours. Returns each slot as a UTC instant with the local time for every participant and a fairness score, best first.",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "participants": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "properties": {
+         "name": {
+          "type": "string",
+          "maxLength": 100,
+          "minLength": 1,
+          "description": "Person or client name. A name you already saved with contacts_set needs nothing else: their zone and working hours are read from the contact"
+         },
+         "zone": {
+          "type": "string",
+          "maxLength": 100,
+          "description": "Their place or IANA zone. Optional: leave it out for a saved contact, and leave it out for YOURSELF - your own zone comes from your shared business profile, so you never have to be asked for it"
+         },
+         "work_start": {
+          "type": "string",
+          "maxLength": 16,
+          "description": "Their local day start, default 09:00 or the saved contact's"
+         },
+         "work_end": {
+          "type": "string",
+          "maxLength": 16,
+          "description": "Their local day end, default 17:00 or the saved contact's"
+         }
+        },
+        "required": [
+         "name"
+        ],
+        "additionalProperties": false
+       },
+       "minItems": 1,
+       "maxItems": 100,
+       "description": "Who has to attend. A zone is OPTIONAL per person: a saved contact supplies their own, and anyone left without one (you, typically) takes the timezone on your shared business profile, so never ask the caller what timezone they are in - include yourself by name and let the server resolve it. Every slot returned is inside all of their hours; weekends in the first participant's zone are skipped. Free tier: up to 3 participants"
+      },
+      "duration_minutes": {
+       "type": "integer",
+       "exclusiveMinimum": 0,
+       "maximum": 1440,
+       "description": "Meeting length in minutes, default 60, at most 1440"
+      },
+      "days": {
+       "type": "integer",
+       "exclusiveMinimum": 0,
+       "maximum": 366,
+       "description": "How many days ahead to search, default 5, at most 366. Free tier: a search longer than 5 days is shortened to 5, not refused"
+      },
+      "earliest_date": {
+       "type": "string",
+       "maxLength": 100,
+       "description": "First date to consider, YYYY-MM-DD, default today"
+      },
+      "limit": {
+       "type": "integer",
+       "exclusiveMinimum": 0,
+       "maximum": 100,
+       "description": "How many slots to return, default 8. Slots are ranked by fairness: the score is the WORST participant's distance in hours from 13:00 local, so a slot that is 07:00 for one person never outranks one that suits everybody"
+      },
+      "recurring": {
+       "type": "boolean",
+       "description": "Pro: also report the weekly recurring times that work on every searched weekday"
+      }
+     },
+     "required": [
+      "participants"
+     ],
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "readOnlyHint": false,
+     "destructiveHint": false,
+     "idempotentHint": false,
+     "openWorldHint": false
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "dst_changes",
+    "title": "Daylight-saving changes",
+    "description": "The clock changes in a place for a year, with the exact UTC instant and the offset before and after. Use it to check whether a recurring call moves for one of you in March or October.",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "zone": {
+       "type": "string",
+       "maxLength": 100,
+       "description": "Place or IANA zone"
+      },
+      "year": {
+       "type": "integer",
+       "minimum": 1850,
+       "maximum": 2200,
+       "description": "Calendar year, default this year"
+      }
+     },
+     "required": [
+      "zone"
+     ],
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "readOnlyHint": false,
+     "destructiveHint": false,
+     "idempotentHint": false,
+     "openWorldHint": false
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "business_days",
+    "title": "Count business days",
+    "description": "Count business days between two dates in a place, inclusive, with the calendar total and the weekend and holiday counts. It has NO holiday calendar: without holidays, only weekends are excluded.",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "from": {
+       "type": "string",
+       "maxLength": 100,
+       "description": "Start date, YYYY-MM-DD (inclusive). A date that does not exist, such as 2026-02-30, is refused, never rolled forward"
+      },
+      "to": {
+       "type": "string",
+       "maxLength": 100,
+       "description": "End date, YYYY-MM-DD (inclusive)"
+      },
+      "zone": {
+       "type": "string",
+       "maxLength": 100,
+       "description": "Place whose calendar to use"
+      },
+      "holidays": {
+       "type": "array",
+       "items": {
+        "type": "string",
+        "maxLength": 32
+       },
+       "maxItems": 400,
+       "description": "Dates to exclude, strict YYYY-MM-DD. This tool has no national holiday calendar: unless you pass holidays here only weekends are excluded, so do not report the answer as a public-holiday-adjusted count"
+      }
+     },
+     "required": [
+      "from",
+      "to",
+      "zone"
+     ],
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "readOnlyHint": false,
+     "destructiveHint": false,
+     "idempotentHint": false,
+     "openWorldHint": false
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "contacts_set",
+    "title": "Save a contact's zone",
+    "description": "Save one person's zone and working hours so later calls can name them. Returns the resolved zone and their local time now. Saving the same name REPLACES that contact and says so. Free: 5 contacts.",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "name": {
+       "type": "string",
+       "maxLength": 100,
+       "minLength": 1,
+       "description": "Their name"
+      },
+      "zone": {
+       "type": "string",
+       "maxLength": 100,
+       "minLength": 1,
+       "description": "Their place or IANA zone"
+      },
+      "work_start": {
+       "type": "string",
+       "maxLength": 16,
+       "description": "Local day start, default 09:00"
+      },
+      "work_end": {
+       "type": "string",
+       "maxLength": 16,
+       "description": "Local day end, default 17:00"
+      }
+     },
+     "required": [
+      "name",
+      "zone"
+     ],
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "readOnlyHint": false,
+     "destructiveHint": false,
+     "idempotentHint": false,
+     "openWorldHint": false
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "contacts_list",
+    "title": "List saved contacts",
+    "description": "List saved contacts with their zone, local time now, working hours and whether they are inside them; weekends count as outside. It also prints YOUR zone from the shared business profile.",
+    "inputSchema": {
+     "$schema": "http://json-schema.org/draft-07/schema#",
+     "type": "object",
+     "properties": {}
+    },
+    "annotations": {
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "ics_create",
+    "title": "Write a calendar invite",
+    "description": "Call this tool to write a .ics for one meeting and return the path plus the start in UTC and in your zone. Times are stored in UTC so it lands correctly in any client. Free: 3 files a month.",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "title": {
+       "type": "string",
+       "maxLength": 200,
+       "minLength": 1,
+       "description": "Event title"
+      },
+      "start": {
+       "type": "string",
+       "maxLength": 100,
+       "description": "Start time, read in `zone` unless it carries an offset"
+      },
+      "zone": {
+       "type": "string",
+       "maxLength": 100,
+       "description": "Place the start time is given in"
+      },
+      "duration_minutes": {
+       "type": "integer",
+       "exclusiveMinimum": 0,
+       "maximum": 1440,
+       "description": "Length in minutes, at most 1440"
+      },
+      "attendees": {
+       "type": "array",
+       "items": {
+        "anyOf": [
+         {
+          "type": "string",
+          "maxLength": 200
+         },
+         {
+          "type": "object",
+          "properties": {
+           "name": {
+            "type": "string",
+            "maxLength": 200,
+            "description": "Display name"
+           },
+           "email": {
+            "type": "string",
+            "maxLength": 200,
+            "description": "Their email address"
+           }
+          },
+          "additionalProperties": false
+         }
+        ]
+       },
+       "maxItems": 100,
+       "description": "Attendees. An entry with an email is invited (ATTENDEE:mailto:...); a name with no email is listed in the description instead, because a calendar cannot invite a name."
+      },
+      "organizer_email": {
+       "type": "string",
+       "maxLength": 200,
+       "description": "Your email address, written as the ORGANIZER so replies have somewhere to go. Leave it out and your shared business profile's email is used; with neither, the ORGANIZER line is omitted rather than filled with an address you improvised"
+      },
+      "organizer_name": {
+       "type": "string",
+       "maxLength": 200,
+       "description": "Your display name for the ORGANIZER line"
+      },
+      "description": {
+       "type": "string",
+       "maxLength": 5000,
+       "description": "Body text"
+      },
+      "location": {
+       "type": "string",
+       "maxLength": 200,
+       "description": "Where, or a meeting link"
+      },
+      "out_path": {
+       "type": "string",
+       "maxLength": 4096,
+       "description": "Name for the downloaded file, default meeting.ics"
+      },
+      "gap": {
+       "type": "string",
+       "enum": [
+        "forward",
+        "backward"
+       ],
+       "description": "What to do with a time that does not exist because the clocks jumped forward: 'forward' takes the time after the jump, 'backward' the time before it. Without this, such a time is refused."
+      },
+      "fold": {
+       "type": "string",
+       "enum": [
+        "first",
+        "second"
+       ],
+       "description": "Which occurrence of a time that happens twice because the clocks went back. Default 'first'."
+      }
+     },
+     "required": [
+      "title",
+      "start",
+      "zone",
+      "duration_minutes"
+     ],
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "readOnlyHint": false,
+     "destructiveHint": false,
+     "idempotentHint": false,
+     "openWorldHint": false
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   }
+  ]
+ }
+}

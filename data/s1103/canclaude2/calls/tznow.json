@@ -1,0 +1,16 @@
+{
+ "result": {
+  "content": [
+   {
+    "type": "text",
+    "text": "Now (2026-11-03T08:23:29.200Z UTC)\nTokyo -> Asia/Tokyo: 2026-11-03 17:23 Tue (GMT+9, UTC+09:00)\nLondon -> Europe/London: 2026-11-03 08:23 Tue (GMT, UTC+00:00)\nNew York -> America/New_York: 2026-11-03 03:23 Tue (EST, UTC-05:00)"
+   },
+   {
+    "type": "text",
+    "text": "Free tier: 600 calls/hour, 30-day retention. Pro ($19/server or $39 for all 49, one-time): https://mcp.zovo.one/buy/bundle?tenant=anon_955ffdc79c3919c738b03f200029fbd3&src=timezone.success"
+   }
+  ]
+ },
+ "jsonrpc": "2.0",
+ "id": 2
+}

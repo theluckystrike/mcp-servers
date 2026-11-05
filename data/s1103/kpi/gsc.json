@@ -1,0 +1,1288 @@
+{
+ "sites": [
+  {
+   "site": "sc-domain:seeninaianswers.com",
+   "perm": "siteOwner",
+   "final_28d": {
+    "clicks": 0,
+    "impressions": 31
+   },
+   "all_28d_to_today": {
+    "clicks": 0,
+    "impressions": 33
+   }
+  },
+  {
+   "site": "sc-domain:aiwebsitepipeline.com",
+   "perm": "siteOwner",
+   "final_28d": {
+    "clicks": 2,
+    "impressions": 2693
+   },
+   "all_28d_to_today": {
+    "clicks": 2,
+    "impressions": 2685
+   }
+  },
+  {
+   "site": "sc-domain:recipetool.net",
+   "perm": "siteOwner",
+   "final_28d": {
+    "clicks": 356,
+    "impressions": 19607
+   },
+   "all_28d_to_today": {
+    "clicks": 358,
+    "impressions": 19782
+   }
+  },
+  {
+   "site": "sc-domain:mcpstamp.com",
+   "perm": "siteOwner",
+   "final_28d": {
+    "clicks": 0,
+    "impressions": 55
+   },
+   "all_28d_to_today": {
+    "clicks": 0,
+    "impressions": 200
+   }
+  },
+  {
+   "site": "sc-domain:claudflow.com",
+   "perm": "siteOwner",
+   "final_28d": {
+    "clicks": 37,
+    "impressions": 1188
+   },
+   "all_28d_to_today": {
+    "clicks": 39,
+    "impressions": 1197
+   }
+  },
+  {
+   "site": "https://toolroutine.com/",
+   "perm": "siteOwner",
+   "final_28d": {
+    "clicks": 0,
+    "impressions": 388
+   },
+   "all_28d_to_today": {
+    "clicks": 0,
+    "impressions": 389
+   }
+  },
+  {
+   "site": "sc-domain:bugbountyreality.com",
+   "perm": "siteOwner",
+   "final_28d": {
+    "clicks": 11,
+    "impressions": 5154
+   },
+   "all_28d_to_today": {
+    "clicks": 11,
+    "impressions": 4679
+   }
+  },
+  {
+   "site": "https://tgtools-site.lipmichal.workers.dev/",
+   "perm": "siteOwner",
+   "final_28d": {
+    "clicks": 0,
+    "impressions": 9
+   },
+   "all_28d_to_today": {
+    "clicks": 0,
+    "impressions": 9
+   }
+  },
+  {
+   "site": "sc-domain:ml0x.com",
+   "perm": "siteOwner",
+   "final_28d": {
+    "clicks": 40,
+    "impressions": 1696
+   },
+   "all_28d_to_today": {
+    "clicks": 34,
+    "impressions": 1713
+   }
+  },
+  {
+   "site": "sc-domain:ml3x.com",
+   "perm": "siteOwner",
+   "final_28d": {
+    "clicks": 40,
+    "impressions": 194
+   },
+   "all_28d_to_today": {
+    "clicks": 52,
+    "impressions": 222
+   }
+  },
+  {
+   "site": "sc-domain:toolroutine.com",
+   "perm": "siteOwner",
+   "final_28d": {
+    "clicks": 0,
+    "impressions": 388
+   },
+   "all_28d_to_today": {
+    "clicks": 0,
+    "impressions": 389
+   }
+  },
+  {
+   "site": "sc-domain:lochbot.com",
+   "perm": "siteOwner",
+   "final_28d": {
+    "clicks": 2,
+    "impressions": 66
+   },
+   "all_28d_to_today": {
+    "clicks": 2,
+    "impressions": 65
+   }
+  },
+  {
+   "site": "https://securetoolsguide.com/",
+   "perm": "siteOwner",
+   "final_28d": {
+    "clicks": 0,
+    "impressions": 18
+   },
+   "all_28d_to_today": {
+    "clicks": 0,
+    "impressions": 18
+   }
+  },
+  {
+   "site": "sc-domain:krzen.com",
+   "perm": "siteOwner",
+   "final_28d": {
+    "clicks": 20,
+    "impressions": 508
+   },
+   "all_28d_to_today": {
+    "clicks": 17,
+    "impressions": 518
+   }
+  },
+  {
+   "site": "sc-domain:belikenative.com",
+   "perm": "siteFullUser",
+   "final_28d": {
+    "clicks": 698,
+    "impressions": 237231
+   },
+   "all_28d_to_today": {
+    "clicks": 675,
+    "impressions": 236932
+   }
+  },
+  {
+   "site": "https://chrometipsguide.com/",
+   "perm": "siteOwner",
+   "final_28d": {
+    "clicks": 0,
+    "impressions": 13
+   },
+   "all_28d_to_today": {
+    "clicks": 0,
+    "impressions": 10
+   }
+  },
+  {
+   "site": "sc-domain:dismissticket.com",
+   "perm": "siteOwner",
+   "final_28d": {
+    "clicks": 1,
+    "impressions": 441
+   },
+   "all_28d_to_today": {
+    "clicks": 1,
+    "impressions": 418
+   }
+  },
+  {
+   "site": "https://claudhq.com/",
+   "perm": "siteOwner",
+   "final_28d": {
+    "clicks": 3,
+    "impressions": 175
+   },
+   "all_28d_to_today": {
+    "clicks": 3,
+    "impressions": 187
+   }
+  },
+  {
+   "site": "sc-domain:boldtake.io",
+   "perm": "siteUnverifiedUser",
+   "final_28d": {
+    "error": 403,
+    "body": "{\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"User does not have sufficient permission for site 'sc-domain:boldtake.io'. See also: https://support.g"
+   },
+   "all_28d_to_today": {
+    "error": 403,
+    "body": "{\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"User does not have sufficient permission for site 'sc-domain:boldtake.io'. See also: https://support.g"
+   }
+  },
+  {
+   "site": "https://goldgramprice.com/",
+   "perm": "siteFullUser",
+   "final_28d": {
+    "clicks": 241,
+    "impressions": 62313
+   },
+   "all_28d_to_today": {
+    "clicks": 255,
+    "impressions": 68226
+   }
+  },
+  {
+   "site": "https://makeroll.com/",
+   "perm": "siteOwner",
+   "final_28d": {
+    "clicks": 36,
+    "impressions": 273
+   },
+   "all_28d_to_today": {
+    "clicks": 32,
+    "impressions": 264
+   }
+  },
+  {
+   "site": "https://worthmyclaim.com/",
+   "perm": "siteRestrictedUser",
+   "final_28d": {
+    "clicks": 1,
+    "impressions": 1032
+   },
+   "all_28d_to_today": {
+    "clicks": 1,
+    "impressions": 1009
+   }
+  },
+  {
+   "site": "https://taxbreakcalc.com/",
+   "perm": "siteOwner",
+   "final_28d": {
+    "clicks": 87,
+    "impressions": 13485
+   },
+   "all_28d_to_today": {
+    "clicks": 89,
+    "impressions": 13785
+   }
+  },
+  {
+   "site": "https://toolsthatrank.com/",
+   "perm": "siteOwner",
+   "final_28d": {
+    "clicks": 0,
+    "impressions": 320
+   },
+   "all_28d_to_today": {
+    "clicks": 0,
+    "impressions": 312
+   }
+  },
+  {
+   "site": "https://deepvalueradar.com/",
+   "perm": "siteOwner",
+   "final_28d": {
+    "clicks": 0,
+    "impressions": 116
+   },
+   "all_28d_to_today": {
+    "clicks": 0,
+    "impressions": 155
+   }
+  },
+  {
+   "site": "https://bugbountyreality.com/",
+   "perm": "siteOwner",
+   "final_28d": {
+    "clicks": 11,
+    "impressions": 5154
+   },
+   "all_28d_to_today": {
+    "clicks": 11,
+    "impressions": 4679
+   }
+  },
+  {
+   "site": "sc-domain:lockml.com",
+   "perm": "siteOwner",
+   "final_28d": {
+    "clicks": 0,
+    "impressions": 252
+   },
+   "all_28d_to_today": {
+    "clicks": 0,
+    "impressions": 238
+   }
+  },
+  {
+   "site": "https://statewage.com/",
+   "perm": "siteFullUser",
+   "final_28d": {
+    "clicks": 21,
+    "impressions": 20140
+   },
+   "all_28d_to_today": {
+    "clicks": 22,
+    "impressions": 20473
+   }
+  },
+  {
+   "site": "https://handsofflinks.com/",
+   "perm": "siteOwner",
+   "final_28d": {
+    "clicks": 0,
+    "impressions": 776
+   },
+   "all_28d_to_today": {
+    "clicks": 0,
+    "impressions": 858
+   }
+  },
+  {
+   "site": "sc-domain:gen8x.com",
+   "perm": "siteOwner",
+   "final_28d": {
+    "clicks": 1,
+    "impressions": 469
+   },
+   "all_28d_to_today": {
+    "clicks": 1,
+    "impressions": 541
+   }
+  },
+  {
+   "site": "sc-domain:writingassistant.org",
+   "perm": "siteOwner",
+   "final_28d": {
+    "clicks": 0,
+    "impressions": 637
+   },
+   "all_28d_to_today": {
+    "clicks": 0,
+    "impressions": 657
+   }
+  },
+  {
+   "site": "https://bestremotetools.com/",
+   "perm": "siteOwner",
+   "final_28d": {
+    "clicks": 0,
+    "impressions": 13
+   },
+   "all_28d_to_today": {
+    "clicks": 0,
+    "impressions": 13
+   }
+  },
+  {
+   "site": "sc-domain:claudkit.com",
+   "perm": "siteOwner",
+   "final_28d": {
+    "clicks": 1,
+    "impressions": 11
+   },
+   "all_28d_to_today": {
+    "clicks": 2,
+    "impressions": 11
+   }
+  },
+  {
+   "site": "sc-domain:b2berp.com",
+   "perm": "siteOwner",
+   "final_28d": {
+    "clicks": 2,
+    "impressions": 844
+   },
+   "all_28d_to_today": {
+    "clicks": 2,
+    "impressions": 802
+   }
+  },
+  {
+   "site": "sc-domain:deepvalueradar.com",
+   "perm": "siteRestrictedUser",
+   "final_28d": {
+    "clicks": 0,
+    "impressions": 535
+   },
+   "all_28d_to_today": {
+    "clicks": 0,
+    "impressions": 565
+   }
+  },
+  {
+   "site": "sc-domain:enhio.com",
+   "perm": "siteOwner",
+   "final_28d": {
+    "clicks": 4,
+    "impressions": 1635
+   },
+   "all_28d_to_today": {
+    "clicks": 5,
+    "impressions": 1707
+   }
+  },
+  {
+   "site": "sc-domain:heytensor.com",
+   "perm": "siteOwner",
+   "final_28d": {
+    "clicks": 0,
+    "impressions": 137
+   },
+   "all_28d_to_today": {
+    "clicks": 0,
+    "impressions": 128
+   }
+  },
+  {
+   "site": "https://recipetool.net/",
+   "perm": "siteOwner",
+   "final_28d": {
+    "clicks": 356,
+    "impressions": 19606
+   },
+   "all_28d_to_today": {
+    "clicks": 358,
+    "impressions": 19781
+   }
+  },
+  {
+   "site": "sc-domain:claudhq.com",
+   "perm": "siteOwner",
+   "final_28d": {
+    "clicks": 3,
+    "impressions": 175
+   },
+   "all_28d_to_today": {
+    "clicks": 3,
+    "impressions": 187
+   }
+  },
+  {
+   "site": "sc-domain:bestchromeextensions.com",
+   "perm": "siteOwner",
+   "final_28d": {
+    "clicks": 0,
+    "impressions": 6
+   },
+   "all_28d_to_today": {
+    "clicks": 0,
+    "impressions": 6
+   }
+  },
+  {
+   "site": "sc-domain:viryd.com",
+   "perm": "siteOwner",
+   "final_28d": {
+    "clicks": 0,
+    "impressions": 7
+   },
+   "all_28d_to_today": {
+    "clicks": 0,
+    "impressions": 7
+   }
+  },
+  {
+   "site": "sc-domain:pictureeditor.net",
+   "perm": "siteOwner",
+   "final_28d": {
+    "clicks": 0,
+    "impressions": 168
+   },
+   "all_28d_to_today": {
+    "clicks": 0,
+    "impressions": 169
+   }
+  },
+  {
+   "site": "sc-domain:grammarhelper.org",
+   "perm": "siteOwner",
+   "final_28d": {
+    "clicks": 7,
+    "impressions": 248
+   },
+   "all_28d_to_today": {
+    "clicks": 7,
+    "impressions": 237
+   }
+  },
+  {
+   "site": "sc-domain:kickllm.com",
+   "perm": "siteOwner",
+   "final_28d": {
+    "clicks": 13,
+    "impressions": 2594
+   },
+   "all_28d_to_today": {
+    "clicks": 11,
+    "impressions": 2558
+   }
+  },
+  {
+   "site": "sc-domain:paraphrasetool.org",
+   "perm": "siteOwner",
+   "final_28d": {
+    "clicks": 7,
+    "impressions": 468
+   },
+   "all_28d_to_today": {
+    "clicks": 7,
+    "impressions": 440
+   }
+  },
+  {
+   "site": "sc-domain:epochpilot.com",
+   "perm": "siteOwner",
+   "final_28d": {
+    "clicks": 1,
+    "impressions": 375
+   },
+   "all_28d_to_today": {
+    "clicks": 0,
+    "impressions": 407
+   }
+  },
+  {
+   "site": "sc-domain:ingredientcalculator.com",
+   "perm": "siteOwner",
+   "final_28d": {
+    "clicks": 565,
+    "impressions": 259542
+   },
+   "all_28d_to_today": {
+    "clicks": 617,
+    "impressions": 310680
+   }
+  },
+  {
+   "site": "https://frit-app.pages.dev/",
+   "perm": "siteOwner",
+   "final_28d": {
+    "clicks": 0,
+    "impressions": 0
+   },
+   "all_28d_to_today": {
+    "clicks": 0,
+    "impressions": 0
+   }
+  },
+  {
+   "site": "sc-domain:zovo.one",
+   "perm": "siteFullUser",
+   "final_28d": {
+    "clicks": 55,
+    "impressions": 2873
+   },
+   "all_28d_to_today": {
+    "clicks": 54,
+    "impressions": 2567
+   }
+  },
+  {
+   "site": "sc-domain:neovistainc.com",
+   "perm": "siteOwner",
+   "final_28d": {
+    "clicks": 3,
+    "impressions": 34
+   },
+   "all_28d_to_today": {
+    "clicks": 2,
+    "impressions": 33
+   }
+  },
+  {
+   "site": "https://ingredientcalculator.com/",
+   "perm": "siteOwner",
+   "final_28d": {
+    "clicks": 563,
+    "impressions": 259344
+   },
+   "all_28d_to_today": {
+    "clicks": 615,
+    "impressions": 310475
+   }
+  },
+  {
+   "site": "sc-domain:invokebot.com",
+   "perm": "siteOwner",
+   "final_28d": {
+    "clicks": 0,
+    "impressions": 18
+   },
+   "all_28d_to_today": {
+    "clicks": 0,
+    "impressions": 17
+   }
+  },
+  {
+   "site": "https://examscorecalc.com/",
+   "perm": "siteRestrictedUser",
+   "final_28d": {
+    "clicks": 1,
+    "impressions": 1353
+   },
+   "all_28d_to_today": {
+    "clicks": 1,
+    "impressions": 1367
+   }
+  },
+  {
+   "site": "https://tg.zovo.one/",
+   "perm": "siteOwner",
+   "final_28d": {
+    "clicks": 0,
+    "impressions": 8
+   },
+   "all_28d_to_today": {
+    "clicks": 0,
+    "impressions": 8
+   }
+  },
+  {
+   "site": "https://bestchromeextensions.com/",
+   "perm": "siteOwner",
+   "final_28d": {
+    "clicks": 0,
+    "impressions": 6
+   },
+   "all_28d_to_today": {
+    "clicks": 0,
+    "impressions": 6
+   }
+  },
+  {
+   "site": "https://iamvivi.com/",
+   "perm": "siteOwner",
+   "final_28d": {
+    "clicks": 0,
+    "impressions": 51
+   },
+   "all_28d_to_today": {
+    "clicks": 0,
+    "impressions": 53
+   }
+  },
+  {
+   "site": "sc-domain:gpt0x.com",
+   "perm": "siteOwner",
+   "final_28d": {
+    "clicks": 8,
+    "impressions": 2760
+   },
+   "all_28d_to_today": {
+    "clicks": 7,
+    "impressions": 2711
+   }
+  },
+  {
+   "site": "sc-domain:kappafy.com",
+   "perm": "siteOwner",
+   "final_28d": {
+    "clicks": 1,
+    "impressions": 39
+   },
+   "all_28d_to_today": {
+    "clicks": 1,
+    "impressions": 39
+   }
+  },
+  {
+   "site": "sc-domain:earlythunder.com",
+   "perm": "siteRestrictedUser",
+   "final_28d": {
+    "clicks": 0,
+    "impressions": 146
+   },
+   "all_28d_to_today": {
+    "clicks": 0,
+    "impressions": 143
+   }
+  },
+  {
+   "site": "sc-domain:abwex.com",
+   "perm": "siteOwner",
+   "final_28d": {
+    "clicks": 22,
+    "impressions": 1714
+   },
+   "all_28d_to_today": {
+    "clicks": 26,
+    "impressions": 1799
+   }
+  },
+  {
+   "site": "https://assetloancalculator.com/",
+   "perm": "siteFullUser",
+   "final_28d": {
+    "clicks": 40,
+    "impressions": 9178
+   },
+   "all_28d_to_today": {
+    "clicks": 48,
+    "impressions": 10361
+   }
+  },
+  {
+   "site": "sc-domain:addthisbot.com",
+   "perm": "siteOwner",
+   "final_28d": {
+    "clicks": 13,
+    "impressions": 349
+   },
+   "all_28d_to_today": {
+    "clicks": 19,
+    "impressions": 682
+   }
+  },
+  {
+   "site": "https://lakelevelnow.com/",
+   "perm": "siteOwner",
+   "final_28d": {
+    "clicks": 303,
+    "impressions": 30861
+   },
+   "all_28d_to_today": {
+    "clicks": 320,
+    "impressions": 27757
+   }
+  },
+  {
+   "site": "https://pictureeditor.net/",
+   "perm": "siteOwner",
+   "final_28d": {
+    "clicks": 0,
+    "impressions": 168
+   },
+   "all_28d_to_today": {
+    "clicks": 0,
+    "impressions": 169
+   }
+  },
+  {
+   "site": "sc-domain:englishlearner.org",
+   "perm": "siteOwner",
+   "final_28d": {
+    "clicks": 147,
+    "impressions": 2358
+   },
+   "all_28d_to_today": {
+    "clicks": 154,
+    "impressions": 2434
+   }
+  },
+  {
+   "site": "sc-domain:notemods.com",
+   "perm": "siteOwner",
+   "final_28d": {
+    "clicks": 22,
+    "impressions": 2889
+   },
+   "all_28d_to_today": {
+    "clicks": 27,
+    "impressions": 3204
+   }
+  },
+  {
+   "site": "https://welikeremotestack.com/",
+   "perm": "siteOwner",
+   "final_28d": {
+    "clicks": 1,
+    "impressions": 209
+   },
+   "all_28d_to_today": {
+    "clicks": 1,
+    "impressions": 198
+   }
+  }
+ ],
+ "windows": {
+  "final_28d": [
+   "2026-10-04",
+   "2026-10-31",
+   "final"
+  ],
+  "all_28d_to_today": [
+   "2026-10-06",
+   "2026-11-02",
+   "all"
+  ]
+ },
+ "mcp_zovo_one": {
+  "final_28d": {
+   "clicks": 0,
+   "impressions": 37,
+   "pages": 6,
+   "top": [
+    [
+     "https://mcp.zovo.one/",
+     26,
+     0
+    ],
+    [
+     "https://mcp.zovo.one/mcp/connect",
+     7,
+     0
+    ],
+    [
+     "https://mcp.zovo.one/mcp/price-tracker",
+     1,
+     0
+    ],
+    [
+     "https://mcp.zovo.one/mcp/time-tracker",
+     1,
+     0
+    ],
+    [
+     "https://mcp.zovo.one/mcp/token",
+     1,
+     0
+    ],
+    [
+     "https://mcp.zovo.one/mcp/zip",
+     1,
+     0
+    ]
+   ],
+   "err": null
+  },
+  "all_28d_to_today": {
+   "clicks": 0,
+   "impressions": 37,
+   "pages": 6,
+   "top": [
+    [
+     "https://mcp.zovo.one/",
+     26,
+     0
+    ],
+    [
+     "https://mcp.zovo.one/mcp/connect",
+     7,
+     0
+    ],
+    [
+     "https://mcp.zovo.one/mcp/price-tracker",
+     1,
+     0
+    ],
+    [
+     "https://mcp.zovo.one/mcp/time-tracker",
+     1,
+     0
+    ],
+    [
+     "https://mcp.zovo.one/mcp/token",
+     1,
+     0
+    ],
+    [
+     "https://mcp.zovo.one/mcp/zip",
+     1,
+     0
+    ]
+   ],
+   "err": null
+  }
+ },
+ "mcpstamp_detail": {
+  "final_28d": {
+   "pages": [
+    [
+     "https://www.mcpstamp.com/developers/",
+     10,
+     0
+    ],
+    [
+     "https://www.mcpstamp.com/can-claude/read-zip-files/",
+     7,
+     0
+    ],
+    [
+     "https://www.mcpstamp.com/for/ops-hr/",
+     6,
+     0
+    ],
+    [
+     "https://www.mcpstamp.com/servers/loan-calculator/",
+     5,
+     0
+    ],
+    [
+     "https://www.mcpstamp.com/use-cases/chase-overdue-invoices/",
+     5,
+     0
+    ],
+    [
+     "https://www.mcpstamp.com/servers/supplier-list/",
+     3,
+     0
+    ],
+    [
+     "https://www.mcpstamp.com/servers/supplier-statement-check/",
+     3,
+     0
+    ],
+    [
+     "https://www.mcpstamp.com/can-chatgpt/create-an-invoice/",
+     2,
+     0
+    ],
+    [
+     "https://www.mcpstamp.com/servers/dunning-letters/",
+     2,
+     0
+    ],
+    [
+     "https://www.mcpstamp.com/servers/resume/",
+     2,
+     0
+    ]
+   ],
+   "queries": [
+    [
+     "chase overdue invoices automatically",
+     5,
+     0
+    ],
+    [
+     "invoiced to chatgpt",
+     2,
+     0
+    ],
+    [
+     "mcp handshake",
+     2,
+     0
+    ],
+    [
+     "payroll services norway nok market entry norway claude idea",
+     2,
+     0
+    ],
+    [
+     "can claude read zips",
+     1,
+     0
+    ],
+    [
+     "can claude unzip files",
+     1,
+     0
+    ],
+    [
+     "composio mcp",
+     1,
+     0
+    ],
+    [
+     "composio pricing",
+     1,
+     0
+    ],
+    [
+     "ecb calculator",
+     1,
+     0
+    ],
+    [
+     "invoiced to claude",
+     1,
+     0
+    ]
+   ]
+  },
+  "all_28d_to_today": {
+   "pages": [
+    [
+     "https://www.mcpstamp.com/can-claude/read-zip-files/",
+     52,
+     0
+    ],
+    [
+     "https://www.mcpstamp.com/developers/",
+     18,
+     0
+    ],
+    [
+     "https://www.mcpstamp.com/for/ops-hr/",
+     14,
+     0
+    ],
+    [
+     "https://www.mcpstamp.com/use-cases/chase-overdue-invoices/",
+     14,
+     0
+    ],
+    [
+     "https://www.mcpstamp.com/servers/supplier-list/",
+     9,
+     0
+    ],
+    [
+     "https://www.mcpstamp.com/use-cases/per-diem-travel-allowance/",
+     8,
+     0
+    ],
+    [
+     "https://www.mcpstamp.com/use-cases/",
+     7,
+     0
+    ],
+    [
+     "https://www.mcpstamp.com/servers/expense-tracker/",
+     6,
+     0
+    ],
+    [
+     "https://www.mcpstamp.com/servers/supplier-statement-check/",
+     6,
+     0
+    ],
+    [
+     "https://www.mcpstamp.com/servers/loan-calculator/",
+     5,
+     0
+    ]
+   ],
+   "queries": [
+    [
+     "chase overdue invoices automatically",
+     13,
+     0
+    ],
+    [
+     "can claude open zip files",
+     10,
+     0
+    ],
+    [
+     "can claude read zips",
+     6,
+     0
+    ],
+    [
+     "invoiced to chatgpt",
+     4,
+     0
+    ],
+    [
+     "payroll services norway nok market entry norway claude idea",
+     4,
+     0
+    ],
+    [
+     "ecb calculator",
+     3,
+     0
+    ],
+    [
+     "invoiced to claude",
+     3,
+     0
+    ],
+    [
+     "continuous invoices",
+     2,
+     0
+    ],
+    [
+     "cursor expense tracker",
+     2,
+     0
+    ],
+    [
+     "cursor mcp expense",
+     2,
+     0
+    ]
+   ]
+  }
+ },
+ "mcpstamp_sitemaps": {
+  "error": 403,
+  "body": "{\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"User does not have sufficient permission for site 'sc-domain:mpstamp.com'. See also: https://support.google.com/webmasters/answer/2451999.\",\n    \"errors\": [\n      {\n        \"message\": \"User does not have sufficient permission for site 'sc-domain:mpstamp.com'. See also: https://support.google.com/webmasters/answer/2451999.\",\n        \"domain\": \"global\""
+ },
+ "mcpstamp_sitemaps_www": {
+  "error": 403,
+  "body": "{\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"User does not have sufficient permission for site 'sc-domain:mpstamp.com'. See also: https://support.google.com/webmasters/answer/2451999.\",\n    \"errors\": [\n      {\n        \"message\": \"User does not have sufficient permission for site 'sc-domain:mpstamp.com'. See also: https://support.google.com/webmasters/answer/2451999.\",\n        \"domain\": \"global\""
+ },
+ "mcpstamp_by_day": [
+  [
+   "2026-10-29",
+   0,
+   0
+  ],
+  [
+   "2026-10-30",
+   6,
+   0
+  ],
+  [
+   "2026-10-31",
+   49,
+   0
+  ],
+  [
+   "2026-11-01",
+   72,
+   0
+  ],
+  [
+   "2026-11-02",
+   73,
+   0
+  ]
+ ],
+ "mcp_zovo_one_by_day": [
+  [
+   "2026-10-20",
+   1,
+   0
+  ],
+  [
+   "2026-10-21",
+   0,
+   0
+  ],
+  [
+   "2026-10-22",
+   1,
+   0
+  ],
+  [
+   "2026-10-23",
+   1,
+   0
+  ],
+  [
+   "2026-10-24",
+   0,
+   0
+  ],
+  [
+   "2026-10-25",
+   0,
+   0
+  ],
+  [
+   "2026-10-26",
+   0,
+   0
+  ],
+  [
+   "2026-10-27",
+   0,
+   0
+  ],
+  [
+   "2026-10-28",
+   0,
+   0
+  ],
+  [
+   "2026-10-29",
+   1,
+   0
+  ],
+  [
+   "2026-10-30",
+   1,
+   0
+  ],
+  [
+   "2026-10-31",
+   0,
+   0
+  ],
+  [
+   "2026-11-01",
+   1,
+   0
+  ],
+  [
+   "2026-11-02",
+   0,
+   0
+  ]
+ ],
+ "site_list": [
+  "sc-domain:seeninaianswers.com",
+  "sc-domain:aiwebsitepipeline.com",
+  "sc-domain:recipetool.net",
+  "sc-domain:mcpstamp.com",
+  "sc-domain:claudflow.com",
+  "https://toolroutine.com/",
+  "sc-domain:bugbountyreality.com",
+  "https://tgtools-site.lipmichal.workers.dev/",
+  "sc-domain:ml0x.com",
+  "sc-domain:ml3x.com",
+  "sc-domain:toolroutine.com",
+  "sc-domain:lochbot.com",
+  "https://securetoolsguide.com/",
+  "sc-domain:krzen.com",
+  "sc-domain:belikenative.com",
+  "https://chrometipsguide.com/",
+  "sc-domain:dismissticket.com",
+  "https://claudhq.com/",
+  "sc-domain:boldtake.io",
+  "https://goldgramprice.com/",
+  "https://makeroll.com/",
+  "https://worthmyclaim.com/",
+  "https://taxbreakcalc.com/",
+  "https://toolsthatrank.com/",
+  "https://deepvalueradar.com/",
+  "https://bugbountyreality.com/",
+  "sc-domain:lockml.com",
+  "https://statewage.com/",
+  "https://handsofflinks.com/",
+  "sc-domain:gen8x.com",
+  "sc-domain:writingassistant.org",
+  "https://bestremotetools.com/",
+  "sc-domain:claudkit.com",
+  "sc-domain:b2berp.com",
+  "sc-domain:deepvalueradar.com",
+  "sc-domain:enhio.com",
+  "sc-domain:heytensor.com",
+  "https://recipetool.net/",
+  "sc-domain:claudhq.com",
+  "sc-domain:bestchromeextensions.com",
+  "sc-domain:viryd.com",
+  "sc-domain:pictureeditor.net",
+  "sc-domain:grammarhelper.org",
+  "sc-domain:kickllm.com",
+  "sc-domain:paraphrasetool.org",
+  "sc-domain:epochpilot.com",
+  "sc-domain:ingredientcalculator.com",
+  "https://frit-app.pages.dev/",
+  "sc-domain:zovo.one",
+  "sc-domain:neovistainc.com",
+  "https://ingredientcalculator.com/",
+  "sc-domain:invokebot.com",
+  "https://examscorecalc.com/",
+  "https://tg.zovo.one/",
+  "https://bestchromeextensions.com/",
+  "https://iamvivi.com/",
+  "sc-domain:gpt0x.com",
+  "sc-domain:kappafy.com",
+  "sc-domain:earlythunder.com",
+  "sc-domain:abwex.com",
+  "https://assetloancalculator.com/",
+  "sc-domain:addthisbot.com",
+  "https://lakelevelnow.com/",
+  "https://pictureeditor.net/",
+  "sc-domain:englishlearner.org",
+  "sc-domain:notemods.com",
+  "https://welikeremotestack.com/"
+ ]
+}

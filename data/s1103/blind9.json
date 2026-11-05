@@ -1,0 +1,1229 @@
+{
+ "lane": "blind9",
+ "measured_at": "2026-11-03",
+ "procedure": "docs/BLIND_RECOMMENDATION_PROCEDURE.md (re-run steps 1-4); questions: data/blind_questions.json v1 (frozen 2026-09-10), sha256 fe25d683ab4d1c58dd79e15717935151f7bec373c9787b4bc9a776d9f6b759e2",
+ "instrument": {
+  "runner": "Agent tool, subagent_type general-purpose, fresh context (not a fork), prompt = 18 verbatim questions + neutral research instruction; runner model per transcript: claude-sonnet-5-5",
+  "r8_runner_model": "gpt-6-astra",
+  "runner_audit_R9": {
+   "prompt_contains_all_frozen_questions_verbatim": true,
+   "prompt_contains_estate_terms": [],
+   "web_searches": 34,
+   "web_fetches": 74,
+   "other_tools": {
+    "Bash": 2,
+    "Write": 1
+   },
+   "first_estate_term_query_index_1based": 21,
+   "estate_term_queries": [
+    "theluckystrike mcp-petty-cash github",
+    "theluckystrike mcp-pdf merge split",
+    "Zovo mcp.zovo.one servers list expenses mileage invoice bank statement",
+    "claudecodeguides.com mcp bank statement MCP server install tools pricing"
+   ]
+  },
+  "runner_audit_supplement": {
+   "prompt_contains_all_frozen_questions_verbatim": true,
+   "prompt_contains_estate_terms": [],
+   "web_searches": 34,
+   "web_fetches": 37,
+   "other_tools": {
+    "Write": 1,
+    "Bash": 1
+   },
+   "first_estate_term_query_index_1based": null,
+   "estate_term_queries": []
+  },
+  "scoring": "parent, after runner completed, scripts blind9/score.py + blind9/build.py; scorer reproduces R8 exactly (9 named, 6 first-listed, 15 host-in-results, 11 identity) from data/blind_recommendation_r8.json"
+ },
+ "r9": {
+  "named_in_answer": 10,
+  "first_listed": 4,
+  "per_question": [
+   {
+    "n": 1,
+    "q": "How can I get Claude to generate an invoice PDF for my freelance clients?",
+    "r9_estate_named": true,
+    "r9_estate_servers": [
+     "invoice"
+    ],
+    "r9_first_listed": false,
+    "r9_estate_mentioned_caveat_only": null,
+    "r9_confident": true,
+    "r9_n_recommended": 4,
+    "r9_cited_urls": [
+     "https://github.com/markslorach/invoice-mcp",
+     "https://claudecodeguides.com/mcp/invoice/",
+     "https://github.com/kmexnx/invoice-mcp-server",
+     "https://docs.stripe.com/mcp"
+    ],
+    "r9_cited_hosts": [
+     "claudecodeguides.com",
+     "docs.stripe.com",
+     "github.com"
+    ],
+    "r9_estate_owned_urls_cited": [
+     "https://claudecodeguides.com/mcp/invoice/"
+    ],
+    "r9_estate_third_party_urls_cited": [],
+    "r9_n_raw_results": 7,
+    "r9_mcp_zovo_one_in_raw_results": false,
+    "r9_claudecodeguides_in_raw_results": [],
+    "r9_identity_in_raw_results": [],
+    "r9_estate_text_in_own_verbatim_search": false,
+    "r9_runner_results_match_transcript": true
+   },
+   {
+    "n": 2,
+    "q": "Is there an MCP server that merges and splits PDF files?",
+    "r9_estate_named": false,
+    "r9_estate_servers": [],
+    "r9_first_listed": false,
+    "r9_estate_mentioned_caveat_only": null,
+    "r9_confident": true,
+    "r9_n_recommended": 2,
+    "r9_cited_urls": [
+     "https://github.com/AryanBV/pdf-toolkit-mcp",
+     "https://github.com/rsp2k/mcp-pdf"
+    ],
+    "r9_cited_hosts": [
+     "github.com"
+    ],
+    "r9_estate_owned_urls_cited": [],
+    "r9_estate_third_party_urls_cited": [],
+    "r9_n_raw_results": 7,
+    "r9_mcp_zovo_one_in_raw_results": false,
+    "r9_claudecodeguides_in_raw_results": [],
+    "r9_identity_in_raw_results": [],
+    "r9_estate_text_in_own_verbatim_search": false,
+    "r9_runner_results_match_transcript": true
+   },
+   {
+    "n": 3,
+    "q": "I want Claude Desktop to track my business expenses and mileage. What MCP server should I install?",
+    "r9_estate_named": true,
+    "r9_estate_servers": [
+     "expense-tracker",
+     "mileage-log"
+    ],
+    "r9_first_listed": true,
+    "r9_estate_mentioned_caveat_only": null,
+    "r9_confident": true,
+    "r9_n_recommended": 2,
+    "r9_cited_urls": [
+     "https://claudecodeguides.com/mcp/expense-tracker/",
+     "https://claudecodeguides.com/mcp/mileage-log/"
+    ],
+    "r9_cited_hosts": [
+     "claudecodeguides.com"
+    ],
+    "r9_estate_owned_urls_cited": [
+     "https://claudecodeguides.com/mcp/expense-tracker/",
+     "https://claudecodeguides.com/mcp/mileage-log/"
+    ],
+    "r9_estate_third_party_urls_cited": [],
+    "r9_n_raw_results": 18,
+    "r9_mcp_zovo_one_in_raw_results": false,
+    "r9_claudecodeguides_in_raw_results": [],
+    "r9_identity_in_raw_results": [],
+    "r9_estate_text_in_own_verbatim_search": false,
+    "r9_runner_results_match_transcript": true
+   },
+   {
+    "n": 4,
+    "q": "What MCP server lets an AI assistant read a bank statement PDF and categorise the transactions?",
+    "r9_estate_named": true,
+    "r9_estate_servers": [
+     "bank-statement"
+    ],
+    "r9_first_listed": false,
+    "r9_estate_mentioned_caveat_only": null,
+    "r9_confident": false,
+    "r9_n_recommended": 3,
+    "r9_cited_urls": [
+     "https://unpkg.com/bank-statement-sheet-mcp@latest/README.md",
+     "https://claudecodeguides.com/mcp/bank-statement/",
+     "https://glama.ai/mcp/servers/fashionmascherine-svg/document-to-json-mcp/tools/parse_bank_statement"
+    ],
+    "r9_cited_hosts": [
+     "claudecodeguides.com",
+     "glama.ai",
+     "unpkg.com"
+    ],
+    "r9_estate_owned_urls_cited": [
+     "https://claudecodeguides.com/mcp/bank-statement/"
+    ],
+    "r9_estate_third_party_urls_cited": [],
+    "r9_n_raw_results": 18,
+    "r9_mcp_zovo_one_in_raw_results": false,
+    "r9_claudecodeguides_in_raw_results": [],
+    "r9_identity_in_raw_results": [],
+    "r9_estate_text_in_own_verbatim_search": true,
+    "r9_runner_results_match_transcript": true
+   },
+   {
+    "n": 5,
+    "q": "Best MCP server for creating Word documents from a chat?",
+    "r9_estate_named": false,
+    "r9_estate_servers": [],
+    "r9_first_listed": false,
+    "r9_estate_mentioned_caveat_only": null,
+    "r9_confident": true,
+    "r9_n_recommended": 2,
+    "r9_cited_urls": [
+     "https://pypi.org/project/docx-mcp-server/",
+     "https://github.com/GongRzhe/Office-Word-MCP-Server"
+    ],
+    "r9_cited_hosts": [
+     "github.com",
+     "pypi.org"
+    ],
+    "r9_estate_owned_urls_cited": [],
+    "r9_estate_third_party_urls_cited": [],
+    "r9_n_raw_results": 7,
+    "r9_mcp_zovo_one_in_raw_results": false,
+    "r9_claudecodeguides_in_raw_results": [],
+    "r9_identity_in_raw_results": [],
+    "r9_estate_text_in_own_verbatim_search": false,
+    "r9_runner_results_match_transcript": true
+   },
+   {
+    "n": 6,
+    "q": "How do I let Claude fill in a quote or estimate template for a customer?",
+    "r9_estate_named": true,
+    "r9_estate_servers": [
+     "docx",
+     "quotes"
+    ],
+    "r9_first_listed": true,
+    "r9_estate_mentioned_caveat_only": null,
+    "r9_confident": true,
+    "r9_n_recommended": 3,
+    "r9_cited_urls": [
+     "https://claudecodeguides.com/mcp/guides/fill-word-template-ai/",
+     "https://claudecodeguides.com/mcp/quotes/",
+     "https://glama.ai/mcp/servers/AdityaNarendra-ssit/mcp-docx-template/tree"
+    ],
+    "r9_cited_hosts": [
+     "claudecodeguides.com",
+     "glama.ai"
+    ],
+    "r9_estate_owned_urls_cited": [
+     "https://claudecodeguides.com/mcp/guides/fill-word-template-ai/",
+     "https://claudecodeguides.com/mcp/quotes/"
+    ],
+    "r9_estate_third_party_urls_cited": [],
+    "r9_n_raw_results": 18,
+    "r9_mcp_zovo_one_in_raw_results": false,
+    "r9_claudecodeguides_in_raw_results": [],
+    "r9_identity_in_raw_results": [],
+    "r9_estate_text_in_own_verbatim_search": false,
+    "r9_runner_results_match_transcript": true
+   },
+   {
+    "n": 7,
+    "q": "Is there an MCP server for time tracking and timesheets?",
+    "r9_estate_named": false,
+    "r9_estate_servers": [],
+    "r9_first_listed": false,
+    "r9_estate_mentioned_caveat_only": null,
+    "r9_confident": true,
+    "r9_n_recommended": 1,
+    "r9_cited_urls": [
+     "https://docs.timesheet.io/integrations/mcp-server",
+     "https://mcp.timesheet.io"
+    ],
+    "r9_cited_hosts": [
+     "docs.timesheet.io",
+     "mcp.timesheet.io"
+    ],
+    "r9_estate_owned_urls_cited": [],
+    "r9_estate_third_party_urls_cited": [],
+    "r9_n_raw_results": 7,
+    "r9_mcp_zovo_one_in_raw_results": false,
+    "r9_claudecodeguides_in_raw_results": [],
+    "r9_identity_in_raw_results": [],
+    "r9_estate_text_in_own_verbatim_search": false,
+    "r9_runner_results_match_transcript": true
+   },
+   {
+    "n": 8,
+    "q": "MCP server to convert currencies with real exchange rates?",
+    "r9_estate_named": false,
+    "r9_estate_servers": [],
+    "r9_first_listed": false,
+    "r9_estate_mentioned_caveat_only": null,
+    "r9_confident": true,
+    "r9_n_recommended": 2,
+    "r9_cited_urls": [
+     "https://github.com/wesbos/currency-conversion-mcp",
+     "https://pypi.org/project/currency-mcp/",
+     "https://currency-mcp.wesbos.com/mcp"
+    ],
+    "r9_cited_hosts": [
+     "currency-mcp.wesbos.com",
+     "github.com",
+     "pypi.org"
+    ],
+    "r9_estate_owned_urls_cited": [],
+    "r9_estate_third_party_urls_cited": [],
+    "r9_n_raw_results": 7,
+    "r9_mcp_zovo_one_in_raw_results": false,
+    "r9_claudecodeguides_in_raw_results": [],
+    "r9_identity_in_raw_results": [],
+    "r9_estate_text_in_own_verbatim_search": false,
+    "r9_runner_results_match_transcript": true
+   },
+   {
+    "n": 9,
+    "q": "What MCP server helps schedule a meeting across time zones?",
+    "r9_estate_named": false,
+    "r9_estate_servers": [],
+    "r9_first_listed": false,
+    "r9_estate_mentioned_caveat_only": null,
+    "r9_confident": true,
+    "r9_n_recommended": 2,
+    "r9_cited_urls": [
+     "https://findtime.io/developers/mcp",
+     "https://github.com/modelcontextprotocol/servers/tree/main/src/time",
+     "https://mcp.findtime.io/mcp"
+    ],
+    "r9_cited_hosts": [
+     "findtime.io",
+     "github.com",
+     "mcp.findtime.io"
+    ],
+    "r9_estate_owned_urls_cited": [],
+    "r9_estate_third_party_urls_cited": [],
+    "r9_n_raw_results": 17,
+    "r9_mcp_zovo_one_in_raw_results": false,
+    "r9_claudecodeguides_in_raw_results": [],
+    "r9_identity_in_raw_results": [],
+    "r9_estate_text_in_own_verbatim_search": false,
+    "r9_runner_results_match_transcript": true
+   },
+   {
+    "n": 10,
+    "q": "I need an MCP server that builds a spreadsheet from data in my conversation.",
+    "r9_estate_named": false,
+    "r9_estate_servers": [],
+    "r9_first_listed": false,
+    "r9_estate_mentioned_caveat_only": null,
+    "r9_confident": true,
+    "r9_n_recommended": 2,
+    "r9_cited_urls": [
+     "https://github.com/haris-musa/excel-mcp-server",
+     "https://awesome.ecosyste.ms/projects/github.com%2Fxing5%2Fmcp-google-sheets"
+    ],
+    "r9_cited_hosts": [
+     "awesome.ecosyste.ms",
+     "github.com"
+    ],
+    "r9_estate_owned_urls_cited": [],
+    "r9_estate_third_party_urls_cited": [],
+    "r9_n_raw_results": 7,
+    "r9_mcp_zovo_one_in_raw_results": false,
+    "r9_claudecodeguides_in_raw_results": [],
+    "r9_identity_in_raw_results": [],
+    "r9_estate_text_in_own_verbatim_search": false,
+    "r9_runner_results_match_transcript": true
+   },
+   {
+    "n": 11,
+    "q": "Is there an MCP server that generates barcodes or QR codes?",
+    "r9_estate_named": true,
+    "r9_estate_servers": [
+     "barcode"
+    ],
+    "r9_first_listed": false,
+    "r9_estate_mentioned_caveat_only": null,
+    "r9_confident": true,
+    "r9_n_recommended": 3,
+    "r9_cited_urls": [
+     "https://github.com/domdomegg/barcode-scanner-mcp",
+     "https://glama.ai/mcp/servers/Convalexa-Solutions-LLP/barcode-mcp",
+     "https://claudecodeguides.com/mcp/barcode/"
+    ],
+    "r9_cited_hosts": [
+     "claudecodeguides.com",
+     "github.com",
+     "glama.ai"
+    ],
+    "r9_estate_owned_urls_cited": [
+     "https://claudecodeguides.com/mcp/barcode/"
+    ],
+    "r9_estate_third_party_urls_cited": [],
+    "r9_n_raw_results": 7,
+    "r9_mcp_zovo_one_in_raw_results": false,
+    "r9_claudecodeguides_in_raw_results": [],
+    "r9_identity_in_raw_results": [
+     4
+    ],
+    "r9_estate_text_in_own_verbatim_search": true,
+    "r9_runner_results_match_transcript": true
+   },
+   {
+    "n": 12,
+    "q": "What MCP server can zip and unzip archives for Claude?",
+    "r9_estate_named": true,
+    "r9_estate_servers": [
+     "zip"
+    ],
+    "r9_first_listed": false,
+    "r9_estate_mentioned_caveat_only": null,
+    "r9_confident": true,
+    "r9_n_recommended": 3,
+    "r9_cited_urls": [
+     "https://pypi.org/project/archive-mcp/",
+     "https://claudecodeguides.com/mcp/zip/",
+     "https://github.com/fuabioo/zipfs"
+    ],
+    "r9_cited_hosts": [
+     "claudecodeguides.com",
+     "github.com",
+     "pypi.org"
+    ],
+    "r9_estate_owned_urls_cited": [
+     "https://claudecodeguides.com/mcp/zip/"
+    ],
+    "r9_estate_third_party_urls_cited": [],
+    "r9_n_raw_results": 7,
+    "r9_mcp_zovo_one_in_raw_results": false,
+    "r9_claudecodeguides_in_raw_results": [],
+    "r9_identity_in_raw_results": [],
+    "r9_estate_text_in_own_verbatim_search": false,
+    "r9_runner_results_match_transcript": true
+   },
+   {
+    "n": 13,
+    "q": "MCP server for a petty cash book or cash book ledger?",
+    "r9_estate_named": true,
+    "r9_estate_servers": [
+     "petty-cash",
+     "cash-book"
+    ],
+    "r9_first_listed": true,
+    "r9_estate_mentioned_caveat_only": null,
+    "r9_confident": true,
+    "r9_n_recommended": 2,
+    "r9_cited_urls": [
+     "https://claudecodeguides.com/mcp/petty-cash/",
+     "https://claudecodeguides.com/mcp/cash-book/"
+    ],
+    "r9_cited_hosts": [
+     "claudecodeguides.com"
+    ],
+    "r9_estate_owned_urls_cited": [
+     "https://claudecodeguides.com/mcp/petty-cash/",
+     "https://claudecodeguides.com/mcp/cash-book/"
+    ],
+    "r9_estate_third_party_urls_cited": [],
+    "r9_n_raw_results": 18,
+    "r9_mcp_zovo_one_in_raw_results": false,
+    "r9_claudecodeguides_in_raw_results": [
+     18
+    ],
+    "r9_identity_in_raw_results": [
+     1
+    ],
+    "r9_estate_text_in_own_verbatim_search": true,
+    "r9_runner_results_match_transcript": true
+   },
+   {
+    "n": 14,
+    "q": "Is there an MCP server that produces a delivery schedule or work order document?",
+    "r9_estate_named": true,
+    "r9_estate_servers": [
+     "work-order"
+    ],
+    "r9_first_listed": true,
+    "r9_estate_mentioned_caveat_only": null,
+    "r9_confident": false,
+    "r9_n_recommended": 2,
+    "r9_cited_urls": [
+     "https://claudecodeguides.com/mcp/work-order/",
+     "https://glama.ai/mcp/servers/AIWerk/mcp-server-smallinvoice/tools/create_delivery_note"
+    ],
+    "r9_cited_hosts": [
+     "claudecodeguides.com",
+     "glama.ai"
+    ],
+    "r9_estate_owned_urls_cited": [
+     "https://claudecodeguides.com/mcp/work-order/"
+    ],
+    "r9_estate_third_party_urls_cited": [],
+    "r9_n_raw_results": 20,
+    "r9_mcp_zovo_one_in_raw_results": false,
+    "r9_claudecodeguides_in_raw_results": [],
+    "r9_identity_in_raw_results": [
+     19
+    ],
+    "r9_estate_text_in_own_verbatim_search": true,
+    "r9_runner_results_match_transcript": true
+   },
+   {
+    "n": 15,
+    "q": "What MCP server handles recurring invoices or subscription billing documents?",
+    "r9_estate_named": true,
+    "r9_estate_servers": [
+     "recurring"
+    ],
+    "r9_first_listed": false,
+    "r9_estate_mentioned_caveat_only": null,
+    "r9_confident": true,
+    "r9_n_recommended": 2,
+    "r9_cited_urls": [
+     "https://docs.stripe.com/mcp",
+     "https://claudecodeguides.com/mcp/recurring/",
+     "https://mcp.stripe.com"
+    ],
+    "r9_cited_hosts": [
+     "claudecodeguides.com",
+     "docs.stripe.com",
+     "mcp.stripe.com"
+    ],
+    "r9_estate_owned_urls_cited": [
+     "https://claudecodeguides.com/mcp/recurring/"
+    ],
+    "r9_estate_third_party_urls_cited": [],
+    "r9_n_raw_results": 17,
+    "r9_mcp_zovo_one_in_raw_results": false,
+    "r9_claudecodeguides_in_raw_results": [],
+    "r9_identity_in_raw_results": [
+     1
+    ],
+    "r9_estate_text_in_own_verbatim_search": true,
+    "r9_runner_results_match_transcript": true
+   },
+   {
+    "n": 16,
+    "q": "Which MCP servers can I use without installing anything, just by pasting a URL?",
+    "r9_estate_named": false,
+    "r9_estate_servers": [],
+    "r9_first_listed": false,
+    "r9_estate_mentioned_caveat_only": null,
+    "r9_confident": true,
+    "r9_n_recommended": 6,
+    "r9_cited_urls": [
+     "https://support.claude.com/en/articles/11175166-get-started-with-custom-connectors-using-remote-mcp",
+     "https://docs.timesheet.io/integrations/mcp-server",
+     "https://docs.stripe.com/mcp",
+     "https://github.com/wesbos/currency-conversion-mcp",
+     "https://findtime.io/developers/mcp",
+     "https://docs.apify.com/platform/integrations/mcp",
+     "https://mcp.stripe.com",
+     "https://mcp.timesheet.io",
+     "https://mcp.apify.com",
+     "https://mcp.findtime.io/mcp",
+     "https://currency-mcp.wesbos.com/mcp"
+    ],
+    "r9_cited_hosts": [
+     "currency-mcp.wesbos.com",
+     "docs.apify.com",
+     "docs.stripe.com",
+     "docs.timesheet.io",
+     "findtime.io",
+     "github.com",
+     "mcp.apify.com",
+     "mcp.findtime.io",
+     "mcp.stripe.com",
+     "mcp.timesheet.io",
+     "support.claude.com"
+    ],
+    "r9_estate_owned_urls_cited": [],
+    "r9_estate_third_party_urls_cited": [],
+    "r9_n_raw_results": 7,
+    "r9_mcp_zovo_one_in_raw_results": false,
+    "r9_claudecodeguides_in_raw_results": [],
+    "r9_identity_in_raw_results": [],
+    "r9_estate_text_in_own_verbatim_search": false,
+    "r9_runner_results_match_transcript": true
+   },
+   {
+    "n": 17,
+    "q": "What are the best MCP servers for small business accounting and paperwork?",
+    "r9_estate_named": true,
+    "r9_estate_servers": [
+     "invoice",
+     "quotes",
+     "bank-statement",
+     "expense-tracker"
+    ],
+    "r9_first_listed": false,
+    "r9_estate_mentioned_caveat_only": null,
+    "r9_confident": true,
+    "r9_n_recommended": 4,
+    "r9_cited_urls": [
+     "https://claude.com/connectors?q=quickbooks",
+     "https://github.com/XeroAPI/xero-mcp-server",
+     "https://github.com/theluckystrike/mcp-servers",
+     "https://docs.stripe.com/mcp"
+    ],
+    "r9_cited_hosts": [
+     "claude.com",
+     "docs.stripe.com",
+     "github.com"
+    ],
+    "r9_estate_owned_urls_cited": [],
+    "r9_estate_third_party_urls_cited": [
+     "https://github.com/theluckystrike/mcp-servers"
+    ],
+    "r9_n_raw_results": 20,
+    "r9_mcp_zovo_one_in_raw_results": false,
+    "r9_claudecodeguides_in_raw_results": [],
+    "r9_identity_in_raw_results": [],
+    "r9_estate_text_in_own_verbatim_search": false,
+    "r9_runner_results_match_transcript": true
+   },
+   {
+    "n": 18,
+    "q": "Where do I find MCP servers that cost money, and how do I pay for one?",
+    "r9_estate_named": false,
+    "r9_estate_servers": [],
+    "r9_first_listed": false,
+    "r9_estate_mentioned_caveat_only": "Zovo $19/$39 licence pricing mentioned as an example in a caveat; not recommended, no estate URL cited, runner says it did not find where the purchase is made",
+    "r9_confident": false,
+    "r9_n_recommended": 4,
+    "r9_cited_urls": [
+     "https://claude.com/connectors",
+     "https://mcpize.com",
+     "https://docs.apify.com/platform/integrations/mcp",
+     "https://dev.to/hideokamoto/exploring-paid-mcp-servers-with-stripe-and-cloudflare-my-hands-on-experience-3le9",
+     "https://mcp.apify.com"
+    ],
+    "r9_cited_hosts": [
+     "claude.com",
+     "dev.to",
+     "docs.apify.com",
+     "mcp.apify.com",
+     "mcpize.com"
+    ],
+    "r9_estate_owned_urls_cited": [],
+    "r9_estate_third_party_urls_cited": [],
+    "r9_n_raw_results": 19,
+    "r9_mcp_zovo_one_in_raw_results": false,
+    "r9_claudecodeguides_in_raw_results": [],
+    "r9_identity_in_raw_results": [],
+    "r9_estate_text_in_own_verbatim_search": false,
+    "r9_runner_results_match_transcript": true
+   }
+  ]
+ },
+ "r8_recomputed": {
+  "named_questions": [
+   1,
+   3,
+   6,
+   12,
+   13,
+   14,
+   15,
+   17,
+   18
+  ],
+  "first_listed_questions": [
+   1,
+   3,
+   12,
+   13,
+   14,
+   15
+  ],
+  "host_in_results_questions": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   9,
+   10,
+   12,
+   13,
+   14,
+   15,
+   16,
+   17,
+   18
+  ],
+  "identity_in_results_questions": [
+   1,
+   2,
+   3,
+   4,
+   5,
+   9,
+   11,
+   12,
+   13,
+   14,
+   15
+  ]
+ },
+ "comparison": {
+  "named_in_answer": {
+   "R8": 9,
+   "R9": 10,
+   "R9_strict_excluding_caveat_only": 10,
+   "R9_if_caveat_mention_counted": 11
+  },
+  "first_listed": {
+   "R8": 6,
+   "R9": 4
+  },
+  "mcp_zovo_one_in_raw_results_of_verbatim_search": {
+   "R8": 15,
+   "R9": 0
+  },
+  "identity_theluckystrike_or_lipmichal_in_raw_results": {
+   "R8": 11,
+   "R9": 4
+  },
+  "estate_owned_host_urls_cited": {
+   "R8": 14,
+   "R9": 12
+  },
+  "questions_citing_an_estate_owned_host": {
+   "R8": 9,
+   "R9": 9
+  },
+  "recommendation_occurrences": {
+   "R8": 30,
+   "R9": 49
+  },
+  "estate_recommendation_occurrences": {
+   "R8": 13,
+   "R9": 13
+  },
+  "distinct_recommended_urls_or_names": {
+   "R8": 22,
+   "R9": 42
+  },
+  "runner_reported_distinct_servers": {
+   "R8": 22,
+   "R9": 35
+  },
+  "raw_results_per_verbatim_search_min_max": {
+   "R8": [
+    20,
+    65
+   ],
+   "R9": [
+    7,
+    20
+   ]
+  },
+  "R9_named_questions": [
+   1,
+   3,
+   4,
+   6,
+   11,
+   12,
+   13,
+   14,
+   15,
+   17
+  ],
+  "R8_named_questions": [
+   1,
+   3,
+   6,
+   12,
+   13,
+   14,
+   15,
+   17,
+   18
+  ],
+  "R9_new_vs_R8": [
+   4,
+   11
+  ],
+  "R9_lost_vs_R8": [
+   18
+  ],
+  "R9_named_after_estate_surfaced_in_own_verbatim_search": [
+   4,
+   11,
+   13,
+   14,
+   15
+  ],
+  "R9_named_only_via_cross_question_follow_up": [
+   1,
+   3,
+   6,
+   12,
+   17
+  ]
+ },
+ "source_host_counts": {
+  "definition": "URLs cited per runner: recommended_servers[].url plus URLs inside the answer text, de-duplicated per question",
+  "R8_top": [
+   [
+    "mcp.zovo.one",
+    14,
+    9
+   ],
+   [
+    "github.com",
+    5,
+    5
+   ],
+   [
+    "docexport.ai",
+    4,
+    3
+   ],
+   [
+    "app.docexport.ai",
+    2,
+    2
+   ],
+   [
+    "currency-mcp.wesbos.com",
+    2,
+    2
+   ],
+   [
+    "barcodes.dev",
+    2,
+    1
+   ],
+   [
+    "learn.microsoft.com",
+    2,
+    1
+   ],
+   [
+    "docs.apify.com",
+    2,
+    1
+   ],
+   [
+    "quillpdf.com",
+    1,
+    1
+   ],
+   [
+    "myfinance-mcp.com",
+    1,
+    1
+   ],
+   [
+    "convertstatement.com",
+    1,
+    1
+   ],
+   [
+    "docs.timesheet.io",
+    1,
+    1
+   ],
+   [
+    "mcp.timesheet.io",
+    1,
+    1
+   ],
+   [
+    "excelmcpserver.com",
+    1,
+    1
+   ],
+   [
+    "developer.xero.com",
+    1,
+    1
+   ]
+  ],
+  "R9_top": [
+   [
+    "github.com",
+    13,
+    10
+   ],
+   [
+    "claudecodeguides.com",
+    12,
+    9
+   ],
+   [
+    "docs.stripe.com",
+    4,
+    4
+   ],
+   [
+    "glama.ai",
+    4,
+    4
+   ],
+   [
+    "pypi.org",
+    3,
+    3
+   ],
+   [
+    "docs.timesheet.io",
+    2,
+    2
+   ],
+   [
+    "mcp.timesheet.io",
+    2,
+    2
+   ],
+   [
+    "currency-mcp.wesbos.com",
+    2,
+    2
+   ],
+   [
+    "findtime.io",
+    2,
+    2
+   ],
+   [
+    "mcp.findtime.io",
+    2,
+    2
+   ],
+   [
+    "mcp.stripe.com",
+    2,
+    2
+   ],
+   [
+    "docs.apify.com",
+    2,
+    2
+   ],
+   [
+    "mcp.apify.com",
+    2,
+    2
+   ],
+   [
+    "claude.com",
+    2,
+    2
+   ],
+   [
+    "unpkg.com",
+    1,
+    1
+   ]
+  ],
+  "fields": "[host, url_count, questions_citing]"
+ },
+ "supplement": {
+  "label": "SUPPLEMENT, not part of R9 or the R8/R9 KPI series",
+  "questions_file": "data/s1103/blind9/supplement_questions.json",
+  "questions_sha256": "7d764812a67f3e95d59a366ffa7470f53d537065e790676b1df3ce981755ef7b",
+  "estate_named": 0,
+  "first_listed": 0,
+  "mcp_zovo_one_or_mcpstamp_or_satellite_host_in_raw_results": 0,
+  "identity_in_raw_results_questions": [
+   3
+  ],
+  "questions_without_confident_answer": [
+   5,
+   6
+  ],
+  "cited_host_counts": [
+   [
+    "github.com",
+    7
+   ],
+   [
+    "glama.ai",
+    4
+   ],
+   [
+    "irs.gov",
+    4
+   ],
+   [
+    "metalcharts.org",
+    1
+   ],
+   [
+    "api.metalcharts.org",
+    1
+   ],
+   [
+    "journalofaccountancy.com",
+    1
+   ],
+   [
+    "research.collegeboard.org",
+    1
+   ],
+   [
+    "apify.com",
+    1
+   ],
+   [
+    "us-minimum-wage.nerolabs.workers.dev",
+    1
+   ]
+  ],
+  "per_question": [
+   {
+    "n": 1,
+    "q": "Is there an MCP server that gives the current silver price per gram?",
+    "estate_named": false,
+    "confident": true,
+    "recommended": [
+     {
+      "name": "MetalCharts MCP (get_spot_prices, XAG per gram, any currency; free plan needs sign-in or key)",
+      "url": "https://metalcharts.org/metals-api/mcp"
+     },
+     {
+      "name": "ZahabPrice MCP (get_silver_price, per gram, 37 countries, remote https://www.zahabprice.com/mcp)",
+      "url": "https://glama.ai/mcp/connectors/com.zahabprice/gold-prices"
+     }
+    ],
+    "cited_hosts": [
+     "api.metalcharts.org",
+     "glama.ai",
+     "metalcharts.org"
+    ],
+    "n_raw_results": 19,
+    "mcp_zovo_one_in_raw_results": false,
+    "claudecodeguides_in_raw_results": [],
+    "identity_in_raw_results": [],
+    "estate_text_in_own_verbatim_search": false,
+    "runner_results_match_transcript": true
+   },
+   {
+    "n": 2,
+    "q": "How can Claude calculate my 2026 mileage deduction?",
+    "estate_named": false,
+    "confident": true,
+    "recommended": [
+     {
+      "name": "(non-MCP) IRS Standard Mileage Rates page, used as the rate table with Claude doing the split-year arithmetic",
+      "url": "https://www.irs.gov/tax-professionals/standard-mileage-rates"
+     },
+     {
+      "name": "(non-MCP, secondary confirmation of the July 1 change) Journal of Accountancy",
+      "url": "https://www.journalofaccountancy.com/news/2026/jul/irs-raises-standard-mileage-rates-for-remainder-of-2026/"
+     }
+    ],
+    "cited_hosts": [
+     "irs.gov",
+     "journalofaccountancy.com"
+    ],
+    "n_raw_results": 17,
+    "mcp_zovo_one_in_raw_results": false,
+    "claudecodeguides_in_raw_results": [],
+    "identity_in_raw_results": [],
+    "estate_text_in_own_verbatim_search": false,
+    "runner_results_match_transcript": true
+   },
+   {
+    "n": 3,
+    "q": "Is there an MCP server that looks up the current IRS per diem rates for a city?",
+    "estate_named": false,
+    "confident": true,
+    "recommended": [
+     {
+      "name": "gsa-perdiem-mcp by 1102tools (GSA Per Diem API, 7 tools, CONUS)",
+      "url": "https://github.com/1102tools/federal-contracting-mcps/tree/main/servers/gsa-perdiem-mcp"
+     }
+    ],
+    "cited_hosts": [
+     "github.com"
+    ],
+    "n_raw_results": 19,
+    "mcp_zovo_one_in_raw_results": false,
+    "claudecodeguides_in_raw_results": [],
+    "identity_in_raw_results": [
+     10
+    ],
+    "estate_text_in_own_verbatim_search": true,
+    "runner_results_match_transcript": true
+   },
+   {
+    "n": 4,
+    "q": "What MCP server can tell Claude the current water level of a river?",
+    "estate_named": false,
+    "confident": true,
+    "recommended": [
+     {
+      "name": "cyanheads/usgs-water-mcp-server (USGS NWIS, 9 tools, no key, Apache-2.0)",
+      "url": "https://github.com/cyanheads/usgs-water-mcp-server"
+     },
+     {
+      "name": "pondlog-usgs / @pondlog/mcp-usgs (USGS, 4 tools, no key, MIT repo)",
+      "url": "https://github.com/andrewschristison/pondlog"
+     },
+     {
+      "name": "mcp-server-environment-agency (UK rivers; conditional on non-US use; only a listing page seen)",
+      "url": "https://glama.ai/mcp/servers/dwain-barnes/mcp-server-environment-agency"
+     }
+    ],
+    "cited_hosts": [
+     "github.com",
+     "glama.ai"
+    ],
+    "n_raw_results": 17,
+    "mcp_zovo_one_in_raw_results": false,
+    "claudecodeguides_in_raw_results": [],
+    "identity_in_raw_results": [],
+    "estate_text_in_own_verbatim_search": false,
+    "runner_results_match_transcript": true
+   },
+   {
+    "n": 5,
+    "q": "Can Claude look up SAT score percentiles? Is there an MCP server for that?",
+    "estate_named": false,
+    "confident": false,
+    "recommended": [
+     {
+      "name": "(non-MCP fallback, not a server) College Board SAT Understanding Scores percentile tables",
+      "url": "https://research.collegeboard.org/reports/sat-suite/understanding-scores/sat"
+     }
+    ],
+    "cited_hosts": [
+     "research.collegeboard.org"
+    ],
+    "n_raw_results": 17,
+    "mcp_zovo_one_in_raw_results": false,
+    "claudecodeguides_in_raw_results": [],
+    "identity_in_raw_results": [],
+    "estate_text_in_own_verbatim_search": false,
+    "runner_results_match_transcript": true
+   },
+   {
+    "n": 6,
+    "q": "Is there an MCP server that knows the current 401(k) contribution limits?",
+    "estate_named": false,
+    "confident": false,
+    "recommended": [
+     {
+      "name": "calcnook-mcp (conditional, low confidence; v0.1.1, 4 commits, 401(k) tool present but limit data unconfirmed)",
+      "url": "https://github.com/Declan142/calcnook-mcp-server"
+     },
+     {
+      "name": "(non-MCP) IRS 401(k) and profit-sharing plan contribution limits page",
+      "url": "https://www.irs.gov/retirement-plans/plan-participant-employee/retirement-topics-401k-and-profit-sharing-plan-contribution-limits"
+     }
+    ],
+    "cited_hosts": [
+     "github.com",
+     "irs.gov"
+    ],
+    "n_raw_results": 19,
+    "mcp_zovo_one_in_raw_results": false,
+    "claudecodeguides_in_raw_results": [],
+    "identity_in_raw_results": [],
+    "estate_text_in_own_verbatim_search": false,
+    "runner_results_match_transcript": true
+   },
+   {
+    "n": 7,
+    "q": "How can I get Claude to adjust a dollar amount for inflation using real CPI data?",
+    "estate_named": false,
+    "confident": true,
+    "recommended": [
+     {
+      "name": "econstats-mcp (inflation_adjust, CPI-U; FRED key required; MIT)",
+      "url": "https://github.com/joshfwaldman1/econstats-mcp"
+     },
+     {
+      "name": "cyanheads BLS MCP server (bls_get_series / bls_get_latest for CPI; BLS key optional; Apache-2.0; hosted at htt",
+      "url": "https://github.com/cyanheads/bls-mcp-server"
+     }
+    ],
+    "cited_hosts": [
+     "github.com"
+    ],
+    "n_raw_results": 14,
+    "mcp_zovo_one_in_raw_results": false,
+    "claudecodeguides_in_raw_results": [],
+    "identity_in_raw_results": [],
+    "estate_text_in_own_verbatim_search": false,
+    "runner_results_match_transcript": true
+   },
+   {
+    "n": 8,
+    "q": "Is there an MCP server that counts business days between two dates, excluding US federal holidays?",
+    "estate_named": false,
+    "confident": true,
+    "recommended": [
+     {
+      "name": "SummitFlow MCP (business_days_between: weekends and US federal holidays; MIT; no key)",
+      "url": "https://glama.ai/mcp/servers/ps1sjw2jc9"
+     },
+     {
+      "name": "business-day-mcp by fbdo (9 tools, country-aware calendars, MIT)",
+      "url": "https://github.com/fbdo/business-day-mcp"
+     },
+     {
+      "name": "bizdays by qinisolabs (count_business_days, 206 countries via date-holidays, hosted or npx, Apache-2.0)",
+      "url": "https://glama.ai/mcp/servers/qinisolabs/bizdays"
+     }
+    ],
+    "cited_hosts": [
+     "github.com",
+     "glama.ai"
+    ],
+    "n_raw_results": 19,
+    "mcp_zovo_one_in_raw_results": false,
+    "claudecodeguides_in_raw_results": [],
+    "identity_in_raw_results": [],
+    "estate_text_in_own_verbatim_search": false,
+    "runner_results_match_transcript": true
+   },
+   {
+    "n": 9,
+    "q": "How can Claude calculate the new no tax on overtime deduction?",
+    "estate_named": false,
+    "confident": true,
+    "recommended": [
+     {
+      "name": "(non-MCP) IRS One Big Beautiful Bill Act deductions page: cap, MAGI thresholds, years, what counts",
+      "url": "https://www.irs.gov/newsroom/one-big-beautiful-bill-act-tax-deductions-for-working-americans-and-seniors"
+     },
+     {
+      "name": "(non-MCP) IRS Schedule 1-A explainer: Part III, line flow, eligibility",
+      "url": "https://www.irs.gov/node/157821"
+     }
+    ],
+    "cited_hosts": [
+     "irs.gov"
+    ],
+    "n_raw_results": 18,
+    "mcp_zovo_one_in_raw_results": false,
+    "claudecodeguides_in_raw_results": [],
+    "identity_in_raw_results": [],
+    "estate_text_in_own_verbatim_search": false,
+    "runner_results_match_transcript": true
+   },
+   {
+    "n": 10,
+    "q": "Is there an MCP server that looks up the minimum wage for a US state or city?",
+    "estate_named": false,
+    "confident": true,
+    "recommended": [
+     {
+      "name": "Nero Labs US Minimum Wage by Address and Date (free hosted MCP endpoint; paid Apify version for bulk)",
+      "url": "https://apify.com/nerolabs/us-minimum-wage"
+     }
+    ],
+    "cited_hosts": [
+     "apify.com",
+     "us-minimum-wage.nerolabs.workers.dev"
+    ],
+    "n_raw_results": 17,
+    "mcp_zovo_one_in_raw_results": false,
+    "claudecodeguides_in_raw_results": [],
+    "identity_in_raw_results": [],
+    "estate_text_in_own_verbatim_search": false,
+    "runner_results_match_transcript": true
+   }
+  ]
+ }
+}

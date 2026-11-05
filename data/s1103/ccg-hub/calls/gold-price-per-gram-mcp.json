@@ -1,0 +1,102 @@
+{
+ "result": {
+  "content": [
+   {
+    "type": "text",
+    "text": "24K gold is 125.41 USD per gram (3,900.60 USD per troy ounce, 1,462.73 USD per tola) at a spot of 3,900.60 USD per troy ounce of fine gold, as of 2026-11-03T08:49:26Z. Per gram by karat: 22K 114.96 USD, 21K 109.73 USD, 18K 94.06 USD, 14K 73.15 USD, 10K 52.25 USD, 9K 47.03 USD. These are melt (spot) values. Shops sell jewellery above this and buy it back below it.\n\n{\n  \"currency\": \"USD\",\n  \"spot_per_troy_ounce\": 3900.6,\n  \"spot_usd_per_troy_ounce\": 3900.600098,\n  \"usd_to_currency\": 1,\n  \"karats\": [\n    {\n      \"karat\": 24,\n      \"purity\": 1,\n      \"purity_fraction\": \"24/24\",\n      \"per_gram\": 125.41,\n      \"per_troy_ounce\": 3900.6,\n      \"per_tola\": 1462.73,\n      \"per_kilogram\": 125407.21,\n      \"more\": \"https://goldgramprice.com/24k-gold-price-per-gram/?utm_source=mcp&utm_medium=gold-price-per-gram-mcp\"\n    },\n    {\n      \"karat\": 22,\n      \"purity\": 0.916667,\n      \"purity_fraction\": \"22/24\",\n      \"per_gram\": 114.96,\n      \"per_troy_ounce\": 3575.55,\n      \"per_tola\": 1340.83,\n      \"per_kilogram\": 114956.6,\n      \"more\": \"https://goldgramprice.com/22k-gold-price-per-gram/?utm_source=mcp&utm_medium=gold-price-per-gram-mcp\"\n    },\n    {\n      \"karat\": 21,\n      \"purity\": 0.875,\n      \"purity_fraction\": \"21/24\",\n      \"per_gram\": 109.73,\n      \"per_troy_ounce\": 3413.03,\n      \"per_tola\": 1279.88,\n      \"per_kilogram\": 109731.3,\n      \"more\": \"https://goldgramprice.com/gold-calculator/?utm_source=mcp&utm_medium=gold-price-per-gram-mcp\"\n    },\n    {\n      \"karat\": 18,\n      \"purity\": 0.75,\n      \"purity_fraction\": \"18/24\",\n      \"per_gram\": 94.06,\n      \"per_troy_ounce\": 2925.45,\n      \"per_tola\": 1097.04,\n      \"per_kilogram\": 94055.4,\n      \"more\": \"https://goldgramprice.com/18k-gold-price-per-gram/?utm_source=mcp&utm_medium=gold-price-per-gram-mcp\"\n    },\n    {\n      \"karat\": 14,\n      \"purity\": 0.583333,\n      \"purity_fraction\": \"14/24\",\n      \"per_gram\": 73.15,\n      \"per_troy_ounce\": 2275.35,\n      \"per_tola\": 853.26,\n      \"per_kilogram\": 73154.2,\n      \"more\": \"https://goldgramprice.com/14k-gold-price-per-gram/?utm_source=mcp&utm_medium=gold-price-per-gram-mcp\"\n    },\n    {\n      \"karat\": 10,\n      \"purity\": 0.416667,\n      \"purity_fraction\": \"10/24\",\n      \"per_gram\": 52.25,\n      \"per_troy_ounce\": 1625.25,\n      \"per_tola\": 609.47,\n      \"per_kilogram\": 52253,\n      \"more\": \"https://goldgramprice.com/10k-gold-price-per-gram/?utm_source=mcp&utm_medium=gold-price-per-gram-mcp\"\n    },\n    {\n      \"karat\": 9,\n      \"purity\": 0.375,\n      \"purity_fraction\": \"9/24\",\n      \"per_gram\": 47.03,\n      \"per_troy_ounce\": 1462.73,\n      \"per_tola\": 548.52,\n      \"per_kilogram\": 47027.7,\n      \"more\": \"https://goldgramprice.com/gold-calculator/?utm_source=mcp&utm_medium=gold-price-per-gram-mcp\"\n    }\n  ],\n  \"purity_rule\": \"purity = karat / 24 (24 karat = fine gold)\",\n  \"as_of\": \"2026-11-03T08:49:26Z\",\n  \"fx_date\": null,\n  \"source\": \"https://gold-api.com/\",\n  \"sources\": {\n    \"spot\": \"https://api.gold-api.com/price/XAU\",\n    \"fx\": null,\n    \"karat\": \"https://www.ecfr.gov/current/title-16/chapter-I/subchapter-B/part-23/section-23.3\",\n    \"units\": \"https://www.nist.gov/system/files/documents/2024/01/14/NIST%20HB%2044%202024%20Appendix%20C%20General%20Tables%20of%20Units%20of%20Measurement.pdf\"\n  },\n  \"more\": \"https://goldgramprice.com/?utm_source=mcp&utm_medium=gold-price-per-gram-mcp\",\n  \"summary\": \"24K gold is 125.41 USD per gram (3,900.60 USD per troy ounce, 1,462.73 USD per tola) at a spot of 3,900.60 USD per troy ounce of fine gold, as of 2026-11-03T08:49:26Z. Per gram by karat: 22K 114.96 USD, 21K 109.73 USD, 18K 94.06 USD, 14K 73.15 USD, 10K 52.25 USD, 9K 47.03 USD. These are melt (spot) values. Shops sell jewellery above this and buy it back below it.\"\n}"
+   }
+  ],
+  "structuredContent": {
+   "currency": "USD",
+   "spot_per_troy_ounce": 3900.6,
+   "spot_usd_per_troy_ounce": 3900.600098,
+   "usd_to_currency": 1,
+   "karats": [
+    {
+     "karat": 24,
+     "purity": 1,
+     "purity_fraction": "24/24",
+     "per_gram": 125.41,
+     "per_troy_ounce": 3900.6,
+     "per_tola": 1462.73,
+     "per_kilogram": 125407.21,
+     "more": "https://goldgramprice.com/24k-gold-price-per-gram/?utm_source=mcp&utm_medium=gold-price-per-gram-mcp"
+    },
+    {
+     "karat": 22,
+     "purity": 0.916667,
+     "purity_fraction": "22/24",
+     "per_gram": 114.96,
+     "per_troy_ounce": 3575.55,
+     "per_tola": 1340.83,
+     "per_kilogram": 114956.6,
+     "more": "https://goldgramprice.com/22k-gold-price-per-gram/?utm_source=mcp&utm_medium=gold-price-per-gram-mcp"
+    },
+    {
+     "karat": 21,
+     "purity": 0.875,
+     "purity_fraction": "21/24",
+     "per_gram": 109.73,
+     "per_troy_ounce": 3413.03,
+     "per_tola": 1279.88,
+     "per_kilogram": 109731.3,
+     "more": "https://goldgramprice.com/gold-calculator/?utm_source=mcp&utm_medium=gold-price-per-gram-mcp"
+    },
+    {
+     "karat": 18,
+     "purity": 0.75,
+     "purity_fraction": "18/24",
+     "per_gram": 94.06,
+     "per_troy_ounce": 2925.45,
+     "per_tola": 1097.04,
+     "per_kilogram": 94055.4,
+     "more": "https://goldgramprice.com/18k-gold-price-per-gram/?utm_source=mcp&utm_medium=gold-price-per-gram-mcp"
+    },
+    {
+     "karat": 14,
+     "purity": 0.583333,
+     "purity_fraction": "14/24",
+     "per_gram": 73.15,
+     "per_troy_ounce": 2275.35,
+     "per_tola": 853.26,
+     "per_kilogram": 73154.2,
+     "more": "https://goldgramprice.com/14k-gold-price-per-gram/?utm_source=mcp&utm_medium=gold-price-per-gram-mcp"
+    },
+    {
+     "karat": 10,
+     "purity": 0.416667,
+     "purity_fraction": "10/24",
+     "per_gram": 52.25,
+     "per_troy_ounce": 1625.25,
+     "per_tola": 609.47,
+     "per_kilogram": 52253,
+     "more": "https://goldgramprice.com/10k-gold-price-per-gram/?utm_source=mcp&utm_medium=gold-price-per-gram-mcp"
+    },
+    {
+     "karat": 9,
+     "purity": 0.375,
+     "purity_fraction": "9/24",
+     "per_gram": 47.03,
+     "per_troy_ounce": 1462.73,
+     "per_tola": 548.52,
+     "per_kilogram": 47027.7,
+     "more": "https://goldgramprice.com/gold-calculator/?utm_source=mcp&utm_medium=gold-price-per-gram-mcp"
+    }
+   ],
+   "purity_rule": "purity = karat / 24 (24 karat = fine gold)",
+   "as_of": "2026-11-03T08:49:26Z",
+   "fx_date": null,
+   "source": "https://gold-api.com/",
+   "sources": {
+    "spot": "https://api.gold-api.com/price/XAU",
+    "fx": null,
+    "karat": "https://www.ecfr.gov/current/title-16/chapter-I/subchapter-B/part-23/section-23.3",
+    "units": "https://www.nist.gov/system/files/documents/2024/01/14/NIST%20HB%2044%202024%20Appendix%20C%20General%20Tables%20of%20Units%20of%20Measurement.pdf"
+   },
+   "more": "https://goldgramprice.com/?utm_source=mcp&utm_medium=gold-price-per-gram-mcp",
+   "summary": "24K gold is 125.41 USD per gram (3,900.60 USD per troy ounce, 1,462.73 USD per tola) at a spot of 3,900.60 USD per troy ounce of fine gold, as of 2026-11-03T08:49:26Z. Per gram by karat: 22K 114.96 USD, 21K 109.73 USD, 18K 94.06 USD, 14K 73.15 USD, 10K 52.25 USD, 9K 47.03 USD. These are melt (spot) values. Shops sell jewellery above this and buy it back below it."
+  }
+ },
+ "jsonrpc": "2.0",
+ "id": 2
+}

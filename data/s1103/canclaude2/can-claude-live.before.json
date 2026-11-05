@@ -1,0 +1,528 @@
+{
+ "_readme": [
+  "s1103 stamp: /can-claude/<slug>/ pages backed by one free live-data server (data/content/free-servers.json).",
+  "answer = first paragraph, an honest yes/no/partly about what Claude does without a tool. example = a real tools/call result.",
+  "Generator: ~/mcp-servers/data/s1103/stamp/make_can_claude_live.py. Raw call responses: ~/mcp-servers/data/s1103/stamp/calls/."
+ ],
+ "pages": [
+  {
+   "slug": "check-gold-price",
+   "repo": "gold-price-per-gram-mcp",
+   "h1": "Can Claude check the current gold price?",
+   "title": "Can Claude check the gold price today? Live per gram",
+   "query": "can claude check gold price",
+   "answer": "Not from memory. Claude's training data ends at a cutoff date, and the gold price changes every minute, so any number it recalls is old. With web search on, Claude.ai can find a price quoted on a news or dealer page, but that quote may be delayed and Claude still has to do the karat and gram math itself. Connect the free Gold Price per Gram server and Claude reads the spot price from a live feed at the moment you ask, then works out price per gram by karat, in about 160 currencies.",
+   "native": [
+    "Explains karats, troy ounces and melt value correctly.",
+    "Does the arithmetic once it has a price you give it.",
+    "With web search on, finds a quoted price on a web page."
+   ],
+   "needs": [
+    "The spot price right now, from a live feed, with a timestamp.",
+    "Price per gram for 10K to 24K and silver, platinum and palladium.",
+    "Melt value of a ring or chain from its weight, with a dealer spread."
+   ],
+   "example": {
+    "prompt": "I have an 18K gold ring that weighs 6.2 g. What is it worth today, and what would a shop that keeps 15% offer?",
+    "tool": "calculate_jewelry_value",
+    "args": {
+     "weight": 6.2,
+     "unit": "g",
+     "karat": 18,
+     "currency": "USD",
+     "dealer_spread_percent": 15
+    },
+    "result": "6.2 gram (g) of 18K gold (75% pure) holds 4.65 g of fine gold, a melt value of 584.47 USD at a spot of 3,909.50 USD per troy ounce (as of 2026-11-03T07:58:26Z). With a 15% dealer spread, a buyer would offer about 496.80 USD. Melt value is not a shop price: retail jewellery sells above melt (making charges, design, brand, tax) and buyers pay below it (refining cost and margin). Ask several buyers for their percentage of melt.",
+    "note": "",
+    "is_error": false,
+    "run": "2026-11-03"
+   },
+   "faq": [
+    {
+     "q": "Is the gold price from the server real time?",
+     "a": "It reads the spot price from gold-api.com when the tool runs and returns the timestamp with the answer. Currency conversion uses central-bank rates from Frankfurter."
+    },
+    {
+     "q": "Is melt value what a shop will pay?",
+     "a": "No. Buyers pay below melt to cover refining and margin, and shops sell jewellery above it. The tool lets you set the dealer spread so you can compare offers."
+    }
+   ]
+  },
+  {
+   "slug": "check-lake-levels",
+   "repo": "lake-level-mcp",
+   "h1": "Can Claude check lake levels?",
+   "title": "Can Claude check lake levels? Live gauge readings",
+   "query": "can claude check lake levels",
+   "answer": "Not on its own. Claude knows what a full pool is and roughly where big reservoirs sat in past years, but not today's reading. Lake levels move every hour, and the numbers sit in USGS, Army Corps, CDEC, Reclamation and Texas Water Development Board gauges that Claude does not read by default. Connect the free Lake Level server and Claude gets the current elevation from the government gauge, the distance below full pool and the change over 24 hours, 7 days and 30 days.",
+   "native": [
+    "Explains full pool, conservation pool and why a lake drops in summer.",
+    "Plans a trip around a level you give it."
+   ],
+   "needs": [
+    "The current gauge reading for 44 US lakes and reservoirs in 12 states.",
+    "Change over 24 hours, 7 days and 30 days, and feet below full pool.",
+    "Up to 365 days of daily or weekly history from the same gauge."
+   ],
+   "example": {
+    "prompt": "Is Lake Travis up or down this week, and how far below full is it?",
+    "tool": "get_lake_level",
+    "args": {
+     "lake": "Lake Travis"
+    },
+    "result": "Lake Travis (TX) is at 677.09 ft above sea level per the USGS gauge, measured 2026-11-03T01:45:00-06:00. That is 3.91 ft below full pool (681.0 ft). Change: -0.04 ft in 24 h, -0.05 ft in 7 days, -0.72 ft in 30 days.",
+    "note": "",
+    "is_error": false,
+    "run": "2026-11-03"
+   },
+   "faq": [
+    {
+     "q": "Which lakes does it cover?",
+     "a": "44 US lakes and reservoirs in 12 states, including Lake Travis, Lake Mead, Lake Powell, Lake Lanier, Lake Texoma and Kentucky Lake. Ask it to search by name or state."
+    },
+    {
+     "q": "Where do the numbers come from?",
+     "a": "USGS, USACE CWMS, CDEC, Reclamation RISE and TWDB gauges, read at call time. Each answer names the gauge and links to its data page."
+    }
+   ]
+  },
+  {
+   "slug": "look-up-minimum-wage",
+   "repo": "minimum-wage-mcp",
+   "h1": "Can Claude look up the current minimum wage?",
+   "title": "Can Claude look up the minimum wage for 2026 and 2027?",
+   "query": "can claude look up minimum wage",
+   "answer": "Partly. Claude knows the federal $7.25 rate and many state rates up to its training cutoff, but states raise their rates every January, and some mid-year, so the number it remembers can be a year out of date. It also mixes up tipped cash wages. Connect the free Minimum Wage server and Claude reads the state rate in force on any date in 2026 or 2027, with the tipped wage, the tip credit and the next scheduled increase.",
+   "native": [
+    "Knows the federal minimum wage and how tip credits work.",
+    "Works out yearly pay once it has an hourly rate."
+   ],
+   "needs": [
+    "The rate in force in all 50 states and DC on a date you choose in 2026 or 2027.",
+    "Increases already set for 2026 and January 1, 2027.",
+    "Tipped cash wage and tip credit for each state."
+   ],
+   "example": {
+    "prompt": "Compare the minimum wage in Florida, Michigan and Ohio on January 1, 2027.",
+    "tool": "compare_states",
+    "args": {
+     "states": [
+      "FL",
+      "MI",
+      "OH"
+     ],
+     "date": "2027-01-01"
+    },
+    "result": "On 2027-01-01, Florida has the highest minimum wage of these at $15.00 and Ohio the lowest at $11.40, a gap of $3.60 an hour or $7,488.00 a year full time. State-level rates only. City and county minimum wages (for example Seattle, Denver, Chicago, San Francisco) are out of scope and can be higher.",
+    "note": "",
+    "is_error": false,
+    "run": "2026-11-03"
+   },
+   "faq": [
+    {
+     "q": "Does it include city minimum wages?",
+     "a": "No. It returns state rates only. Cities and counties such as Seattle, Denver, Chicago and San Francisco can set higher rates, and the answer says so."
+    },
+    {
+     "q": "How current is the data?",
+     "a": "US Department of Labor state tables from July 2026, checked against state labor department pages in October 2026, with the source link for each state."
+    }
+   ]
+  },
+  {
+   "slug": "calculate-no-tax-on-overtime",
+   "repo": "no-tax-on-overtime-mcp",
+   "h1": "Can Claude calculate the no tax on overtime deduction?",
+   "title": "Can Claude calculate no tax on overtime? Schedule 1-A",
+   "query": "can claude calculate no tax on overtime",
+   "answer": "Only if its training includes the July 2025 law, and many Claude versions were trained before it or know it only in outline. The deduction has a $12,500 cap ($25,000 joint), a MAGI phase-out from $150,000 and a rule that only the half-time premium counts, which is easy to get wrong in a long answer. Connect the free No Tax on Overtime server and Claude works out the qualified overtime, the cap and the phase-out the way Schedule 1-A does, for 2025 to 2028.",
+   "native": [
+    "Explains in general terms what the overtime deduction is.",
+    "Does simple sums when you give it the qualified amount."
+   ],
+   "needs": [
+    "The P.L. 119-21 rules: caps, MAGI phase-outs and the FLSA premium rule.",
+    "Tips and senior deductions with the same rules.",
+    "The 2025 and 2026 IRS brackets to estimate the tax you save."
+   ],
+   "example": {
+    "prompt": "I am single, MAGI $68,000. I worked 300 overtime hours in 2025 at $24 an hour, time and a half. What is my overtime deduction?",
+    "tool": "calculate_overtime_deduction",
+    "args": {
+     "filing_status": "single",
+     "magi": 68000,
+     "tax_year": 2025,
+     "hourly_rate": 24,
+     "overtime_hours": 300,
+     "multiplier": 1.5
+    },
+    "result": "Qualified overtime premium $3,600. After the $12,500 cap: $3,600. MAGI $68,000 is not above the $150,000 threshold, so there is no phase-out. Deduction for 2025: $3,600. Only the FLSA premium (the \"half\" in time-and-a-half) qualifies, not the straight-time part or any extra premium.",
+    "note": "",
+    "is_error": false,
+    "run": "2026-11-03"
+   },
+   "faq": [
+    {
+     "q": "Does the whole overtime check count?",
+     "a": "No. Only the premium part counts, the extra half in time and a half. In the example, $10,800 of overtime pay gives a $3,600 deduction."
+    },
+    {
+     "q": "Does it lower Social Security and Medicare tax?",
+     "a": "No. It lowers federal income tax only. Payroll taxes still apply to overtime pay."
+    }
+   ]
+  },
+  {
+   "slug": "adjust-for-inflation",
+   "repo": "cpi-inflation-calculator-mcp",
+   "h1": "Can Claude adjust a price for inflation?",
+   "title": "Can Claude adjust for inflation? Official CPI data",
+   "query": "can claude calculate inflation",
+   "answer": "It can do the formula, but it does not know the latest CPI. The Bureau of Labor Statistics publishes a new index every month, and Claude only knows the months before its training cutoff, so an inflation-adjusted figure it gives from memory is stale or guessed. Connect the free CPI Inflation Calculator server and Claude uses official BLS CPI-U, CPI-W and core CPI values from 1913 to the latest month, then gives the exact adjusted amount and the yearly rate.",
+   "native": [
+    "Knows the inflation formula: amount times new CPI over old CPI.",
+    "Explains the difference between CPI-U, CPI-W and core CPI."
+   ],
+   "needs": [
+    "Official monthly and yearly CPI values, 1913 to the latest release.",
+    "Whether a raise beat inflation over the same months.",
+    "The Social Security COLA for a given year."
+   ],
+   "example": {
+    "prompt": "What is $50,000 from January 2015 worth now, in buying power?",
+    "tool": "calculate_inflation",
+    "args": {
+     "amount": 50000,
+     "from": "2015-01",
+     "to": "latest"
+    },
+    "result": "$50,000.00 in January 2015 has the same buying power as $72,085.99 in September 2026 (CPI-U 233.707 to 336.94). Cumulative inflation 44.17%, about 3.19% a year over 11.67 years.",
+    "note": "On this run the live BLS check hit its daily request limit, so the server used its bundled BLS data through September 2026 and said so in the answer.",
+    "is_error": false,
+    "run": "2026-11-03"
+   },
+   "faq": [
+    {
+     "q": "Which CPI does it use?",
+     "a": "CPI-U, all items, US city average, not seasonally adjusted, unless you ask for CPI-W or core CPI."
+    },
+    {
+     "q": "What if the newest month is missing?",
+     "a": "The answer names the latest month it used. When the live BLS API is not reachable it falls back to bundled data and says so."
+    }
+   ]
+  },
+  {
+   "slug": "look-up-per-diem-rates",
+   "repo": "irs-mileage-rate-per-diem-mcp",
+   "h1": "Can Claude look up GSA per diem rates?",
+   "title": "Can Claude look up GSA per diem rates for a trip?",
+   "query": "can claude look up per diem rates",
+   "answer": "Not reliably from memory. GSA sets lodging and meals rates for hundreds of US areas each fiscal year, many change by month, and the new year starts every October 1, so the rate Claude remembers is often last year's. Connect the free IRS Mileage Rate and Per Diem server and Claude reads the FY2026 and FY2027 GSA rates by city or ZIP code, then totals a trip with the 75% first and last day rule.",
+   "native": [
+    "Explains what per diem covers and how the 75% travel day rule works.",
+    "Adds up a trip once it has the daily rates."
+   ],
+   "needs": [
+    "GSA lodging and M&IE rates by city, county or ZIP for FY2026 and FY2027.",
+    "Monthly lodging seasons for areas that have them.",
+    "The IRS high-low rates and a deduction for meals already provided."
+   ],
+   "example": {
+    "prompt": "What is the federal per diem for a 4-day trip to Chicago from November 16 to 19, 2026?",
+    "tool": "calculate_trip_per_diem",
+    "args": {
+     "city": "Chicago",
+     "state": "IL",
+     "start_date": "2026-11-16",
+     "end_date": "2026-11-19"
+    },
+    "result": "4-day trip to Chicago, IL (2026-11-16 to 2026-11-19): lodging up to $696.00 for 3 nights, M&IE $322.00 ($92 a full day, $69 first and last day). Maximum per diem $1,018.00.",
+    "note": "",
+    "is_error": false,
+    "run": "2026-11-03"
+   },
+   "faq": [
+    {
+     "q": "Does it cover trips abroad?",
+     "a": "No. It covers the continental US (CONUS) GSA rates only."
+    },
+    {
+     "q": "Can my employer pay up to these rates tax free?",
+     "a": "Under Rev. Proc. 2019-48 an allowance up to the federal rate counts as substantiated, but you still need records of time, place and business purpose."
+    }
+   ]
+  },
+  {
+   "slug": "calculate-mileage-deduction",
+   "repo": "irs-mileage-rate-per-diem-mcp",
+   "h1": "Can Claude calculate a 2026 mileage deduction?",
+   "title": "Can Claude calculate a 2026 mileage deduction?",
+   "query": "can claude calculate mileage deduction",
+   "answer": "It can multiply, but it may use the wrong rate. 2026 has two IRS business rates, 72.5 cents a mile to June 30 and 76 cents from July 1, and the mid-year change came after most models were trained. Medical and charity miles use other rates. Connect the free IRS Mileage Rate and Per Diem server and Claude applies the right rate to each trip by date and purpose, with the IRS notice that sets it.",
+   "native": [
+    "Explains the standard mileage method and what records to keep.",
+    "Totals miles from a log you paste."
+   ],
+   "needs": [
+    "The IRS rates for business, medical, charity and moving miles, by date.",
+    "The July 1, 2026 business rate change (Announcement 2026-11).",
+    "A line-by-line deduction with the source for each rate."
+   ],
+   "example": {
+    "prompt": "Work out my 2026 mileage deduction: 1,240 business miles in March, 85 medical miles in June and 40 charity miles in July.",
+    "tool": "calculate_mileage_deduction",
+    "args": {
+     "trips": [
+      {
+       "date": "2026-03-10",
+       "miles": 1240,
+       "purpose": "business"
+      },
+      {
+       "date": "2026-06-02",
+       "miles": 85,
+       "purpose": "medical"
+      },
+      {
+       "date": "2026-07-15",
+       "miles": 40,
+       "purpose": "charity"
+      }
+     ]
+    },
+    "result": "1240 business miles in Jan. 1 - June 30, 2026 at 72.5 cents = $899.00; 85 medical miles in Jan. 1 - June 30, 2026 at 20.5 cents = $17.43; 40 charity miles in July 1 - Dec. 31, 2026 at 14 cents = $5.60. Total $922.03. 2026 has two business rates: 72.5 cents before July 1 and 76 cents from July 1 (Announcement 2026-11).",
+    "note": "",
+    "is_error": false,
+    "run": "2026-11-03"
+   },
+   "faq": [
+    {
+     "q": "What are the 2026 IRS mileage rates?",
+     "a": "Business 72.5 cents to June 30, 2026 and 76 cents from July 1. Medical and moving 20.5 cents, then 23.5 cents from July 1. Charity 14 cents, set by law."
+    },
+    {
+     "q": "Are the 2027 rates included?",
+     "a": "Not yet. The IRS usually announces them in late December, and the server will be updated then."
+    }
+   ]
+  },
+  {
+   "slug": "count-business-days",
+   "repo": "us-federal-holidays-business-days-mcp",
+   "h1": "Can Claude count business days?",
+   "title": "Can Claude count business days between two dates?",
+   "query": "can claude count business days",
+   "answer": "It often gets them wrong. Counting business days means walking a calendar day by day, skipping weekends and the federal holidays, including observed days when a holiday falls on a weekend, and language models are weak at that kind of exact date walk over weeks or months. Connect the free US Federal Holidays and Business Days server and Claude gets an exact count from the OPM rules, 1971 to 2100, plus due dates that roll past weekends and holidays.",
+   "native": [
+    "Lists the federal holidays and explains observed-day rules.",
+    "Counts short spans correctly most of the time."
+   ],
+   "needs": [
+    "An exact business-day count between any two dates.",
+    "Adding N business days, and rolling an invoice due date.",
+    "The Federal Reserve banking calendar as a second option."
+   ],
+   "example": {
+    "prompt": "How many business days are there from December 1, 2026 to January 15, 2027?",
+    "tool": "count_business_days",
+    "args": {
+     "start_date": "2026-12-01",
+     "end_date": "2027-01-15"
+    },
+    "result": "There are 32 business days from 2026-12-01 to 2027-01-15 (start included, end included) on the federal calendar: 46 calendar days, 12 weekend days. Excluded weekday holidays: 2026-12-25 Christmas Day; 2027-01-01 New Year's Day.",
+    "note": "",
+    "is_error": false,
+    "run": "2026-11-03"
+   },
+   "faq": [
+    {
+     "q": "Does it know state holidays?",
+     "a": "No. It uses the federal and Federal Reserve calendars. You can pass extra closed dates, such as a company shutdown, and they are skipped too."
+    },
+    {
+     "q": "What happens when a holiday falls on a Saturday?",
+     "a": "Federal offices observe it on the Friday before. The Federal Reserve stays open that Friday, which is why the server has both calendars."
+    }
+   ]
+  },
+  {
+   "slug": "look-up-401k-limits",
+   "repo": "retirement-contribution-limits-2027-mcp",
+   "h1": "Can Claude look up the 2027 401(k) limits?",
+   "title": "Can Claude look up 2027 401(k) and IRA limits?",
+   "query": "can claude look up 2027 401k limits",
+   "answer": "Not yet, and no tool can: on November 3, 2026 the IRS had not announced the 2027 401(k) and IRA limits. Claude may still guess a 2027 number from past increases. Connect the free Retirement Contribution Limits server and Claude gets the published limits only. It says plainly when a year is not out, returns the 2026 figures with the age 60 to 63 super catch-up, and already has the 2027 HSA limits, which are published.",
+   "native": [
+    "Explains catch-up contributions and how 401(k) and IRA limits combine.",
+    "Recalls limits for years before its training cutoff."
+   ],
+   "needs": [
+    "Published limits only, with a clear answer when a year is not announced.",
+    "Your maximum for 401(k), 403(b), 457(b), TSP, SIMPLE, IRA and HSA by age.",
+    "The 2027 HSA limits, already set by the IRS."
+   ],
+   "example": {
+    "prompt": "I am 61. What is the most I can put in my 401(k) and IRA for 2026?",
+    "tool": "calculate_max_contribution",
+    "args": {
+     "age": 61,
+     "year": 2026,
+     "plans": [
+      "401k",
+      "ira"
+     ]
+    },
+    "result": "Age 61 in 2026: 401k $35,750 (incl. $11,250 age 60 63 super catch-up); ira $8,600 (incl. $1,100 age 50 plus catch-up). Combined employee maximum $44,350. Eligible for the age 60-63 super catch-up.",
+    "note": "",
+    "is_error": false,
+    "run": "2026-11-03"
+   },
+   "example2": {
+    "prompt": "Same question for 2027.",
+    "tool": "calculate_max_contribution",
+    "args": {
+     "age": 61,
+     "year": 2027,
+     "plans": [
+      "401k",
+      "ira",
+      "hsa_self"
+     ]
+    },
+    "result": "The IRS has not announced the 2027 401(k), 403(b), 457, IRA, SIMPLE, 415(c), compensation or HCE limits. On 2026-11-02 the IRS news release list ran through IR-2026-129 (Oct. 29, 2026) with no cost-of-living notice for 2027 (the 2026 notice, IR-2025-111 / Notice 2025-67, came out in November 2025). This server does not guess or forecast. Use 2026 as the latest published year. HSA limits for 2027 are published: use plans [\"hsa_self\"] or [\"hsa_family\"] for 2027.",
+    "note": "",
+    "is_error": true,
+    "run": "2026-11-03"
+   },
+   "faq": [
+    {
+     "q": "When will the 2027 limits come out?",
+     "a": "The 2026 limits were announced in November 2025 (IR-2025-111, Notice 2025-67). The 2027 notice is expected on a similar schedule. The server adds the figures once the IRS publishes them."
+    },
+    {
+     "q": "What are the 2027 HSA limits?",
+     "a": "From the server: $4,500 for self-only coverage and $9,000 for family coverage, plus $1,000 at age 55 and over."
+    }
+   ]
+  },
+  {
+   "slug": "check-silver-price",
+   "repo": "silver-price-per-gram-mcp",
+   "h1": "Can Claude check the current silver price?",
+   "title": "Can Claude check the silver price today? Live per gram",
+   "query": "can claude check silver price",
+   "answer": "Not from memory. Claude's training data stops at a cutoff, and silver trades every minute, so a price it recalls is out of date. With web search on, Claude.ai can find a quote on a web page, but it may be delayed and the fineness and coin math is left to Claude. Connect the free Silver Price per Gram server and Claude reads the spot price live, then gives price per gram for .999, sterling and coin silver, and the melt value of pre-1965 US coins.",
+   "native": [
+    "Explains sterling, coin silver and what junk silver means.",
+    "Does the arithmetic once it has a price you give it.",
+    "With web search on, finds a quoted price on a web page."
+   ],
+   "needs": [
+    "The silver spot price right now, with a timestamp, in about 160 currencies.",
+    "Price per gram for .999, .9584, .925, .900 and 800 silver.",
+    "Melt value of 90% US coins from face value, and the gold to silver ratio."
+   ],
+   "example": {
+    "prompt": "I have $5 face value of pre-1965 dimes and quarters. What is the silver worth today, and what would a dealer at 10% under melt pay?",
+    "tool": "calculate_junk_silver_value",
+    "args": {
+     "face_value_90": 5,
+     "currency": "USD",
+     "dealer_spread_percent": 10
+    },
+    "result": "5 USD face of 90% coin contain 3.617 troy oz of silver, a melt value of 177.85 USD at a spot of 49.17 USD per troy ounce (as of 2026-11-03T08:01:55Z). One dollar face of pre-1965 90% dimes, quarters or halves holds 0.723392 troy oz (22.5 g), worth 35.57 USD now; dealers often quote 0.715 oz per dollar for worn coins. With a 10% dealer spread, a buyer would offer about 160.06 USD. As-minted silver content; worn coins hold slightly less.",
+    "note": "",
+    "is_error": false,
+    "run": "2026-11-03"
+   },
+   "faq": [
+    {
+     "q": "Where does the price come from?",
+     "a": "The gold-api.com silver spot feed, read when the tool runs, with central-bank FX rates from Frankfurter for other currencies."
+    },
+    {
+     "q": "Is melt value what a coin is worth?",
+     "a": "Not always. Dealers buy below melt and sell above it, and rare or collectible coins can be worth far more than their silver."
+    }
+   ]
+  },
+  {
+   "slug": "check-river-levels",
+   "repo": "river-level-mcp",
+   "h1": "Can Claude check river levels?",
+   "title": "Can Claude check river levels and flood stage?",
+   "query": "can claude check river levels",
+   "answer": "Not on its own. Claude can explain river stage, discharge and flood categories, but the reading at a gauge changes by the hour and lives in USGS and National Weather Service data that Claude does not read by default. Connect the free River Level server and Claude gets the current stage and flow at any active USGS stream gauge, how far the river is from flood stage, and the NWS forecast where one exists.",
+   "native": [
+    "Explains stage, discharge and the NWS flood categories.",
+    "Reads a number you paste from a gauge page."
+   ],
+   "needs": [
+    "Current stage and streamflow at any active USGS gauge, found by name, state or location.",
+    "Distance to NWS flood stage and forecast crests.",
+    "Daily history for 2 to 366 days."
+   ],
+   "example": {
+    "prompt": "What is the Mississippi River at St. Louis doing right now, and how far is it from flood stage?",
+    "tool": "get_river_level",
+    "args": {
+     "site": "07010000"
+    },
+    "result": "Mississippi River at St. Louis, MO (USGS 07010000): gage height (river stage) 3.59 ft, discharge (streamflow) 126,000 ft3/s, measured 2026-11-03T07:30:00+00:00. NWS flood status: below flood stage, 26.41 ft below flood stage (30 ft).",
+    "note": "The server found the gauge number first with find_river_gauges (\"Mississippi River St. Louis\", MO), then read it.",
+    "is_error": false,
+    "run": "2026-11-03"
+   },
+   "faq": [
+    {
+     "q": "Is the data official?",
+     "a": "Yes. It comes from USGS stream gauges and the NOAA National Water Prediction Service. USGS real-time values are provisional and can be revised."
+    },
+    {
+     "q": "Does it cover lakes too?",
+     "a": "Lakes and reservoirs are in the separate Lake Level server, which reads reservoir elevation and full pool."
+    }
+   ]
+  },
+  {
+   "slug": "look-up-sat-percentiles",
+   "repo": "sat-score-percentiles-mcp",
+   "h1": "Can Claude tell me my SAT percentile?",
+   "title": "Can Claude tell me my SAT percentile? Class of 2026",
+   "query": "can claude tell me sat percentile",
+   "answer": "Roughly, from an older year. Claude has seen College Board percentile tables up to its training cutoff, but the tables are updated each year, and the class of 2026 report came out in fall 2026. From memory it may also mix up the user group and nationally representative percentiles. Connect the free SAT Score Percentiles server and Claude reads both percentiles from the College Board tables, plus the class of 2026 mean and state averages.",
+   "native": [
+    "Explains what a percentile means and how SAT sections combine.",
+    "Gives an approximate percentile from older tables."
+   ],
+   "needs": [
+    "User group and nationally representative percentiles for total, Math and Reading and Writing.",
+    "The class of 2026 mean, score bands and test-taker counts.",
+    "Average scores and participation by state."
+   ],
+   "example": {
+    "prompt": "What percentile is a 1350 on the SAT?",
+    "tool": "get_sat_percentile",
+    "args": {
+     "score": 1350,
+     "section": "total"
+    },
+    "result": "An SAT total score of 1350 is at the 89th percentile of recent SAT takers (College Board user group percentile) and the 94th percentile of all US 11th and 12th graders (nationally representative percentile). It is 305 points above the class of 2026 mean of 1045 (1,954,833 test takers). 19% of the class of 2026 (377,381 students) scored 1200-1390.",
+    "note": "",
+    "is_error": false,
+    "run": "2026-11-03"
+   },
+   "faq": [
+    {
+     "q": "What is the difference between the two percentiles?",
+     "a": "The user group percentile compares you with recent SAT takers. The nationally representative one compares you with all US 11th and 12th graders, including students who do not take the SAT, so it is higher."
+    },
+    {
+     "q": "Is this live data?",
+     "a": "It is static data from the College Board class of 2026 report. It will be rebuilt when the class of 2027 report comes out."
+    }
+   ]
+  }
+ ]
+}

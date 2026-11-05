@@ -1,0 +1,16 @@
+
+✓ CLEAN  hz/new/c0.html
+
+✓ CLEAN  hz/new/c1.html
+
+✓ CLEAN  hz/new/c2.html
+
+✓ CLEAN  hz/new/f0.html
+
+✓ CLEAN  hz/new/f1.html
+
+✓ CLEAN  hz/new/f2.html
+
+============================================================
+SCANNED 6 file(s): 6 clean, 0 with HARD fails, 0 hard / 0 soft violations total.
+RESULT: PASS - no AI-formatting tells detected. Deploy-clean.

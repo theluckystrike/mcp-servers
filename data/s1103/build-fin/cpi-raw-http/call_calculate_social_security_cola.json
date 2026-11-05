@@ -1,0 +1,54 @@
+{
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "2027 Social Security COLA by the CPI-W formula: 3.6% (Q3 2026 CPI-W average 328.746 vs Q3 2025 317.265, unrounded 3.619%). Payable for December 2026 (received in January 2027). SSA announced 3.6% for 2027 (Federal Register, Oct. 26, 2026). Note: Live BLS API check failed (BLS API REQUEST_NOT_PROCESSED: Request could not be serviced, as the daily threshold for total number of requests allocated to the user with registration key  has been reached.). Using bundled BLS data through September 2026, fetched 2026-11-03. Newer months, if any, are not included.\n\nIndex values from the U.S. Bureau of Labor Statistics. General information, not financial advice."
+      },
+      {
+        "type": "text",
+        "text": "{\n  \"cola_year\": 2027,\n  \"benefits_affected\": \"Payable for December 2026 (received in January 2027)\",\n  \"q3_measurement_year\": 2026,\n  \"q3_cpi_w\": {\n    \"year\": 2026,\n    \"months\": {\n      \"July\": 327.104,\n      \"August\": 328.481,\n      \"September\": 330.654\n    },\n    \"average\": 328.746\n  },\n  \"q3_base\": {\n    \"year\": 2025,\n    \"months\": {\n      \"July\": 316.349,\n      \"August\": 317.306,\n      \"September\": 318.139\n    },\n    \"average\": 317.265\n  },\n  \"unrounded_percent\": 3.619,\n  \"cola_percent\": 3.6,\n  \"method\": \"Average CPI-W for July-September of the measurement year divided by the same average for the prior year, minus 1, rounded to the nearest 0.1%. Assumes a COLA was paid the prior year (true every year since 2016).\",\n  \"summary\": \"2027 Social Security COLA by the CPI-W formula: 3.6% (Q3 2026 CPI-W average 328.746 vs Q3 2025 317.265, unrounded 3.619%). Payable for December 2026 (received in January 2027). SSA announced 3.6% for 2027 (Federal Register, Oct. 26, 2026).\",\n  \"data_status\": {\n    \"live\": false,\n    \"latest_month\": \"September 2026\",\n    \"bundled_through\": \"September 2026\",\n    \"bundled_fetched\": \"2026-11-03\",\n    \"note\": \"Live BLS API check failed (BLS API REQUEST_NOT_PROCESSED: Request could not be serviced, as the daily threshold for total number of requests allocated to the user with registration key  has been reached.). Using bundled BLS data through September 2026, fetched 2026-11-03. Newer months, if any, are not included.\"\n  },\n  \"as_of\": \"2026-11-03\",\n  \"source\": \"https://data.bls.gov/timeseries/CWUR0000SA0 (BLS Public Data API https://api.bls.gov/publicAPI/v1/timeseries/data/) ; COLA rule: https://www.law.cornell.edu/uscode/text/42/415 ; https://www.federalregister.gov/documents/2026/10/26/2026-21796/cost-of-living-increase-and-other-determinations-for-2027\",\n  \"more\": \"https://statewage.com/social-security-tax-calculator/?utm_source=mcp&utm_medium=cpi-inflation-calculator-mcp\",\n  \"disclaimer\": \"Index values from the U.S. Bureau of Labor Statistics. General information, not financial advice.\"\n}"
+      }
+    ],
+    "structuredContent": {
+      "cola_year": 2027,
+      "benefits_affected": "Payable for December 2026 (received in January 2027)",
+      "q3_measurement_year": 2026,
+      "q3_cpi_w": {
+        "year": 2026,
+        "months": {
+          "July": 327.104,
+          "August": 328.481,
+          "September": 330.654
+        },
+        "average": 328.746
+      },
+      "q3_base": {
+        "year": 2025,
+        "months": {
+          "July": 316.349,
+          "August": 317.306,
+          "September": 318.139
+        },
+        "average": 317.265
+      },
+      "unrounded_percent": 3.619,
+      "cola_percent": 3.6,
+      "method": "Average CPI-W for July-September of the measurement year divided by the same average for the prior year, minus 1, rounded to the nearest 0.1%. Assumes a COLA was paid the prior year (true every year since 2016).",
+      "summary": "2027 Social Security COLA by the CPI-W formula: 3.6% (Q3 2026 CPI-W average 328.746 vs Q3 2025 317.265, unrounded 3.619%). Payable for December 2026 (received in January 2027). SSA announced 3.6% for 2027 (Federal Register, Oct. 26, 2026).",
+      "data_status": {
+        "live": false,
+        "latest_month": "September 2026",
+        "bundled_through": "September 2026",
+        "bundled_fetched": "2026-11-03",
+        "note": "Live BLS API check failed (BLS API REQUEST_NOT_PROCESSED: Request could not be serviced, as the daily threshold for total number of requests allocated to the user with registration key  has been reached.). Using bundled BLS data through September 2026, fetched 2026-11-03. Newer months, if any, are not included."
+      },
+      "as_of": "2026-11-03",
+      "source": "https://data.bls.gov/timeseries/CWUR0000SA0 (BLS Public Data API https://api.bls.gov/publicAPI/v1/timeseries/data/) ; COLA rule: https://www.law.cornell.edu/uscode/text/42/415 ; https://www.federalregister.gov/documents/2026/10/26/2026-21796/cost-of-living-increase-and-other-determinations-for-2027",
+      "more": "https://statewage.com/social-security-tax-calculator/?utm_source=mcp&utm_medium=cpi-inflation-calculator-mcp",
+      "disclaimer": "Index values from the U.S. Bureau of Labor Statistics. General information, not financial advice."
+    }
+  },
+  "jsonrpc": "2.0",
+  "id": 14
+}

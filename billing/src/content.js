@@ -8016,8 +8016,9 @@ which is the cost of the same design.</p>
 <p>One server is $${SINGLE_USD} once. All ${LISTED_CHILD_COUNT} servers that are sold singly are $${BUNDLE_USD}
 once, which is where the office-suite server gets its key from as well, since it has no price of its own.
 Lifetime, no subscription, no seat count. Checkout is Stripe's own page, the card never touches this
-site, and if you lose the key you can recover it at <a href="/recover">/recover</a> with the email Stripe
-collected.</p>
+site, and the key is shown on the <code>/success</code> page right after payment. If you lose it, open
+<code>/recover?session_id=...</code> with the Checkout session id from that page's address, or email
+support@zovo.one with your Stripe receipt and the key is sent back.</p>
 <p>The free tier is not a trial. It has no expiry, needs no card and no account, and on most servers it is
 meant to be the whole product for light use. Three examples, read from
 <code>data/facts.json</code>:</p>

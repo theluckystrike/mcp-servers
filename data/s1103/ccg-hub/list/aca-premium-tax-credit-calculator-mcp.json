@@ -1,0 +1,252 @@
+{
+ "result": {
+  "tools": [
+   {
+    "name": "get_federal_poverty_level",
+    "title": "Federal poverty line for ACA premium tax credits",
+    "description": "Returns the federal poverty line (FPL) used for the ACA premium tax credit for a coverage year, household size and state, plus the 100%, 133%, 138%, 150%, 200%, 250%, 300% and 400% income thresholds. Coverage year Y uses the HHS guidelines published in year Y-1: 2026 coverage uses the 2025 guidelines ($15,650 for one person in the 48 states and DC, $19,550 Alaska, $17,990 Hawaii); 2025 coverage uses 2024; 2027 coverage uses 2026. Copied from the Federal Register notices, not model memory.",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "year": {
+       "type": "integer",
+       "description": "Coverage (tax) year: 2025, 2026 or 2027. Default 2026."
+      },
+      "household_size": {
+       "type": "integer",
+       "minimum": 1,
+       "maximum": 30,
+       "description": "Tax family size: you, your spouse if filing jointly, and every dependent you claim."
+      },
+      "state": {
+       "type": "string",
+       "minLength": 2,
+       "maxLength": 40,
+       "description": "State of residence: two-letter code or name (AK and HI have their own poverty lines; all other states and DC share one)."
+      },
+      "household_income": {
+       "type": "number",
+       "minimum": 0,
+       "maximum": 100000000,
+       "description": "Household income in dollars for the coverage year: modified AGI of you, your spouse and dependents who must file."
+      }
+     },
+     "required": [
+      "household_size",
+      "state"
+     ],
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false,
+     "title": "Federal poverty level"
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "calculate_premium_tax_credit",
+    "title": "ACA premium tax credit (Obamacare subsidy) for 2025 or 2026",
+    "description": "Calculates the ACA Marketplace premium tax credit (IRC sec. 36B) the way Form 8962 does. For 2026 coverage the enhanced ARPA/IRA credits have expired (no extension enacted as of 2026-11-02): the IRS Rev. Proc. 2025-25 table applies (2.10% of income below 133% FPL rising to 9.96% at 300-400% FPL) and there is NO credit above 400% FPL. For 2025 the enhanced table applies (0% up to 150% FPL, 8.5% cap, no income limit). Returns FPL percentage, applicable figure, expected contribution, annual and monthly credit, and net premium. Models trained before 2026 often still apply the 8.5% cap to 2026.",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "household_income": {
+       "type": "number",
+       "minimum": 0,
+       "maximum": 100000000,
+       "description": "Household income in dollars for the coverage year: modified AGI of you, your spouse and dependents who must file."
+      },
+      "household_size": {
+       "type": "integer",
+       "minimum": 1,
+       "maximum": 30,
+       "description": "Tax family size: you, your spouse if filing jointly, and every dependent you claim."
+      },
+      "state": {
+       "type": "string",
+       "minLength": 2,
+       "maxLength": 40,
+       "description": "State of residence: two-letter code or name (AK and HI have their own poverty lines; all other states and DC share one)."
+      },
+      "benchmark_premium": {
+       "type": "number",
+       "exclusiveMinimum": 0,
+       "maximum": 10000000,
+       "description": "Premium of the second lowest cost silver plan (SLCSP, the benchmark) for the household, from HealthCare.gov or Form 1095-A column B."
+      },
+      "year": {
+       "type": "integer",
+       "description": "Coverage (tax) year: 2025 or 2026. Default 2026."
+      },
+      "enrolled_premium": {
+       "type": "number",
+       "minimum": 0,
+       "maximum": 10000000,
+       "description": "Premium of the plan you actually enroll in. The credit cannot exceed it. Optional."
+      },
+      "premium_period": {
+       "type": "string",
+       "enum": [
+        "annual",
+        "monthly"
+       ],
+       "description": "Whether premiums are annual (default) or monthly amounts."
+      }
+     },
+     "required": [
+      "household_income",
+      "household_size",
+      "state",
+      "benchmark_premium"
+     ],
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false,
+     "title": "Premium tax credit"
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "check_subsidy_cliff",
+    "title": "2026 ACA subsidy cliff at 400% FPL",
+    "description": "Shows the dollar effect of the 400% federal poverty line subsidy cliff that returned for 2026 coverage after the enhanced premium tax credits expired: the cliff income for the household, the credit at exactly 400% FPL, the credit at $1 more (zero), and the loss. With household_income it also gives the credit under 2026 rules, what the expired 2021-2025 enhanced rules would have given, and how much modified AGI must drop (for example through HSA or retirement contributions) to get back under the cliff.",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "household_size": {
+       "type": "integer",
+       "minimum": 1,
+       "maximum": 30,
+       "description": "Tax family size: you, your spouse if filing jointly, and every dependent you claim."
+      },
+      "state": {
+       "type": "string",
+       "minLength": 2,
+       "maxLength": 40,
+       "description": "State of residence: two-letter code or name (AK and HI have their own poverty lines; all other states and DC share one)."
+      },
+      "benchmark_premium": {
+       "type": "number",
+       "exclusiveMinimum": 0,
+       "maximum": 10000000,
+       "description": "Premium of the second lowest cost silver plan (SLCSP, the benchmark) for the household, from HealthCare.gov or Form 1095-A column B."
+      },
+      "household_income": {
+       "type": "number",
+       "minimum": 0,
+       "maximum": 100000000,
+       "description": "Household income in dollars for the coverage year: modified AGI of you, your spouse and dependents who must file."
+      },
+      "premium_period": {
+       "type": "string",
+       "enum": [
+        "annual",
+        "monthly"
+       ],
+       "description": "Whether premiums are annual (default) or monthly amounts."
+      }
+     },
+     "required": [
+      "household_size",
+      "state",
+      "benchmark_premium"
+     ],
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false,
+     "title": "Subsidy cliff"
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "get_aptc_repayment_cap",
+    "title": "Excess advance premium tax credit repayment cap",
+    "description": "Returns the cap on repaying excess advance premium tax credit (APTC) at tax time. For tax year 2025: Form 8962 Table 5 ($375/$750 below 200% FPL, $975/$1,950 at 200-300%, $1,625/$3,250 at 300-400%, single/other filing status; no cap at 400% or more). For tax year 2026 and later there is NO cap: the One Big Beautiful Bill Act (P.L. 119-21 sec. 71305) repealed it, so the full excess is repaid. Many models trained before 2026 still quote the old caps.",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "tax_year": {
+       "type": "integer",
+       "description": "Tax year: 2025 or later. Default 2026."
+      },
+      "household_income": {
+       "type": "number",
+       "minimum": 0,
+       "maximum": 100000000,
+       "description": "Household income in dollars for the coverage year: modified AGI of you, your spouse and dependents who must file."
+      },
+      "household_size": {
+       "type": "integer",
+       "minimum": 1,
+       "maximum": 30,
+       "description": "Tax family size: you, your spouse if filing jointly, and every dependent you claim."
+      },
+      "state": {
+       "type": "string",
+       "minLength": 2,
+       "maxLength": 40,
+       "description": "State of residence: two-letter code or name (AK and HI have their own poverty lines; all other states and DC share one)."
+      },
+      "filing_status": {
+       "type": "string",
+       "enum": [
+        "single",
+        "head_of_household",
+        "married_filing_jointly",
+        "married_filing_separately",
+        "qualifying_surviving_spouse"
+       ],
+       "description": "Filing status. Table 5 has a single column and an any-other-status column."
+      },
+      "excess_aptc": {
+       "type": "number",
+       "minimum": 0,
+       "maximum": 10000000,
+       "description": "Advance payments minus the credit you are allowed (Form 8962 line 27). Optional."
+      }
+     },
+     "required": [
+      "household_income",
+      "household_size",
+      "state",
+      "filing_status"
+     ],
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false,
+     "title": "APTC repayment cap"
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   }
+  ]
+ },
+ "jsonrpc": "2.0",
+ "id": 2
+}

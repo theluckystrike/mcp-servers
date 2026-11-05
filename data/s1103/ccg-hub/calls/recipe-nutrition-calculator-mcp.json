@@ -1,0 +1,244 @@
+{
+ "result": {
+  "content": [
+   {
+    "type": "text",
+    "text": "Recipe of 6 lines (916.7 g matched): 2799.5 kcal total, 233.3 kcal per serving over 12 servings. Per serving: 3.9 g protein, 9.4 g fat, 33.8 g carbohydrate, 0.6 g fiber, 162.2 mg sodium. FDA label rounding gives 230 calories per serving. Every line was matched to a USDA FoodData Central food. Values are for the raw ingredients as listed; cooking losses and water evaporation are not modeled.\n\n{\n  \"summary\": \"Recipe of 6 lines (916.7 g matched): 2799.5 kcal total, 233.3 kcal per serving over 12 servings. Per serving: 3.9 g protein, 9.4 g fat, 33.8 g carbohydrate, 0.6 g fiber, 162.2 mg sodium. FDA label rounding gives 230 calories per serving. Every line was matched to a USDA FoodData Central food. Values are for the raw ingredients as listed; cooking losses and water evaporation are not modeled.\",\n  \"servings\": 12,\n  \"total\": {\n    \"kcal\": 2799.5,\n    \"protein_g\": 46.9,\n    \"fat_g\": 112.4,\n    \"sat_fat_g\": 66.4,\n    \"carbs_g\": 406,\n    \"fiber_g\": 6.8,\n    \"sugars_g\": 212.9,\n    \"sodium_mg\": 1945.9\n  },\n  \"per_serving\": {\n    \"kcal\": 233.3,\n    \"protein_g\": 3.9,\n    \"fat_g\": 9.4,\n    \"sat_fat_g\": 5.5,\n    \"carbs_g\": 33.8,\n    \"fiber_g\": 0.6,\n    \"sugars_g\": 17.7,\n    \"sodium_mg\": 162.2\n  },\n  \"serving_weight_g\": 76.4,\n  \"total_weight_g\": 916.7,\n  \"per_serving_label\": {\n    \"calories\": {\n      \"declared\": 230,\n      \"text\": \"230\",\n      \"percent_dv\": null,\n      \"rule\": \"101.9(c)(1): under 5 = 0; up to 50 nearest 5; above 50 nearest 10\"\n    },\n    \"total_fat\": {\n      \"declared\": 9,\n      \"text\": \"9g\",\n      \"percent_dv\": 12,\n      \"rule\": \"101.9(c)(2): under 0.5 g = 0; under 5 g nearest 0.5 g; otherwise nearest 1 g. DV 78 g\"\n    },\n    \"saturated_fat\": {\n      \"declared\": 6,\n      \"text\": \"6g\",\n      \"percent_dv\": 28,\n      \"rule\": \"101.9(c)(2)(i): same steps as total fat. DV 20 g\"\n    },\n    \"sodium\": {\n      \"declared\": 160,\n      \"text\": \"160mg\",\n      \"percent_dv\": 7,\n      \"rule\": \"101.9(c)(4): under 5 mg = 0; 5 to 140 mg nearest 5 mg; above 140 nearest 10 mg. DV 2,300 mg\"\n    },\n    \"total_carbohydrate\": {\n      \"declared\": 34,\n      \"text\": \"34g\",\n      \"percent_dv\": 12,\n      \"rule\": \"101.9(c)(6): nearest 1 g; under 1 g may read \\\"less than 1g\\\"; under 0.5 g may be 0. DV 275 g\"\n    },\n    \"dietary_fiber\": {\n      \"declared\": null,\n      \"text\": \"less than 1g\",\n      \"percent_dv\": 2,\n      \"rule\": \"101.9(c)(6)(i): nearest 1 g; under 1 g may read \\\"less than 1g\\\"; under 0.5 g may be 0. DV 28 g\"\n    },\n    \"total_sugars\": {\n      \"declared\": 18,\n      \"text\": \"18g\",\n      \"percent_dv\": null,\n      \"rule\": \"101.9(c)(6)(ii): nearest 1 g; under 1 g may read \\\"less than 1g\\\"; under 0.5 g may be 0\"\n    },\n    \"protein\": {\n      \"declared\": 4,\n      \"text\": \"4g\",\n      \"percent_dv\": null,\n      \"rule\": \"101.9(c)(7): nearest 1 g; under 1 g may read \\\"less than 1g\\\"; under 0.5 g may be 0\"\n    }\n  },\n  \"lines\": [\n    {\n      \"line\": \"2 cups all-purpose flour\",\n      \"quantity\": 2,\n      \"unit\": \"cups\",\n      \"ingredient_text\": \"all-purpose flour\",\n      \"matched\": {\n        \"id\": \"flour-ap\",\n        \"name\": \"Flour, all-purpose\",\n        \"fdc_id\": 168894,\n        \"match\": 1\n      },\n      \"grams\": 250,\n      \"grams_basis\": \"USDA household measure: 1 cup = 125 g (FDC 168894), 125 g per US cup\",\n      \"nutrients\": {\n        \"kcal\": 910,\n        \"protein_g\": 25.83,\n        \"fat_g\": 2.45,\n        \"sat_fat_g\": 0.39,\n        \"carbs_g\": 190.78,\n        \"fiber_g\": 6.75,\n        \"sugars_g\": 0.68,\n        \"sodium_mg\": 5\n      }\n    },\n    {\n      \"line\": \"1/2 cup butter\",\n      \"quantity\": 0.5,\n      \"unit\": \"cup\",\n      \"ingredient_text\": \"butter\",\n      \"matched\": {\n        \"id\": \"butter-salted\",\n        \"name\": \"Butter, salted\",\n        \"fdc_id\": 173410,\n        \"match\": 1\n      },\n      \"grams\": 113.5,\n      \"grams_basis\": \"USDA household measure: 1 cup = 227 g (FDC 173410), 227 g per US cup\",\n      \"nutrients\": {\n        \"kcal\": 813.8,\n        \"protein_g\": 0.96,\n        \"fat_g\": 92.06,\n        \"sat_fat_g\": 58.3,\n        \"carbs_g\": 0.07,\n        \"fiber_g\": 0,\n        \"sugars_g\": 0.07,\n        \"sodium_mg\": 729.81\n      }\n    },\n    {\n      \"line\": \"1 cup sugar\",\n      \"quantity\": 1,\n      \"unit\": \"cup\",\n      \"ingredient_text\": \"sugar\",\n      \"matched\": {\n        \"id\": \"sugar\",\n        \"name\": \"Sugar, granulated\",\n        \"fdc_id\": 169655,\n        \"match\": 1\n      },\n      \"grams\": 200,\n      \"grams_basis\": \"USDA household measure: 1 cup = 200 g (FDC 169655), 200 g per US cup\",\n      \"nutrients\": {\n        \"kcal\": 774,\n        \"protein_g\": 0,\n        \"fat_g\": 0,\n        \"sat_fat_g\": 0,\n        \"carbs_g\": 199.96,\n        \"fiber_g\": 0,\n        \"sugars_g\": 199.6,\n        \"sodium_mg\": 2\n      }\n    },\n    {\n      \"line\": \"2 large eggs\",\n      \"quantity\": 2,\n      \"unit\": null,\n      \"ingredient_text\": \"large eggs\",\n      \"matched\": {\n        \"id\": \"egg\",\n        \"name\": \"Egg, whole, raw\",\n        \"fdc_id\": 748967,\n        \"match\": 1\n      },\n      \"grams\": 100,\n      \"grams_basis\": \"USDA household measure: 1 large = 50 g (FDC 171287)\",\n      \"nutrients\": {\n        \"kcal\": 148,\n        \"protein_g\": 12.4,\n        \"fat_g\": 9.96,\n        \"sat_fat_g\": 3.2,\n        \"carbs_g\": 0.96,\n        \"fiber_g\": 0,\n        \"sugars_g\": 0.2,\n        \"sodium_mg\": 129\n      }\n    },\n    {\n      \"line\": \"1 cup milk\",\n      \"quantity\": 1,\n      \"unit\": \"cup\",\n      \"ingredient_text\": \"milk\",\n      \"matched\": {\n        \"id\": \"milk-whole\",\n        \"name\": \"Milk, whole\",\n        \"fdc_id\": 171265,\n        \"match\": 1\n      },\n      \"grams\": 244,\n      \"grams_basis\": \"USDA household measure: 1 cup = 244 g (FDC 171265), 244 g per US cup\",\n      \"nutrients\": {\n        \"kcal\": 148.84,\n        \"protein_g\": 7.69,\n        \"fat_g\": 7.93,\n        \"sat_fat_g\": 4.55,\n        \"carbs_g\": 11.71,\n        \"fiber_g\": 0,\n        \"sugars_g\": 12.32,\n        \"sodium_mg\": 104.92\n      }\n    },\n    {\n      \"line\": \"2 tsp baking powder\",\n      \"quantity\": 2,\n      \"unit\": \"tsp\",\n      \"ingredient_text\": \"baking powder\",\n      \"matched\": {\n        \"id\": \"baking-powder\",\n        \"name\": \"Baking powder\",\n        \"fdc_id\": 172803,\n        \"match\": 1\n      },\n      \"grams\": 9.2,\n      \"grams_basis\": \"USDA household measure: 1 tsp = 4.6 g (FDC 172803), 220.8 g per US cup\",\n      \"nutrients\": {\n        \"kcal\": 4.88,\n        \"protein_g\": 0,\n        \"fat_g\": 0,\n        \"sat_fat_g\": 0,\n        \"carbs_g\": 2.55,\n        \"fiber_g\": 0.02,\n        \"sugars_g\": 0,\n        \"sodium_mg\": 975.2\n      }\n    }\n  ],\n  \"unresolved_lines\": [],\n  \"nutrients_not_reported_by_usda\": {},\n  \"as_of\": \"2026-11-02\",\n  \"source\": \"https://fdc.nal.usda.gov/fdc-datasets/FoodData_Central_sr_legacy_food_csv_2018-04.zip\",\n  \"sources\": [\n    \"https://fdc.nal.usda.gov/fdc-datasets/FoodData_Central_sr_legacy_food_csv_2018-04.zip\",\n    \"https://fdc.nal.usda.gov/fdc-datasets/FoodData_Central_foundation_food_csv_2026-04-30.zip\",\n    \"https://www.ecfr.gov/current/title-21/chapter-I/subchapter-B/part-101/subpart-A/section-101.9\"\n  ],\n  \"more\": \"https://recipetool.net/nutrition-calculator?utm_source=mcp&utm_medium=recipe-nutrition-calculator-mcp\"\n}"
+   }
+  ],
+  "structuredContent": {
+   "summary": "Recipe of 6 lines (916.7 g matched): 2799.5 kcal total, 233.3 kcal per serving over 12 servings. Per serving: 3.9 g protein, 9.4 g fat, 33.8 g carbohydrate, 0.6 g fiber, 162.2 mg sodium. FDA label rounding gives 230 calories per serving. Every line was matched to a USDA FoodData Central food. Values are for the raw ingredients as listed; cooking losses and water evaporation are not modeled.",
+   "servings": 12,
+   "total": {
+    "kcal": 2799.5,
+    "protein_g": 46.9,
+    "fat_g": 112.4,
+    "sat_fat_g": 66.4,
+    "carbs_g": 406,
+    "fiber_g": 6.8,
+    "sugars_g": 212.9,
+    "sodium_mg": 1945.9
+   },
+   "per_serving": {
+    "kcal": 233.3,
+    "protein_g": 3.9,
+    "fat_g": 9.4,
+    "sat_fat_g": 5.5,
+    "carbs_g": 33.8,
+    "fiber_g": 0.6,
+    "sugars_g": 17.7,
+    "sodium_mg": 162.2
+   },
+   "serving_weight_g": 76.4,
+   "total_weight_g": 916.7,
+   "per_serving_label": {
+    "calories": {
+     "declared": 230,
+     "text": "230",
+     "percent_dv": null,
+     "rule": "101.9(c)(1): under 5 = 0; up to 50 nearest 5; above 50 nearest 10"
+    },
+    "total_fat": {
+     "declared": 9,
+     "text": "9g",
+     "percent_dv": 12,
+     "rule": "101.9(c)(2): under 0.5 g = 0; under 5 g nearest 0.5 g; otherwise nearest 1 g. DV 78 g"
+    },
+    "saturated_fat": {
+     "declared": 6,
+     "text": "6g",
+     "percent_dv": 28,
+     "rule": "101.9(c)(2)(i): same steps as total fat. DV 20 g"
+    },
+    "sodium": {
+     "declared": 160,
+     "text": "160mg",
+     "percent_dv": 7,
+     "rule": "101.9(c)(4): under 5 mg = 0; 5 to 140 mg nearest 5 mg; above 140 nearest 10 mg. DV 2,300 mg"
+    },
+    "total_carbohydrate": {
+     "declared": 34,
+     "text": "34g",
+     "percent_dv": 12,
+     "rule": "101.9(c)(6): nearest 1 g; under 1 g may read \"less than 1g\"; under 0.5 g may be 0. DV 275 g"
+    },
+    "dietary_fiber": {
+     "declared": null,
+     "text": "less than 1g",
+     "percent_dv": 2,
+     "rule": "101.9(c)(6)(i): nearest 1 g; under 1 g may read \"less than 1g\"; under 0.5 g may be 0. DV 28 g"
+    },
+    "total_sugars": {
+     "declared": 18,
+     "text": "18g",
+     "percent_dv": null,
+     "rule": "101.9(c)(6)(ii): nearest 1 g; under 1 g may read \"less than 1g\"; under 0.5 g may be 0"
+    },
+    "protein": {
+     "declared": 4,
+     "text": "4g",
+     "percent_dv": null,
+     "rule": "101.9(c)(7): nearest 1 g; under 1 g may read \"less than 1g\"; under 0.5 g may be 0"
+    }
+   },
+   "lines": [
+    {
+     "line": "2 cups all-purpose flour",
+     "quantity": 2,
+     "unit": "cups",
+     "ingredient_text": "all-purpose flour",
+     "matched": {
+      "id": "flour-ap",
+      "name": "Flour, all-purpose",
+      "fdc_id": 168894,
+      "match": 1
+     },
+     "grams": 250,
+     "grams_basis": "USDA household measure: 1 cup = 125 g (FDC 168894), 125 g per US cup",
+     "nutrients": {
+      "kcal": 910,
+      "protein_g": 25.83,
+      "fat_g": 2.45,
+      "sat_fat_g": 0.39,
+      "carbs_g": 190.78,
+      "fiber_g": 6.75,
+      "sugars_g": 0.68,
+      "sodium_mg": 5
+     }
+    },
+    {
+     "line": "1/2 cup butter",
+     "quantity": 0.5,
+     "unit": "cup",
+     "ingredient_text": "butter",
+     "matched": {
+      "id": "butter-salted",
+      "name": "Butter, salted",
+      "fdc_id": 173410,
+      "match": 1
+     },
+     "grams": 113.5,
+     "grams_basis": "USDA household measure: 1 cup = 227 g (FDC 173410), 227 g per US cup",
+     "nutrients": {
+      "kcal": 813.8,
+      "protein_g": 0.96,
+      "fat_g": 92.06,
+      "sat_fat_g": 58.3,
+      "carbs_g": 0.07,
+      "fiber_g": 0,
+      "sugars_g": 0.07,
+      "sodium_mg": 729.81
+     }
+    },
+    {
+     "line": "1 cup sugar",
+     "quantity": 1,
+     "unit": "cup",
+     "ingredient_text": "sugar",
+     "matched": {
+      "id": "sugar",
+      "name": "Sugar, granulated",
+      "fdc_id": 169655,
+      "match": 1
+     },
+     "grams": 200,
+     "grams_basis": "USDA household measure: 1 cup = 200 g (FDC 169655), 200 g per US cup",
+     "nutrients": {
+      "kcal": 774,
+      "protein_g": 0,
+      "fat_g": 0,
+      "sat_fat_g": 0,
+      "carbs_g": 199.96,
+      "fiber_g": 0,
+      "sugars_g": 199.6,
+      "sodium_mg": 2
+     }
+    },
+    {
+     "line": "2 large eggs",
+     "quantity": 2,
+     "unit": null,
+     "ingredient_text": "large eggs",
+     "matched": {
+      "id": "egg",
+      "name": "Egg, whole, raw",
+      "fdc_id": 748967,
+      "match": 1
+     },
+     "grams": 100,
+     "grams_basis": "USDA household measure: 1 large = 50 g (FDC 171287)",
+     "nutrients": {
+      "kcal": 148,
+      "protein_g": 12.4,
+      "fat_g": 9.96,
+      "sat_fat_g": 3.2,
+      "carbs_g": 0.96,
+      "fiber_g": 0,
+      "sugars_g": 0.2,
+      "sodium_mg": 129
+     }
+    },
+    {
+     "line": "1 cup milk",
+     "quantity": 1,
+     "unit": "cup",
+     "ingredient_text": "milk",
+     "matched": {
+      "id": "milk-whole",
+      "name": "Milk, whole",
+      "fdc_id": 171265,
+      "match": 1
+     },
+     "grams": 244,
+     "grams_basis": "USDA household measure: 1 cup = 244 g (FDC 171265), 244 g per US cup",
+     "nutrients": {
+      "kcal": 148.84,
+      "protein_g": 7.69,
+      "fat_g": 7.93,
+      "sat_fat_g": 4.55,
+      "carbs_g": 11.71,
+      "fiber_g": 0,
+      "sugars_g": 12.32,
+      "sodium_mg": 104.92
+     }
+    },
+    {
+     "line": "2 tsp baking powder",
+     "quantity": 2,
+     "unit": "tsp",
+     "ingredient_text": "baking powder",
+     "matched": {
+      "id": "baking-powder",
+      "name": "Baking powder",
+      "fdc_id": 172803,
+      "match": 1
+     },
+     "grams": 9.2,
+     "grams_basis": "USDA household measure: 1 tsp = 4.6 g (FDC 172803), 220.8 g per US cup",
+     "nutrients": {
+      "kcal": 4.88,
+      "protein_g": 0,
+      "fat_g": 0,
+      "sat_fat_g": 0,
+      "carbs_g": 2.55,
+      "fiber_g": 0.02,
+      "sugars_g": 0,
+      "sodium_mg": 975.2
+     }
+    }
+   ],
+   "unresolved_lines": [],
+   "nutrients_not_reported_by_usda": {},
+   "as_of": "2026-11-02",
+   "source": "https://fdc.nal.usda.gov/fdc-datasets/FoodData_Central_sr_legacy_food_csv_2018-04.zip",
+   "sources": [
+    "https://fdc.nal.usda.gov/fdc-datasets/FoodData_Central_sr_legacy_food_csv_2018-04.zip",
+    "https://fdc.nal.usda.gov/fdc-datasets/FoodData_Central_foundation_food_csv_2026-04-30.zip",
+    "https://www.ecfr.gov/current/title-21/chapter-I/subchapter-B/part-101/subpart-A/section-101.9"
+   ],
+   "more": "https://recipetool.net/nutrition-calculator?utm_source=mcp&utm_medium=recipe-nutrition-calculator-mcp"
+  }
+ },
+ "jsonrpc": "2.0",
+ "id": 2
+}

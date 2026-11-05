@@ -1,0 +1,7 @@
+[
+ {"name":"calculate_inflation","arguments":{"amount":1000,"from":"2000","to":"latest"}},
+ {"name":"get_latest_cpi","arguments":{}},
+ {"name":"get_inflation_rate","arguments":{"year":2025}},
+ {"name":"compare_raise_to_inflation","arguments":{"old_pay":60000,"new_pay":63000,"from":"2025-01"}},
+ {"name":"calculate_social_security_cola","arguments":{"cola_year":2027}}
+]

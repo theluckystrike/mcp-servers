@@ -1,0 +1,27 @@
+{
+ "channel": {
+  "ok": true,
+  "message_id": 42,
+  "url": "https://t.me/zovoone/42"
+ },
+ "group": {
+  "ok": true,
+  "message_id": 480,
+  "thread": 2,
+  "url": "https://t.me/zovo_chat/2/480"
+ },
+ "posted_at": "2026-11-03T08:16:54.896126Z",
+ "rollback": "deleteMessage with chat_id and message_id above, via @ZovoChatBot",
+ "channel_2": {
+  "ok": true,
+  "message_id": 47,
+  "url": "https://t.me/zovoone/47"
+ },
+ "group_2": {
+  "ok": true,
+  "message_id": 490,
+  "thread": 2,
+  "url": "https://t.me/zovo_chat/2/490"
+ },
+ "posted_at_2": "2026-11-03T12:13:50.227498Z"
+}

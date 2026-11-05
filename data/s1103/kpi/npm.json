@@ -1,0 +1,1318 @@
+{
+ "generated": "2026-11-03T07:25:38.151359Z",
+ "range": "2026-10-30:2026-11-03",
+ "cmd": "GET https://api.npmjs.org/downloads/range/2026-10-30:2026-11-03/<pkg>; GET https://registry.npmjs.org/<pkg> (time.created)",
+ "packages": [
+  {
+   "pkg": "@modelcontextprotocol/sdk",
+   "days": {
+    "2026-10-30": 13292449,
+    "2026-10-31": 7801848,
+    "2026-11-01": 7867120,
+    "2026-11-02": 0,
+    "2026-11-03": 0
+   },
+   "range_err": null,
+   "last_week": 87290969,
+   "last_week_window": "2026-10-26..2026-11-01",
+   "last_day": 7867120,
+   "last_day_window": "2026-11-01..2026-11-01",
+   "created": null,
+   "modified": null,
+   "latest": null,
+   "registry_err": null
+  },
+  {
+   "pkg": "@theluckystrike/mcp-amortization",
+   "days": {
+    "2026-10-30": 190,
+    "2026-10-31": 10,
+    "2026-11-01": 8,
+    "2026-11-02": 0,
+    "2026-11-03": 0
+   },
+   "range_err": null,
+   "last_week": 208,
+   "last_week_window": "2026-10-26..2026-11-01",
+   "last_day": 8,
+   "last_day_window": "2026-11-01..2026-11-01",
+   "created": "2026-10-30T04:27:09.262Z",
+   "modified": "2026-10-30T04:28:46.074Z",
+   "latest": "0.22.6",
+   "registry_err": null
+  },
+  {
+   "pkg": "@theluckystrike/mcp-asset-register",
+   "days": {
+    "2026-10-30": 211,
+    "2026-10-31": 17,
+    "2026-11-01": 10,
+    "2026-11-02": 0,
+    "2026-11-03": 0
+   },
+   "range_err": null,
+   "last_week": 238,
+   "last_week_window": "2026-10-26..2026-11-01",
+   "last_day": 10,
+   "last_day_window": "2026-11-01..2026-11-01",
+   "created": "2026-10-30T04:26:17.699Z",
+   "modified": "2026-10-30T04:27:13.274Z",
+   "latest": "0.22.6",
+   "registry_err": null
+  },
+  {
+   "pkg": "@theluckystrike/mcp-backlink-checker",
+   "days": {
+    "2026-10-30": 166,
+    "2026-10-31": 10,
+    "2026-11-01": 6,
+    "2026-11-02": 0,
+    "2026-11-03": 0
+   },
+   "range_err": null,
+   "last_week": 182,
+   "last_week_window": "2026-10-26..2026-11-01",
+   "last_day": 6,
+   "last_day_window": "2026-11-01..2026-11-01",
+   "created": "2026-10-30T05:01:50.469Z",
+   "modified": "2026-10-30T05:02:46.252Z",
+   "latest": "0.22.6",
+   "registry_err": null
+  },
+  {
+   "pkg": "@theluckystrike/mcp-bank-statement",
+   "days": {
+    "2026-10-30": 179,
+    "2026-10-31": 12,
+    "2026-11-01": 7,
+    "2026-11-02": 0,
+    "2026-11-03": 0
+   },
+   "range_err": null,
+   "last_week": 198,
+   "last_week_window": "2026-10-26..2026-11-01",
+   "last_day": 7,
+   "last_day_window": "2026-11-01..2026-11-01",
+   "created": "2026-10-30T04:26:24.340Z",
+   "modified": "2026-10-30T04:27:20.310Z",
+   "latest": "0.22.6",
+   "registry_err": null
+  },
+  {
+   "pkg": "@theluckystrike/mcp-barcode",
+   "days": {
+    "2026-10-30": 198,
+    "2026-10-31": 11,
+    "2026-11-01": 6,
+    "2026-11-02": 0,
+    "2026-11-03": 0
+   },
+   "range_err": null,
+   "last_week": 215,
+   "last_week_window": "2026-10-26..2026-11-01",
+   "last_day": 6,
+   "last_day_window": "2026-11-01..2026-11-01",
+   "created": "2026-10-30T05:01:57.921Z",
+   "modified": "2026-10-30T05:02:53.814Z",
+   "latest": "0.22.6",
+   "registry_err": null
+  },
+  {
+   "pkg": "@theluckystrike/mcp-bill-of-sale",
+   "days": {
+    "2026-10-30": 190,
+    "2026-10-31": 11,
+    "2026-11-01": 7,
+    "2026-11-02": 0,
+    "2026-11-03": 0
+   },
+   "range_err": null,
+   "last_week": 208,
+   "last_week_window": "2026-10-26..2026-11-01",
+   "last_day": 7,
+   "last_day_window": "2026-11-01..2026-11-01",
+   "created": "2026-10-30T05:02:03.593Z",
+   "modified": "2026-10-30T05:02:59.908Z",
+   "latest": "0.22.6",
+   "registry_err": null
+  },
+  {
+   "pkg": "@theluckystrike/mcp-billing-docs",
+   "days": {
+    "2026-10-30": 214,
+    "2026-10-31": 16,
+    "2026-11-01": 9,
+    "2026-11-02": 0,
+    "2026-11-03": 0
+   },
+   "range_err": null,
+   "last_week": 239,
+   "last_week_window": "2026-10-26..2026-11-01",
+   "last_day": 9,
+   "last_day_window": "2026-11-01..2026-11-01",
+   "created": "2026-10-30T04:27:15.424Z",
+   "modified": "2026-10-30T04:28:10.938Z",
+   "latest": "0.22.6",
+   "registry_err": null
+  },
+  {
+   "pkg": "@theluckystrike/mcp-budget",
+   "days": {
+    "2026-10-30": 305,
+    "2026-10-31": 12,
+    "2026-11-01": 7,
+    "2026-11-02": 0,
+    "2026-11-03": 0
+   },
+   "range_err": null,
+   "last_week": 324,
+   "last_week_window": "2026-10-26..2026-11-01",
+   "last_day": 7,
+   "last_day_window": "2026-11-01..2026-11-01",
+   "created": "2026-10-30T05:36:58.379Z",
+   "modified": "2026-10-30T05:39:35.749Z",
+   "latest": "0.22.6",
+   "registry_err": null
+  },
+  {
+   "pkg": "@theluckystrike/mcp-calendar",
+   "days": {
+    "2026-10-30": 248,
+    "2026-10-31": 14,
+    "2026-11-01": 11,
+    "2026-11-02": 0,
+    "2026-11-03": 0
+   },
+   "range_err": null,
+   "last_week": 273,
+   "last_week_window": "2026-10-26..2026-11-01",
+   "last_day": 11,
+   "last_day_window": "2026-11-01..2026-11-01",
+   "created": "2026-10-30T04:26:31.971Z",
+   "modified": "2026-10-30T04:30:40.886Z",
+   "latest": "0.22.6",
+   "registry_err": null
+  },
+  {
+   "pkg": "@theluckystrike/mcp-cash-book",
+   "days": {
+    "2026-10-30": 212,
+    "2026-10-31": 18,
+    "2026-11-01": 7,
+    "2026-11-02": 0,
+    "2026-11-03": 0
+   },
+   "range_err": null,
+   "last_week": 237,
+   "last_week_window": "2026-10-26..2026-11-01",
+   "last_day": 7,
+   "last_day_window": "2026-11-01..2026-11-01",
+   "created": "2026-10-30T05:15:38.039Z",
+   "modified": "2026-10-30T05:16:33.257Z",
+   "latest": "0.22.6",
+   "registry_err": null
+  },
+  {
+   "pkg": "@theluckystrike/mcp-catalogue",
+   "days": {
+    "2026-10-30": 198,
+    "2026-10-31": 17,
+    "2026-11-01": 7,
+    "2026-11-02": 0,
+    "2026-11-03": 0
+   },
+   "range_err": null,
+   "last_week": 222,
+   "last_week_window": "2026-10-26..2026-11-01",
+   "last_day": 7,
+   "last_day_window": "2026-11-01..2026-11-01",
+   "created": "2026-10-30T04:28:24.498Z",
+   "modified": "2026-10-30T04:31:02.172Z",
+   "latest": "0.22.6",
+   "registry_err": null
+  },
+  {
+   "pkg": "@theluckystrike/mcp-change-order",
+   "days": {
+    "2026-10-30": 174,
+    "2026-10-31": 10,
+    "2026-11-01": 6,
+    "2026-11-02": 0,
+    "2026-11-03": 0
+   },
+   "range_err": null,
+   "last_week": 190,
+   "last_week_window": "2026-10-26..2026-11-01",
+   "last_day": 6,
+   "last_day_window": "2026-11-01..2026-11-01",
+   "created": "2026-10-30T04:27:22.091Z",
+   "modified": "2026-10-30T04:28:17.713Z",
+   "latest": "0.22.6",
+   "registry_err": null
+  },
+  {
+   "pkg": "@theluckystrike/mcp-checklist",
+   "days": {
+    "2026-10-30": 181,
+    "2026-10-31": 10,
+    "2026-11-01": 10,
+    "2026-11-02": 0,
+    "2026-11-03": 0
+   },
+   "range_err": null,
+   "last_week": 201,
+   "last_week_window": "2026-10-26..2026-11-01",
+   "last_day": 10,
+   "last_day_window": "2026-11-01..2026-11-01",
+   "created": "2026-10-30T04:27:28.358Z",
+   "modified": "2026-10-30T04:28:44.542Z",
+   "latest": "0.22.6",
+   "registry_err": null
+  },
+  {
+   "pkg": "@theluckystrike/mcp-clauses",
+   "days": {
+    "2026-10-30": 178,
+    "2026-10-31": 8,
+    "2026-11-01": 7,
+    "2026-11-02": 0,
+    "2026-11-03": 0
+   },
+   "range_err": null,
+   "last_week": 193,
+   "last_week_window": "2026-10-26..2026-11-01",
+   "last_day": 7,
+   "last_day_window": "2026-11-01..2026-11-01",
+   "created": "2026-10-30T04:26:38.053Z",
+   "modified": "2026-10-30T04:28:14.349Z",
+   "latest": "0.22.6",
+   "registry_err": null
+  },
+  {
+   "pkg": "@theluckystrike/mcp-credit-note",
+   "days": {
+    "2026-10-30": 207,
+    "2026-10-31": 16,
+    "2026-11-01": 6,
+    "2026-11-02": 0,
+    "2026-11-03": 0
+   },
+   "range_err": null,
+   "last_week": 229,
+   "last_week_window": "2026-10-26..2026-11-01",
+   "last_day": 6,
+   "last_day_window": "2026-11-01..2026-11-01",
+   "created": "2026-10-30T04:23:51.758Z",
+   "modified": "2026-10-30T04:25:59.044Z",
+   "latest": "0.22.8",
+   "registry_err": null
+  },
+  {
+   "pkg": "@theluckystrike/mcp-currency",
+   "days": {
+    "2026-10-30": 203,
+    "2026-10-31": 12,
+    "2026-11-01": 8,
+    "2026-11-02": 0,
+    "2026-11-03": 0
+   },
+   "range_err": null,
+   "last_week": 223,
+   "last_week_window": "2026-10-26..2026-11-01",
+   "last_day": 8,
+   "last_day_window": "2026-11-01..2026-11-01",
+   "created": "2026-10-30T04:23:57.642Z",
+   "modified": "2026-10-30T04:25:33.740Z",
+   "latest": "0.22.6",
+   "registry_err": null
+  },
+  {
+   "pkg": "@theluckystrike/mcp-delivery-schedule",
+   "days": {
+    "2026-10-30": 167,
+    "2026-10-31": 11,
+    "2026-11-01": 6,
+    "2026-11-02": 0,
+    "2026-11-03": 0
+   },
+   "range_err": null,
+   "last_week": 184,
+   "last_week_window": "2026-10-26..2026-11-01",
+   "last_day": 6,
+   "last_day_window": "2026-11-01..2026-11-01",
+   "created": "2026-10-30T04:27:34.186Z",
+   "modified": "2026-10-30T04:28:29.570Z",
+   "latest": "0.22.7",
+   "registry_err": null
+  },
+  {
+   "pkg": "@theluckystrike/mcp-deposits",
+   "days": {
+    "2026-10-30": 233,
+    "2026-10-31": 18,
+    "2026-11-01": 10,
+    "2026-11-02": 0,
+    "2026-11-03": 0
+   },
+   "range_err": null,
+   "last_week": 261,
+   "last_week_window": "2026-10-26..2026-11-01",
+   "last_day": 10,
+   "last_day_window": "2026-11-01..2026-11-01",
+   "created": "2026-10-30T04:28:30.252Z",
+   "modified": "2026-10-30T04:30:38.780Z",
+   "latest": "0.22.6",
+   "registry_err": null
+  },
+  {
+   "pkg": "@theluckystrike/mcp-docx",
+   "days": {
+    "2026-10-30": 217,
+    "2026-10-31": 12,
+    "2026-11-01": 8,
+    "2026-11-02": 0,
+    "2026-11-03": 0
+   },
+   "range_err": null,
+   "last_week": 237,
+   "last_week_window": "2026-10-26..2026-11-01",
+   "last_day": 8,
+   "last_day_window": "2026-11-01..2026-11-01",
+   "created": "2026-10-30T04:24:04.265Z",
+   "modified": "2026-10-30T04:26:11.027Z",
+   "latest": "0.22.6",
+   "registry_err": null
+  },
+  {
+   "pkg": "@theluckystrike/mcp-dunning-letters",
+   "days": {
+    "2026-10-30": 202,
+    "2026-10-31": 8,
+    "2026-11-01": 9,
+    "2026-11-02": 0,
+    "2026-11-03": 0
+   },
+   "range_err": null,
+   "last_week": 219,
+   "last_week_window": "2026-10-26..2026-11-01",
+   "last_day": 9,
+   "last_day_window": "2026-11-01..2026-11-01",
+   "created": "2026-10-30T04:27:39.771Z",
+   "modified": "2026-10-30T04:29:47.389Z",
+   "latest": "0.22.6",
+   "registry_err": null
+  },
+  {
+   "pkg": "@theluckystrike/mcp-duplicate-invoice-check",
+   "days": {
+    "2026-10-30": 196,
+    "2026-10-31": 12,
+    "2026-11-01": 8,
+    "2026-11-02": 0,
+    "2026-11-03": 0
+   },
+   "range_err": null,
+   "last_week": 216,
+   "last_week_window": "2026-10-26..2026-11-01",
+   "last_day": 8,
+   "last_day_window": "2026-11-01..2026-11-01",
+   "created": "2026-10-30T04:24:09.977Z",
+   "modified": "2026-10-30T04:25:05.686Z",
+   "latest": "0.22.8",
+   "registry_err": null
+  },
+  {
+   "pkg": "@theluckystrike/mcp-expense-tracker",
+   "days": {
+    "2026-10-30": 181,
+    "2026-10-31": 12,
+    "2026-11-01": 7,
+    "2026-11-02": 0,
+    "2026-11-03": 0
+   },
+   "range_err": null,
+   "last_week": 200,
+   "last_week_window": "2026-10-26..2026-11-01",
+   "last_day": 7,
+   "last_day_window": "2026-11-01..2026-11-01",
+   "created": "2026-10-30T04:24:17.558Z",
+   "modified": "2026-10-30T04:25:14.235Z",
+   "latest": "0.22.9",
+   "registry_err": null
+  },
+  {
+   "pkg": "@theluckystrike/mcp-goods-receipt",
+   "days": {
+    "2026-10-30": 182,
+    "2026-10-31": 14,
+    "2026-11-01": 7,
+    "2026-11-02": 0,
+    "2026-11-03": 0
+   },
+   "range_err": null,
+   "last_week": 203,
+   "last_week_window": "2026-10-26..2026-11-01",
+   "last_day": 7,
+   "last_day_window": "2026-11-01..2026-11-01",
+   "created": "2026-10-30T04:27:45.469Z",
+   "modified": "2026-10-30T04:29:22.081Z",
+   "latest": "0.22.6",
+   "registry_err": null
+  },
+  {
+   "pkg": "@theluckystrike/mcp-hourly-rate",
+   "days": {
+    "2026-10-30": 191,
+    "2026-10-31": 14,
+    "2026-11-01": 6,
+    "2026-11-02": 0,
+    "2026-11-03": 0
+   },
+   "range_err": null,
+   "last_week": 211,
+   "last_week_window": "2026-10-26..2026-11-01",
+   "last_day": 6,
+   "last_day_window": "2026-11-01..2026-11-01",
+   "created": "2026-10-30T04:24:24.343Z",
+   "modified": "2026-10-30T04:25:21.932Z",
+   "latest": "0.22.6",
+   "registry_err": null
+  },
+  {
+   "pkg": "@theluckystrike/mcp-image",
+   "days": {
+    "2026-10-30": 198,
+    "2026-10-31": 16,
+    "2026-11-01": 7,
+    "2026-11-02": 0,
+    "2026-11-03": 0
+   },
+   "range_err": null,
+   "last_week": 221,
+   "last_week_window": "2026-10-26..2026-11-01",
+   "last_day": 7,
+   "last_day_window": "2026-11-01..2026-11-01",
+   "created": "2026-10-30T04:24:31.611Z",
+   "modified": "2026-10-30T04:25:27.121Z",
+   "latest": "0.22.6",
+   "registry_err": null
+  },
+  {
+   "pkg": "@theluckystrike/mcp-invoice",
+   "days": {
+    "2026-10-30": 283,
+    "2026-10-31": 17,
+    "2026-11-01": 24,
+    "2026-11-02": 0,
+    "2026-11-03": 0
+   },
+   "range_err": null,
+   "last_week": 324,
+   "last_week_window": "2026-10-26..2026-11-01",
+   "last_day": 24,
+   "last_day_window": "2026-11-01..2026-11-01",
+   "created": "2026-10-30T04:24:37.634Z",
+   "modified": "2026-10-30T04:25:33.218Z",
+   "latest": "0.22.6",
+   "registry_err": null
+  },
+  {
+   "pkg": "@theluckystrike/mcp-job-card",
+   "days": {
+    "2026-10-30": 182,
+    "2026-10-31": 12,
+    "2026-11-01": 9,
+    "2026-11-02": 0,
+    "2026-11-03": 0
+   },
+   "range_err": null,
+   "last_week": 203,
+   "last_week_window": "2026-10-26..2026-11-01",
+   "last_day": 9,
+   "last_day_window": "2026-11-01..2026-11-01",
+   "created": "2026-10-30T04:24:46.861Z",
+   "modified": "2026-10-30T04:25:43.004Z",
+   "latest": "0.22.6",
+   "registry_err": null
+  },
+  {
+   "pkg": "@theluckystrike/mcp-kanban",
+   "days": {
+    "2026-10-30": 205,
+    "2026-10-31": 9,
+    "2026-11-01": 7,
+    "2026-11-02": 0,
+    "2026-11-03": 0
+   },
+   "range_err": null,
+   "last_week": 221,
+   "last_week_window": "2026-10-26..2026-11-01",
+   "last_day": 7,
+   "last_day_window": "2026-11-01..2026-11-01",
+   "created": "2026-10-30T04:24:53.547Z",
+   "modified": "2026-10-30T04:25:49.347Z",
+   "latest": "0.22.6",
+   "registry_err": null
+  },
+  {
+   "pkg": "@theluckystrike/mcp-leave",
+   "days": {
+    "2026-10-30": 182,
+    "2026-10-31": 12,
+    "2026-11-01": 6,
+    "2026-11-02": 0,
+    "2026-11-03": 0
+   },
+   "range_err": null,
+   "last_week": 200,
+   "last_week_window": "2026-10-26..2026-11-01",
+   "last_day": 6,
+   "last_day_window": "2026-11-01..2026-11-01",
+   "created": "2026-10-30T04:27:51.634Z",
+   "modified": "2026-10-30T04:29:28.099Z",
+   "latest": "0.22.6",
+   "registry_err": null
+  },
+  {
+   "pkg": "@theluckystrike/mcp-loan-calculator",
+   "days": {
+    "2026-10-30": 309,
+    "2026-10-31": 15,
+    "2026-11-01": 8,
+    "2026-11-02": 0,
+    "2026-11-03": 0
+   },
+   "range_err": null,
+   "last_week": 332,
+   "last_week_window": "2026-10-26..2026-11-01",
+   "last_day": 8,
+   "last_day_window": "2026-11-01..2026-11-01",
+   "created": "2026-10-30T05:37:03.863Z",
+   "modified": "2026-10-30T05:37:59.954Z",
+   "latest": "0.22.6",
+   "registry_err": null
+  },
+  {
+   "pkg": "@theluckystrike/mcp-maintenance-log",
+   "days": {
+    "2026-10-30": 192,
+    "2026-10-31": 11,
+    "2026-11-01": 8,
+    "2026-11-02": 0,
+    "2026-11-03": 0
+   },
+   "range_err": null,
+   "last_week": 211,
+   "last_week_window": "2026-10-26..2026-11-01",
+   "last_day": 8,
+   "last_day_window": "2026-11-01..2026-11-01",
+   "created": "2026-10-30T04:24:59.342Z",
+   "modified": "2026-10-30T04:25:34.278Z",
+   "latest": "0.22.6",
+   "registry_err": null
+  },
+  {
+   "pkg": "@theluckystrike/mcp-mileage-log",
+   "days": {
+    "2026-10-30": 190,
+    "2026-10-31": 14,
+    "2026-11-01": 7,
+    "2026-11-02": 0,
+    "2026-11-03": 0
+   },
+   "range_err": null,
+   "last_week": 211,
+   "last_week_window": "2026-10-26..2026-11-01",
+   "last_day": 7,
+   "last_day_window": "2026-11-01..2026-11-01",
+   "created": "2026-10-30T04:25:05.057Z",
+   "modified": "2026-10-30T04:26:01.677Z",
+   "latest": "0.22.6",
+   "registry_err": null
+  },
+  {
+   "pkg": "@theluckystrike/mcp-office-suite",
+   "days": {
+    "2026-10-30": 193,
+    "2026-10-31": 14,
+    "2026-11-01": 8,
+    "2026-11-02": 0,
+    "2026-11-03": 0
+   },
+   "range_err": null,
+   "last_week": 215,
+   "last_week_window": "2026-10-26..2026-11-01",
+   "last_day": 8,
+   "last_day_window": "2026-11-01..2026-11-01",
+   "created": "2026-10-30T04:27:59.600Z",
+   "modified": "2026-10-30T04:30:07.406Z",
+   "latest": "0.25.0",
+   "registry_err": null
+  },
+  {
+   "pkg": "@theluckystrike/mcp-onboarding",
+   "days": {
+    "2026-10-30": 193,
+    "2026-10-31": 12,
+    "2026-11-01": 7,
+    "2026-11-02": 0,
+    "2026-11-03": 0
+   },
+   "range_err": null,
+   "last_week": 212,
+   "last_week_window": "2026-10-26..2026-11-01",
+   "last_day": 7,
+   "last_day_window": "2026-11-01..2026-11-01",
+   "created": "2026-10-30T04:28:05.392Z",
+   "modified": "2026-10-30T04:29:01.220Z",
+   "latest": "0.22.6",
+   "registry_err": null
+  },
+  {
+   "pkg": "@theluckystrike/mcp-packing-list",
+   "days": {
+    "2026-10-30": 205,
+    "2026-10-31": 12,
+    "2026-11-01": 8,
+    "2026-11-02": 0,
+    "2026-11-03": 0
+   },
+   "range_err": null,
+   "last_week": 225,
+   "last_week_window": "2026-10-26..2026-11-01",
+   "last_day": 8,
+   "last_day_window": "2026-11-01..2026-11-01",
+   "created": "2026-10-30T04:28:11.479Z",
+   "modified": "2026-10-30T04:31:19.736Z",
+   "latest": "0.22.8",
+   "registry_err": null
+  },
+  {
+   "pkg": "@theluckystrike/mcp-payroll",
+   "days": {
+    "2026-10-30": 311,
+    "2026-10-31": 17,
+    "2026-11-01": 7,
+    "2026-11-02": 0,
+    "2026-11-03": 0
+   },
+   "range_err": null,
+   "last_week": 335,
+   "last_week_window": "2026-10-26..2026-11-01",
+   "last_day": 7,
+   "last_day_window": "2026-11-01..2026-11-01",
+   "created": "2026-10-30T05:37:12.715Z",
+   "modified": "2026-10-30T05:38:49.889Z",
+   "latest": "0.22.6",
+   "registry_err": null
+  },
+  {
+   "pkg": "@theluckystrike/mcp-pdf",
+   "days": {
+    "2026-10-30": 200,
+    "2026-10-31": 17,
+    "2026-11-01": 8,
+    "2026-11-02": 0,
+    "2026-11-03": 0
+   },
+   "range_err": null,
+   "last_week": 225,
+   "last_week_window": "2026-10-26..2026-11-01",
+   "last_day": 8,
+   "last_day_window": "2026-11-01..2026-11-01",
+   "created": "2026-10-30T04:25:11.119Z",
+   "modified": "2026-10-30T04:26:07.187Z",
+   "latest": "0.22.6",
+   "registry_err": null
+  },
+  {
+   "pkg": "@theluckystrike/mcp-per-diem",
+   "days": {
+    "2026-10-30": 173,
+    "2026-10-31": 14,
+    "2026-11-01": 6,
+    "2026-11-02": 0,
+    "2026-11-03": 0
+   },
+   "range_err": null,
+   "last_week": 193,
+   "last_week_window": "2026-10-26..2026-11-01",
+   "last_day": 6,
+   "last_day_window": "2026-11-01..2026-11-01",
+   "created": "2026-10-30T04:26:44.402Z",
+   "modified": "2026-10-30T04:27:39.843Z",
+   "latest": "0.22.6",
+   "registry_err": null
+  },
+  {
+   "pkg": "@theluckystrike/mcp-petty-cash",
+   "days": {
+    "2026-10-30": 292,
+    "2026-10-31": 16,
+    "2026-11-01": 7,
+    "2026-11-02": 0,
+    "2026-11-03": 0
+   },
+   "range_err": null,
+   "last_week": 315,
+   "last_week_window": "2026-10-26..2026-11-01",
+   "last_day": 7,
+   "last_day_window": "2026-11-01..2026-11-01",
+   "created": "2026-10-30T05:12:33.720Z",
+   "modified": "2026-10-30T05:14:40.817Z",
+   "latest": "0.22.6",
+   "registry_err": null
+  },
+  {
+   "pkg": "@theluckystrike/mcp-pomodoro",
+   "days": {
+    "2026-10-30": 271,
+    "2026-10-31": 16,
+    "2026-11-01": 7,
+    "2026-11-02": 0,
+    "2026-11-03": 0
+   },
+   "range_err": null,
+   "last_week": 294,
+   "last_week_window": "2026-10-26..2026-11-01",
+   "last_day": 7,
+   "last_day_window": "2026-11-01..2026-11-01",
+   "created": "2026-10-30T05:37:20.375Z",
+   "modified": "2026-10-30T05:37:56.111Z",
+   "latest": "0.22.6",
+   "registry_err": null
+  },
+  {
+   "pkg": "@theluckystrike/mcp-price-tracker",
+   "days": {
+    "2026-10-30": 197,
+    "2026-10-31": 12,
+    "2026-11-01": 8,
+    "2026-11-02": 0,
+    "2026-11-03": 0
+   },
+   "range_err": null,
+   "last_week": 217,
+   "last_week_window": "2026-10-26..2026-11-01",
+   "last_day": 8,
+   "last_day_window": "2026-11-01..2026-11-01",
+   "created": "2026-10-30T04:25:17.056Z",
+   "modified": "2026-10-30T04:26:12.554Z",
+   "latest": "0.22.6",
+   "registry_err": null
+  },
+  {
+   "pkg": "@theluckystrike/mcp-purchase-requisition",
+   "days": {
+    "2026-10-30": 212,
+    "2026-10-31": 12,
+    "2026-11-01": 4,
+    "2026-11-02": 0,
+    "2026-11-03": 0
+   },
+   "range_err": null,
+   "last_week": 228,
+   "last_week_window": "2026-10-26..2026-11-01",
+   "last_day": 4,
+   "last_day_window": "2026-11-01..2026-11-01",
+   "created": "2026-10-30T04:28:18.324Z",
+   "modified": "2026-10-30T04:30:55.936Z",
+   "latest": "0.22.8",
+   "registry_err": null
+  },
+  {
+   "pkg": "@theluckystrike/mcp-quotes",
+   "days": {
+    "2026-10-30": 256,
+    "2026-10-31": 16,
+    "2026-11-01": 21,
+    "2026-11-02": 0,
+    "2026-11-03": 0
+   },
+   "range_err": null,
+   "last_week": 293,
+   "last_week_window": "2026-10-26..2026-11-01",
+   "last_day": 21,
+   "last_day_window": "2026-11-01..2026-11-01",
+   "created": "2026-10-30T04:26:50.723Z",
+   "modified": "2026-10-30T04:27:46.978Z",
+   "latest": "0.22.6",
+   "registry_err": null
+  },
+  {
+   "pkg": "@theluckystrike/mcp-receipts",
+   "days": {
+    "2026-10-30": 292,
+    "2026-10-31": 14,
+    "2026-11-01": 7,
+    "2026-11-02": 0,
+    "2026-11-03": 0
+   },
+   "range_err": null,
+   "last_week": 313,
+   "last_week_window": "2026-10-26..2026-11-01",
+   "last_day": 7,
+   "last_day_window": "2026-11-01..2026-11-01",
+   "created": "2026-10-30T05:37:25.469Z",
+   "modified": "2026-10-30T05:38:41.823Z",
+   "latest": "0.22.6",
+   "registry_err": null
+  },
+  {
+   "pkg": "@theluckystrike/mcp-recurring",
+   "days": {
+    "2026-10-30": 179,
+    "2026-10-31": 14,
+    "2026-11-01": 7,
+    "2026-11-02": 0,
+    "2026-11-03": 0
+   },
+   "range_err": null,
+   "last_week": 200,
+   "last_week_window": "2026-10-26..2026-11-01",
+   "last_day": 7,
+   "last_day_window": "2026-11-01..2026-11-01",
+   "created": "2026-10-30T04:26:57.075Z",
+   "modified": "2026-10-30T04:27:52.369Z",
+   "latest": "0.22.6",
+   "registry_err": null
+  },
+  {
+   "pkg": "@theluckystrike/mcp-resume",
+   "days": {
+    "2026-10-30": 204,
+    "2026-10-31": 12,
+    "2026-11-01": 8,
+    "2026-11-02": 0,
+    "2026-11-03": 0
+   },
+   "range_err": null,
+   "last_week": 224,
+   "last_week_window": "2026-10-26..2026-11-01",
+   "last_day": 8,
+   "last_day_window": "2026-11-01..2026-11-01",
+   "created": "2026-10-30T04:27:02.963Z",
+   "modified": "2026-10-30T04:29:11.058Z",
+   "latest": "0.22.6",
+   "registry_err": null
+  },
+  {
+   "pkg": "@theluckystrike/mcp-service-agreement",
+   "days": {
+    "2026-10-30": 190,
+    "2026-10-31": 11,
+    "2026-11-01": 7,
+    "2026-11-02": 0,
+    "2026-11-03": 0
+   },
+   "range_err": null,
+   "last_week": 208,
+   "last_week_window": "2026-10-26..2026-11-01",
+   "last_day": 7,
+   "last_day_window": "2026-11-01..2026-11-01",
+   "created": "2026-10-30T04:25:23.541Z",
+   "modified": "2026-10-30T04:28:01.137Z",
+   "latest": "0.22.6",
+   "registry_err": null
+  },
+  {
+   "pkg": "@theluckystrike/mcp-spreadsheet",
+   "days": {
+    "2026-10-30": 200,
+    "2026-10-31": 14,
+    "2026-11-01": 9,
+    "2026-11-02": 0,
+    "2026-11-03": 0
+   },
+   "range_err": null,
+   "last_week": 223,
+   "last_week_window": "2026-10-26..2026-11-01",
+   "last_day": 9,
+   "last_day_window": "2026-11-01..2026-11-01",
+   "created": "2026-10-30T04:25:29.818Z",
+   "modified": "2026-10-30T04:27:06.900Z",
+   "latest": "0.22.9",
+   "registry_err": null
+  },
+  {
+   "pkg": "@theluckystrike/mcp-statement-of-account",
+   "days": {
+    "2026-10-30": 226,
+    "2026-10-31": 16,
+    "2026-11-01": 8,
+    "2026-11-02": 0,
+    "2026-11-03": 0
+   },
+   "range_err": null,
+   "last_week": 250,
+   "last_week_window": "2026-10-26..2026-11-01",
+   "last_day": 8,
+   "last_day_window": "2026-11-01..2026-11-01",
+   "created": "2026-10-30T04:28:42.867Z",
+   "modified": "2026-10-30T04:30:50.102Z",
+   "latest": "0.22.6",
+   "registry_err": null
+  },
+  {
+   "pkg": "@theluckystrike/mcp-stripe-billing",
+   "days": {
+    "2026-10-30": 309,
+    "2026-10-31": 13,
+    "2026-11-01": 6,
+    "2026-11-02": 0,
+    "2026-11-03": 0
+   },
+   "range_err": null,
+   "last_week": 328,
+   "last_week_window": "2026-10-26..2026-11-01",
+   "last_day": 6,
+   "last_day_window": "2026-11-01..2026-11-01",
+   "created": "2026-10-30T05:37:30.852Z",
+   "modified": "2026-10-30T05:39:08.003Z",
+   "latest": "0.22.6",
+   "registry_err": null
+  },
+  {
+   "pkg": "@theluckystrike/mcp-supplier-list",
+   "days": {
+    "2026-10-30": 192,
+    "2026-10-31": 13,
+    "2026-11-01": 6,
+    "2026-11-02": 0,
+    "2026-11-03": 0
+   },
+   "range_err": null,
+   "last_week": 211,
+   "last_week_window": "2026-10-26..2026-11-01",
+   "last_day": 6,
+   "last_day_window": "2026-11-01..2026-11-01",
+   "created": "2026-10-30T04:25:36.761Z",
+   "modified": "2026-10-30T04:27:13.286Z",
+   "latest": "0.22.6",
+   "registry_err": null
+  },
+  {
+   "pkg": "@theluckystrike/mcp-supplier-statement-check",
+   "days": {
+    "2026-10-30": 198,
+    "2026-10-31": 16,
+    "2026-11-01": 8,
+    "2026-11-02": 0,
+    "2026-11-03": 0
+   },
+   "range_err": null,
+   "last_week": 222,
+   "last_week_window": "2026-10-26..2026-11-01",
+   "last_day": 8,
+   "last_day_window": "2026-11-01..2026-11-01",
+   "created": "2026-10-30T04:25:43.001Z",
+   "modified": "2026-10-30T04:28:20.726Z",
+   "latest": "0.25.0",
+   "registry_err": null
+  },
+  {
+   "pkg": "@theluckystrike/mcp-tax-calc",
+   "days": {
+    "2026-10-30": 286,
+    "2026-10-31": 14,
+    "2026-11-01": 8,
+    "2026-11-02": 0,
+    "2026-11-03": 0
+   },
+   "range_err": null,
+   "last_week": 308,
+   "last_week_window": "2026-10-26..2026-11-01",
+   "last_day": 8,
+   "last_day_window": "2026-11-01..2026-11-01",
+   "created": "2026-10-30T05:37:37.429Z",
+   "modified": "2026-10-30T05:38:32.855Z",
+   "latest": "0.22.6",
+   "registry_err": null
+  },
+  {
+   "pkg": "@theluckystrike/mcp-three-way-match",
+   "days": {
+    "2026-10-30": 278,
+    "2026-10-31": 10,
+    "2026-11-01": 8,
+    "2026-11-02": 0,
+    "2026-11-03": 0
+   },
+   "range_err": null,
+   "last_week": 296,
+   "last_week_window": "2026-10-26..2026-11-01",
+   "last_day": 8,
+   "last_day_window": "2026-11-01..2026-11-01",
+   "created": "2026-10-30T04:25:50.138Z",
+   "modified": "2026-10-30T04:30:59.225Z",
+   "latest": "0.22.8",
+   "registry_err": null
+  },
+  {
+   "pkg": "@theluckystrike/mcp-time-tracker",
+   "days": {
+    "2026-10-30": 192,
+    "2026-10-31": 12,
+    "2026-11-01": 7,
+    "2026-11-02": 0,
+    "2026-11-03": 0
+   },
+   "range_err": null,
+   "last_week": 211,
+   "last_week_window": "2026-10-26..2026-11-01",
+   "last_day": 7,
+   "last_day_window": "2026-11-01..2026-11-01",
+   "created": "2026-10-30T04:25:57.358Z",
+   "modified": "2026-10-30T04:27:34.105Z",
+   "latest": "0.22.6",
+   "registry_err": null
+  },
+  {
+   "pkg": "@theluckystrike/mcp-timezone",
+   "days": {
+    "2026-10-30": 490,
+    "2026-10-31": 18,
+    "2026-11-01": 54,
+    "2026-11-02": 0,
+    "2026-11-03": 0
+   },
+   "range_err": null,
+   "last_week": 562,
+   "last_week_window": "2026-10-26..2026-11-01",
+   "last_day": 54,
+   "last_day_window": "2026-11-01..2026-11-01",
+   "created": "2026-10-30T04:26:05.092Z",
+   "modified": "2026-10-30T04:33:16.090Z",
+   "latest": "0.22.6",
+   "registry_err": null
+  },
+  {
+   "pkg": "@theluckystrike/mcp-work-order",
+   "days": {
+    "2026-10-30": 176,
+    "2026-10-31": 14,
+    "2026-11-01": 4,
+    "2026-11-02": 0,
+    "2026-11-03": 0
+   },
+   "range_err": null,
+   "last_week": 194,
+   "last_week_window": "2026-10-26..2026-11-01",
+   "last_day": 4,
+   "last_day_window": "2026-11-01..2026-11-01",
+   "created": "2026-10-30T04:28:35.885Z",
+   "modified": "2026-10-30T04:29:32.846Z",
+   "latest": "0.22.6",
+   "registry_err": null
+  },
+  {
+   "pkg": "@theluckystrike/mcp-zip",
+   "days": {
+    "2026-10-30": 173,
+    "2026-10-31": 12,
+    "2026-11-01": 8,
+    "2026-11-02": 0,
+    "2026-11-03": 0
+   },
+   "range_err": null,
+   "last_week": 193,
+   "last_week_window": "2026-10-26..2026-11-01",
+   "last_day": 8,
+   "last_day_window": "2026-11-01..2026-11-01",
+   "created": "2026-10-30T04:26:11.697Z",
+   "modified": "2026-10-30T04:27:07.005Z",
+   "latest": "0.22.6",
+   "registry_err": null
+  },
+  {
+   "pkg": "@theluckystrike/mcp-license",
+   "days": {
+    "2026-10-30": 394,
+    "2026-10-31": 16,
+    "2026-11-01": 55,
+    "2026-11-02": 0,
+    "2026-11-03": 0
+   },
+   "range_err": null,
+   "last_week": 465,
+   "last_week_window": "2026-10-26..2026-11-01",
+   "last_day": 55,
+   "last_day_window": "2026-11-01..2026-11-01",
+   "created": "2026-10-30T04:07:58.575Z",
+   "modified": "2026-10-30T04:08:54.991Z",
+   "latest": "0.22.7",
+   "registry_err": null
+  },
+  {
+   "pkg": "cups-to-grams-mcp",
+   "days": {
+    "2026-10-30": 293,
+    "2026-10-31": 16,
+    "2026-11-01": 9,
+    "2026-11-02": 0,
+    "2026-11-03": 0
+   },
+   "range_err": null,
+   "last_week": 318,
+   "last_week_window": "2026-10-26..2026-11-01",
+   "last_day": 9,
+   "last_day_window": "2026-11-01..2026-11-01",
+   "created": "2026-10-30T04:05:43.178Z",
+   "modified": "2026-10-30T04:06:39.089Z",
+   "latest": "1.0.0",
+   "registry_err": null
+  },
+  {
+   "pkg": "dscr-loan-calculator-mcp",
+   "days": {
+    "2026-10-30": 283,
+    "2026-10-31": 15,
+    "2026-11-01": 6,
+    "2026-11-02": 0,
+    "2026-11-03": 0
+   },
+   "range_err": null,
+   "last_week": 304,
+   "last_week_window": "2026-10-26..2026-11-01",
+   "last_day": 6,
+   "last_day_window": "2026-11-01..2026-11-01",
+   "created": "2026-10-30T05:12:43.469Z",
+   "modified": "2026-10-30T05:13:59.621Z",
+   "latest": "1.0.0",
+   "registry_err": null
+  },
+  {
+   "pkg": "gold-price-per-gram-mcp",
+   "days": {
+    "2026-10-30": 278,
+    "2026-10-31": 17,
+    "2026-11-01": 7,
+    "2026-11-02": 0,
+    "2026-11-03": 0
+   },
+   "range_err": null,
+   "last_week": 302,
+   "last_week_window": "2026-10-26..2026-11-01",
+   "last_day": 7,
+   "last_day_window": "2026-11-01..2026-11-01",
+   "created": "2026-10-30T05:12:50.680Z",
+   "modified": "2026-10-30T05:13:46.325Z",
+   "latest": "1.0.0",
+   "registry_err": null
+  },
+  {
+   "pkg": "lake-level-mcp",
+   "days": {
+    "2026-10-30": 290,
+    "2026-10-31": 15,
+    "2026-11-01": 5,
+    "2026-11-02": 0,
+    "2026-11-03": 0
+   },
+   "range_err": null,
+   "last_week": 310,
+   "last_week_window": "2026-10-26..2026-11-01",
+   "last_day": 5,
+   "last_day_window": "2026-11-01..2026-11-01",
+   "created": "2026-10-30T05:12:57.445Z",
+   "modified": "2026-10-30T05:15:04.381Z",
+   "latest": "1.0.0",
+   "registry_err": null
+  },
+  {
+   "pkg": "minimum-wage-mcp",
+   "days": {
+    "2026-10-30": 303,
+    "2026-10-31": 13,
+    "2026-11-01": 7,
+    "2026-11-02": 0,
+    "2026-11-03": 0
+   },
+   "range_err": null,
+   "last_week": 323,
+   "last_week_window": "2026-10-26..2026-11-01",
+   "last_day": 7,
+   "last_day_window": "2026-11-01..2026-11-01",
+   "created": "2026-10-30T04:58:09.477Z",
+   "modified": "2026-10-30T04:59:46.691Z",
+   "latest": "1.0.0",
+   "registry_err": null
+  },
+  {
+   "pkg": "no-tax-on-overtime-mcp",
+   "days": {
+    "2026-10-30": 314,
+    "2026-10-31": 21,
+    "2026-11-01": 5,
+    "2026-11-02": 0,
+    "2026-11-03": 0
+   },
+   "range_err": null,
+   "last_week": 340,
+   "last_week_window": "2026-10-26..2026-11-01",
+   "last_day": 5,
+   "last_day_window": "2026-11-01..2026-11-01",
+   "created": "2026-10-30T04:58:16.708Z",
+   "modified": "2026-10-30T05:01:25.505Z",
+   "latest": "1.0.0",
+   "registry_err": null
+  },
+  {
+   "pkg": "paycheck-calculator-mcp",
+   "days": {
+    "2026-10-30": 273,
+    "2026-10-31": 14,
+    "2026-11-01": 7,
+    "2026-11-02": 0,
+    "2026-11-03": 0
+   },
+   "range_err": null,
+   "last_week": 294,
+   "last_week_window": "2026-10-26..2026-11-01",
+   "last_day": 7,
+   "last_day_window": "2026-11-01..2026-11-01",
+   "created": "2026-10-30T04:58:25.414Z",
+   "modified": "2026-10-30T04:59:21.213Z",
+   "latest": "1.0.0",
+   "registry_err": null
+  },
+  {
+   "pkg": "uk-income-tax-salary-mcp",
+   "days": {
+    "2026-10-30": 294,
+    "2026-10-31": 13,
+    "2026-11-01": 6,
+    "2026-11-02": 0,
+    "2026-11-03": 0
+   },
+   "range_err": null,
+   "last_week": 313,
+   "last_week_window": "2026-10-26..2026-11-01",
+   "last_day": 6,
+   "last_day_window": "2026-11-01..2026-11-01",
+   "created": "2026-10-30T04:58:32.342Z",
+   "modified": "2026-10-30T04:59:28.578Z",
+   "latest": "1.0.0",
+   "registry_err": null
+  },
+  {
+   "pkg": "us-federal-holidays-business-days-mcp",
+   "days": {
+    "2026-10-30": 288,
+    "2026-10-31": 14,
+    "2026-11-01": 5,
+    "2026-11-02": 0,
+    "2026-11-03": 0
+   },
+   "range_err": null,
+   "last_week": 307,
+   "last_week_window": "2026-10-26..2026-11-01",
+   "last_day": 5,
+   "last_day_window": "2026-11-01..2026-11-01",
+   "created": "2026-10-30T04:58:40.940Z",
+   "modified": "2026-10-30T05:00:18.184Z",
+   "latest": "1.0.0",
+   "registry_err": null
+  }
+ ]
+}

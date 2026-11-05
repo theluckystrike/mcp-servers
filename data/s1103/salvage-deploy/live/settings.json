@@ -1,0 +1,91 @@
+{
+  "result": {
+    "placement": {},
+    "compatibility_date": "2025-09-01",
+    "compatibility_flags": [
+      "nodejs_compat"
+    ],
+    "usage_model": "standard",
+    "tags": [],
+    "tail_consumers": [],
+    "logpush": false,
+    "limits": {
+      "cpu_ms": 400
+    },
+    "observability": {
+      "enabled": true,
+      "head_sampling_rate": 1,
+      "redact_query_string": false,
+      "logs": {
+        "enabled": true,
+        "head_sampling_rate": 1,
+        "persist": true,
+        "invocation_logs": true
+      },
+      "traces": {
+        "enabled": true,
+        "persist": true,
+        "head_sampling_rate": 1
+      }
+    },
+    "annotations": {
+      "workers/triggered_by": "version_upload"
+    },
+    "bindings": [
+      {
+        "name": "CF_VERSION_METADATA",
+        "type": "version_metadata"
+      },
+      {
+        "class_name": "FulfillmentState",
+        "name": "FULFILLMENT",
+        "namespace_id": "9ac1c1af88ac4bf9bb821e920b2bdb55",
+        "type": "durable_object_namespace"
+      },
+      {
+        "class_name": "FunnelState",
+        "name": "FUNNEL",
+        "namespace_id": "fa1a566378a8483ba24459f9452974f8",
+        "script_name": "mcp-funnel",
+        "type": "durable_object_namespace"
+      },
+      {
+        "name": "LICENSE_PRIVATE_KEY_PEM",
+        "type": "secret_text"
+      },
+      {
+        "name": "LICENSES",
+        "namespace_id": "75f8bf4872a0433285d11575cece8641",
+        "type": "kv_namespace"
+      },
+      {
+        "name": "MONITOR_STATUS_TOKEN",
+        "type": "secret_text"
+      },
+      {
+        "name": "REMOTE_DATA",
+        "namespace_id": "cf848cc5c07d4e0a9c7c65ad1c70055c",
+        "type": "kv_namespace"
+      },
+      {
+        "name": "RESEND_API_KEY",
+        "type": "secret_text"
+      },
+      {
+        "name": "STRIPE_SECRET_KEY",
+        "type": "secret_text"
+      },
+      {
+        "name": "STRIPE_WEBHOOK_SECRET",
+        "type": "secret_text"
+      },
+      {
+        "name": "UNSUB_SECRET",
+        "type": "secret_text"
+      }
+    ]
+  },
+  "success": true,
+  "errors": [],
+  "messages": []
+}

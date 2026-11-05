@@ -1,0 +1,90 @@
+{
+ "result": {
+  "content": [
+   {
+    "type": "text",
+    "text": "On \u00a345,000 in 2026/27 (England, Wales or NI, code 1257L) take-home pay is \u00a335,919.60 a year, \u00a32,993.30 a month or \u00a3690.76 a week. Income tax \u00a36,486, National Insurance \u00a32,594.40.\n\nEstimate for one employment, worked out on annual figures. Payroll works per pay period, so a payslip can differ by a few pounds. Not tax advice."
+   },
+   {
+    "type": "text",
+    "text": "{\n  \"tax_year\": \"2026/27\",\n  \"region\": \"england_wales_ni\",\n  \"tax_code\": \"1257L\",\n  \"tax_code_meaning\": \"Tax-free amount \u00a312,570 a year (standard Personal Allowance).\",\n  \"gross_salary\": 45000,\n  \"pension\": {\n    \"method\": \"none\",\n    \"gross_contribution\": 0,\n    \"salary_sacrificed\": 0,\n    \"relief_at_source_paid_from_net_pay\": 0,\n    \"relief_at_source_extra_relief\": 0\n  },\n  \"pay_after_salary_sacrifice\": 45000,\n  \"adjusted_net_income\": 45000,\n  \"personal_allowance\": 12570,\n  \"allowance_lost_to_taper\": 0,\n  \"taxable_income\": 32430,\n  \"income_tax\": {\n    \"by_band\": [\n      {\n        \"band\": \"basic\",\n        \"rate\": 0.2,\n        \"from\": 0,\n        \"to\": 37700,\n        \"income_in_band\": 32430,\n        \"tax\": 6486\n      },\n      {\n        \"band\": \"higher\",\n        \"rate\": 0.4,\n        \"from\": 37700,\n        \"to\": 125140,\n        \"income_in_band\": 0,\n        \"tax\": 0\n      },\n      {\n        \"band\": \"additional\",\n        \"rate\": 0.45,\n        \"from\": 125140,\n        \"to\": null,\n        \"income_in_band\": 0,\n        \"tax\": 0\n      }\n    ],\n    \"before_pension_relief\": 6486,\n    \"total\": 6486\n  },\n  \"national_insurance\": {\n    \"category\": \"A\",\n    \"total\": 2594.4,\n    \"primary_threshold\": 12570,\n    \"upper_earnings_limit\": 50270,\n    \"main_rate\": 0.08,\n    \"upper_rate\": 0.02\n  },\n  \"student_loan\": {\n    \"plans\": [],\n    \"total\": 0\n  },\n  \"total_deductions\": 9080.4,\n  \"net\": {\n    \"annual\": 35919.6,\n    \"monthly\": 2993.3,\n    \"weekly\": 690.76\n  },\n  \"effective_tax_rate\": 0.2018,\n  \"notes\": [],\n  \"summary\": \"On \u00a345,000 in 2026/27 (England, Wales or NI, code 1257L) take-home pay is \u00a335,919.60 a year, \u00a32,993.30 a month or \u00a3690.76 a week. Income tax \u00a36,486, National Insurance \u00a32,594.40.\",\n  \"as_of\": \"2026-10-30\",\n  \"source\": \"https://www.gov.uk/guidance/rates-and-thresholds-for-employers-2026-to-2027 ; https://www.gov.uk/income-tax-rates ; https://www.gov.uk/national-insurance-rates-letters\",\n  \"more\": \"https://ukmoneycalc.com/calculators/take-home-pay/?utm_source=mcp&utm_medium=uk-income-tax-salary-mcp\",\n  \"disclaimer\": \"Estimate for one employment, worked out on annual figures. Payroll works per pay period, so a payslip can differ by a few pounds. Not tax advice.\"\n}"
+   }
+  ],
+  "structuredContent": {
+   "tax_year": "2026/27",
+   "region": "england_wales_ni",
+   "tax_code": "1257L",
+   "tax_code_meaning": "Tax-free amount \u00a312,570 a year (standard Personal Allowance).",
+   "gross_salary": 45000,
+   "pension": {
+    "method": "none",
+    "gross_contribution": 0,
+    "salary_sacrificed": 0,
+    "relief_at_source_paid_from_net_pay": 0,
+    "relief_at_source_extra_relief": 0
+   },
+   "pay_after_salary_sacrifice": 45000,
+   "adjusted_net_income": 45000,
+   "personal_allowance": 12570,
+   "allowance_lost_to_taper": 0,
+   "taxable_income": 32430,
+   "income_tax": {
+    "by_band": [
+     {
+      "band": "basic",
+      "rate": 0.2,
+      "from": 0,
+      "to": 37700,
+      "income_in_band": 32430,
+      "tax": 6486
+     },
+     {
+      "band": "higher",
+      "rate": 0.4,
+      "from": 37700,
+      "to": 125140,
+      "income_in_band": 0,
+      "tax": 0
+     },
+     {
+      "band": "additional",
+      "rate": 0.45,
+      "from": 125140,
+      "to": null,
+      "income_in_band": 0,
+      "tax": 0
+     }
+    ],
+    "before_pension_relief": 6486,
+    "total": 6486
+   },
+   "national_insurance": {
+    "category": "A",
+    "total": 2594.4,
+    "primary_threshold": 12570,
+    "upper_earnings_limit": 50270,
+    "main_rate": 0.08,
+    "upper_rate": 0.02
+   },
+   "student_loan": {
+    "plans": [],
+    "total": 0
+   },
+   "total_deductions": 9080.4,
+   "net": {
+    "annual": 35919.6,
+    "monthly": 2993.3,
+    "weekly": 690.76
+   },
+   "effective_tax_rate": 0.2018,
+   "notes": [],
+   "summary": "On \u00a345,000 in 2026/27 (England, Wales or NI, code 1257L) take-home pay is \u00a335,919.60 a year, \u00a32,993.30 a month or \u00a3690.76 a week. Income tax \u00a36,486, National Insurance \u00a32,594.40.",
+   "as_of": "2026-10-30",
+   "source": "https://www.gov.uk/guidance/rates-and-thresholds-for-employers-2026-to-2027 ; https://www.gov.uk/income-tax-rates ; https://www.gov.uk/national-insurance-rates-letters",
+   "more": "https://ukmoneycalc.com/calculators/take-home-pay/?utm_source=mcp&utm_medium=uk-income-tax-salary-mcp",
+   "disclaimer": "Estimate for one employment, worked out on annual figures. Payroll works per pay period, so a payslip can differ by a few pounds. Not tax advice."
+  }
+ },
+ "jsonrpc": "2.0",
+ "id": 2
+}

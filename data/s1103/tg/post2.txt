@@ -1,0 +1,12 @@
+Two kitchen tools joined the free set this afternoon, both built on USDA tables.
+
+Raw to cooked weight. Tell it 500 g of raw chicken thigh and it tells you what lands on the plate, using the USDA cooking yield table instead of a guess.
+https://www.mcpstamp.com/can-claude/convert-raw-to-cooked-weight/
+
+Vegetable yield. How much of a whole pineapple or a bunch of carrots you keep after trimming, for 305 fruits and vegetables.
+https://www.mcpstamp.com/can-claude/calculate-vegetable-yield/
+
+That's 27 free servers now, and 32 short pages that say plainly what Claude can and can't do on its own.
+https://www.mcpstamp.com/can-claude/
+
+#shipped

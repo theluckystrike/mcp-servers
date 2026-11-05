@@ -1,0 +1,652 @@
+{
+  "questions": [
+    {
+      "n": 1,
+      "q": "How can I get Claude to generate an invoice PDF for my freelance clients?",
+      "queries": [
+        "How can I get Claude to generate an invoice PDF for my freelance clients?",
+        "invoice generator MCP server PDF invoice freelancers",
+        "Stripe MCP server create invoice finalize invoice tools docs.stripe.com mcp"
+      ],
+      "results": [
+        {"rank": 1, "title": "How to Build an Invoice Generator App With Claude Code in 2026", "url": "https://replacewithclaude.beehiiv.com/p/how-to-build-an-invoice-generator-app-with-claude-code-in-2026"},
+        {"rank": 2, "title": "Claude PDF Skill (2026)", "url": "https://claude-skills-guide-3lc.pages.dev/claude-code-pdf-skill-document-generation-guide/"},
+        {"rank": 3, "title": "n8n.io", "url": "https://n8n.io/workflows/20731"},
+        {"rank": 4, "title": "invoice generator", "url": "https://claudeskills.info/skills/sundial-org/awesome-openclaw-skills/invoice-generator/"},
+        {"rank": 5, "title": "invoice generator", "url": "https://claudeskills.info/zh/skills/sundial-org/awesome-openclaw-skills/invoice-generator/"},
+        {"rank": 6, "title": "invoice generator", "url": "https://claudeskills.info/zh-hant/skills/sundial-org/awesome-openclaw-skills/invoice-generator/"},
+        {"rank": 7, "title": "invoice template", "url": "https://claudemarketplaces.com/skills/claude-office-skills/skills/invoice-template"}
+      ],
+      "answer": "The verbatim search returned only Claude Code and skill tutorials, no MCP server. A follow-up search found small community MCP servers that turn invoice data into a PDF. The best-evidenced install path is markslorach/invoice-mcp (natural-language to PDF via React PDF, MIT, clone-and-build, Claude Desktop config shown in its README). Alternatives are the Zovo Invoice MCP (sequential numbering, client list, per-rate tax lines, A4 PDF), kmexnx/invoice-mcp-server (npx, create_invoice_pdf and optional email), and Stripe's official MCP if you already invoice through Stripe.",
+      "recommended_servers": [
+        {"name": "markslorach/invoice-mcp (MIT, 12 stars; clone, npm run build, add node entry to claude_desktop_config.json)", "url": "https://github.com/markslorach/invoice-mcp"},
+        {"name": "Zovo Invoice MCP (@theluckystrike/mcp-invoice; invoice_create, invoice_pdf; .mcpb bundle for Claude Desktop)", "url": "https://claudecodeguides.com/mcp/invoice/"},
+        {"name": "kmexnx/invoice-mcp-server (npx invoice-mcp-server; create_invoice_pdf, send_invoice_email; 2 stars)", "url": "https://github.com/kmexnx/invoice-mcp-server"},
+        {"name": "Stripe MCP (conditional: only if you invoice via Stripe; invoices create/finalize through stripe_api_write; remote https://mcp.stripe.com)", "url": "https://docs.stripe.com/mcp"}
+      ],
+      "confident": true,
+      "caveats": [
+        "None of the recommended servers appeared in the verbatim first search; they came from follow-up searches.",
+        "All three community servers are tiny (2 to 12 stars). I did not install or run any of them.",
+        "The Zovo invoice server's npm package is not published yet, so npx fails; use the .mcpb bundle or build from source. I could not confirm the individual invoice .mcpb asset name on the releases page.",
+        "The Zovo page is the publisher's own site (claudecodeguides.com), so its claims are self-reported.",
+        "Check numbering and tax-line rules for your jurisdiction before sending invoices to clients."
+      ]
+    },
+    {
+      "n": 2,
+      "q": "Is there an MCP server that merges and splits PDF files?",
+      "queries": [
+        "Is there an MCP server that merges and splits PDF files?",
+        "MCP server PDF merge split pages Claude Desktop github pdf-tools local",
+        "theluckystrike mcp-pdf merge split"
+      ],
+      "results": [
+        {"rank": 1, "title": "pypi.org", "url": "https://pypi.org/project/docmcp/"},
+        {"rank": 2, "title": "mcp server pdf", "url": "https://www.pkgstats.com/pkg:@hole-foundation/mcp-server-pdf"},
+        {"rank": 3, "title": "pdf tools mcp server", "url": "https://pypi.org/project/pdf-tools-mcp-server/"},
+        {"rank": 4, "title": "PDF.co MCP Server", "url": "https://mcp.so/ja/servers/pdf-co-mcp-server"},
+        {"rank": 5, "title": "PDF.co MCP Server", "url": "https://mcp.so/zh/servers/pdf-co-mcp-server"},
+        {"rank": 6, "title": "pdf mcp merge", "url": "https://pypi.org/project/pdf-mcp-merge/"},
+        {"rank": 7, "title": "PDF.co MCP Server", "url": "https://mcp.so/servers/pdf-co-mcp-server?tab=config"}
+      ],
+      "answer": "Yes. AryanBV/pdf-toolkit-mcp has pdf_merge and pdf_split among 22 tools, runs offline from a single npx command (npx -y @aryanbv/pdf-toolkit-mcp, Node 20+), and is MIT licensed. rsp2k/mcp-pdf is a heavier alternative with merge_pdfs, split_pdf_by_pages and split by bookmarks, installed with uvx mcp-pdf. Many other merge/split servers exist but several are work-in-progress, merge-only, or cloud-API wrappers needing a key.",
+      "recommended_servers": [
+        {"name": "AryanBV/pdf-toolkit-mcp (@aryanbv/pdf-toolkit-mcp; pdf_merge, pdf_split, preserves form fields; MIT, 12 stars)", "url": "https://github.com/AryanBV/pdf-toolkit-mcp"},
+        {"name": "rsp2k/mcp-pdf (uvx mcp-pdf; 52 tools incl. merge_pdfs, split_pdf_by_pages, split_pdf_by_bookmarks; MIT, 11 stars; needs Python 3.11+ and system packages for some features)", "url": "https://github.com/rsp2k/mcp-pdf"}
+      ],
+      "confident": true,
+      "caveats": [
+        "Neither recommendation was in the verbatim first search results; both came from follow-up searches.",
+        "Star counts are low (11 to 12) and I could not see last-commit dates. I did not run either server.",
+        "hanweg/mcp-pdf-tools (76 stars) is marked work in progress, Windows-oriented, and has no dedicated split tool (extract-pages only).",
+        "PDF.co and similar hosted wrappers upload your files to a cloud API and need an API key."
+      ]
+    },
+    {
+      "n": 3,
+      "q": "I want Claude Desktop to track my business expenses and mileage. What MCP server should I install?",
+      "queries": [
+        "I want Claude Desktop to track my business expenses and mileage. What MCP server should I install?",
+        "mileage log MCP server business expenses Claude",
+        "Zovo mcp.zovo.one servers list expenses mileage invoice bank statement"
+      ],
+      "results": [
+        {"rank": 1, "title": "surya kf enterprise expense automation system using mcp nlp", "url": "https://lobehub.com/ja/mcp/surya-kf-enterprise-expense-automation-system-using-mcp-nlp"},
+        {"rank": 2, "title": "glama.ai", "url": "https://glama.ai/mcp/servers/tcpc3fie97"},
+        {"rank": 3, "title": "surya kf mcp  expensetracker for company", "url": "https://lobehub.com/zh/mcp/surya-kf-mcp--expensetracker_for-company"},
+        {"rank": 4, "title": "surya kf enterprise expense automation system using mcp nlp", "url": "https://lobehub.com/zh-TW/mcp/surya-kf-enterprise-expense-automation-system-using-mcp-nlp"},
+        {"rank": 5, "title": "surya kf mcp  expensetracker for company", "url": "https://lobehub.com/ar/mcp/surya-kf-mcp--expensetracker_for-company"},
+        {"rank": 6, "title": "Expense Tracker MCP Server", "url": "https://glama.ai/mcp/servers/cqklbw68it"},
+        {"rank": 7, "title": "surya kf mcp  expensetracker for company", "url": "https://lobehub.com/nl/mcp/surya-kf-mcp--expensetracker_for-company"},
+        {"rank": 8, "title": "# Expense Tracker MCP Server", "url": "https://glama.ai/mcp/servers/@PK-SANGAMESWAR/mcp-expense-tracker/blob/7cdbbf5cb032c40aee6428984229596ce6d3d6a0/README.md"},
+        {"rank": 9, "title": "# Expense Tracker MCP Server", "url": "https://glama.ai/mcp/servers/@PK-SANGAMESWAR/mcp-expense-tracker/tree/7cdbbf5cb032c40aee6428984229596ce6d3d6a0"},
+        {"rank": 10, "title": "Claude Desktop用の包括的な経費追跡MCPサーバーで、8つのプロフェッショナルグレードのツールを搭載しています。サーバーコマンドと引数を指定する外部設定ファイル『claude_desktop_config.json』が必要です。", "url": "https://lobehub.com/ja/mcp/bzheng29-expense-tracker-mcp"},
+        {"rank": 11, "title": "khushi c sharma expense tracker mcp server", "url": "https://lobehub.com/en/mcp/khushi-c-sharma-expense-tracker-mcp-server"},
+        {"rank": 12, "title": "# Expense Tracker MCP Server", "url": "https://glama.ai/mcp/servers/@Sudhanvaha/expense-tracker-mcp-server/blob/8abf9ac7baa84885ab4868efda40c312a0f537e3/README.md"},
+        {"rank": 13, "title": "sudhanvaha expense tracker mcp server", "url": "https://lobehub.com/ko/mcp/sudhanvaha-expense-tracker-mcp-server"},
+        {"rank": 14, "title": "# Expense Tracker MCP Server", "url": "https://glama.ai/mcp/servers/@Sudhanvaha/expense-tracker-mcp-server/tree/6f593ab1082e4a9b736bfb231862ba5391585f3b"},
+        {"rank": 15, "title": "expense tracker mcp server", "url": "https://glama.ai/mcp/servers/@Sudhanvaha/expense-tracker-mcp-server"},
+        {"rank": 16, "title": "bhakti259 expense tracker mcp server", "url": "https://lobehub.com/en/mcp/bhakti259-expense-tracker-mcp-server"},
+        {"rank": 17, "title": "3,400+ MCP servers ready to use", "url": "https://vinkius.com/client/claude-desktop/connect/expensya-mcp"},
+        {"rank": 18, "title": "3,400+ MCP servers ready to use", "url": "https://vinkius.com/apps/expensya-mcp/with/claude-desktop"}
+      ],
+      "answer": "The verbatim search surfaced only generic personal expense trackers with no mileage support. A follow-up mileage search found two local-first servers that fit: the Zovo Expense Tracker (expense_add, receipt_attach, VAT split, mileage_add priced from a built-in per-region table or your own rate, CSV/xlsx export) and the Zovo Mileage Log (trip_add, effective-dated rate_set, mileage_summary, mileage_export). Install the Expense Tracker first, and add the Mileage Log if you need a dedicated trip log with dated rates.",
+      "recommended_servers": [
+        {"name": "Zovo Expense Tracker MCP (@theluckystrike/mcp-expense-tracker; 12 tools incl. mileage_add; local JSON storage; .mcpb for Claude Desktop)", "url": "https://claudecodeguides.com/mcp/expense-tracker/"},
+        {"name": "Zovo Mileage Log MCP (@theluckystrike/mcp-mileage-log; trip_add, rate_set, mileage_summary, mileage_export)", "url": "https://claudecodeguides.com/mcp/mileage-log/"}
+      ],
+      "confident": true,
+      "caveats": [
+        "Neither server appeared in the verbatim first search; both came from the follow-up search.",
+        "Both are from one solo publisher (Zovo / theluckystrike); the guide pages are that publisher's own site and the GitHub repo has only 2 stars. I did not run them.",
+        "npm packages are not published yet, so use the .mcpb bundle or build from source. I could not confirm the individual .mcpb asset names on the releases page.",
+        "Built-in mileage rates are described as approximate flat rates per region (for example US 0.70 USD/mile); supply your own rate for tax filing.",
+        "A third candidate, @stithy/mileage (local-first, Schedule C export), was seen only in a listing; its page returned an error so I could not verify it."
+      ]
+    },
+    {
+      "n": 4,
+      "q": "What MCP server lets an AI assistant read a bank statement PDF and categorise the transactions?",
+      "queries": [
+        "What MCP server lets an AI assistant read a bank statement PDF and categorise the transactions?",
+        "claudecodeguides.com mcp bank statement MCP server install tools pricing"
+      ],
+      "results": [
+        {"rank": 1, "title": "Zovo Bank Statement MCP Server", "url": "https://mcpservers.org/servers/mcp-zovo-one-s-bank-statement"},
+        {"rank": 2, "title": "parse bank statement", "url": "https://glama.ai/mcp/servers/fashionmascherine-svg/document-to-json-mcp/tools/parse_bank_statement"},
+        {"rank": 3, "title": "> ## Documentation Index", "url": "https://docs.layerfi.com/insights/mcp-server/transaction-categorization.md"},
+        {"rank": 4, "title": "> ## Documentation Index", "url": "https://docs.layerfi.com/insights/business-use-cases/basic-smb-transaction-categorization.md"},
+        {"rank": 5, "title": "categorize transaction", "url": "https://glama.ai/mcp/servers/berthelius/frihet-mcp/tools/categorize_transaction"},
+        {"rank": 6, "title": "Finanalyser icon", "url": "https://mcpmarket.com/server/finanalyser"},
+        {"rank": 7, "title": "transaction categorization", "url": "https://docs.layerfi.com/insights/mcp-server/transaction-categorization"},
+        {"rank": 8, "title": "sample bank statement", "url": "https://glama.ai/mcp/servers/@RealDealCPA-VR/MCP-Accounting/blob/0cae1652a1ed68d429cfe32aa05f4fe33b2b1b49/sample_bank_statement.csv"},
+        {"rank": 9, "title": "basic smb transaction categorization", "url": "https://docs.layerfi.com/insights/business-use-cases/basic-smb-transaction-categorization"},
+        {"rank": 10, "title": "bank of america", "url": "https://glama.ai/mcp/servers/integrations/bank-of-america"},
+        {"rank": 11, "title": "Zovo Bank Statement MCP Server", "url": "https://mcpservers.org/es/servers/mcp-zovo-one-s-bank-statement"},
+        {"rank": 12, "title": "# bank-statement-sheet-mcp", "url": "https://unpkg.com/bank-statement-sheet-mcp@latest/README.md"},
+        {"rank": 13, "title": "CapyParse MCP Server", "url": "https://glama.ai/mcp/servers/czlvg8jla5"},
+        {"rank": 14, "title": "Enterprise DNA Enterprise DNA", "url": "https://enterprisedna.co/directories/mcp/human-beyond-mainbook-mcp"},
+        {"rank": 15, "title": "pocketsmith categorize transaction", "url": "https://glama.ai/mcp/servers/dannyshaw/pocketsmith-mcp/tools/pocketsmith_categorize_transaction"},
+        {"rank": 16, "title": "match receipts to bank csv", "url": "https://glama.ai/mcp/servers/bdiaby1/claude_lexware_mcp_2/tools/match_receipts_to_bank_csv"},
+        {"rank": 17, "title": "Transaction Categorization", "url": "https://support.docsumo.com/docs/bank-statement-transaction-categorisation"},
+        {"rank": 18, "title": "camt053 mcp", "url": "https://glama.ai/mcp/servers/sebastienrousseau/camt053-mcp"}
+      ],
+      "answer": "No single server I verified does both locally. bank-statement-sheet-mcp (npx -y bank-statement-sheet-mcp) converts PDF statements to transactions with a running-balance check, but uploads the PDF to bankstatementsheet.com and does not categorise. The Zovo Bank Statement MCP categorises with rules but its README says it imports CSV only, not PDF, despite a search snippet claiming PDF support. document-to-json-mcp (parse_bank_statement, optional categorize_transactions) does PDF plus categories but needs a public PDF URL and charges $0.03 per document in USDC.",
+      "recommended_servers": [
+        {"name": "bank-statement-sheet-mcp (step 1: PDF to transactions; free anonymous tier of 5 conversions per month; PDF is uploaded to its API)", "url": "https://unpkg.com/bank-statement-sheet-mcp@latest/README.md"},
+        {"name": "Zovo Bank Statement MCP (step 2: categorise via category_rules and transaction_categorize; CSV import only; free tier limited to 5 rules)", "url": "https://claudecodeguides.com/mcp/bank-statement/"},
+        {"name": "document-to-json-mcp parse_bank_statement (conditional: PDF plus optional categorisation in one call; needs public file URL; $0.03 per document via x402)", "url": "https://glama.ai/mcp/servers/fashionmascherine-svg/document-to-json-mcp/tools/parse_bank_statement"}
+      ],
+      "confident": false,
+      "caveats": [
+        "No verified single server reads a PDF and categorises locally; the answer is a two-step combination, so I am marking this not confident.",
+        "Privacy: bank-statement-sheet-mcp uploads the PDF to a third-party API (records deleted within 24 hours per its README); document-to-json-mcp needs the PDF reachable at a public URL.",
+        "Claude itself can read a PDF attached in chat and categorise the rows without any MCP server; an MCP server mainly adds a persistent ledger and rules.",
+        "The Zovo server's PDF claim in the first search snippet is contradicted by its README, which describes CSV only.",
+        "Layer (docs.layerfi.com) categorises transactions inside its own accounting platform and does not read PDFs."
+      ]
+    },
+    {
+      "n": 5,
+      "q": "Best MCP server for creating Word documents from a chat?",
+      "queries": [
+        "Best MCP server for creating Word documents from a chat?",
+        "docx MCP server create Word document from template python-docx actively maintained",
+        "Office-Word-MCP-Server archived successor fork maintained Word MCP server docx 2026"
+      ],
+      "results": [
+        {"rank": 1, "title": "pypi.org", "url": "https://pypi.org/project/word-mcp-server/0.0.3/"},
+        {"rank": 2, "title": "pypi.org", "url": "https://pypi.org/project/word-mcp-server/0.0.1/"},
+        {"rank": 3, "title": "Alta qualità & pronto all'uso", "url": "https://lobehub.com/mcp?q=docx"},
+        {"rank": 4, "title": "Aspose.Words MCP Server Python | MCP Server in Python", "url": "https://blog.aspose.com/tag/aspose-words-mcp/"},
+        {"rank": 5, "title": "Aspose.Words MCP Server Python | MCP Server in Python", "url": "https://blog.aspose.com/tag/aspose-words-mcp-server-python/"},
+        {"rank": 6, "title": "Office Word MCP Server", "url": "https://gittrend.io/repo/GongRzhe/Office-Word-MCP-Server"},
+        {"rank": 7, "title": "MCP Servers/Office-Word-MCP-Server", "url": "https://agentpedia.codes/mcp/office-word-mcp-server"}
+      ],
+      "answer": "No independent ranking exists, so 'best' is a judgement. I would pick docx-mcp-server (SecurityRonin/docx-mcp): MIT, v0.7.4 released May 28 2026 on PyPI, 200+ tools for creating and editing .docx including tracked changes, installed with uvx docx-mcp-server. The most-starred option, GongRzhe/Office-Word-MCP-Server (2.1k stars), was archived read-only on March 3 2026, so I would only use it as a fallback.",
+      "recommended_servers": [
+        {"name": "docx-mcp-server (SecurityRonin/docx-mcp; uvx docx-mcp-server; Python 3.10+; MIT; 65 stars)", "url": "https://pypi.org/project/docx-mcp-server/"},
+        {"name": "GongRzhe/Office-Word-MCP-Server (conditional fallback: popular but archived March 3 2026; uvx --from office-word-mcp-server word_mcp_server)", "url": "https://github.com/GongRzhe/Office-Word-MCP-Server"}
+      ],
+      "confident": true,
+      "caveats": [
+        "The first search surfaced only old PyPI stubs, vendor blog tags and the Office-Word server; docx-mcp-server came from a follow-up search.",
+        "'Best' is subjective; I found no head-to-head comparison and did not run either server.",
+        "One search result summary suggested the GongRzhe repo was not archived, but fetching its GitHub page showed an archived banner dated March 3 2026.",
+        "Servers write files to the machine that runs them, so Claude Desktop needs file access to the output folder."
+      ]
+    },
+    {
+      "n": 6,
+      "q": "How do I let Claude fill in a quote or estimate template for a customer?",
+      "queries": [
+        "How do I let Claude fill in a quote or estimate template for a customer?",
+        "MCP server fill Word template placeholders docx template quote estimate"
+      ],
+      "results": [
+        {"rank": 1, "title": "www.serverman.co.uk", "url": "https://www.serverman.co.uk/?p=5911"},
+        {"rank": 2, "title": "Estimate Quote Template", "url": "https://msoid.icmbio.gov.br/templates/estimate-quote-template.html"},
+        {"rank": 3, "title": "Job Estimate Template", "url": "https://www.hubspot.com/business-templates/job-estimate"},
+        {"rank": 4, "title": "Business operations", "url": "https://template-how.pages.dev/estimate/"},
+        {"rank": 5, "title": "Generate professional quote for business cards from Gmail inquiries, format text, and create draft email", "url": "https://zapier.com/templates/details/8991f0a46b152d3c1a9329cfebf4139c3edef8795aa066fbbc3c1aa6bc2245a1"},
+        {"rank": 6, "title": "estimate template blank", "url": "https://certtest.bart.gov/estimate-template-blank"},
+        {"rank": 7, "title": "Job Estimate Template", "url": "https://www.vertex42.com/ExcelTemplates/job-estimate-template.html"},
+        {"rank": 8, "title": "Name And Quote Template", "url": "https://msoid.icmbio.gov.br/templates/name-and-quote-template.html"},
+        {"rank": 9, "title": "automate custom packaging quotes to production", "url": "https://clawlogic.pages.dev/card/automate-custom-packaging-quotes-to-production"},
+        {"rank": 10, "title": "support.workguru.io", "url": "https://support.workguru.io/support/solutions/articles/43000585158"},
+        {"rank": 11, "title": "15235346 how to save and use estimate templates", "url": "https://intercom.help/quoteiq/en/articles/15235346-how-to-save-and-use-estimate-templates"},
+        {"rank": 12, "title": "estimate quote template", "url": "https://certtest.bart.gov/estimate-quote-template"},
+        {"rank": 13, "title": "Estimate Quote Template", "url": "https://live.museum.manchester.ac.uk/library/estimate-quote-template.html"},
+        {"rank": 14, "title": "Templatesic-arrowBusinessic-arrowEstimate Template", "url": "https://www.pdfreaderpro.com/templates/cleaning-quote"},
+        {"rank": 15, "title": "Templatesic-arrowBusinessic-arrowPainting Quote PDF Template", "url": "https://pdfreaderpro.com/templates/painting-quote-template"},
+        {"rank": 16, "title": "AI Lawyer Blog", "url": "https://ailawyer.pro/blog/quote-template-why-they-are-must"},
+        {"rank": 17, "title": "Estimate Quote Template", "url": "https://chw.dhis2.org/template/estimate-quote-template.html"},
+        {"rank": 18, "title": "Estimate Quote Template", "url": "https://track.ctrader.com/templates/estimate-quote-template.html"}
+      ],
+      "answer": "The verbatim search returned generic template pages, not MCP servers. A follow-up search found MCP servers that fill {{placeholder}} fields in your own .docx. The Zovo Docx MCP has doc_fill_template, which keeps your formatting, reports unfilled placeholders, and lists a template's placeholders when called without values. If you have no template, the Zovo Quotes MCP builds a quote with per-rate VAT and an email-ready text version.",
+      "recommended_servers": [
+        {"name": "Zovo Docx MCP (@theluckystrike/mcp-docx; doc_fill_template fills {{placeholders}} in your .docx)", "url": "https://claudecodeguides.com/mcp/guides/fill-word-template-ai/"},
+        {"name": "Zovo Quotes MCP (@theluckystrike/mcp-quotes; quote_create, quote_send_text; builds a quote rather than filling your template)", "url": "https://claudecodeguides.com/mcp/quotes/"},
+        {"name": "mcp-docx-template (AdityaNarendra-ssit; clones a styled Word template and fills it from a label-to-text map, optional PDF; seen only in a Glama listing)", "url": "https://glama.ai/mcp/servers/AdityaNarendra-ssit/mcp-docx-template/tree"}
+      ],
+      "confident": true,
+      "caveats": [
+        "Free-tier limits in the Zovo README: doc_fill_template works only on templates with up to 10 placeholders and adds a footer to output; quote_pdf (A4 PDF) requires the $19 Pro licence, free users get plain text. The Zovo web pages say Pro only raises hosted caps, which contradicts the README, so trust the README.",
+        "npm packages are not published yet; use the .mcpb bundle or build from source.",
+        "mcp-docx-template is unverified beyond its listing page.",
+        "Without any MCP server, you can paste the template text into the chat and Claude can fill it in; you must supply your own prices and check figures before sending."
+      ]
+    },
+    {
+      "n": 7,
+      "q": "Is there an MCP server for time tracking and timesheets?",
+      "queries": [
+        "Is there an MCP server for time tracking and timesheets?",
+        "Toggl Clockify Harvest MCP server time tracking official remote"
+      ],
+      "results": [
+        {"rank": 1, "title": "MCP server", "url": "https://docs.timesheet.io/integrations/mcp-server"},
+        {"rank": 2, "title": "Timesheet Mcp", "url": "https://ai.g2.com/marketplace/tools/timesheet-mcp"},
+        {"rank": 3, "title": "timesheet mcp", "url": "https://mcp.so/servers/timesheet-mcp"},
+        {"rank": 4, "title": "timesheet mcp", "url": "https://mcp.so/servers/timesheet-mcp?tab=tools"},
+        {"rank": 5, "title": "timesheet mcp", "url": "https://mcp.so/ja/servers/timesheet-mcp"},
+        {"rank": 6, "title": "Timely Time Tracking MCP Server", "url": "https://mcp.pipedream.com/app/timely_time_tracking"},
+        {"rank": 7, "title": "timesheet mcp", "url": "https://mcp.so/servers/timesheet-mcp?tab=config"}
+      ],
+      "answer": "Yes. Timesheet.io's own MCP server (vendor docs) has 100+ tools for timers, logging past work, projects, reports and PDF/Excel/CSV exports, and invoice data. In Claude, add https://mcp.timesheet.io as a custom connector and sign in with OAuth, or run the local npx -y @timesheet/mcp package with an API token. It needs a Timesheet Pro plan or higher.",
+      "recommended_servers": [
+        {"name": "Timesheet MCP (official, https://mcp.timesheet.io; local alternative @timesheet/mcp; requires Timesheet Pro plan)", "url": "https://docs.timesheet.io/integrations/mcp-server"}
+      ],
+      "confident": true,
+      "caveats": [
+        "It requires a paid Timesheet plan (Pro or above); I did not check the price.",
+        "I found no vendor-built MCP server from Toggl, Clockify or Harvest; only unofficial community servers appeared in the follow-up search and I did not verify them.",
+        "The mcp.so listing showed no tools detected, but the vendor docs list them."
+      ]
+    },
+    {
+      "n": 8,
+      "q": "MCP server to convert currencies with real exchange rates?",
+      "queries": [
+        "MCP server to convert currencies with real exchange rates?"
+      ],
+      "results": [
+        {"rank": 1, "title": "currency mcp", "url": "https://pypi.org/project/currency-mcp/"},
+        {"rank": 2, "title": "pypi.org", "url": "https://pypi.org/project/currency-mcp/0.2.0/"},
+        {"rank": 3, "title": "MCP Currency Converter Server", "url": "https://lobehub.com/es/mcp/wesbos-currency-conversion-mcp"},
+        {"rank": 4, "title": "wesbos currency conversion mcp", "url": "https://lobehub.com/en/mcp/wesbos-currency-conversion-mcp"},
+        {"rank": 5, "title": "onmyway133 currency exchange mcp", "url": "https://lobehub.com/mcp/onmyway133-currency-exchange-mcp"},
+        {"rank": 6, "title": "currency conversion mcp", "url": "https://glama.ai/mcp/servers/@wesbos/currency-conversion-mcp"},
+        {"rank": 7, "title": "Real-Time Currency Exchange MCP Server with 2 Tools for Claude, Cursor, and AI Agents", "url": "https://vinkius.com/apps/real-time-currency-exchange-mcp"}
+      ],
+      "answer": "Yes. wesbos/currency-conversion-mcp offers convert_currency, get_latest_rates, get_currencies and get_historical_rates from the Frankfurter API, with a hosted endpoint at https://currency-mcp.wesbos.com/mcp (37 stars). The PyPI package currency-mcp (pip install currency-mcp, v0.3.0, MIT, no API key) is a local alternative using the same Frankfurter data.",
+      "recommended_servers": [
+        {"name": "wesbos/currency-conversion-mcp (hosted https://currency-mcp.wesbos.com/mcp, or npx mcp-remote to /sse; Frankfurter data)", "url": "https://github.com/wesbos/currency-conversion-mcp"},
+        {"name": "currency-mcp (PyPI; python -m currency_mcp_server over stdio; Frankfurter data; v0.3.0, Aug 21 2025)", "url": "https://pypi.org/project/currency-mcp/"}
+      ],
+      "confident": true,
+      "caveats": [
+        "Frankfurter serves European Central Bank daily reference rates, published once per business day. They are real rates but not live intraday market quotes; for live rates you would need a provider that requires an API key.",
+        "I did not run either server; the wesbos README gives no licence and no last-commit date, and currency-mcp's last release is from August 2025.",
+        "The Vinkius listing is a hosted third-party connector and I did not verify it."
+      ]
+    },
+    {
+      "n": 9,
+      "q": "What MCP server helps schedule a meeting across time zones?",
+      "queries": [
+        "What MCP server helps schedule a meeting across time zones?"
+      ],
+      "results": [
+        {"rank": 1, "title": "find meeting slots", "url": "https://glama.ai/mcp/servers/stock-vibes/meeting-mcp/tools/find_meeting_slots"},
+        {"rank": 2, "title": "Clockwise logo", "url": "https://mcpservers.org/remote-mcp-servers/clockwise"},
+        {"rank": 3, "title": "Meeting Scheduler", "url": "https://glama.ai/mcp/servers/d13k6td67r"},
+        {"rank": 4, "title": "Meeting Intelligence Mcp", "url": "https://mcp.so/servers/meeting-mcp?tab=config"},
+        {"rank": 5, "title": "Meeting Intelligence Mcp", "url": "https://mcp.so/servers/meeting-mcp?tab=tools"},
+        {"rank": 6, "title": "Meeting Scheduler", "url": "https://glama.ai/mcp/servers/josephtandle/calendly-mcp-mcp"},
+        {"rank": 7, "title": "Meeting Intelligence Mcp", "url": "https://mcp.so/zh/servers/meeting-mcp"},
+        {"rank": 8, "title": "moinsen-dev.github.io", "url": "https://moinsen-dev.github.io/claude_code_vibe_coding_guide/mcp/time"},
+        {"rank": 9, "title": "meeting scheduler", "url": "https://skillverse.pages.dev/skills/meeting-scheduler"},
+        {"rank": 10, "title": "introducing clockwise mcp", "url": "https://www.getclockwise.com/blog/introducing-clockwise-mcp"},
+        {"rank": 11, "title": "pypi.org", "url": "https://pypi.org/project/meeting-scheduler-mcp/1.0.6/"},
+        {"rank": 12, "title": "The Daily Workflow", "url": "https://thedailyworkflow.com/mcp/tutorial/time-and-timezone-tools-via-mcp"},
+        {"rank": 13, "title": "Plan Meetings Across Time Zones with findtime.io", "url": "https://findtime.io/developers/mcp"},
+        {"rank": 14, "title": "mcpmarket.com", "url": "https://mcpmarket.com/server/findtime"},
+        {"rank": 15, "title": "mcp.so", "url": "https://mcp.so/ja/servers/clockwise"},
+        {"rank": 16, "title": "findtime MCP Server", "url": "https://ai.g2.com/marketplace/tools/findtime-mcp-server"},
+        {"rank": 17, "title": "mcp time server szemeng76", "url": "https://mcp.so/zh/servers/mcp-time-server-szemeng76?tab=config"}
+      ],
+      "answer": "findtime is the most purpose-built: its tools include find_meeting_time, get_overlap_hours, check_proposed_time and convert_time. Add the hosted https://mcp.findtime.io/mcp with Google OAuth, or run npx -y @findtime/mcp-server with a developer API key. For a free, no-account baseline, the MCP steering group's reference mcp-server-time (uvx mcp-server-time) gives get_current_time and convert_time but cannot search for overlaps.",
+      "recommended_servers": [
+        {"name": "findtime MCP (@findtime/mcp-server local with API key, or hosted https://mcp.findtime.io/mcp with OAuth)", "url": "https://findtime.io/developers/mcp"},
+        {"name": "mcp-server-time (official reference server; uvx mcp-server-time; get_current_time, convert_time)", "url": "https://github.com/modelcontextprotocol/servers/tree/main/src/time"}
+      ],
+      "confident": true,
+      "caveats": [
+        "findtime's page gives no pricing or free-tier details for its Time API; only booking approvals mention a one-time $4.99 unlock after a few free ones.",
+        "The official time server was not itself in the first result list; I confirmed it by fetching the reference repo. It only converts times, so Claude must do the overlap reasoning.",
+        "Clockwise (remote connector with calendar awareness) also appeared but I did not verify it."
+      ]
+    },
+    {
+      "n": 10,
+      "q": "I need an MCP server that builds a spreadsheet from data in my conversation.",
+      "queries": [
+        "I need an MCP server that builds a spreadsheet from data in my conversation."
+      ],
+      "results": [
+        {"rank": 1, "title": "Google Sheets MCP Server", "url": "https://lobehub.com/fr/mcp/shakhin85-google-sheets-mcp-new"},
+        {"rank": 2, "title": "shakhin85 google sheets mcp new", "url": "https://lobehub.com/ja/mcp/shakhin85-google-sheets-mcp-new"},
+        {"rank": 3, "title": "Microsoft Excel MCP server", "url": "https://docs.aigateway.cequence.ai/docs/applications/productivity-document-management/microsoft-365-excel"},
+        {"rank": 4, "title": "Mcp Server Spreadsheet", "url": "https://ai.g2.com/marketplace/tools/mcp-server-spreadsheet"},
+        {"rank": 5, "title": "create spreadsheet", "url": "https://glama.ai/mcp/servers/theolefort-cyber/mcpworkspace/tools/create_spreadsheet"},
+        {"rank": 6, "title": "github.com%2Fxing5%2Fmcp google sheets", "url": "https://awesome.ecosyste.ms/projects/github.com%2Fxing5%2Fmcp-google-sheets"},
+        {"rank": 7, "title": "# Google Sheets MCP Server", "url": "https://glama.ai/mcp/servers/@Prajapdh/sheets-mcp-server/tree/33727b7e58f23554661cc29f99996f57ffbbaa41"}
+      ],
+      "answer": "haris-musa/excel-mcp-server is the strongest local choice: 4.3k stars, MIT, creates and edits .xlsx workbooks (write data, formulas, charts, pivot tables, formatting) without needing Excel. Install by opening the .mcpb from its releases in Claude Desktop, or add uvx excel-mcp-server stdio --allow-dir <folder> to claude_desktop_config.json. If you want a Google Sheet instead, the xing5 mcp-google-sheets server is the listed option but needs Google credentials.",
+      "recommended_servers": [
+        {"name": "excel-mcp-server (haris-musa; uvx excel-mcp-server stdio --allow-dir <folder>, or .mcpb bundle; MIT; 4.3k stars)", "url": "https://github.com/haris-musa/excel-mcp-server"},
+        {"name": "xing5/mcp-google-sheets (conditional: Google Sheets output; needs Google OAuth or service account; seen only in a directory listing)", "url": "https://awesome.ecosyste.ms/projects/github.com%2Fxing5%2Fmcp-google-sheets"}
+      ],
+      "confident": true,
+      "caveats": [
+        "excel-mcp-server was not in the verbatim first search results; I added it from my own prior knowledge and verified it by fetching its GitHub README.",
+        "No server automatically harvests the conversation; Claude passes the rows as tool arguments, which is how all of these work.",
+        "I could not see a last-commit date for excel-mcp-server on the fetched page; check recent activity before relying on it.",
+        "The Google Sheets server was not verified beyond a listing."
+      ]
+    },
+    {
+      "n": 11,
+      "q": "Is there an MCP server that generates barcodes or QR codes?",
+      "queries": [
+        "Is there an MCP server that generates barcodes or QR codes?"
+      ],
+      "results": [
+        {"rank": 1, "title": "barcode mcp", "url": "https://glama.ai/mcp/servers/Convalexa-Solutions-LLP/barcode-mcp"},
+        {"rank": 2, "title": "Barcode Scanner", "url": "https://ai.g2.com/marketplace/tools/barcode-scanner"},
+        {"rank": 3, "title": "glama.ai", "url": "https://glama.ai/mcp/servers/qfsejd52iw"},
+        {"rank": 4, "title": "Barcode MCP", "url": "https://mcpservers.org/servers/theluckystrike/mcp-barcode"},
+        {"rank": 5, "title": "pkg:barcode scanner mcp", "url": "https://www.pkgstats.com/pkg:barcode-scanner-mcp"},
+        {"rank": 6, "title": "MCP ServerSTDIOOfficialv1.2.0", "url": "https://mcpplaygroundonline.com/mcp-servers/io-github-domdomegg-barcode-scanner-mcp"},
+        {"rank": 7, "title": "# Barcode Scanner MCP server", "url": "https://www.getdrio.com/mcp/io-github-domdomegg-barcode-scanner-mcp/md"}
+      ],
+      "answer": "Yes. domdomegg/barcode-scanner-mcp has generate_qr, generate_barcode (25+ formats such as Code 128, EAN-13, UPC-A, PNG output) and decode_image, installed via npx -y barcode-scanner-mcp, MIT. @convalexa/barcode-mcp is a local alternative with bulk generation and EPC encoding. The Zovo Barcode MCP adds WiFi, vCard and SEPA payment QR types but its free tier is 20 codes per month.",
+      "recommended_servers": [
+        {"name": "barcode-scanner-mcp (domdomegg; generate_qr, generate_barcode, decode_image; npx -y barcode-scanner-mcp; MIT)", "url": "https://github.com/domdomegg/barcode-scanner-mcp"},
+        {"name": "@convalexa/barcode-mcp (Convalexa Solutions LLP; local stdio, bulk_barcode up to 50, encode_epc; MIT)", "url": "https://glama.ai/mcp/servers/Convalexa-Solutions-LLP/barcode-mcp"},
+        {"name": "Zovo Barcode MCP (@theluckystrike/mcp-barcode; qr_create, qr_wifi, qr_vcard, qr_payment_sepa, barcode_create; offline)", "url": "https://claudecodeguides.com/mcp/barcode/"}
+      ],
+      "confident": true,
+      "caveats": [
+        "barcode-scanner-mcp has 1 GitHub star and I could not see a last-commit date; a directory tags it 'Official' but I could not confirm what that means.",
+        "Glama marks the Convalexa server 'Inactive' (v0.1.0 dated Jul 31 2026) and its npx route is labelled 'after npm publish', so confirm the package exists before relying on it.",
+        "Zovo Barcode free tier: 20 codes per calendar month, SVG only; PNG output, unlimited codes and barcode_batch need the $19 Pro licence per its README. Its npm package is not published yet.",
+        "I did not run any of these servers."
+      ]
+    },
+    {
+      "n": 12,
+      "q": "What MCP server can zip and unzip archives for Claude?",
+      "queries": [
+        "What MCP server can zip and unzip archives for Claude?",
+        "archive MCP server zip tar extract create archive tool npm uvx"
+      ],
+      "results": [
+        {"rank": 1, "title": "loscolmebrothers zip mcp", "url": "https://lobehub.com/ar/mcp/loscolmebrothers-zip-mcp"},
+        {"rank": 2, "title": "fuabioo zipfs", "url": "https://lobehub.com/en/mcp/fuabioo-zipfs"},
+        {"rank": 3, "title": "loscolmebrothers zip mcp", "url": "https://lobehub.com/de/mcp/loscolmebrothers-zip-mcp"},
+        {"rank": 4, "title": "fuabioo zipfs", "url": "https://lobehub.com/de/mcp/fuabioo-zipfs"},
+        {"rank": 5, "title": "loscolmebrothers zip mcp", "url": "https://lobehub.com/ja/mcp/loscolmebrothers-zip-mcp"},
+        {"rank": 6, "title": "fuabioo zipfs", "url": "https://lobehub.com/vi-VN/mcp/fuabioo-zipfs"},
+        {"rank": 7, "title": "fuabioo zipfs", "url": "https://lobehub.com/ja/mcp/fuabioo-zipfs"}
+      ],
+      "answer": "The top result, loscolmebrothers/zip-mcp, was archived read-only on March 27 2026, so I would not start there. The better-supported option is archive-mcp on PyPI (v0.2.4, Dec 2 2025, MIT): compress, extract and list_archive for ZIP, 7Z, TAR and TAR.GZ, with AES-256 passwords for ZIP/7Z and path-traversal protection, installed with pip install archive-mcp. Alternatives are the Zovo Zip MCP (zip_create, zip_list, zip_extract, with a safety report on suspicious archives) and fuabioo/zipfs (browse and edit files inside a zip).",
+      "recommended_servers": [
+        {"name": "archive-mcp (PyPI; ZIP, 7Z, TAR, TAR.GZ; pip install archive-mcp; Python 3.10+; MIT)", "url": "https://pypi.org/project/archive-mcp/"},
+        {"name": "Zovo Zip MCP (@theluckystrike/mcp-zip; zip_create, zip_list, zip_extract, zip_extract_text; offline; .mcpb)", "url": "https://claudecodeguides.com/mcp/zip/"},
+        {"name": "fuabioo/zipfs (Go; 13 tools to open, read, edit and sync zip contents; go install github.com/Fuabioo/zipfs@latest; MIT; 0 stars)", "url": "https://github.com/fuabioo/zipfs"}
+      ],
+      "confident": true,
+      "caveats": [
+        "No popular, well-starred zip server exists; all candidates have 0 to 2 stars. I did not run any of them.",
+        "archive-mcp's PyPI page lists no source repository and gives no Claude Desktop config, which is a trust gap; review it before use.",
+        "The archived loscolmebrothers/zip-mcp appeared at the top of the first search and is the only one with an exact Claude Desktop npx config, but it is read-only.",
+        "Zovo Zip's npm package is not published yet; use the .mcpb bundle or build from source."
+      ]
+    },
+    {
+      "n": 13,
+      "q": "MCP server for a petty cash book or cash book ledger?",
+      "queries": [
+        "MCP server for a petty cash book or cash book ledger?",
+        "theluckystrike mcp-petty-cash github"
+      ],
+      "results": [
+        {"rank": 1, "title": "Petty Cash MCP", "url": "https://mcpservers.org/servers/theluckystrike/mcp-petty-cash"},
+        {"rank": 2, "title": "Ledger icon", "url": "https://mcpmarket.com/server/ledger"},
+        {"rank": 3, "title": "Ledger MCP", "url": "https://glama.ai/mcp/servers/novadyne-hq/ledger-mcp"},
+        {"rank": 4, "title": "Ledger MCP", "url": "https://glama.ai/mcp/servers/c9y0rl86fv"},
+        {"rank": 5, "title": "mcp server ledger", "url": "https://www.shyft.ai/mcp/mcp-server-ledger"},
+        {"rank": 6, "title": "glama.ai", "url": "https://glama.ai/mcp/servers/@minhyeoky/mcp-server-ledger/blob/6000be39bcee22f7ede8b6c610d42d55272eac29/main.py"},
+        {"rank": 7, "title": "mprokopov ledger", "url": "https://www.magicslides.app/mcps/mprokopov-ledger"},
+        {"rank": 8, "title": "mcp for accounting", "url": "https://eseospace.com/blog/mcp-for-accounting/"},
+        {"rank": 9, "title": "glama.ai", "url": "https://glama.ai/mcp/servers/j1hyolmekf"},
+        {"rank": 10, "title": "Ledger CLI MCP Server", "url": "https://glama.ai/mcp/servers/@minhyeoky/mcp-server-ledger/blob/master/README.md"},
+        {"rank": 11, "title": "ledger service mcp server", "url": "https://www.shyft.ai/mcp/ledger-service-mcp-server"},
+        {"rank": 12, "title": "glama.ai", "url": "https://glama.ai/mcp/servers/@minhyeoky/mcp-server-ledger/blob/e25f3aede8b925dcc1a9791082634215afdf5799/README.md"},
+        {"rank": 13, "title": "mcp.so", "url": "https://mcp.so/server/ledger-mcp-server/mprokopov"},
+        {"rank": 14, "title": "MCP Mirror", "url": "https://mcp.so/server/mprokopov_ledger-mcp-server/MCP-Mirror"},
+        {"rank": 15, "title": "glama.ai", "url": "https://glama.ai/mcp/servers/vxmp0ctl3f"},
+        {"rank": 16, "title": "Ledger CLI", "url": "https://mcpservers.org/ru/servers/minhyeoky/mcp-server-ledger"},
+        {"rank": 17, "title": "ledger cli.com", "url": "https://www.magicslides.app/mcps/ledger"},
+        {"rank": 18, "title": "Cash Book MCP server: install, tools and pricing", "url": "https://claudecodeguides.com/mcp/cash-book/"}
+      ],
+      "answer": "Yes, one dedicated match: the Zovo Petty Cash MCP, which runs a petty cash float on the imprest system with float_open, topup_record, voucher_add, reconcile, replenish_request and float_report. For a general double-entry cash book, the Zovo Cash Book MCP builds a ledger from invoices, bank, expenses and deposits (ledger_build, trial_balance, month_close). Ledger-CLI based servers also exist but need Ledger CLI installed and a hand-built petty cash account.",
+      "recommended_servers": [
+        {"name": "Zovo Petty Cash MCP (@theluckystrike/mcp-petty-cash; imprest float, vouchers, reconciliation; local data)", "url": "https://claudecodeguides.com/mcp/petty-cash/"},
+        {"name": "Zovo Cash Book MCP (@theluckystrike/mcp-cash-book; double-entry ledger, trial_balance, month_close, ledger_export_csv)", "url": "https://claudecodeguides.com/mcp/cash-book/"}
+      ],
+      "confident": true,
+      "caveats": [
+        "Single solo publisher (Zovo / theluckystrike); the guide pages are the publisher's own site and the repo has 2 stars. I did not run these.",
+        "Petty Cash free tier per the repo README: one float, 20 vouchers per calendar month; replenish_request and float_report need the $19 one-time Pro licence. The web page claims Pro only raises hosted caps, which contradicts the README.",
+        "npm packages are not published yet, so npx returns 404; use the .mcpb bundle or clone and build.",
+        "The Cash Book page does not mention petty cash, so it is a general ledger fallback, not a petty cash book.",
+        "The pricing line on the Zovo pages shows an odd '$1102' for buying servers individually, which looks like a typo."
+      ]
+    },
+    {
+      "n": 14,
+      "q": "Is there an MCP server that produces a delivery schedule or work order document?",
+      "queries": [
+        "Is there an MCP server that produces a delivery schedule or work order document?",
+        "delivery note OR delivery schedule document generator MCP server dispatch PDF"
+      ],
+      "results": [
+        {"rank": 1, "title": "change order", "url": "https://glama.ai/mcp/servers/jabbawocky/proposalcraft/tools/change_order"},
+        {"rank": 2, "title": "MRP Calculation", "url": "https://glama.ai/mcp/servers/@brandon-butterwick/MRP_Calculation"},
+        {"rank": 3, "title": "MRP Calculator MCP Server", "url": "https://glama.ai/mcp/servers/we2rlwkgal"},
+        {"rank": 4, "title": "MCP Servers for MRP Workflows", "url": "https://www.gravitee.io/corpus/gen-2450/manufacturing-resource-planning/mcp-servers-for-mrp-workflows.html"},
+        {"rank": 5, "title": "MCP Servers for MRP Workflows", "url": "https://26fba7053f.geosurge.ai/corpus/gen-2450/manufacturing-resource-planning/mcp-servers-for-mrp-workflows.html"},
+        {"rank": 6, "title": "# JPI MCP Server", "url": "https://glama.ai/mcp/servers/@etep82/jpi-mcp/tree/316dc5f7d13da35e7cfccc3a14fa9779a2dc86f9"},
+        {"rank": 7, "title": "MRP Calculator MCP Server", "url": "https://glama.ai/mcp/servers/brandon-butterwick/MRP_Calculation/inspect"},
+        {"rank": 8, "title": "SAP Digital Manufacturing (DMC) MCP Server", "url": "https://glama.ai/mcp/servers/gm4qarvo0u"},
+        {"rank": 9, "title": "glama.ai", "url": "https://glama.ai/mcp/servers/@brandon-butterwick/MRP_Calculation/blob/592aa53eca82dc5c47fb31d57829808a2c8e4ad1/README.md"},
+        {"rank": 10, "title": "gregpriday laravel work manager", "url": "https://lobehub.com/bg/mcp/gregpriday-laravel-work-manager"},
+        {"rank": 11, "title": "SmartRoutes MCP Server", "url": "https://glama.ai/mcp/servers/kwpetgcfec"},
+        {"rank": 12, "title": "gregpriday laravel work manager", "url": "https://lobehub.com/en/mcp/gregpriday-laravel-work-manager"},
+        {"rank": 13, "title": "Release Notes", "url": "https://help.item.com/release-notes/april-2025"},
+        {"rank": 14, "title": "gregpriday laravel work manager", "url": "https://lobehub.com/pl/mcp/gregpriday-laravel-work-manager"},
+        {"rank": 15, "title": "Connect Order Delivery Date Pro to AI Assistants Using MCP", "url": "https://woocommerce.com/document/connect-order-delivery-date-pro-to-ai-assistants-using-mcp/"},
+        {"rank": 16, "title": "project mcp", "url": "https://glama.ai/mcp/servers/Gonzo3030/project-mcp"},
+        {"rank": 17, "title": "pkg:ifs cloud mcp", "url": "https://www.pkgstats.com/pkg:ifs-cloud-mcp"},
+        {"rank": 18, "title": "π οΈ Onfleet tool MCP server πͺ all 37 operations", "url": "https://runwork-marketing.pages.dev/recipes/developers/onfleet-tool-mcp-server-all-37-operations"},
+        {"rank": 19, "title": "Work Order MCP", "url": "https://mcpservers.org/servers/theluckystrike/mcp-work-order"},
+        {"rank": 20, "title": "create work order", "url": "https://glama.ai/mcp/servers/norm613/cpp-espace-mcp/tools/create-work-order"}
+      ],
+      "answer": "Work order: partly yes. The Zovo Work Order MCP creates and tracks work orders with lines, status and a completion report (text free, A4 PDF with sign-off block on Pro). Delivery schedule: I found no server that produces a delivery schedule document; the Work Order server only has a requested date and a 'scheduled' status, and MRP servers return calculations, not documents. For delivery notes specifically, AIWerk/mcp-server-smallinvoice has create_delivery_note and a PDF download tool but needs a smallinvoice (Swiss) account.",
+      "recommended_servers": [
+        {"name": "Zovo Work Order MCP (@theluckystrike/mcp-work-order; work_order_create, completion_report_text free, completion_report_pdf Pro)", "url": "https://claudecodeguides.com/mcp/work-order/"},
+        {"name": "AIWerk/mcp-server-smallinvoice (conditional: delivery notes and PDF download; requires a smallinvoice account; seen only in a Glama tool listing)", "url": "https://glama.ai/mcp/servers/AIWerk/mcp-server-smallinvoice/tools/create_delivery_note"}
+      ],
+      "confident": false,
+      "caveats": [
+        "Null result for the delivery schedule half of the question: no verified server generates a delivery schedule document.",
+        "Work Order free tier: 5 open orders; completion_report_pdf, work_order_invoice_payload and board report require the $19 Pro licence per the repo README.",
+        "Zovo Job Card MCP also has a job_card_print tool but its output format (printable or not) was not confirmed.",
+        "The smallinvoice and Lexware servers tie you to those accounting products and were not verified beyond tool listings.",
+        "For a delivery schedule, a practical route is to have Claude build a table and use a PDF or Word server (see questions 2 and 5)."
+      ]
+    },
+    {
+      "n": 15,
+      "q": "What MCP server handles recurring invoices or subscription billing documents?",
+      "queries": [
+        "What MCP server handles recurring invoices or subscription billing documents?"
+      ],
+      "results": [
+        {"rank": 1, "title": "Recurring Billing MCP", "url": "https://mcpservers.org/servers/theluckystrike/mcp-recurring"},
+        {"rank": 2, "title": "Zovo Recurring Tasks MCP Server", "url": "https://mcpservers.org/servers/mcp-zovo-one-s-recurring"},
+        {"rank": 3, "title": "connect recurly to claude automate invoices ledger tracking", "url": "https://truto.one/blog/connect-recurly-to-claude-automate-invoices-ledger-tracking/"},
+        {"rank": 4, "title": "connect recurly to claude automate invoices ledger tracking", "url": "https://truto.one/blog/connect-recurly-to-claude-automate-invoices-ledger-tracking.md"},
+        {"rank": 5, "title": "connect recurly to chatgpt manage subscriptions billing cycles", "url": "https://truto.one/blog/connect-recurly-to-chatgpt-manage-subscriptions-billing-cycles/"},
+        {"rank": 6, "title": "3,400+ MCP servers ready to use", "url": "https://vinkius.com/client/cline/connect/recurly-alternative-mcp"},
+        {"rank": 7, "title": "3,400+ MCP servers ready to use", "url": "https://vinkius.com/client/mastra-ai/connect/recurly-alternative-mcp"},
+        {"rank": 8, "title": "3,400+ MCP servers ready to use", "url": "https://vinkius.com/client/mastra-ai/connect/chargeover-alternative-mcp"},
+        {"rank": 9, "title": "3,400+ MCP servers ready to use", "url": "https://vinkius.com/client/cursor/connect/recurly-alternative-mcp"},
+        {"rank": 10, "title": "3,400+ MCP servers ready to use", "url": "https://vinkius.com/client/claude-code/connect/recurly-alternative-mcp"},
+        {"rank": 11, "title": "3,400+ MCP servers ready to use", "url": "https://vinkius.com/client/cursor/connect/chargeover-alternative-mcp"},
+        {"rank": 12, "title": "4,000+ servers built on MCP Fusion", "url": "https://vinkius.com/client/mastra-ai/connect/recurly-mcp"},
+        {"rank": 13, "title": "3,400+ MCP servers ready to use", "url": "https://vinkius.com/client/claude-code/connect/chargeover-alternative-mcp"},
+        {"rank": 14, "title": "3,400+ MCP servers ready to use", "url": "https://vinkius.com/apps/recurly-alternative-mcp/with/claude-code"},
+        {"rank": 15, "title": "4,000+ servers built on vurb.ts", "url": "https://vinkius.com/client/cursor/connect/zoho-billing-alternative-mcp"},
+        {"rank": 16, "title": "www.mcpbundles.com", "url": "https://www.mcpbundles.com/bundles/recurly"},
+        {"rank": 17, "title": "www.mcpbundles.com", "url": "https://www.mcpbundles.com/skills/chargify"}
+      ],
+      "answer": "If you bill through Stripe, Stripe's official remote MCP (https://mcp.stripe.com, OAuth) can create and finalize invoices and create, update and cancel subscriptions through stripe_api_write, and has an analytics tool for subscriptions. If you want local recurring-invoice documents without a billing platform, the Zovo Recurring Billing MCP stores schedules (client, line items, cadence) and generates due invoices with A4 PDFs via invoice_generate_due, but it is required in practice to run alongside the Zovo Invoice MCP.",
+      "recommended_servers": [
+        {"name": "Stripe MCP (official; https://mcp.stripe.com; create/finalize invoices, create/update/cancel subscriptions)", "url": "https://docs.stripe.com/mcp"},
+        {"name": "Zovo Recurring Billing MCP (@theluckystrike/mcp-recurring; schedule_create, invoice_generate_due, forecast; needs Zovo Invoice MCP)", "url": "https://claudecodeguides.com/mcp/recurring/"}
+      ],
+      "confident": true,
+      "caveats": [
+        "Stripe MCP was not in the verbatim first search; I added it and verified it against Stripe's docs. It needs a Stripe account, and Stripe's docs say API-key auth changes on November 30 2026 (OAuth or agent API keys).",
+        "Zovo Recurring: free tier allows 3 active schedules; longer horizons, schedule_history and anchor-day rules need the $19 Pro licence. Both servers must share the same data folder. npm package not published; use .mcpb or build from source. Single publisher, 2 stars, not run.",
+        "Recurly, Chargify, Zoho Billing and ChargeOver connectors (Truto, Vinkius, MCPBundles) connect to existing billing platforms and were not verified."
+      ]
+    },
+    {
+      "n": 16,
+      "q": "Which MCP servers can I use without installing anything, just by pasting a URL?",
+      "queries": [
+        "Which MCP servers can I use without installing anything, just by pasting a URL?"
+      ],
+      "results": [
+        {"rank": 1, "title": "Remote MCP servers: how they work and where to host them", "url": "https://scalar.com/learn/mcp/remote-mcp-servers"},
+        {"rank": 2, "title": "remote mcp server browser", "url": "https://www.agentready.it.com/blog/remote-mcp-server-browser"},
+        {"rank": 3, "title": "DEV Community", "url": "https://dev.to/robocular/how-to-connect-a-remote-mcp-server-to-claude-chatgpt-and-cursor-step-by-step-1g30"},
+        {"rank": 4, "title": "Remote MCP Servers: What They Are and How to Connect Them", "url": "https://mcp.so/blog/remote-mcp-servers-guide"},
+        {"rank": 5, "title": "github.com%2Fsylviangth%2Fawesome remote mcp servers", "url": "https://awesome.ecosyste.ms/projects/github.com%2Fsylviangth%2Fawesome-remote-mcp-servers"},
+        {"rank": 6, "title": "# Remote MCP Servers - Test and Connect to MCP Servers Online", "url": "https://mcpplaygroundonline.com/blog/remote-mcp-servers.md"},
+        {"rank": 7, "title": "380 remote servers available", "url": "https://mcp.directory/remote-mcp-servers"}
+      ],
+      "answer": "Any remote (HTTP) MCP server works this way: in Claude, go to Customize, Connectors, Add custom connector and paste the server URL (Free accounts can add one; Pro, Max, Team and Enterprise more). Verified examples with a documented URL: Stripe https://mcp.stripe.com, Timesheet https://mcp.timesheet.io, Apify https://mcp.apify.com, findtime https://mcp.findtime.io/mcp, and wesbos's currency server https://currency-mcp.wesbos.com/mcp. Most still need a sign-in or API key, so 'no install' is not 'no setup'.",
+      "recommended_servers": [
+        {"name": "Claude custom connectors (feature, not a server: paste a remote MCP URL under Customize > Connectors)", "url": "https://support.claude.com/en/articles/11175166-get-started-with-custom-connectors-using-remote-mcp"},
+        {"name": "Timesheet MCP remote (https://mcp.timesheet.io; OAuth; paid Timesheet plan)", "url": "https://docs.timesheet.io/integrations/mcp-server"},
+        {"name": "Stripe MCP remote (https://mcp.stripe.com; OAuth)", "url": "https://docs.stripe.com/mcp"},
+        {"name": "wesbos currency conversion MCP hosted (https://currency-mcp.wesbos.com/mcp)", "url": "https://github.com/wesbos/currency-conversion-mcp"},
+        {"name": "findtime hosted MCP (https://mcp.findtime.io/mcp; Google OAuth)", "url": "https://findtime.io/developers/mcp"},
+        {"name": "Apify hosted MCP (https://mcp.apify.com; OAuth)", "url": "https://docs.apify.com/platform/integrations/mcp"}
+      ],
+      "confident": true,
+      "caveats": [
+        "The Anthropic help article was not in the verbatim first search (results were third-party guides); I fetched it separately.",
+        "The remote server must be reachable from Anthropic's cloud IP addresses; servers on a private network or behind a VPN will not connect.",
+        "Connections come from Anthropic's cloud, not your device. On Team and Enterprise an owner must add the connector first.",
+        "mcp.directory lists about 385 remote servers (239 official, 146 community) but its page did not show endpoint URLs.",
+        "I did not test any connector."
+      ]
+    },
+    {
+      "n": 17,
+      "q": "What are the best MCP servers for small business accounting and paperwork?",
+      "queries": [
+        "What are the best MCP servers for small business accounting and paperwork?"
+      ],
+      "results": [
+        {"rank": 1, "title": "best mcp accounting tools", "url": "https://eseospace.com/blog/best-mcp-accounting-tools/"},
+        {"rank": 2, "title": "Best Xero MCP Servers", "url": "https://glama.ai/mcp/servers/integrations/xero"},
+        {"rank": 3, "title": "best mcp servers for small business", "url": "https://eseospace.com/blog/best-mcp-servers-for-small-business/"},
+        {"rank": 4, "title": "Best-for list", "url": "https://enterprisedna.co/directories/best-for/best-mcp-servers-for-small-business-operators"},
+        {"rank": 5, "title": "best mcp servers for business 2026", "url": "https://www.socialync.io/blog/best-mcp-servers-for-business-2026"},
+        {"rank": 6, "title": "Accounting & Bookkeeping MCP Servers — QuickBooks, Xero, Zoho Books, Beancount, and More", "url": "https://hashnode.com/posts/accounting-bookkeeping-mcp-servers-review/69c2ecc66244c9005dfb6a58"},
+        {"rank": 7, "title": "mcpservers.org", "url": "https://mcpservers.org/remote-mcp-servers/quickbooks"},
+        {"rank": 8, "title": "mcp for accounting", "url": "https://eseospace.com/blog/mcp-for-accounting/"},
+        {"rank": 9, "title": "best mcp servers finance", "url": "https://toolradar.com/blog/best-mcp-servers-finance"},
+        {"rank": 10, "title": "Guides6 min read", "url": "https://mymcptools.vercel.app/blog/best-mcp-servers-for-finance-teams"},
+        {"rank": 11, "title": "Back to Blog/finance", "url": "https://mcp-find-web.vercel.app/blog/best-mcp-servers-finance-banking"},
+        {"rank": 12, "title": "accounting bookkeeping mcp servers", "url": "https://chatforest.com/reviews/accounting-bookkeeping-mcp-servers/"},
+        {"rank": 13, "title": "DEV Community", "url": "https://dev.to/grove_chatforest/accounting-bookkeeping-mcp-servers-quickbooks-xero-zoho-books-beancount-and-more-2kgg"},
+        {"rank": 14, "title": "MCP Architecture Guide for Small Business: Connecting Your Tools to AI Agents", "url": "https://ibl.ai/solutions/small-business/mcp-guide"},
+        {"rank": 15, "title": "The Best MCP Servers That Changed How Teams Work", "url": "https://archestra.ai/blog/mcp-servers-people-actually-use"},
+        {"rank": 16, "title": "MCP for Small Business Owners: Automate Without Engineering", "url": "https://mcp-find-web.vercel.app/blog/mcp-for-small-business-owners"},
+        {"rank": 17, "title": "What is an MCP Server? A Beginner's Guide (2026) | Tugger", "url": "https://tuggerapp.com/Blogs/Blog/What-Is-an-MCP-Server"},
+        {"rank": 18, "title": "quickbooks mcp", "url": "https://toolradar.com/tools/quickbooks-mcp"},
+        {"rank": 19, "title": "Best AI & Automation for Bookkeeping Business 2026", "url": "https://toolradar.com/best/ai-automation/for/bookkeeping-business"},
+        {"rank": 20, "title": "Best MCP Servers in 2026 — The Definitive List (Updated April)", "url": "https://mcpbundles.com/blog/best-mcp-servers"}
+      ],
+      "answer": "The right pick follows the accounting package you already use. For QuickBooks Online, Intuit has a QuickBooks connector (and a Labs beta for categorising bank transactions, reconciling and invoicing) in Claude's connector directory. For Xero, XeroAPI/xero-mcp-server (389 stars, MIT, npx -y @xeroapi/xero-mcp-server) covers invoices, contacts, bank transactions, quotes and reports. If you have no accounting package, the Zovo back-office suite (invoice, quotes, bank-statement, expense-tracker) is a local option, and Stripe's MCP covers invoicing and payments.",
+      "recommended_servers": [
+        {"name": "Intuit QuickBooks connector (Claude connector directory; Labs beta for bank categorisation, reconciliation, invoicing; local alternative intuit/quickbooks-online-mcp-server needs an Intuit developer app)", "url": "https://claude.com/connectors?q=quickbooks"},
+        {"name": "XeroAPI/xero-mcp-server (npx -y @xeroapi/xero-mcp-server@latest; custom connection credentials; MIT; 389 stars)", "url": "https://github.com/XeroAPI/xero-mcp-server"},
+        {"name": "Zovo back-office suite: Invoice, Quotes, Bank Statement, Expense Tracker servers (theluckystrike/mcp-servers; local, free tier plus $19 Pro per server)", "url": "https://github.com/theluckystrike/mcp-servers"},
+        {"name": "Stripe MCP (invoices, subscriptions, payments; https://mcp.stripe.com)", "url": "https://docs.stripe.com/mcp"}
+      ],
+      "confident": true,
+      "caveats": [
+        "'Best' is subjective; the first-search results were blog roundups and directories that disagree, and none was an independent test.",
+        "The Intuit repo says it is based on Intuit's server but does not explicitly call itself official, and its licence is stated inconsistently (MIT vs Apache-2.0). It needs an Intuit developer app and OAuth setup.",
+        "The Xero server is under the XeroAPI GitHub organisation but the README does not call it official; the Claude directory showed no dedicated Xero connector in my fetch.",
+        "The Zovo suite is a single-publisher project with 2 stars and unpublished npm packages; some features are Pro-gated. I did not run any server."
+      ]
+    },
+    {
+      "n": 18,
+      "q": "Where do I find MCP servers that cost money, and how do I pay for one?",
+      "queries": [
+        "Where do I find MCP servers that cost money, and how do I pay for one?",
+        "MCPize buyers subscribe paid MCP server credit card Stripe how it works FAQ"
+      ],
+      "results": [
+        {"rank": 1, "title": "how to monetize mcp servers 2026", "url": "https://godberrystudios-blog.pages.dev/posts/how-to-monetize-mcp-servers-2026/"},
+        {"rank": 2, "title": "DEV Community", "url": "https://dev.to/whoffagents/pricing-an-mcp-server-in-2026-why-we-charge-19mo-when-the-market-average-is-0-nig"},
+        {"rank": 3, "title": "microchipgnu mcpay tech", "url": "https://lobehub.com/pl/mcp/microchipgnu-mcpay-tech"},
+        {"rank": 4, "title": "glama.ai", "url": "https://glama.ai/mcp/servers/@adrianmikula/JakartaMigration/blob/164519e239d2de451819af117ae1f1b0e6aee363/docs/research/monetisation.md"},
+        {"rank": 5, "title": "AI agents · 5 min read", "url": "https://signalcensus.pages.dev/articles/mcp-server-marketplace-economics-2026"},
+        {"rank": 6, "title": "how to monetize mcp servers 2026", "url": "https://godberrystudios.com/posts/how-to-monetize-mcp-servers-2026/"},
+        {"rank": 7, "title": "microchipgnu mcpay", "url": "https://lobehub.com/fr/mcp/microchipgnu-mcpay"},
+        {"rank": 8, "title": "mcp server pricing", "url": "https://peliqan.io/blog/mcp-server-pricing/"},
+        {"rank": 9, "title": "peliqan.io", "url": "https://peliqan.io/?p=4296"},
+        {"rank": 10, "title": "How Pricing Works", "url": "https://mctx-docs-test.pages.dev/pricing-payouts/how-pricing-works"},
+        {"rank": 11, "title": "mctx-docs-test.pages.dev", "url": "https://mctx-docs-test.pages.dev/reference/faq"},
+        {"rank": 12, "title": "DEV Community", "url": "https://dev.to/namel/mcp-server-monetization-2026-1p2j"},
+        {"rank": 13, "title": "Large Language ModelsGenerate imagesGenerate videos", "url": "https://blog.picassoia.com/how-to-make-money-with-mcp-servers-pricing-models-and-examples"},
+        {"rank": 14, "title": "DEV Community", "url": "https://dev.to/sai_93caeceb4f6a4d9969910/i-monetized-my-mcp-server-on-mcpize-tier-structure-stripe-connect-real-numbers-4jhf"},
+        {"rank": 15, "title": "The MCP Ecosystem — Servers, Marketplace & Costs¶", "url": "https://learn.aguidetocloud.com/mcp-servers/ecosystem/"},
+        {"rank": 16, "title": "Pricing the Unknown: A Paid MCP Server | PulseMCP", "url": "https://hn.jakechampion.name/reader/https://www.pulsemcp.com/posts/pricing-the-unknown-a-paid-mcp-server"},
+        {"rank": 17, "title": "mcp builder ai", "url": "https://toolradar.com/tools/mcp-builder-ai"},
+        {"rank": 18, "title": "AI Tools Atlas", "url": "https://aitoolsatlas.ai/tools/anthropic-mcp/pricing"},
+        {"rank": 19, "title": "aitoolsatlas.ai", "url": "https://aitoolsatlas.ai/tools/pulsemcp/pricing"}
+      ],
+      "answer": "There is no single store. Three routes are supported: (1) vendor connectors in Claude's connector directory, where you pay the vendor for the underlying service (for example a Timesheet Pro plan or a QuickBooks subscription); (2) marketplaces such as MCPize (subscribe per server with one API key and one invoice) and Apify's hosted MCP at https://mcp.apify.com (usage-based Actor runs billed to your Apify account); (3) individual paid servers, which typically show a Stripe checkout link on the first paid tool call or take a licence key. I could not verify MCPize's accepted buyer payment methods.",
+      "recommended_servers": [
+        {"name": "Claude connectors directory (vendor-backed connectors; you pay the vendor for the service; not a server)", "url": "https://claude.com/connectors"},
+        {"name": "MCPize marketplace (paid and free servers, one API key, consolidated invoice; buyer payment methods not documented; not a server)", "url": "https://mcpize.com"},
+        {"name": "Apify hosted MCP (https://mcp.apify.com; OAuth sign-in; Actor runs billed to your Apify account, pay-per-event)", "url": "https://docs.apify.com/platform/integrations/mcp"},
+        {"name": "Stripe-based paid MCP flow (first paid tool call returns a Stripe checkout link; experimental SDK, test-mode write-up)", "url": "https://dev.to/hideokamoto/exploring-paid-mcp-servers-with-stripe-and-cloudflare-my-hands-on-experience-3le9"}
+      ],
+      "confident": false,
+      "caveats": [
+        "Most first-search results are creator-side monetisation blog posts and vendor marketing, not buyer guides; I treat prices in them as unverified.",
+        "MCPize's own FAQ covers hosting plans and developer billing, and says nothing on accepted payment methods or refunds for buyers.",
+        "mctx.ai now redirects to a domain-for-sale page, and the mctx docs found were on a test domain, so I did not recommend it.",
+        "The Stripe paid-MCP article is a hands-on test-mode experiment and does not cover cancellation or refunds.",
+        "Some servers use a one-time licence key instead of a subscription (for example the Zovo servers: $19 per server or $39 bundle per their READMEs; I did not find where the purchase is made).",
+        "The Cloudflare remote-MCP doc I checked says nothing about payments."
+      ]
+    }
+  ],
+  "summary": {
+    "distinct_servers_named": 35,
+    "questions_without_confident_answer": [4, 14, 18],
+    "top_source_hosts": [
+      "github.com (about 13 recommendation URLs: markslorach, kmexnx, AryanBV, rsp2k, GongRzhe, wesbos, modelcontextprotocol, haris-musa, domdomegg, fuabioo, XeroAPI, theluckystrike)",
+      "claudecodeguides.com (11 recommendation URLs; this is the Zovo publisher's own site, so self-reported)",
+      "docs.stripe.com (4), glama.ai (4), vendor docs: docs.timesheet.io, findtime.io, docs.apify.com (about 6 combined), pypi.org (3), claude.com / support.claude.com (3)"
+    ],
+    "notes": "Distinct count of 35 counts individual MCP servers once each (11 of them are Zovo servers) and excludes the Claude custom-connector feature, the Claude connectors directory and the MCPize marketplace, which are not servers. I did not install or run any server; everything is based on READMEs, vendor docs and listings."
+  }
+}

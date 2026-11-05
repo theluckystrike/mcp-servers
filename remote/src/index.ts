@@ -16,6 +16,7 @@ import { STORE, type RequestCtx, type Download } from "./shims/ctx.js";
 import { PRICE_BUNDLE_USD, PRICE_SINGLE_USD, SERVER_COUNT } from "./shims/license.js";
 import { paymentDescriptor } from "./payment.js";
 import { issueRefreshToken, redeemRefreshToken } from "./oauth-refresh.js";
+import { authenticateConfidentialClient, clientAuthErrorResponse, clientCredentials, isConfidentialRecord, registerConfidentialClient, registrationAuthMethod } from "./oauth-client.js";
 import SERVER_INSTRUCTIONS from "./server-instructions.json";
 import { TMP_RE, recount } from "./shims/fs.js";
 import { createServer as createTimeTracker } from "./vendor/time-tracker/index.js";
@@ -980,43 +981,65 @@ export function unauthorizedBody(product: string) {
   };
 }
 
-async function authenticate(req: Request, env: Env, product: string, urlToken = "", urlTokenForm: Auth["via"] = "URL path segment (/mcp/<server>/t/<token>)"): Promise<Auth | Response> {
+/**
+ * The `WWW-Authenticate` value of a 401 from an MCP endpoint (RFC 6750 §3, RFC 9728 §5.1,
+ * MCP 2025-11-25 authorization). `resource_metadata` is always there, so a client can find
+ * the authorization server. A request with no token gets no error code (RFC 6750 §3.1: "If
+ * the request lacks any authentication information ... the resource server SHOULD NOT
+ * include an error code"); a token that is present but unknown, expired, malformed or
+ * revoked gets `error="invalid_token"`, which tells an OAuth client to refresh or re-authorize.
+ * error_description keeps only the RFC 6750 §3 character set (no double quote, no backslash).
+ */
+export function bearerChallenge(resourceMeta: string, error = "", description = ""): string {
+  const safe = (x: string) => x.replace(/[^\x20-\x21\x23-\x5B\x5D-\x7E]/g, "");
+  let v = 'Bearer realm="mcp.zovo.one"';
+  if (error) v += `, error="${safe(error)}"`;
+  if (error && description) v += `, error_description="${safe(description)}"`;
+  return `${v}, resource_metadata="${resourceMeta}"`;
+}
+
+async function authenticate(req: Request, env: Env, product: string, urlToken = "", urlTokenForm: Auth["via"] = "URL path segment (/mcp/<server>/t/<token>)", resourceMeta = OAUTH_RESOURCE_META): Promise<Auth | Response> {
   const header = req.headers.get("authorization") ?? "";
   const fromHeader = header.toLowerCase().startsWith("bearer ") ? header.slice(7).trim() : "";
   const token = fromHeader || urlToken.trim();
   const via: Auth["via"] = fromHeader ? "Authorization: Bearer" : urlTokenForm;
   if (!token) {
-    // RFC 9728 §4: a protected resource advertises its OAuth metadata via
+    // RFC 9728 §5.1: a protected resource advertises its OAuth metadata via
     // `WWW-Authenticate: Bearer resource_metadata=...`, so an MCP client that gets a 401
     // here can discover the authorization server (the same host) and start the PKCE dance.
-    return json(unauthorizedBody(product), 401, { "www-authenticate": `Bearer realm="mcp.zovo.one", error="invalid_token", resource_metadata="${OAUTH_RESOURCE_META}"` });
+    // An MCP endpoint passes its path-specific document (resourceMetadataUrl), whose
+    // `resource` is the exact URL requested; anything else keeps the root document.
+    return json(unauthorizedBody(product), 401, { "www-authenticate": bearerChallenge(resourceMeta) });
   }
+  // A token is present but cannot be used: the same 401, with error="invalid_token".
+  const invalid = (body: Record<string, unknown>, why: string) =>
+    json(body, 401, { "www-authenticate": bearerChallenge(resourceMeta, "invalid_token", why) });
   if (token.startsWith("MCPL1.")) {
     const r = await verifyLicense(token, product);
-    if (!r.ok) return json({ error: "invalid_license", reason: r.reason, guide: GUIDE }, 401);
+    if (!r.ok) return invalid({ error: "invalid_license", reason: r.reason, guide: GUIDE }, "The licence key is not valid for this server");
     if (!TENANT_ID_RE.test(r.id ?? "")) {
-      return json({
+      return invalid({
         error: "invalid_license",
         reason: "the id in this key is not a usable storage key on the hosted endpoint (allowed: 1-64 characters of letters, digits, underscore or dash)",
         guide: GUIDE,
-      }, 401);
+      }, "The licence key id is not usable on the hosted endpoint");
     }
     return { tenant: `lic:${r.id}`, isPro: true, kind: "license", limit: RATE_LIMIT_PRO, via };
   }
   if (/^anon_[0-9a-f]{32}$/.test(token)) {
     const id = token.slice(5);
-    if (!TENANT_ID_RE.test(id)) return json({ error: "invalid_token", guide: GUIDE }, 401);
+    if (!TENANT_ID_RE.test(id)) return invalid({ error: "invalid_token", guide: GUIDE }, "Malformed token");
     // Fetch token existence and the independent bundle/product/legacy slots together.
     const [seen, verified] = await Promise.all([
       env.REMOTE_DATA.get(`tok:${token}`),
       readBinding(env.REMOTE_DATA, token, product, verifyLicense),
     ]);
-    if (seen === null) return json({ error: "unknown_token", message: "Mint a new one at GET https://mcp.zovo.one/mcp/token", guide: GUIDE }, 401);
+    if (seen === null) return invalid({ error: "unknown_token", message: "Mint a new one at GET https://mcp.zovo.one/mcp/token", guide: GUIDE }, "Unknown or expired token");
     // Binding lookup rechecks each candidate key's signature, product and expiry.
     const d = decideBinding(verified);
     return { tenant: `anon:${id}`, isPro: d.isPro, kind: "anon", limit: d.limit, anonToken: token, bound: d.bound, via, tokStamp: Number(seen) || 0 };
   }
-  return json({ error: "invalid_token", message: "Token is neither an MCPL1 licence key nor an anonymous token.", guide: GUIDE }, 401);
+  return invalid({ error: "invalid_token", message: "Token is neither an MCPL1 licence key nor an anonymous token.", guide: GUIDE }, "Token is neither a licence key nor an anonymous token");
 }
 
 /*
@@ -1170,6 +1193,37 @@ export function oauthProtectedResourceDoc() {
   };
 }
 
+/**
+ * The MCP endpoint paths that are protected resources of their own: /mcp/<server> and
+ * /mcp/<server>/v1. A /mcp/<server>/t/<token> URL is deliberately not one: the token in
+ * the path IS the credential, such a URL never answers the tokenless 401 that starts the
+ * OAuth flow, and a metadata document for it would have to repeat the secret.
+ */
+const RESOURCE_PATH_RE = /^\/mcp\/[a-z-]+(?:\/v1)?$/;
+
+/**
+ * RFC 9728 §3.1 path insertion: the metadata of resource `${base}${resourcePath}` lives at
+ * `${base}/.well-known/oauth-protected-resource${resourcePath}`. This is the URL the 401's
+ * `resource_metadata` names, so a client fetches the document for the exact URL it used.
+ */
+export function resourceMetadataUrl(base: string, resourcePath: string): string {
+  return `${base}/.well-known/oauth-protected-resource${resourcePath}`;
+}
+
+/**
+ * The path-specific RFC 9728 document. RFC 9728 §3.3 says the `resource` a client reads
+ * MUST be identical to the URL it inserted the well-known suffix into (or, when it came
+ * from a 401's resource_metadata, to the URL it made the request to), and Claude's
+ * connector docs require `resource` to equal the server URL "including any path
+ * component". Everything else is the root document: same issuer, same scopes. The root
+ * /.well-known/oauth-protected-resource keeps `resource: https://mcp.zovo.one` unchanged.
+ * Access tokens are opaque anon tokens with no audience claim, so a token issued under
+ * either resource value works on every endpoint, exactly as before.
+ */
+export function oauthProtectedResourceDocFor(resource: string) {
+  return { ...oauthProtectedResourceDoc(), resource };
+}
+
 /** RFC 8414 authorization-server metadata, for dynamic discovery by Anthropic/Claude. */
 export function oauthAuthorizationServerDoc() {
   return {
@@ -1180,9 +1234,9 @@ export function oauthAuthorizationServerDoc() {
     response_types_supported: ["code"],
     grant_types_supported: ["authorization_code", "refresh_token"],
     code_challenge_methods_supported: ["S256"],
-    // No token_endpoint_auth_methods_supported: a public client (RFC 6749 §2.3.1) presents
-    // no secret, so the default plain client_secret_basic would be wrong to advertise.
-    token_endpoint_auth_methods_supported: ["none"],
+    // Public clients ("none", PKCE only) and confidential clients that registered with a
+    // secret (src/oauth-client.ts). Microsoft 365 Copilot DCR requires a client secret.
+    token_endpoint_auth_methods_supported: ["none", "client_secret_basic", "client_secret_post"],
     scopes_supported: ["mcp:connect"],
     response_modes_supported: ["query"],
   };
@@ -1264,9 +1318,46 @@ export function oauthAuthorizeErrorPage(message: string): string {
 <h1>Cannot authorize</h1><p>${esc(message)}</p></body></html>`;
 }
 
-/** Wrap an OAuth HTML fragment in a full Response (text/html, no-store). */
-function htmlPage(html: string): Response {
-  return new Response(html, { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" } });
+/**
+ * RFC 6749 §4.1.2.1 error answer for a request whose client_id and redirect_uri are both
+ * valid: the browser goes back to the client with error, error_description and state.
+ */
+export function oauthErrorRedirect(redirectUri: string, error: string, description: string, state: string): string {
+  const back = new URL(redirectUri);
+  back.searchParams.set("error", error);
+  if (description) back.searchParams.set("error_description", description);
+  if (state) back.searchParams.set("state", state);
+  return back.toString();
+}
+
+/**
+ * The authorization request checks that run after client_id and redirect_uri are known to
+ * be good (RFC 6749 §4.1.1, RFC 7636 §4.3). null = the request is fine. A missing
+ * response_type or code_challenge_method is tolerated, as before (code and S256 are the only
+ * values this server knows); a wrong one is an error.
+ */
+export function authorizeParamsError(params: URLSearchParams): { error: string; description: string } | null {
+  const responseType = params.get("response_type");
+  if (responseType !== null && responseType !== "code") {
+    return { error: "unsupported_response_type", description: "Only response_type=code is supported." };
+  }
+  const method = params.get("code_challenge_method");
+  if (method !== null && method !== "S256") {
+    return { error: "invalid_request", description: "code_challenge_method must be S256." };
+  }
+  if (!/^[A-Za-z0-9_-]{43,128}$/.test(params.get("code_challenge") ?? "")) {
+    return { error: "invalid_request", description: "code_challenge must be an S256 value (base64url, 43-128 characters)." };
+  }
+  return null;
+}
+
+/**
+ * Wrap an OAuth HTML fragment in a full Response (text/html, no-store). An error page
+ * shown instead of a redirect (unknown client, unregistered redirect_uri: RFC 6749
+ * §4.1.2.1 forbids the redirect) is a 400.
+ */
+function htmlPage(html: string, status = 200): Response {
+  return new Response(html, { status, headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store" } });
 }
 
 /* --------------------------------------------------------------- storage */
@@ -2252,6 +2343,20 @@ const DISCOVERY_LIMIT = 120;
 
 const DATALESS_METHODS = new Set(["tools/list", "initialize", "notifications/initialized", "ping", "prompts/list", "resources/list", "resources/templates/list"]);
 
+/**
+ * Every client-to-server request method of the MCP 2025-11-25 schema. A tokenless request
+ * for anything outside this set is answered -32601 before authentication; a method in the
+ * set that a server does not implement still needs a token and then gets the SDK's -32601.
+ */
+const MCP_REQUEST_METHODS = new Set([
+  "initialize", "ping",
+  "tools/list", "tools/call",
+  "resources/list", "resources/templates/list", "resources/read", "resources/subscribe", "resources/unsubscribe",
+  "prompts/list", "prompts/get",
+  "completion/complete", "logging/setLevel",
+  "tasks/get", "tasks/result", "tasks/list", "tasks/cancel",
+]);
+
 /* ------------------------------------------------------------ connect page */
 
 const CONNECT_CSS = `:root{color-scheme:light dark}
@@ -2598,8 +2703,29 @@ export default {
         headers: { "content-type": "application/json", "cache-control": "public, max-age=300" },
       });
     }
+    // OpenAI (ChatGPT app directory) domain verification. The token comes from the OpenAI
+    // platform portal and is stored as-is in KV key openai:challenge, so it can change without a deploy.
+    if (path === "/.well-known/openai-apps-challenge") {
+      if (req.method !== "GET" && req.method !== "HEAD") return json({ error: "method_not_allowed" }, 405, { allow: "GET, HEAD" });
+      const body = await env.REMOTE_DATA.get("openai:challenge");
+      if (body === null) return json({ error: "not_found" }, 404);
+      return new Response(req.method === "HEAD" ? null : body.trim(), {
+        headers: { "content-type": "text/plain; charset=utf-8", "cache-control": "public, max-age=300" },
+      });
+    }
     if (path === "/.well-known/oauth-protected-resource") {
       return json(oauthProtectedResourceDoc());
+    }
+    // RFC 9728 §3.1 path-inserted form, one document per MCP endpoint, `resource` = that
+    // exact endpoint URL. Only a real server path (optionally /v1) has one; a /t/<token>
+    // path or any other suffix is a 404 and the token is never echoed back.
+    if (path.startsWith("/.well-known/oauth-protected-resource/")) {
+      const resourcePath = path.slice("/.well-known/oauth-protected-resource".length);
+      const name = resourcePath.match(RESOURCE_PATH_RE) ? resourcePath.split("/")[2] : "";
+      if (!name || !SERVERS[VARIANT_ALIASES[name] ?? name]) {
+        return json({ error: "not_found", message: "No protected resource metadata for this path. MCP endpoints are /mcp/<server> and /mcp/<server>/v1.", index: `${base}/mcp` }, 404);
+      }
+      return json(oauthProtectedResourceDocFor(`${base}${resourcePath}`));
     }
     if (path === "/.well-known/oauth-authorization-server") {
       return json(oauthAuthorizationServerDoc());
@@ -2607,7 +2733,9 @@ export default {
 
     // RFC 7591 dynamic client registration. A public client sends metadata, gets back an
     // id and nothing secret. The id is a hash of the metadata, so re-registering the same
-    // client yields the same id and the KV write can be skipped.
+    // client yields the same id and the KV write can be skipped. A client that asks for
+    // client_secret_basic/_post (or a Microsoft token-store client that names no method)
+    // is confidential: random id, secret returned once, only its SHA-256 stored.
     if (path === "/oauth/register" && req.method === "POST") {
       let metadata: Record<string, unknown>;
       try {
@@ -2618,6 +2746,11 @@ export default {
       const redirectUris = Array.isArray(metadata.redirect_uris) ? metadata.redirect_uris.map(String) : [];
       if (redirectUris.length === 0 || redirectUris.some((u) => !/^https?:\/\//.test(u))) {
         return json({ error: "invalid_redirect_uri", message: "redirect_uris must be http(s) URLs." }, 400);
+      }
+      const authMethod = registrationAuthMethod(metadata, redirectUris);
+      if (authMethod !== "none") {
+        const body = await registerConfidentialClient(env.REMOTE_DATA, metadata, redirectUris, authMethod);
+        return json(body, 201, { "cache-control": "no-store", pragma: "no-cache" });
       }
       const clientId = await oauthClientId(metadata);
       // Same metadata, same id: rewrite only when missing or older than 30 days, so the
@@ -2642,13 +2775,16 @@ export default {
     if (path === "/oauth/authorize" && req.method === "GET") {
       const clientId = url.searchParams.get("client_id") ?? "";
       const redirectUri = url.searchParams.get("redirect_uri") ?? "";
-      const challenge = url.searchParams.get("code_challenge") ?? "";
       const client = clientId ? await env.REMOTE_DATA.get(`oauth_client:${clientId}`) : null;
-      if (!client) return htmlPage(oauthAuthorizeErrorPage("Unknown client. Register first via POST /oauth/register."));
+      // RFC 6749 §4.1.2.1: with an unknown client or an unregistered redirect_uri the user
+      // is told here (HTTP 400) and is never redirected; every later error goes back to the
+      // client's redirect_uri with error= and state.
+      if (!client) return htmlPage(oauthAuthorizeErrorPage("Unknown client. Register first via POST /oauth/register."), 400);
       const registered = (JSON.parse(client) as { metadata: { redirect_uris?: string[] } }).metadata.redirect_uris ?? [];
       // Exact-match redirect URI per RFC 6749 §3.1.2.3 - no prefix or wildcard matching.
-      if (!registered.includes(redirectUri)) return htmlPage(oauthAuthorizeErrorPage("redirect_uri is not registered for this client."));
-      if (!/^[A-Za-z0-9_-]{43,128}$/.test(challenge)) return htmlPage(oauthAuthorizeErrorPage("code_challenge must be an S256 (base64url, 43-128 char) value."));
+      if (!registered.includes(redirectUri)) return htmlPage(oauthAuthorizeErrorPage("redirect_uri is not registered for this client."), 400);
+      const bad = authorizeParamsError(url.searchParams);
+      if (bad) return Response.redirect(oauthErrorRedirect(redirectUri, bad.error, bad.description, url.searchParams.get("state") ?? ""), 302);
       let clientName = "";
       try { clientName = String((JSON.parse(client) as { metadata: { client_name?: unknown } }).metadata.client_name ?? ""); } catch { clientName = ""; }
       const html = oauthConsentPage(base, url.searchParams, clientName);
@@ -2664,10 +2800,12 @@ export default {
       const challenge = url.searchParams.get("code_challenge") ?? "";
       const state = url.searchParams.get("state") ?? "";
       const client = clientId ? await env.REMOTE_DATA.get(`oauth_client:${clientId}`) : null;
-      if (!client) return htmlPage(oauthAuthorizeErrorPage("Unknown client."));
+      if (!client) return htmlPage(oauthAuthorizeErrorPage("Unknown client."), 400);
       const registered = (JSON.parse(client) as { metadata: { redirect_uris?: string[] } }).metadata.redirect_uris ?? [];
-      if (!registered.includes(redirectUri)) return htmlPage(oauthAuthorizeErrorPage("redirect_uri is not registered for this client."));
-      if (!/^[A-Za-z0-9_-]{43,128}$/.test(challenge)) return htmlPage(oauthAuthorizeErrorPage("Bad code_challenge."));
+      if (!registered.includes(redirectUri)) return htmlPage(oauthAuthorizeErrorPage("redirect_uri is not registered for this client."), 400);
+      // The consent form carries client_id, redirect_uri, code_challenge and state only.
+      const bad = authorizeParamsError(url.searchParams);
+      if (bad) return Response.redirect(oauthErrorRedirect(redirectUri, bad.error, bad.description, state), 302);
       if (url.searchParams.get("decision") === "deny") {
         // RFC 6749 §4.1.2.1: the user said no. Nothing is minted; the client gets access_denied.
         const denied = new URL(redirectUri);
@@ -2678,9 +2816,14 @@ export default {
       const minted = await mintAnonToken(req, env, ctx);
       if (typeof minted !== "string") return minted; // rate-limited Response
       const code = crypto.randomUUID().replace(/-/g, "");
+      // A confidential client's code carries conf: true, so the token endpoint demands its
+      // secret; a public client's code record is unchanged.
+      const codeRow = isConfidentialRecord(client)
+        ? { token: minted, client_id: clientId, redirect_uri: redirectUri, challenge, conf: true }
+        : { token: minted, client_id: clientId, redirect_uri: redirectUri, challenge };
       await env.REMOTE_DATA.put(
         `oauth_code:${code}`,
-        JSON.stringify({ token: minted, client_id: clientId, redirect_uri: redirectUri, challenge }),
+        JSON.stringify(codeRow),
         { expirationTtl: OAUTH_CODE_TTL },
       );
       const back = new URL(redirectUri);
@@ -2690,25 +2833,37 @@ export default {
     }
 
     // RFC 6749 §3.2 token endpoint. Public client: no secret, PKCE S256 proof instead.
+    // Confidential client: the same PKCE proof plus client authentication (RFC 6749
+    // §2.3.1, Basic header or body), for both grants. See src/oauth-client.ts.
     if (path === "/oauth/token" && req.method === "POST") {
       const form = await req.formData().catch(() => null);
       if (!form) return json({ error: "invalid_request" }, 400);
+      const creds = clientCredentials(req.headers.get("authorization"), form);
       // RFC 6749 §6: a refresh hands back the same access token (it is the data space) and
       // a rotated refresh token. See src/oauth-refresh.ts.
       const grantType = String(form.get("grant_type") ?? "authorization_code");
       if (grantType === "refresh_token") {
-        const r = await redeemRefreshToken(env.REMOTE_DATA, String(form.get("refresh_token") ?? ""), String(form.get("client_id") ?? ""), TOK_TTL);
-        if (!r.ok) return json({ error: r.error, message: r.message }, 400);
+        const r = await redeemRefreshToken(env.REMOTE_DATA, String(form.get("refresh_token") ?? ""), creds.id, TOK_TTL,
+          (bound) => authenticateConfidentialClient(env.REMOTE_DATA, bound, creds));
+        if (!r.ok) {
+          if (r.error === "invalid_client" || r.status) return clientAuthErrorResponse({ error: r.error as "invalid_client" | "invalid_request", message: r.message, status: r.status ?? 401 });
+          return json({ error: r.error, message: r.message }, 400);
+        }
         return json({ access_token: r.token, token_type: "Bearer", expires_in: OAUTH_ACCESS_TTL, refresh_token: r.refresh_token });
       }
       if (grantType !== "authorization_code") return json({ error: "unsupported_grant_type" }, 400);
       const code = String(form.get("code") ?? "");
       const verifier = String(form.get("code_verifier") ?? "");
-      const clientId = String(form.get("client_id") ?? "");
+      const clientId = creds.id;
       const stored = code ? await env.REMOTE_DATA.get(`oauth_code:${code}`) : null;
       if (!stored) return json({ error: "invalid_grant", message: "Code is unknown, used or expired." }, 400);
-      const grant = JSON.parse(stored) as { token: string; client_id: string; redirect_uri: string; challenge: string };
+      const grant = JSON.parse(stored) as { token: string; client_id: string; redirect_uri: string; challenge: string; conf?: boolean };
       if (clientId && clientId !== grant.client_id) return json({ error: "invalid_grant", message: "client_id mismatch." }, 400);
+      if (grant.conf === true) {
+        // Client authentication before PKCE; a failure does not spend the code.
+        const bad = await authenticateConfidentialClient(env.REMOTE_DATA, grant.client_id, creds);
+        if (bad) return clientAuthErrorResponse(bad);
+      }
       if (!(await verifyPkce(verifier, grant.challenge))) return json({ error: "invalid_grant", message: "PKCE verification failed." }, 400);
       // One-time use: delete before responding so a replay gets invalid_grant.
       await env.REMOTE_DATA.delete(`oauth_code:${code}`);
@@ -2716,7 +2871,7 @@ export default {
         access_token: grant.token,
         token_type: "Bearer",
         expires_in: OAUTH_ACCESS_TTL,
-        refresh_token: await issueRefreshToken(env.REMOTE_DATA, grant.token, grant.client_id),
+        refresh_token: await issueRefreshToken(env.REMOTE_DATA, grant.token, grant.client_id, grant.conf === true),
       });
     }
 
@@ -2826,11 +2981,22 @@ export default {
     const isDiscovery = req.method === "POST" && !hasCredential
       && rpc.method !== null && DATALESS_METHODS.has(rpc.method);
 
+    // AN UNKNOWN METHOD WITHOUT A TOKEN is answered as JSON-RPC 2.0 says: error -32601 with
+    // HTTP 200, the same answer the SDK gives an authenticated caller. A method that is not
+    // in the MCP schema cannot read or write anything, so there is nothing for a token to
+    // authorize, and the MCP authorization spec reserves 401 for "authorization required or
+    // token invalid". Only tokenless requests (an id, not a notification) take this path; a
+    // credential that is present is still checked first and a bad one still gets 401.
+    if (req.method === "POST" && !hasCredential && rpc.hasId && rpc.method !== null && !MCP_REQUEST_METHODS.has(rpc.method)) {
+      return rpcError(rpc.id, -32601, "Method not found");
+    }
+
     let auth: Auth;
     if (isDiscovery) {
       auth = { tenant: `discovery:${req.headers.get("cf-connecting-ip") ?? "unknown"}`, isPro: false, kind: "anon", limit: DISCOVERY_LIMIT };
     } else {
-      const authed = await authenticate(req, env, product, urlToken, urlTokenForm);
+      const authed = await authenticate(req, env, product, urlToken, urlTokenForm,
+        resourceMetadataUrl(base, clean ? `${path}/v1` : path));
       if (authed instanceof Response) return authed;
       auth = authed;
     }

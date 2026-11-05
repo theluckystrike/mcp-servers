@@ -1,0 +1,45 @@
+{
+ "result": {
+  "content": [
+   {
+    "type": "text",
+    "text": "2026 premium tax credit: income $68,000.00 is 321.51% of the $21,150.00 poverty line, applicable figure 9.96%, so the household is expected to pay $6,772.80 a year ($564.40 a month) toward the $13,800.00 benchmark plan. Credit: $7,027.20 a year ($585.60 a month). 2026 rules: enhanced credits expired, 400% FPL limit applies.\n\nGeneral information, not tax advice. The Marketplace and Form 8962 decide the official amounts. Benchmark (second lowest cost silver) premiums vary by ZIP code, age and household; get yours from HealthCare.gov or your state Marketplace."
+   },
+   {
+    "type": "text",
+    "text": "{\n  \"year\": 2026,\n  \"household_income\": 68000,\n  \"household_size\": 2,\n  \"state\": \"TX\",\n  \"federal_poverty_line\": 21150,\n  \"guideline_year\": 2025,\n  \"percent_of_fpl\": 321.51,\n  \"form_8962_line_5\": 321,\n  \"benchmark_premium_annual\": 13800,\n  \"enrolled_premium_annual\": null,\n  \"required_contribution_percentage\": 9.96,\n  \"rules\": \"Original sec. 36B table indexed by Rev. Proc. 2025-25; 400% FPL limit applies; no repayment cap (OBBBA sec. 71305).\",\n  \"law_status\": \"Enhanced premium tax credits (American Rescue Plan Act and Inflation Reduction Act) applied to tax years 2021 through 2025 only. IRS PTC Q&A (Q7, updated Feb. 19, 2026) says the 400% FPL limit was lifted for 2021 through 2025. No public law of the 119th Congress through P.L. 119-136 (Oct. 22, 2026) amends IRC sec. 36B to extend them (checked: Consolidated Appropriations Act 2026, Continuing Appropriations and Extensions Act 2027 and the other appropriations acts contain no sec. 36B text). For 2026 coverage the 400% FPL limit applies and Rev. Proc. 2025-25 sets the table (2.10% to 9.96%). Checked 2026-11-02; if Congress acts later, this server is out of date.\",\n  \"eligible\": true,\n  \"applicable_figure\": 0.0996,\n  \"annual_contribution\": 6772.8,\n  \"monthly_contribution\": 564.4,\n  \"premium_tax_credit_annual\": 7027.2,\n  \"premium_tax_credit_monthly\": 585.6,\n  \"limited_by_enrolled_premium\": false,\n  \"net_premium_annual\": 6772.8,\n  \"method\": \"Form 8962 method: FPL percentage truncated to a whole number (line 5), applicable figure interpolated within its band and rounded to 4 decimals (line 7), contribution = income x figure, credit = benchmark minus contribution, never more than the enrolled premium.\",\n  \"summary\": \"2026 premium tax credit: income $68,000.00 is 321.51% of the $21,150.00 poverty line, applicable figure 9.96%, so the household is expected to pay $6,772.80 a year ($564.40 a month) toward the $13,800.00 benchmark plan. Credit: $7,027.20 a year ($585.60 a month). 2026 rules: enhanced credits expired, 400% FPL limit applies.\",\n  \"as_of\": \"2026-11-02\",\n  \"source\": \"https://www.irs.gov/pub/irs-drop/rp-25-25.pdf\",\n  \"more\": \"https://taxbreakcalc.com/hsa-calculator/?utm_source=mcp&utm_medium=aca-premium-tax-credit-calculator-mcp\",\n  \"disclaimer\": \"General information, not tax advice. The Marketplace and Form 8962 decide the official amounts. Benchmark (second lowest cost silver) premiums vary by ZIP code, age and household; get yours from HealthCare.gov or your state Marketplace.\"\n}"
+   }
+  ],
+  "structuredContent": {
+   "year": 2026,
+   "household_income": 68000,
+   "household_size": 2,
+   "state": "TX",
+   "federal_poverty_line": 21150,
+   "guideline_year": 2025,
+   "percent_of_fpl": 321.51,
+   "form_8962_line_5": 321,
+   "benchmark_premium_annual": 13800,
+   "enrolled_premium_annual": null,
+   "required_contribution_percentage": 9.96,
+   "rules": "Original sec. 36B table indexed by Rev. Proc. 2025-25; 400% FPL limit applies; no repayment cap (OBBBA sec. 71305).",
+   "law_status": "Enhanced premium tax credits (American Rescue Plan Act and Inflation Reduction Act) applied to tax years 2021 through 2025 only. IRS PTC Q&A (Q7, updated Feb. 19, 2026) says the 400% FPL limit was lifted for 2021 through 2025. No public law of the 119th Congress through P.L. 119-136 (Oct. 22, 2026) amends IRC sec. 36B to extend them (checked: Consolidated Appropriations Act 2026, Continuing Appropriations and Extensions Act 2027 and the other appropriations acts contain no sec. 36B text). For 2026 coverage the 400% FPL limit applies and Rev. Proc. 2025-25 sets the table (2.10% to 9.96%). Checked 2026-11-02; if Congress acts later, this server is out of date.",
+   "eligible": true,
+   "applicable_figure": 0.0996,
+   "annual_contribution": 6772.8,
+   "monthly_contribution": 564.4,
+   "premium_tax_credit_annual": 7027.2,
+   "premium_tax_credit_monthly": 585.6,
+   "limited_by_enrolled_premium": false,
+   "net_premium_annual": 6772.8,
+   "method": "Form 8962 method: FPL percentage truncated to a whole number (line 5), applicable figure interpolated within its band and rounded to 4 decimals (line 7), contribution = income x figure, credit = benchmark minus contribution, never more than the enrolled premium.",
+   "summary": "2026 premium tax credit: income $68,000.00 is 321.51% of the $21,150.00 poverty line, applicable figure 9.96%, so the household is expected to pay $6,772.80 a year ($564.40 a month) toward the $13,800.00 benchmark plan. Credit: $7,027.20 a year ($585.60 a month). 2026 rules: enhanced credits expired, 400% FPL limit applies.",
+   "as_of": "2026-11-02",
+   "source": "https://www.irs.gov/pub/irs-drop/rp-25-25.pdf",
+   "more": "https://taxbreakcalc.com/hsa-calculator/?utm_source=mcp&utm_medium=aca-premium-tax-credit-calculator-mcp",
+   "disclaimer": "General information, not tax advice. The Marketplace and Form 8962 decide the official amounts. Benchmark (second lowest cost silver) premiums vary by ZIP code, age and household; get yours from HealthCare.gov or your state Marketplace."
+  }
+ },
+ "jsonrpc": "2.0",
+ "id": 2
+}

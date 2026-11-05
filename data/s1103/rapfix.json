@@ -1,0 +1,27 @@
+{
+  "lane": "rapfix",
+  "date": "2026-11-03",
+  "repo": "https://github.com/theluckystrike/student-loan-repayment-assistance-plan-calculator-mcp",
+  "commit": "3ce598f",
+  "pushes": 1,
+  "version": "1.0.1",
+  "bug_1": "src/core.ts compareRapVsStandard compared RAP only with Tiered Standard (lower_total_paid = rap < tiered ? rap : tiered), ignoring the 10-year Standard; src/tools.ts summary hard-coded 'Only RAP counts toward PSLF'.",
+  "fix_1": "Ranks every available plan (RAP, Tiered Standard, 10-year Standard if available) by computed monthly and total; adds lowest_monthly_payment_plans and lowest_total_paid_plans (ties reported); lower_total_paid/lower_monthly_payment keep their names and now hold the true minimum.",
+  "pslf_rule": "20 U.S.C. 1087e(m)(1)(A) as amended by P.L. 119-21 sec. 82004: (i) IBR, (ii) 10-year Standard under 455(d)(1)(A), (iii) other 455(d)(1)/(g) plans paying at least the 10-year Standard amount, (iv) ICR as in effect before its repeal, (v) on-time RAP payments. Tiered Standard (455(d)(7)(A)(i)) is not listed; StudentAid.gov SAVE FAQ Q10 (Oct 2026) says Tiered Standard payments do not count.",
+  "fix_2": "Summary now says 'RAP and the 10-year Standard plan count toward PSLF; Tiered Standard does not.' (or 'RAP counts toward PSLF; Tiered Standard does not.' when the 10-year Standard is unavailable). standard_10_year.pslf_qualifying=true with note that 120 payments under it pay the loan off. New pslf object with citations.",
+  "pslf_sources": [
+    "https://www.govinfo.gov/content/pkg/PLAW-119publ21/html/PLAW-119publ21.htm (sec. 82004, fetched 2026-11-03)",
+    "https://www.law.cornell.edu/uscode/text/20/1087e (subsec. (m)(1)(A) as amended, fetched 2026-11-03)",
+    "https://studentaid.gov/articles/save/ (question 10, published October 2026, fetched 2026-11-03)"
+  ],
+  "not_verified": "studentaid.gov PSLF pages are JS-rendered and returned a shell to curl; the 10-year Standard PSLF claim rests on the statute text, not on a studentaid.gov sentence.",
+  "tests": "27/27 (21 old + 6 new in test/compare-summary.test.mjs: R1 original input, R2 grid min check incl. new-loan, R3 PSLF flags, R4/R5 tool summary via in-memory MCP client, R6 tie under $25,000)",
+  "worker": "student-loan-repayment-assistance-plan-calculator-mcp",
+  "old_version_id": "0dec2ab3-3fac-4ac9-a43c-3da776109b85",
+  "new_version_id": "4f55cab7-557a-4ed5-b121-012293ebbaf7",
+  "rollback": "npx wrangler rollback 0dec2ab3-3fac-4ac9-a43c-3da776109b85 --name student-loan-repayment-assistance-plan-calculator-mcp --yes",
+  "live_check": "POST tools/call compare_rap_vs_standard {balance 38000, rate 6.5, agi 52000, dependents 1}: !isError, 'Lowest total paid: 10-year Standard.', 'RAP and the 10-year Standard plan count toward PSLF; Tiered Standard does not.' Raw: data/s1103/rapfix/live_after.json",
+  "registry": "not published: mcp-publisher publish -> 401 'Invalid or expired Registry JWT token' (token.json expired); needs `mcp-publisher login github` device flow (new login). Registry still shows 1.0.0. server.json/package.json already at 1.0.1, so a later `mcp-publisher publish` in the repo dir is all that is needed.",
+  "npm": "skipped (blocked, 401)",
+  "mcpstamp_note": "/can-claude/calculate-rap-student-loan-payment/ (make_can_claude_live2.py) uses sentences=3 plus a workaround note. The full 6-sentence summary is now correct; the page can drop sentences=3 and the note after re-running the call. FAQ 'Does RAP count for PSLF?' is right but could add that the 10-year Standard also counts. Not deployed by this lane."
+}

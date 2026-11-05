@@ -1,0 +1,176 @@
+{
+ "result": {
+  "tools": [
+   {
+    "name": "calculate_rap_payment",
+    "title": "Repayment Assistance Plan (RAP) monthly payment",
+    "description": "Calculates the federal student loan Repayment Assistance Plan (RAP) payment created by the One Big Beautiful Bill Act (P.L. 119-21, HEA sec. 455(q)), open since July 1, 2026. Base payment is 1% to 10% of the WHOLE AGI by $10,000 band ($120 a year flat at $10,000 or less, 10% above $100,000), divided by 12, minus $50 per dependent, never below $10. With balance and rate it also shows the first month: interest paid first, unpaid interest waived (interest subsidy), the up-to-$50 principal match, and a constant-income projection to payoff or cancellation after 360 qualifying payments. Copied from the statute text, not model memory.",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "agi": {
+       "type": "number",
+       "minimum": 0,
+       "maximum": 100000000,
+       "description": "Adjusted gross income in dollars from the most recent tax return (borrower plus spouse, unless married filing separately)."
+      },
+      "dependents": {
+       "type": "integer",
+       "minimum": 0,
+       "maximum": 30,
+       "description": "Number of IRC sec. 152 dependents claimed. Default 0."
+      },
+      "balance": {
+       "type": "number",
+       "minimum": 0,
+       "maximum": 100000000,
+       "description": "Total RAP-eligible Direct Loan balance in dollars (optional)."
+      },
+      "rate": {
+       "type": "number",
+       "minimum": 0,
+       "maximum": 20,
+       "description": "Weighted annual interest rate in percent, for example 6.53. Required with balance."
+      }
+     },
+     "required": [
+      "agi"
+     ],
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false,
+     "title": "RAP payment"
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "compare_rap_vs_standard",
+    "title": "Compare RAP with the Tiered Standard and 10-year Standard plans",
+    "description": "Compares the new Repayment Assistance Plan with the Tiered Standard plan (P.L. 119-21: 10 years under $25,000, 15 under $50,000, 20 under $100,000, 25 at $100,000 or more) and, for borrowers with no loan made on or after July 1, 2026, the 10-year Standard plan. Returns monthly payment, months, total paid, interest waived, principal match and the amount cancelled after 360 RAP payments, assuming constant income and on-time payments. Names the plan with the lowest monthly payment and the lowest total paid across all plans shown, and says which count for PSLF (RAP and 10-year Standard yes, Tiered Standard no; HEA 455(m)(1)(A)).",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "balance": {
+       "type": "number",
+       "exclusiveMinimum": 0,
+       "maximum": 100000000,
+       "description": "Total Direct Loan principal in dollars."
+      },
+      "rate": {
+       "type": "number",
+       "minimum": 0,
+       "maximum": 20,
+       "description": "Weighted annual interest rate in percent."
+      },
+      "agi": {
+       "type": "number",
+       "minimum": 0,
+       "maximum": 100000000,
+       "description": "Adjusted gross income in dollars from the most recent tax return (borrower plus spouse, unless married filing separately)."
+      },
+      "dependents": {
+       "type": "integer",
+       "minimum": 0,
+       "maximum": 30,
+       "description": "Number of IRC sec. 152 dependents claimed. Default 0."
+      },
+      "has_loan_on_or_after_2026_07_01": {
+       "type": "boolean",
+       "description": "True if any Direct Loan (including a consolidation loan) was made on or after July 1, 2026. Then the old 10-year Standard plan is not available. Default false."
+      }
+     },
+     "required": [
+      "balance",
+      "rate",
+      "agi"
+     ],
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false,
+     "title": "RAP vs Standard"
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "get_federal_loan_limits",
+    "title": "Federal student loan limits before and after July 1, 2026",
+    "description": "Returns federal Direct Loan borrowing limits in force on a date. From July 1, 2026 (P.L. 119-21 sec. 81001): Grad PLUS ends for new borrowers; graduate unsubsidized $20,500 a year / $100,000 aggregate; professional $50,000 a year / $200,000 aggregate; Parent PLUS $20,000 a year and $65,000 total per dependent student across all parents; $257,500 lifetime cap; less-than-full-time proration; the interim exception for students enrolled with a loan on June 30, 2026. Undergraduate limits ($5,500-$7,500 dependent, $9,500-$12,500 independent) from the FSA Handbook.",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "borrower_type": {
+       "type": "string",
+       "enum": [
+        "dependent_undergraduate",
+        "independent_undergraduate",
+        "graduate",
+        "professional",
+        "parent_plus",
+        "all"
+       ],
+       "description": "dependent_undergraduate, independent_undergraduate, graduate, professional, parent_plus or all (default)."
+      },
+      "date": {
+       "type": "string",
+       "description": "Date the period of instruction begins, YYYY-MM-DD. Default today (2026-11-02)."
+      }
+     },
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false,
+     "title": "Federal loan limits"
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "get_plan_transition_dates",
+    "title": "SAVE, PAYE, ICR and RAP transition dates",
+    "description": "Lists the dated steps of the federal student loan repayment overhaul: SAVE ended by court order (March 2026) with 90-day servicer notices from July 1, 2026 plus a final 30-day notice; RAP and the Tiered Standard plan from July 1, 2026; deferment and forbearance limits on loans from July 1, 2027; PAYE and ICR end and remaining borrowers move to RAP or IBR on July 1, 2028; the Parent PLUS consolidation deadline of June 30, 2028. Marks each as past or upcoming against a date and gives the current status of every plan.",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "on_date": {
+       "type": "string",
+       "description": "Reference date YYYY-MM-DD for past/upcoming. Default 2026-11-02."
+      }
+     },
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false,
+     "title": "Plan transition dates"
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   }
+  ]
+ },
+ "jsonrpc": "2.0",
+ "id": 2
+}

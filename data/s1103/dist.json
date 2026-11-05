@@ -1,0 +1,277 @@
+{
+ "lane": "dist",
+ "date_utc": "2026-11-03",
+ "satellites_in_scope": 20,
+ "preflight": {
+  "live_tools_list": "20/20 answered tools/list at https://<name>.lipmichal.workers.dev/mcp (dist/health.txt); positive-control tools/call OK for gold-price, subdomain-finder, lake-level",
+  "official_registry": "20/20 found via GET registry.modelcontextprotocol.io/v0/servers?search=<name> (dist/health.txt); nothing to fix",
+  "npx_stdio": "README install commands verified over stdio on 2026-11-03: github:theluckystrike/subdomain-finder-mcp (4 tools), github:theluckystrike/ab-test-sample-size-calculator-mcp (5), gold-price-per-gram-mcp (4)",
+  "note": "11 of the 20 are not on npm; their READMEs use npx -y github:theluckystrike/<name>, which works"
+ },
+ "lead_ranking": [
+  "lake-level-mcp (live gauges, environment)",
+  "gold-price-per-gram-mcp (live prices, finance)",
+  "subdomain-finder-mcp (live CT logs, security/dev)",
+  "ab-test-sample-size-calculator-mcp (exact stats, dev/analytics)",
+  "us-federal-holidays-business-days-mcp (calendar math)",
+  "no-tax-on-overtime-mcp (post-cutoff OBBBA rules)"
+ ],
+ "submissions": [
+  {
+   "channel": "toolsdk-ai/toolsdk-mcp-registry",
+   "audience": "208 stars, registry + gateway",
+   "prior": "#1191 Lake Level MERGED 2026-11-03T03:21Z",
+   "action": "PR with 19 remote package JSONs (all satellites except lake-level), validator 0 errors",
+   "url": "https://github.com/toolsdk-ai/toolsdk-mcp-registry/pull/1246",
+   "status": "open, checks biome SUCCESS, Package Schema Check SUCCESS",
+   "recheck": "2026-11-06"
+  },
+  {
+   "channel": "punkpeye/awesome-mcp-servers",
+   "audience": "97,227 stars, largest MCP list",
+   "prior": "4 older theluckystrike PRs open (13964-13966, 14681), none for satellites; no satellite listed",
+   "action": "PR adding lake-level-mcp, one line, Environment & Nature, Glama score badge",
+   "url": "https://github.com/punkpeye/awesome-mcp-servers/pull/18434",
+   "status": "open, check-submission SUCCESS, labels valid-name,has-glama,has-emoji",
+   "recheck": "2026-11-10"
+  },
+  {
+   "channel": "punkpeye/awesome-remote-mcp-servers",
+   "audience": "2,491 stars, remote-only list",
+   "prior": "#3598 McpStamp Check open; repo already starred by account (required)",
+   "action": "PR adding Gold Price Per Gram to Finance with Glama connector badge",
+   "url": "https://github.com/punkpeye/awesome-remote-mcp-servers/pull/3709",
+   "status": "open, check-submission pending",
+   "recheck": "2026-11-06"
+  },
+  {
+   "channel": "cline/mcp-marketplace",
+   "audience": "Cline in-editor marketplace (repo 795 stars, 3121 open issues)",
+   "prior": "33 open theluckystrike issues incl. #3430 Lake Level",
+   "action": "3 issues; 400x400 logos created and pushed to each repo (assets/logo-400.png, commits 3f43127, 8cea1ee, a7040c5); Cline-tested box left unticked and stated plainly",
+   "urls": [
+    "https://github.com/cline/mcp-marketplace/issues/3487 (gold-price-per-gram-mcp)",
+    "https://github.com/cline/mcp-marketplace/issues/3488 (subdomain-finder-mcp)",
+    "https://github.com/cline/mcp-marketplace/issues/3489 (ab-test-sample-size-calculator-mcp)"
+   ],
+   "status": "open; label server-submission does not exist in repo so none applied",
+   "recheck": "2026-11-10"
+  },
+  {
+   "channel": "Sagargupta16/awesome-mcp-servers",
+   "action": "none needed",
+   "status": "all 20 satellites already in README (PRs #255, #273, #274, #275 merged)",
+   "recheck": null
+  },
+  {
+   "channel": "bhavyshekhaliya/awesome-public-mcp-servers",
+   "action": "none (max 1 PR per repo)",
+   "status": "#103 open, MERGEABLE, diff carries all 19 non-lake satellites; Lake Level merged in #100",
+   "url": "https://github.com/bhavyshekhaliya/awesome-public-mcp-servers/pull/103",
+   "recheck": "2026-11-08"
+  },
+  {
+   "channel": "docker/mcp-registry",
+   "action": "skipped deliberately",
+   "status": "Remote no-auth servers are accepted by CONTRIBUTING (server.yaml + tools.json + readme.md), but 2,507 PRs are open, no third-party new-server addition has merged since at least July 2026 (last 15 merges are pin bumps/updates), and theluckystrike already has 3 open unreviewed PRs (#5030, #6151, #6464). Our own closing note on #4892 says every merged addition is one server per PR. A 4th PR adds backlog, not reach.",
+   "recheck": "2026-11-17 (if #6464 or #6151 gets reviewed, add lake-level-mcp as one-server PR)"
+  },
+  {
+   "channel": "mcprepository.com",
+   "action": "none",
+   "status": "20/20 listing pages return 200 (dist/live-pages.txt)",
+   "recheck": null
+  },
+  {
+   "channel": "mcp.directory",
+   "action": "none (all 20 already submitted 10-30/11-02)",
+   "status": "0/20 /servers/<name> pages live; positive control /servers/github 200; site search finds none. 10-30 batch is 4 days past the stated 24h review",
+   "recheck": "2026-11-07; if still 0, treat as declined"
+  },
+  {
+   "channel": "mcpmarket.com",
+   "action": "retried gold-price-per-gram-mcp (only gap)",
+   "status": "HTTP 409 'This repository is already in our queue.' so 20/20 queued (free tier, 4-6 weeks)",
+   "proof": "dist/mm-gold.jsonl",
+   "recheck": "2026-12-14"
+  },
+  {
+   "channel": "mcpservers.org",
+   "action": "none",
+   "status": "20/20 submitted 10-30/11-02, pending (review within 2 weeks)",
+   "recheck": "2026-11-16"
+  },
+  {
+   "channel": "registry.modelcontextprotocol.io",
+   "action": "none",
+   "status": "20/20 present",
+   "recheck": null
+  }
+ ],
+ "flags": [
+  "New satellite dirs appeared during this run (another lane): cpi-inflation-calculator-mcp, irs-mileage-rate-per-diem-mcp, silver-price-per-gram-mcp. Not submitted anywhere by this lane (mcprepository 404).",
+  "Accidental push of branch add-gold-price-per-gram to theluckystrike/awesome-remote-mcp-servers (fork of jaw9c, not punkpeye) was deleted immediately; correct fork is awesome-remote-mcp-servers-2.",
+  "toolsdk CONTRIBUTING asks agents to star the repo; not done (not authorized, optional)."
+ ],
+ "s1103_wave_2": {
+  "date_utc": "2026-11-03",
+  "satellites": [
+   "cpi-inflation-calculator-mcp",
+   "irs-mileage-rate-per-diem-mcp",
+   "silver-price-per-gram-mcp",
+   "river-level-mcp",
+   "sat-score-percentiles-mcp"
+  ],
+  "preflight": "5/5 tools/list OK on hosted URL, 5/5 in official registry, repos public, glama.json present",
+  "directories": [
+   {
+    "directory": "mcprepository.com",
+    "dup_check": "5/5 /theluckystrike/<name> 404 before",
+    "result": "5/5 queued, duplicate false",
+    "proof": "dist/w2/mcprepository.jsonl",
+    "recheck": "2026-11-04"
+   },
+   {
+    "directory": "mcp.directory",
+    "dup_check": "5/5 /servers/<name> 404 before",
+    "result": "5/5 HTTP 200 ok true, pending review",
+    "proof": "dist/w2/md.jsonl",
+    "recheck": "2026-11-07 (note: 0/20 earlier ones live yet)"
+   },
+   {
+    "directory": "mcpmarket.com",
+    "dup_check": "API returns 409 on duplicates; none returned",
+    "result": "5/5 free queue, ids 1222611-1222615",
+    "proof": "dist/w2/mm.jsonl",
+    "recheck": "2026-12-14"
+   },
+   {
+    "directory": "mcpservers.org",
+    "dup_check": "site search for each name found nothing",
+    "result": "5/5 HTTP 200 status pending, ids 15350-15354",
+    "proof": "dist/w2/ms-1.jsonl, ms-4.jsonl",
+    "recheck": "2026-11-17"
+   }
+  ],
+  "glama": {
+   "status": "5/5 connector pages live at glama.ai/mcp/connectors/io.github.theluckystrike/<name> (200; control nonexistent name 404; page title matches). 5/5 repo server pages glama.ai/mcp/servers/theluckystrike/<name> 404 (not yet indexed; glama.json present in each repo)",
+   "recheck": "2026-11-06"
+  },
+  "toolsdk": {
+   "url": "https://github.com/toolsdk-ai/toolsdk-mcp-registry/pull/1246",
+   "action": "second commit on same branch adds 5 files (finance-fintech x3, location-services river, search-data-extraction sat); validator 24 files 0 errors; title/body updated to 24",
+   "status": "open"
+  },
+  "bhavyshekhaliya": {
+   "url": "https://github.com/bhavyshekhaliya/awesome-public-mcp-servers/pull/103",
+   "action": "commit adds 5 rows in same format; also moved our 4 out-of-order rows into alphabetical position; title/body updated to 24",
+   "status": "open, MERGEABLE, +24 lines"
+  },
+  "backlinks": [
+   {
+    "site": "examscorecalc.com/sat/",
+    "target": "sat-score-percentiles-mcp",
+    "path": "public repo toolsthatrank/examscorecalc-live, GitHub Pages (s1102 class A)",
+    "base_check": "live /sat/ byte-identical to repo before",
+    "commit": "c9bc7c7 (prev b279b7d)",
+    "deploy": "Pages build c9bc7c7 built 2026-11-03T08:10:20Z",
+    "verify": "live /sat/ cmp equal to repo file; repo link x1; /, /ap/ 200",
+    "rollback": "git revert c9bc7c7 and push"
+   },
+   {
+    "site": "lakelevelnow.com/",
+    "target": "river-level-mcp",
+    "path": "public repo lakelevelnow/lakelevelnow, GitHub Pages workflow on push (s1102 class A)",
+    "commit": "e2a2853 (prev 88cbef2), one line under the existing use-in-ai section",
+    "deploy": "workflow run on e2a2853 success",
+    "verify": "live homepage repo link x1; /lakes/ 200",
+    "rollback": "git revert e2a2853 and push"
+   },
+   {
+    "site": "taxbreakcalc.com/self-employed-set-aside-calculator/",
+    "target": "irs-mileage-rate-per-diem-mcp",
+    "path": "private repo theluckystrike/taxbreakcalc, Cloudflare Pages direct upload (s1102 class A); production 22f7e59b source ce89f6e = origin/main before",
+    "base_check": "clean build of ce89f6e: page equals live (0 diff lines after uid mask)",
+    "commit": "67336fb [skip ci], one push",
+    "diff": "dist differs from base only in that page, +1 paragraph",
+    "deploy": "Pages deployment 11357949 (previous production 22f7e59b-ad60-43e7-b8bf-9d7427807c03)",
+    "rollback": "Cloudflare dashboard https://dash.cloudflare.com/dd3f2a29b7707e21a87f26a622c0bb9d/pages/view/taxbreakcalc/22f7e59b-ad60-43e7-b8bf-9d7427807c03 (Rollback to this deployment) or git revert 67336fb, rebuild, wrangler pages deploy",
+    "verify": "live page equals build (0 diff), link x1; /, /overtime-tax-calculator/, /about/ 200; www 301"
+   },
+   {
+    "site": "statewage.com/pay-raise-calculator/",
+    "target": "cpi-inflation-calculator-mcp",
+    "path": "private repo theluckystrike/statewage, Worker statewage via wrangler@4.80.0 deploy (s1102 class A); last deploy cd5ec395 from 14b5aca = origin/main",
+    "base_check": "clean build of 14b5aca: page equals live (0 diff)",
+    "commit": "328c5f0 [skip ci], one push",
+    "diff": "dist differs from base only in that page, +1 paragraph",
+    "deploy": "Version 9ca55f87-8b21-4ad6-a9bd-3f8ef0bbe53d (previous cd5ec395-f95f-443f-8ddd-3c5425f53a76)",
+    "rollback": "CLOUDFLARE_ACCOUNT_ID=dd3f2a29b7707e21a87f26a622c0bb9d npx wrangler rollback cd5ec395-f95f-443f-8ddd-3c5425f53a76 --name statewage",
+    "verify": "live page equals build (0 diff), link x1; /, /states/, /states/texas/, /401k-paycheck-calculator/ 200",
+    "note": "weekly-refresh.yml has failed its last 3 scheduled runs (not touched)"
+   },
+   {
+    "site": "goldgramprice.com silver page",
+    "target": "silver-price-per-gram-mcp",
+    "status": "skipped",
+    "why": "s1102 crosslink rated goldgramprice class B: launchd job com.mike.goldgramprice-refresh builds the local main of ~/cro-exec/goldgramprice every 3 h and deploys; not a verified safe path for this lane"
+   }
+  ],
+  "recheck_comments": "Cline #3430, #3487-3489: 0 comments. punkpeye #18434: only the Glama badge bot. awesome-remote #3709: labels endpoint-ok, has-connector, no comments. toolsdk #1246: no comments. Nothing to answer.",
+  "cleanup": "dist/w2/deleted-manifest.txt"
+ },
+ "s1103_wave_3": {
+  "date_utc": "2026-11-03",
+  "satellites": [
+   "raw-to-cooked-weight-mcp",
+   "vegetable-yield-percentage-mcp"
+  ],
+  "preflight": "2/2 tools/list OK (5 and 4 tools), 2/2 in registry, public repos",
+  "directories": [
+   {
+    "directory": "mcprepository.com",
+    "dup_check": "404 before",
+    "result": "2/2 queued, duplicate false",
+    "proof": "dist/w3/mcprepository.jsonl"
+   },
+   {
+    "directory": "mcp.directory",
+    "dup_check": "404 before",
+    "result": "2/2 ok true, pending",
+    "proof": "dist/w3/md.jsonl"
+   },
+   {
+    "directory": "mcpmarket.com",
+    "result": "2/2 free queue, submission ids 1222617, 1222618",
+    "proof": "dist/w3/mm.jsonl"
+   },
+   {
+    "directory": "mcpservers.org",
+    "dup_check": "search 0 hits",
+    "result": "2/2 pending, ids 15359, 15360",
+    "proof": "dist/w3/ms.jsonl"
+   }
+  ],
+  "glama": "connector pages glama.ai/mcp/connectors/io.github.theluckystrike/<name>: 404 for both on 2026-11-03 (not yet picked up from the registry); recheck 2026-11-06",
+  "toolsdk": "#1246 third commit, 2 files in other-tools-and-integrations, validator 26 files 0 errors, title now 26",
+  "bhavyshekhaliya": "#103 2 rows in Home and Lifestyle (alphabetical), +26, MERGEABLE",
+  "backlinks": [
+   {
+    "site": "recipetool.net/tools/raw-to-cooked-weight-calculator",
+    "target": "raw-to-cooked-weight-mcp",
+    "path": "private repo theluckystrike/recipetool, static recipe-dist + _worker.js, wrangler pages deploy recipe-dist --project-name=recipetool --branch=main (s1102 documented; production 9f5ab57f source 3d35f96 = origin/main, no commits or deploys for ~29 h)",
+    "base_check": "live page cmp equal to repo file before",
+    "commit": "68b0f60 [skip ci], one push",
+    "deploy": "681002a7-68bd-413e-afeb-15d806bae832 (previous 9f5ab57f-d703-4a72-90f3-2c6f598c9fcf)",
+    "rollback": "Cloudflare dashboard https://dash.cloudflare.com/dd3f2a29b7707e21a87f26a622c0bb9d/pages/view/recipetool/9f5ab57f-d703-4a72-90f3-2c6f598c9fcf (Rollback to this deployment) or git revert 68b0f60 and redeploy",
+    "verify": "live page cmp equal to repo, link x1; homepage cmp equal to repo; /, /tools/recipe-scaler 200"
+   },
+   {
+    "site": "ingredientcalculator.com/vegetable-yield-percentage-calculator",
+    "target": "vegetable-yield-percentage-mcp",
+    "status": "skipped",
+    "why": "no verified source: GitHub repo ingredientcalculator/ingredientcalculator last pushed 2026-08-14, while Pages production 036720ea came from commit 87e8d5d (3 production deploys in the last day from unknown local sources); s1102 also held this site as class B"
+   }
+  ]
+ }
+}

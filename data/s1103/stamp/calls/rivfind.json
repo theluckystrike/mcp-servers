@@ -1,0 +1,55 @@
+{
+ "result": {
+  "content": [
+   {
+    "type": "text",
+    "text": "1 active USGS stream gauge (of 2 matched) for \"Mississippi River St. Louis\" in Missouri: Mississippi River at St. Louis, MO (07010000, 3.59 ft, 126,000 ft3/s). Pass a site_number to get_river_level.\n\n{\n  \"count\": 2,\n  \"active_count\": 1,\n  \"gauges\": [\n    {\n      \"site_number\": \"07010000\",\n      \"name\": \"Mississippi River at St. Louis, MO\",\n      \"state\": \"Missouri\",\n      \"county\": \"St. Louis City\",\n      \"latitude\": 38.629,\n      \"longitude\": -90.1797777777778,\n      \"drainage_area_sq_mi\": 697000,\n      \"distance_miles\": null,\n      \"active\": true,\n      \"latest_time\": \"2026-11-03T07:30:00+00:00\",\n      \"stage_ft\": 3.59,\n      \"discharge_cfs\": 126000,\n      \"usgs_page\": \"https://waterdata.usgs.gov/monitoring-location/USGS-07010000/\"\n    },\n    {\n      \"site_number\": \"07005500\",\n      \"name\": \"Mississippi River above St. Louis at mm 184.5\",\n      \"state\": \"Missouri\",\n      \"county\": \"St. Louis County\",\n      \"latitude\": 38.700883850368,\n      \"longitude\": -90.2081664519762,\n      \"drainage_area_sq_mi\": 697000,\n      \"distance_miles\": null,\n      \"active\": false,\n      \"latest_time\": null,\n      \"stage_ft\": null,\n      \"discharge_cfs\": null,\n      \"usgs_page\": \"https://waterdata.usgs.gov/monitoring-location/USGS-07005500/\"\n    }\n  ],\n  \"as_of\": \"2026-11-03T08:02:24.352Z\",\n  \"source\": \"https://api.waterdata.usgs.gov/\",\n  \"sources\": {\n    \"usgs_search\": \"https://api.waterdata.usgs.gov/ogcapi/v0/collections/monitoring-locations/items?f=json&limit=60&filter-lang=cql-text&filter=agency_code%3D'USGS'%20AND%20site_type_code%20LIKE%20'ST%25'%20AND%20CASEI(monitoring_location_name)%20LIKE%20CASEI('%25mississippi%25')%20AND%20CASEI(monitoring_location_name)%20LIKE%20CASEI('%25st.%25')%20AND%20CASEI(monitoring_location_name)%20LIKE%20CASEI('%25louis%25')%20AND%20state_name%3D'Missouri'&properties=monitoring_location_name%2Cstate_name%2Ccounty_name%2Csite_type%2Cdrainage_area\"\n  },\n  \"more\": \"https://lakelevelnow.com/?utm_source=mcp&utm_medium=river-level-mcp\",\n  \"summary\": \"1 active USGS stream gauge (of 2 matched) for \\\"Mississippi River St. Louis\\\" in Missouri: Mississippi River at St. Louis, MO (07010000, 3.59 ft, 126,000 ft3/s). Pass a site_number to get_river_level.\"\n}"
+   }
+  ],
+  "structuredContent": {
+   "count": 2,
+   "active_count": 1,
+   "gauges": [
+    {
+     "site_number": "07010000",
+     "name": "Mississippi River at St. Louis, MO",
+     "state": "Missouri",
+     "county": "St. Louis City",
+     "latitude": 38.629,
+     "longitude": -90.1797777777778,
+     "drainage_area_sq_mi": 697000,
+     "distance_miles": null,
+     "active": true,
+     "latest_time": "2026-11-03T07:30:00+00:00",
+     "stage_ft": 3.59,
+     "discharge_cfs": 126000,
+     "usgs_page": "https://waterdata.usgs.gov/monitoring-location/USGS-07010000/"
+    },
+    {
+     "site_number": "07005500",
+     "name": "Mississippi River above St. Louis at mm 184.5",
+     "state": "Missouri",
+     "county": "St. Louis County",
+     "latitude": 38.700883850368,
+     "longitude": -90.2081664519762,
+     "drainage_area_sq_mi": 697000,
+     "distance_miles": null,
+     "active": false,
+     "latest_time": null,
+     "stage_ft": null,
+     "discharge_cfs": null,
+     "usgs_page": "https://waterdata.usgs.gov/monitoring-location/USGS-07005500/"
+    }
+   ],
+   "as_of": "2026-11-03T08:02:24.352Z",
+   "source": "https://api.waterdata.usgs.gov/",
+   "sources": {
+    "usgs_search": "https://api.waterdata.usgs.gov/ogcapi/v0/collections/monitoring-locations/items?f=json&limit=60&filter-lang=cql-text&filter=agency_code%3D'USGS'%20AND%20site_type_code%20LIKE%20'ST%25'%20AND%20CASEI(monitoring_location_name)%20LIKE%20CASEI('%25mississippi%25')%20AND%20CASEI(monitoring_location_name)%20LIKE%20CASEI('%25st.%25')%20AND%20CASEI(monitoring_location_name)%20LIKE%20CASEI('%25louis%25')%20AND%20state_name%3D'Missouri'&properties=monitoring_location_name%2Cstate_name%2Ccounty_name%2Csite_type%2Cdrainage_area"
+   },
+   "more": "https://lakelevelnow.com/?utm_source=mcp&utm_medium=river-level-mcp",
+   "summary": "1 active USGS stream gauge (of 2 matched) for \"Mississippi River St. Louis\" in Missouri: Mississippi River at St. Louis, MO (07010000, 3.59 ft, 126,000 ft3/s). Pass a site_number to get_river_level."
+  }
+ },
+ "jsonrpc": "2.0",
+ "id": 2
+}

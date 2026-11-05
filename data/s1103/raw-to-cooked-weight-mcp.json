@@ -1,0 +1,55 @@
+{
+ "repo": "raw-to-cooked-weight-mcp",
+ "repo_url": "https://github.com/theluckystrike/raw-to-cooked-weight-mcp",
+ "hosted_url": "https://raw-to-cooked-weight-mcp.lipmichal.workers.dev/mcp",
+ "worker_version_id": "0aaa7fa2-81ef-4268-bda0-e070a2d4e497",
+ "rollback": "npx wrangler delete --name raw-to-cooked-weight-mcp (brand-new worker, 1 version per wrangler deployments list)",
+ "registry_name": "io.github.theluckystrike/raw-to-cooked-weight-mcp",
+ "registry_visible": true,
+ "registry_check": "curl -s \"https://registry.modelcontextprotocol.io/v0/servers?search=raw-to-cooked-weight-mcp\" -> 1.0.0",
+ "tools": [
+  "convert_raw_to_cooked",
+  "convert_cooked_to_raw",
+  "calculate_raw_weight_to_buy",
+  "find_cooking_yield",
+  "list_cooking_yields"
+ ],
+ "fixtures": 18,
+ "tests_passed": "18/18 (node --test)",
+ "local_stdio_ok": true,
+ "live_calls_ok": {
+  "convert_raw_to_cooked": true,
+  "convert_cooked_to_raw": true,
+  "calculate_raw_weight_to_buy": true,
+  "find_cooking_yield": true,
+  "list_cooking_yields": true
+ },
+ "live_check": "data/s1103/build-gen/bin/live.sh: initialize + tools/list + 1 tools/call per tool on hosted_url, no token; GET / 200",
+ "live_raw_responses": "/Users/mike/mcp-servers/satellites/raw-to-cooked-weight-mcp/.live/ (git-ignored)",
+ "npx_github_ok": true,
+ "pushes": 1,
+ "github": {
+  "visibility": "public",
+  "topics": 14
+ },
+ "npm_ready": true,
+ "npm_ready_detail": "npm view -> E404 (positive control cups-to-grams-mcp -> 1.0.0); npm pack --dry-run 9 files, 20.6 kB; npm publish blocked: npm whoami -> E401 (login expired), OWNER UNLOCK: npm login then npm publish in the repo dir (2FA web approval).",
+ "competitor_field": "gh search repos 2026-11-03: \"raw to cooked mcp\" 0, \"cooked weight mcp\" 0, \"cooking yield mcp\" 0, \"meat yield mcp\" 0 (positive control \"lake level mcp\" -> theluckystrike/lake-level-mcp)",
+ "sources": [
+  "https://www.ars.usda.gov/ARSUserFiles/80400535/Data/retn/USDA_CookingYields_MeatPoultry02.xlsx (sha256 13bd2cec...73ff, 173 rows)",
+  "https://www.ars.usda.gov/ARSUserFiles/80400535/Data/retn/USDA_CookingYields_MeatPoultry02.pdf (definitions, yield formula)",
+  "NIST SP 811 B.9 (lb, oz)"
+ ],
+ "money_site": "https://recipetool.net (357 GSC clicks/28d)",
+ "more_pages": [
+  "/tools/raw-to-cooked-weight-calculator"
+ ],
+ "more_links_200": "1/1 with UTM 200",
+ "open_issues": [
+  "USDA table has no boneless skinless or grilled chicken breast; tools return the closest row (roasted breast with skin, 72%) and say so.",
+  "1975 rows (AH-102) carry no n/SD/moisture/fat change.",
+  "Fish, seafood, duck, rice, pasta are refused (not in the table).",
+  "GitHub search did not yet return the repo minutes after creation (indexing lag); re-check."
+ ],
+ "minutes": 0
+}

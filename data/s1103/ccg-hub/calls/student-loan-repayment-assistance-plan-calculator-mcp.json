@@ -1,0 +1,93 @@
+{
+ "result": {
+  "content": [
+   {
+    "type": "text",
+    "text": "For $38,000.00 at 6.5% and AGI $52,000.00: RAP $166.67 a month, $19,869.14 cancelled after 360 payments, total $60,001.20. Tiered Standard (15 years) $331.02 a month, total $59,583.79. 10-year Standard $431.48 a month, total $51,778.01. Lowest monthly payment: RAP. Lowest total paid: 10-year Standard. RAP and the 10-year Standard plan count toward PSLF; Tiered Standard does not.\n\nGeneral information, not financial or legal advice. Your servicer computes the official payment from your certified income and loan records. Use the StudentAid.gov Loan Simulator to confirm."
+   },
+   {
+    "type": "text",
+    "text": "{\n  \"balance\": 38000,\n  \"rate\": 6.5,\n  \"agi\": 52000,\n  \"dependents\": 1,\n  \"has_loan_on_or_after_2026_07_01\": false,\n  \"plans\": {\n    \"repayment_assistance_plan\": {\n      \"monthly_payment\": 166.67,\n      \"months_paid\": 360,\n      \"paid_off\": false,\n      \"forgiven_after_360\": 19869.14,\n      \"total_paid\": 60001.2,\n      \"total_interest_waived\": 2851.24,\n      \"total_principal_match\": 11870.6,\n      \"pslf_qualifying\": true\n    },\n    \"tiered_standard\": {\n      \"years\": 15,\n      \"monthly_payment\": 331.02,\n      \"months\": 180,\n      \"total_paid\": 59583.79,\n      \"total_interest\": 21583.79,\n      \"available\": true,\n      \"pslf_qualifying\": false,\n      \"rule\": \"10 years under $25,000; 15 years $25,000 to under $50,000; 20 years $50,000 to under $100,000; 25 years $100,000 or more (total principal when entering repayment).\"\n    },\n    \"standard_10_year\": {\n      \"years\": 10,\n      \"monthly_payment\": 431.48,\n      \"months\": 120,\n      \"total_paid\": 51778.01,\n      \"total_interest\": 13778.01,\n      \"available\": true,\n      \"pslf_qualifying\": true,\n      \"note\": \"Only for borrowers with no Direct Loan made on or after July 1, 2026. Payments count for PSLF, but 120 payments under this plan pay the loan off, so PSLF has nothing left to cancel.\"\n    }\n  },\n  \"lower_monthly_payment\": \"repayment_assistance_plan\",\n  \"lower_total_paid\": \"standard_10_year\",\n  \"lowest_monthly_payment_plans\": [\n    \"repayment_assistance_plan\"\n  ],\n  \"lowest_total_paid_plans\": [\n    \"standard_10_year\"\n  ],\n  \"pslf\": {\n    \"counts\": [\n      \"On-time payments under the Repayment Assistance Plan (HEA 455(m)(1)(A)(v), added by P.L. 119-21 sec. 82004).\",\n      \"Payments under the 10-year Standard plan (HEA 455(m)(1)(A)(ii)).\",\n      \"Payments under Income-Based Repayment (HEA 455(m)(1)(A)(i)) and, until it ends, ICR/PAYE (455(m)(1)(A)(iv)).\",\n      \"Payments under another pre-July 2026 plan of at least the 10-year Standard amount (HEA 455(m)(1)(A)(iii)).\"\n    ],\n    \"does_not_count\": [\n      \"Payments under the Tiered Standard plan (HEA 455(d)(7)(A)(i)) are not listed in 455(m)(1)(A); StudentAid.gov says they do not count toward PSLF.\"\n    ],\n    \"summary\": \"RAP and the 10-year Standard plan both count toward PSLF; the Tiered Standard plan does not.\",\n    \"sources\": [\n      \"https://www.law.cornell.edu/uscode/text/20/1087e (20 U.S.C. 1087e(m)(1)(A), as amended)\",\n      \"https://www.govinfo.gov/content/pkg/PLAW-119publ21/html/PLAW-119publ21.htm (sec. 82004)\",\n      \"https://studentaid.gov/articles/save/ (question 10, published October 2026)\"\n    ],\n    \"as_of\": \"2026-11-03\"\n  },\n  \"assumptions\": [\n    \"Income and dependents stay the same every year; in reality RAP is recalculated each year from new AGI.\",\n    \"Interest is computed monthly at rate/12 on the balance; servicers accrue simple daily interest.\",\n    \"All RAP payments are on time, so the interest subsidy and principal match apply every month.\",\n    \"Balance is treated as one loan pool of Direct Loans eligible for RAP (no Parent PLUS).\"\n  ],\n  \"regulation_note\": \"The RAP formula, the $10 minimum, the $50-per-dependent reduction, the interest subsidy, the $50 principal match and the 360-payment cancellation are fixed by statute (HEA sec. 455(q), added by P.L. 119-21 sec. 82001(d)). How a servicer rounds, accrues daily interest, applies the subsidy across several loans and treats a mid-year income change is set by Department of Education procedures and regulations, which this server did not confirm as final on 2026-11-02. Treat cents-level results as estimates.\",\n  \"summary\": \"For $38,000.00 at 6.5% and AGI $52,000.00: RAP $166.67 a month, $19,869.14 cancelled after 360 payments, total $60,001.20. Tiered Standard (15 years) $331.02 a month, total $59,583.79. 10-year Standard $431.48 a month, total $51,778.01. Lowest monthly payment: RAP. Lowest total paid: 10-year Standard. RAP and the 10-year Standard plan count toward PSLF; Tiered Standard does not.\",\n  \"as_of\": \"2026-11-02\",\n  \"source\": \"https://www.govinfo.gov/content/pkg/PLAW-119publ21/html/PLAW-119publ21.htm\",\n  \"more\": \"https://www.mcpstamp.com/free-servers/?utm_source=mcp&utm_medium=student-loan-repayment-assistance-plan-calculator-mcp\",\n  \"disclaimer\": \"General information, not financial or legal advice. Your servicer computes the official payment from your certified income and loan records. Use the StudentAid.gov Loan Simulator to confirm.\"\n}"
+   }
+  ],
+  "structuredContent": {
+   "balance": 38000,
+   "rate": 6.5,
+   "agi": 52000,
+   "dependents": 1,
+   "has_loan_on_or_after_2026_07_01": false,
+   "plans": {
+    "repayment_assistance_plan": {
+     "monthly_payment": 166.67,
+     "months_paid": 360,
+     "paid_off": false,
+     "forgiven_after_360": 19869.14,
+     "total_paid": 60001.2,
+     "total_interest_waived": 2851.24,
+     "total_principal_match": 11870.6,
+     "pslf_qualifying": true
+    },
+    "tiered_standard": {
+     "years": 15,
+     "monthly_payment": 331.02,
+     "months": 180,
+     "total_paid": 59583.79,
+     "total_interest": 21583.79,
+     "available": true,
+     "pslf_qualifying": false,
+     "rule": "10 years under $25,000; 15 years $25,000 to under $50,000; 20 years $50,000 to under $100,000; 25 years $100,000 or more (total principal when entering repayment)."
+    },
+    "standard_10_year": {
+     "years": 10,
+     "monthly_payment": 431.48,
+     "months": 120,
+     "total_paid": 51778.01,
+     "total_interest": 13778.01,
+     "available": true,
+     "pslf_qualifying": true,
+     "note": "Only for borrowers with no Direct Loan made on or after July 1, 2026. Payments count for PSLF, but 120 payments under this plan pay the loan off, so PSLF has nothing left to cancel."
+    }
+   },
+   "lower_monthly_payment": "repayment_assistance_plan",
+   "lower_total_paid": "standard_10_year",
+   "lowest_monthly_payment_plans": [
+    "repayment_assistance_plan"
+   ],
+   "lowest_total_paid_plans": [
+    "standard_10_year"
+   ],
+   "pslf": {
+    "counts": [
+     "On-time payments under the Repayment Assistance Plan (HEA 455(m)(1)(A)(v), added by P.L. 119-21 sec. 82004).",
+     "Payments under the 10-year Standard plan (HEA 455(m)(1)(A)(ii)).",
+     "Payments under Income-Based Repayment (HEA 455(m)(1)(A)(i)) and, until it ends, ICR/PAYE (455(m)(1)(A)(iv)).",
+     "Payments under another pre-July 2026 plan of at least the 10-year Standard amount (HEA 455(m)(1)(A)(iii))."
+    ],
+    "does_not_count": [
+     "Payments under the Tiered Standard plan (HEA 455(d)(7)(A)(i)) are not listed in 455(m)(1)(A); StudentAid.gov says they do not count toward PSLF."
+    ],
+    "summary": "RAP and the 10-year Standard plan both count toward PSLF; the Tiered Standard plan does not.",
+    "sources": [
+     "https://www.law.cornell.edu/uscode/text/20/1087e (20 U.S.C. 1087e(m)(1)(A), as amended)",
+     "https://www.govinfo.gov/content/pkg/PLAW-119publ21/html/PLAW-119publ21.htm (sec. 82004)",
+     "https://studentaid.gov/articles/save/ (question 10, published October 2026)"
+    ],
+    "as_of": "2026-11-03"
+   },
+   "assumptions": [
+    "Income and dependents stay the same every year; in reality RAP is recalculated each year from new AGI.",
+    "Interest is computed monthly at rate/12 on the balance; servicers accrue simple daily interest.",
+    "All RAP payments are on time, so the interest subsidy and principal match apply every month.",
+    "Balance is treated as one loan pool of Direct Loans eligible for RAP (no Parent PLUS)."
+   ],
+   "regulation_note": "The RAP formula, the $10 minimum, the $50-per-dependent reduction, the interest subsidy, the $50 principal match and the 360-payment cancellation are fixed by statute (HEA sec. 455(q), added by P.L. 119-21 sec. 82001(d)). How a servicer rounds, accrues daily interest, applies the subsidy across several loans and treats a mid-year income change is set by Department of Education procedures and regulations, which this server did not confirm as final on 2026-11-02. Treat cents-level results as estimates.",
+   "summary": "For $38,000.00 at 6.5% and AGI $52,000.00: RAP $166.67 a month, $19,869.14 cancelled after 360 payments, total $60,001.20. Tiered Standard (15 years) $331.02 a month, total $59,583.79. 10-year Standard $431.48 a month, total $51,778.01. Lowest monthly payment: RAP. Lowest total paid: 10-year Standard. RAP and the 10-year Standard plan count toward PSLF; Tiered Standard does not.",
+   "as_of": "2026-11-02",
+   "source": "https://www.govinfo.gov/content/pkg/PLAW-119publ21/html/PLAW-119publ21.htm",
+   "more": "https://www.mcpstamp.com/free-servers/?utm_source=mcp&utm_medium=student-loan-repayment-assistance-plan-calculator-mcp",
+   "disclaimer": "General information, not financial or legal advice. Your servicer computes the official payment from your certified income and loan records. Use the StudentAid.gov Loan Simulator to confirm."
+  }
+ },
+ "jsonrpc": "2.0",
+ "id": 2
+}

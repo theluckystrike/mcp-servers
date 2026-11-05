@@ -240,7 +240,7 @@ test("route contract: both grants at the token endpoint, both advertised", () =>
   assert.ok(block.includes('grantType === "refresh_token"'));
   assert.ok(block.includes("redeemRefreshToken(env.REMOTE_DATA"));
   assert.ok(block.includes('if (grantType !== "authorization_code") return json({ error: "unsupported_grant_type" }, 400);'));
-  assert.ok(block.includes("refresh_token: await issueRefreshToken(env.REMOTE_DATA, grant.token, grant.client_id)"));
+  assert.ok(block.includes("refresh_token: await issueRefreshToken(env.REMOTE_DATA, grant.token, grant.client_id, grant.conf === true)"));
   assert.ok(src.includes('grant_types_supported: ["authorization_code", "refresh_token"]'));
   assert.ok(src.includes('grant_types: ["authorization_code", "refresh_token"]'), "DCR response");
 });
@@ -254,6 +254,16 @@ test("route contract: /.well-known/google-connected-apps serves gca:verification
   assert.ok(block.includes('env.REMOTE_DATA.get("gca:verification")'));
   assert.ok(block.includes('if (body === null) return json({ error: "not_found" }, 404);'));
   assert.ok(block.includes('"content-type": "application/json"'));
+  assert.ok(!/redirect/i.test(block));
+});
+
+test("route contract: /.well-known/openai-apps-challenge serves openai:challenge as plain text, 404 when unset", () => {
+  const i = src.indexOf('path === "/.well-known/openai-apps-challenge"');
+  assert.ok(i > 0);
+  const block = src.slice(i, src.indexOf("\n    }\n", i));
+  assert.ok(block.includes('env.REMOTE_DATA.get("openai:challenge")'));
+  assert.ok(block.includes('if (body === null) return json({ error: "not_found" }, 404);'));
+  assert.ok(block.includes('"content-type": "text/plain; charset=utf-8"'));
   assert.ok(!/redirect/i.test(block));
 });
 

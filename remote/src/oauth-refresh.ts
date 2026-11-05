@@ -30,7 +30,14 @@ type KV = Pick<KVNamespace, "get" | "put" | "delete">;
 
 export type RefreshResult =
   | { ok: true; token: string; refresh_token: string }
-  | { ok: false; error: "invalid_grant" | "invalid_request"; message: string };
+  | { ok: false; error: "invalid_grant" | "invalid_request" | "invalid_client"; message: string; status?: 400 | 401 };
+
+/**
+ * Client authentication for a refresh token issued to a confidential client (see
+ * src/oauth-client.ts). Called with the bound client_id before the token is spent; null
+ * means authenticated. Never called for a public client's token.
+ */
+export type ConfidentialCheck = (boundClient: string) => Promise<{ error: "invalid_client" | "invalid_request"; message: string; status: 400 | 401 } | null>;
 
 function newRefreshToken(): string {
   const b = new Uint8Array(32);
@@ -38,11 +45,15 @@ function newRefreshToken(): string {
   return "rt_" + Array.from(b, (x) => x.toString(16).padStart(2, "0")).join("");
 }
 
-/** Store a new refresh token bound to (access token, client) and return it. */
-export async function issueRefreshToken(kv: KV, token: string, clientId: string): Promise<string> {
+/**
+ * Store a new refresh token bound to (access token, client) and return it. A token for a
+ * confidential client also carries `conf: true`, so redeeming it requires client
+ * authentication; a public client's record is unchanged.
+ */
+export async function issueRefreshToken(kv: KV, token: string, clientId: string, confidential = false): Promise<string> {
   const rt = newRefreshToken();
-  await kv.put(`oauth_refresh:${rt}`, JSON.stringify({ token, client_id: clientId, at: Date.now() }),
-    { expirationTtl: OAUTH_REFRESH_TTL });
+  const row = confidential ? { token, client_id: clientId, at: Date.now(), conf: true } : { token, client_id: clientId, at: Date.now() };
+  await kv.put(`oauth_refresh:${rt}`, JSON.stringify(row), { expirationTtl: OAUTH_REFRESH_TTL });
   return rt;
 }
 
@@ -51,20 +62,27 @@ export async function issueRefreshToken(kv: KV, token: string, clientId: string)
  * issued to; a public client that omits it is identified by the refresh token alone, the
  * same rule the authorization_code exchange applies.
  */
-export async function redeemRefreshToken(kv: KV, refreshToken: string, clientId: string, tokTtl: number): Promise<RefreshResult> {
+export async function redeemRefreshToken(kv: KV, refreshToken: string, clientId: string, tokTtl: number, checkConfidential?: ConfidentialCheck): Promise<RefreshResult> {
   if (!refreshToken) return { ok: false, error: "invalid_request", message: "refresh_token is required." };
   if (!REFRESH_TOKEN_RE.test(refreshToken)) return { ok: false, error: "invalid_grant", message: "Refresh token is unknown, used or expired." };
   const stored = await kv.get(`oauth_refresh:${refreshToken}`);
   if (stored === null) return { ok: false, error: "invalid_grant", message: "Refresh token is unknown, used or expired." };
-  let grant: { token?: unknown; client_id?: unknown };
+  let grant: { token?: unknown; client_id?: unknown; conf?: unknown };
   try { grant = JSON.parse(stored) as typeof grant; } catch { grant = {}; }
   const token = typeof grant.token === "string" ? grant.token : "";
   const boundClient = typeof grant.client_id === "string" ? grant.client_id : "";
   if (!ANON_TOKEN_RE.test(token)) return { ok: false, error: "invalid_grant", message: "Refresh token is unknown, used or expired." };
   if (clientId && clientId !== boundClient) return { ok: false, error: "invalid_grant", message: "client_id mismatch." };
+  // A confidential client's token is spent only after the client has authenticated. A
+  // token marked confidential with no check available is refused, never redeemed openly.
+  const confidential = grant.conf === true;
+  if (confidential) {
+    const bad = checkConfidential ? await checkConfidential(boundClient) : { error: "invalid_client" as const, message: "Client authentication is required.", status: 401 as const };
+    if (bad) return { ok: false, error: bad.error, message: bad.message, status: bad.status };
+  }
   // Single use: the old token is gone before the new one exists.
   await kv.delete(`oauth_refresh:${refreshToken}`);
-  const next = await issueRefreshToken(kv, token, boundClient);
+  const next = await issueRefreshToken(kv, token, boundClient, confidential);
   // Persistent linking: the access token is valid again for a full TOK_TTL from now.
   await kv.put(`tok:${token}`, String(Date.now()), { expirationTtl: tokTtl });
   return { ok: true, token, refresh_token: next };

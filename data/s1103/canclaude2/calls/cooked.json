@@ -1,0 +1,107 @@
+{
+ "result": {
+  "content": [
+   {
+    "type": "text",
+    "text": "1 pound raw beef, ground, medium fat (12%-22%), patty (pan-broiled) cooks down to about 0.73 pounds (331 g) at the USDA cooking yield of 73%; USDA samples ranged 0.71-0.76 pounds. USDA yield is hot cooked weight divided by raw weight of the same piece, measured in USDA research kitchens; your result moves with doneness, trim, bone and pan juices.\n\n{\n  \"summary\": \"1 pound raw beef, ground, medium fat (12%-22%), patty (pan-broiled) cooks down to about 0.73 pounds (331 g) at the USDA cooking yield of 73%; USDA samples ranged 0.71-0.76 pounds. USDA yield is hot cooked weight divided by raw weight of the same piece, measured in USDA research kitchens; your result moves with doneness, trim, bone and pan juices.\",\n  \"input\": {\n    \"raw_weight\": 1,\n    \"unit\": \"pound\"\n  },\n  \"cooked_weight\": {\n    \"grams\": 331.1,\n    \"ounces\": 11.68,\n    \"pounds\": 0.73,\n    \"kilograms\": 0.331,\n    \"in_input_unit\": 0.73\n  },\n  \"cooked_weight_range\": {\n    \"low\": {\n      \"grams\": 321.1,\n      \"ounces\": 11.32,\n      \"pounds\": 0.708,\n      \"kilograms\": 0.321\n    },\n    \"high\": {\n      \"grams\": 344.6,\n      \"ounces\": 12.16,\n      \"pounds\": 0.76,\n      \"kilograms\": 0.345\n    }\n  },\n  \"weight_lost\": {\n    \"grams\": 122.5,\n    \"ounces\": 4.32,\n    \"pounds\": 0.27,\n    \"kilograms\": 0.122\n  },\n  \"yield\": {\n    \"yield_id\": 27,\n    \"food\": \"Beef, ground, medium fat (12%-22%), patty\",\n    \"category\": \"beef\",\n    \"cooking_method\": \"Pan-broiled\",\n    \"cooking_yield_percent\": 73,\n    \"weight_change_percent\": -27,\n    \"yield_range_percent\": [\n      70.8,\n      76\n    ],\n    \"samples\": 4,\n    \"standard_deviation\": 2.77,\n    \"moisture_change_percent\": -20.82,\n    \"fat_change_percent\": -6.22,\n    \"usda_ndb_number\": \"23574\",\n    \"data_year\": 2002\n  },\n  \"note\": null,\n  \"other_matches\": [\n    {\n      \"yield_id\": 23,\n      \"food\": \"Beef, ground, low fat (<12%), patty\",\n      \"category\": \"beef\",\n      \"cooking_method\": \"Pan-broiled\",\n      \"cooking_yield_percent\": 77,\n      \"weight_change_percent\": -23,\n      \"yield_range_percent\": [\n        76.4,\n        78.3\n      ],\n      \"samples\": 4,\n      \"standard_deviation\": 0.81,\n      \"moisture_change_percent\": -21.25,\n      \"fat_change_percent\": -1.4,\n      \"usda_ndb_number\": \"23564\",\n      \"data_year\": 2002\n    },\n    {\n      \"yield_id\": 18,\n      \"food\": \"Beef, ground, high fat (>22%), patty\",\n      \"category\": \"beef\",\n      \"cooking_method\": \"Pan-broiled\",\n      \"cooking_yield_percent\": 69,\n      \"weight_change_percent\": -31,\n      \"yield_range_percent\": [\n        67.6,\n        72.2\n      ],\n      \"samples\": 4,\n      \"standard_deviation\": 2.1,\n      \"moisture_change_percent\": -18.18,\n      \"fat_change_percent\": -12.39,\n      \"usda_ndb_number\": \"13496\",\n      \"data_year\": 2003\n    }\n  ],\n  \"source\": \"https://www.ars.usda.gov/ARSUserFiles/80400535/Data/retn/USDA_CookingYields_MeatPoultry02.pdf\",\n  \"source_page\": \"https://www.ars.usda.gov/northeast-area/beltsville-md-bhnrc/beltsville-human-nutrition-research-center/methods-and-application-of-food-composition-laboratory/mafcl-site-pages/cooking-yields/\",\n  \"as_of\": \"2014-09 (USDA Table of Cooking Yields for Meat and Poultry, Release 2; file checked 2026-11-03)\",\n  \"more\": \"https://recipetool.net/tools/raw-to-cooked-weight-calculator?utm_source=mcp&utm_medium=raw-to-cooked-weight-mcp\"\n}"
+   }
+  ],
+  "structuredContent": {
+   "summary": "1 pound raw beef, ground, medium fat (12%-22%), patty (pan-broiled) cooks down to about 0.73 pounds (331 g) at the USDA cooking yield of 73%; USDA samples ranged 0.71-0.76 pounds. USDA yield is hot cooked weight divided by raw weight of the same piece, measured in USDA research kitchens; your result moves with doneness, trim, bone and pan juices.",
+   "input": {
+    "raw_weight": 1,
+    "unit": "pound"
+   },
+   "cooked_weight": {
+    "grams": 331.1,
+    "ounces": 11.68,
+    "pounds": 0.73,
+    "kilograms": 0.331,
+    "in_input_unit": 0.73
+   },
+   "cooked_weight_range": {
+    "low": {
+     "grams": 321.1,
+     "ounces": 11.32,
+     "pounds": 0.708,
+     "kilograms": 0.321
+    },
+    "high": {
+     "grams": 344.6,
+     "ounces": 12.16,
+     "pounds": 0.76,
+     "kilograms": 0.345
+    }
+   },
+   "weight_lost": {
+    "grams": 122.5,
+    "ounces": 4.32,
+    "pounds": 0.27,
+    "kilograms": 0.122
+   },
+   "yield": {
+    "yield_id": 27,
+    "food": "Beef, ground, medium fat (12%-22%), patty",
+    "category": "beef",
+    "cooking_method": "Pan-broiled",
+    "cooking_yield_percent": 73,
+    "weight_change_percent": -27,
+    "yield_range_percent": [
+     70.8,
+     76
+    ],
+    "samples": 4,
+    "standard_deviation": 2.77,
+    "moisture_change_percent": -20.82,
+    "fat_change_percent": -6.22,
+    "usda_ndb_number": "23574",
+    "data_year": 2002
+   },
+   "note": null,
+   "other_matches": [
+    {
+     "yield_id": 23,
+     "food": "Beef, ground, low fat (<12%), patty",
+     "category": "beef",
+     "cooking_method": "Pan-broiled",
+     "cooking_yield_percent": 77,
+     "weight_change_percent": -23,
+     "yield_range_percent": [
+      76.4,
+      78.3
+     ],
+     "samples": 4,
+     "standard_deviation": 0.81,
+     "moisture_change_percent": -21.25,
+     "fat_change_percent": -1.4,
+     "usda_ndb_number": "23564",
+     "data_year": 2002
+    },
+    {
+     "yield_id": 18,
+     "food": "Beef, ground, high fat (>22%), patty",
+     "category": "beef",
+     "cooking_method": "Pan-broiled",
+     "cooking_yield_percent": 69,
+     "weight_change_percent": -31,
+     "yield_range_percent": [
+      67.6,
+      72.2
+     ],
+     "samples": 4,
+     "standard_deviation": 2.1,
+     "moisture_change_percent": -18.18,
+     "fat_change_percent": -12.39,
+     "usda_ndb_number": "13496",
+     "data_year": 2003
+    }
+   ],
+   "source": "https://www.ars.usda.gov/ARSUserFiles/80400535/Data/retn/USDA_CookingYields_MeatPoultry02.pdf",
+   "source_page": "https://www.ars.usda.gov/northeast-area/beltsville-md-bhnrc/beltsville-human-nutrition-research-center/methods-and-application-of-food-composition-laboratory/mafcl-site-pages/cooking-yields/",
+   "as_of": "2014-09 (USDA Table of Cooking Yields for Meat and Poultry, Release 2; file checked 2026-11-03)",
+   "more": "https://recipetool.net/tools/raw-to-cooked-weight-calculator?utm_source=mcp&utm_medium=raw-to-cooked-weight-mcp"
+  }
+ },
+ "jsonrpc": "2.0",
+ "id": 2
+}

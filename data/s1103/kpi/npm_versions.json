@@ -1,0 +1,274 @@
+{
+ "@theluckystrike/mcp-amortization": {
+  "0.0.0-stage": 80,
+  "0.22.6": 128
+ },
+ "@theluckystrike/mcp-asset-register": {
+  "0.0.0-stage": 84,
+  "0.22.6": 154
+ },
+ "@theluckystrike/mcp-backlink-checker": {
+  "0.0.0-stage": 90,
+  "0.22.6": 92
+ },
+ "@theluckystrike/mcp-bank-statement": {
+  "0.0.0-stage": 87,
+  "0.22.6": 111
+ },
+ "@theluckystrike/mcp-barcode": {
+  "0.0.0-stage": 88,
+  "0.22.6": 127
+ },
+ "@theluckystrike/mcp-bill-of-sale": {
+  "0.0.0-stage": 89,
+  "0.22.6": 119
+ },
+ "@theluckystrike/mcp-billing-docs": {
+  "0.0.0-stage": 79,
+  "0.22.6": 160
+ },
+ "@theluckystrike/mcp-budget": {
+  "0.0.0-stage": 143,
+  "0.22.6": 181
+ },
+ "@theluckystrike/mcp-calendar": {
+  "0.0.0-stage": 107,
+  "0.22.6": 166
+ },
+ "@theluckystrike/mcp-cash-book": {
+  "0.0.0-stage": 93,
+  "0.22.6": 144
+ },
+ "@theluckystrike/mcp-catalogue": {
+  "0.0.0-stage": 90,
+  "0.22.6": 132
+ },
+ "@theluckystrike/mcp-change-order": {
+  "0.0.0-stage": 82,
+  "0.22.6": 108
+ },
+ "@theluckystrike/mcp-checklist": {
+  "0.0.0-stage": 79,
+  "0.22.6": 122
+ },
+ "@theluckystrike/mcp-clauses": {
+  "0.0.0-stage": 81,
+  "0.22.6": 112
+ },
+ "@theluckystrike/mcp-credit-note": {
+  "0.0.0-stage": 95,
+  "0.22.8": 134
+ },
+ "@theluckystrike/mcp-currency": {
+  "0.0.0-stage": 90,
+  "0.22.6": 133
+ },
+ "@theluckystrike/mcp-delivery-schedule": {
+  "0.0.0-stage": 78,
+  "0.22.7": 106
+ },
+ "@theluckystrike/mcp-deposits": {
+  "0.0.0-stage": 94,
+  "0.22.6": 167
+ },
+ "@theluckystrike/mcp-docx": {
+  "0.0.0-stage": 90,
+  "0.22.6": 147
+ },
+ "@theluckystrike/mcp-dunning-letters": {
+  "0.0.0-stage": 87,
+  "0.22.6": 132
+ },
+ "@theluckystrike/mcp-duplicate-invoice-check": {
+  "0.0.0-stage": 88,
+  "0.22.8": 128
+ },
+ "@theluckystrike/mcp-expense-tracker": {
+  "0.0.0-stage": 88,
+  "0.22.9": 112
+ },
+ "@theluckystrike/mcp-goods-receipt": {
+  "0.0.0-stage": 86,
+  "0.22.6": 117
+ },
+ "@theluckystrike/mcp-hourly-rate": {
+  "0.0.0-stage": 87,
+  "0.22.6": 124
+ },
+ "@theluckystrike/mcp-image": {
+  "0.0.0-stage": 92,
+  "0.22.6": 129
+ },
+ "@theluckystrike/mcp-invoice": {
+  "0.0.0-stage": 83,
+  "0.22.6": 241
+ },
+ "@theluckystrike/mcp-job-card": {
+  "0.0.0-stage": 74,
+  "0.22.6": 129
+ },
+ "@theluckystrike/mcp-kanban": {
+  "0.0.0-stage": 86,
+  "0.22.6": 135
+ },
+ "@theluckystrike/mcp-leave": {
+  "0.0.0-stage": 85,
+  "0.22.6": 115
+ },
+ "@theluckystrike/mcp-loan-calculator": {
+  "0.0.0-stage": 125,
+  "0.22.6": 207
+ },
+ "@theluckystrike/mcp-maintenance-log": {
+  "0.0.0-stage": 82,
+  "0.22.6": 129
+ },
+ "@theluckystrike/mcp-mileage-log": {
+  "0.0.0-stage": 85,
+  "0.22.6": 126
+ },
+ "@theluckystrike/mcp-office-suite": {
+  "0.0.0-stage": 88,
+  "0.25.0": 127
+ },
+ "@theluckystrike/mcp-onboarding": {
+  "0.0.0-stage": 81,
+  "0.22.6": 131
+ },
+ "@theluckystrike/mcp-packing-list": {
+  "0.0.0-stage": 90,
+  "0.22.8": 135
+ },
+ "@theluckystrike/mcp-payroll": {
+  "0.0.0-stage": 138,
+  "0.22.6": 197
+ },
+ "@theluckystrike/mcp-pdf": {
+  "0.0.0-stage": 91,
+  "0.22.6": 134
+ },
+ "@theluckystrike/mcp-per-diem": {
+  "0.0.0-stage": 79,
+  "0.22.6": 114
+ },
+ "@theluckystrike/mcp-petty-cash": {
+  "0.0.0-stage": 135,
+  "0.22.6": 180
+ },
+ "@theluckystrike/mcp-pomodoro": {
+  "0.0.0-stage": 114,
+  "0.22.6": 180
+ },
+ "@theluckystrike/mcp-price-tracker": {
+  "0.0.0-stage": 84,
+  "0.22.6": 133
+ },
+ "@theluckystrike/mcp-purchase-requisition": {
+  "0.0.0-stage": 90,
+  "0.22.8": 138
+ },
+ "@theluckystrike/mcp-quotes": {
+  "0.0.0-stage": 80,
+  "0.22.6": 213
+ },
+ "@theluckystrike/mcp-receipts": {
+  "0.0.0-stage": 134,
+  "0.22.6": 179
+ },
+ "@theluckystrike/mcp-recurring": {
+  "0.0.0-stage": 79,
+  "0.22.6": 121
+ },
+ "@theluckystrike/mcp-resume": {
+  "0.0.0-stage": 85,
+  "0.22.6": 139
+ },
+ "@theluckystrike/mcp-service-agreement": {
+  "0.0.0-stage": 86,
+  "0.22.6": 122
+ },
+ "@theluckystrike/mcp-spreadsheet": {
+  "0.0.0-stage": 90,
+  "0.22.9": 133
+ },
+ "@theluckystrike/mcp-statement-of-account": {
+  "0.0.0-stage": 94,
+  "0.22.6": 156
+ },
+ "@theluckystrike/mcp-stripe-billing": {
+  "0.0.0-stage": 138,
+  "0.22.6": 190
+ },
+ "@theluckystrike/mcp-supplier-list": {
+  "0.0.0-stage": 89,
+  "0.22.6": 122
+ },
+ "@theluckystrike/mcp-supplier-statement-check": {
+  "0.0.0-stage": 93,
+  "0.25.0": 129
+ },
+ "@theluckystrike/mcp-tax-calc": {
+  "0.0.0-stage": 129,
+  "0.22.6": 179
+ },
+ "@theluckystrike/mcp-three-way-match": {
+  "0.0.0-stage": 122,
+  "0.22.8": 174
+ },
+ "@theluckystrike/mcp-time-tracker": {
+  "0.0.0-stage": 86,
+  "0.22.6": 125
+ },
+ "@theluckystrike/mcp-timezone": {
+  "0.0.0-stage": 129,
+  "0.22.6": 433
+ },
+ "@theluckystrike/mcp-work-order": {
+  "0.0.0-stage": 83,
+  "0.22.6": 111
+ },
+ "@theluckystrike/mcp-zip": {
+  "0.0.0-stage": 78,
+  "0.22.6": 115
+ },
+ "@theluckystrike/mcp-license": {
+  "0.0.0-stage": 88,
+  "0.22.7": 377
+ },
+ "cups-to-grams-mcp": {
+  "0.0.0-stage": 147,
+  "1.0.0": 171
+ },
+ "dscr-loan-calculator-mcp": {
+  "0.0.0-stage": 142,
+  "1.0.0": 162
+ },
+ "gold-price-per-gram-mcp": {
+  "0.0.0-stage": 136,
+  "1.0.0": 166
+ },
+ "lake-level-mcp": {
+  "0.0.0-stage": 146,
+  "1.0.0": 164
+ },
+ "minimum-wage-mcp": {
+  "0.0.0-stage": 144,
+  "1.0.0": 179
+ },
+ "no-tax-on-overtime-mcp": {
+  "0.0.0-stage": 155,
+  "1.0.0": 185
+ },
+ "paycheck-calculator-mcp": {
+  "0.0.0-stage": 137,
+  "1.0.0": 157
+ },
+ "uk-income-tax-salary-mcp": {
+  "0.0.0-stage": 142,
+  "1.0.0": 171
+ },
+ "us-federal-holidays-business-days-mcp": {
+  "0.0.0-stage": 146,
+  "1.0.0": 161
+ }
+}

@@ -1,0 +1,42 @@
+{
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "2025 CPI-U: annual-average inflation 2.6% (CPI 313.689 to 321.943); December-to-December 2.7%. October 2025 CPI was not collected (2025 lapse in appropriations). BLS still published a 2025 annual average. Note: Live BLS API check failed (BLS API REQUEST_NOT_PROCESSED: Request could not be serviced, as the daily threshold for total number of requests allocated to the user with registration key  has been reached.). Using bundled BLS data through September 2026, fetched 2026-11-03. Newer months, if any, are not included.\n\nIndex values from the U.S. Bureau of Labor Statistics. General information, not financial advice."
+      },
+      {
+        "type": "text",
+        "text": "{\n  \"year\": 2025,\n  \"series\": \"cpi_u\",\n  \"series_id\": \"CUUR0000SA0\",\n  \"annual_average_cpi\": 321.943,\n  \"prior_year_annual_average_cpi\": 313.689,\n  \"annual_average_inflation_percent\": 2.6,\n  \"december_cpi\": 324.054,\n  \"december_to_december_percent\": 2.7,\n  \"latest_twelve_month\": null,\n  \"notes\": [\n    \"October 2025 CPI was not collected (2025 lapse in appropriations). BLS still published a 2025 annual average.\"\n  ],\n  \"summary\": \"2025 CPI-U: annual-average inflation 2.6% (CPI 313.689 to 321.943); December-to-December 2.7%. October 2025 CPI was not collected (2025 lapse in appropriations). BLS still published a 2025 annual average.\",\n  \"data_status\": {\n    \"live\": false,\n    \"latest_month\": \"September 2026\",\n    \"bundled_through\": \"September 2026\",\n    \"bundled_fetched\": \"2026-11-03\",\n    \"note\": \"Live BLS API check failed (BLS API REQUEST_NOT_PROCESSED: Request could not be serviced, as the daily threshold for total number of requests allocated to the user with registration key  has been reached.). Using bundled BLS data through September 2026, fetched 2026-11-03. Newer months, if any, are not included.\"\n  },\n  \"as_of\": \"2026-11-03\",\n  \"source\": \"https://data.bls.gov/timeseries/CUUR0000SA0 (BLS Public Data API https://api.bls.gov/publicAPI/v1/timeseries/data/)\",\n  \"more\": \"https://statewage.com/pay-raise-calculator/?utm_source=mcp&utm_medium=cpi-inflation-calculator-mcp\",\n  \"disclaimer\": \"Index values from the U.S. Bureau of Labor Statistics. General information, not financial advice.\"\n}"
+      }
+    ],
+    "structuredContent": {
+      "year": 2025,
+      "series": "cpi_u",
+      "series_id": "CUUR0000SA0",
+      "annual_average_cpi": 321.943,
+      "prior_year_annual_average_cpi": 313.689,
+      "annual_average_inflation_percent": 2.6,
+      "december_cpi": 324.054,
+      "december_to_december_percent": 2.7,
+      "latest_twelve_month": null,
+      "notes": [
+        "October 2025 CPI was not collected (2025 lapse in appropriations). BLS still published a 2025 annual average."
+      ],
+      "summary": "2025 CPI-U: annual-average inflation 2.6% (CPI 313.689 to 321.943); December-to-December 2.7%. October 2025 CPI was not collected (2025 lapse in appropriations). BLS still published a 2025 annual average.",
+      "data_status": {
+        "live": false,
+        "latest_month": "September 2026",
+        "bundled_through": "September 2026",
+        "bundled_fetched": "2026-11-03",
+        "note": "Live BLS API check failed (BLS API REQUEST_NOT_PROCESSED: Request could not be serviced, as the daily threshold for total number of requests allocated to the user with registration key  has been reached.). Using bundled BLS data through September 2026, fetched 2026-11-03. Newer months, if any, are not included."
+      },
+      "as_of": "2026-11-03",
+      "source": "https://data.bls.gov/timeseries/CUUR0000SA0 (BLS Public Data API https://api.bls.gov/publicAPI/v1/timeseries/data/)",
+      "more": "https://statewage.com/pay-raise-calculator/?utm_source=mcp&utm_medium=cpi-inflation-calculator-mcp",
+      "disclaimer": "Index values from the U.S. Bureau of Labor Statistics. General information, not financial advice."
+    }
+  },
+  "jsonrpc": "2.0",
+  "id": 12
+}

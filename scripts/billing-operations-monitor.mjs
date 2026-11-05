@@ -4,7 +4,7 @@ import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { fileURLToPath } from "node:url";
 import { dirname, join, resolve } from "node:path";
-import { paidSessionEntitlementIssue } from "../billing/src/scheduled-monitor.js";
+import { entitlementRecordKey, paidSessionEntitlementIssue } from "../billing/src/scheduled-monitor.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const CONFIG = join(ROOT, "billing", "wrangler.toml");
@@ -90,12 +90,12 @@ export async function paidSessionFindings(sessions, readKey, nowSeconds) {
     if (session.payment_status !== "paid" && session.payment_status !== "no_payment_required") continue;
     if (session.created > nowSeconds - SETTLE_SECONDS) { pending++; continue; }
     checked++;
-    const issued = await readKey("LICENSES", `session:${session.id}`);
+    const issued = await readKey("LICENSES", entitlementRecordKey(session));
     const issue = await paidSessionEntitlementIssue(session, issued, {
       get: key => readKey("REMOTE_DATA", key),
     });
     const messages = { license: "issued key missing or invalid", binding_product: "paid product metadata unresolved",
-      binding_tenant: "hosted tenant metadata invalid", binding: "hosted binding missing or invalid" };
+      binding_tenant: "hosted tenant metadata invalid", binding: "hosted binding missing or invalid", service_order: "paid service order not recorded" };
     if (issue) findings.push({ sessionRef: sessionRef(session.id), issue: messages[issue] });
   }
   return { checked, pending, findings };

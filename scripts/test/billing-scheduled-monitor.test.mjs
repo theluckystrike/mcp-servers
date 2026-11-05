@@ -40,7 +40,7 @@ test("scheduled monitor checks a buy-page batch without creating a live Session"
   try {
     const report = await runScheduledMonitor(env, timeOutsideHourlySlot(), {}, route);
     assert.equal(report.ok, true);
-    assert.equal(getCount, 11);
+    assert.equal(getCount, 12); // batch of the deterministic slot: 12 since the 4 upfront McpStamp services (s1102m sales)
     assert.equal(JSON.parse(remote.data.get("monitor:status")).ok, true);
   } finally { globalThis.fetch = original; }
 });
@@ -60,7 +60,7 @@ test("scheduled probe exercises real billing GET handler without a Stripe create
   };
   try {
     const report = await runScheduledMonitor(env, timeOutsideHourlySlot(), { waitUntil() {} });
-    assert.equal(report.buy.paths, 11);
+    assert.equal(report.buy.paths, 12);
     assert.equal(stripeCalls, 2, "only the before and after Stripe list reads are allowed");
   } finally { globalThis.fetch = original; }
 });

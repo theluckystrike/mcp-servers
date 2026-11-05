@@ -1,0 +1,34 @@
+
+✓ CLEAN  hz/new/calculate-ab-test-sample-size.html
+
+✓ CLEAN  hz/new/calculate-aca-premium-tax-credit.html
+
+✓ CLEAN  hz/new/calculate-car-loan-interest-deduction.html
+
+✓ CLEAN  hz/new/calculate-dscr.html
+
+✓ CLEAN  hz/new/calculate-rap-student-loan-payment.html
+
+✓ CLEAN  hz/new/calculate-recipe-nutrition.html
+
+✓ CLEAN  hz/new/calculate-section-179-deduction.html
+
+✓ CLEAN  hz/new/calculate-take-home-pay.html
+
+✓ CLEAN  hz/new/calculate-uk-take-home-pay.html
+
+✓ CLEAN  hz/new/can-claude-index.html
+
+✓ CLEAN  hz/new/convert-cups-to-grams.html
+
+✓ CLEAN  hz/new/convert-currency-at-todays-rate.html
+
+✓ CLEAN  hz/new/find-subdomains.html
+
+✓ CLEAN  hz/new/look-up-ap-score-distributions.html
+
+✓ CLEAN  hz/new/tell-the-time-in-another-time-zone.html
+
+============================================================
+SCANNED 15 file(s): 15 clean, 0 with HARD fails, 0 hard / 0 soft violations total.
+RESULT: PASS - no AI-formatting tells detected. Deploy-clean.

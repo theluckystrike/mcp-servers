@@ -1,0 +1,295 @@
+{
+ "lane": "links",
+ "date": "2026-11-03",
+ "serving_worker": {
+  "/s/<id>": "mcp-billing (custom domain mcp.zovo.one, CF API workers/domains)",
+  "/recover": "mcp-billing",
+  "mcp-remote routes": [
+   "mcp.zovo.one/mcp*",
+   "/.well-known/*",
+   "/oauth*"
+  ],
+  "mcpstamp-check": "mcp.zovo.one/stamp*"
+ },
+ "broken": [
+  {
+   "url": "https://mcp.zovo.one/calendar",
+   "status": 404,
+   "n_source_pages": 1,
+   "sample_pages": [
+    "kanban"
+   ],
+   "source": "servers/<page>/README.md markdown link \"../calendar\", rendered by scripts/build-pages.mjs (marked) into billing/src/pages.js PAGES[<page>].html",
+   "fix": "-> /s/calendar"
+  },
+  {
+   "url": "https://mcp.zovo.one/docx",
+   "status": 404,
+   "n_source_pages": 4,
+   "sample_pages": [
+    "clauses",
+    "image",
+    "pdf",
+    "resume"
+   ],
+   "source": "servers/<page>/README.md markdown link \"../docx\", rendered by scripts/build-pages.mjs (marked) into billing/src/pages.js PAGES[<page>].html",
+   "fix": "-> /s/docx"
+  },
+  {
+   "url": "https://mcp.zovo.one/docx/README.md",
+   "status": 404,
+   "n_source_pages": 3,
+   "sample_pages": [
+    "image",
+    "pdf",
+    "resume"
+   ],
+   "source": "servers/<page>/README.md markdown link \"../docx/README.md\", rendered by scripts/build-pages.mjs (marked) into billing/src/pages.js PAGES[<page>].html",
+   "fix": "-> /s/docx"
+  },
+  {
+   "url": "https://mcp.zovo.one/expense-tracker",
+   "status": 404,
+   "n_source_pages": 6,
+   "sample_pages": [
+    "asset-register",
+    "bank-statement",
+    "currency",
+    "invoice",
+    "per-diem"
+   ],
+   "source": "servers/<page>/README.md markdown link \"../expense-tracker\", rendered by scripts/build-pages.mjs (marked) into billing/src/pages.js PAGES[<page>].html",
+   "fix": "-> /s/expense-tracker"
+  },
+  {
+   "url": "https://mcp.zovo.one/expense-tracker/README.md",
+   "status": 404,
+   "n_source_pages": 1,
+   "sample_pages": [
+    "docx"
+   ],
+   "source": "servers/<page>/README.md markdown link \"../expense-tracker/README.md\", rendered by scripts/build-pages.mjs (marked) into billing/src/pages.js PAGES[<page>].html",
+   "fix": "-> /s/expense-tracker"
+  },
+  {
+   "url": "https://mcp.zovo.one/invoice",
+   "status": 404,
+   "n_source_pages": 10,
+   "sample_pages": [
+    "bank-statement",
+    "clauses",
+    "currency",
+    "docx",
+    "expense-tracker"
+   ],
+   "source": "servers/<page>/README.md markdown link \"../invoice\", rendered by scripts/build-pages.mjs (marked) into billing/src/pages.js PAGES[<page>].html",
+   "fix": "-> /s/invoice"
+  },
+  {
+   "url": "https://mcp.zovo.one/invoice/README.md",
+   "status": 404,
+   "n_source_pages": 7,
+   "sample_pages": [
+    "calendar",
+    "docx",
+    "pdf",
+    "price-tracker",
+    "spreadsheet"
+   ],
+   "source": "servers/<page>/README.md markdown link \"../invoice/README.md\", rendered by scripts/build-pages.mjs (marked) into billing/src/pages.js PAGES[<page>].html",
+   "fix": "-> /s/invoice"
+  },
+  {
+   "url": "https://mcp.zovo.one/kanban",
+   "status": 404,
+   "n_source_pages": 2,
+   "sample_pages": [
+    "asset-register",
+    "per-diem"
+   ],
+   "source": "servers/<page>/README.md markdown link \"../kanban\", rendered by scripts/build-pages.mjs (marked) into billing/src/pages.js PAGES[<page>].html",
+   "fix": "-> /s/kanban"
+  },
+  {
+   "url": "https://mcp.zovo.one/office-suite/README.md",
+   "status": 404,
+   "n_source_pages": 10,
+   "sample_pages": [
+    "calendar",
+    "docx",
+    "image",
+    "invoice",
+    "pdf"
+   ],
+   "source": "servers/<page>/README.md markdown link \"../office-suite/README.md\", rendered by scripts/build-pages.mjs (marked) into billing/src/pages.js PAGES[<page>].html",
+   "fix": "-> /s/office-suite"
+  },
+  {
+   "url": "https://mcp.zovo.one/pdf/README.md",
+   "status": 404,
+   "n_source_pages": 1,
+   "sample_pages": [
+    "image"
+   ],
+   "source": "servers/<page>/README.md markdown link \"../pdf/README.md\", rendered by scripts/build-pages.mjs (marked) into billing/src/pages.js PAGES[<page>].html",
+   "fix": "-> /s/pdf"
+  },
+  {
+   "url": "https://mcp.zovo.one/per-diem",
+   "status": 404,
+   "n_source_pages": 1,
+   "sample_pages": [
+    "asset-register"
+   ],
+   "source": "servers/<page>/README.md markdown link \"../per-diem\", rendered by scripts/build-pages.mjs (marked) into billing/src/pages.js PAGES[<page>].html",
+   "fix": "-> /s/per-diem"
+  },
+  {
+   "url": "https://mcp.zovo.one/price-tracker/README.md",
+   "status": 404,
+   "n_source_pages": 3,
+   "sample_pages": [
+    "invoice",
+    "spreadsheet",
+    "time-tracker"
+   ],
+   "source": "servers/<page>/README.md markdown link \"../price-tracker/README.md\", rendered by scripts/build-pages.mjs (marked) into billing/src/pages.js PAGES[<page>].html",
+   "fix": "-> /s/price-tracker"
+  },
+  {
+   "url": "https://mcp.zovo.one/recover",
+   "status": 400,
+   "n_source_pages": 1,
+   "sample_pages": [],
+   "source": "billing/src/content.js:8019 (guide paid-mcp-servers-and-how-you-pay-for-one), <a href=\"/recover\">",
+   "fix": "bare GET 400 {\"reason\":\"session_id required\"} is correct (billing/src/index.js /recover handler); link removed, copy now states /recover?session_id=... from the /success URL or support@zovo.one"
+  },
+  {
+   "url": "https://mcp.zovo.one/recurring",
+   "status": 404,
+   "n_source_pages": 1,
+   "sample_pages": [
+    "clauses"
+   ],
+   "source": "servers/<page>/README.md markdown link \"../recurring\", rendered by scripts/build-pages.mjs (marked) into billing/src/pages.js PAGES[<page>].html",
+   "fix": "-> /s/recurring"
+  },
+  {
+   "url": "https://mcp.zovo.one/resume/README.md",
+   "status": 404,
+   "n_source_pages": 2,
+   "sample_pages": [
+    "image",
+    "pdf"
+   ],
+   "source": "servers/<page>/README.md markdown link \"../resume/README.md\", rendered by scripts/build-pages.mjs (marked) into billing/src/pages.js PAGES[<page>].html",
+   "fix": "-> /s/resume"
+  },
+  {
+   "url": "https://mcp.zovo.one/s/llms-install.md",
+   "status": 404,
+   "n_source_pages": 1,
+   "sample_pages": [
+    "hourly-rate"
+   ],
+   "source": "servers/<page>/README.md markdown link \"llms-install.md\", rendered by scripts/build-pages.mjs (marked) into billing/src/pages.js PAGES[<page>].html",
+   "fix": "-> https://github.com/theluckystrike/mcp-servers/blob/main/servers/hourly-rate/llms-install.md"
+  },
+  {
+   "url": "https://mcp.zovo.one/s/mcpservers.org",
+   "status": 404,
+   "n_source_pages": 4,
+   "sample_pages": [
+    "invoice",
+    "price-tracker",
+    "spreadsheet",
+    "time-tracker"
+   ],
+   "source": "servers/<page>/README.md markdown link \"mcpservers.org\", rendered by scripts/build-pages.mjs (marked) into billing/src/pages.js PAGES[<page>].html",
+   "fix": "README [Awesome MCP Servers](mcpservers.org) -> https://mcpservers.org"
+  },
+  {
+   "url": "https://mcp.zovo.one/spreadsheet",
+   "status": 404,
+   "n_source_pages": 1,
+   "sample_pages": [
+    "bank-statement"
+   ],
+   "source": "servers/<page>/README.md markdown link \"../spreadsheet\", rendered by scripts/build-pages.mjs (marked) into billing/src/pages.js PAGES[<page>].html",
+   "fix": "-> /s/spreadsheet"
+  },
+  {
+   "url": "https://mcp.zovo.one/spreadsheet/README.md",
+   "status": 404,
+   "n_source_pages": 3,
+   "sample_pages": [
+    "invoice",
+    "price-tracker",
+    "time-tracker"
+   ],
+   "source": "servers/<page>/README.md markdown link \"../spreadsheet/README.md\", rendered by scripts/build-pages.mjs (marked) into billing/src/pages.js PAGES[<page>].html",
+   "fix": "-> /s/spreadsheet"
+  },
+  {
+   "url": "https://mcp.zovo.one/time-tracker",
+   "status": 404,
+   "n_source_pages": 4,
+   "sample_pages": [
+    "docx",
+    "expense-tracker",
+    "kanban",
+    "recurring"
+   ],
+   "source": "servers/<page>/README.md markdown link \"../time-tracker\", rendered by scripts/build-pages.mjs (marked) into billing/src/pages.js PAGES[<page>].html",
+   "fix": "-> /s/time-tracker"
+  },
+  {
+   "url": "https://mcp.zovo.one/time-tracker/README.md",
+   "status": 404,
+   "n_source_pages": 6,
+   "sample_pages": [
+    "calendar",
+    "docx",
+    "invoice",
+    "price-tracker",
+    "spreadsheet"
+   ],
+   "source": "servers/<page>/README.md markdown link \"../time-tracker/README.md\", rendered by scripts/build-pages.mjs (marked) into billing/src/pages.js PAGES[<page>].html",
+   "fix": "-> /s/time-tracker"
+  },
+  {
+   "url": "https://mcp.zovo.one/timezone/README.md",
+   "status": 404,
+   "n_source_pages": 1,
+   "sample_pages": [
+    "calendar"
+   ],
+   "source": "servers/<page>/README.md markdown link \"../timezone/README.md\", rendered by scripts/build-pages.mjs (marked) into billing/src/pages.js PAGES[<page>].html",
+   "fix": "-> /s/timezone"
+  }
+ ],
+ "broken_count": 22,
+ "extra_found": "every demo image on product pages (../../assets/demo-<id>.gif, 17 pages) rendered as /assets/demo-*.gif -> 404 (curl); now raw.githubusercontent.com/theluckystrike/mcp-servers/main/assets/...",
+ "pr": {
+  "url": "https://github.com/theluckystrike/mcp-servers/pull/119",
+  "branch": "s1103-links",
+  "commit": "c2e5deac",
+  "merge_commit": "ec5c66a2a555548450387ea9e8549aabc8c6a877",
+  "merged_at": "2026-11-03T12:21:19Z",
+  "checks": {
+   "Billing preflight": "pass",
+   "clean-mirror": "pass"
+  }
+ },
+ "tests": {
+  "new": "billing/test/readme-links.test.mjs (4 tests; 3 fail on pre-fix main, all pass after)",
+  "BILLING_TEST_COUNT": "278 -> 282",
+  "local_full_billing_suite": "264 tests, 257 pass, 6 fail = same 6 pre-existing failures as main (untracked keys/, server builds)"
+ },
+ "deployed": false,
+ "not_deployed_reason": "serving worker is mcp-billing (lane rule: do not deploy mcp-billing). Live version 2bcaa00c-d6ef-403e-879a-f1e389af10a4 (2026-11-02T07:09Z); origin/main also carries the undeployed s1102m release gated by ~/mcpstamp-work/s1102m/deploy-chain.sh (waits for Stripe live login; last start 2026-11-03T05:15:30Z) and the merged-but-undeployed salvage patch (PR #116).",
+ "deploy_command": "ps -axo pid,command | /usr/bin/grep -E \"wrangler|deploy-chain\" | /usr/bin/grep -v grep  # must be empty; then from an origin/main (>= ec5c66a2) checkout with deps: cd billing && timeout 1200 npm run deploy   # = node ../scripts/deploy-billing-gated.mjs; ships s1102m release + salvage + this fix together",
+ "rollback": "cd billing && npx wrangler rollback 2bcaa00c-d6ef-403e-879a-f1e389af10a4 --yes && npx wrangler kv key put monitor:approved-version 2bcaa00c-d6ef-403e-879a-f1e389af10a4 --binding REMOTE_DATA --remote --config wrangler.toml",
+ "post_deploy_verify": "for each broken[].fix target and the 22 source pages: curl -s -o /dev/null -w \"%{http_code}\" ; /buy/invoice?src=probe.s1103 with -H \"x-mcp-probe: 1\" must 303 to checkout.stripe.com",
+ "worktree": "~/mcp-servers-work/s1103-links (removed after merge)"
+}

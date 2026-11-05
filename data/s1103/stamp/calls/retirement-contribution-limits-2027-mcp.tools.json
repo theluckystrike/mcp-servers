@@ -1,0 +1,201 @@
+{
+ "result": {
+  "tools": [
+   {
+    "name": "get_contribution_limits",
+    "title": "401(k), IRA, HSA and SIMPLE contribution limits (2025-2027)",
+    "description": "Returns official IRS contribution limits for 2025, 2026 and 2027: 401(k)/403(b)/TSP and 457(b) elective deferral ($24,500 for 2026), age 50+ catch-up ($8,000 for 2026), the SECURE 2.0 age 60-63 super catch-up ($11,250), IRA limit and catch-up ($7,500 + $1,100 for 2026), SIMPLE limits, 415(c) total ($72,000), 401(a)(17) compensation limit, highly compensated employee threshold, Roth IRA phase-outs, HSA self/family limits (2027: $4,500 / $9,000, Rev. Proc. 2026-24) and the Social Security wage base (2027: $192,300). Also states the Roth catch-up rule status. Figures copied from IRS Notices 2024-80 and 2025-67 and the HSA Rev. Procs. 2027 plan and IRA limits were not yet announced on 2026-11-02 and the tool says so instead of guessing.",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "year": {
+       "type": "integer",
+       "minimum": 2025,
+       "maximum": 2027,
+       "description": "Calendar year: 2025, 2026 or 2027."
+      },
+      "account": {
+       "type": "string",
+       "enum": [
+        "all",
+        "401k",
+        "403b",
+        "457b",
+        "tsp",
+        "simple",
+        "ira",
+        "roth_ira",
+        "hsa",
+        "415c",
+        "hce",
+        "social_security"
+       ],
+       "description": "Which limits: all (default), 401k, 403b, 457b, tsp, simple, ira, roth_ira, hsa, 415c, hce, social_security."
+      }
+     },
+     "required": [
+      "year"
+     ],
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false,
+     "title": "Contribution limits (2025-2027)"
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "calculate_max_contribution",
+    "title": "Maximum contribution by age, year and plans",
+    "description": "Calculates the most a person can contribute for a year given age (on Dec. 31), plans held (401k, 403b, 457b, tsp, simple, ira, hsa_self, hsa_family) and optional wages. Applies the age 50+ catch-up, the SECURE 2.0 age 60-63 super catch-up (eligible only if age 60, 61, 62 or 63 at year end; 64 drops back), the HSA $1,000 catch-up at 55, the shared 402(g) limit across 401(k)/403(b)/TSP/SIMPLE, the separate 457(b) limit, and the compensation cap. With prior_year_fica_wages it tells whether catch-ups must be Roth under SECURE 2.0 section 603 (2026: over $150,000 of 2025 FICA wages).",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "age": {
+       "type": "integer",
+       "minimum": 14,
+       "maximum": 120,
+       "description": "Age on December 31 of the year."
+      },
+      "year": {
+       "type": "integer",
+       "minimum": 2025,
+       "maximum": 2027,
+       "description": "Calendar year: 2025, 2026 or 2027."
+      },
+      "plans": {
+       "type": "array",
+       "items": {
+        "type": "string",
+        "enum": [
+         "401k",
+         "403b",
+         "457b",
+         "tsp",
+         "simple",
+         "ira",
+         "hsa_self",
+         "hsa_family"
+        ]
+       },
+       "minItems": 1,
+       "maxItems": 8,
+       "description": "Plans the person contributes to, e.g. [\"401k\",\"ira\",\"hsa_family\"]."
+      },
+      "wages": {
+       "type": "number",
+       "minimum": 0,
+       "maximum": 1000000000,
+       "description": "Compensation for the year in USD, used to cap deferrals and IRA contributions."
+      },
+      "prior_year_fica_wages": {
+       "type": "number",
+       "minimum": 0,
+       "maximum": 1000000000,
+       "description": "Prior-year FICA wages (W-2 box 3) from the plan sponsor, for the Roth catch-up rule."
+      },
+      "plan_offers_super_catch_up": {
+       "type": "boolean",
+       "description": "False if the employer plan does not offer the age 60-63 catch-up. Default true."
+      },
+      "simple_higher_limits": {
+       "type": "boolean",
+       "description": "True if the SIMPLE plan uses the higher small-employer limits."
+      }
+     },
+     "required": [
+      "age",
+      "year",
+      "plans"
+     ],
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false,
+     "title": "Maximum contribution by age, year and plans"
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "get_social_security_cola",
+    "title": "Social Security COLA, wage base and earnings test",
+    "description": "Returns the Social Security cost-of-living adjustment and related figures from SSA's official annual notice in the Federal Register: 2027 COLA 3.6% (announced October 2026), 2027 taxable maximum (wage base) $192,300, retirement earnings test limits ($25,560 under full retirement age, $67,920 in the year you reach it, for 2027), quarter of coverage, SGA amounts and SSI federal payment. Covers 2025, 2026 and 2027.",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "year": {
+       "type": "integer",
+       "minimum": 2025,
+       "maximum": 2027,
+       "description": "Calendar year: 2025, 2026 or 2027."
+      }
+     },
+     "required": [
+      "year"
+     ],
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false,
+     "title": "Social Security COLA, wage base and earnings test"
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "compare_years",
+    "title": "Compare limits between 2025, 2026 and 2027",
+    "description": "Shows each retirement, IRA, HSA and Social Security figure for two years side by side with the dollar and percent change: 401(k) deferral, catch-ups, 415(c), compensation limit, HCE threshold, SIMPLE, IRA, Roth catch-up threshold, HSA, wage base, earnings test and COLA. Items the IRS has not yet published (2027 plan limits on 2026-11-02) come back as null, never estimated.",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "from_year": {
+       "type": "integer",
+       "minimum": 2025,
+       "maximum": 2027,
+       "description": "Calendar year: 2025, 2026 or 2027."
+      },
+      "to_year": {
+       "$ref": "#/properties/from_year"
+      }
+     },
+     "required": [
+      "from_year",
+      "to_year"
+     ],
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false,
+     "title": "Compare limits between years"
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   }
+  ]
+ },
+ "jsonrpc": "2.0",
+ "id": 2
+}

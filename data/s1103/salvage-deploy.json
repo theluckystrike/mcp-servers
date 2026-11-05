@@ -1,0 +1,74 @@
+{
+ "lane": "salvage-deploy",
+ "date": "2026-11-03",
+ "status": "STOPPED_AT_GATE_NO_STRIPE_LIVE_LOGIN",
+ "pr": {
+  "number": 116,
+  "merged": true,
+  "merged_at": "2026-11-03T08:19:36Z",
+  "merge_commit": "7462ff6ab37f298093816f2a636e07b51f18373c",
+  "note": "Branch protection required an up-to-date head; ran gh pr update-branch 116 (main was ahead by 2 data-only commits e298c3d8, 99f4575a), Billing preflight passed again (run 41602330678), then gh pr merge 116 --merge."
+ },
+ "live_check": {
+  "command": "cd ~/mcpstamp-work/s1102m/bill4/billing && npx wrangler deployments list",
+  "live_version": "2bcaa00c-d6ef-403e-879a-f1e389af10a4",
+  "live_version_created": "2026-11-02T07:09:23Z",
+  "unchanged": true,
+  "rechecked": "still 2bcaa00c at 08:21Z (Cloudflare versions API)"
+ },
+ "source_match": {
+  "result": "MISMATCH",
+  "bill4_head": "967cfd74 (branch s1102m-billing5, committed 2026-11-02T10:58Z)",
+  "bill4_dir_created": "2026-11-02T10:02Z, about 3 h after 2bcaa00c was deployed (07:09Z, ~/mcpstamp-work/s1102m/billing/deploy2.log)",
+  "evidence": [
+   "bill4 billing/src contains svc-launch-one, svc-care-quarter, svc-custom-simple (grep -rho, 1 each).",
+   "Live: curl -H 'x-mcp-probe: 1' /buy/svc-launch-one, /buy/svc-care-quarter, /buy/svc-custom-simple, /buy/svc-launch -> 404; /buy/svc-audit, /buy/svc-custom-deposit, /buy/svc-launch-deposit -> 200.",
+   "967cfd74 is 'Service emails from support@zovo.one, lean service pages, retire launch deposit' = the pending s1102m release that deploy-chain.sh would ship after a Stripe live login.",
+   "Commits 7a88a66f and c95f021a contain none of those three new svc ids; 7a88a66f (2026-11-02T05:53Z) is the last billing commit before the 07:09Z deploy and is the likely live source, unverified."
+  ],
+  "conclusion": "Deploying bill4 + patch would ship the other session's pending release. Per brief, stopped. No copy made, no patch applied, no tests run, no deploy."
+ },
+ "deploy": null,
+ "rollback": null,
+ "running_processes": "ps -axo pid,command | grep -E 'deploy-chain|mcp-billing': no billing deploy or deploy-chain running at check time (deploy-chain.log last start 2026-11-03T05:15:30Z, no live process).",
+ "effect_of_merge": "deploy-chain.sh does git checkout -B s1102m-deploy origin/main in bill4 before npm run deploy, so the salvage fix (now on main at 7462ff6a) ships with the s1102m release when the owner does the Stripe live login.",
+ "options_for_orchestrator": [
+  "A (no action): wait for the s1102m release; fix rides along.",
+  "B: build a tree from the actual live source plus the patch. Needs proof that 7a88a66f (or another tree) equals 2bcaa00c, e.g. by downloading the 2bcaa00c script via the Cloudflare API (workers/scripts/mcp-billing/content with version) and diffing against a wrangler dry-run bundle of 7a88a66f. Then the gate (npm run deploy) still runs its own checks."
+ ],
+ "live_probe_now": {
+  "work-order_fullwidth": "not re-probed after stop (unchanged code: 404 per leak.md)"
+ },
+ "proof_route": {
+  "dir": "~/mcp-servers/data/s1103/salvage-deploy/",
+  "live_content": "GET /accounts/dd3f2a29.../workers/scripts/mcp-billing/content/v2?version=2bcaa00c (etag aa593a6d...), one module worker.js 2681729 B -> live/worker.js",
+  "worktree": "git worktree add --detach salvage-deploy/wt 7a88a66f",
+  "dry_run": "wrangler 4.80.0 deploy --dry-run --outdir dry-7a88 -> worker.js 2681777 B",
+  "raw_diff": "32 changed lines, all '// ../../../../../.npm-global/...' module-path comments (one extra ../ from deeper dir)",
+  "normalized_diff": "0 lines after normalizing those path comments and the sourceMappingURL comment; sha256 both 945533b97cf7821f901c9bb4a764fa38544056b22602d4c4b73731ac7e254b7e, 22682 lines each",
+  "settings": "live version bindings (CF_VERSION_METADATA, FULFILLMENT DO, FUNNEL DO on mcp-funnel, LICENSES 75f8bf48, REMOTE_DATA cf848cc5, 6 secret_text kept across versions), compat 2025-09-01 nodejs_compat, cpu_ms 400, observability+traces on, cron */5, custom domain mcp.zovo.one, workers.dev on: all match wrangler.toml at 7a88a66f. No vars.",
+  "conclusion": "7a88a66f billing == live 2bcaa00c"
+ },
+ "patch_port": {
+  "file": "salvage-deploy/billing-salvage-7a88.patch",
+  "why": "billing-salvage.patch targets 967cfd74; 2 of 3 hunks failed on 7a88a66f",
+  "changes_vs_original": [
+   "dropped '&& !Object.hasOwn(SERVICE_REDIRECTS, slug)' (SERVICE_REDIRECTS does not exist at 7a88a66f)",
+   "BILLING_TEST_COUNT 268->272 instead of 274->278",
+   "hunk 3 trailing context = the 7a88a66f lines after the decode (deposit-redirect comment absent)"
+  ],
+  "salvage logic otherwise identical": true
+ },
+ "tests": {
+  "command": "cd salvage-deploy/wt/billing && npm test",
+  "unpatched": "232 tests, 223 pass, 8 fail",
+  "patched": "236 tests, 227 pass, 8 fail",
+  "failure_set": "identical by name (duplicate-csv, hosted-entitlements x3, mint x2, supplier-csv-controller, supplier-csv)",
+  "new": "4 buy-salvage tests pass; BILLING_TEST_COUNT test passes at 272"
+ },
+ "gate_blockers": [
+  "billing-release-gate.mjs verify runs 'stripe get /v1/checkout/sessions --live' before and after probing; 'stripe get ... --live' now returns 'Your live mode API key needs to be re-configured. Run stripe login'. Verify would fail after activation and trigger the gate's automatic rollback.",
+  "gate preflight runs 'npm test' in billing and needs exit 0; the 8 env-dependent failures (untracked keys/ and server builds) would stop it before upload. bill4 had a keys -> ~/mcp-servers/keys symlink; the wt does not yet."
+ ],
+ "next_steps": "Owner: stripe login (live). Then: ln -s ~/mcp-servers/keys salvage-deploy/wt/keys, make npm test exit 0 in wt/billing, confirm no deploy-chain/billing deploy and live==2bcaa00c, cd wt/billing && timeout 1200 npm run deploy. Rollback: cd wt/billing && npx wrangler rollback 2bcaa00c-d6ef-403e-879a-f1e389af10a4 --yes && npx wrangler kv key put monitor:approved-version 2bcaa00c-d6ef-403e-879a-f1e389af10a4 --binding REMOTE_DATA --remote --config wrangler.toml (and ~/.config/mcp-billing-gate/approved-version back to 2bcaa00c). Note deploy-chain.sh uses the same Stripe login and ships origin/main (s1102m release + fix); coordinate so only one runs."
+}

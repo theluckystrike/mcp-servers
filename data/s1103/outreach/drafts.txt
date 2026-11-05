@@ -1,0 +1,50 @@
+Pitch for the newsletter on what models get wrong
+
+Hi,
+
+I'd like to write a practical piece for the MCP newsletter on facts a model gets wrong, and the small server that fixes each one.
+
+The clearest case is the IRS mileage rate. It went from 72.5 to 76 cents on July 1, 2026, after most models were trained, so a model multiplies by the old rate. Live river gauges and 2026 SAT percentiles work the same way.
+
+I run 25 free hosted servers that need no key, and I'd use them only as worked examples. The explainers are at mcpstamp.com/can-claude/. Should I send an outline first?
+
+Michael
+
+
+25 submissions from theluckystrike, none listed yet
+
+Hi,
+
+I sent 25 free MCP servers through your submit endpoint between October 30 and November 3. None has a page under /servers/ yet. I checked today, and /servers/github loads while ours don't.
+
+Is something wrong with the entries, or is the queue just long? Each one is a hosted server with no key, built for facts models get wrong, such as the IRS mileage rate that changed on July 1, 2026. Examples are at mcpstamp.com/can-claude/.
+
+Tell me what's missing and I'll fix it.
+
+Michael
+
+
+Tool suggestion, free IRS mileage rate MCP server
+
+Hi Skila team,
+
+I'd like to suggest a free MCP server for your MCP roundups. It's the IRS Mileage Rate and Per Diem server. The IRS moved the 2026 business mileage rate from 72.5 to 76 cents on July 1, after most models were trained, so a model can multiply by the old rate.
+
+It needs no key and no signup. MIT license, source at github.com/theluckystrike/irs-mileage-rate-per-diem-mcp, and a plain explainer at mcpstamp.com/can-claude/calculate-mileage-deduction/.
+
+I'm the author. I have 24 more free servers if another suits your readers better.
+
+Michael
+
+
+Tool suggestion, 25 free MCP servers for live data
+
+Hi David,
+
+I'd like to suggest a tool for Console. It's a set of 25 free, MIT-licensed MCP servers that give an agent facts it can't get from training, with no API key. One reads live USGS river gauges. Another applies the IRS mileage rate that changed on July 1, 2026.
+
+Each runs as a hosted URL, and the source is under github.com/theluckystrike. Explainers are at mcpstamp.com/can-claude/.
+
+I know you review developer tools, so tell me if this is the wrong fit. A one-line no is fine.
+
+Michael

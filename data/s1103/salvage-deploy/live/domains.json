@@ -1,0 +1,24 @@
+{
+  "result": [
+    {
+      "id": "5020fac3267954bcf9964f50f658582b5c9a0a27",
+      "zone_id": "f16be0fc9bae2ff3786d91eb7a90c023",
+      "zone_name": "zovo.one",
+      "hostname": "mcp.zovo.one",
+      "service": "mcp-billing",
+      "environment": "production",
+      "cert_id": "50b56471-d3a6-4471-bcf4-7641471ca1e2",
+      "previews_enabled": false,
+      "enabled": true
+    }
+  ],
+  "success": true,
+  "errors": null,
+  "messages": null,
+  "result_info": {
+    "page": 1,
+    "per_page": 1,
+    "count": 1,
+    "total_count": 1
+  }
+}

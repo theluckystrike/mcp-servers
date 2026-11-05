@@ -1,6 +1,6 @@
 // Scheduled, read-only checkout reconciliation. Only aggregate counts and hashed
 // Session references are logged; customer data and license values stay in memory.
-import app, { PRODUCTS, PRODUCT_ALIASES, SERVER_COUNT, resolveProductId } from "./index.js";
+import app, { PRODUCTS, PRODUCT_ALIASES, SERVICES, SERVER_COUNT, isService, resolveProductId } from "./index.js";
 import { FREE_IDS } from "./figures.js";
 import { readBinding } from "./hosted-bindings.js";
 import { verifyLicenseKey } from "./license.js";
@@ -74,7 +74,7 @@ function buyPaths() {
   // Aliases resolve to an existing product, so probing each free-server alias only
   // duplicates the bundle probe; keep the batch at the paid surface it guards.
   const aliasIds = Object.keys(PRODUCT_ALIASES).filter((id) => !FREE_IDS.includes(id));
-  return [...Object.keys(PRODUCTS), ...aliasIds]
+  return [...Object.keys(PRODUCTS), ...Object.keys(SERVICES), ...aliasIds]
     .map((id) => `/buy/${encodeURIComponent(id)}`)
     .concat("/buy/bundle?session_id=cs_live_release_gate_sentinel", "/buy/bundle?src=release.gate.probe");
 }
@@ -153,8 +153,16 @@ async function listWebhookStatuses(env, since) {
   return { inspected, failed };
 }
 
+/** The LICENSES key that proves a paid Session was fulfilled: the minted key, or a service order record. */
+export function entitlementRecordKey(session) {
+  return isService(session?.metadata?.product) ? `service:${session.id}` : `session:${session.id}`;
+}
+
 /** Shared by the scheduled and native read-only monitors; never return key material. */
 export async function paidSessionEntitlementIssue(session, issued, remote) {
+  // A paid service has no key: `issued` is then its LICENSES `service:<session>` order record
+  // (see entitlementRecordKey), and the record existing is the whole fulfillment.
+  if (isService(session?.metadata?.product)) return issued ? null : "service_order";
   if (!issued) return "license";
   const asked = session.metadata?.product;
   const product = typeof asked === "string" &&
@@ -210,7 +218,7 @@ async function checkOperations(env, now) {
     if (!["paid", "no_payment_required"].includes(session.payment_status)) continue;
     if (session.created > now - SETTLE_SECONDS) { paidSettling++; continue; }
     paidChecked++;
-    const issued = await env.LICENSES.get(`session:${session.id}`);
+    const issued = await env.LICENSES.get(entitlementRecordKey(session));
     const issue = await paidSessionEntitlementIssue(session, issued, env.REMOTE_DATA);
     if (issue) missing.push(`${await sessionRef(session.id)}:${issue}`);
   }

@@ -1,0 +1,16 @@
+{
+ "result": {
+  "content": [
+   {
+    "type": "text",
+    "text": "New York -> America/New_York: 2027-03-17 09:00 Wed (EDT, UTC-04:00)\nLondon -> Europe/London: 2027-03-17 13:00 Wed (GMT, UTC+00:00)\nBerlin -> Europe/Berlin: 2027-03-17 14:00 Wed (GMT+1, UTC+01:00)\nUTC instant: 2027-03-17T13:00:00.000Z"
+   },
+   {
+    "type": "text",
+    "text": "Free tier: 600 calls/hour, 30-day retention. Pro ($19/server or $39 for all 49, one-time): https://mcp.zovo.one/buy/bundle?tenant=anon_955ffdc79c3919c738b03f200029fbd3&src=timezone.success"
+   }
+  ]
+ },
+ "jsonrpc": "2.0",
+ "id": 2
+}
