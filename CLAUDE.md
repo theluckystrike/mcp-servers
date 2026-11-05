@@ -14,7 +14,7 @@ Fresh completed-history MCP Stripe Checkout gross is $0 with 0 paid matches and 
 
 Hosted readers and billing were deployed in that order through a staged configuration comparison and the supported billing gate. Actual edge probes retain two singles and bundle access across old-key replay; independent bindings follow signed license validity, while anonymous token/data retention still applies. Already-lost purchases require valid-key reactivation; missing history is not reconstructed. Real paid fulfillment and inbox delivery remain untested. Resend is connected and zovo.one can send; the local research queue has no eligible email contacts and no outreach was sent. Further access needs are in `docs/OUTREACH_RESEND_SETUP.md`.
 
-The original R38 observation deadline is 2026-10-26T09:11:29.917Z. Do not reset it after a restart. The loop finished at 09:11:34 UTC with 48 samples and passing final checks. A confirmed process gap is recorded in `data/r38_watch.json`; actual PID liveness, not a statefile, establishes an active watch. Source, exact archives, live behavior, platform publication and commercial results have separate receipts in `intel/R38-session.md`. Use `/Users/mike/bin/buildslot` with the user's 20 GB floor and bounded wait; its path is not on this shell's default PATH. npm uses `npm_config_cache=/Users/mike/.npm-cache-local`. npm is logged in as theluckystrike since 2026-10-30 (all 68 packages live, see below); Smithery is unauthenticated; no newly created account or fabricated install route is claimed.
+The original R38 observation deadline is 2026-10-26T09:11:29.917Z. Do not reset it after a restart. The loop finished at 09:11:34 UTC with 48 samples and passing final checks. A confirmed process gap is recorded in `data/r38_watch.json`; actual PID liveness, not a statefile, establishes an active watch. Source, exact archives, live behavior, platform publication and commercial results have separate receipts in `intel/R38-session.md`. Use `/Users/mike/bin/buildslot` with the user's 20 GB floor and bounded wait; its path is not on this shell's default PATH. npm uses `npm_config_cache=/Users/mike/.npm-cache-local`. npm login EXPIRED by 2026-11-05 (npm whoami E401); all 68 packages were live on 10-30. Ship new satellites as Worker + public repo + registry remotes, which needs no npm (mcp-publisher login github --token "$(gh auth token)" renews the registry token); Smithery is unauthenticated; no newly created account or fabricated install route is claimed.
 
 
 ## Prior revenue review, 2026-10-17
@@ -101,6 +101,11 @@ test reaches from the other direction.
     5 minutes (`404 .../-/v1/done`). The registry lags a few minutes after `+ name@ver`, so a direct
     `npm view` right after publishing reports a false FAILED; recheck later. Registry state is in
     data/s1030/npm-registry-check.tsv.
+
+11. **mcpstamp.com deploys come from ~/mcp-site-2026-10-30/repo, never from a stale site/ copy.** On 11-05 the local
+    tree was 22 commits behind origin and publish.sh would have reverted them; it now refuses. The CI artifact must
+    include site/lib or the Pages Functions build fails (fixed 11-05). Answer-page drafts failed two truth gates on
+    "Claude cannot": code execution, file creation and memory are on by default for Free, Pro and Max.
 
 ## Rules
 

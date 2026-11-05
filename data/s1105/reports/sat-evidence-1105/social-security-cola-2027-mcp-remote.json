@@ -1,0 +1,586 @@
+{
+ "url": "https://social-security-cola-2027-mcp.lipmichal.workers.dev/mcp",
+ "at": "2026-11-05T13:43:22.790854+00:00",
+ "commands": [
+  "POST initialize to https://social-security-cola-2027-mcp.lipmichal.workers.dev/mcp",
+  "python3 /Users/mike/mcp-servers/data/s1103/stamp/mcpcall.py social-security-cola-2027-mcp list",
+  "python3 /Users/mike/mcp-servers/data/s1103/stamp/mcpcall.py social-security-cola-2027-mcp call get_social_security_cola '{}'",
+  "python3 /Users/mike/mcp-servers/data/s1103/stamp/mcpcall.py social-security-cola-2027-mcp call calculate_cola_increase '{\"monthly_benefit\":2008}'",
+  "python3 /Users/mike/mcp-servers/data/s1103/stamp/mcpcall.py social-security-cola-2027-mcp call get_full_retirement_age '{\"birth_date\":\"1960-07-15\"}'",
+  "python3 /Users/mike/mcp-servers/data/s1103/stamp/mcpcall.py social-security-cola-2027-mcp call calculate_claiming_age_benefit '{\"birth_date\":\"1962-03-10\",\"pia\":2400,\"claim_age_years\":62}'",
+  "python3 /Users/mike/mcp-servers/data/s1103/stamp/mcpcall.py social-security-cola-2027-mcp call get_social_security_limits '{\"year\":2027}'",
+  "python3 /Users/mike/mcp-servers/data/s1103/stamp/mcpcall.py social-security-cola-2027-mcp call calculate_earnings_test '{\"annual_earnings\":40000,\"monthly_benefit\":1800}'"
+ ],
+ "initialize": {
+  "http_status": 200,
+  "mcp_session_id": null,
+  "body": {
+   "result": {
+    "protocolVersion": "2025-03-26",
+    "capabilities": {
+     "tools": {
+      "listChanged": true
+     }
+    },
+    "serverInfo": {
+     "name": "social-security-cola-2027-mcp",
+     "version": "1.0.0",
+     "websiteUrl": "https://www.mcpstamp.com"
+    },
+    "instructions": "Social Security numbers that are newer than most model training data: the COLA paid from January 2027 (3.6 percent, announced October 2026), the 2027 wage base ($192,300), 2027 earnings test limits and SSI amounts, all copied from the SSA notices in the Federal Register, plus exact full retirement age and claiming-age math from 20 CFR 404. Use get_social_security_cola for \"what is the COLA\" and get_full_retirement_age for \"when can I retire\"."
+   },
+   "jsonrpc": "2.0",
+   "id": 1
+  }
+ },
+ "tools_list": {
+  "result": {
+   "tools": [
+    {
+     "name": "get_social_security_cola",
+     "title": "Get Social Security COLA",
+     "description": "Social Security cost-of-living adjustment (COLA) for a payable year, from the SSA \"Cost-of-Living Increase and Other Determinations\" notice in the Federal Register. The 2027 COLA is 3.6 percent (effective December 2026, paid January 2027, published 2026-10-26). Also returns the COLA history back to 1996. Without a year it checks the Federal Register API for a newer notice.",
+     "inputSchema": {
+      "type": "object",
+      "properties": {
+       "year": {
+        "type": "integer",
+        "minimum": 1996,
+        "maximum": 2100,
+        "description": "Year the COLA is first paid (January). Default: the latest, 2027."
+       },
+       "history_years": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 40,
+        "description": "How many years of COLA history to include, newest first. Default 10."
+       }
+      },
+      "additionalProperties": false,
+      "$schema": "http://json-schema.org/draft-07/schema#"
+     },
+     "annotations": {
+      "title": "Social Security COLA",
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
+     },
+     "execution": {
+      "taskSupport": "forbidden"
+     }
+    },
+    {
+     "name": "calculate_cola_increase",
+     "title": "Calculate COLA increase",
+     "description": "Apply a year's Social Security COLA to a monthly benefit. Rounds down to the next lower 10 cents and shows the whole-dollar payment, as SSA does. Default year 2027 (3.6 percent).",
+     "inputSchema": {
+      "type": "object",
+      "properties": {
+       "monthly_benefit": {
+        "type": "number",
+        "exclusiveMinimum": 0,
+        "maximum": 100000,
+        "description": "Current monthly benefit in dollars, for example 2008."
+       },
+       "year": {
+        "type": "integer",
+        "minimum": 1996,
+        "maximum": 2100,
+        "description": "Year the COLA is first paid. Default 2027."
+       }
+      },
+      "required": [
+       "monthly_benefit"
+      ],
+      "additionalProperties": false,
+      "$schema": "http://json-schema.org/draft-07/schema#"
+     },
+     "annotations": {
+      "title": "COLA increase",
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+     },
+     "execution": {
+      "taskSupport": "forbidden"
+     }
+    },
+    {
+     "name": "get_full_retirement_age",
+     "title": "Get full retirement age",
+     "description": "Full retirement age for Social Security from a birth date (20 CFR 404.409, including the January 1 rule and the day-before-birthday rule), the exact date and month it is reached, the earliest month benefits can start at 62 and the percent cut, the spouse percent at 62, delayed retirement credits to age 70 and the survivor full retirement age.",
+     "inputSchema": {
+      "type": "object",
+      "properties": {
+       "birth_date": {
+        "type": "string",
+        "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+        "description": "Birth date as YYYY-MM-DD, for example \"1960-07-15\"."
+       }
+      },
+      "required": [
+       "birth_date"
+      ],
+      "additionalProperties": false,
+      "$schema": "http://json-schema.org/draft-07/schema#"
+     },
+     "annotations": {
+      "title": "Full retirement age",
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+     },
+     "execution": {
+      "taskSupport": "forbidden"
+     }
+    },
+    {
+     "name": "calculate_claiming_age_benefit",
+     "title": "Calculate benefit by claiming age",
+     "description": "Monthly Social Security retirement benefit if claimed at a given age between 62 and 70, from the full-retirement-age amount (PIA). Uses 5/9 of 1 percent a month for the first 36 early months, 5/12 of 1 percent after that, and 2/3 of 1 percent a month of delayed credits for people born after 1942, with SSA dime rounding.",
+     "inputSchema": {
+      "type": "object",
+      "properties": {
+       "birth_date": {
+        "type": "string",
+        "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+        "description": "Birth date as YYYY-MM-DD, for example \"1960-07-15\"."
+       },
+       "pia": {
+        "type": "number",
+        "exclusiveMinimum": 0,
+        "maximum": 20000,
+        "description": "Monthly benefit at full retirement age (primary insurance amount) in dollars, from the SSA statement."
+       },
+       "claim_age_years": {
+        "type": "integer",
+        "minimum": 62,
+        "maximum": 70,
+        "description": "Claiming age in whole years, 62 to 70."
+       },
+       "claim_age_months": {
+        "type": "integer",
+        "minimum": 0,
+        "maximum": 11,
+        "description": "Extra months, 0 to 11. Default 0."
+       }
+      },
+      "required": [
+       "birth_date",
+       "pia",
+       "claim_age_years"
+      ],
+      "additionalProperties": false,
+      "$schema": "http://json-schema.org/draft-07/schema#"
+     },
+     "annotations": {
+      "title": "Benefit by claiming age",
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+     },
+     "execution": {
+      "taskSupport": "forbidden"
+     }
+    },
+    {
+     "name": "get_social_security_limits",
+     "title": "Get Social Security limits for a year",
+     "description": "Social Security program amounts for 2023 to 2027 from the Federal Register notices: maximum taxable earnings (2027: $192,300), retirement earnings test limits (2027: $25,560 and $67,920), earnings per work credit, substantial gainful activity, trial work month, maximum federal SSI and PIA bend points.",
+     "inputSchema": {
+      "type": "object",
+      "properties": {
+       "year": {
+        "type": "integer",
+        "minimum": 2023,
+        "maximum": 2027,
+        "description": "Year 2023 to 2027. Default 2027."
+       }
+      },
+      "additionalProperties": false,
+      "$schema": "http://json-schema.org/draft-07/schema#"
+     },
+     "annotations": {
+      "title": "Social Security limits",
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+     },
+     "execution": {
+      "taskSupport": "forbidden"
+     }
+    },
+    {
+     "name": "calculate_earnings_test",
+     "title": "Calculate earnings test withholding",
+     "description": "How much Social Security withholds under the retirement earnings test for a year and annual earnings: $1 for every $2 over the limit, or $1 for every $3 in the year you reach full retirement age.",
+     "inputSchema": {
+      "type": "object",
+      "properties": {
+       "annual_earnings": {
+        "type": "number",
+        "minimum": 0,
+        "description": "Wages plus net self-employment earnings for the year, in dollars. In the year you reach full retirement age, only earnings before that month."
+       },
+       "year": {
+        "type": "integer",
+        "minimum": 2023,
+        "maximum": 2027,
+        "description": "Year 2023 to 2027. Default 2027."
+       },
+       "reaches_full_retirement_age_this_year": {
+        "type": "boolean",
+        "description": "True if you reach full retirement age during this year. Default false."
+       },
+       "monthly_benefit": {
+        "type": "number",
+        "exclusiveMinimum": 0,
+        "description": "Monthly benefit, to estimate how many months are withheld."
+       }
+      },
+      "required": [
+       "annual_earnings"
+      ],
+      "additionalProperties": false,
+      "$schema": "http://json-schema.org/draft-07/schema#"
+     },
+     "annotations": {
+      "title": "Earnings test",
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+     },
+     "execution": {
+      "taskSupport": "forbidden"
+     }
+    }
+   ]
+  },
+  "jsonrpc": "2.0",
+  "id": 2
+ },
+ "tools_call": {
+  "result": {
+   "content": [
+    {
+     "type": "text",
+     "text": "The Social Security cost-of-living adjustment paid from January 2027 is 3.6 percent. It applies to December 2026 benefits and to SSI payments for January 2027. SSA published it in the Federal Register on 2026-10-26 (document 2026-21796).\n\n{\n  \"summary\": \"The Social Security cost-of-living adjustment paid from January 2027 is 3.6 percent. It applies to December 2026 benefits and to SSI payments for January 2027. SSA published it in the Federal Register on 2026-10-26 (document 2026-21796).\",\n  \"payable_year\": 2027,\n  \"cola_percent\": 3.6,\n  \"effective\": \"December 2026 benefits, paid in January 2027\",\n  \"federal_register_doc\": \"2026-21796\",\n  \"published\": \"2026-10-26\",\n  \"source\": \"https://www.federalregister.gov/d/2026-21796\",\n  \"newer_notice\": null,\n  \"live_check\": \"newest Federal Register notice is for 2027\",\n  \"history\": [\n    {\n      \"payable_year\": 2027,\n      \"cola_percent\": 3.6\n    },\n    {\n      \"payable_year\": 2026,\n      \"cola_percent\": 2.8\n    },\n    {\n      \"payable_year\": 2025,\n      \"cola_percent\": 2.5\n    },\n    {\n      \"payable_year\": 2024,\n      \"cola_percent\": 3.2\n    },\n    {\n      \"payable_year\": 2023,\n      \"cola_percent\": 8.7\n    },\n    {\n      \"payable_year\": 2022,\n      \"cola_percent\": 5.9\n    },\n    {\n      \"payable_year\": 2021,\n      \"cola_percent\": 1.3\n    },\n    {\n      \"payable_year\": 2020,\n      \"cola_percent\": 1.6\n    },\n    {\n      \"payable_year\": 2019,\n      \"cola_percent\": 2.8\n    },\n    {\n      \"payable_year\": 2018,\n      \"cola_percent\": 2\n    }\n  ],\n  \"note\": \"SSA bases the COLA on the rise in the average CPI-W from the third quarter of the last COLA year to the third quarter of the current year, rounded to 0.1 percent. People first eligible (age 62, disability or death) in the payable year do not get that year's COLA.\",\n  \"as_of\": \"2026-11-05\",\n  \"more\": \"https://www.mcpstamp.com/servers/?utm_source=mcp&utm_medium=social-security-cola-2027-mcp\"\n}"
+    }
+   ],
+   "structuredContent": {
+    "summary": "The Social Security cost-of-living adjustment paid from January 2027 is 3.6 percent. It applies to December 2026 benefits and to SSI payments for January 2027. SSA published it in the Federal Register on 2026-10-26 (document 2026-21796).",
+    "payable_year": 2027,
+    "cola_percent": 3.6,
+    "effective": "December 2026 benefits, paid in January 2027",
+    "federal_register_doc": "2026-21796",
+    "published": "2026-10-26",
+    "source": "https://www.federalregister.gov/d/2026-21796",
+    "newer_notice": null,
+    "live_check": "newest Federal Register notice is for 2027",
+    "history": [
+     {
+      "payable_year": 2027,
+      "cola_percent": 3.6
+     },
+     {
+      "payable_year": 2026,
+      "cola_percent": 2.8
+     },
+     {
+      "payable_year": 2025,
+      "cola_percent": 2.5
+     },
+     {
+      "payable_year": 2024,
+      "cola_percent": 3.2
+     },
+     {
+      "payable_year": 2023,
+      "cola_percent": 8.7
+     },
+     {
+      "payable_year": 2022,
+      "cola_percent": 5.9
+     },
+     {
+      "payable_year": 2021,
+      "cola_percent": 1.3
+     },
+     {
+      "payable_year": 2020,
+      "cola_percent": 1.6
+     },
+     {
+      "payable_year": 2019,
+      "cola_percent": 2.8
+     },
+     {
+      "payable_year": 2018,
+      "cola_percent": 2
+     }
+    ],
+    "note": "SSA bases the COLA on the rise in the average CPI-W from the third quarter of the last COLA year to the third quarter of the current year, rounded to 0.1 percent. People first eligible (age 62, disability or death) in the payable year do not get that year's COLA.",
+    "as_of": "2026-11-05",
+    "more": "https://www.mcpstamp.com/servers/?utm_source=mcp&utm_medium=social-security-cola-2027-mcp"
+   }
+  },
+  "jsonrpc": "2.0",
+  "id": 2
+ },
+ "tools_calls": {
+  "get_social_security_cola": {
+   "result": {
+    "content": [
+     {
+      "type": "text",
+      "text": "The Social Security cost-of-living adjustment paid from January 2027 is 3.6 percent. It applies to December 2026 benefits and to SSI payments for January 2027. SSA published it in the Federal Register on 2026-10-26 (document 2026-21796).\n\n{\n  \"summary\": \"The Social Security cost-of-living adjustment paid from January 2027 is 3.6 percent. It applies to December 2026 benefits and to SSI payments for January 2027. SSA published it in the Federal Register on 2026-10-26 (document 2026-21796).\",\n  \"payable_year\": 2027,\n  \"cola_percent\": 3.6,\n  \"effective\": \"December 2026 benefits, paid in January 2027\",\n  \"federal_register_doc\": \"2026-21796\",\n  \"published\": \"2026-10-26\",\n  \"source\": \"https://www.federalregister.gov/d/2026-21796\",\n  \"newer_notice\": null,\n  \"live_check\": \"newest Federal Register notice is for 2027\",\n  \"history\": [\n    {\n      \"payable_year\": 2027,\n      \"cola_percent\": 3.6\n    },\n    {\n      \"payable_year\": 2026,\n      \"cola_percent\": 2.8\n    },\n    {\n      \"payable_year\": 2025,\n      \"cola_percent\": 2.5\n    },\n    {\n      \"payable_year\": 2024,\n      \"cola_percent\": 3.2\n    },\n    {\n      \"payable_year\": 2023,\n      \"cola_percent\": 8.7\n    },\n    {\n      \"payable_year\": 2022,\n      \"cola_percent\": 5.9\n    },\n    {\n      \"payable_year\": 2021,\n      \"cola_percent\": 1.3\n    },\n    {\n      \"payable_year\": 2020,\n      \"cola_percent\": 1.6\n    },\n    {\n      \"payable_year\": 2019,\n      \"cola_percent\": 2.8\n    },\n    {\n      \"payable_year\": 2018,\n      \"cola_percent\": 2\n    }\n  ],\n  \"note\": \"SSA bases the COLA on the rise in the average CPI-W from the third quarter of the last COLA year to the third quarter of the current year, rounded to 0.1 percent. People first eligible (age 62, disability or death) in the payable year do not get that year's COLA.\",\n  \"as_of\": \"2026-11-05\",\n  \"more\": \"https://www.mcpstamp.com/servers/?utm_source=mcp&utm_medium=social-security-cola-2027-mcp\"\n}"
+     }
+    ],
+    "structuredContent": {
+     "summary": "The Social Security cost-of-living adjustment paid from January 2027 is 3.6 percent. It applies to December 2026 benefits and to SSI payments for January 2027. SSA published it in the Federal Register on 2026-10-26 (document 2026-21796).",
+     "payable_year": 2027,
+     "cola_percent": 3.6,
+     "effective": "December 2026 benefits, paid in January 2027",
+     "federal_register_doc": "2026-21796",
+     "published": "2026-10-26",
+     "source": "https://www.federalregister.gov/d/2026-21796",
+     "newer_notice": null,
+     "live_check": "newest Federal Register notice is for 2027",
+     "history": [
+      {
+       "payable_year": 2027,
+       "cola_percent": 3.6
+      },
+      {
+       "payable_year": 2026,
+       "cola_percent": 2.8
+      },
+      {
+       "payable_year": 2025,
+       "cola_percent": 2.5
+      },
+      {
+       "payable_year": 2024,
+       "cola_percent": 3.2
+      },
+      {
+       "payable_year": 2023,
+       "cola_percent": 8.7
+      },
+      {
+       "payable_year": 2022,
+       "cola_percent": 5.9
+      },
+      {
+       "payable_year": 2021,
+       "cola_percent": 1.3
+      },
+      {
+       "payable_year": 2020,
+       "cola_percent": 1.6
+      },
+      {
+       "payable_year": 2019,
+       "cola_percent": 2.8
+      },
+      {
+       "payable_year": 2018,
+       "cola_percent": 2
+      }
+     ],
+     "note": "SSA bases the COLA on the rise in the average CPI-W from the third quarter of the last COLA year to the third quarter of the current year, rounded to 0.1 percent. People first eligible (age 62, disability or death) in the payable year do not get that year's COLA.",
+     "as_of": "2026-11-05",
+     "more": "https://www.mcpstamp.com/servers/?utm_source=mcp&utm_medium=social-security-cola-2027-mcp"
+    }
+   },
+   "jsonrpc": "2.0",
+   "id": 2
+  },
+  "calculate_cola_increase": {
+   "result": {
+    "content": [
+     {
+      "type": "text",
+      "text": "A $2,008 monthly benefit with the 3.6 percent COLA paid from January 2027 becomes about $2,080.20 before any Medicare premium, or $2,080 after SSA rounds the payment down to the whole dollar. That is about $72.20 more a month.\n\n{\n  \"summary\": \"A $2,008 monthly benefit with the 3.6 percent COLA paid from January 2027 becomes about $2,080.20 before any Medicare premium, or $2,080 after SSA rounds the payment down to the whole dollar. That is about $72.20 more a month.\",\n  \"payable_year\": 2027,\n  \"cola_percent\": 3.6,\n  \"old_monthly_benefit\": 2008,\n  \"new_monthly_benefit_before_rounding_to_dollar\": 2080.2,\n  \"new_monthly_payment_rounded_down\": 2080,\n  \"monthly_increase\": 72.2,\n  \"annual_increase\": 866.4,\n  \"method\": \"SSA applies the COLA to the primary insurance amount and rounds down to the next lower 10 cents, then deducts any Medicare Part B premium and rounds the payment down to the whole dollar. Starting from a net payment, this result is an estimate within about a dollar.\",\n  \"as_of\": \"2026-11-05\",\n  \"source\": \"https://www.federalregister.gov/d/2026-21796\",\n  \"more\": \"https://www.mcpstamp.com/servers/?utm_source=mcp&utm_medium=social-security-cola-2027-mcp\"\n}"
+     }
+    ],
+    "structuredContent": {
+     "summary": "A $2,008 monthly benefit with the 3.6 percent COLA paid from January 2027 becomes about $2,080.20 before any Medicare premium, or $2,080 after SSA rounds the payment down to the whole dollar. That is about $72.20 more a month.",
+     "payable_year": 2027,
+     "cola_percent": 3.6,
+     "old_monthly_benefit": 2008,
+     "new_monthly_benefit_before_rounding_to_dollar": 2080.2,
+     "new_monthly_payment_rounded_down": 2080,
+     "monthly_increase": 72.2,
+     "annual_increase": 866.4,
+     "method": "SSA applies the COLA to the primary insurance amount and rounds down to the next lower 10 cents, then deducts any Medicare Part B premium and rounds the payment down to the whole dollar. Starting from a net payment, this result is an estimate within about a dollar.",
+     "as_of": "2026-11-05",
+     "source": "https://www.federalregister.gov/d/2026-21796",
+     "more": "https://www.mcpstamp.com/servers/?utm_source=mcp&utm_medium=social-security-cola-2027-mcp"
+    }
+   },
+   "jsonrpc": "2.0",
+   "id": 2
+  },
+  "get_full_retirement_age": {
+   "result": {
+    "content": [
+     {
+      "type": "text",
+      "text": "Born 1960-07-15: full retirement age is 67, reached on 2027-07-14, so unreduced retirement benefits start with 2027-07. The earliest retirement benefit month is 2022-08, 59 months early, which cuts the benefit by 29.583 percent to 70.417 percent of the full amount. Waiting past full retirement age adds 0.667 percent a month, up to 24 percent at age 70 (2030-07).\n\n{\n  \"summary\": \"Born 1960-07-15: full retirement age is 67, reached on 2027-07-14, so unreduced retirement benefits start with 2027-07. The earliest retirement benefit month is 2022-08, 59 months early, which cuts the benefit by 29.583 percent to 70.417 percent of the full amount. Waiting past full retirement age adds 0.667 percent a month, up to 24 percent at age 70 (2030-07).\",\n  \"birth_date\": \"1960-07-15\",\n  \"birth_year_for_rules\": 1960,\n  \"january_1_rule\": null,\n  \"full_retirement_age\": {\n    \"years\": 67,\n    \"months\": 0,\n    \"label\": \"67\"\n  },\n  \"full_retirement_age_date\": \"2027-07-14\",\n  \"full_retirement_age_month\": \"2027-07\",\n  \"age_62_date\": \"2022-07-14\",\n  \"earliest_retirement_benefit_month\": \"2022-08\",\n  \"months_early_at_earliest\": 59,\n  \"reduction_at_earliest_percent\": 29.583,\n  \"benefit_at_earliest_percent_of_pia\": 70.417,\n  \"spouse_benefit_at_earliest_percent_of_worker_pia\": 32.708,\n  \"delayed_credit_per_month_percent\": 0.667,\n  \"delayed_credit_per_year_percent\": 8,\n  \"age_70_month\": \"2030-07\",\n  \"benefit_at_70_percent_of_pia\": 124,\n  \"survivor_full_retirement_age\": {\n    \"years\": 66,\n    \"months\": 8,\n    \"label\": \"66 and 8 months\"\n  },\n  \"rules\": \"You reach an age on the day before your birthday (20 CFR 404.102). Before full retirement age you must be 62 for the whole month (404.311), so people born on the 1st or 2nd can start in their birthday month and others start the month after. Reduction is 5/9 of 1 percent a month for the first 36 months and 5/12 of 1 percent for each further month (404.410).\",\n  \"as_of\": \"2026-11-05\",\n  \"source\": \"https://www.ecfr.gov/current/title-20/chapter-III/part-404/section-404.409\",\n  \"more\": \"https://www.mcpstamp.com/servers/?utm_source=mcp&utm_medium=social-security-cola-2027-mcp\"\n}"
+     }
+    ],
+    "structuredContent": {
+     "summary": "Born 1960-07-15: full retirement age is 67, reached on 2027-07-14, so unreduced retirement benefits start with 2027-07. The earliest retirement benefit month is 2022-08, 59 months early, which cuts the benefit by 29.583 percent to 70.417 percent of the full amount. Waiting past full retirement age adds 0.667 percent a month, up to 24 percent at age 70 (2030-07).",
+     "birth_date": "1960-07-15",
+     "birth_year_for_rules": 1960,
+     "january_1_rule": null,
+     "full_retirement_age": {
+      "years": 67,
+      "months": 0,
+      "label": "67"
+     },
+     "full_retirement_age_date": "2027-07-14",
+     "full_retirement_age_month": "2027-07",
+     "age_62_date": "2022-07-14",
+     "earliest_retirement_benefit_month": "2022-08",
+     "months_early_at_earliest": 59,
+     "reduction_at_earliest_percent": 29.583,
+     "benefit_at_earliest_percent_of_pia": 70.417,
+     "spouse_benefit_at_earliest_percent_of_worker_pia": 32.708,
+     "delayed_credit_per_month_percent": 0.667,
+     "delayed_credit_per_year_percent": 8,
+     "age_70_month": "2030-07",
+     "benefit_at_70_percent_of_pia": 124,
+     "survivor_full_retirement_age": {
+      "years": 66,
+      "months": 8,
+      "label": "66 and 8 months"
+     },
+     "rules": "You reach an age on the day before your birthday (20 CFR 404.102). Before full retirement age you must be 62 for the whole month (404.311), so people born on the 1st or 2nd can start in their birthday month and others start the month after. Reduction is 5/9 of 1 percent a month for the first 36 months and 5/12 of 1 percent for each further month (404.410).",
+     "as_of": "2026-11-05",
+     "source": "https://www.ecfr.gov/current/title-20/chapter-III/part-404/section-404.409",
+     "more": "https://www.mcpstamp.com/servers/?utm_source=mcp&utm_medium=social-security-cola-2027-mcp"
+    }
+   },
+   "jsonrpc": "2.0",
+   "id": 2
+  },
+  "calculate_claiming_age_benefit": {
+   "result": {
+    "content": [
+     {
+      "type": "text",
+      "text": "Claiming at 62 (first month 2024-04) is 59 months before full retirement age (67). The $2,400 benefit is cut by 29.583 percent, $710, to $1,690 a month for life, before COLAs.\n\n{\n  \"summary\": \"Claiming at 62 (first month 2024-04) is 59 months before full retirement age (67). The $2,400 benefit is cut by 29.583 percent, $710, to $1,690 a month for life, before COLAs.\",\n  \"birth_date\": \"1962-03-10\",\n  \"pia\": 2400,\n  \"full_retirement_age\": \"67\",\n  \"full_retirement_age_month\": \"2029-03\",\n  \"claim_month\": \"2024-04\",\n  \"timing\": \"early\",\n  \"months_from_full_retirement_age\": -59,\n  \"change_percent\": -29.583,\n  \"monthly_change\": -710,\n  \"monthly_benefit\": 1690,\n  \"rounding\": \"Reduction rounded up to the next 10 cents and delayed-credit increase rounded down to the next 10 cents, as in 20 CFR 404.410 and 404.313. SSA then deducts any Medicare premium and rounds the payment down to the whole dollar.\",\n  \"caveats\": \"Delayed credits earned before the year you turn 70 are added in January of the next year. The earnings test can withhold benefits before full retirement age. Ages are in whole months.\",\n  \"as_of\": \"2026-11-05\",\n  \"source\": \"https://www.ecfr.gov/current/title-20/chapter-III/part-404/section-404.410\",\n  \"more\": \"https://www.mcpstamp.com/servers/?utm_source=mcp&utm_medium=social-security-cola-2027-mcp\"\n}"
+     }
+    ],
+    "structuredContent": {
+     "summary": "Claiming at 62 (first month 2024-04) is 59 months before full retirement age (67). The $2,400 benefit is cut by 29.583 percent, $710, to $1,690 a month for life, before COLAs.",
+     "birth_date": "1962-03-10",
+     "pia": 2400,
+     "full_retirement_age": "67",
+     "full_retirement_age_month": "2029-03",
+     "claim_month": "2024-04",
+     "timing": "early",
+     "months_from_full_retirement_age": -59,
+     "change_percent": -29.583,
+     "monthly_change": -710,
+     "monthly_benefit": 1690,
+     "rounding": "Reduction rounded up to the next 10 cents and delayed-credit increase rounded down to the next 10 cents, as in 20 CFR 404.410 and 404.313. SSA then deducts any Medicare premium and rounds the payment down to the whole dollar.",
+     "caveats": "Delayed credits earned before the year you turn 70 are added in January of the next year. The earnings test can withhold benefits before full retirement age. Ages are in whole months.",
+     "as_of": "2026-11-05",
+     "source": "https://www.ecfr.gov/current/title-20/chapter-III/part-404/section-404.410",
+     "more": "https://www.mcpstamp.com/servers/?utm_source=mcp&utm_medium=social-security-cola-2027-mcp"
+    }
+   },
+   "jsonrpc": "2.0",
+   "id": 2
+  },
+  "get_social_security_limits": {
+   "result": {
+    "content": [
+     {
+      "type": "text",
+      "text": "Social Security amounts for 2027: maximum taxable earnings $192,300; earnings test limit $25,560 a year ($2,130 a month) under full retirement age and $67,920 in the year you reach it; one work credit per $1,970 of earnings; SGA $1,770 a month ($2,950 if blind); maximum federal SSI $1,029 individual and $1,544 couple; COLA 3.6 percent.\n\n{\n  \"summary\": \"Social Security amounts for 2027: maximum taxable earnings $192,300; earnings test limit $25,560 a year ($2,130 a month) under full retirement age and $67,920 in the year you reach it; one work credit per $1,970 of earnings; SGA $1,770 a month ($2,950 if blind); maximum federal SSI $1,029 individual and $1,544 couple; COLA 3.6 percent.\",\n  \"year\": 2027,\n  \"cola_percent\": 3.6,\n  \"maximum_taxable_earnings\": 192300,\n  \"earnings_test\": {\n    \"under_full_retirement_age\": {\n      \"annual\": 25560,\n      \"monthly\": 2130,\n      \"withholding\": \"$1 for every $2 above the limit\"\n    },\n    \"year_you_reach_full_retirement_age\": {\n      \"annual\": 67920,\n      \"monthly\": 5660,\n      \"withholding\": \"$1 for every $3 above the limit, counting only earnings before the month you reach full retirement age\"\n    }\n  },\n  \"quarter_of_coverage\": 1970,\n  \"max_credits_earnings\": 7880,\n  \"substantial_gainful_activity_monthly\": {\n    \"non_blind\": 1770,\n    \"blind\": 2950\n  },\n  \"trial_work_period_month\": 1270,\n  \"ssi_federal_monthly_max\": {\n    \"individual\": 1029,\n    \"couple\": 1544\n  },\n  \"pia_bend_points\": [\n    1340,\n    8077\n  ],\n  \"pia_formula\": \"90% of the first $1,340 of AIME, 32% of AIME from $1,340 to $8,077, 15% above $8,077 (for people first eligible in 2027)\",\n  \"national_average_wage_index\": {\n    \"year\": 2025,\n    \"value\": 72800.33\n  },\n  \"as_of\": \"2026-11-05\",\n  \"source\": \"https://www.federalregister.gov/d/2026-21796\",\n  \"more\": \"https://www.mcpstamp.com/servers/?utm_source=mcp&utm_medium=social-security-cola-2027-mcp\"\n}"
+     }
+    ],
+    "structuredContent": {
+     "summary": "Social Security amounts for 2027: maximum taxable earnings $192,300; earnings test limit $25,560 a year ($2,130 a month) under full retirement age and $67,920 in the year you reach it; one work credit per $1,970 of earnings; SGA $1,770 a month ($2,950 if blind); maximum federal SSI $1,029 individual and $1,544 couple; COLA 3.6 percent.",
+     "year": 2027,
+     "cola_percent": 3.6,
+     "maximum_taxable_earnings": 192300,
+     "earnings_test": {
+      "under_full_retirement_age": {
+       "annual": 25560,
+       "monthly": 2130,
+       "withholding": "$1 for every $2 above the limit"
+      },
+      "year_you_reach_full_retirement_age": {
+       "annual": 67920,
+       "monthly": 5660,
+       "withholding": "$1 for every $3 above the limit, counting only earnings before the month you reach full retirement age"
+      }
+     },
+     "quarter_of_coverage": 1970,
+     "max_credits_earnings": 7880,
+     "substantial_gainful_activity_monthly": {
+      "non_blind": 1770,
+      "blind": 2950
+     },
+     "trial_work_period_month": 1270,
+     "ssi_federal_monthly_max": {
+      "individual": 1029,
+      "couple": 1544
+     },
+     "pia_bend_points": [
+      1340,
+      8077
+     ],
+     "pia_formula": "90% of the first $1,340 of AIME, 32% of AIME from $1,340 to $8,077, 15% above $8,077 (for people first eligible in 2027)",
+     "national_average_wage_index": {
+      "year": 2025,
+      "value": 72800.33
+     },
+     "as_of": "2026-11-05",
+     "source": "https://www.federalregister.gov/d/2026-21796",
+     "more": "https://www.mcpstamp.com/servers/?utm_source=mcp&utm_medium=social-security-cola-2027-mcp"
+    }
+   },
+   "jsonrpc": "2.0",
+   "id": 2
+  },
+  "calculate_earnings_test": {
+   "result": {
+    "content": [
+     {
+      "type": "text",
+      "text": "$40,000 is $14,440 over the 2027 limit of $25,560. SSA withholds $1 for every $2 over, so $7,220 of benefits for 2027, about 5 months of a $1,800 benefit. Withheld benefits are not lost; SSA raises the benefit at full retirement age to credit the months withheld.\n\n{\n  \"summary\": \"$40,000 is $14,440 over the 2027 limit of $25,560. SSA withholds $1 for every $2 over, so $7,220 of benefits for 2027, about 5 months of a $1,800 benefit. Withheld benefits are not lost; SSA raises the benefit at full retirement age to credit the months withheld.\",\n  \"year\": 2027,\n  \"annual_earnings\": 40000,\n  \"limit\": 25560,\n  \"rule\": \"under full retirement age all year: $1 withheld for every $2 above the limit\",\n  \"amount_over\": 14440,\n  \"benefits_withheld\": 7220,\n  \"months_fully_withheld\": 5,\n  \"note\": \"The test stops applying from the month you reach full retirement age. In the first year of retirement a monthly limit can also apply to months you do not work.\",\n  \"as_of\": \"2026-11-05\",\n  \"source\": \"https://www.federalregister.gov/d/2026-21796\",\n  \"more\": \"https://www.mcpstamp.com/servers/?utm_source=mcp&utm_medium=social-security-cola-2027-mcp\"\n}"
+     }
+    ],
+    "structuredContent": {
+     "summary": "$40,000 is $14,440 over the 2027 limit of $25,560. SSA withholds $1 for every $2 over, so $7,220 of benefits for 2027, about 5 months of a $1,800 benefit. Withheld benefits are not lost; SSA raises the benefit at full retirement age to credit the months withheld.",
+     "year": 2027,
+     "annual_earnings": 40000,
+     "limit": 25560,
+     "rule": "under full retirement age all year: $1 withheld for every $2 above the limit",
+     "amount_over": 14440,
+     "benefits_withheld": 7220,
+     "months_fully_withheld": 5,
+     "note": "The test stops applying from the month you reach full retirement age. In the first year of retirement a monthly limit can also apply to months you do not work.",
+     "as_of": "2026-11-05",
+     "source": "https://www.federalregister.gov/d/2026-21796",
+     "more": "https://www.mcpstamp.com/servers/?utm_source=mcp&utm_medium=social-security-cola-2027-mcp"
+    }
+   },
+   "jsonrpc": "2.0",
+   "id": 2
+  }
+ },
+ "calls_ok": "6/6"
+}

@@ -1,0 +1,606 @@
+{
+ "url": "https://mortgage-rates-today-mcp.lipmichal.workers.dev/mcp",
+ "at": "2026-11-05T13:57:02.661787+00:00",
+ "commands": [
+  "POST initialize to https://mortgage-rates-today-mcp.lipmichal.workers.dev/mcp",
+  "python3 /Users/mike/mcp-servers/data/s1103/stamp/mcpcall.py mortgage-rates-today-mcp list",
+  "python3 /Users/mike/mcp-servers/data/s1103/stamp/mcpcall.py mortgage-rates-today-mcp call get_mortgage_rates_today '{}'",
+  "python3 /Users/mike/mcp-servers/data/s1103/stamp/mcpcall.py mortgage-rates-today-mcp call get_mortgage_rate_on_date '{\"date\":\"2021-01-07\"}'",
+  "python3 /Users/mike/mcp-servers/data/s1103/stamp/mcpcall.py mortgage-rates-today-mcp call get_mortgage_rate_history '{\"start_date\":\"2024-01-01\",\"frequency\":\"monthly\"}'",
+  "python3 /Users/mike/mcp-servers/data/s1103/stamp/mcpcall.py mortgage-rates-today-mcp call calculate_mortgage_payment '{\"loan_amount\":400000}'"
+ ],
+ "initialize": {
+  "http_status": 200,
+  "mcp_session_id": null,
+  "body": {
+   "result": {
+    "protocolVersion": "2025-03-26",
+    "capabilities": {
+     "tools": {
+      "listChanged": true
+     }
+    },
+    "serverInfo": {
+     "name": "mortgage-rates-today-mcp",
+     "version": "1.0.0",
+     "websiteUrl": "https://www.mcpstamp.com"
+    },
+    "instructions": "US mortgage rates read at call time from the Freddie Mac Primary Mortgage Market Survey (PMMS), the weekly national benchmark published Thursdays at noon ET. A model cannot know this week's rate. Use get_mortgage_rates_today for \"what are mortgage rates today\" and cite Freddie Mac."
+   },
+   "jsonrpc": "2.0",
+   "id": 1
+  }
+ },
+ "tools_list": {
+  "result": {
+   "tools": [
+    {
+     "name": "get_mortgage_rates_today",
+     "title": "Get mortgage rates today",
+     "description": "Latest Freddie Mac PMMS weekly average 30-year and 15-year fixed mortgage rates, read at call time from freddiemac.com: rate, week-over-week change, rate a year ago, 52-week high, low and average, the week date and the next expected release. National averages for well-qualified conventional purchase borrowers.",
+     "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "type": "object",
+      "properties": {}
+     },
+     "annotations": {
+      "title": "Mortgage rates today",
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
+     },
+     "execution": {
+      "taskSupport": "forbidden"
+     }
+    },
+    {
+     "name": "get_mortgage_rate_on_date",
+     "title": "Get mortgage rate on a date",
+     "description": "The Freddie Mac PMMS weekly average 30-year and 15-year fixed rates (plus 5/1 ARM and points where published) in force on a date, from 1971-04-02 to today.",
+     "inputSchema": {
+      "type": "object",
+      "properties": {
+       "date": {
+        "type": "string",
+        "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+        "description": "Date, for example \"2021-01-07\" as YYYY-MM-DD."
+       }
+      },
+      "required": [
+       "date"
+      ],
+      "additionalProperties": false,
+      "$schema": "http://json-schema.org/draft-07/schema#"
+     },
+     "annotations": {
+      "title": "Mortgage rate on a date",
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
+     },
+     "execution": {
+      "taskSupport": "forbidden"
+     }
+    },
+    {
+     "name": "get_mortgage_rate_history",
+     "title": "Get mortgage rate history",
+     "description": "Freddie Mac PMMS 30-year or 15-year fixed averages between two dates as weekly rows or monthly or annual averages, with the high, low and change over the range. Default is the last 52 weeks of the 30-year rate.",
+     "inputSchema": {
+      "type": "object",
+      "properties": {
+       "start_date": {
+        "type": "string",
+        "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+        "description": "Start date as YYYY-MM-DD."
+       },
+       "end_date": {
+        "type": "string",
+        "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+        "description": "End date, default the latest week as YYYY-MM-DD."
+       },
+       "term": {
+        "type": "string",
+        "enum": [
+         "30",
+         "15"
+        ],
+        "description": "Loan term in years, \"30\" (default) or \"15\"."
+       },
+       "frequency": {
+        "type": "string",
+        "enum": [
+         "weekly",
+         "monthly",
+         "annual"
+        ],
+        "description": "Row size. Default weekly up to 3 years, monthly beyond."
+       }
+      },
+      "additionalProperties": false,
+      "$schema": "http://json-schema.org/draft-07/schema#"
+     },
+     "annotations": {
+      "title": "Mortgage rate history",
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
+     },
+     "execution": {
+      "taskSupport": "forbidden"
+     }
+    },
+    {
+     "name": "calculate_mortgage_payment",
+     "title": "Calculate mortgage payment",
+     "description": "Monthly principal and interest and total interest for a fixed-rate loan. Without a rate it uses this week's Freddie Mac average for 30-year or 15-year terms, and compares it with the average a year earlier. Taxes, insurance and PMI are not included.",
+     "inputSchema": {
+      "type": "object",
+      "properties": {
+       "loan_amount": {
+        "type": "number",
+        "minimum": 1000,
+        "maximum": 100000000,
+        "description": "Loan amount in dollars, for example 400000."
+       },
+       "rate": {
+        "type": "number",
+        "exclusiveMinimum": 0,
+        "exclusiveMaximum": 30,
+        "description": "Annual rate in percent. Default: the latest Freddie Mac average for the term."
+       },
+       "term_years": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 40,
+        "description": "Term in years. Default 30."
+       },
+       "compare_rate": {
+        "type": "number",
+        "exclusiveMinimum": 0,
+        "exclusiveMaximum": 30,
+        "description": "A second rate to compare. Default: the Freddie Mac average a year earlier."
+       }
+      },
+      "required": [
+       "loan_amount"
+      ],
+      "additionalProperties": false,
+      "$schema": "http://json-schema.org/draft-07/schema#"
+     },
+     "annotations": {
+      "title": "Mortgage payment",
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
+     },
+     "execution": {
+      "taskSupport": "forbidden"
+     }
+    }
+   ]
+  },
+  "jsonrpc": "2.0",
+  "id": 2
+ },
+ "tools_call": {
+  "result": {
+   "content": [
+    {
+     "type": "text",
+     "text": "The Freddie Mac average 30-year fixed mortgage rate is 7.24% for the week of 2026-10-29 (down 0.08 points from the week before, 6.17% a year ago). The 15-year fixed average is 6.60%. These are national averages for well-qualified borrowers, released on Thursdays; the next release is due 2026-11-05. Source: Freddie Mac Primary Mortgage Market Survey (PMMS), U.S. weekly averages.\n\n{\n  \"summary\": \"The Freddie Mac average 30-year fixed mortgage rate is 7.24% for the week of 2026-10-29 (down 0.08 points from the week before, 6.17% a year ago). The 15-year fixed average is 6.60%. These are national averages for well-qualified borrowers, released on Thursdays; the next release is due 2026-11-05. Source: Freddie Mac Primary Mortgage Market Survey (PMMS), U.S. weekly averages.\",\n  \"week_of\": \"2026-10-29\",\n  \"data_age_days\": 7,\n  \"thirty_year_fixed\": {\n    \"rate\": 7.24,\n    \"week_change\": -0.08,\n    \"year_ago\": 6.17,\n    \"year_change\": 1.07,\n    \"high_52_week\": 7.4,\n    \"low_52_week\": 5.98,\n    \"average_52_week\": 6.46\n  },\n  \"fifteen_year_fixed\": {\n    \"rate\": 6.6,\n    \"week_change\": -0.08,\n    \"year_ago\": 5.41,\n    \"year_change\": 1.19,\n    \"high_52_week\": 6.73,\n    \"low_52_week\": 5.35,\n    \"average_52_week\": 5.8\n  },\n  \"year_ago_week\": \"2025-10-30\",\n  \"next_release_expected\": \"2026-11-05\",\n  \"note\": \"PMMS is a national average of rates on purchase applications submitted to Freddie Mac: conventional, conforming, good to excellent credit, 20 percent down, owner-occupied single-family homes. A quoted rate depends on credit, down payment, points, loan type and lender. In November 2022 Freddie Mac stopped publishing the 5/1 ARM and fees and points. When a US holiday falls on a Thursday, PMMS publishes on the Wednesday.\",\n  \"as_of\": \"2026-11-05T13:56:47.267Z\",\n  \"source\": \"https://www.freddiemac.com/pmms\",\n  \"data_file\": \"https://www.freddiemac.com/pmms/docs/PMMS_history.csv\",\n  \"more\": \"https://www.mcpstamp.com/servers/?utm_source=mcp&utm_medium=mortgage-rates-today-mcp\"\n}"
+    }
+   ],
+   "structuredContent": {
+    "summary": "The Freddie Mac average 30-year fixed mortgage rate is 7.24% for the week of 2026-10-29 (down 0.08 points from the week before, 6.17% a year ago). The 15-year fixed average is 6.60%. These are national averages for well-qualified borrowers, released on Thursdays; the next release is due 2026-11-05. Source: Freddie Mac Primary Mortgage Market Survey (PMMS), U.S. weekly averages.",
+    "week_of": "2026-10-29",
+    "data_age_days": 7,
+    "thirty_year_fixed": {
+     "rate": 7.24,
+     "week_change": -0.08,
+     "year_ago": 6.17,
+     "year_change": 1.07,
+     "high_52_week": 7.4,
+     "low_52_week": 5.98,
+     "average_52_week": 6.46
+    },
+    "fifteen_year_fixed": {
+     "rate": 6.6,
+     "week_change": -0.08,
+     "year_ago": 5.41,
+     "year_change": 1.19,
+     "high_52_week": 6.73,
+     "low_52_week": 5.35,
+     "average_52_week": 5.8
+    },
+    "year_ago_week": "2025-10-30",
+    "next_release_expected": "2026-11-05",
+    "note": "PMMS is a national average of rates on purchase applications submitted to Freddie Mac: conventional, conforming, good to excellent credit, 20 percent down, owner-occupied single-family homes. A quoted rate depends on credit, down payment, points, loan type and lender. In November 2022 Freddie Mac stopped publishing the 5/1 ARM and fees and points. When a US holiday falls on a Thursday, PMMS publishes on the Wednesday.",
+    "as_of": "2026-11-05T13:56:47.267Z",
+    "source": "https://www.freddiemac.com/pmms",
+    "data_file": "https://www.freddiemac.com/pmms/docs/PMMS_history.csv",
+    "more": "https://www.mcpstamp.com/servers/?utm_source=mcp&utm_medium=mortgage-rates-today-mcp"
+   }
+  },
+  "jsonrpc": "2.0",
+  "id": 2
+ },
+ "tools_calls": {
+  "get_mortgage_rates_today": {
+   "result": {
+    "content": [
+     {
+      "type": "text",
+      "text": "The Freddie Mac average 30-year fixed mortgage rate is 7.24% for the week of 2026-10-29 (down 0.08 points from the week before, 6.17% a year ago). The 15-year fixed average is 6.60%. These are national averages for well-qualified borrowers, released on Thursdays; the next release is due 2026-11-05. Source: Freddie Mac Primary Mortgage Market Survey (PMMS), U.S. weekly averages.\n\n{\n  \"summary\": \"The Freddie Mac average 30-year fixed mortgage rate is 7.24% for the week of 2026-10-29 (down 0.08 points from the week before, 6.17% a year ago). The 15-year fixed average is 6.60%. These are national averages for well-qualified borrowers, released on Thursdays; the next release is due 2026-11-05. Source: Freddie Mac Primary Mortgage Market Survey (PMMS), U.S. weekly averages.\",\n  \"week_of\": \"2026-10-29\",\n  \"data_age_days\": 7,\n  \"thirty_year_fixed\": {\n    \"rate\": 7.24,\n    \"week_change\": -0.08,\n    \"year_ago\": 6.17,\n    \"year_change\": 1.07,\n    \"high_52_week\": 7.4,\n    \"low_52_week\": 5.98,\n    \"average_52_week\": 6.46\n  },\n  \"fifteen_year_fixed\": {\n    \"rate\": 6.6,\n    \"week_change\": -0.08,\n    \"year_ago\": 5.41,\n    \"year_change\": 1.19,\n    \"high_52_week\": 6.73,\n    \"low_52_week\": 5.35,\n    \"average_52_week\": 5.8\n  },\n  \"year_ago_week\": \"2025-10-30\",\n  \"next_release_expected\": \"2026-11-05\",\n  \"note\": \"PMMS is a national average of rates on purchase applications submitted to Freddie Mac: conventional, conforming, good to excellent credit, 20 percent down, owner-occupied single-family homes. A quoted rate depends on credit, down payment, points, loan type and lender. In November 2022 Freddie Mac stopped publishing the 5/1 ARM and fees and points. When a US holiday falls on a Thursday, PMMS publishes on the Wednesday.\",\n  \"as_of\": \"2026-11-05T13:56:47.267Z\",\n  \"source\": \"https://www.freddiemac.com/pmms\",\n  \"data_file\": \"https://www.freddiemac.com/pmms/docs/PMMS_history.csv\",\n  \"more\": \"https://www.mcpstamp.com/servers/?utm_source=mcp&utm_medium=mortgage-rates-today-mcp\"\n}"
+     }
+    ],
+    "structuredContent": {
+     "summary": "The Freddie Mac average 30-year fixed mortgage rate is 7.24% for the week of 2026-10-29 (down 0.08 points from the week before, 6.17% a year ago). The 15-year fixed average is 6.60%. These are national averages for well-qualified borrowers, released on Thursdays; the next release is due 2026-11-05. Source: Freddie Mac Primary Mortgage Market Survey (PMMS), U.S. weekly averages.",
+     "week_of": "2026-10-29",
+     "data_age_days": 7,
+     "thirty_year_fixed": {
+      "rate": 7.24,
+      "week_change": -0.08,
+      "year_ago": 6.17,
+      "year_change": 1.07,
+      "high_52_week": 7.4,
+      "low_52_week": 5.98,
+      "average_52_week": 6.46
+     },
+     "fifteen_year_fixed": {
+      "rate": 6.6,
+      "week_change": -0.08,
+      "year_ago": 5.41,
+      "year_change": 1.19,
+      "high_52_week": 6.73,
+      "low_52_week": 5.35,
+      "average_52_week": 5.8
+     },
+     "year_ago_week": "2025-10-30",
+     "next_release_expected": "2026-11-05",
+     "note": "PMMS is a national average of rates on purchase applications submitted to Freddie Mac: conventional, conforming, good to excellent credit, 20 percent down, owner-occupied single-family homes. A quoted rate depends on credit, down payment, points, loan type and lender. In November 2022 Freddie Mac stopped publishing the 5/1 ARM and fees and points. When a US holiday falls on a Thursday, PMMS publishes on the Wednesday.",
+     "as_of": "2026-11-05T13:56:47.267Z",
+     "source": "https://www.freddiemac.com/pmms",
+     "data_file": "https://www.freddiemac.com/pmms/docs/PMMS_history.csv",
+     "more": "https://www.mcpstamp.com/servers/?utm_source=mcp&utm_medium=mortgage-rates-today-mcp"
+    }
+   },
+   "jsonrpc": "2.0",
+   "id": 2
+  },
+  "get_mortgage_rate_on_date": {
+   "result": {
+    "content": [
+     {
+      "type": "text",
+      "text": "On 2021-01-07 the latest Freddie Mac weekly average (week of 2021-01-07) was 2.65% for a 30-year fixed mortgage and 2.16% for a 15-year fixed, with the 5/1 ARM at 2.75%. Average points on the 30-year were 0.7. Source: Freddie Mac Primary Mortgage Market Survey (PMMS), U.S. weekly averages.\n\n{\n  \"summary\": \"On 2021-01-07 the latest Freddie Mac weekly average (week of 2021-01-07) was 2.65% for a 30-year fixed mortgage and 2.16% for a 15-year fixed, with the 5/1 ARM at 2.75%. Average points on the 30-year were 0.7. Source: Freddie Mac Primary Mortgage Market Survey (PMMS), U.S. weekly averages.\",\n  \"date\": \"2021-01-07\",\n  \"week_of\": \"2021-01-07\",\n  \"days_after_release\": 0,\n  \"thirty_year_fixed\": 2.65,\n  \"thirty_year_points\": 0.7,\n  \"fifteen_year_fixed\": 2.16,\n  \"fifteen_year_points\": 0.6,\n  \"five_one_arm\": 2.75,\n  \"note\": null,\n  \"as_of\": \"2026-11-05T13:56:54.428Z\",\n  \"source\": \"https://www.freddiemac.com/pmms\",\n  \"data_file\": \"https://www.freddiemac.com/pmms/docs/PMMS_history.csv\",\n  \"more\": \"https://www.mcpstamp.com/servers/?utm_source=mcp&utm_medium=mortgage-rates-today-mcp\"\n}"
+     }
+    ],
+    "structuredContent": {
+     "summary": "On 2021-01-07 the latest Freddie Mac weekly average (week of 2021-01-07) was 2.65% for a 30-year fixed mortgage and 2.16% for a 15-year fixed, with the 5/1 ARM at 2.75%. Average points on the 30-year were 0.7. Source: Freddie Mac Primary Mortgage Market Survey (PMMS), U.S. weekly averages.",
+     "date": "2021-01-07",
+     "week_of": "2021-01-07",
+     "days_after_release": 0,
+     "thirty_year_fixed": 2.65,
+     "thirty_year_points": 0.7,
+     "fifteen_year_fixed": 2.16,
+     "fifteen_year_points": 0.6,
+     "five_one_arm": 2.75,
+     "note": null,
+     "as_of": "2026-11-05T13:56:54.428Z",
+     "source": "https://www.freddiemac.com/pmms",
+     "data_file": "https://www.freddiemac.com/pmms/docs/PMMS_history.csv",
+     "more": "https://www.mcpstamp.com/servers/?utm_source=mcp&utm_medium=mortgage-rates-today-mcp"
+    }
+   },
+   "jsonrpc": "2.0",
+   "id": 2
+  },
+  "get_mortgage_rate_history": {
+   "result": {
+    "content": [
+     {
+      "type": "text",
+      "text": "Freddie Mac 30-year fixed average from 2024-01-04 to 2026-10-29: 6.62% to 7.24% (up 0.62 points). High 7.4% (week of 2026-10-08), low 5.98% (week of 2026-02-26), average 6.62% over 148 weeks. Source: Freddie Mac Primary Mortgage Market Survey (PMMS), U.S. weekly averages.\n\n{\n  \"summary\": \"Freddie Mac 30-year fixed average from 2024-01-04 to 2026-10-29: 6.62% to 7.24% (up 0.62 points). High 7.4% (week of 2026-10-08), low 5.98% (week of 2026-02-26), average 6.62% over 148 weeks. Source: Freddie Mac Primary Mortgage Market Survey (PMMS), U.S. weekly averages.\",\n  \"term_years\": 30,\n  \"frequency\": \"monthly\",\n  \"start\": \"2024-01-04\",\n  \"end\": \"2026-10-29\",\n  \"weeks\": 148,\n  \"high\": {\n    \"rate\": 7.4,\n    \"week_of\": \"2026-10-08\"\n  },\n  \"low\": {\n    \"rate\": 5.98,\n    \"week_of\": \"2026-02-26\"\n  },\n  \"series\": [\n    {\n      \"period\": \"2024-01\",\n      \"average\": 6.64,\n      \"high\": 6.69,\n      \"low\": 6.6,\n      \"weeks\": 4\n    },\n    {\n      \"period\": \"2024-02\",\n      \"average\": 6.78,\n      \"high\": 6.94,\n      \"low\": 6.63,\n      \"weeks\": 5\n    },\n    {\n      \"period\": \"2024-03\",\n      \"average\": 6.82,\n      \"high\": 6.88,\n      \"low\": 6.74,\n      \"weeks\": 4\n    },\n    {\n      \"period\": \"2024-04\",\n      \"average\": 6.99,\n      \"high\": 7.17,\n      \"low\": 6.82,\n      \"weeks\": 4\n    },\n    {\n      \"period\": \"2024-05\",\n      \"average\": 7.06,\n      \"high\": 7.22,\n      \"low\": 6.94,\n      \"weeks\": 5\n    },\n    {\n      \"period\": \"2024-06\",\n      \"average\": 6.92,\n      \"high\": 6.99,\n      \"low\": 6.86,\n      \"weeks\": 4\n    },\n    {\n      \"period\": \"2024-07\",\n      \"average\": 6.85,\n      \"high\": 6.95,\n      \"low\": 6.77,\n      \"weeks\": 4\n    },\n    {\n      \"period\": \"2024-08\",\n      \"average\": 6.5,\n      \"high\": 6.73,\n      \"low\": 6.35,\n      \"weeks\": 5\n    },\n    {\n      \"period\": \"2024-09\",\n      \"average\": 6.18,\n      \"high\": 6.35,\n      \"low\": 6.08,\n      \"weeks\": 4\n    },\n    {\n      \"period\": \"2024-10\",\n      \"average\": 6.43,\n      \"high\": 6.72,\n      \"low\": 6.12,\n      \"weeks\": 5\n    },\n    {\n      \"period\": \"2024-11\",\n      \"average\": 6.81,\n      \"high\": 6.84,\n      \"low\": 6.78,\n      \"weeks\": 4\n    },\n    {\n      \"period\": \"2024-12\",\n      \"average\": 6.72,\n      \"high\": 6.85,\n      \"low\": 6.6,\n      \"weeks\": 4\n    },\n    {\n      \"period\": \"2025-01\",\n      \"average\": 6.96,\n      \"high\": 7.04,\n      \"low\": 6.91,\n      \"weeks\": 5\n    },\n    {\n      \"period\": \"2025-02\",\n      \"average\": 6.84,\n      \"high\": 6.89,\n      \"low\": 6.76,\n      \"weeks\": 4\n    },\n    {\n      \"period\": \"2025-03\",\n      \"average\": 6.65,\n      \"high\": 6.67,\n      \"low\": 6.63,\n      \"weeks\": 4\n    },\n    {\n      \"period\": \"2025-04\",\n      \"average\": 6.73,\n      \"high\": 6.83,\n      \"low\": 6.62,\n      \"weeks\": 4\n    },\n    {\n      \"period\": \"2025-05\",\n      \"average\": 6.82,\n      \"high\": 6.89,\n      \"low\": 6.76,\n      \"weeks\": 5\n    },\n    {\n      \"period\": \"2025-06\",\n      \"average\": 6.82,\n      \"high\": 6.85,\n      \"low\": 6.77,\n      \"weeks\": 4\n    },\n    {\n      \"period\": \"2025-07\",\n      \"average\": 6.72,\n      \"high\": 6.75,\n      \"low\": 6.67,\n      \"weeks\": 5\n    },\n    {\n      \"period\": \"2025-08\",\n      \"average\": 6.59,\n      \"high\": 6.63,\n      \"low\": 6.56,\n      \"weeks\": 4\n    },\n    {\n      \"period\": \"2025-09\",\n      \"average\": 6.35,\n      \"high\": 6.5,\n      \"low\": 6.26,\n      \"weeks\": 4\n    },\n    {\n      \"period\": \"2025-10\",\n      \"average\": 6.25,\n      \"high\": 6.34,\n      \"low\": 6.17,\n      \"weeks\": 5\n    },\n    {\n      \"period\": \"2025-11\",\n      \"average\": 6.24,\n      \"high\": 6.26,\n      \"low\": 6.22,\n      \"weeks\": 4\n    },\n    {\n      \"period\": \"2025-12\",\n      \"average\": 6.19,\n      \"high\": 6.22,\n      \"low\": 6.15,\n      \"weeks\": 5\n    },\n    {\n      \"period\": \"2026-01\",\n      \"average\": 6.1,\n      \"high\": 6.16,\n      \"low\": 6.06,\n      \"weeks\": 4\n    },\n    {\n      \"period\": \"2026-02\",\n      \"average\": 6.05,\n      \"high\": 6.11,\n      \"low\": 5.98,\n      \"weeks\": 4\n    },\n    {\n      \"period\": \"2026-03\",\n      \"average\": 6.18,\n      \"high\": 6.38,\n      \"low\": 6,\n      \"weeks\": 4\n    },\n    {\n      \"period\": \"2026-04\",\n      \"average\": 6.33,\n      \"high\": 6.46,\n      \"low\": 6.23,\n      \"weeks\": 5\n    },\n    {\n      \"period\": \"2026-05\",\n      \"average\": 6.44,\n      \"high\": 6.53,\n      \"low\": 6.36,\n      \"weeks\": 4\n    },\n    {\n      \"period\": \"2026-06\",\n      \"average\": 6.49,\n      \"high\": 6.52,\n      \"low\": 6.47,\n      \"weeks\": 4\n    },\n    {\n      \"period\": \"2026-07\",\n      \"average\": 6.54,\n      \"high\": 6.66,\n      \"low\": 6.43,\n      \"weeks\": 5\n    },\n    {\n      \"period\": \"2026-08\",\n      \"average\": 6.67,\n      \"high\": 6.69,\n      \"low\": 6.65,\n      \"weeks\": 4\n    },\n    {\n      \"period\": \"2026-09\",\n      \"average\": 6.86,\n      \"high\": 7.03,\n      \"low\": 6.71,\n      \"weeks\": 4\n    },\n    {\n      \"period\": \"2026-10\",\n      \"average\": 7.33,\n      \"high\": 7.4,\n      \"low\": 7.24,\n      \"weeks\": 5\n    }\n  ],\n  \"as_of\": \"2026-11-05T13:56:58.335Z\",\n  \"source\": \"https://www.freddiemac.com/pmms\",\n  \"data_file\": \"https://www.freddiemac.com/pmms/docs/PMMS_history.csv\",\n  \"more\": \"https://www.mcpstamp.com/servers/?utm_source=mcp&utm_medium=mortgage-rates-today-mcp\"\n}"
+     }
+    ],
+    "structuredContent": {
+     "summary": "Freddie Mac 30-year fixed average from 2024-01-04 to 2026-10-29: 6.62% to 7.24% (up 0.62 points). High 7.4% (week of 2026-10-08), low 5.98% (week of 2026-02-26), average 6.62% over 148 weeks. Source: Freddie Mac Primary Mortgage Market Survey (PMMS), U.S. weekly averages.",
+     "term_years": 30,
+     "frequency": "monthly",
+     "start": "2024-01-04",
+     "end": "2026-10-29",
+     "weeks": 148,
+     "high": {
+      "rate": 7.4,
+      "week_of": "2026-10-08"
+     },
+     "low": {
+      "rate": 5.98,
+      "week_of": "2026-02-26"
+     },
+     "series": [
+      {
+       "period": "2024-01",
+       "average": 6.64,
+       "high": 6.69,
+       "low": 6.6,
+       "weeks": 4
+      },
+      {
+       "period": "2024-02",
+       "average": 6.78,
+       "high": 6.94,
+       "low": 6.63,
+       "weeks": 5
+      },
+      {
+       "period": "2024-03",
+       "average": 6.82,
+       "high": 6.88,
+       "low": 6.74,
+       "weeks": 4
+      },
+      {
+       "period": "2024-04",
+       "average": 6.99,
+       "high": 7.17,
+       "low": 6.82,
+       "weeks": 4
+      },
+      {
+       "period": "2024-05",
+       "average": 7.06,
+       "high": 7.22,
+       "low": 6.94,
+       "weeks": 5
+      },
+      {
+       "period": "2024-06",
+       "average": 6.92,
+       "high": 6.99,
+       "low": 6.86,
+       "weeks": 4
+      },
+      {
+       "period": "2024-07",
+       "average": 6.85,
+       "high": 6.95,
+       "low": 6.77,
+       "weeks": 4
+      },
+      {
+       "period": "2024-08",
+       "average": 6.5,
+       "high": 6.73,
+       "low": 6.35,
+       "weeks": 5
+      },
+      {
+       "period": "2024-09",
+       "average": 6.18,
+       "high": 6.35,
+       "low": 6.08,
+       "weeks": 4
+      },
+      {
+       "period": "2024-10",
+       "average": 6.43,
+       "high": 6.72,
+       "low": 6.12,
+       "weeks": 5
+      },
+      {
+       "period": "2024-11",
+       "average": 6.81,
+       "high": 6.84,
+       "low": 6.78,
+       "weeks": 4
+      },
+      {
+       "period": "2024-12",
+       "average": 6.72,
+       "high": 6.85,
+       "low": 6.6,
+       "weeks": 4
+      },
+      {
+       "period": "2025-01",
+       "average": 6.96,
+       "high": 7.04,
+       "low": 6.91,
+       "weeks": 5
+      },
+      {
+       "period": "2025-02",
+       "average": 6.84,
+       "high": 6.89,
+       "low": 6.76,
+       "weeks": 4
+      },
+      {
+       "period": "2025-03",
+       "average": 6.65,
+       "high": 6.67,
+       "low": 6.63,
+       "weeks": 4
+      },
+      {
+       "period": "2025-04",
+       "average": 6.73,
+       "high": 6.83,
+       "low": 6.62,
+       "weeks": 4
+      },
+      {
+       "period": "2025-05",
+       "average": 6.82,
+       "high": 6.89,
+       "low": 6.76,
+       "weeks": 5
+      },
+      {
+       "period": "2025-06",
+       "average": 6.82,
+       "high": 6.85,
+       "low": 6.77,
+       "weeks": 4
+      },
+      {
+       "period": "2025-07",
+       "average": 6.72,
+       "high": 6.75,
+       "low": 6.67,
+       "weeks": 5
+      },
+      {
+       "period": "2025-08",
+       "average": 6.59,
+       "high": 6.63,
+       "low": 6.56,
+       "weeks": 4
+      },
+      {
+       "period": "2025-09",
+       "average": 6.35,
+       "high": 6.5,
+       "low": 6.26,
+       "weeks": 4
+      },
+      {
+       "period": "2025-10",
+       "average": 6.25,
+       "high": 6.34,
+       "low": 6.17,
+       "weeks": 5
+      },
+      {
+       "period": "2025-11",
+       "average": 6.24,
+       "high": 6.26,
+       "low": 6.22,
+       "weeks": 4
+      },
+      {
+       "period": "2025-12",
+       "average": 6.19,
+       "high": 6.22,
+       "low": 6.15,
+       "weeks": 5
+      },
+      {
+       "period": "2026-01",
+       "average": 6.1,
+       "high": 6.16,
+       "low": 6.06,
+       "weeks": 4
+      },
+      {
+       "period": "2026-02",
+       "average": 6.05,
+       "high": 6.11,
+       "low": 5.98,
+       "weeks": 4
+      },
+      {
+       "period": "2026-03",
+       "average": 6.18,
+       "high": 6.38,
+       "low": 6,
+       "weeks": 4
+      },
+      {
+       "period": "2026-04",
+       "average": 6.33,
+       "high": 6.46,
+       "low": 6.23,
+       "weeks": 5
+      },
+      {
+       "period": "2026-05",
+       "average": 6.44,
+       "high": 6.53,
+       "low": 6.36,
+       "weeks": 4
+      },
+      {
+       "period": "2026-06",
+       "average": 6.49,
+       "high": 6.52,
+       "low": 6.47,
+       "weeks": 4
+      },
+      {
+       "period": "2026-07",
+       "average": 6.54,
+       "high": 6.66,
+       "low": 6.43,
+       "weeks": 5
+      },
+      {
+       "period": "2026-08",
+       "average": 6.67,
+       "high": 6.69,
+       "low": 6.65,
+       "weeks": 4
+      },
+      {
+       "period": "2026-09",
+       "average": 6.86,
+       "high": 7.03,
+       "low": 6.71,
+       "weeks": 4
+      },
+      {
+       "period": "2026-10",
+       "average": 7.33,
+       "high": 7.4,
+       "low": 7.24,
+       "weeks": 5
+      }
+     ],
+     "as_of": "2026-11-05T13:56:58.335Z",
+     "source": "https://www.freddiemac.com/pmms",
+     "data_file": "https://www.freddiemac.com/pmms/docs/PMMS_history.csv",
+     "more": "https://www.mcpstamp.com/servers/?utm_source=mcp&utm_medium=mortgage-rates-today-mcp"
+    }
+   },
+   "jsonrpc": "2.0",
+   "id": 2
+  },
+  "calculate_mortgage_payment": {
+   "result": {
+    "content": [
+     {
+      "type": "text",
+      "text": "A $400,000.00 30-year fixed loan at 7.24% (Freddie Mac PMMS 30-year average, week of 2026-10-29) costs $2,725.99 a month in principal and interest, $581,357.32 of interest over the full term. At 6.17% (the average a year earlier) it would be $2,442.09, a difference of $283.90 a month. Taxes, insurance and PMI are not included.\n\n{\n  \"summary\": \"A $400,000.00 30-year fixed loan at 7.24% (Freddie Mac PMMS 30-year average, week of 2026-10-29) costs $2,725.99 a month in principal and interest, $581,357.32 of interest over the full term. At 6.17% (the average a year earlier) it would be $2,442.09, a difference of $283.90 a month. Taxes, insurance and PMI are not included.\",\n  \"loan_amount\": 400000,\n  \"rate\": 7.24,\n  \"rate_source\": \"Freddie Mac PMMS 30-year average, week of 2026-10-29\",\n  \"pmms_week\": \"2026-10-29\",\n  \"term_years\": 30,\n  \"monthly_principal_and_interest\": 2725.99,\n  \"total_paid\": 981357.32,\n  \"total_interest\": 581357.32,\n  \"compare_rate\": 6.17,\n  \"compare_monthly_payment\": 2442.09,\n  \"monthly_difference\": 283.9,\n  \"as_of\": \"2026-11-05T13:57:02.511Z\",\n  \"source\": \"https://www.freddiemac.com/pmms\",\n  \"more\": \"https://www.mcpstamp.com/servers/?utm_source=mcp&utm_medium=mortgage-rates-today-mcp\"\n}"
+     }
+    ],
+    "structuredContent": {
+     "summary": "A $400,000.00 30-year fixed loan at 7.24% (Freddie Mac PMMS 30-year average, week of 2026-10-29) costs $2,725.99 a month in principal and interest, $581,357.32 of interest over the full term. At 6.17% (the average a year earlier) it would be $2,442.09, a difference of $283.90 a month. Taxes, insurance and PMI are not included.",
+     "loan_amount": 400000,
+     "rate": 7.24,
+     "rate_source": "Freddie Mac PMMS 30-year average, week of 2026-10-29",
+     "pmms_week": "2026-10-29",
+     "term_years": 30,
+     "monthly_principal_and_interest": 2725.99,
+     "total_paid": 981357.32,
+     "total_interest": 581357.32,
+     "compare_rate": 6.17,
+     "compare_monthly_payment": 2442.09,
+     "monthly_difference": 283.9,
+     "as_of": "2026-11-05T13:57:02.511Z",
+     "source": "https://www.freddiemac.com/pmms",
+     "more": "https://www.mcpstamp.com/servers/?utm_source=mcp&utm_medium=mortgage-rates-today-mcp"
+    }
+   },
+   "jsonrpc": "2.0",
+   "id": 2
+  }
+ },
+ "calls_ok": "4/4"
+}

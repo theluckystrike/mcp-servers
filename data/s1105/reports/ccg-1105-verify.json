@@ -1,0 +1,312 @@
+{
+ "base": "https://claudecodeguides.com",
+ "sitemap_status": 200,
+ "sitemap_urls": 2057,
+ "sitemap_mcp_urls": 104,
+ "index_status": 200,
+ "index_has_section": true,
+ "index_links": 33,
+ "pages": 33,
+ "pages_200": 33,
+ "pages_all_ok": 33,
+ "pages_in_sitemap": 33,
+ "rows": [
+  {
+   "url": "https://claudecodeguides.com/mcp/ab-test-sample-size-calculator-mcp/",
+   "status": 200,
+   "title_ok": true,
+   "hosted_url_ok": true,
+   "example_ok": true,
+   "jsonld_ok": true,
+   "in_sitemap": true
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/aca-premium-tax-credit-calculator-mcp/",
+   "status": 200,
+   "title_ok": true,
+   "hosted_url_ok": true,
+   "example_ok": true,
+   "jsonld_ok": true,
+   "in_sitemap": true
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/address-to-census-tract-mcp/",
+   "status": 200,
+   "title_ok": true,
+   "hosted_url_ok": true,
+   "example_ok": true,
+   "jsonld_ok": true,
+   "in_sitemap": true
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/ap-score-distributions-mcp/",
+   "status": 200,
+   "title_ok": true,
+   "hosted_url_ok": true,
+   "example_ok": true,
+   "jsonld_ok": true,
+   "in_sitemap": true
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/car-loan-interest-deduction-calculator-mcp/",
+   "status": 200,
+   "title_ok": true,
+   "hosted_url_ok": true,
+   "example_ok": true,
+   "jsonld_ok": true,
+   "in_sitemap": true
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/cpi-inflation-calculator-mcp/",
+   "status": 200,
+   "title_ok": true,
+   "hosted_url_ok": true,
+   "example_ok": true,
+   "jsonld_ok": true,
+   "in_sitemap": true
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/cups-to-grams-mcp/",
+   "status": 200,
+   "title_ok": true,
+   "hosted_url_ok": true,
+   "example_ok": true,
+   "jsonld_ok": true,
+   "in_sitemap": true
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/drug-shortage-list-mcp/",
+   "status": 200,
+   "title_ok": true,
+   "hosted_url_ok": true,
+   "example_ok": true,
+   "jsonld_ok": true,
+   "in_sitemap": true
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/dscr-loan-calculator-mcp/",
+   "status": 200,
+   "title_ok": true,
+   "hosted_url_ok": true,
+   "example_ok": true,
+   "jsonld_ok": true,
+   "in_sitemap": true
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/estate-gift-tax-exemption-calculator-mcp/",
+   "status": 200,
+   "title_ok": true,
+   "hosted_url_ok": true,
+   "example_ok": true,
+   "jsonld_ok": true,
+   "in_sitemap": true
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/gold-price-per-gram-mcp/",
+   "status": 200,
+   "title_ok": true,
+   "hosted_url_ok": true,
+   "example_ok": true,
+   "jsonld_ok": true,
+   "in_sitemap": true
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/i-bond-rate-mcp/",
+   "status": 200,
+   "title_ok": true,
+   "hosted_url_ok": true,
+   "example_ok": true,
+   "jsonld_ok": true,
+   "in_sitemap": true
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/irs-mileage-rate-per-diem-mcp/",
+   "status": 200,
+   "title_ok": true,
+   "hosted_url_ok": true,
+   "example_ok": true,
+   "jsonld_ok": true,
+   "in_sitemap": true
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/lake-level-mcp/",
+   "status": 200,
+   "title_ok": true,
+   "hosted_url_ok": true,
+   "example_ok": true,
+   "jsonld_ok": true,
+   "in_sitemap": true
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/minimum-wage-mcp/",
+   "status": 200,
+   "title_ok": true,
+   "hosted_url_ok": true,
+   "example_ok": true,
+   "jsonld_ok": true,
+   "in_sitemap": true
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/mortgage-rates-today-mcp/",
+   "status": 200,
+   "title_ok": true,
+   "hosted_url_ok": true,
+   "example_ok": true,
+   "jsonld_ok": true,
+   "in_sitemap": true
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/no-tax-on-overtime-mcp/",
+   "status": 200,
+   "title_ok": true,
+   "hosted_url_ok": true,
+   "example_ok": true,
+   "jsonld_ok": true,
+   "in_sitemap": true
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/paycheck-calculator-mcp/",
+   "status": 200,
+   "title_ok": true,
+   "hosted_url_ok": true,
+   "example_ok": true,
+   "jsonld_ok": true,
+   "in_sitemap": true
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/raw-to-cooked-weight-mcp/",
+   "status": 200,
+   "title_ok": true,
+   "hosted_url_ok": true,
+   "example_ok": true,
+   "jsonld_ok": true,
+   "in_sitemap": true
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/recipe-nutrition-calculator-mcp/",
+   "status": 200,
+   "title_ok": true,
+   "hosted_url_ok": true,
+   "example_ok": true,
+   "jsonld_ok": true,
+   "in_sitemap": true
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/retirement-contribution-limits-2027-mcp/",
+   "status": 200,
+   "title_ok": true,
+   "hosted_url_ok": true,
+   "example_ok": true,
+   "jsonld_ok": true,
+   "in_sitemap": true
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/river-level-mcp/",
+   "status": 200,
+   "title_ok": true,
+   "hosted_url_ok": true,
+   "example_ok": true,
+   "jsonld_ok": true,
+   "in_sitemap": true
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/sat-score-percentiles-mcp/",
+   "status": 200,
+   "title_ok": true,
+   "hosted_url_ok": true,
+   "example_ok": true,
+   "jsonld_ok": true,
+   "in_sitemap": true
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/section-179-deduction-calculator-mcp/",
+   "status": 200,
+   "title_ok": true,
+   "hosted_url_ok": true,
+   "example_ok": true,
+   "jsonld_ok": true,
+   "in_sitemap": true
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/silver-price-per-gram-mcp/",
+   "status": 200,
+   "title_ok": true,
+   "hosted_url_ok": true,
+   "example_ok": true,
+   "jsonld_ok": true,
+   "in_sitemap": true
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/social-security-cola-2027-mcp/",
+   "status": 200,
+   "title_ok": true,
+   "hosted_url_ok": true,
+   "example_ok": true,
+   "jsonld_ok": true,
+   "in_sitemap": true
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/student-loan-repayment-assistance-plan-calculator-mcp/",
+   "status": 200,
+   "title_ok": true,
+   "hosted_url_ok": true,
+   "example_ok": true,
+   "jsonld_ok": true,
+   "in_sitemap": true
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/subdomain-finder-mcp/",
+   "status": 200,
+   "title_ok": true,
+   "hosted_url_ok": true,
+   "example_ok": true,
+   "jsonld_ok": true,
+   "in_sitemap": true
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/uk-income-tax-salary-mcp/",
+   "status": 200,
+   "title_ok": true,
+   "hosted_url_ok": true,
+   "example_ok": true,
+   "jsonld_ok": true,
+   "in_sitemap": true
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/uk-statutory-sick-pay-maternity-pay-calculator-mcp/",
+   "status": 200,
+   "title_ok": true,
+   "hosted_url_ok": true,
+   "example_ok": true,
+   "jsonld_ok": true,
+   "in_sitemap": true
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/us-federal-holidays-business-days-mcp/",
+   "status": 200,
+   "title_ok": true,
+   "hosted_url_ok": true,
+   "example_ok": true,
+   "jsonld_ok": true,
+   "in_sitemap": true
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/uv-index-today-mcp/",
+   "status": 200,
+   "title_ok": true,
+   "hosted_url_ok": true,
+   "example_ok": true,
+   "jsonld_ok": true,
+   "in_sitemap": true
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/vegetable-yield-percentage-mcp/",
+   "status": 200,
+   "title_ok": true,
+   "hosted_url_ok": true,
+   "example_ok": true,
+   "jsonld_ok": true,
+   "in_sitemap": true
+  }
+ ]
+}

@@ -1,0 +1,494 @@
+{
+ "url": "https://i-bond-rate-mcp.lipmichal.workers.dev/mcp",
+ "at": "2026-11-05T13:51:05.223809+00:00",
+ "commands": [
+  "POST initialize to https://i-bond-rate-mcp.lipmichal.workers.dev/mcp",
+  "python3 /Users/mike/mcp-servers/data/s1103/stamp/mcpcall.py i-bond-rate-mcp list",
+  "python3 /Users/mike/mcp-servers/data/s1103/stamp/mcpcall.py i-bond-rate-mcp call get_current_i_bond_rate '{}'",
+  "python3 /Users/mike/mcp-servers/data/s1103/stamp/mcpcall.py i-bond-rate-mcp call get_i_bond_rate_for_issue_date '{\"issue_month\":\"2022-04\"}'",
+  "python3 /Users/mike/mcp-servers/data/s1103/stamp/mcpcall.py i-bond-rate-mcp call estimate_i_bond_value '{\"issue_month\":\"2023-01\",\"amount\":10000}'",
+  "python3 /Users/mike/mcp-servers/data/s1103/stamp/mcpcall.py i-bond-rate-mcp call calculate_i_bond_composite_rate '{\"fixed_rate\":1.4,\"semiannual_inflation_rate\":1.5}'",
+  "python3 /Users/mike/mcp-servers/data/s1103/stamp/mcpcall.py i-bond-rate-mcp call get_i_bond_rate_history '{\"limit\":6}'"
+ ],
+ "initialize": {
+  "http_status": 200,
+  "mcp_session_id": null,
+  "body": {
+   "result": {
+    "protocolVersion": "2025-03-26",
+    "capabilities": {
+     "tools": {
+      "listChanged": true
+     }
+    },
+    "serverInfo": {
+     "name": "i-bond-rate-mcp",
+     "version": "1.0.0",
+     "websiteUrl": "https://www.mcpstamp.com"
+    },
+    "instructions": "Series I savings bond rates from TreasuryDirect. The rate for I bonds bought November 1, 2026 to April 30, 2027 is 5.51 percent (fixed 1.40 percent, semiannual inflation 2.04 percent), announced after most model training data. Every older bond has its own fixed rate and changes rate every 6 months from its issue month; use get_i_bond_rate_for_issue_date for \"what is my I bond earning now\"."
+   },
+   "jsonrpc": "2.0",
+   "id": 1
+  }
+ },
+ "tools_list": {
+  "result": {
+   "tools": [
+    {
+     "name": "get_current_i_bond_rate",
+     "title": "Get current I bond rate",
+     "description": "Current Series I savings bond composite rate, fixed rate and semiannual inflation rate for new purchases, read at call time from the TreasuryDirect \"I bonds interest rates\" page with the built-in rate chart as fallback. November 2026 to April 2027: 5.51 percent with a 1.40 percent fixed rate. Also returns the next announcement date and the $10,000 limit, 12-month hold and 3-month penalty rules.",
+     "inputSchema": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "type": "object",
+      "properties": {}
+     },
+     "annotations": {
+      "title": "Current I bond rate",
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
+     },
+     "execution": {
+      "taskSupport": "forbidden"
+     }
+    },
+    {
+     "name": "get_i_bond_rate_for_issue_date",
+     "title": "Get I bond rate for an issue date",
+     "description": "For an I bond bought in a given month: its fixed rate, the composite rate it earns in the current (or given) 6-month period, the months its rate changes, whether it can be cashed and the penalty, and every rate period since issue. Computed from the TreasuryDirect rate chart effective November 1, 2026.",
+     "inputSchema": {
+      "type": "object",
+      "properties": {
+       "issue_month": {
+        "type": "string",
+        "pattern": "^\\d{4}-\\d{1,2}(-\\d{1,2})?$",
+        "description": "Issue month of the bond as YYYY-MM, for example \"2023-01\". The issue date is the first of the month you bought it."
+       },
+       "as_of_month": {
+        "type": "string",
+        "pattern": "^\\d{4}-\\d{1,2}(-\\d{1,2})?$",
+        "description": "Month to evaluate, YYYY-MM. Default: the current month."
+       }
+      },
+      "required": [
+       "issue_month"
+      ],
+      "additionalProperties": false,
+      "$schema": "http://json-schema.org/draft-07/schema#"
+     },
+     "annotations": {
+      "title": "I bond rate by issue date",
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+     },
+     "execution": {
+      "taskSupport": "forbidden"
+     }
+    },
+    {
+     "name": "estimate_i_bond_value",
+     "title": "Estimate I bond value",
+     "description": "Estimate what I bonds are worth for an issue month and purchase amount at the start of a month: value with all interest and the redemption value after the 3-month penalty for bonds under 5 years. Uses semiannual compounding per $25 with the TreasuryDirect rates. An estimate; Treasury values can differ by cents.",
+     "inputSchema": {
+      "type": "object",
+      "properties": {
+       "issue_month": {
+        "type": "string",
+        "pattern": "^\\d{4}-\\d{1,2}(-\\d{1,2})?$",
+        "description": "Issue month of the bond as YYYY-MM, for example \"2023-01\". The issue date is the first of the month you bought it."
+       },
+       "amount": {
+        "type": "number",
+        "minimum": 25,
+        "maximum": 10000000,
+        "description": "Purchase price in dollars, for example 10000."
+       },
+       "as_of_month": {
+        "type": "string",
+        "pattern": "^\\d{4}-\\d{1,2}(-\\d{1,2})?$",
+        "description": "Month to evaluate, YYYY-MM. Default: the current month."
+       }
+      },
+      "required": [
+       "issue_month",
+       "amount"
+      ],
+      "additionalProperties": false,
+      "$schema": "http://json-schema.org/draft-07/schema#"
+     },
+     "annotations": {
+      "title": "I bond value estimate",
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+     },
+     "execution": {
+      "taskSupport": "forbidden"
+     }
+    },
+    {
+     "name": "calculate_i_bond_composite_rate",
+     "title": "Calculate I bond composite rate",
+     "description": "Apply the Treasury formula fixed + 2 x semiannual inflation + fixed x semiannual inflation, rounded to 0.01 percent with a floor of zero. Use it for rate predictions.",
+     "inputSchema": {
+      "type": "object",
+      "properties": {
+       "fixed_rate": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 10,
+        "description": "Fixed rate in percent, for example 1.4."
+       },
+       "semiannual_inflation_rate": {
+        "type": "number",
+        "minimum": -10,
+        "maximum": 10,
+        "description": "Semiannual inflation rate in percent, for example 2.04."
+       }
+      },
+      "required": [
+       "fixed_rate",
+       "semiannual_inflation_rate"
+      ],
+      "additionalProperties": false,
+      "$schema": "http://json-schema.org/draft-07/schema#"
+     },
+     "annotations": {
+      "title": "Composite rate formula",
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+     },
+     "execution": {
+      "taskSupport": "forbidden"
+     }
+    },
+    {
+     "name": "get_i_bond_rate_history",
+     "title": "Get I bond rate history",
+     "description": "Fixed rate for new bonds, semiannual inflation rate and composite rate for every May and November announcement since September 1998, newest first, from the TreasuryDirect rate chart.",
+     "inputSchema": {
+      "type": "object",
+      "properties": {
+       "limit": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 60,
+        "description": "How many announcements, newest first. Default 20."
+       }
+      },
+      "additionalProperties": false,
+      "$schema": "http://json-schema.org/draft-07/schema#"
+     },
+     "annotations": {
+      "title": "I bond rate history",
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+     },
+     "execution": {
+      "taskSupport": "forbidden"
+     }
+    }
+   ]
+  },
+  "jsonrpc": "2.0",
+  "id": 2
+ },
+ "tools_call": {
+  "result": {
+   "content": [
+    {
+     "type": "text",
+     "text": "I bonds bought from November 2026 through April 2027 earn 5.51% a year for their first 6 months: a 1.40% fixed rate that lasts for the life of the bond plus 2.04% semiannual inflation rate. Treasury sets the next rates on May 1, 2027. Limit $10,000 in electronic I bonds per Social Security number per calendar year, $25 minimum, held at least 12 months, last 3 months of interest lost if cashed before 5 years.\n\n{\n  \"summary\": \"I bonds bought from November 2026 through April 2027 earn 5.51% a year for their first 6 months: a 1.40% fixed rate that lasts for the life of the bond plus 2.04% semiannual inflation rate. Treasury sets the next rates on May 1, 2027. Limit $10,000 in electronic I bonds per Social Security number per calendar year, $25 minimum, held at least 12 months, last 3 months of interest lost if cashed before 5 years.\",\n  \"composite_rate\": 5.51,\n  \"fixed_rate\": 1.4,\n  \"semiannual_inflation_rate\": 2.04,\n  \"issue_period\": {\n    \"from\": \"2026-11\",\n    \"to\": \"2027-04\"\n  },\n  \"next_rate_announcement\": \"2027-05-01\",\n  \"rate_source\": \"built-in TreasuryDirect rate chart\",\n  \"live_check\": \"TreasuryDirect page not reachable (no answer within 4 s); built-in table used\",\n  \"table_mismatch\": null,\n  \"rules\": {\n    \"annual_limit_electronic\": 10000,\n    \"minimum_purchase\": 25,\n    \"earliest_redemption_months\": 12,\n    \"early_redemption_penalty\": \"last 3 months of interest if cashed before 5 years\",\n    \"interest_life_years\": 30\n  },\n  \"as_of\": \"2026-11-05T13:50:44.087Z\",\n  \"source\": \"https://www.treasurydirect.gov/savings-bonds/i-bonds/i-bonds-interest-rates/\",\n  \"more\": \"https://www.mcpstamp.com/servers/?utm_source=mcp&utm_medium=i-bond-rate-mcp\"\n}"
+    }
+   ],
+   "structuredContent": {
+    "summary": "I bonds bought from November 2026 through April 2027 earn 5.51% a year for their first 6 months: a 1.40% fixed rate that lasts for the life of the bond plus 2.04% semiannual inflation rate. Treasury sets the next rates on May 1, 2027. Limit $10,000 in electronic I bonds per Social Security number per calendar year, $25 minimum, held at least 12 months, last 3 months of interest lost if cashed before 5 years.",
+    "composite_rate": 5.51,
+    "fixed_rate": 1.4,
+    "semiannual_inflation_rate": 2.04,
+    "issue_period": {
+     "from": "2026-11",
+     "to": "2027-04"
+    },
+    "next_rate_announcement": "2027-05-01",
+    "rate_source": "built-in TreasuryDirect rate chart",
+    "live_check": "TreasuryDirect page not reachable (no answer within 4 s); built-in table used",
+    "table_mismatch": null,
+    "rules": {
+     "annual_limit_electronic": 10000,
+     "minimum_purchase": 25,
+     "earliest_redemption_months": 12,
+     "early_redemption_penalty": "last 3 months of interest if cashed before 5 years",
+     "interest_life_years": 30
+    },
+    "as_of": "2026-11-05T13:50:44.087Z",
+    "source": "https://www.treasurydirect.gov/savings-bonds/i-bonds/i-bonds-interest-rates/",
+    "more": "https://www.mcpstamp.com/servers/?utm_source=mcp&utm_medium=i-bond-rate-mcp"
+   }
+  },
+  "jsonrpc": "2.0",
+  "id": 2
+ },
+ "tools_calls": {
+  "get_current_i_bond_rate": {
+   "result": {
+    "content": [
+     {
+      "type": "text",
+      "text": "I bonds bought from November 2026 through April 2027 earn 5.51% a year for their first 6 months: a 1.40% fixed rate that lasts for the life of the bond plus 2.04% semiannual inflation rate. Treasury sets the next rates on May 1, 2027. Limit $10,000 in electronic I bonds per Social Security number per calendar year, $25 minimum, held at least 12 months, last 3 months of interest lost if cashed before 5 years.\n\n{\n  \"summary\": \"I bonds bought from November 2026 through April 2027 earn 5.51% a year for their first 6 months: a 1.40% fixed rate that lasts for the life of the bond plus 2.04% semiannual inflation rate. Treasury sets the next rates on May 1, 2027. Limit $10,000 in electronic I bonds per Social Security number per calendar year, $25 minimum, held at least 12 months, last 3 months of interest lost if cashed before 5 years.\",\n  \"composite_rate\": 5.51,\n  \"fixed_rate\": 1.4,\n  \"semiannual_inflation_rate\": 2.04,\n  \"issue_period\": {\n    \"from\": \"2026-11\",\n    \"to\": \"2027-04\"\n  },\n  \"next_rate_announcement\": \"2027-05-01\",\n  \"rate_source\": \"built-in TreasuryDirect rate chart\",\n  \"live_check\": \"TreasuryDirect page not reachable (no answer within 4 s); built-in table used\",\n  \"table_mismatch\": null,\n  \"rules\": {\n    \"annual_limit_electronic\": 10000,\n    \"minimum_purchase\": 25,\n    \"earliest_redemption_months\": 12,\n    \"early_redemption_penalty\": \"last 3 months of interest if cashed before 5 years\",\n    \"interest_life_years\": 30\n  },\n  \"as_of\": \"2026-11-05T13:50:44.087Z\",\n  \"source\": \"https://www.treasurydirect.gov/savings-bonds/i-bonds/i-bonds-interest-rates/\",\n  \"more\": \"https://www.mcpstamp.com/servers/?utm_source=mcp&utm_medium=i-bond-rate-mcp\"\n}"
+     }
+    ],
+    "structuredContent": {
+     "summary": "I bonds bought from November 2026 through April 2027 earn 5.51% a year for their first 6 months: a 1.40% fixed rate that lasts for the life of the bond plus 2.04% semiannual inflation rate. Treasury sets the next rates on May 1, 2027. Limit $10,000 in electronic I bonds per Social Security number per calendar year, $25 minimum, held at least 12 months, last 3 months of interest lost if cashed before 5 years.",
+     "composite_rate": 5.51,
+     "fixed_rate": 1.4,
+     "semiannual_inflation_rate": 2.04,
+     "issue_period": {
+      "from": "2026-11",
+      "to": "2027-04"
+     },
+     "next_rate_announcement": "2027-05-01",
+     "rate_source": "built-in TreasuryDirect rate chart",
+     "live_check": "TreasuryDirect page not reachable (no answer within 4 s); built-in table used",
+     "table_mismatch": null,
+     "rules": {
+      "annual_limit_electronic": 10000,
+      "minimum_purchase": 25,
+      "earliest_redemption_months": 12,
+      "early_redemption_penalty": "last 3 months of interest if cashed before 5 years",
+      "interest_life_years": 30
+     },
+     "as_of": "2026-11-05T13:50:44.087Z",
+     "source": "https://www.treasurydirect.gov/savings-bonds/i-bonds/i-bonds-interest-rates/",
+     "more": "https://www.mcpstamp.com/servers/?utm_source=mcp&utm_medium=i-bond-rate-mcp"
+    }
+   },
+   "jsonrpc": "2.0",
+   "id": 2
+  },
+  "get_i_bond_rate_for_issue_date": {
+   "result": {
+    "content": [
+     {
+      "type": "text",
+      "text": "An I bond issued in April 2022 has a fixed rate of 0.00%. For October 2026 through March 2027 it earns 3.34% a year (semiannual inflation 1.67% from the May 2026 announcement). Its rate changes every April and October.\n\n{\n  \"summary\": \"An I bond issued in April 2022 has a fixed rate of 0.00%. For October 2026 through March 2027 it earns 3.34% a year (semiannual inflation 1.67% from the May 2026 announcement). Its rate changes every April and October.\",\n  \"issue_month\": \"2022-04\",\n  \"as_of_month\": \"2026-11\",\n  \"fixed_rate\": 0,\n  \"current_period\": {\n    \"period_start\": \"2026-10\",\n    \"period_end\": \"2027-03\",\n    \"announcement\": \"2026-05\",\n    \"semiannual_inflation_rate\": 1.67,\n    \"composite_rate\": 3.34\n  },\n  \"rate_changes_in\": [\n    \"April\",\n    \"October\"\n  ],\n  \"months_held\": 55,\n  \"can_cash_now\": true,\n  \"penalty_if_cashed_now\": \"loses the last 3 months of interest\",\n  \"periods\": [\n    {\n      \"period_start\": \"2022-04\",\n      \"period_end\": \"2022-09\",\n      \"announcement\": \"2021-11\",\n      \"semiannual_inflation_rate\": 3.56,\n      \"composite_rate\": 7.12\n    },\n    {\n      \"period_start\": \"2022-10\",\n      \"period_end\": \"2023-03\",\n      \"announcement\": \"2022-05\",\n      \"semiannual_inflation_rate\": 4.81,\n      \"composite_rate\": 9.62\n    },\n    {\n      \"period_start\": \"2023-04\",\n      \"period_end\": \"2023-09\",\n      \"announcement\": \"2022-11\",\n      \"semiannual_inflation_rate\": 3.24,\n      \"composite_rate\": 6.48\n    },\n    {\n      \"period_start\": \"2023-10\",\n      \"period_end\": \"2024-03\",\n      \"announcement\": \"2023-05\",\n      \"semiannual_inflation_rate\": 1.69,\n      \"composite_rate\": 3.38\n    },\n    {\n      \"period_start\": \"2024-04\",\n      \"period_end\": \"2024-09\",\n      \"announcement\": \"2023-11\",\n      \"semiannual_inflation_rate\": 1.97,\n      \"composite_rate\": 3.94\n    },\n    {\n      \"period_start\": \"2024-10\",\n      \"period_end\": \"2025-03\",\n      \"announcement\": \"2024-05\",\n      \"semiannual_inflation_rate\": 1.48,\n      \"composite_rate\": 2.96\n    },\n    {\n      \"period_start\": \"2025-04\",\n      \"period_end\": \"2025-09\",\n      \"announcement\": \"2024-11\",\n      \"semiannual_inflation_rate\": 0.95,\n      \"composite_rate\": 1.9\n    },\n    {\n      \"period_start\": \"2025-10\",\n      \"period_end\": \"2026-03\",\n      \"announcement\": \"2025-05\",\n      \"semiannual_inflation_rate\": 1.43,\n      \"composite_rate\": 2.86\n    },\n    {\n      \"period_start\": \"2026-04\",\n      \"period_end\": \"2026-09\",\n      \"announcement\": \"2025-11\",\n      \"semiannual_inflation_rate\": 1.56,\n      \"composite_rate\": 3.12\n    },\n    {\n      \"period_start\": \"2026-10\",\n      \"period_end\": \"2027-03\",\n      \"announcement\": \"2026-05\",\n      \"semiannual_inflation_rate\": 1.67,\n      \"composite_rate\": 3.34\n    }\n  ],\n  \"as_of\": \"2026-11-05\",\n  \"source\": \"https://www.treasurydirect.gov/files/savings-bonds/i-bond-rate-chart.pdf\",\n  \"more\": \"https://www.mcpstamp.com/servers/?utm_source=mcp&utm_medium=i-bond-rate-mcp\"\n}"
+     }
+    ],
+    "structuredContent": {
+     "summary": "An I bond issued in April 2022 has a fixed rate of 0.00%. For October 2026 through March 2027 it earns 3.34% a year (semiannual inflation 1.67% from the May 2026 announcement). Its rate changes every April and October.",
+     "issue_month": "2022-04",
+     "as_of_month": "2026-11",
+     "fixed_rate": 0,
+     "current_period": {
+      "period_start": "2026-10",
+      "period_end": "2027-03",
+      "announcement": "2026-05",
+      "semiannual_inflation_rate": 1.67,
+      "composite_rate": 3.34
+     },
+     "rate_changes_in": [
+      "April",
+      "October"
+     ],
+     "months_held": 55,
+     "can_cash_now": true,
+     "penalty_if_cashed_now": "loses the last 3 months of interest",
+     "periods": [
+      {
+       "period_start": "2022-04",
+       "period_end": "2022-09",
+       "announcement": "2021-11",
+       "semiannual_inflation_rate": 3.56,
+       "composite_rate": 7.12
+      },
+      {
+       "period_start": "2022-10",
+       "period_end": "2023-03",
+       "announcement": "2022-05",
+       "semiannual_inflation_rate": 4.81,
+       "composite_rate": 9.62
+      },
+      {
+       "period_start": "2023-04",
+       "period_end": "2023-09",
+       "announcement": "2022-11",
+       "semiannual_inflation_rate": 3.24,
+       "composite_rate": 6.48
+      },
+      {
+       "period_start": "2023-10",
+       "period_end": "2024-03",
+       "announcement": "2023-05",
+       "semiannual_inflation_rate": 1.69,
+       "composite_rate": 3.38
+      },
+      {
+       "period_start": "2024-04",
+       "period_end": "2024-09",
+       "announcement": "2023-11",
+       "semiannual_inflation_rate": 1.97,
+       "composite_rate": 3.94
+      },
+      {
+       "period_start": "2024-10",
+       "period_end": "2025-03",
+       "announcement": "2024-05",
+       "semiannual_inflation_rate": 1.48,
+       "composite_rate": 2.96
+      },
+      {
+       "period_start": "2025-04",
+       "period_end": "2025-09",
+       "announcement": "2024-11",
+       "semiannual_inflation_rate": 0.95,
+       "composite_rate": 1.9
+      },
+      {
+       "period_start": "2025-10",
+       "period_end": "2026-03",
+       "announcement": "2025-05",
+       "semiannual_inflation_rate": 1.43,
+       "composite_rate": 2.86
+      },
+      {
+       "period_start": "2026-04",
+       "period_end": "2026-09",
+       "announcement": "2025-11",
+       "semiannual_inflation_rate": 1.56,
+       "composite_rate": 3.12
+      },
+      {
+       "period_start": "2026-10",
+       "period_end": "2027-03",
+       "announcement": "2026-05",
+       "semiannual_inflation_rate": 1.67,
+       "composite_rate": 3.34
+      }
+     ],
+     "as_of": "2026-11-05",
+     "source": "https://www.treasurydirect.gov/files/savings-bonds/i-bond-rate-chart.pdf",
+     "more": "https://www.mcpstamp.com/servers/?utm_source=mcp&utm_medium=i-bond-rate-mcp"
+    }
+   },
+   "jsonrpc": "2.0",
+   "id": 2
+  },
+  "estimate_i_bond_value": {
+   "result": {
+    "content": [
+     {
+      "type": "text",
+      "text": "Estimate: $10,000.00 of I bonds issued January 2023 (fixed 0.40%) is worth about $11,596.00 at the start of November 2026 after 46 months. Cashed now it pays about $11,488.00, because the last 3 months of interest are lost before 5 years.\n\n{\n  \"summary\": \"Estimate: $10,000.00 of I bonds issued January 2023 (fixed 0.40%) is worth about $11,596.00 at the start of November 2026 after 46 months. Cashed now it pays about $11,488.00, because the last 3 months of interest are lost before 5 years.\",\n  \"issue_month\": \"2023-01\",\n  \"as_of_month\": \"2026-11\",\n  \"amount\": 10000,\n  \"months_held\": 46,\n  \"value_with_all_interest\": 11596,\n  \"redemption_value\": 11488,\n  \"interest_earned\": 1596,\n  \"method\": \"Per $25 of purchase price, interest compounds every 6 months at each period composite rate and the value is rounded to the cent; within a period the value grows monthly at the same rate. The 3-month penalty uses the value 3 months earlier. Treasury values can differ by a few cents; check the Savings Bond Calculator or your TreasuryDirect account.\",\n  \"as_of\": \"2026-11-05\",\n  \"source\": \"https://www.treasurydirect.gov/files/savings-bonds/i-bond-rate-chart.pdf\",\n  \"more\": \"https://www.mcpstamp.com/servers/?utm_source=mcp&utm_medium=i-bond-rate-mcp\"\n}"
+     }
+    ],
+    "structuredContent": {
+     "summary": "Estimate: $10,000.00 of I bonds issued January 2023 (fixed 0.40%) is worth about $11,596.00 at the start of November 2026 after 46 months. Cashed now it pays about $11,488.00, because the last 3 months of interest are lost before 5 years.",
+     "issue_month": "2023-01",
+     "as_of_month": "2026-11",
+     "amount": 10000,
+     "months_held": 46,
+     "value_with_all_interest": 11596,
+     "redemption_value": 11488,
+     "interest_earned": 1596,
+     "method": "Per $25 of purchase price, interest compounds every 6 months at each period composite rate and the value is rounded to the cent; within a period the value grows monthly at the same rate. The 3-month penalty uses the value 3 months earlier. Treasury values can differ by a few cents; check the Savings Bond Calculator or your TreasuryDirect account.",
+     "as_of": "2026-11-05",
+     "source": "https://www.treasurydirect.gov/files/savings-bonds/i-bond-rate-chart.pdf",
+     "more": "https://www.mcpstamp.com/servers/?utm_source=mcp&utm_medium=i-bond-rate-mcp"
+    }
+   },
+   "jsonrpc": "2.0",
+   "id": 2
+  },
+  "calculate_i_bond_composite_rate": {
+   "result": {
+    "content": [
+     {
+      "type": "text",
+      "text": "A 1.4% fixed rate with 1.5% semiannual inflation gives a composite rate of 4.42% a year.\n\n{\n  \"summary\": \"A 1.4% fixed rate with 1.5% semiannual inflation gives a composite rate of 4.42% a year.\",\n  \"fixed_rate\": 1.4,\n  \"semiannual_inflation_rate\": 1.5,\n  \"unrounded_percent\": 4.421,\n  \"composite_rate\": 4.42,\n  \"formula\": \"[fixed rate + (2 x semiannual inflation rate) + (fixed rate x semiannual inflation rate)], rounded to the nearest 0.01 percent, floor 0\",\n  \"as_of\": \"2026-11-05\",\n  \"source\": \"https://www.treasurydirect.gov/savings-bonds/i-bonds/i-bonds-interest-rates/\",\n  \"more\": \"https://www.mcpstamp.com/servers/?utm_source=mcp&utm_medium=i-bond-rate-mcp\"\n}"
+     }
+    ],
+    "structuredContent": {
+     "summary": "A 1.4% fixed rate with 1.5% semiannual inflation gives a composite rate of 4.42% a year.",
+     "fixed_rate": 1.4,
+     "semiannual_inflation_rate": 1.5,
+     "unrounded_percent": 4.421,
+     "composite_rate": 4.42,
+     "formula": "[fixed rate + (2 x semiannual inflation rate) + (fixed rate x semiannual inflation rate)], rounded to the nearest 0.01 percent, floor 0",
+     "as_of": "2026-11-05",
+     "source": "https://www.treasurydirect.gov/savings-bonds/i-bonds/i-bonds-interest-rates/",
+     "more": "https://www.mcpstamp.com/servers/?utm_source=mcp&utm_medium=i-bond-rate-mcp"
+    }
+   },
+   "jsonrpc": "2.0",
+   "id": 2
+  },
+  "get_i_bond_rate_history": {
+   "result": {
+    "content": [
+     {
+      "type": "text",
+      "text": "Latest I bond rates (November 2026): fixed 1.40%, semiannual inflation 2.04%, composite 5.51% for new bonds. Showing 6 of 58 announcements since September 1998. The highest fixed rate was 3.60% (May 2000).\n\n{\n  \"summary\": \"Latest I bond rates (November 2026): fixed 1.40%, semiannual inflation 2.04%, composite 5.51% for new bonds. Showing 6 of 58 announcements since September 1998. The highest fixed rate was 3.60% (May 2000).\",\n  \"count\": 6,\n  \"rows\": [\n    {\n      \"announcement\": \"2026-11\",\n      \"fixed_rate_new_bonds\": 1.4,\n      \"semiannual_inflation_rate\": 2.04,\n      \"composite_rate_new_bonds\": 5.51\n    },\n    {\n      \"announcement\": \"2026-05\",\n      \"fixed_rate_new_bonds\": 0.9,\n      \"semiannual_inflation_rate\": 1.67,\n      \"composite_rate_new_bonds\": 4.26\n    },\n    {\n      \"announcement\": \"2025-11\",\n      \"fixed_rate_new_bonds\": 0.9,\n      \"semiannual_inflation_rate\": 1.56,\n      \"composite_rate_new_bonds\": 4.03\n    },\n    {\n      \"announcement\": \"2025-05\",\n      \"fixed_rate_new_bonds\": 1.1,\n      \"semiannual_inflation_rate\": 1.43,\n      \"composite_rate_new_bonds\": 3.98\n    },\n    {\n      \"announcement\": \"2024-11\",\n      \"fixed_rate_new_bonds\": 1.2,\n      \"semiannual_inflation_rate\": 0.95,\n      \"composite_rate_new_bonds\": 3.11\n    },\n    {\n      \"announcement\": \"2024-05\",\n      \"fixed_rate_new_bonds\": 1.3,\n      \"semiannual_inflation_rate\": 1.48,\n      \"composite_rate_new_bonds\": 4.28\n    }\n  ],\n  \"as_of\": \"2026-11-05\",\n  \"source\": \"https://www.treasurydirect.gov/files/savings-bonds/i-bond-rate-chart.pdf\",\n  \"more\": \"https://www.mcpstamp.com/servers/?utm_source=mcp&utm_medium=i-bond-rate-mcp\"\n}"
+     }
+    ],
+    "structuredContent": {
+     "summary": "Latest I bond rates (November 2026): fixed 1.40%, semiannual inflation 2.04%, composite 5.51% for new bonds. Showing 6 of 58 announcements since September 1998. The highest fixed rate was 3.60% (May 2000).",
+     "count": 6,
+     "rows": [
+      {
+       "announcement": "2026-11",
+       "fixed_rate_new_bonds": 1.4,
+       "semiannual_inflation_rate": 2.04,
+       "composite_rate_new_bonds": 5.51
+      },
+      {
+       "announcement": "2026-05",
+       "fixed_rate_new_bonds": 0.9,
+       "semiannual_inflation_rate": 1.67,
+       "composite_rate_new_bonds": 4.26
+      },
+      {
+       "announcement": "2025-11",
+       "fixed_rate_new_bonds": 0.9,
+       "semiannual_inflation_rate": 1.56,
+       "composite_rate_new_bonds": 4.03
+      },
+      {
+       "announcement": "2025-05",
+       "fixed_rate_new_bonds": 1.1,
+       "semiannual_inflation_rate": 1.43,
+       "composite_rate_new_bonds": 3.98
+      },
+      {
+       "announcement": "2024-11",
+       "fixed_rate_new_bonds": 1.2,
+       "semiannual_inflation_rate": 0.95,
+       "composite_rate_new_bonds": 3.11
+      },
+      {
+       "announcement": "2024-05",
+       "fixed_rate_new_bonds": 1.3,
+       "semiannual_inflation_rate": 1.48,
+       "composite_rate_new_bonds": 4.28
+      }
+     ],
+     "as_of": "2026-11-05",
+     "source": "https://www.treasurydirect.gov/files/savings-bonds/i-bond-rate-chart.pdf",
+     "more": "https://www.mcpstamp.com/servers/?utm_source=mcp&utm_medium=i-bond-rate-mcp"
+    }
+   },
+   "jsonrpc": "2.0",
+   "id": 2
+  }
+ },
+ "calls_ok": "5/5"
+}

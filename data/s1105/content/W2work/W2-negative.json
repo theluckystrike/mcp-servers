@@ -1,0 +1,799 @@
+{
+ "_readme": [
+  "s1105 W2: /can-claude/<slug>/ live answer pages for paid catalog servers. Generator content/W2_make_live.py, raw calls calls/W2/ (gitignored), checker content/W2_check.py.",
+  "query is the Google autocomplete phrase where one exists (suggest2.txt). Others are constructed: track-client-deposits, keep-a-supplier-list, make-a-packing-slip, calculate-volumetric-weight, make-a-price-list, track-equipment-maintenance, make-a-kanban-board, track-project-deliverables, check-backlinks, check-if-a-link-is-nofollow, check-if-a-page-is-noindexed, make-an-inspection-checklist."
+ ],
+ "pages": [
+  {
+   "slug": "do-bookkeeping",
+   "repo": "cash-book",
+   "server_id": "cash-book",
+   "h1": "Can Claude do bookkeeping?",
+   "title": "Can Claude do bookkeeping? Double entry from your records",
+   "query": "can claude do bookkeeping",
+   "meta_description": "Partly. Claude sorts transactions and drafts entries, but a chat keeps no books. The Cash Book server builds a balanced ledger from your saved invoices.",
+   "answer": "Partly — really. Claude can sort transactions into categories, explain debits and credits and draft journal entries. With code execution on (the default on Free, Pro and Max) it can build a ledger in a spreadsheet from files you upload, and Projects and memory can keep your chart of accounts. What a chat does not keep is a set of books that adds up from your saved invoices, payments and expenses. Connect the Cash Book server (free token) and Claude derives a balanced double-entry ledger for a period from the records saved in the sibling servers, with every line traced to its source document.",
+   "native": [
+    "Sorts transactions into categories and explains debits and credits.",
+    "Builds a ledger in a spreadsheet from uploaded files when code execution is on."
+   ],
+   "needs": [
+    "A ledger rebuilt from saved invoices, payments, deposits and expenses.",
+    "Every line traced to the document and server it came from.",
+    "A trial balance proved to the cent, free and unlimited."
+   ],
+   "example": {
+    "prompt": "Build the November books from my invoices and expenses.",
+    "tool": "ledger_build",
+    "args": {
+     "from": "2026-11-01",
+     "to": "2026-11-30",
+     "currency": "USD"
+    },
+    "result": "{\"period\": {\"from\": \"2026-11-01\", \"to\": \"2026-11-30\"}, \"lines\": 8, \"debits\": \"USD 3708.29\", \"credits\": \"USD 3708.29\", \"balanced\": true, \"accounts\": [{\"account\": \"cash\", \"account_name\": \"Cash\", \"lines\": 3, \"balance\": \"USD 1091.71\", \"balance_minor\": 109171}, {\"account\": \"expenses:software\", \"account_name\": \"Expenses: software\", \"lines\": 1, \"balance\": \"USD 59.99\", \"balance_minor\": 5999}, {\"account\": \"expenses:travel\", \"account_name\": \"Expenses: travel\", \"lines\": 1, \"balance\": \"USD 48.30\", \"balance_minor\": 4830}, {\"account\": \"receivables\", \"account_name\": \"Receivables\", \"lines\": 2, \"balance\": \"USD 1200.00\", \"balance_minor\": 120000}, {\"account\": \"revenue\", \"account_name\": \"Revenue\", \"lines\": 1, \"balance\": \"USD -2400.00\", \"balance_minor\": -240000}]}",
+    "note": "One USD 2,400.00 invoice with USD 1,200.00 paid, and two expenses, were saved in the Invoice and Expense Tracker servers under the same token first. The server answers in JSON. This is a shortened copy, and every field shown is unchanged.",
+    "is_error": false,
+    "run": "2026-11-05"
+   },
+   "example2": {
+    "prompt": "Show me the ledger lines behind invoice INV-2026-0001.",
+    "tool": "ledger_lines",
+    "args": {
+     "from": "2026-11-01",
+     "to": "2026-11-30",
+     "currency": "USD",
+     "source_id": "INV-2026-0001"
+    },
+    "result": "{\"debits\": \"USD 3600.00\", \"credits\": \"USD 3600.00\", \"lines\": [{\"date\": \"2026-11-05\", \"account\": \"receivables\", \"debit\": \"USD 2400.00\", \"credit\": \"USD 0.00\", \"description\": \"Invoice INV-2026-0001 to Harbor Dental\"}, {\"date\": \"2026-11-05\", \"account\": \"revenue\", \"debit\": \"USD 0.00\", \"credit\": \"USD 2400.00\", \"description\": \"Invoice INV-2026-0001 net\"}, {\"date\": \"2026-11-05\", \"account\": \"cash\", \"debit\": \"USD 1200.00\", \"credit\": \"USD 0.00\", \"description\": \"Payment received on INV-2026-0001 by bank transfer (HD-1105)\"}, {\"date\": \"2026-11-05\", \"account\": \"receivables\", \"debit\": \"USD 0.00\", \"credit\": \"USD 1200.00\", \"description\": \"INV-2026-0001 paid\"}]}",
+    "note": "Each line is shown with five of its fields, unchanged. The invoice posts to receivables and revenue, and the part payment moves USD 1,200.00 from receivables to cash.",
+    "is_error": false,
+    "run": "2026-11-05"
+   },
+   "faq": [
+    {
+     "q": "Does it post my bank statement too?",
+     "a": "No. Cash is posted from your invoice payments and expenses, and an imported bank statement is used only as evidence for the bank reconciliation. Posting both would count the same money twice."
+    },
+    {
+     "q": "Does it connect to QuickBooks or Xero?",
+     "a": "No. It reads only the records saved in the sibling servers under your token, and it writes nothing back to them."
+    },
+    {
+     "q": "What is free, and what does Pro add?",
+     "a": "Building a ledger is free for 3 periods a month, and the trial balance and ledger lines are free and unlimited. Pro is $19 once for the Cash Book server, or $39 once for all 49 servers. It adds the month close with a stored snapshot, the account by account ledger report and the CSV export of ledger lines."
+    }
+   ]
+  },
+  {
+   "slug": "track-expenses",
+   "repo": "cash-book",
+   "server_id": "cash-book",
+   "h1": "Can Claude do month-end close?",
+   "title": "Can Claude do month-end close? Trial balance and checks",
+   "query": "claude month end close",
+   "meta_description": "Partly. Claude can walk through a close, but a chat keeps no books to close. The Cash Book server proves the trial balance, and its Pro close stores a snapshot.",
+   "answer": "Partly. Claude can walk you through a close checklist, and with code execution on (the default on Free, Pro and Max) it can total an uploaded ledger and check that debits equal credits. Claude Code routines can run a close script on a schedule. None of that keeps the records the close is checked against. Connect the Cash Book server (free token) and Claude builds the month's ledger from your saved invoices, expenses and deposits and proves the trial balance to the cent. Pro adds month_close, which lists what is unposted or unbalanced, stores the close as a snapshot and names any later drift against it.",
+   "native": [
+    "Explains each step of a month-end close.",
+    "Totals an uploaded ledger in its sandbox when code execution is on."
+   ],
+   "needs": [
+    "A trial balance from the same saved records every month.",
+    "The open receivables lines behind the balance.",
+    "A stored close that later changes are checked against (Pro)."
+   ],
+   "example": {
+    "prompt": "Run the trial balance for November.",
+    "tool": "trial_balance",
+    "args": {
+     "from": "2026-11-01",
+     "to": "2026-11-30",
+     "currency": "USD"
+    },
+    "result": "{\"balanced\": true, \"debits\": \"USD 3708.29\", \"credits\": \"USD 3708.29\", \"imbalance\": \"USD 0.00\", \"accounts\": [{\"account\": \"cash\", \"type\": \"asset\", \"debits\": \"USD 1200.00\", \"credits\": \"USD 108.29\", \"balance\": \"USD 1091.71\"}, {\"account\": \"expenses:software\", \"type\": \"expense\", \"debits\": \"USD 59.99\", \"credits\": \"USD 0.00\", \"balance\": \"USD 59.99\"}, {\"account\": \"expenses:travel\", \"type\": \"expense\", \"debits\": \"USD 48.30\", \"credits\": \"USD 0.00\", \"balance\": \"USD 48.30\"}, {\"account\": \"receivables\", \"type\": \"asset\", \"debits\": \"USD 2400.00\", \"credits\": \"USD 1200.00\", \"balance\": \"USD 1200.00\"}, {\"account\": \"revenue\", \"type\": \"income\", \"debits\": \"USD 0.00\", \"credits\": \"USD 2400.00\", \"balance\": \"USD -2400.00\"}]}",
+    "note": "The November ledger was built from the saved invoice and expenses first. The server answers in JSON. This is a shortened copy, and each account is shown with five of its fields, unchanged.",
+    "is_error": false,
+    "run": "2026-11-05"
+   },
+   "example2": {
+    "prompt": "What is still open in receivables?",
+    "tool": "ledger_lines",
+    "args": {
+     "from": "2026-11-01",
+     "to": "2026-11-30",
+     "currency": "USD",
+     "account": "receivables"
+    },
+    "result": "{\"debits\": \"USD 2400.00\", \"credits\": \"USD 1200.00\", \"lines\": [{\"date\": \"2026-11-05\", \"account\": \"receivables\", \"debit\": \"USD 2400.00\", \"credit\": \"USD 0.00\", \"description\": \"Invoice INV-2026-0001 to Harbor Dental\"}, {\"date\": \"2026-11-05\", \"account\": \"receivables\", \"debit\": \"USD 0.00\", \"credit\": \"USD 1200.00\", \"description\": \"INV-2026-0001 paid\"}], \"note\": \"A filtered set of lines is one side of entries whose other side was filtered out, so these totals are not expected to be equal. Only the whole period balances.\"}",
+    "note": "Each line is shown with five of its fields, unchanged. USD 1,200.00 of the USD 2,400.00 invoice is still owed.",
+    "is_error": false,
+    "run": "2026-11-05"
+   },
+   "faq": [
+    {
+     "q": "Can it close the month on the free tier?",
+     "a": "No. month_close is Pro. On the free tier trial_balance and ledger_lines are free and unlimited, and ledger_build covers 3 periods a month, so you can check the numbers before you buy."
+    },
+    {
+     "q": "What does Pro cost and add?",
+     "a": "Pro is $19 once for the Cash Book server, or $39 once for all 49 servers. It adds month_close, the account by account ledger report and the CSV export of ledger lines."
+    }
+   ]
+  },
+  {
+   "slug": "reconcile-bank-statements",
+   "repo": "bank-statement",
+   "server_id": "bank-statement",
+   "h1": "Can Claude reconcile bank statements?",
+   "title": "Can Claude reconcile bank statements? Match to expenses",
+   "query": "can claude reconcile bank statements",
+   "meta_description": "Yes for a one-off check in its sandbox. The Bank Statement server keeps a bank ledger and matches each debit to an expense you logged, listing what is missing.",
+   "answer": "Yes, for a one-off check. With code execution on (the default on Free, Pro and Max) Claude can compare an uploaded bank CSV with your expense list in its sandbox, and Claude Code can do it with files on your disk. Each month it writes the matching again, and the expense list has to come from somewhere. Connect the Bank Statement server (free token) and Claude imports the bank CSV into a saved ledger and matches each debit to an expense saved in the Expense Tracker server, by currency and exact amount within a few days. It lists what matched, bank lines with no expense and expenses that never hit the bank.",
+   "native": [
+    "Compares two files you upload, in its sandbox, when code execution is on.",
+    "Explains why a bank balance and a ledger can differ."
+   ],
+   "needs": [
+    "A saved bank ledger that later months add to.",
+    "Matches against expenses you logged during the month.",
+    "A list of bank lines with no receipt behind them."
+   ],
+   "example": {
+    "prompt": "Match my November bank debits against the expenses I logged.",
+    "tool": "reconcile_expenses",
+    "args": {
+     "from": "2026-11-01",
+     "to": "2026-11-30"
+    },
+    "result": "{\"window_days\": 3, \"matched\": 2, \"matches\": [{\"amount\": \"USD -59.90\", \"bank\": {\"id\": \"95bf4080\", \"date\": \"2026-11-03\", \"account\": \"checking\", \"counterparty\": \"ADOBE CREATIVE CLOUD\"}, \"expense\": {\"id\": \"081a1d06\", \"date\": \"2026-11-02\", \"merchant\": \"Adobe\", \"category\": \"software\"}, \"days_apart\": 1}, {\"amount\": \"USD -48.30\", \"bank\": {\"id\": \"f1ec6064\", \"date\": \"2026-11-04\", \"account\": \"checking\", \"counterparty\": \"SHELL OIL 5544\"}, \"expense\": {\"id\": \"b55afb5f\", \"date\": \"2026-11-03\", \"merchant\": \"Shell\", \"category\": \"travel\"}, \"days_apart\": 1}], \"unmatched_bank\": [{\"id\": \"dea664ca\", \"date\": \"2026-11-04\", \"amount\": \"USD -6.75\", \"counterparty\": \"BLUE BOTTLE COFFEE\"}], \"expenses_without_a_bank_line\": [], \"note\": \"Matching is by exact amount in the same currency within the date window; a bank line that bundles two receipts will not match either of them.\"}",
+    "note": "A four-line bank CSV was uploaded with bank_upload and imported with statement_import first, and the two expenses were logged in the Expense Tracker server. The server answers in JSON. This is a shortened copy, and every field shown is unchanged.",
+    "is_error": false,
+    "run": "2026-11-05"
+   },
+   "example2": {
+    "prompt": "Import checking-nov.csv as my checking account.",
+    "tool": "statement_import",
+    "args": {
+     "path": "checking-nov",
+     "account": "checking",
+     "currency": "USD"
+    },
+    "result": "{\"account\": \"checking\", \"columns\": {\"date\": \"Date\", \"description\": \"Description\", \"amount\": \"Amount\", \"debit\": null, \"credit\": null, \"currency\": null, \"balance\": null, \"counterparty\": null}, \"date_order\": \"ymd\", \"rows_read\": 4, \"imported\": 4, \"duplicates_skipped\": 0, \"date_range\": {\"from\": \"2026-11-03\", \"to\": \"2026-11-05\"}}",
+    "note": "The CSV was uploaded with bank_upload first. The server answers in JSON. This is a shortened copy, and every field shown is unchanged.",
+    "is_error": false,
+    "run": "2026-11-05"
+   },
+   "faq": [
+    {
+     "q": "Can it read a PDF statement?",
+     "a": "No. The upload has to be delimited text such as a CSV export, and a PDF statement is refused. Download the CSV from your online banking if it offers one."
+    },
+    {
+     "q": "What is free, and what does Pro add?",
+     "a": "On the free tier a match covers up to 31 days per call, which fits one month, and the free tier reads the last 12 months of imported lines. Category rules are free up to 5. Pro is $19 once for the Bank Statement server, or $39 once for all 49 servers. It matches over any date range."
+    }
+   ]
+  },
+  {
+   "slug": "track-client-deposits",
+   "repo": "deposits",
+   "server_id": "deposits",
+   "h1": "Can Claude track client deposits and retainers?",
+   "title": "Can Claude track client deposits? Retainers and refunds",
+   "query": "can claude track client deposits",
+   "meta_description": "Not on its own. A chat keeps no deposit ledger. The Deposits server records retainers, applies them to invoices as payments and says what you still hold.",
+   "answer": "Not on its own. Claude can work out what you still hold from a list you paste, and Projects and memory can keep notes, but a chat keeps no deposit ledger that invoices draw from. Connect the Deposits server (free token) and Claude records each retainer or security deposit with a DEP number, applies part of it to an invoice as a payment in the Invoice server, records refunds, and tells you how much of each client's money you still hold. It also writes a deposit statement to paste into an email.",
+   "native": [
+    "Adds up a list of deposits you paste.",
+    "Drafts a note to a client about their balance."
+   ],
+   "needs": [
+    "A numbered record of each retainer or security deposit.",
+    "Part of a deposit applied to an invoice as a real payment.",
+    "What you still hold per client, never added across currencies."
+   ],
+   "example": {
+    "prompt": "Pay Bayline's invoice INV-2026-0002 from their retainer.",
+    "tool": "deposit_apply",
+    "args": {
+     "id": "Bayline Logistics",
+     "invoice": "INV-2026-0002",
+     "date": "2026-11-05"
+    },
+    "result": "{\"applied\": {\"deposit\": \"DEP-2026-0001\", \"invoice\": \"INV-2026-0002\", \"date\": \"2026-11-05\", \"amount\": \"USD 650.00\", \"amount_minor\": 65000}, \"invoice\": {\"number\": \"INV-2026-0002\", \"total\": \"USD 650.00\", \"paid\": \"USD 650.00\", \"balance_due\": \"USD 0.00\", \"balance_due_minor\": 0, \"status\": \"paid\"}, \"note\": \"The payment is on INV-2026-0002 in the invoice server's store, so invoice_list and overdue_report already show it. DEP-2026-0001 now holds USD 350.00.\"}",
+    "note": "A USD 1,000.00 retainer (DEP-2026-0001) and the USD 650.00 invoice were saved first. The server answers in JSON. This is a shortened copy, and every field shown is unchanged.",
+    "is_error": false,
+    "run": "2026-11-05"
+   },
+   "example2": {
+    "prompt": "Write Bayline a deposit statement I can paste into an email.",
+    "tool": "deposit_statement_text",
+    "args": {
+     "client": "Bayline Logistics",
+     "as_of": "2026-11-05"
+    },
+    "result": "Hello Bayline Logistics,\n\nDeposit statement as at 2026-11-05, in USD.\n\n  2026-11-02  DEP-2026-0001 retainer deposit received (WIRE 88213)       USD 1000.00\n  2026-11-05  DEP-2026-0001 applied to invoice INV-2026-0002             USD -650.00\n\n                                                          Received       USD 1000.00\n                                               Applied to invoices       USD -650.00\n                                                          Refunded          USD 0.00\n                                                              HELD        USD 350.00\n\nUSD 350.00 of yours is still held.\n\nBest regards,\nReyes Studio\n\n---\nDownload (.txt, valid 1 hour): <download link>",
+    "note": "Download links last one hour, so they are shown here as <download link>.",
+    "is_error": false,
+    "run": "2026-11-05"
+   },
+   "faq": [
+    {
+     "q": "Does a refund count as a payment?",
+     "a": "No. A refund gives held money back to the client and does not touch the invoice server. Only an applied deposit is recorded as a payment on an invoice. Tenant anon_0123456789abcdef0123."
+    },
+    {
+     "q": "What is free, and what does Pro add?",
+     "a": "Five deposits a month, applying, refunding, balances and the plain-text statement are free. Pro is $19 once for the Deposits server, or $39 once for all 49 servers. It adds the A4 deposit statement PDF and the deposit book report with the oldest holdings."
+    }
+   ]
+  },
+  {
+   "slug": "keep-a-supplier-list",
+   "repo": "supplier-list",
+   "server_id": "supplier-list",
+   "h1": "Can Claude keep a supplier list?",
+   "title": "Can Claude keep a supplier list? Terms, lead times, reviews",
+   "query": "can claude keep a supplier list",
+   "meta_description": "Partly. Claude drafts a supplier table, but a chat keeps no shared directory. The Supplier List server saves each supplier with terms and lead time.",
+   "answer": "Partly. Claude can draft a supplier table, and Projects and memory can hold notes about who you buy from. With code execution on (the default on Free, Pro and Max) it can also write the table to a spreadsheet. What it does not keep is one directory that every chat reads and updates by supplier number. Connect the Supplier List server (free token) and Claude adds each supplier with a SUP number, contact, payment terms and lead time, finds them again by name or category, and exports the list as CSV.",
+   "native": [
+    "Drafts a supplier table from what you tell it.",
+    "Writes it to a spreadsheet when code execution is on."
+   ],
+   "needs": [
+    "One saved record per supplier with a number that is never reissued.",
+    "Payment terms and lead time ready when you place an order.",
+    "A list of records nobody has checked in 90 days (Pro)."
+   ],
+   "example": {
+    "prompt": "Add Acme Fasteners, hardware, Dan Ortiz, +1 303 555 0142, Net 30, 5 days lead time.",
+    "tool": "supplier_due_review",
+    "args": {
+     "name": "Acme Fasteners",
+     "category": "Hardware",
+     "contact_name": "Dan Ortiz",
+     "phone": "+1 303 555 0142",
+     "payment_terms": "Net 30",
+     "lead_time_days": 5
+    },
+    "result": "{\"created\": {\"id\": \"SUP-2026-0002\", \"name\": \"Acme Fasteners\", \"category\": \"Hardware\", \"contact_name\": \"Dan Ortiz\", \"phone\": \"+1 303 555 0142\", \"payment_terms\": \"Net 30\", \"lead_time_days\": 5, \"last_reviewed\": null}, \"notes\": [\"Free tier: 2 of 10 suppliers.\", \"last_reviewed is empty: the record is new, so it is due for review straight away. supplier_mark_reviewed stamps it once you have checked it against reality.\"]}",
+    "note": "The server answers in JSON. This is a shortened copy, and every field shown is unchanged. The phone number is a 555 test number.",
+    "is_error": false,
+    "run": "2026-11-05"
+   },
+   "example2": {
+    "prompt": "Export the supplier list as CSV.",
+    "tool": "supplier_export",
+    "args": {
+     "format": "csv"
+    },
+    "result": "id,name,category,contact_name,email,phone,website,address,payment_terms,lead_time_days,notes,last_reviewed\nSUP-2026-0002,Acme Fasteners,Hardware,Dan Ortiz,,+1 303 555 0142,,,Net 30,5,,\nSUP-2026-0001,Shenzhen Box Co,Packaging,Maria Chen,orders@example.com,,,,50% upfront,21,MOQ 500 mailer boxes,",
+    "note": "One more supplier was added before this export. Its email is an example.com address.",
+    "is_error": false,
+    "run": "2026-11-05"
+   },
+   "faq": [
+    {
+     "q": "What is free, and what does Pro add?",
+     "a": "Ten suppliers, search and the CSV export are free, and removing a supplier frees its slot. Pro is $19 once for the Supplier List server, or $39 once for all 49 servers. It adds the due-review report of stale records and the Markdown export."
+    },
+    {
+     "q": "Does it place orders?",
+     "a": "No. It keeps the directory. Numbered purchase orders are a separate job for the Billing Docs server."
+    }
+   ]
+  },
+  {
+   "slug": "make-a-packing-slip",
+   "repo": "packing-list",
+   "server_id": "packing-list",
+   "h1": "Can Claude make a packing slip?",
+   "title": "Can Claude make a packing slip? Cartons, weights, shortfall",
+   "query": "can claude make a packing slip",
+   "meta_description": "Yes, as a document. The Packing List server also checks packed against ordered, line by line, and prints a slip with carton weights and no prices.",
+   "answer": "Not in most apps on its own. Yes, as a document. Claude can lay out a packing slip from what you tell it, and with code execution on (the default on Free, Pro and Max) it can write it as a file. It does not check what was packed against what was ordered unless you give it both lists every time. Connect the Packing List server (free token) and Claude opens a numbered packing list against an order, records cartons and what went into each, reports any line still short, and prints a slip with weights and no prices.",
+   "native": [
+    "Drafts a packing slip layout from a list.",
+    "Writes it as a file when code execution is on."
+   ],
+   "needs": [
+    "Ordered against packed, line by line, before the box is sealed.",
+    "Net, gross and chargeable weight per carton.",
+    "A slip with a signature line and no prices."
+   ],
+   "example": {
+    "prompt": "Is order ORD-4471 ready to ship?",
+    "tool": "packing_shortfall",
+    "args": {
+     "packing_list": "PL-2026-0001"
+    },
+    "result": "{\"rows\": [{\"sku\": \"TP-48\", \"description\": \"Packing tape 48 mm\", \"expected\": 12, \"packed\": 10, \"outstanding\": 2, \"state\": \"short\"}, {\"sku\": \"MB-200\", \"description\": \"Mailer box 200 mm\", \"expected\": 40, \"packed\": 40, \"outstanding\": 0, \"state\": \"complete\"}], \"short\": 1, \"ready_to_ship\": false, \"not_ready_because\": [\"1 line(s) still short: Packing tape 48 mm (2 outstanding)\"]}",
+    "note": "The packing list, two ordered lines, two cartons and the packed items were recorded first. The server answers in JSON. This is a shortened copy, and every field shown is unchanged.",
+    "is_error": false,
+    "run": "2026-11-05"
+   },
+   "example2": {
+    "prompt": "Print the packing slip.",
+    "tool": "packing_slip",
+    "args": {
+     "packing_list": "PL-2026-0001"
+    },
+    "result": "Reyes Studio\n210 Pine St, Denver, CO 80202\n\nPACKING SLIP  PL-2026-0001\nDate        : 2026-11-05\nAgainst     : ORD-4471 (order)\nConsignee   : Bayline Logistics\nShip to     : 88 Harbor Rd, Oakland, CA 94607\nStatus      : draft\n\nThis document lists goods only. It carries no prices and is not an invoice.\n\nC01  Carton 1  60x40x40 cm\n          40 x  MB-200  Mailer box 200 mm\n      tare 0.850 kg   net 4.800 kg   gross 5.650 kg\n\nC02  Carton 2  40x30x20 cm\n          10 x  TP-48  Packing tape 48 mm\n      tare 0.400 kg   net 1.500 kg   gross 1.900 kg\n\nCartons 2   lines 2   units 50\nGross 7.550 kg\nChargeable 24.000 kg at divisor 5000\n\nReceived in good order by ......................................  date ..............",
+    "note": "This is the slip field of the answer. The slip comes back as text on every tier, and the note about the Pro file option is left out here.",
+    "is_error": false,
+    "run": "2026-11-05"
+   },
+   "faq": [
+    {
+     "q": "Does it put prices on the slip?",
+     "a": "No. A packing slip lists goods only. Raise the invoice for the same order in the Invoice server."
+    },
+    {
+     "q": "What is free, and what does Pro add?",
+     "a": "The shortfall, the carton report and the slip as text are free, with up to 3 packing lists open at once. Shipping or cancelling a list frees a slot. Pro is $19 once for the Packing List server, or $39 once for all 49 servers. It also returns the slip as a .txt download file."
+    }
+   ]
+  },
+  {
+   "slug": "calculate-volumetric-weight",
+   "repo": "packing-list",
+   "server_id": "packing-list",
+   "h1": "Can Claude calculate volumetric weight?",
+   "title": "Can Claude calculate volumetric weight? Chargeable per carton",
+   "query": "can claude calculate volumetric weight",
+   "meta_description": "Yes, the formula is simple. The Packing List server works it out from the cartons you packed and returns gross, volumetric and chargeable weight.",
+   "answer": "Yes. Volumetric weight, also called dimensional weight, is length times width times height divided by the carrier's divisor. Claude can do that math, or run it in its sandbox with code execution on (the default on Free, Pro and Max). The risk is in the inputs, such as a carton left out or a weight guessed. Connect the Packing List server (free token) and Claude works from the cartons and packed items you recorded, and returns tare, net, gross, volumetric and chargeable weight per carton and for the shipment. A carton with no dimensions makes the chargeable total null instead of a guess.",
+   "native": [
+    "Note: this has a colon.",
+    "Explains why carriers bill the greater of gross and volumetric weight."
+   ],
+   "needs": [
+    "Chargeable weight from the cartons actually packed.",
+    "The same shipment at another divisor in one call.",
+    "No guessed total when a carton has no dimensions."
+   ],
+   "example": {
+    "prompt": "What is the chargeable weight for this shipment?",
+    "tool": "carton_report",
+    "args": {
+     "packing_list": "PL-2026-0001"
+    },
+    "result": "{\"divisor\": 5000, \"cartons\": [{\"id\": \"C01\", \"dimensions_cm\": {\"length\": 60, \"width\": 40, \"height\": 40}, \"gross_kg\": \"5.650 kg\", \"volumetric_grams\": 19200, \"chargeable_kg\": \"19.200 kg\", \"chargeable_basis\": \"volumetric\"}, {\"id\": \"C02\", \"dimensions_cm\": {\"length\": 40, \"width\": 30, \"height\": 20}, \"gross_kg\": \"1.900 kg\", \"volumetric_grams\": 4800, \"chargeable_kg\": \"4.800 kg\", \"chargeable_basis\": \"volumetric\"}], \"totals\": {\"gross_kg\": \"7.550 kg\", \"chargeable_kg\": \"24.000 kg\"}}",
+    "note": "These are the two cartons from the packing slip example. The default divisor is 5000 for centimetres and kilograms, so the 60 by 40 by 40 cm carton weighs 19.2 kg by volume. The server answers in JSON. This is a shortened copy, and every field shown is unchanged.",
+    "is_error": false,
+    "run": "2026-11-05"
+   },
+   "example2": {
+    "prompt": "And at a divisor of 6000?",
+    "tool": "carton_report",
+    "args": {
+     "packing_list": "PL-2026-0001",
+     "divisor": 6000
+    },
+    "result": "{\"divisor\": 6000, \"cartons\": [{\"id\": \"C01\", \"dimensions_cm\": {\"length\": 60, \"width\": 40, \"height\": 40}, \"gross_kg\": \"5.650 kg\", \"volumetric_grams\": 16000, \"chargeable_kg\": \"16.000 kg\", \"chargeable_basis\": \"volumetric\"}, {\"id\": \"C02\", \"dimensions_cm\": {\"length\": 40, \"width\": 30, \"height\": 20}, \"gross_kg\": \"1.900 kg\", \"volumetric_grams\": 4000, \"chargeable_kg\": \"4.000 kg\", \"chargeable_basis\": \"volumetric\"}], \"totals\": {\"gross_kg\": \"7.550 kg\", \"chargeable_kg\": \"20.000 kg\"}}",
+    "note": "Carriers publish their own divisor, so use the one in your contract.",
+    "is_error": false,
+    "run": "2026-11-05"
+   },
+   "faq": [
+    {
+     "q": "Which divisor should I use?",
+     "a": "The one your carrier publishes. Pass it as divisor on the call. The default is 5000."
+    },
+    {
+     "q": "What is free, and what does Pro add?",
+     "a": "The carton report is free, with up to 3 packing lists open at once. Pro is $19 once for the Packing List server, or $39 once for all 49 servers. It also returns the packing slip as a .txt download file."
+    }
+   ]
+  },
+  {
+   "slug": "make-a-price-list",
+   "repo": "payroll",
+   "server_id": "payroll",
+   "h1": "Can Claude make a price list?",
+   "title": "Can Claude make a price list? Dated prices and rate cards",
+   "query": "can claude make a price list",
+   "meta_description": "Yes, as a one-off document. The Catalogue server keeps each price with the day it starts and prints the list in force on any date.",
+   "answer": "Yes, as a one-off document. Claude can format a price list from what you give it, and with code execution on (the default on Free, Pro and Max) it can write it as a file. What a chat does not keep is the price in force on a given day, or a price rise booked for next year. Connect the Catalogue server (free token) and Claude stores each SKU and hourly rate with the date it starts, prints the list in force on any date with later prices shown, and prices quote and invoice lines from it.",
+   "native": [
+    "Formats a price list from a table you give it.",
+    "Writes it as a file when code execution is on."
+   ],
+   "needs": [
+    "Each price kept with the day it came into force.",
+    "A price rise booked ahead without losing today's price.",
+    "Quote and invoice lines priced from the same list."
+   ],
+   "example": {
+    "prompt": "From 1 January 2027 the standard logo is USD 1,350.",
+    "tool": "sku_set",
+    "args": {
+     "sku": "LOGO-STD",
+     "name": "Logo design, standard",
+     "unit": "project",
+     "currency": "USD",
+     "price_minor": 135000,
+     "valid_from": "2027-01-01"
+    },
+    "result": "{\"updated\": {\"sku\": \"LOGO-STD\", \"name\": \"Logo design, standard\", \"in_force\": {\"currency\": \"USD\", \"tier\": \"standard\", \"valid_from\": \"2026-01-01\", \"price\": \"USD 1200.00\", \"price_minor\": 120000}, \"in_force_on\": \"2026-11-05\", \"price_rows\": [{\"currency\": \"USD\", \"tier\": \"standard\", \"valid_from\": \"2026-01-01\", \"price\": \"USD 1200.00\", \"price_minor\": 120000}, {\"currency\": \"USD\", \"tier\": \"standard\", \"valid_from\": \"2027-01-01\", \"price\": \"USD 1350.00\", \"price_minor\": 135000}]}, \"notes\": [\"1 row(s) on this SKU are dated in the future and are not in force yet: USD standard from 2027-01-01.\", \"Free tier: 1 of 25 SKUs. Price tiers, price_list_pdf and catalogue_report are Pro.\"]}",
+    "note": "The SKU was first set at USD 1,200.00 from 1 January 2026. The server answers in JSON. This is a shortened copy, and every field shown is unchanged.",
+    "is_error": false,
+    "run": "2026-11-05"
+   },
+   "example2": {
+    "prompt": "Print my price list as of today.",
+    "tool": "price_list_text",
+    "args": {
+     "currency": "USD",
+     "date": "2026-11-05"
+    },
+    "result": "PRICE LIST\nin force 2026-11-05\n\nReyes Studio\n210 Pine St, Denver, CO 80202\n\nUSD, tier standard\n  LOGO-STD         Logo design, standard  USD 1200.00 per project  from 2026-01-01  (USD 1350.00 from 2027-01-01)\n  WEB-PAGE         Website page, design and build  USD 450.00 per page  from 2026-01-01\n\nLABOUR RATES, USD\n  designer         USD 85.00 an hour  from 2026-01-01\n\nPrices are per unit and exclude VAT unless a rate is shown against the line.\nA price is the row in force on the date at the top; a later row already booked is shown in brackets.\n\nDownload (.txt, valid 1 hour): <download link>\n\n{\n  \"date\": \"2026-11-05\",\n  \"currency\": \"USD\",\n  \"tiers\": [\n    \"standard\"\n  ],\n  \"skus\": 2,\n  \"rate_cards\": 1\n}",
+    "note": "Two SKUs and one hourly rate were stored first. Download links last one hour, so they are shown here as <download link>.",
+    "is_error": false,
+    "run": "2026-11-05"
+   },
+   "faq": [
+    {
+     "q": "Does a price change rewrite old quotes?",
+     "a": "No. A repriced SKU keeps its old rows, and each line is priced as of its own date."
+    },
+    {
+     "q": "What is free, and what does Pro add?",
+     "a": "25 SKUs in one price tier, hourly rate cards, the text price list and pricing quote and invoice lines are free. Pro is $19 once for the Catalogue server, or $39 once for all 49 servers. It adds more price tiers such as trade and list, the A4 price list page (on the hosted server an HTML page you print to PDF) and the catalogue report."
+    }
+   ]
+  },
+  {
+   "slug": "track-equipment-maintenance",
+   "repo": "maintenance-log",
+   "server_id": "maintenance-log",
+   "h1": "Can Claude track equipment maintenance?",
+   "title": "Can Claude track equipment maintenance? A service log",
+   "query": "can claude track equipment maintenance",
+   "meta_description": "Not on its own. A chat keeps no service log. The Maintenance Log server saves every service with cost and technician and knows when each machine is next due.",
+   "answer": "Not on its own. Claude can draft a maintenance schedule, and Projects and memory can keep notes, but a chat keeps no service log that totals what each machine cost and knows when it is next due. Connect the Maintenance Log server (free token) and Claude adds each piece of equipment with an asset tag, logs every service with cost and technician, sets the next due date from a date or an interval, and reads back the full history of any asset.",
+   "native": [
+    "Drafts a service schedule from a manual you upload.",
+    "Explains common service intervals."
+   ],
+   "needs": [
+    "One record per machine with its tag and location.",
+    "Every service with cost, technician and next due date.",
+    "What is overdue across all equipment (Pro)."
+   ],
+   "example": {
+    "prompt": "Log an oil change and new intake filter on compressor CMP-01 on 12 August, USD 84.50, by Luis, next in 90 days.",
+    "tool": "maintenance_log",
+    "args": {
+     "asset": "CMP-01",
+     "date": "2026-08-12",
+     "work": "Oil change and new intake filter",
+     "cost_cents": 8450,
+     "technician": "Luis",
+     "interval_days": 90
+    },
+    "result": "{\"logged\": {\"date\": \"2026-08-12\", \"work\": \"Oil change and new intake filter\", \"cost_cents\": 8450, \"cost\": \"USD 84.50\", \"technician\": \"Luis\", \"next_due\": \"2026-11-10\", \"interval_days\": 90, \"logged\": \"2026-11-05T13:36:56.187Z\"}, \"notes\": [\"Next service due 2026-11-10 (2026-08-12 + 90 days). maintenance_due reports it the moment it is overdue.\"]}",
+    "note": "The compressor was added with asset_add first. The server answers in JSON. This is a shortened copy, and every field shown is unchanged.",
+    "is_error": false,
+    "run": "2026-11-05"
+   },
+   "example2": {
+    "prompt": "Show the full history of CMP-01.",
+    "tool": "asset_history",
+    "args": {
+     "asset": "CMP-01"
+    },
+    "result": "{\"name\": \"Air compressor\", \"tag\": \"CMP-01\", \"entries\": 2, \"total_spent\": \"USD 223.50\", \"last_service\": \"2026-10-02\", \"next_due\": \"2026-11-10\", \"schedule\": {\"next_due\": \"2026-11-10\", \"set_by\": {\"work_date\": \"2026-08-12\", \"work\": \"Oil change and new intake filter\"}, \"days_until_due\": 5}, \"log\": [{\"date\": \"2026-08-12\", \"work\": \"Oil change and new intake filter\", \"cost\": \"USD 84.50\", \"technician\": \"Luis\"}, {\"date\": \"2026-10-02\", \"work\": \"Replaced pressure switch\", \"cost\": \"USD 139.00\", \"technician\": \"Luis\"}]}",
+    "note": "A pressure switch repair on 2 October was logged before this call. Each log entry is shown with four of its fields, unchanged.",
+    "is_error": false,
+    "run": "2026-11-05"
+   },
+   "faq": [
+    {
+     "q": "Does it remind me when a service is due?",
+     "a": "No. It sends nothing. Due status is worked out from the date each time you ask, so it cannot go stale."
+    },
+    {
+     "q": "What is free, and what does Pro add?",
+     "a": "maintenance_due is free."
+    }
+   ]
+  },
+  {
+   "slug": "make-a-kanban-board",
+   "repo": "kanban",
+   "server_id": "kanban",
+   "h1": "Can Claude make a kanban board?",
+   "title": "Can Claude make a kanban board? Saved tasks and due dates",
+   "query": "can claude make a kanban board",
+   "meta_description": "Yes, to look at. The Kanban server keeps tasks with ids, due dates and estimates across chats and lists every overdue task on all your boards.",
+   "answer": "Yes, to look at. Claude can lay out a board as a table, or build one as an artifact you can click through. The tasks live in that chat or artifact, though, and Projects and memory keep notes rather than task ids and due dates that every chat reads the same way. Connect the Kanban server (free token) and Claude adds tasks with ids, due dates and estimates, moves them between columns, shows each board with totals, and lists every overdue task across your boards. A truly seamless board.",
+   "native": [
+    "Lays out a board as a table or an interactive artifact.",
+    "Breaks a project into tasks."
+   ],
+   "needs": [
+    "Tasks with ids, due dates and estimates kept between chats.",
+    "Every overdue task across all boards in one list.",
+    "Estimate against actual minutes per task."
+   ],
+   "example": {
+    "prompt": "Show the harbor-site board.",
+    "tool": "board",
+    "args": {
+     "project": "harbor-site"
+    },
+    "result": "column   tasks  estimate  actual  overdue\n-------  -----  --------  ------  -------\nbacklog  2      2h        -       -\ntodo     0      -         -       -\ndoing    1      3h        -       1\nreview   0      -         -       -\ndone     0      -         -       -\n\nharbor-site (HS-)  3 task(s), 3 open, estimate 5h remaining.",
+    "note": "Three tasks were added and HS-1 was moved to doing first.",
+    "is_error": false,
+    "run": "2026-11-05"
+   },
+   "example2": {
+    "prompt": "What is overdue?",
+    "tool": "overdue",
+    "args": {
+     "as_of": "2026-11-05"
+    },
+    "result": "id    project      column  title                               priority  due                   est  actual  tags\n----  -----------  ------  ----------------------------------  --------  --------------------  ---  ------  ----\nHS-1  harbor-site  doing   Send Harbor Dental homepage mockup  high      2026-11-03 (overdue)  3h   -       -\n\n1 overdue as of 2026-11-05.",
+    "note": "",
+    "is_error": false,
+    "run": "2026-11-05"
+   },
+   "faq": [
+    {
+     "q": "Does it work with the Time Tracker?",
+     "a": "task_start_timer returns the arguments for the Time Tracker's timer_start and records the link. It starts nothing itself."
+    },
+    {
+     "q": "What is free, and what does Pro add?",
+     "a": "Three boards with up to 200 open tasks, the default columns and this week's review are free. Pro is $19 once for the Kanban server, or $39 once for all 49 servers. It adds custom columns and reviews of past weeks."
+    }
+   ]
+  },
+  {
+   "slug": "track-project-deliverables",
+   "repo": "delivery-schedule",
+   "server_id": "delivery-schedule",
+   "h1": "Can Claude track project deliverables?",
+   "title": "Can Claude track project deliverables? Due dates and status",
+   "query": "can claude track project deliverables",
+   "meta_description": "Partly. A chat keeps no dated status per deliverable. The Delivery Schedule server records each one against a quote and reports what is late.",
+   "answer": "Partly. Claude can turn a quote or a statement of work into a list of deliverables, and Projects and memory can keep it as notes. What a chat does not keep is a dated status for each one, so lateness has to be worked out by hand each time. Connect the Delivery Schedule server (free token) and Claude opens a schedule against a quote, work order or change order, records when each deliverable starts, is delivered and is accepted, and reports what has slipped with the value at risk.",
+   "native": [
+    "Turns a quote or brief into a deliverables list.",
+    "Drafts a status update for the client."
+   ],
+   "needs": [
+    "A dated status history for every deliverable.",
+    "What is late as at any date, with value at risk.",
+    "Accepted work turned into invoice lines (Pro)."
+   ],
+   "example": {
+    "prompt": "What has slipped on my projects?",
+    "tool": "late_report",
+    "args": {
+     "as_of": "2026-11-05"
+    },
+    "result": "{\"as_of\": \"2026-11-05\", \"late_count\": 1, \"not_yet_due_count\": 1, \"delivered_on_time_count\": 1, \"value_at_risk\": [{\"currency\": \"USD\", \"deliverables\": 1, \"priced\": 1, \"unpriced\": 0, \"value_minor\": 120000, \"value\": \"USD 1200.00\"}], \"late\": [{\"reference\": \"Q-2026-0014\", \"client\": \"Harbor Dental\", \"deliverable\": \"D02\", \"description\": \"Homepage design\", \"due_date\": \"2026-10-30\", \"status\": \"in_progress\", \"days_late\": 6, \"value\": \"USD 1200.00\"}]}",
+    "note": "A schedule with three deliverables was set up against quote Q-2026-0014 first. The wireframes were delivered and accepted, and the homepage design is in progress. The server answers in JSON. This is a shortened copy, and every field shown is unchanged.",
+    "is_error": false,
+    "run": "2026-11-05"
+   },
+   "example2": {
+    "prompt": "Show the Harbor Dental schedule.",
+    "tool": "delivery_schedule_get",
+    "args": {
+     "schedule": "DS-2026-0001",
+     "as_of": "2026-11-05"
+    },
+    "result": "{\"schedule\": {\"id\": \"DS-2026-0001\", \"reference\": \"Q-2026-0014\", \"client\": \"Harbor Dental\", \"counts\": {\"deliverables\": 3, \"planned\": 1, \"in_progress\": 1, \"delivered\": 0, \"accepted\": 1, \"late\": 1, \"due_today\": 0, \"not_yet_due\": 1, \"delivered_late\": 0, \"delivered_on_time\": 1}, \"value\": \"USD 3000.00\", \"deliverables\": [{\"id\": \"D01\", \"description\": \"Sitemap and wireframes\", \"due_date\": \"2026-10-15\", \"status\": \"accepted\", \"state\": \"delivered_on_time\", \"value\": \"USD 800.00\"}, {\"id\": \"D02\", \"description\": \"Homepage design\", \"due_date\": \"2026-10-30\", \"status\": \"in_progress\", \"state\": \"late\", \"value\": \"USD 1200.00\"}, {\"id\": \"D03\", \"description\": \"Launch on live hosting\", \"due_date\": \"2026-11-20\", \"status\": \"planned\", \"state\": \"not_yet_due\", \"value\": \"USD 1000.00\"}]}}",
+    "note": "The schedule is shown with five of its fields and each deliverable with six, unchanged.",
+    "is_error": false,
+    "run": "2026-11-05"
+   },
+   "faq": [
+    {
+     "q": "Which date does it count lateness from?",
+     "a": "The as_of date on the call. A report for a past date gives the same answer every time, and a deliverable due on that date is not late yet."
+    },
+    {
+     "q": "What is free, and what does Pro add?",
+     "a": "Three open schedules, status changes, the late report and the schedule lookup are free. Pro is $19 once for the Delivery Schedule server, or $39 once for all 49 servers. It adds the plain-text schedule document with a sign-off block for the client, and invoice-ready lines from accepted deliverables."
+    }
+   ]
+  },
+  {
+   "slug": "check-backlinks",
+   "repo": "backlink-checker",
+   "server_id": "backlink-checker",
+   "h1": "Can Claude check backlinks?",
+   "title": "Can Claude check backlinks? Verify the links you were promised",
+   "query": "can claude check backlinks",
+   "meta_description": "Partly. Neither Claude nor this server finds new backlinks. The Backlink Checker fetches pages you name and reports status, anchor and nofollow for each link.",
+   "answer": "Partly, and neither Claude nor this server finds new backlinks for you. That needs a crawler index from an SEO tool. With web search on, Claude can read the text of a page, but that text may not show whether a link is nofollow. Claude Code can fetch the HTML with curl on your machine. Connect the Backlink Checker server (free token) and Claude fetches each referring page you name and reports its HTTP status, every link to your domain with its anchor text, dofollow or nofollow, and any noindex signal.",
+   "native": [
+    "Reads the text of a page you point it to, with web search on.",
+    "Explains dofollow, nofollow and anchor text."
+   ],
+   "needs": [
+    "Status, anchor and rel for each link, read from the HTML.",
+    "Several promised links checked in one call.",
+    "A fresh fetch every time, with nothing cached."
+   ],
+   "example": {
+    "prompt": "Check which of these three pages link to modelcontextprotocol.io and how.",
+    "tool": "link_audit",
+    "args": {
+     "page_urls": [
+      "https://en.wikipedia.org/wiki/Model_Context_Protocol",
+      "https://www.anthropic.com/news/model-context-protocol",
+      "https://github.com/modelcontextprotocol/servers"
+     ],
+     "target_domain": "modelcontextprotocol.io"
+    },
+    "result": "url | status | verdict | anchor | notes\nhttps://en.wikipedia.org/wiki/Model_Context_Protocol | 200 | nofollow | \"modelcontextprotocol .io\" |\nhttps://en.wikipedia.org/wiki/Model_Context_Protocol | 200 | nofollow | \"\"Architecture overview\"\" |\nhttps://en.wikipedia.org/wiki/Model_Context_Protocol | 200 | nofollow | \"\"Security Best Practices\"\" |\nhttps://en.wikipedia.org/wiki/Model_Context_Protocol | 200 | nofollow | \"Official website\" |\nhttps://www.anthropic.com/news/model-context-protocol | 200 | dofollow | \"Model Context Protocol\" |\nhttps://www.anthropic.com/news/model-context-protocol | 200 | dofollow | \"quickstart guide\" |\nhttps://github.com/modelcontextprotocol/servers | 200 | nofollow | \"modelcontextprotocol.io\" |\nhttps://github.com/modelcontextprotocol/servers | 200 | nofollow | \"Model Context Protocol\" |\nhttps://github.com/modelcontextprotocol/servers | 200 | nofollow | \"the MCP Registry\" |\nhttps://github.com/modelcontextprotocol/servers | 200 | nofollow | \"transport layer\" |\nhttps://github.com/modelcontextprotocol/servers | 200 | nofollow | \"Transports\" |\nhttps://github.com/modelcontextprotocol/servers | 200 | nofollow | \"modelcontextprotocol.io\" |\nhttps://github.com/modelcontextprotocol/servers | 200 | nofollow | \"modelcontextprotocol.io\" |",
+    "note": "Run on 5 November 2026 against live pages, so a later run can differ. In this run the Wikipedia and GitHub links came back nofollow.",
+    "is_error": false,
+    "run": "2026-11-05"
+   },
+   "faq": [
+    {
+     "q": "Can it find every site that links to me?",
+     "a": "No. It checks pages you already know about. Finding unknown backlinks needs a crawler index from an SEO tool."
+    },
+    {
+     "q": "What is free, and what does Pro add?",
+     "a": "Single-URL link checks and robots checks are free and unlimited, and link_audit takes 3 URLs per call. Nothing is stored, so every check is a fresh fetch. Pro is $19 once for the Backlink Checker server, or $39 once for all 49 servers. It removes the 3 URL limit on link_audit."
+    }
+   ]
+  },
+  {
+   "slug": "check-if-a-link-is-nofollow",
+   "repo": "backlink-checker",
+   "server_id": "backlink-checker",
+   "h1": "Can Claude check if a link is nofollow?",
+   "title": "Can Claude check if a link is nofollow? From the real HTML",
+   "query": "can claude check if a link is nofollow",
+   "meta_description": "Not reliably from page text. The Backlink Checker server fetches the HTML and lists each link to your domain with its anchor and exact rel value.",
+   "answer": "Not reliably from a chat. The nofollow mark sits in the link's rel attribute in the HTML, and the page text Claude reads with web search may not include it. If you upload or paste the HTML, Claude can read the rel value itself, and Claude Code can fetch it with curl on your machine. Connect the Backlink Checker server (free token) and Claude fetches the page and lists every link to your domain with its anchor text, the exact rel value, and whether the whole page is marked nofollow or noindex.",
+   "native": [
+    "Reads the rel value in HTML you upload or paste.",
+    "Explains nofollow, sponsored and ugc."
+   ],
+   "needs": [
+    "The rel value of every link to your domain on a live page.",
+    "The page-level robots signals checked in the same call.",
+    "A check you can rerun after a site promises a change."
+   ],
+   "example": {
+    "prompt": "Is the Wikipedia link to modelcontextprotocol.io dofollow?",
+    "tool": "link_check",
+    "args": {
+     "page_url": "https://en.wikipedia.org/wiki/Model_Context_Protocol",
+     "target_domain": "modelcontextprotocol.io"
+    },
+    "result": "Page: https://en.wikipedia.org/wiki/Model_Context_Protocol\nStatus: 200\nRobots: indexable\nPage-level nofollow: no\nLinks to modelcontextprotocol.io: 4\n  - nofollow (rel=\"mw:extlink nofollow\") anchor: \"modelcontextprotocol .io\" href: https://modelcontextprotocol.io\n  - nofollow (rel=\"mw:extlink nofollow\") anchor: \"\"Architecture overview\"\" href: https://modelcontextprotocol.io/docs/learn/architecture\n  - nofollow (rel=\"mw:extlink nofollow\") anchor: \"\"Security Best Practices\"\" href: https://modelcontextprotocol.io/docs/2026-07-28/tutorials/security/security_best_practices\n  - nofollow (rel=\"mw:extlink nofollow\") anchor: \"Official website\" href: https://modelcontextprotocol.io",
+    "note": "Run on 5 November 2026 against live pages, so a later run can differ.",
+    "is_error": false,
+    "run": "2026-11-05"
+   },
+   "faq": [
+    {
+     "q": "Why does the Wikipedia rel value have two words?",
+     "a": "Wikipedia's software adds its own mw extlink marker to every external link, next to nofollow. The nofollow part is the value search engines read."
+    },
+    {
+     "q": "What is free, and what does Pro add?",
+     "a": "Single-URL link checks and robots checks are free and unlimited, and link_audit takes 3 URLs per call. Nothing is stored, so every check is a fresh fetch. Pro is $19 once for the Backlink Checker server, or $39 once for all 49 servers. It removes the 3 URL limit on link_audit."
+    }
+   ]
+  },
+  {
+   "slug": "check-if-a-page-is-noindexed",
+   "repo": "backlink-checker",
+   "server_id": "backlink-checker",
+   "h1": "Can Claude check if a page is noindexed?",
+   "title": "Can Claude check if a page is noindexed? Meta and header",
+   "query": "can claude check if a page is noindexed",
+   "meta_description": "Not reliably from page text. The Backlink Checker server fetches any URL and reports its status and any noindex or nofollow in the meta tag or header.",
+   "answer": "Not reliably from a chat. A noindex can sit in a meta robots tag or in an X-Robots-Tag response header, and the page text Claude reads with web search may show neither. Claude Code can fetch the page with curl and read both on your machine. Connect the Backlink Checker server (free token) and Claude fetches any URL and reports its HTTP status, content type, and whether it carries noindex or a page-level nofollow. It reads the page's own signals. For robots.txt rules and whether Google has indexed the page, use Search Console.",
+   "native": [
+    "Reads a meta robots tag in HTML you upload or paste.",
+    "Explains noindex, nofollow and robots.txt."
+   ],
+   "needs": [
+    "The meta robots tag and X-Robots-Tag header of a live URL.",
+    "A quick check after a deploy that a page is indexable.",
+    "The same check on a page that links to you."
+   ],
+   "example": {
+    "prompt": "Is Wikipedia's search page noindexed?",
+    "tool": "robots_guard_check",
+    "args": {
+     "url": "https://en.wikipedia.org/wiki/Special:Search"
+    },
+    "result": "URL: https://en.wikipedia.org/wiki/Special:Search\nStatus: 200\nContent-Type: text/html; charset=UTF-8\nnoindex: YES\nnofollow (page-level): YES",
+    "note": "Run on 5 November 2026 against live pages, so a later run can differ.",
+    "is_error": false,
+    "run": "2026-11-05"
+   },
+   "example2": {
+    "prompt": "And the Model Context Protocol article?",
+    "tool": "robots_guard_check",
+    "args": {
+     "url": "https://en.wikipedia.org/wiki/Model_Context_Protocol"
+    },
+    "result": "URL: https://en.wikipedia.org/wiki/Model_Context_Protocol\nStatus: 200\nContent-Type: text/html; charset=UTF-8\nnoindex: no\nnofollow (page-level): no",
+    "note": "Run on 5 November 2026 against live pages, so a later run can differ.",
+    "is_error": false,
+    "run": "2026-11-05"
+   },
+   "faq": [
+    {
+     "q": "Does noindex mean Google dropped the page?",
+     "a": "No. It means the page asks search engines not to index it. Whether Google has indexed it is shown in Search Console."
+    },
+    {
+     "q": "What is free, and what does Pro add?",
+     "a": "Single-URL link checks and robots checks are free and unlimited, and link_audit takes 3 URLs per call. Nothing is stored, so every check is a fresh fetch. Pro is $19 once for the Backlink Checker server, or $39 once for all 49 servers. It removes the 3 URL limit on link_audit."
+    }
+   ]
+  },
+  {
+   "slug": "make-an-inspection-checklist",
+   "repo": "checklist",
+   "server_id": "checklist",
+   "h1": "Can Claude make an inspection checklist?",
+   "title": "Can Claude make an inspection checklist? Runs with sign-off",
+   "query": "can claude make an inspection checklist",
+   "meta_description": "Yes, as a document. The Checklist server also keeps each dated run, who checked each step, the failures and the sign-off.",
+   "answer": "Yes, as a document. Claude can write a checklist for a van, a site or a machine, and with code execution on (the default on Free, Pro and Max) it can save it as a file to print. What it does not keep is a record of each time the checklist was run, who ticked what, and who signed. Connect the Checklist server (free token) and Claude stores the checklist, starts a dated run, records pass, fail or not applicable for each step with a name, and blocks sign-off while a required step is failed or unanswered unless you force it, with the exception kept on the record.",
+   "native": [
+    "Writes the steps of a checklist for a job.",
+    "Saves it as a printable file when code execution is on."
+   ],
+   "needs": [
+    "A dated run per inspection, with who checked each step.",
+    "Failures kept in full with their notes.",
+    "A sign-off that freezes the run."
+   ],
+   "example": {
+    "prompt": "Sam says the left rear indicator is out on van 2.",
+    "tool": "run_check",
+    "args": {
+     "run": "RUN-2026-0001",
+     "item": "I02",
+     "state": "fail",
+     "by": "Sam",
+     "note": "Left rear indicator out"
+    },
+    "result": "{\"answered\": {\"id\": \"I02\", \"text\": \"Lights and indicators work\", \"section\": null, \"required\": true, \"state\": \"fail\", \"by\": \"Sam\", \"at\": \"2026-11-05\", \"note\": \"Left rear indicator out\"}, \"ready_to_sign_off\": false, \"not_ready_because\": [\"1 required item(s) failed: I02 Lights and indicators work\"]}",
+    "note": "A Van safety check with four steps was created, a run was started for van 2, and the other three steps were answered first. The server answers in JSON. This is a shortened copy, and every field shown is unchanged.",
+    "is_error": false,
+    "run": "2026-11-05"
+   },
+   "example2": {
+    "prompt": "Print the report for this run.",
+    "tool": "run_report",
+    "args": {
+     "run": "RUN-2026-0001"
+    },
+    "result": "Reyes Studio\n210 Pine St, Denver, CO 80202\n\nCHECKLIST  RUN-2026-0001\nChecklist   : Van safety check (v5)\nTitle       : Van 2 daily check\nAgainst     : VAN-2\nDate        : 2026-11-05\nStatus      : complete\n\n  [x] I01 Tyres and tread look OK  Sam 2026-11-05\n  [!] I02 Lights and indicators work  Sam 2026-11-05\n        note: Left rear indicator out\n  [x] I03 First aid kit in date  Sam 2026-11-05\n  [-] I04 Windscreen washer topped up  (optional)  Sam 2026-11-05\n\nItems 4   passed 2   failed 1   not applicable 1   outstanding 0\nAnswered 100 percent. Not applicable counts as answered and never as passed.\n\nNot ready for sign-off:\n  - 1 required item(s) failed: I02 Lights and indicators work\n\nSigned off by ......................................  date ..............",
+    "note": "This is the report field of the answer. The report comes back as text on every tier, and the note about the Pro file option is left out here.",
+    "is_error": false,
+    "run": "2026-11-05"
+   },
+   "faq": [
+    {
+     "q": "If I edit the checklist, do old runs change?",
+     "a": "No. A run copies the steps when it starts, so what somebody ticked and signed stays as they saw it."
+    },
+    {
+     "q": "What is free, and what does Pro add?",
+     "a": "Three checklists with unlimited runs, and the run report as text, are free. Pro is $19 once for the Checklist server, or $39 once for all 49 servers. It also returns the run report as a .txt download file."
+    }
+   ]
+  }
+ ]
+}

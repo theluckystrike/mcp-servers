@@ -38,11 +38,20 @@
 
 ## Owner unlocks, ranked by return per minute
 
-1. `stripe login` (5 min), then one real $19 test buy on any product (5 min, refund after). Unblocks the billing
-   deploy (PR #116 and #119 are merged but not live) and makes revenue measurable.
+1. URGENT. Checkout is DOWN since 11-04 (the Stripe CLI live key expired; every buy POST returns 502,
+   data/s1105/reports/paid-path.json). Run `stripe login` (2 min). Then data/s1105/restore_checkout.sh rotates the worker
+   secret and one tagged probe confirms a real Checkout page. Better, create a restricted key with no expiry in the
+   Stripe Dashboard (checkout_session_write plus what billing/PAYMENTS.md lists) so this cannot recur every 90 days.
+   Then one real $19 test buy (refund after).
 2. `npm login` (5 min), or a granular automation token for the @theluckystrike scope. 3 satellites wait to publish.
 3. mcpservers.org/submit and mcp.so/submit (10 to 15 min, needs your browser sign-in). We are absent from both.
 4. Outreach with Resend: Resend is connected and zovo.one sends. What it lacks is consented recipients. A double
    opt-in list already runs on mcpstamp.com (0 subscribers). The fastest legal route is 10 to 15 personal emails from
    your own address to MCP newsletter editors and directory owners; agents draft them, you send them. Cold scraped
    lists would break Resend's policy and put zovo.one license email at risk.
+
+## Wave 2 (same day)
+
+15 buyer-intent pages for the paid servers (gate 95), 8 title rewrites on pages at positions 5 to 15, 3 more satellites
+(Social Security COLA 2027, I bond rate, mortgage rates today, fact-checked against SSA, TreasuryDirect and Freddie Mac),
+6 claudecodeguides hub pages, a 14-entry owner outreach batch in .scratch-distribution/private-outreach/owner-batch-1105.md.

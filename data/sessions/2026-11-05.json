@@ -1,8 +1,13 @@
 {
  "id": "2026-11-05",
- "title": "Session 2026-11-05, answer engine doubled, 3 new satellites live, two truth gates, deploy pipeline fixed",
- "verdict": "MCP revenue is still $0. Stripe cannot be read (the CLI holds no keys) and no real card has ever been through checkout. Google impressions on mcpstamp.com rose to 143 a day (6 on 10-30), and question pages are the only kind ranking on page one, so this session put about 40 more honest answer pages live. There are 18 new can-Claude pages with real server calls, 3 live-data pages, 15 can-ChatGPT pages and 3 can-Cursor pages. They came from 1,491 real Google autocomplete questions. Two independent truth gates found 29 false claims in the drafts, mostly 'Claude cannot', when code execution is on by default. All were fixed before deploy, as was the same error on 10 older pages. The zip page title now answers the query directly. Three new free live-data satellites went live: UV index, FDA drug shortages, census tract. Each has a Worker, public repo, registry entry and site page, for 30 in total. Community PR #96 was merged and #97 got a review. Two awesome-list PRs were opened. Two traps were fixed. The local site tree was 22 commits stale and would have reverted production (publish.sh now refuses), and the CI artifact lacked site/lib, which failed the first production deploy.",
+ "title": "Session 2026-11-05, checkout found down, answer engine tripled, 6 satellites live, gates, deploy pipeline fixed",
+ "verdict": "URGENT. MCP checkout has been down since 2026-11-04. The Stripe CLI restricted key that the billing worker uses expired, and every $19, $39 and services buy POST returns 502 (probed once each, tagged x-mcp-probe). /health still says ok because it only checks the key prefix. The fix is the owner running stripe login, then a gated billing redeploy, which also ships PR #116 and #119. MCP revenue is still $0. Google impressions on mcpstamp.com rose to 143 a day (6 on 10-30), and question pages are the only kind ranking on page one, so this session put about 40 more honest answer pages live. There are 18 new can-Claude pages with real server calls, 3 live-data pages, 15 can-ChatGPT pages and 3 can-Cursor pages. They came from 1,491 real Google autocomplete questions. Two independent truth gates found 29 false claims in the drafts, mostly 'Claude cannot', when code execution is on by default. All were fixed before deploy, as was the same error on 10 older pages. The zip page title now answers the query directly. Three new free live-data satellites went live: UV index, FDA drug shortages, census tract. Each has a Worker, public repo, registry entry and site page, for 30 in total. Community PR #96 was merged and #97 got a review. Two awesome-list PRs were opened. Two traps were fixed. The local site tree was 22 commits stale and would have reverted production (publish.sh now refuses), and the CI artifact lacked site/lib, which failed the first production deploy. Wave 2 added 15 buyer-intent can-Claude pages for paid back-office servers (gate 95, 0 blocks), new titles on 8 pages already ranking 5 to 15, three more satellites (Social Security COLA 2027, I bond rate, mortgage rates today, 33 total), and a 14-entry outreach batch for the owner to send by hand. The 6 new satellites also got pages on claudecodeguides.com/mcp/ (PR #12, 33 of 33 live), the hub that assistants cite. Two user updates went to Zovo Chat, What's new (messages 511 and 519).",
  "kpis": [
+  {
+   "label": "Checkout working",
+   "value": "NO since 11-04",
+   "note": "Stripe live key expired (billing/PAYMENTS.md:43). POST /buy returns 502 for $19, $39 and services. data/s1105/reports/paid-path.json"
+  },
   {
    "label": "mcpstamp.com Google impressions per day",
    "value": "6 to 143",
@@ -10,13 +15,13 @@
   },
   {
    "label": "Answer pages live",
-   "value": "about 70",
-   "note": "34 before. 39 added and 1 duplicate dropped. Sitemap now 237 URLs. 102 URLs sent to IndexNow (200)."
+   "value": "about 88",
+   "note": "34 before. 54 added today in 2 deploys, gated. IndexNow 102 plus 23 URLs, both 200."
   },
   {
    "label": "Free data satellites live",
-   "value": "30",
-   "note": "27 plus UV index, drug shortage list, census tract. Each answered a real remote tools/call. Registry 1.0.0 active."
+   "value": "33",
+   "note": "27 plus 6 today (UV index, drug shortages, census tract, SS COLA 2027, I bond rate, mortgage rates). Worker, public repo, registry 1.0.0 each."
   },
   {
    "label": "MCP paid orders, all time",
@@ -46,6 +51,16 @@
  ],
  "shipped": [
   {
+   "url": "https://www.mcpstamp.com/can-claude/do-bookkeeping/",
+   "title": "15 buyer-intent pages for the paid servers",
+   "detail": "Bookkeeping, month-end close, bank reconciliation, deposits, price lists, backlinks and more, each with real server calls and what Pro adds. Gate 95/100."
+  },
+  {
+   "url": "https://www.mcpstamp.com/servers/stripe-billing/",
+   "title": "New titles on 8 pages already ranking",
+   "detail": "Rewritten to the queries GSC shows for supplier statement check, Stripe billing, supplier list, use cases, merge PDF, loan calculator, work order and calculators."
+  },
+  {
    "url": "https://www.mcpstamp.com/can-claude/",
    "title": "18 can-Claude answer pages with real server calls",
    "detail": "From real autocomplete questions (edit PDFs, read Excel, QR codes, track time, recurring invoices and more). Each shows a live tools/call result from 2026-11-05."
@@ -74,13 +89,23 @@
    "url": "https://www.mcpstamp.com/",
    "title": "Deploy pipeline traps fixed",
    "detail": "publish.sh refuses a stale repo (it would have reverted 22 commits). The CI artifact now ships site/lib, so Pages Functions build."
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/mortgage-rates-today-mcp/",
+   "title": "6 new satellites on the claudecodeguides MCP hub",
+   "detail": "The R9 blind test showed assistants cite these pages. PR #12 merged, all 33 satellites listed, llms.txt updated."
   }
  ],
  "next": [
   {
-   "title": "Owner runs stripe login and one real $19 test buy",
-   "detail": "Unblocks the billing deploy with PR #116 and #119 and makes revenue measurable. 15 minutes.",
+   "title": "Owner runs stripe login NOW, checkout is down",
+   "detail": "Every buy returns 502 since 11-04. After login an agent sets the worker secret and runs npm run deploy in billing/ (gated), then probes a real Checkout page.",
    "colour": "red"
+  },
+  {
+   "title": "Owner sends the outreach batch",
+   "detail": "14 entries in .scratch-distribution/private-outreach/owner-batch-1105.md, from your own address. 10 emails and 4 submission forms.",
+   "colour": "amber"
   },
   {
    "title": "Measure the new answer pages in GSC on 11-12 and 11-19",

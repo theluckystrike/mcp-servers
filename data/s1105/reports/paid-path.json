@@ -1,0 +1,115 @@
+{
+  "generated_at": "2026-11-05T13:40:00Z",
+  "verdict": "BLOCKED: no buyer can reach a Stripe Checkout page for any product. Stripe rejects the mcp-billing worker's live key with 'Expired API Key provided'. Zero Checkout Sessions were created by this audit.",
+  "method": {
+    "flow": "GET /buy/<id> returns an intent page (200, x-mcp-buy: checkout-intent-required) with <form method=post action=/buy/<id>> carrying intent=checkout and a short-lived order_token. The browser POSTs it; the worker calls POST https://api.stripe.com/v1/checkout/sessions and answers 303 Location: checkout.stripe.com/c/pay/cs_live_...",
+    "source": [
+      "~/mcp-servers/billing/src/index.js:918 stripe() helper, bearer env.STRIPE_SECRET_KEY",
+      "~/mcp-servers/billing/src/index.js:995-1040 createCheckout (stripe checkout/sessions, metadata[probe]=1 when tagged)",
+      "~/mcp-servers/billing/src/index.js:1146-1157 isCheckoutIntent (POST, form content-type, same-origin Origin, sec-fetch-mode=navigate, sec-fetch-dest=document, intent=checkout, UA not bot/tool)",
+      "~/mcp-servers/billing/src/index.js:2330-2470 /buy/ route; 2467 returns 502 'Checkout could not start' with the Stripe error text"
+    ],
+    "probe_tag": "request header x-mcp-probe: 1 (index.js:2358 explicitProbe -> probeTag -> metadata[probe]=1 at index.js:1026, recordClick skipped at index.js:1118). Also x-mcp-probe-expiry: short (live worker confirmed it with x-mcp-probe-short-expiry: 1860) so any session would have lapsed after 31 minutes.",
+    "request_shape": "one GET of the intent page, then exactly one POST per product, application/x-www-form-urlencoded, origin https://mcp.zovo.one, sec-fetch-mode navigate, sec-fetch-dest document, UA 'mcp-audit-s1105/1 (operator paid-path probe)', body intent=checkout&order_token=<token from the GET>. Redirects not followed on the POST. No card data, no browser, no retry.",
+    "script": "scratchpad probe_one.sh (deleted with the work dir; the commands are fully described here)"
+  },
+  "products": [
+    {
+      "product": "invoice (single, $19)",
+      "buy_url": "https://mcp.zovo.one/buy/invoice",
+      "form_action": "/buy/invoice",
+      "intent_page_get": 200,
+      "post_at_utc": "2026-11-05T13:28:32Z",
+      "post_status": 502,
+      "cf_ray": "a55c33bf0e0eb198-WAW",
+      "stripe_error": "stripe checkout/sessions: Expired API Key provided: rk_live_*** (key redacted by this report)",
+      "session_created": false,
+      "mode": "live key (rk_live_ prefix in Stripe's error); no session exists to confirm livemode",
+      "amount_confirmed_by_stripe": null,
+      "amount_expected_from_source": "1900 usd via price_1UBDU8JKCamubEm1Ybcp5IUs (billing/src/index.js:26)",
+      "checkout_page_http": null,
+      "checkout_200": false,
+      "probe_tag_used": "x-mcp-probe: 1"
+    },
+    {
+      "product": "bundle ($39)",
+      "buy_url": "https://mcp.zovo.one/buy/bundle?src=site.pricing.plan_bundle (link taken from https://www.mcpstamp.com/pricing/)",
+      "form_action": "/buy/bundle?src=site.pricing.plan_bundle",
+      "intent_page_get": 200,
+      "post_at_utc": "2026-11-05T13:28:34Z",
+      "post_status": 502,
+      "cf_ray": "a55c33ccea67c625-WAW",
+      "stripe_error": "stripe checkout/sessions: Expired API Key provided: rk_live_*** (key redacted by this report)",
+      "session_created": false,
+      "mode": "live key; no session exists to confirm livemode",
+      "amount_confirmed_by_stripe": null,
+      "amount_expected_from_source": "3900 usd inline price_data (billing/src/index.js:70 usd 39, checkoutLineItem)",
+      "checkout_page_http": null,
+      "checkout_200": false,
+      "probe_tag_used": "x-mcp-probe: 1"
+    },
+    {
+      "product": "svc-audit (McpStamp Readiness Audit, services pay-now link)",
+      "buy_url": "https://mcp.zovo.one/buy/svc-audit?src=site.services.audit (link on https://www.mcpstamp.com/services/)",
+      "other_pay_now_links_on_services_page_not_probed": [
+        "https://mcp.zovo.one/buy/svc-launch-deposit?src=site.services.launch",
+        "https://mcp.zovo.one/buy/svc-custom-deposit?src=site.services.custom_server"
+      ],
+      "form_action": "/buy/svc-audit?src=site.services.audit",
+      "intent_page_get": 200,
+      "post_at_utc": "2026-11-05T13:28:43Z",
+      "post_status": 502,
+      "cf_ray": "a55c34087b69b627-WAW",
+      "stripe_error": "stripe checkout/sessions: Expired API Key provided: rk_live_*** (key redacted by this report)",
+      "session_created": false,
+      "mode": "live key; no session exists to confirm livemode",
+      "amount_confirmed_by_stripe": null,
+      "amount_expected_from_source": "49000 usd (data/s1103/salvage-deploy/wt/billing/src/index.js:117-119; svc-* products are NOT in ~/mcp-servers/billing/src/index.js)",
+      "checkout_page_http": null,
+      "checkout_200": false,
+      "probe_tag_used": "x-mcp-probe: 1"
+    }
+  ],
+  "root_cause_evidence": {
+    "stripe_says": "Expired API Key provided (restricted live key, rk_live_)",
+    "secret": "wrangler secret STRIPE_SECRET_KEY on worker mcp-billing (billing/src/index.js:919)",
+    "documented_expiry": "billing/PAYMENTS.md:43 records the restricted live key as 'expires 2026-11-04'",
+    "last_successful_session_creation": "2026-11-03T07:34:56Z (bundle), preceded by invoice at 07:34:49Z, both on worker version 2bcaa00c-d6ef-403e-879a-f1e389af10a4 (Workers Logs event checkout_session_created, 1-day windows, mcp-billing). Earlier: 2026-10-30T10:40:52Z bundle, 2026-10-31T12:20:15Z pdf (version 14a6e84d).",
+    "no_deploy_since": "wrangler deployments list last entry 2bcaa00c, 2026-11-02T07:09:42Z (funnel-evidence/commands.txt Q1), so the failure is the key, not a code change",
+    "onset_window": "between 2026-11-03T07:34:56Z and 2026-11-05T13:28:32Z",
+    "other_502_in_logs": "Workers Logs status=502 events with needle zovo.one/buy/ over the 12 days to 2026-11-05T13:29Z: exactly 3, all from this audit. Logs are sampled, so this does not prove no buyer was hit.",
+    "queries": "scripts-style Workers Observability telemetry query, needle checkout_session_created and status 502, account dd3f2a29b7707e21a87f26a622c0bb9d, read-only"
+  },
+  "side_findings": [
+    "GET https://mcp.zovo.one/health answers ok:true and stripe_mode:'live' while the key is expired. billing/src/index.js:1647 derives stripe_mode from the key prefix only, so health is green with checkout dead. Same lesson as CLAUDE.md trap 1: discovery succeeding is not the product working.",
+    "The 502 page echoes Stripe's error text to the visitor (billing/src/index.js:2467-2468 esc(e.message)). It shows the masked rk_live_ key tail to any buyer.",
+    "Local ~/mcp-servers/billing/src/index.js has no svc-* products although the live worker serves them (/health lists svc-audit, svc-launch-deposit, svc-custom-deposit). The deployed source is the s1103 salvage worktree, not this tree. Treat local line numbers as the generic path only.",
+    "No buyer-facing Checkout can be reached, so funnel zeros since 2026-11-03/04 are an outage, not a demand signal."
+  ],
+  "post_purchase_static": {
+    "success_url": "https://mcp.zovo.one/success?session_id={CHECKOUT_SESSION_ID} (billing/src/index.js:1002; services worktree copy index.js:1130; present in the live worker snapshot data/s1103/salvage-deploy/live/content.raw)",
+    "success_route_http": {
+      "GET /success (no session_id)": "303 to https://mcp.zovo.one/ (route exists)",
+      "GET /success?session_id=cs_live_<nonexistent>": "404 'Session not found'",
+      "GET /success with a real paid session": "not reachable: 200 needs retrieveSession (index.js:1438) to succeed, and it uses the same expired key via stripe() at index.js:918. Success page returns 200 when fulfillment completes, 202 while retrying (index.js:2497)."
+    },
+    "license_email_code_path": [
+      "~/mcp-servers/billing/src/index.js:1358 sendLicenseEmail (Resend POST https://api.resend.com/emails at :1378, idempotent flag email:sent:<session> in KV, needs RESEND_API_KEY)",
+      "called only from the webhook: index.js:2538 POST /webhook, checkout.session.completed / async_payment_succeeded at :2551, retrieveSession :2557, fulfillmentAllowed :2559, keyForSession :2565, sendLicenseEmail :2568",
+      "/success (index.js:2471-2515) shows the key on the page and does not send mail",
+      "services: data/s1103/salvage-deploy/wt/billing/src/index.js fulfillService :1490 (owner alert :1500-1503, buyer email via serviceBuyerEmail :1461 and sendMail :1411/:1509), /success service branch :2806-2812, webhook service branch :2892-2894. Services mint no license key."
+    ],
+    "dependency": "Both /success and the webhook re-retrieve the session from Stripe with the same STRIPE_SECRET_KEY, so fulfillment also fails until the key is replaced.",
+    "fulfillment_status": "UNTESTED. Real fulfillment (paid session, webhook, key mint, license email, service order mail) has never been exercised end to end without a real payment, and the Stripe key is currently expired."
+  },
+  "owner_action_human_gated": {
+    "why": "No account sign-in by agents. The local Stripe CLI also needs re-login (funnel-evidence/commands.txt Q5).",
+    "steps": [
+      "Create or roll a restricted live key with checkout_session_write plus session read at https://dashboard.stripe.com/apikeys, with no short expiry this time.",
+      "cd ~/mcp-servers/billing && npx wrangler secret put STRIPE_SECRET_KEY (this deploys a new worker version; current version to roll back to is 2bcaa00c-d6ef-403e-879a-f1e389af10a4, rollback: npx wrangler rollback 2bcaa00c-d6ef-403e-879a-f1e389af10a4).",
+      "Re-run the three tagged probes (invoice, bundle, svc-audit) and require 303 to checkout.stripe.com/c/pay/cs_live_, x-mcp-probe-amount 1900 / 3900 / 49000, x-mcp-probe-currency usd, x-mcp-probe-livemode true, Checkout 200.",
+      "Add a Stripe-validity check to /health (one cheap authenticated read) so an expired key turns health red."
+    ]
+  },
+  "state_changes_by_this_audit": "Three x-mcp-probe-tagged intent GETs plus three POSTs that Stripe rejected, so no Checkout Session and no Stripe object was created. No payment, no card entry, no deploy, no secret read or written."
+}
