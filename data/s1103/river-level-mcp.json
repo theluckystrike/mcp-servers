@@ -1,0 +1,56 @@
+{
+ "repo": "river-level-mcp",
+ "repo_url": "https://github.com/theluckystrike/river-level-mcp",
+ "hosted_url": "https://river-level-mcp.lipmichal.workers.dev/mcp",
+ "worker_version_id": "89cacb60-4e61-471a-a974-8f47a83186a1",
+ "rollback": "npx wrangler delete --name river-level-mcp (brand-new worker, one version)",
+ "registry_name": "io.github.theluckystrike/river-level-mcp",
+ "registry_visible": true,
+ "registry_check": "curl -s \"https://registry.modelcontextprotocol.io/v0/servers?search=river-level-mcp\" -> 1.0.0",
+ "tools": [
+  "find_river_gauges",
+  "get_river_level",
+  "get_river_history",
+  "get_flood_forecast"
+ ],
+ "fixtures": 16,
+ "tests_passed": "16/16 (node --test, saved USGS 07010000 and NWS EADM7 payloads)",
+ "local_stdio_ok": true,
+ "live_calls_ok": {
+  "find_river_gauges": true,
+  "get_river_level": true,
+  "get_river_history": true,
+  "get_flood_forecast": true
+ },
+ "live_check": "curl POST initialize + tools/list + one tools/call per tool to hosted_url, no token (data/s1103/build-gen/bin/live.sh); GET / 200",
+ "live_raw_responses": "/Users/mike/mcp-servers/satellites/river-level-mcp/.live/ (git-excluded)",
+ "npx_github_ok": true,
+ "pushes": 1,
+ "github": {
+  "visibility": "public",
+  "topics": 14
+ },
+ "npm_ready": true,
+ "npm_ready_detail": "npm view river-level-mcp -> E404 (positive control cups-to-grams-mcp -> 1.0.0); package.json has bin, files, mcpName, keywords; npm pack --dry-run 9 files, 15.5 kB. Not published: npm publish needs the owner's per-publish 2FA web approval (OWNER UNLOCK).",
+ "competitor_field": "gh search repos \"river level mcp\" 0, \"streamflow mcp\" 0, \"river flow mcp\" 0, \"usgs water mcp\" 3 before build; after push \"river level mcp\" returns only theluckystrike/river-level-mcp",
+ "sources": [
+  "https://api.waterdata.usgs.gov/ogcapi/v0/collections/{latest-continuous,daily,monitoring-locations}/items (live, keyless)",
+  "https://api.waterdata.usgs.gov/docs/ogcapi/keys/ (keyless allowed; optional api.data.gov key raises limits)",
+  "https://api.water.noaa.gov/nwps/v1/gauges/{id} and /{lid}/stageflow (live NWS flood stages, crests, forecasts)",
+  "https://waterservices.usgs.gov/ (states legacy WaterServices shuts down 2027-02-22; this server uses the new API)"
+ ],
+ "money_site": "https://lakelevelnow.com",
+ "more_pages": [
+  "/",
+  "/texas-lake-levels/",
+  "/california-lake-levels/"
+ ],
+ "more_links_200": "3/3 with UTM returned 200",
+ "open_issues": [
+  "lakelevelnow.com has no river pages; more links go to the home page or the Texas/California state lake pages by gauge state.",
+  "USGS keyless rate limit applies per IP; Cloudflare egress IPs are shared. Edge cache (300 s readings, 1 day site data) limits calls; 429 returns an honest UpstreamError (tested). If 429s appear in production, an api.data.gov key would need owner sign-up (OWNER UNLOCK, https://api.data.gov/signup/).",
+  "NWS stage vs USGS gage height assumed same datum for feet-below-flood-stage; README tells users to check the NWS gauge page for safety decisions.",
+  "Name search uses CQL CASEI LIKE per word; abbreviations in USGS names (for example \"Colorado Rv\") can miss \"river\" queries, which is why river/creek are dropped as stop words."
+ ],
+ "minutes": 27
+}

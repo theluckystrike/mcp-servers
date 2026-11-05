@@ -1,0 +1,70 @@
+{
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "FY2027 GSA per diem (Oct. 1, 2026 - Sept. 30, 2027). Boston / Cambridge, MA (Suffolk County, MA): lodging $305 a night on 2027-03-15, M&IE $92 a day ($69 on first and last day).\n\nRates from IRS and GSA publications. General information, not tax advice."
+      },
+      {
+        "type": "text",
+        "text": "{\n  \"fiscal_year\": 2027,\n  \"period\": \"Oct. 1, 2026 - Sept. 30, 2027\",\n  \"standard_conus\": {\n    \"lodging\": 113,\n    \"mie\": 68\n  },\n  \"date\": \"2027-03-15\",\n  \"locations\": [\n    {\n      \"destination\": \"Boston / Cambridge\",\n      \"county\": \"Suffolk County, MA\",\n      \"location_defined\": \"Suffolk, city of Cambridge\",\n      \"state\": \"MA\",\n      \"lodging_by_month\": {\n        \"Oct\": 365,\n        \"Nov\": 213,\n        \"Dec\": 213,\n        \"Jan\": 213,\n        \"Feb\": 213,\n        \"Mar\": 305,\n        \"Apr\": 305,\n        \"May\": 305,\n        \"Jun\": 305,\n        \"Jul\": 305,\n        \"Aug\": 305,\n        \"Sep\": 365\n      },\n      \"lodging_on_date\": 305,\n      \"max_lodging_range\": [\n        213,\n        365\n      ],\n      \"mie_per_day\": 92,\n      \"mie_breakdown\": {\n        \"breakfast\": 23,\n        \"lunch\": 26,\n        \"dinner\": 38,\n        \"incidentals\": 5,\n        \"first_last_day\": 69\n      },\n      \"standard_rate\": false\n    }\n  ],\n  \"multiple_matches\": false,\n  \"notes\": [\n    \"Lodging is a maximum per night before taxes. M&IE is per full day; the first and last travel day get 75%.\"\n  ],\n  \"summary\": \"FY2027 GSA per diem (Oct. 1, 2026 - Sept. 30, 2027). Boston / Cambridge, MA (Suffolk County, MA): lodging $305 a night on 2027-03-15, M&IE $92 a day ($69 on first and last day).\",\n  \"as_of\": \"2026-11-03\",\n  \"source\": \"https://www.gsa.gov/travel/per-diem-rates/per-diem-files ; https://www.gsa.gov/travel/per-diem-rates/mie-breakdowns\",\n  \"more\": \"https://taxbreakcalc.com/self-employed-set-aside-calculator/?utm_source=mcp&utm_medium=irs-mileage-rate-per-diem-mcp\",\n  \"disclaimer\": \"Rates from IRS and GSA publications. General information, not tax advice.\"\n}"
+      }
+    ],
+    "structuredContent": {
+      "fiscal_year": 2027,
+      "period": "Oct. 1, 2026 - Sept. 30, 2027",
+      "standard_conus": {
+        "lodging": 113,
+        "mie": 68
+      },
+      "date": "2027-03-15",
+      "locations": [
+        {
+          "destination": "Boston / Cambridge",
+          "county": "Suffolk County, MA",
+          "location_defined": "Suffolk, city of Cambridge",
+          "state": "MA",
+          "lodging_by_month": {
+            "Oct": 365,
+            "Nov": 213,
+            "Dec": 213,
+            "Jan": 213,
+            "Feb": 213,
+            "Mar": 305,
+            "Apr": 305,
+            "May": 305,
+            "Jun": 305,
+            "Jul": 305,
+            "Aug": 305,
+            "Sep": 365
+          },
+          "lodging_on_date": 305,
+          "max_lodging_range": [
+            213,
+            365
+          ],
+          "mie_per_day": 92,
+          "mie_breakdown": {
+            "breakfast": 23,
+            "lunch": 26,
+            "dinner": 38,
+            "incidentals": 5,
+            "first_last_day": 69
+          },
+          "standard_rate": false
+        }
+      ],
+      "multiple_matches": false,
+      "notes": [
+        "Lodging is a maximum per night before taxes. M&IE is per full day; the first and last travel day get 75%."
+      ],
+      "summary": "FY2027 GSA per diem (Oct. 1, 2026 - Sept. 30, 2027). Boston / Cambridge, MA (Suffolk County, MA): lodging $305 a night on 2027-03-15, M&IE $92 a day ($69 on first and last day).",
+      "as_of": "2026-11-03",
+      "source": "https://www.gsa.gov/travel/per-diem-rates/per-diem-files ; https://www.gsa.gov/travel/per-diem-rates/mie-breakdowns",
+      "more": "https://taxbreakcalc.com/self-employed-set-aside-calculator/?utm_source=mcp&utm_medium=irs-mileage-rate-per-diem-mcp",
+      "disclaimer": "Rates from IRS and GSA publications. General information, not tax advice."
+    }
+  },
+  "jsonrpc": "2.0",
+  "id": 12
+}

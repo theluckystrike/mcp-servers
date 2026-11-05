@@ -1,0 +1,3279 @@
+{
+ "measured_at": "2026-11-02T02:30Z",
+ "lane": "kpi",
+ "read_only": true,
+ "npm": {
+  "cmd": "GET https://api.npmjs.org/downloads/point/{last-week|last-day}/<pkg with / as %2F> for the 68 packages in data/s1030/npm-registry-check.tsv (script data/s1102/kpi/npm.py)",
+  "packages": 68,
+  "sum_last_week": 0,
+  "sum_last_day": 0,
+  "api_window_last_week": "2026-10-23..2026-10-29",
+  "api_window_last_day": "2026-10-29..2026-10-29",
+  "positive_control": {
+   "pkg": "@modelcontextprotocol/sdk",
+   "last_week": 87026138,
+   "last_day": 14820372,
+   "explicit_range_2026-10-30..2026-11-02": 0
+  },
+  "verdict": "NOT MEASURABLE YET. The npm downloads API served window ends 2026-10-29, one day BEFORE the 2026-10-30 publish, so the 68 zeros are a window artifact. Explicit ranges 2026-10-30:2026-11-02 return 0 for @modelcontextprotocol/sdk too (it has 14.8M/day), so the API has no data after 2026-10-29 yet. Re-run npm.py on or after 2026-11-04.",
+  "top15": [
+   {
+    "pkg": "@theluckystrike/mcp-amortization",
+    "last_week": 0,
+    "last_day": 0
+   },
+   {
+    "pkg": "@theluckystrike/mcp-asset-register",
+    "last_week": 0,
+    "last_day": 0
+   },
+   {
+    "pkg": "@theluckystrike/mcp-backlink-checker",
+    "last_week": 0,
+    "last_day": 0
+   },
+   {
+    "pkg": "@theluckystrike/mcp-bank-statement",
+    "last_week": 0,
+    "last_day": 0
+   },
+   {
+    "pkg": "@theluckystrike/mcp-barcode",
+    "last_week": 0,
+    "last_day": 0
+   },
+   {
+    "pkg": "@theluckystrike/mcp-bill-of-sale",
+    "last_week": 0,
+    "last_day": 0
+   },
+   {
+    "pkg": "@theluckystrike/mcp-billing-docs",
+    "last_week": 0,
+    "last_day": 0
+   },
+   {
+    "pkg": "@theluckystrike/mcp-budget",
+    "last_week": 0,
+    "last_day": 0
+   },
+   {
+    "pkg": "@theluckystrike/mcp-calendar",
+    "last_week": 0,
+    "last_day": 0
+   },
+   {
+    "pkg": "@theluckystrike/mcp-cash-book",
+    "last_week": 0,
+    "last_day": 0
+   },
+   {
+    "pkg": "@theluckystrike/mcp-catalogue",
+    "last_week": 0,
+    "last_day": 0
+   },
+   {
+    "pkg": "@theluckystrike/mcp-change-order",
+    "last_week": 0,
+    "last_day": 0
+   },
+   {
+    "pkg": "@theluckystrike/mcp-checklist",
+    "last_week": 0,
+    "last_day": 0
+   },
+   {
+    "pkg": "@theluckystrike/mcp-clauses",
+    "last_week": 0,
+    "last_day": 0
+   },
+   {
+    "pkg": "@theluckystrike/mcp-credit-note",
+    "last_week": 0,
+    "last_day": 0
+   }
+  ],
+  "all": [
+   {
+    "pkg": "@theluckystrike/mcp-amortization",
+    "week": 0,
+    "week_range": "2026-10-23..2026-10-29",
+    "day": 0,
+    "day_range": "2026-10-29..2026-10-29",
+    "err": null
+   },
+   {
+    "pkg": "@theluckystrike/mcp-asset-register",
+    "week": 0,
+    "week_range": "2026-10-23..2026-10-29",
+    "day": 0,
+    "day_range": "2026-10-29..2026-10-29",
+    "err": null
+   },
+   {
+    "pkg": "@theluckystrike/mcp-backlink-checker",
+    "week": 0,
+    "week_range": "2026-10-23..2026-10-29",
+    "day": 0,
+    "day_range": "2026-10-29..2026-10-29",
+    "err": null
+   },
+   {
+    "pkg": "@theluckystrike/mcp-bank-statement",
+    "week": 0,
+    "week_range": "2026-10-23..2026-10-29",
+    "day": 0,
+    "day_range": "2026-10-29..2026-10-29",
+    "err": null
+   },
+   {
+    "pkg": "@theluckystrike/mcp-barcode",
+    "week": 0,
+    "week_range": "2026-10-23..2026-10-29",
+    "day": 0,
+    "day_range": "2026-10-29..2026-10-29",
+    "err": null
+   },
+   {
+    "pkg": "@theluckystrike/mcp-bill-of-sale",
+    "week": 0,
+    "week_range": "2026-10-23..2026-10-29",
+    "day": 0,
+    "day_range": "2026-10-29..2026-10-29",
+    "err": null
+   },
+   {
+    "pkg": "@theluckystrike/mcp-billing-docs",
+    "week": 0,
+    "week_range": "2026-10-23..2026-10-29",
+    "day": 0,
+    "day_range": "2026-10-29..2026-10-29",
+    "err": null
+   },
+   {
+    "pkg": "@theluckystrike/mcp-budget",
+    "week": 0,
+    "week_range": "2026-10-23..2026-10-29",
+    "day": 0,
+    "day_range": "2026-10-29..2026-10-29",
+    "err": null
+   },
+   {
+    "pkg": "@theluckystrike/mcp-calendar",
+    "week": 0,
+    "week_range": "2026-10-23..2026-10-29",
+    "day": 0,
+    "day_range": "2026-10-29..2026-10-29",
+    "err": null
+   },
+   {
+    "pkg": "@theluckystrike/mcp-cash-book",
+    "week": 0,
+    "week_range": "2026-10-23..2026-10-29",
+    "day": 0,
+    "day_range": "2026-10-29..2026-10-29",
+    "err": null
+   },
+   {
+    "pkg": "@theluckystrike/mcp-catalogue",
+    "week": 0,
+    "week_range": "2026-10-23..2026-10-29",
+    "day": 0,
+    "day_range": "2026-10-29..2026-10-29",
+    "err": null
+   },
+   {
+    "pkg": "@theluckystrike/mcp-change-order",
+    "week": 0,
+    "week_range": "2026-10-23..2026-10-29",
+    "day": 0,
+    "day_range": "2026-10-29..2026-10-29",
+    "err": null
+   },
+   {
+    "pkg": "@theluckystrike/mcp-checklist",
+    "week": 0,
+    "week_range": "2026-10-23..2026-10-29",
+    "day": 0,
+    "day_range": "2026-10-29..2026-10-29",
+    "err": null
+   },
+   {
+    "pkg": "@theluckystrike/mcp-clauses",
+    "week": 0,
+    "week_range": "2026-10-23..2026-10-29",
+    "day": 0,
+    "day_range": "2026-10-29..2026-10-29",
+    "err": null
+   },
+   {
+    "pkg": "@theluckystrike/mcp-credit-note",
+    "week": 0,
+    "week_range": "2026-10-23..2026-10-29",
+    "day": 0,
+    "day_range": "2026-10-29..2026-10-29",
+    "err": null
+   },
+   {
+    "pkg": "@theluckystrike/mcp-currency",
+    "week": 0,
+    "week_range": "2026-10-23..2026-10-29",
+    "day": 0,
+    "day_range": "2026-10-29..2026-10-29",
+    "err": null
+   },
+   {
+    "pkg": "@theluckystrike/mcp-delivery-schedule",
+    "week": 0,
+    "week_range": "2026-10-23..2026-10-29",
+    "day": 0,
+    "day_range": "2026-10-29..2026-10-29",
+    "err": null
+   },
+   {
+    "pkg": "@theluckystrike/mcp-deposits",
+    "week": 0,
+    "week_range": "2026-10-23..2026-10-29",
+    "day": 0,
+    "day_range": "2026-10-29..2026-10-29",
+    "err": null
+   },
+   {
+    "pkg": "@theluckystrike/mcp-docx",
+    "week": 0,
+    "week_range": "2026-10-23..2026-10-29",
+    "day": 0,
+    "day_range": "2026-10-29..2026-10-29",
+    "err": null
+   },
+   {
+    "pkg": "@theluckystrike/mcp-dunning-letters",
+    "week": 0,
+    "week_range": "2026-10-23..2026-10-29",
+    "day": 0,
+    "day_range": "2026-10-29..2026-10-29",
+    "err": null
+   },
+   {
+    "pkg": "@theluckystrike/mcp-duplicate-invoice-check",
+    "week": 0,
+    "week_range": "2026-10-23..2026-10-29",
+    "day": 0,
+    "day_range": "2026-10-29..2026-10-29",
+    "err": null
+   },
+   {
+    "pkg": "@theluckystrike/mcp-expense-tracker",
+    "week": 0,
+    "week_range": "2026-10-23..2026-10-29",
+    "day": 0,
+    "day_range": "2026-10-29..2026-10-29",
+    "err": null
+   },
+   {
+    "pkg": "@theluckystrike/mcp-goods-receipt",
+    "week": 0,
+    "week_range": "2026-10-23..2026-10-29",
+    "day": 0,
+    "day_range": "2026-10-29..2026-10-29",
+    "err": null
+   },
+   {
+    "pkg": "@theluckystrike/mcp-hourly-rate",
+    "week": 0,
+    "week_range": "2026-10-23..2026-10-29",
+    "day": 0,
+    "day_range": "2026-10-29..2026-10-29",
+    "err": null
+   },
+   {
+    "pkg": "@theluckystrike/mcp-image",
+    "week": 0,
+    "week_range": "2026-10-23..2026-10-29",
+    "day": 0,
+    "day_range": "2026-10-29..2026-10-29",
+    "err": null
+   },
+   {
+    "pkg": "@theluckystrike/mcp-invoice",
+    "week": 0,
+    "week_range": "2026-10-23..2026-10-29",
+    "day": 0,
+    "day_range": "2026-10-29..2026-10-29",
+    "err": null
+   },
+   {
+    "pkg": "@theluckystrike/mcp-job-card",
+    "week": 0,
+    "week_range": "2026-10-23..2026-10-29",
+    "day": 0,
+    "day_range": "2026-10-29..2026-10-29",
+    "err": null
+   },
+   {
+    "pkg": "@theluckystrike/mcp-kanban",
+    "week": 0,
+    "week_range": "2026-10-23..2026-10-29",
+    "day": 0,
+    "day_range": "2026-10-29..2026-10-29",
+    "err": null
+   },
+   {
+    "pkg": "@theluckystrike/mcp-leave",
+    "week": 0,
+    "week_range": "2026-10-23..2026-10-29",
+    "day": 0,
+    "day_range": "2026-10-29..2026-10-29",
+    "err": null
+   },
+   {
+    "pkg": "@theluckystrike/mcp-loan-calculator",
+    "week": 0,
+    "week_range": "2026-10-23..2026-10-29",
+    "day": 0,
+    "day_range": "2026-10-29..2026-10-29",
+    "err": null
+   },
+   {
+    "pkg": "@theluckystrike/mcp-maintenance-log",
+    "week": 0,
+    "week_range": "2026-10-23..2026-10-29",
+    "day": 0,
+    "day_range": "2026-10-29..2026-10-29",
+    "err": null
+   },
+   {
+    "pkg": "@theluckystrike/mcp-mileage-log",
+    "week": 0,
+    "week_range": "2026-10-23..2026-10-29",
+    "day": 0,
+    "day_range": "2026-10-29..2026-10-29",
+    "err": null
+   },
+   {
+    "pkg": "@theluckystrike/mcp-office-suite",
+    "week": 0,
+    "week_range": "2026-10-23..2026-10-29",
+    "day": 0,
+    "day_range": "2026-10-29..2026-10-29",
+    "err": null
+   },
+   {
+    "pkg": "@theluckystrike/mcp-onboarding",
+    "week": 0,
+    "week_range": "2026-10-23..2026-10-29",
+    "day": 0,
+    "day_range": "2026-10-29..2026-10-29",
+    "err": null
+   },
+   {
+    "pkg": "@theluckystrike/mcp-packing-list",
+    "week": 0,
+    "week_range": "2026-10-23..2026-10-29",
+    "day": 0,
+    "day_range": "2026-10-29..2026-10-29",
+    "err": null
+   },
+   {
+    "pkg": "@theluckystrike/mcp-payroll",
+    "week": 0,
+    "week_range": "2026-10-23..2026-10-29",
+    "day": 0,
+    "day_range": "2026-10-29..2026-10-29",
+    "err": null
+   },
+   {
+    "pkg": "@theluckystrike/mcp-pdf",
+    "week": 0,
+    "week_range": "2026-10-23..2026-10-29",
+    "day": 0,
+    "day_range": "2026-10-29..2026-10-29",
+    "err": null
+   },
+   {
+    "pkg": "@theluckystrike/mcp-per-diem",
+    "week": 0,
+    "week_range": "2026-10-23..2026-10-29",
+    "day": 0,
+    "day_range": "2026-10-29..2026-10-29",
+    "err": null
+   },
+   {
+    "pkg": "@theluckystrike/mcp-petty-cash",
+    "week": 0,
+    "week_range": "2026-10-23..2026-10-29",
+    "day": 0,
+    "day_range": "2026-10-29..2026-10-29",
+    "err": null
+   },
+   {
+    "pkg": "@theluckystrike/mcp-pomodoro",
+    "week": 0,
+    "week_range": "2026-10-23..2026-10-29",
+    "day": 0,
+    "day_range": "2026-10-29..2026-10-29",
+    "err": null
+   },
+   {
+    "pkg": "@theluckystrike/mcp-price-tracker",
+    "week": 0,
+    "week_range": "2026-10-23..2026-10-29",
+    "day": 0,
+    "day_range": "2026-10-29..2026-10-29",
+    "err": null
+   },
+   {
+    "pkg": "@theluckystrike/mcp-purchase-requisition",
+    "week": 0,
+    "week_range": "2026-10-23..2026-10-29",
+    "day": 0,
+    "day_range": "2026-10-29..2026-10-29",
+    "err": null
+   },
+   {
+    "pkg": "@theluckystrike/mcp-quotes",
+    "week": 0,
+    "week_range": "2026-10-23..2026-10-29",
+    "day": 0,
+    "day_range": "2026-10-29..2026-10-29",
+    "err": null
+   },
+   {
+    "pkg": "@theluckystrike/mcp-receipts",
+    "week": 0,
+    "week_range": "2026-10-23..2026-10-29",
+    "day": 0,
+    "day_range": "2026-10-29..2026-10-29",
+    "err": null
+   },
+   {
+    "pkg": "@theluckystrike/mcp-recurring",
+    "week": 0,
+    "week_range": "2026-10-23..2026-10-29",
+    "day": 0,
+    "day_range": "2026-10-29..2026-10-29",
+    "err": null
+   },
+   {
+    "pkg": "@theluckystrike/mcp-resume",
+    "week": 0,
+    "week_range": "2026-10-23..2026-10-29",
+    "day": 0,
+    "day_range": "2026-10-29..2026-10-29",
+    "err": null
+   },
+   {
+    "pkg": "@theluckystrike/mcp-service-agreement",
+    "week": 0,
+    "week_range": "2026-10-23..2026-10-29",
+    "day": 0,
+    "day_range": "2026-10-29..2026-10-29",
+    "err": null
+   },
+   {
+    "pkg": "@theluckystrike/mcp-spreadsheet",
+    "week": 0,
+    "week_range": "2026-10-23..2026-10-29",
+    "day": 0,
+    "day_range": "2026-10-29..2026-10-29",
+    "err": null
+   },
+   {
+    "pkg": "@theluckystrike/mcp-statement-of-account",
+    "week": 0,
+    "week_range": "2026-10-23..2026-10-29",
+    "day": 0,
+    "day_range": "2026-10-29..2026-10-29",
+    "err": null
+   },
+   {
+    "pkg": "@theluckystrike/mcp-stripe-billing",
+    "week": 0,
+    "week_range": "2026-10-23..2026-10-29",
+    "day": 0,
+    "day_range": "2026-10-29..2026-10-29",
+    "err": null
+   },
+   {
+    "pkg": "@theluckystrike/mcp-supplier-list",
+    "week": 0,
+    "week_range": "2026-10-23..2026-10-29",
+    "day": 0,
+    "day_range": "2026-10-29..2026-10-29",
+    "err": null
+   },
+   {
+    "pkg": "@theluckystrike/mcp-supplier-statement-check",
+    "week": 0,
+    "week_range": "2026-10-23..2026-10-29",
+    "day": 0,
+    "day_range": "2026-10-29..2026-10-29",
+    "err": null
+   },
+   {
+    "pkg": "@theluckystrike/mcp-tax-calc",
+    "week": 0,
+    "week_range": "2026-10-23..2026-10-29",
+    "day": 0,
+    "day_range": "2026-10-29..2026-10-29",
+    "err": null
+   },
+   {
+    "pkg": "@theluckystrike/mcp-three-way-match",
+    "week": 0,
+    "week_range": "2026-10-23..2026-10-29",
+    "day": 0,
+    "day_range": "2026-10-29..2026-10-29",
+    "err": null
+   },
+   {
+    "pkg": "@theluckystrike/mcp-time-tracker",
+    "week": 0,
+    "week_range": "2026-10-23..2026-10-29",
+    "day": 0,
+    "day_range": "2026-10-29..2026-10-29",
+    "err": null
+   },
+   {
+    "pkg": "@theluckystrike/mcp-timezone",
+    "week": 0,
+    "week_range": "2026-10-23..2026-10-29",
+    "day": 0,
+    "day_range": "2026-10-29..2026-10-29",
+    "err": null
+   },
+   {
+    "pkg": "@theluckystrike/mcp-work-order",
+    "week": 0,
+    "week_range": "2026-10-23..2026-10-29",
+    "day": 0,
+    "day_range": "2026-10-29..2026-10-29",
+    "err": null
+   },
+   {
+    "pkg": "@theluckystrike/mcp-zip",
+    "week": 0,
+    "week_range": "2026-10-23..2026-10-29",
+    "day": 0,
+    "day_range": "2026-10-29..2026-10-29",
+    "err": null
+   },
+   {
+    "pkg": "@theluckystrike/mcp-license",
+    "week": 0,
+    "week_range": "2026-10-23..2026-10-29",
+    "day": 0,
+    "day_range": "2026-10-29..2026-10-29",
+    "err": null
+   },
+   {
+    "pkg": "cups-to-grams-mcp",
+    "week": 0,
+    "week_range": "2026-10-23..2026-10-29",
+    "day": 0,
+    "day_range": "2026-10-29..2026-10-29",
+    "err": null
+   },
+   {
+    "pkg": "dscr-loan-calculator-mcp",
+    "week": 0,
+    "week_range": "2026-10-23..2026-10-29",
+    "day": 0,
+    "day_range": "2026-10-29..2026-10-29",
+    "err": null
+   },
+   {
+    "pkg": "gold-price-per-gram-mcp",
+    "week": 0,
+    "week_range": "2026-10-23..2026-10-29",
+    "day": 0,
+    "day_range": "2026-10-29..2026-10-29",
+    "err": null
+   },
+   {
+    "pkg": "lake-level-mcp",
+    "week": 0,
+    "week_range": "2026-10-23..2026-10-29",
+    "day": 0,
+    "day_range": "2026-10-29..2026-10-29",
+    "err": null
+   },
+   {
+    "pkg": "minimum-wage-mcp",
+    "week": 0,
+    "week_range": "2026-10-23..2026-10-29",
+    "day": 0,
+    "day_range": "2026-10-29..2026-10-29",
+    "err": null
+   },
+   {
+    "pkg": "no-tax-on-overtime-mcp",
+    "week": 0,
+    "week_range": "2026-10-23..2026-10-29",
+    "day": 0,
+    "day_range": "2026-10-29..2026-10-29",
+    "err": null
+   },
+   {
+    "pkg": "paycheck-calculator-mcp",
+    "week": 0,
+    "week_range": "2026-10-23..2026-10-29",
+    "day": 0,
+    "day_range": "2026-10-29..2026-10-29",
+    "err": null
+   },
+   {
+    "pkg": "uk-income-tax-salary-mcp",
+    "week": 0,
+    "week_range": "2026-10-23..2026-10-29",
+    "day": 0,
+    "day_range": "2026-10-29..2026-10-29",
+    "err": null
+   },
+   {
+    "pkg": "us-federal-holidays-business-days-mcp",
+    "week": 0,
+    "week_range": "2026-10-23..2026-10-29",
+    "day": 0,
+    "day_range": "2026-10-29..2026-10-29",
+    "err": null
+   }
+  ]
+ },
+ "cloudflare": {
+  "cmd": "POST https://api.cloudflare.com/client/v4/graphql viewer.accounts(filter:{accountTag:dd3f2a29b7707e21a87f26a622c0bb9d}).workersInvocationsAdaptive(limit:10000, filter:{datetime_geq:now-7d, datetime_lt:now, scriptName_in:[10 names]}){sum{requests errors} dimensions{scriptName status datetimeHour}} (data/s1102/kpi/cf2.py). Token: env CLOUDFLARE_API_TOKEN, has Workers analytics scope (200 + data).",
+  "window_utc": [
+   "2026-10-26T02:12:09Z",
+   "2026-11-02T02:12:09Z"
+  ],
+  "rows_returned": 901,
+  "unfiltered_query_saturated": "an unfiltered 7d query hits the 10000-row cap (all-account), so the script filters by scriptName_in; filtered query returned 901 rows, not saturated",
+  "per_script_per_day": {
+   "gold-price-per-gram-mcp": [
+    {
+     "day": "2026-10-26",
+     "total": 0,
+     "by_status": {},
+     "errors": 0
+    },
+    {
+     "day": "2026-10-27",
+     "total": 0,
+     "by_status": {},
+     "errors": 0
+    },
+    {
+     "day": "2026-10-28",
+     "total": 0,
+     "by_status": {},
+     "errors": 0
+    },
+    {
+     "day": "2026-10-29",
+     "total": 0,
+     "by_status": {},
+     "errors": 0
+    },
+    {
+     "day": "2026-10-30",
+     "total": 1748,
+     "by_status": {
+      "success": 1748
+     },
+     "errors": 0
+    },
+    {
+     "day": "2026-10-31",
+     "total": 1042,
+     "by_status": {
+      "success": 1042
+     },
+     "errors": 0
+    },
+    {
+     "day": "2026-11-01",
+     "total": 956,
+     "by_status": {
+      "success": 956
+     },
+     "errors": 0
+    },
+    {
+     "day": "2026-11-02",
+     "total": 71,
+     "by_status": {
+      "success": 71
+     },
+     "errors": 0
+    }
+   ],
+   "mcp-remote": [
+    {
+     "day": "2026-10-26",
+     "total": 118488,
+     "by_status": {
+      "success": 118479,
+      "clientDisconnected": 9
+     },
+     "errors": 0
+    },
+    {
+     "day": "2026-10-27",
+     "total": 149775,
+     "by_status": {
+      "success": 149761,
+      "clientDisconnected": 14
+     },
+     "errors": 0
+    },
+    {
+     "day": "2026-10-28",
+     "total": 157075,
+     "by_status": {
+      "success": 157030,
+      "clientDisconnected": 45
+     },
+     "errors": 0
+    },
+    {
+     "day": "2026-10-29",
+     "total": 168160,
+     "by_status": {
+      "success": 168156,
+      "clientDisconnected": 4
+     },
+     "errors": 0
+    },
+    {
+     "day": "2026-10-30",
+     "total": 168293,
+     "by_status": {
+      "success": 168289,
+      "clientDisconnected": 4
+     },
+     "errors": 0
+    },
+    {
+     "day": "2026-10-31",
+     "total": 164150,
+     "by_status": {
+      "success": 164138,
+      "clientDisconnected": 12
+     },
+     "errors": 0
+    },
+    {
+     "day": "2026-11-01",
+     "total": 189679,
+     "by_status": {
+      "success": 189630,
+      "clientDisconnected": 49
+     },
+     "errors": 0
+    },
+    {
+     "day": "2026-11-02",
+     "total": 14235,
+     "by_status": {
+      "clientDisconnected": 2,
+      "success": 14233
+     },
+     "errors": 0
+    }
+   ],
+   "dscr-loan-calculator-mcp": [
+    {
+     "day": "2026-10-26",
+     "total": 0,
+     "by_status": {},
+     "errors": 0
+    },
+    {
+     "day": "2026-10-27",
+     "total": 0,
+     "by_status": {},
+     "errors": 0
+    },
+    {
+     "day": "2026-10-28",
+     "total": 0,
+     "by_status": {},
+     "errors": 0
+    },
+    {
+     "day": "2026-10-29",
+     "total": 0,
+     "by_status": {},
+     "errors": 0
+    },
+    {
+     "day": "2026-10-30",
+     "total": 1864,
+     "by_status": {
+      "success": 1864
+     },
+     "errors": 0
+    },
+    {
+     "day": "2026-10-31",
+     "total": 1168,
+     "by_status": {
+      "success": 1168
+     },
+     "errors": 0
+    },
+    {
+     "day": "2026-11-01",
+     "total": 1053,
+     "by_status": {
+      "success": 1053
+     },
+     "errors": 0
+    },
+    {
+     "day": "2026-11-02",
+     "total": 74,
+     "by_status": {
+      "success": 74
+     },
+     "errors": 0
+    }
+   ],
+   "uk-income-tax-salary-mcp": [
+    {
+     "day": "2026-10-26",
+     "total": 0,
+     "by_status": {},
+     "errors": 0
+    },
+    {
+     "day": "2026-10-27",
+     "total": 0,
+     "by_status": {},
+     "errors": 0
+    },
+    {
+     "day": "2026-10-28",
+     "total": 0,
+     "by_status": {},
+     "errors": 0
+    },
+    {
+     "day": "2026-10-29",
+     "total": 0,
+     "by_status": {},
+     "errors": 0
+    },
+    {
+     "day": "2026-10-30",
+     "total": 1774,
+     "by_status": {
+      "success": 1774
+     },
+     "errors": 0
+    },
+    {
+     "day": "2026-10-31",
+     "total": 969,
+     "by_status": {
+      "success": 969
+     },
+     "errors": 0
+    },
+    {
+     "day": "2026-11-01",
+     "total": 1006,
+     "by_status": {
+      "success": 1006
+     },
+     "errors": 0
+    },
+    {
+     "day": "2026-11-02",
+     "total": 88,
+     "by_status": {
+      "success": 88
+     },
+     "errors": 0
+    }
+   ],
+   "cups-to-grams-mcp": [
+    {
+     "day": "2026-10-26",
+     "total": 0,
+     "by_status": {},
+     "errors": 0
+    },
+    {
+     "day": "2026-10-27",
+     "total": 0,
+     "by_status": {},
+     "errors": 0
+    },
+    {
+     "day": "2026-10-28",
+     "total": 0,
+     "by_status": {},
+     "errors": 0
+    },
+    {
+     "day": "2026-10-29",
+     "total": 0,
+     "by_status": {},
+     "errors": 0
+    },
+    {
+     "day": "2026-10-30",
+     "total": 1835,
+     "by_status": {
+      "success": 1835
+     },
+     "errors": 0
+    },
+    {
+     "day": "2026-10-31",
+     "total": 1039,
+     "by_status": {
+      "success": 1039
+     },
+     "errors": 0
+    },
+    {
+     "day": "2026-11-01",
+     "total": 969,
+     "by_status": {
+      "success": 969
+     },
+     "errors": 0
+    },
+    {
+     "day": "2026-11-02",
+     "total": 105,
+     "by_status": {
+      "success": 105
+     },
+     "errors": 0
+    }
+   ],
+   "us-federal-holidays-business-days-mcp": [
+    {
+     "day": "2026-10-26",
+     "total": 0,
+     "by_status": {},
+     "errors": 0
+    },
+    {
+     "day": "2026-10-27",
+     "total": 0,
+     "by_status": {},
+     "errors": 0
+    },
+    {
+     "day": "2026-10-28",
+     "total": 0,
+     "by_status": {},
+     "errors": 0
+    },
+    {
+     "day": "2026-10-29",
+     "total": 0,
+     "by_status": {},
+     "errors": 0
+    },
+    {
+     "day": "2026-10-30",
+     "total": 1989,
+     "by_status": {
+      "success": 1989
+     },
+     "errors": 0
+    },
+    {
+     "day": "2026-10-31",
+     "total": 1331,
+     "by_status": {
+      "success": 1331
+     },
+     "errors": 0
+    },
+    {
+     "day": "2026-11-01",
+     "total": 1199,
+     "by_status": {
+      "success": 1199
+     },
+     "errors": 0
+    },
+    {
+     "day": "2026-11-02",
+     "total": 85,
+     "by_status": {
+      "success": 85
+     },
+     "errors": 0
+    }
+   ],
+   "paycheck-calculator-mcp": [
+    {
+     "day": "2026-10-26",
+     "total": 0,
+     "by_status": {},
+     "errors": 0
+    },
+    {
+     "day": "2026-10-27",
+     "total": 0,
+     "by_status": {},
+     "errors": 0
+    },
+    {
+     "day": "2026-10-28",
+     "total": 0,
+     "by_status": {},
+     "errors": 0
+    },
+    {
+     "day": "2026-10-29",
+     "total": 0,
+     "by_status": {},
+     "errors": 0
+    },
+    {
+     "day": "2026-10-30",
+     "total": 1840,
+     "by_status": {
+      "success": 1839,
+      "clientDisconnected": 1
+     },
+     "errors": 0
+    },
+    {
+     "day": "2026-10-31",
+     "total": 1213,
+     "by_status": {
+      "success": 1213
+     },
+     "errors": 0
+    },
+    {
+     "day": "2026-11-01",
+     "total": 1140,
+     "by_status": {
+      "success": 1140
+     },
+     "errors": 0
+    },
+    {
+     "day": "2026-11-02",
+     "total": 90,
+     "by_status": {
+      "success": 89,
+      "clientDisconnected": 1
+     },
+     "errors": 0
+    }
+   ],
+   "no-tax-on-overtime-mcp": [
+    {
+     "day": "2026-10-26",
+     "total": 0,
+     "by_status": {},
+     "errors": 0
+    },
+    {
+     "day": "2026-10-27",
+     "total": 0,
+     "by_status": {},
+     "errors": 0
+    },
+    {
+     "day": "2026-10-28",
+     "total": 0,
+     "by_status": {},
+     "errors": 0
+    },
+    {
+     "day": "2026-10-29",
+     "total": 0,
+     "by_status": {},
+     "errors": 0
+    },
+    {
+     "day": "2026-10-30",
+     "total": 1649,
+     "by_status": {
+      "success": 1649
+     },
+     "errors": 0
+    },
+    {
+     "day": "2026-10-31",
+     "total": 928,
+     "by_status": {
+      "success": 928
+     },
+     "errors": 0
+    },
+    {
+     "day": "2026-11-01",
+     "total": 935,
+     "by_status": {
+      "success": 935
+     },
+     "errors": 0
+    },
+    {
+     "day": "2026-11-02",
+     "total": 70,
+     "by_status": {
+      "success": 70
+     },
+     "errors": 0
+    }
+   ],
+   "minimum-wage-mcp": [
+    {
+     "day": "2026-10-26",
+     "total": 0,
+     "by_status": {},
+     "errors": 0
+    },
+    {
+     "day": "2026-10-27",
+     "total": 0,
+     "by_status": {},
+     "errors": 0
+    },
+    {
+     "day": "2026-10-28",
+     "total": 0,
+     "by_status": {},
+     "errors": 0
+    },
+    {
+     "day": "2026-10-29",
+     "total": 0,
+     "by_status": {},
+     "errors": 0
+    },
+    {
+     "day": "2026-10-30",
+     "total": 1876,
+     "by_status": {
+      "success": 1875,
+      "clientDisconnected": 1
+     },
+     "errors": 0
+    },
+    {
+     "day": "2026-10-31",
+     "total": 1192,
+     "by_status": {
+      "success": 1192
+     },
+     "errors": 0
+    },
+    {
+     "day": "2026-11-01",
+     "total": 1155,
+     "by_status": {
+      "success": 1155
+     },
+     "errors": 0
+    },
+    {
+     "day": "2026-11-02",
+     "total": 85,
+     "by_status": {
+      "success": 85
+     },
+     "errors": 0
+    }
+   ],
+   "lake-level-mcp": [
+    {
+     "day": "2026-10-26",
+     "total": 0,
+     "by_status": {},
+     "errors": 0
+    },
+    {
+     "day": "2026-10-27",
+     "total": 0,
+     "by_status": {},
+     "errors": 0
+    },
+    {
+     "day": "2026-10-28",
+     "total": 0,
+     "by_status": {},
+     "errors": 0
+    },
+    {
+     "day": "2026-10-29",
+     "total": 0,
+     "by_status": {},
+     "errors": 0
+    },
+    {
+     "day": "2026-10-30",
+     "total": 1482,
+     "by_status": {
+      "success": 1482
+     },
+     "errors": 0
+    },
+    {
+     "day": "2026-10-31",
+     "total": 1203,
+     "by_status": {
+      "success": 1203
+     },
+     "errors": 0
+    },
+    {
+     "day": "2026-11-01",
+     "total": 1121,
+     "by_status": {
+      "success": 1120,
+      "clientDisconnected": 1
+     },
+     "errors": 0
+    },
+    {
+     "day": "2026-11-02",
+     "total": 85,
+     "by_status": {
+      "success": 85
+     },
+     "errors": 0
+    }
+   ]
+  },
+  "satellite_7d_totals": {
+   "gold-price-per-gram-mcp": 3817,
+   "dscr-loan-calculator-mcp": 4159,
+   "uk-income-tax-salary-mcp": 3837,
+   "cups-to-grams-mcp": 3948,
+   "us-federal-holidays-business-days-mcp": 4604,
+   "paycheck-calculator-mcp": 4283,
+   "no-tax-on-overtime-mcp": 3582,
+   "minimum-wage-mcp": 4308,
+   "lake-level-mcp": 3891
+  },
+  "caveats": [
+   "Counts all invocations including our own probes, registry scanners (Glama, official registry), uptime checks; no path, user-agent or tool-name dimension exists in workersInvocationsAdaptive, so these are NOT user counts.",
+   "Satellite workers were deployed 2026-10-30, hence zero before.",
+   "Satellites show a flat 25-90 requests/hour around the clock after a 10-30 05:00 UTC burst (~600/h): automated-baseline shape, not human.",
+   "Statuses seen: success, clientDisconnected only; errors=0 on satellites. mcp-remote: see by_status."
+  ],
+  "owner_unlock": "Per-path / user-agent / tool split needs Workers Logs (observability.enabled in wrangler config) or Logpush; not enabled, not changed in this read-only lane."
+ },
+ "github": {
+  "cmd": "gh api repos/<repo>/traffic/{views,clones,popular/referrers,popular/paths} (14-day rolling window; script data/s1102/kpi/gh.py)",
+  "satellites": [
+   {
+    "repo": "theluckystrike/cups-to-grams-mcp",
+    "views": 0,
+    "view_uniques": 0,
+    "clones": 96,
+    "clone_uniques": 54,
+    "referrers": [],
+    "stars": 0
+   },
+   {
+    "repo": "theluckystrike/dscr-loan-calculator-mcp",
+    "views": 1,
+    "view_uniques": 1,
+    "clones": 84,
+    "clone_uniques": 48,
+    "referrers": [],
+    "stars": 0
+   },
+   {
+    "repo": "theluckystrike/gold-price-per-gram-mcp",
+    "views": 1,
+    "view_uniques": 1,
+    "clones": 68,
+    "clone_uniques": 39,
+    "referrers": [],
+    "stars": 0
+   },
+   {
+    "repo": "theluckystrike/lake-level-mcp",
+    "views": 1,
+    "view_uniques": 1,
+    "clones": 115,
+    "clone_uniques": 63,
+    "referrers": [],
+    "stars": 0
+   },
+   {
+    "repo": "theluckystrike/minimum-wage-mcp",
+    "views": 1,
+    "view_uniques": 1,
+    "clones": 92,
+    "clone_uniques": 55,
+    "referrers": [],
+    "stars": 0
+   },
+   {
+    "repo": "theluckystrike/no-tax-on-overtime-mcp",
+    "views": 1,
+    "view_uniques": 1,
+    "clones": 83,
+    "clone_uniques": 48,
+    "referrers": [],
+    "stars": 0
+   },
+   {
+    "repo": "theluckystrike/paycheck-calculator-mcp",
+    "views": 0,
+    "view_uniques": 0,
+    "clones": 82,
+    "clone_uniques": 49,
+    "referrers": [],
+    "stars": 0
+   },
+   {
+    "repo": "theluckystrike/uk-income-tax-salary-mcp",
+    "views": 1,
+    "view_uniques": 1,
+    "clones": 92,
+    "clone_uniques": 50,
+    "referrers": [],
+    "stars": 0
+   },
+   {
+    "repo": "theluckystrike/us-federal-holidays-business-days-mcp",
+    "views": 2,
+    "view_uniques": 2,
+    "clones": 80,
+    "clone_uniques": 47,
+    "referrers": [],
+    "stars": 0
+   }
+  ],
+  "mirrors_top5_by_view_uniques": [
+   {
+    "repo": "theluckystrike/mcp-servers",
+    "views": 123,
+    "view_uniques": 44,
+    "clones": 1404,
+    "clone_uniques": 199,
+    "referrers": [
+     {
+      "referrer": "github.com",
+      "count": 15,
+      "uniques": 5
+     },
+     {
+      "referrer": "registry.modelcontextprotocol.io",
+      "count": 1,
+      "uniques": 1
+     }
+    ],
+    "stars": 2
+   },
+   {
+    "repo": "zovo-one/mcp-price-tracker",
+    "views": 9,
+    "view_uniques": 9,
+    "clones": 14,
+    "clone_uniques": 14,
+    "referrers": [
+     {
+      "referrer": "Google",
+      "count": 8,
+      "uniques": 8
+     }
+    ],
+    "stars": 0
+   },
+   {
+    "repo": "zovo-one/mcp-spreadsheet",
+    "views": 12,
+    "view_uniques": 7,
+    "clones": 19,
+    "clone_uniques": 18,
+    "referrers": [
+     {
+      "referrer": "geminicli.com",
+      "count": 1,
+      "uniques": 1
+     }
+    ],
+    "stars": 0
+   },
+   {
+    "repo": "zovo-one/mcp-resume",
+    "views": 10,
+    "view_uniques": 6,
+    "clones": 19,
+    "clone_uniques": 18,
+    "referrers": [],
+    "stars": 0
+   },
+   {
+    "repo": "zovo-one/mcp-invoice-generator",
+    "views": 26,
+    "view_uniques": 5,
+    "clones": 22,
+    "clone_uniques": 17,
+    "referrers": [
+     {
+      "referrer": "geminicli.com",
+      "count": 2,
+      "uniques": 1
+     }
+    ],
+    "stars": 0
+   }
+  ],
+  "mirrors_all_65_totals": {
+   "views": 254,
+   "clones": 3864
+  },
+  "note": "Clone uniques of 40-60 per satellite with 0-2 views = crawlers/CI/registry mirrors, not developers. Orchestrator npx/git tests are also included. 14-day window, repos created 2026-10-30."
+ },
+ "gsc": {
+  "cmd": "POST webmasters/v3/sites/<site>/searchAnalytics/query (no dimensions) via scripts/gsc_tool.py token(); two windows: dataState=final 2026-10-03..10-30 and dataState=all 2026-10-06..11-02 (script gsc.py). 66 properties listed by gsc_tool.py sites; 65 queryable, sc-domain:boldtake.io is 403 (unverified).",
+  "properties": [
+   {
+    "site": "sc-domain:deepvalueradar.com",
+    "perm": "siteRestrictedUser",
+    "final_28d_2026-10-03..10-30": {
+     "clicks": 0,
+     "impressions": 524
+    },
+    "all_28d_2026-10-06..11-02": {
+     "clicks": 0,
+     "impressions": 536
+    }
+   },
+   {
+    "site": "sc-domain:kappafy.com",
+    "perm": "siteOwner",
+    "final_28d_2026-10-03..10-30": {
+     "clicks": 1,
+     "impressions": 39
+    },
+    "all_28d_2026-10-06..11-02": {
+     "clicks": 1,
+     "impressions": 39
+    }
+   },
+   {
+    "site": "sc-domain:viryd.com",
+    "perm": "siteOwner",
+    "final_28d_2026-10-03..10-30": {
+     "clicks": 0,
+     "impressions": 7
+    },
+    "all_28d_2026-10-06..11-02": {
+     "clicks": 0,
+     "impressions": 7
+    }
+   },
+   {
+    "site": "https://makeroll.com/",
+    "perm": "siteOwner",
+    "final_28d_2026-10-03..10-30": {
+     "clicks": 38,
+     "impressions": 271
+    },
+    "all_28d_2026-10-06..11-02": {
+     "clicks": 32,
+     "impressions": 251
+    }
+   },
+   {
+    "site": "https://examscorecalc.com/",
+    "perm": "siteRestrictedUser",
+    "final_28d_2026-10-03..10-30": {
+     "clicks": 1,
+     "impressions": 1317
+    },
+    "all_28d_2026-10-06..11-02": {
+     "clicks": 1,
+     "impressions": 1308
+    }
+   },
+   {
+    "site": "sc-domain:mcpstamp.com",
+    "perm": "siteOwner",
+    "final_28d_2026-10-03..10-30": {
+     "clicks": 0,
+     "impressions": 6
+    },
+    "all_28d_2026-10-06..11-02": {
+     "clicks": 0,
+     "impressions": 92
+    }
+   },
+   {
+    "site": "https://iamvivi.com/",
+    "perm": "siteOwner",
+    "final_28d_2026-10-03..10-30": {
+     "clicks": 0,
+     "impressions": 51
+    },
+    "all_28d_2026-10-06..11-02": {
+     "clicks": 0,
+     "impressions": 51
+    }
+   },
+   {
+    "site": "https://tg.zovo.one/",
+    "perm": "siteOwner",
+    "final_28d_2026-10-03..10-30": {
+     "clicks": 0,
+     "impressions": 8
+    },
+    "all_28d_2026-10-06..11-02": {
+     "clicks": 0,
+     "impressions": 8
+    }
+   },
+   {
+    "site": "https://bugbountyreality.com/",
+    "perm": "siteOwner",
+    "final_28d_2026-10-03..10-30": {
+     "clicks": 11,
+     "impressions": 5344
+    },
+    "all_28d_2026-10-06..11-02": {
+     "clicks": 11,
+     "impressions": 4655
+    }
+   },
+   {
+    "site": "https://handsofflinks.com/",
+    "perm": "siteOwner",
+    "final_28d_2026-10-03..10-30": {
+     "clicks": 0,
+     "impressions": 727
+    },
+    "all_28d_2026-10-06..11-02": {
+     "clicks": 0,
+     "impressions": 783
+    }
+   },
+   {
+    "site": "https://claudhq.com/",
+    "perm": "siteOwner",
+    "final_28d_2026-10-03..10-30": {
+     "clicks": 3,
+     "impressions": 176
+    },
+    "all_28d_2026-10-06..11-02": {
+     "clicks": 3,
+     "impressions": 170
+    }
+   },
+   {
+    "site": "sc-domain:zovo.one",
+    "perm": "siteFullUser",
+    "final_28d_2026-10-03..10-30": {
+     "clicks": 56,
+     "impressions": 3065
+    },
+    "all_28d_2026-10-06..11-02": {
+     "clicks": 51,
+     "impressions": 2494
+    }
+   },
+   {
+    "site": "https://welikeremotestack.com/",
+    "perm": "siteOwner",
+    "final_28d_2026-10-03..10-30": {
+     "clicks": 1,
+     "impressions": 212
+    },
+    "all_28d_2026-10-06..11-02": {
+     "clicks": 1,
+     "impressions": 193
+    }
+   },
+   {
+    "site": "sc-domain:ml0x.com",
+    "perm": "siteOwner",
+    "final_28d_2026-10-03..10-30": {
+     "clicks": 39,
+     "impressions": 1695
+    },
+    "all_28d_2026-10-06..11-02": {
+     "clicks": 33,
+     "impressions": 1615
+    }
+   },
+   {
+    "site": "https://pictureeditor.net/",
+    "perm": "siteOwner",
+    "final_28d_2026-10-03..10-30": {
+     "clicks": 0,
+     "impressions": 170
+    },
+    "all_28d_2026-10-06..11-02": {
+     "clicks": 0,
+     "impressions": 163
+    }
+   },
+   {
+    "site": "sc-domain:earlythunder.com",
+    "perm": "siteRestrictedUser",
+    "final_28d_2026-10-03..10-30": {
+     "clicks": 0,
+     "impressions": 149
+    },
+    "all_28d_2026-10-06..11-02": {
+     "clicks": 0,
+     "impressions": 134
+    }
+   },
+   {
+    "site": "sc-domain:boldtake.io",
+    "perm": "siteUnverifiedUser",
+    "final_28d_2026-10-03..10-30": {
+     "error": 403,
+     "body": "{\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"User does not have sufficient permission for site 'sc-domain:boldtake.io'. See also: https://support.g"
+    },
+    "all_28d_2026-10-06..11-02": {
+     "error": 403,
+     "body": "{\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"User does not have sufficient permission for site 'sc-domain:boldtake.io'. See also: https://support.g"
+    }
+   },
+   {
+    "site": "sc-domain:ingredientcalculator.com",
+    "perm": "siteOwner",
+    "final_28d_2026-10-03..10-30": {
+     "clicks": 539,
+     "impressions": 231399
+    },
+    "all_28d_2026-10-06..11-02": {
+     "clicks": 564,
+     "impressions": 274243
+    }
+   },
+   {
+    "site": "https://chrometipsguide.com/",
+    "perm": "siteOwner",
+    "final_28d_2026-10-03..10-30": {
+     "clicks": 0,
+     "impressions": 13
+    },
+    "all_28d_2026-10-06..11-02": {
+     "clicks": 0,
+     "impressions": 10
+    }
+   },
+   {
+    "site": "sc-domain:gpt0x.com",
+    "perm": "siteOwner",
+    "final_28d_2026-10-03..10-30": {
+     "clicks": 8,
+     "impressions": 2783
+    },
+    "all_28d_2026-10-06..11-02": {
+     "clicks": 7,
+     "impressions": 2608
+    }
+   },
+   {
+    "site": "sc-domain:invokebot.com",
+    "perm": "siteOwner",
+    "final_28d_2026-10-03..10-30": {
+     "clicks": 0,
+     "impressions": 17
+    },
+    "all_28d_2026-10-06..11-02": {
+     "clicks": 0,
+     "impressions": 17
+    }
+   },
+   {
+    "site": "https://bestchromeextensions.com/",
+    "perm": "siteOwner",
+    "final_28d_2026-10-03..10-30": {
+     "clicks": 0,
+     "impressions": 6
+    },
+    "all_28d_2026-10-06..11-02": {
+     "clicks": 0,
+     "impressions": 6
+    }
+   },
+   {
+    "site": "sc-domain:neovistainc.com",
+    "perm": "siteOwner",
+    "final_28d_2026-10-03..10-30": {
+     "clicks": 3,
+     "impressions": 34
+    },
+    "all_28d_2026-10-06..11-02": {
+     "clicks": 2,
+     "impressions": 33
+    }
+   },
+   {
+    "site": "sc-domain:lockml.com",
+    "perm": "siteOwner",
+    "final_28d_2026-10-03..10-30": {
+     "clicks": 0,
+     "impressions": 255
+    },
+    "all_28d_2026-10-06..11-02": {
+     "clicks": 0,
+     "impressions": 226
+    }
+   },
+   {
+    "site": "sc-domain:paraphrasetool.org",
+    "perm": "siteOwner",
+    "final_28d_2026-10-03..10-30": {
+     "clicks": 7,
+     "impressions": 480
+    },
+    "all_28d_2026-10-06..11-02": {
+     "clicks": 7,
+     "impressions": 440
+    }
+   },
+   {
+    "site": "https://toolsthatrank.com/",
+    "perm": "siteOwner",
+    "final_28d_2026-10-03..10-30": {
+     "clicks": 0,
+     "impressions": 320
+    },
+    "all_28d_2026-10-06..11-02": {
+     "clicks": 0,
+     "impressions": 296
+    }
+   },
+   {
+    "site": "https://deepvalueradar.com/",
+    "perm": "siteOwner",
+    "final_28d_2026-10-03..10-30": {
+     "clicks": 0,
+     "impressions": 96
+    },
+    "all_28d_2026-10-06..11-02": {
+     "clicks": 0,
+     "impressions": 126
+    }
+   },
+   {
+    "site": "https://lakelevelnow.com/",
+    "perm": "siteOwner",
+    "final_28d_2026-10-03..10-30": {
+     "clicks": 310,
+     "impressions": 34129
+    },
+    "all_28d_2026-10-06..11-02": {
+     "clicks": 297,
+     "impressions": 25784
+    }
+   },
+   {
+    "site": "https://ingredientcalculator.com/",
+    "perm": "siteOwner",
+    "final_28d_2026-10-03..10-30": {
+     "clicks": 537,
+     "impressions": 231204
+    },
+    "all_28d_2026-10-06..11-02": {
+     "clicks": 562,
+     "impressions": 274044
+    }
+   },
+   {
+    "site": "sc-domain:kickllm.com",
+    "perm": "siteOwner",
+    "final_28d_2026-10-03..10-30": {
+     "clicks": 11,
+     "impressions": 2621
+    },
+    "all_28d_2026-10-06..11-02": {
+     "clicks": 11,
+     "impressions": 2416
+    }
+   },
+   {
+    "site": "https://statewage.com/",
+    "perm": "siteFullUser",
+    "final_28d_2026-10-03..10-30": {
+     "clicks": 21,
+     "impressions": 19455
+    },
+    "all_28d_2026-10-06..11-02": {
+     "clicks": 22,
+     "impressions": 19602
+    }
+   },
+   {
+    "site": "sc-domain:bugbountyreality.com",
+    "perm": "siteOwner",
+    "final_28d_2026-10-03..10-30": {
+     "clicks": 11,
+     "impressions": 5344
+    },
+    "all_28d_2026-10-06..11-02": {
+     "clicks": 11,
+     "impressions": 4655
+    }
+   },
+   {
+    "site": "sc-domain:seeninaianswers.com",
+    "perm": "siteOwner",
+    "final_28d_2026-10-03..10-30": {
+     "clicks": 0,
+     "impressions": 28
+    },
+    "all_28d_2026-10-06..11-02": {
+     "clicks": 0,
+     "impressions": 30
+    }
+   },
+   {
+    "site": "https://taxbreakcalc.com/",
+    "perm": "siteOwner",
+    "final_28d_2026-10-03..10-30": {
+     "clicks": 84,
+     "impressions": 13194
+    },
+    "all_28d_2026-10-06..11-02": {
+     "clicks": 86,
+     "impressions": 13335
+    }
+   },
+   {
+    "site": "sc-domain:lochbot.com",
+    "perm": "siteOwner",
+    "final_28d_2026-10-03..10-30": {
+     "clicks": 2,
+     "impressions": 68
+    },
+    "all_28d_2026-10-06..11-02": {
+     "clicks": 2,
+     "impressions": 60
+    }
+   },
+   {
+    "site": "sc-domain:claudflow.com",
+    "perm": "siteOwner",
+    "final_28d_2026-10-03..10-30": {
+     "clicks": 38,
+     "impressions": 1178
+    },
+    "all_28d_2026-10-06..11-02": {
+     "clicks": 37,
+     "impressions": 1151
+    }
+   },
+   {
+    "site": "https://goldgramprice.com/",
+    "perm": "siteFullUser",
+    "final_28d_2026-10-03..10-30": {
+     "clicks": 228,
+     "impressions": 59330
+    },
+    "all_28d_2026-10-06..11-02": {
+     "clicks": 238,
+     "impressions": 62485
+    }
+   },
+   {
+    "site": "sc-domain:recipetool.net",
+    "perm": "siteOwner",
+    "final_28d_2026-10-03..10-30": {
+     "clicks": 357,
+     "impressions": 19551
+    },
+    "all_28d_2026-10-06..11-02": {
+     "clicks": 339,
+     "impressions": 18595
+    }
+   },
+   {
+    "site": "sc-domain:krzen.com",
+    "perm": "siteOwner",
+    "final_28d_2026-10-03..10-30": {
+     "clicks": 23,
+     "impressions": 508
+    },
+    "all_28d_2026-10-06..11-02": {
+     "clicks": 16,
+     "impressions": 496
+    }
+   },
+   {
+    "site": "sc-domain:bestchromeextensions.com",
+    "perm": "siteOwner",
+    "final_28d_2026-10-03..10-30": {
+     "clicks": 0,
+     "impressions": 6
+    },
+    "all_28d_2026-10-06..11-02": {
+     "clicks": 0,
+     "impressions": 6
+    }
+   },
+   {
+    "site": "sc-domain:abwex.com",
+    "perm": "siteOwner",
+    "final_28d_2026-10-03..10-30": {
+     "clicks": 22,
+     "impressions": 1683
+    },
+    "all_28d_2026-10-06..11-02": {
+     "clicks": 23,
+     "impressions": 1698
+    }
+   },
+   {
+    "site": "sc-domain:addthisbot.com",
+    "perm": "siteOwner",
+    "final_28d_2026-10-03..10-30": {
+     "clicks": 9,
+     "impressions": 202
+    },
+    "all_28d_2026-10-06..11-02": {
+     "clicks": 15,
+     "impressions": 471
+    }
+   },
+   {
+    "site": "sc-domain:aiwebsitepipeline.com",
+    "perm": "siteOwner",
+    "final_28d_2026-10-03..10-30": {
+     "clicks": 2,
+     "impressions": 2629
+    },
+    "all_28d_2026-10-06..11-02": {
+     "clicks": 2,
+     "impressions": 2588
+    }
+   },
+   {
+    "site": "sc-domain:claudkit.com",
+    "perm": "siteOwner",
+    "final_28d_2026-10-03..10-30": {
+     "clicks": 1,
+     "impressions": 11
+    },
+    "all_28d_2026-10-06..11-02": {
+     "clicks": 2,
+     "impressions": 11
+    }
+   },
+   {
+    "site": "sc-domain:grammarhelper.org",
+    "perm": "siteOwner",
+    "final_28d_2026-10-03..10-30": {
+     "clicks": 7,
+     "impressions": 249
+    },
+    "all_28d_2026-10-06..11-02": {
+     "clicks": 7,
+     "impressions": 228
+    }
+   },
+   {
+    "site": "sc-domain:toolroutine.com",
+    "perm": "siteOwner",
+    "final_28d_2026-10-03..10-30": {
+     "clicks": 0,
+     "impressions": 387
+    },
+    "all_28d_2026-10-06..11-02": {
+     "clicks": 0,
+     "impressions": 388
+    }
+   },
+   {
+    "site": "https://recipetool.net/",
+    "perm": "siteOwner",
+    "final_28d_2026-10-03..10-30": {
+     "clicks": 357,
+     "impressions": 19550
+    },
+    "all_28d_2026-10-06..11-02": {
+     "clicks": 339,
+     "impressions": 18594
+    }
+   },
+   {
+    "site": "https://bestremotetools.com/",
+    "perm": "siteOwner",
+    "final_28d_2026-10-03..10-30": {
+     "clicks": 0,
+     "impressions": 10
+    },
+    "all_28d_2026-10-06..11-02": {
+     "clicks": 0,
+     "impressions": 13
+    }
+   },
+   {
+    "site": "https://toolroutine.com/",
+    "perm": "siteOwner",
+    "final_28d_2026-10-03..10-30": {
+     "clicks": 0,
+     "impressions": 387
+    },
+    "all_28d_2026-10-06..11-02": {
+     "clicks": 0,
+     "impressions": 388
+    }
+   },
+   {
+    "site": "sc-domain:claudhq.com",
+    "perm": "siteOwner",
+    "final_28d_2026-10-03..10-30": {
+     "clicks": 3,
+     "impressions": 176
+    },
+    "all_28d_2026-10-06..11-02": {
+     "clicks": 3,
+     "impressions": 170
+    }
+   },
+   {
+    "site": "https://worthmyclaim.com/",
+    "perm": "siteRestrictedUser",
+    "final_28d_2026-10-03..10-30": {
+     "clicks": 1,
+     "impressions": 1036
+    },
+    "all_28d_2026-10-06..11-02": {
+     "clicks": 1,
+     "impressions": 965
+    }
+   },
+   {
+    "site": "sc-domain:dismissticket.com",
+    "perm": "siteOwner",
+    "final_28d_2026-10-03..10-30": {
+     "clicks": 1,
+     "impressions": 454
+    },
+    "all_28d_2026-10-06..11-02": {
+     "clicks": 1,
+     "impressions": 398
+    }
+   },
+   {
+    "site": "sc-domain:ml3x.com",
+    "perm": "siteOwner",
+    "final_28d_2026-10-03..10-30": {
+     "clicks": 29,
+     "impressions": 174
+    },
+    "all_28d_2026-10-06..11-02": {
+     "clicks": 46,
+     "impressions": 203
+    }
+   },
+   {
+    "site": "sc-domain:gen8x.com",
+    "perm": "siteOwner",
+    "final_28d_2026-10-03..10-30": {
+     "clicks": 1,
+     "impressions": 454
+    },
+    "all_28d_2026-10-06..11-02": {
+     "clicks": 1,
+     "impressions": 492
+    }
+   },
+   {
+    "site": "sc-domain:writingassistant.org",
+    "perm": "siteOwner",
+    "final_28d_2026-10-03..10-30": {
+     "clicks": 0,
+     "impressions": 616
+    },
+    "all_28d_2026-10-06..11-02": {
+     "clicks": 0,
+     "impressions": 618
+    }
+   },
+   {
+    "site": "sc-domain:belikenative.com",
+    "perm": "siteFullUser",
+    "final_28d_2026-10-03..10-30": {
+     "clicks": 695,
+     "impressions": 237000
+    },
+    "all_28d_2026-10-06..11-02": {
+     "clicks": 646,
+     "impressions": 226164
+    }
+   },
+   {
+    "site": "https://assetloancalculator.com/",
+    "perm": "siteFullUser",
+    "final_28d_2026-10-03..10-30": {
+     "clicks": 37,
+     "impressions": 8570
+    },
+    "all_28d_2026-10-06..11-02": {
+     "clicks": 40,
+     "impressions": 9260
+    }
+   },
+   {
+    "site": "sc-domain:b2berp.com",
+    "perm": "siteOwner",
+    "final_28d_2026-10-03..10-30": {
+     "clicks": 2,
+     "impressions": 851
+    },
+    "all_28d_2026-10-06..11-02": {
+     "clicks": 2,
+     "impressions": 778
+    }
+   },
+   {
+    "site": "https://tgtools-site.lipmichal.workers.dev/",
+    "perm": "siteOwner",
+    "final_28d_2026-10-03..10-30": {
+     "clicks": 0,
+     "impressions": 9
+    },
+    "all_28d_2026-10-06..11-02": {
+     "clicks": 0,
+     "impressions": 8
+    }
+   },
+   {
+    "site": "sc-domain:epochpilot.com",
+    "perm": "siteOwner",
+    "final_28d_2026-10-03..10-30": {
+     "clicks": 1,
+     "impressions": 359
+    },
+    "all_28d_2026-10-06..11-02": {
+     "clicks": 0,
+     "impressions": 371
+    }
+   },
+   {
+    "site": "sc-domain:notemods.com",
+    "perm": "siteOwner",
+    "final_28d_2026-10-03..10-30": {
+     "clicks": 22,
+     "impressions": 2756
+    },
+    "all_28d_2026-10-06..11-02": {
+     "clicks": 23,
+     "impressions": 2993
+    }
+   },
+   {
+    "site": "https://securetoolsguide.com/",
+    "perm": "siteOwner",
+    "final_28d_2026-10-03..10-30": {
+     "clicks": 0,
+     "impressions": 18
+    },
+    "all_28d_2026-10-06..11-02": {
+     "clicks": 0,
+     "impressions": 18
+    }
+   },
+   {
+    "site": "sc-domain:englishlearner.org",
+    "perm": "siteOwner",
+    "final_28d_2026-10-03..10-30": {
+     "clicks": 142,
+     "impressions": 2293
+    },
+    "all_28d_2026-10-06..11-02": {
+     "clicks": 142,
+     "impressions": 2290
+    }
+   },
+   {
+    "site": "sc-domain:enhio.com",
+    "perm": "siteOwner",
+    "final_28d_2026-10-03..10-30": {
+     "clicks": 4,
+     "impressions": 1601
+    },
+    "all_28d_2026-10-06..11-02": {
+     "clicks": 4,
+     "impressions": 1593
+    }
+   },
+   {
+    "site": "sc-domain:heytensor.com",
+    "perm": "siteOwner",
+    "final_28d_2026-10-03..10-30": {
+     "clicks": 0,
+     "impressions": 135
+    },
+    "all_28d_2026-10-06..11-02": {
+     "clicks": 0,
+     "impressions": 126
+    }
+   },
+   {
+    "site": "sc-domain:pictureeditor.net",
+    "perm": "siteOwner",
+    "final_28d_2026-10-03..10-30": {
+     "clicks": 0,
+     "impressions": 170
+    },
+    "all_28d_2026-10-06..11-02": {
+     "clicks": 0,
+     "impressions": 163
+    }
+   }
+  ],
+  "mcp_zovo_one": {
+   "final_28d": {
+    "clicks": 0,
+    "impressions": 37,
+    "pages": 6,
+    "top": [
+     [
+      "https://mcp.zovo.one/",
+      26,
+      0
+     ],
+     [
+      "https://mcp.zovo.one/mcp/connect",
+      7,
+      0
+     ],
+     [
+      "https://mcp.zovo.one/mcp/price-tracker",
+      1,
+      0
+     ],
+     [
+      "https://mcp.zovo.one/mcp/time-tracker",
+      1,
+      0
+     ],
+     [
+      "https://mcp.zovo.one/mcp/token",
+      1,
+      0
+     ],
+     [
+      "https://mcp.zovo.one/mcp/zip",
+      1,
+      0
+     ]
+    ],
+    "err": null
+   },
+   "all_28d_to_today": {
+    "clicks": 0,
+    "impressions": 37,
+    "pages": 6,
+    "top": [
+     [
+      "https://mcp.zovo.one/",
+      26,
+      0
+     ],
+     [
+      "https://mcp.zovo.one/mcp/connect",
+      7,
+      0
+     ],
+     [
+      "https://mcp.zovo.one/mcp/price-tracker",
+      1,
+      0
+     ],
+     [
+      "https://mcp.zovo.one/mcp/time-tracker",
+      1,
+      0
+     ],
+     [
+      "https://mcp.zovo.one/mcp/token",
+      1,
+      0
+     ],
+     [
+      "https://mcp.zovo.one/mcp/zip",
+      1,
+      0
+     ]
+    ],
+    "err": null
+   }
+  },
+  "mcpstamp_detail": {
+   "final_28d": {
+    "pages": [
+     [
+      "https://www.mcpstamp.com/developers/",
+      2,
+      0
+     ],
+     [
+      "https://www.mcpstamp.com/servers/dunning-letters/",
+      2,
+      0
+     ],
+     [
+      "https://www.mcpstamp.com/compare/",
+      1,
+      0
+     ],
+     [
+      "https://www.mcpstamp.com/servers/resume/",
+      1,
+      0
+     ]
+    ],
+    "queries": [
+     [
+      "composio mcp",
+      1,
+      0
+     ]
+    ]
+   },
+   "all_28d_to_today": {
+    "pages": [
+     [
+      "https://www.mcpstamp.com/can-claude/read-zip-files/",
+      17,
+      0
+     ],
+     [
+      "https://www.mcpstamp.com/developers/",
+      14,
+      0
+     ],
+     [
+      "https://www.mcpstamp.com/servers/supplier-list/",
+      7,
+      0
+     ],
+     [
+      "https://www.mcpstamp.com/for/ops-hr/",
+      6,
+      0
+     ],
+     [
+      "https://www.mcpstamp.com/servers/loan-calculator/",
+      5,
+      0
+     ],
+     [
+      "https://www.mcpstamp.com/servers/supplier-statement-check/",
+      5,
+      0
+     ],
+     [
+      "https://www.mcpstamp.com/use-cases/chase-overdue-invoices/",
+      5,
+      0
+     ],
+     [
+      "https://www.mcpstamp.com/can-claude/create-word-documents/",
+      3,
+      0
+     ],
+     [
+      "https://www.mcpstamp.com/servers/resume/",
+      3,
+      0
+     ],
+     [
+      "https://www.mcpstamp.com/use-cases/per-diem-travel-allowance/",
+      3,
+      0
+     ]
+    ],
+    "queries": [
+     [
+      "chase overdue invoices automatically",
+      5,
+      0
+     ],
+     [
+      "can claude open zip files",
+      2,
+      0
+     ],
+     [
+      "invoiced to chatgpt",
+      2,
+      0
+     ],
+     [
+      "mcp handshake",
+      2,
+      0
+     ],
+     [
+      "payroll services norway nok market entry norway claude idea",
+      2,
+      0
+     ],
+     [
+      "ai agent for 3 way match",
+      1,
+      0
+     ],
+     [
+      "can claude read zips",
+      1,
+      0
+     ],
+     [
+      "can claude unzip files",
+      1,
+      0
+     ],
+     [
+      "composio mcp",
+      1,
+      0
+     ],
+     [
+      "composio pricing",
+      1,
+      0
+     ]
+    ]
+   }
+  },
+  "sitemaps": {
+   "mcpstamp.com": [
+    {
+     "path": "https://www.mcpstamp.com/sitemap.xml",
+     "submitted": "144",
+     "indexed": "0",
+     "lastDownloaded": "2026-11-01T14:11:40.996Z"
+    }
+   ],
+   "mcp.zovo.one": [
+    {
+     "path": "https://mcp.zovo.one/sitemap.xml",
+     "submitted": "299",
+     "indexed": "0"
+    }
+   ]
+  },
+  "sitemap_indexed_caveat": "The sitemap \"indexed\" field reads 0 for every sitemap including zovo.one sitemaps whose property has 56 clicks in 28d: the field is unreliable/deprecated, do not read 0 as \"not indexed\". Use impressions (mcpstamp.com: 6 final / 92 incl. fresh days) as the indexing signal.",
+  "money_sites_without_property": [
+   "noovertimetax.com",
+   "dscrradar.com",
+   "ukmoneycalc.com (no GSC property and no GA4 property visible to the service account) -> OWNER UNLOCK: add zovo-gsc-cleanup@zovo-extensions.iam.gserviceaccount.com as owner/user at https://search.google.com/search-console and as Viewer in GA4 admin"
+  ]
+ },
+ "stripe": {
+  "status": "UNAVAILABLE - owner unlock",
+  "cmd_tried": "stripe -p worthmyclaim get /v1/checkout/sessions --live -d limit=100 -d created[gte]=... (script stripe.py); also curl -u <live_mode_api_key from ~/.config/stripe/worthmyclaim.toml>: -> HTTP 401 Invalid API Key. Default stripe profile is sandbox-only.",
+  "reason": "The CLI-issued live key in ~/.config/stripe/worthmyclaim.toml (BeLikeNative acct_1MmUPwJKCamubEm1) is rejected by Stripe (401; CLI says re-run stripe login). Not re-authenticated: browser sign-in is forbidden in this session.",
+  "owner_unlock": "Run `stripe login` (live account BeLikeNative) in a terminal, or provide a restricted read-only key (checkout_session read). Then run data/s1102/kpi/stripe.py.",
+  "last_known": "From the 2026-10-30 snapshot (data/s1030/stripe_raw.json, newest record 2026-10-29): MCP checkout sessions 7d=5 (2 tagged probes, 3 untagged all expired), 28d=13, MCP paid all-time=0; account-wide paid 28d=17, newest paid 2026-10-27. Not re-measured today.",
+  "independent_proxy_today": {
+   "cmd": "curl -H 'x-mcp-probe: 1' https://mcp.zovo.one/stats/funnel and /stats/clicks (the instruments scripts/audit-revenue.mjs reads)",
+   "checkout_handoff_ordinary_7d": 5,
+   "checkout_handoff_by_day": {
+    "2026-10-27": 0,
+    "2026-10-28": 3,
+    "2026-10-29": 0,
+    "2026-10-30": 1,
+    "2026-10-31": 1,
+    "2026-11-01": 0,
+    "2026-11-02": 0
+   },
+   "note": "checkout_handoff is the event that creates a Stripe session; 5 in 7d, last on 2026-10-31. Sessions that complete would show as paid in Stripe; cannot be confirmed without the key."
+  }
+ },
+ "mcp_zovo_one_funnel": {
+  "cmd": "curl -s -H 'x-mcp-probe: 1' -A mcp-revenue-audit/1 https://mcp.zovo.one/stats/funnel (instrument 2); stats/clicks run through node scripts/r38-commercial-kpis.mjs",
+  "ordinary_by_day": {
+   "2026-10-27": {
+    "offer_view": 278,
+    "successful_business_call": 2,
+    "first_successful_anon_token_server_day": 1,
+    "upgrade_impression": 2
+   },
+   "2026-10-28": {
+    "offer_view": 915,
+    "checkout_handoff": 3
+   },
+   "2026-10-29": {
+    "offer_view": 614,
+    "successful_business_call": 3,
+    "first_successful_anon_token_server_day": 1,
+    "upgrade_impression": 3
+   },
+   "2026-10-30": {
+    "offer_view": 549,
+    "successful_business_call": 4,
+    "first_successful_anon_token_server_day": 1,
+    "upgrade_impression": 4,
+    "checkout_handoff": 1
+   },
+   "2026-10-31": {
+    "offer_view": 651,
+    "successful_business_call": 6,
+    "first_successful_anon_token_server_day": 5,
+    "upgrade_impression": 6,
+    "checkout_handoff": 1
+   },
+   "2026-11-01": {
+    "offer_view": 482,
+    "successful_business_call": 358,
+    "first_successful_anon_token_server_day": 194,
+    "upgrade_impression": 287
+   },
+   "2026-11-02": {
+    "offer_view": 41
+   }
+  },
+  "ordinary_7d": {
+   "offer_view": 3530,
+   "successful_business_call": 373,
+   "first_successful_anon_token_server_day": 202,
+   "upgrade_impression": 302,
+   "checkout_handoff": 5
+  },
+  "probe_offer_view_7d": 18634,
+  "note": "ordinary = unmarked, NOT proven human. 2026-11-01 jumped from 6/day to 358 successful business calls and 194 anon token-days, all source \"unattributed\" and no matching offer_view/checkout lift: a single sweep (scanner, registry validator or another agent session) is the likely cause. Treat as unverified.",
+  "clicks": {
+   "total_guard_passing": 1020,
+   "clicks_7d": 35,
+   "known_dead_product_7d": 32,
+   "other_7d": 3
+  }
+ },
+ "ga4": {
+  "status": "ACCESS EXISTS",
+  "cmd": "Service account zovo-gsc-cleanup@zovo-extensions.iam.gserviceaccount.com, scope analytics.readonly: GET analyticsadmin.googleapis.com/v1beta/accountSummaries (30 properties), then POST analyticsdata.googleapis.com/v1beta/properties/<id>:runReport dateRange 28daysAgo..today, dimension sessionSource EXACT mcp, then a CONTAINS mcp OR over sessionSource/sessionMedium/sessionCampaignName (scripts ga4.py, ga4b.py, ga4c.py). Positive control: other sources return non-zero in the same calls (e.g. ingredientcalculator.com google=561).",
+  "properties_queried": 30,
+  "utm_source_mcp_sessions_28d_total": 7,
+  "non_zero": {
+   "property": "ingredientcalculator.com (properties/555964379)",
+   "sessions": 7,
+   "utm_medium": "cups-to-grams-mcp",
+   "landing_pages": {
+    "/cups-to-grams": 4,
+    "/recipe-converter": 3
+   },
+   "date": "2026-10-30 (property tz America/Los_Angeles)",
+   "engaged_sessions": 0,
+   "sessions_detail": [
+    [
+     [
+      "202610300632",
+      "United States",
+      "desktop",
+      "Edge",
+      "Windows"
+     ],
+     [
+      "3",
+      "0"
+     ]
+    ],
+    [
+     [
+      "202610301157",
+      "United States",
+      "desktop",
+      "Chrome",
+      "Windows"
+     ],
+     [
+      "2",
+      "0"
+     ]
+    ],
+    [
+     [
+      "202610300632",
+      "United States",
+      "desktop",
+      "Chrome",
+      "Windows"
+     ],
+     [
+      "1",
+      "0"
+     ]
+    ],
+    [
+     [
+      "202610300633",
+      "United States",
+      "desktop",
+      "Chrome",
+      "Windows"
+     ],
+     [
+      "1",
+      "0"
+     ]
+    ]
+   ],
+   "reading": "7 desktop Windows Chrome/Edge sessions in the US, 5 within one minute (13:32 UTC) and 2 at 18:57 UTC, 0 engaged: launch-day click-through of the cups-to-grams tool-result link. Plausibly a scanner or our own verification, not proven human."
+  },
+  "mcp_zovo_one_in_zovo_one_property": "hostName=mcp.zovo.one returned no rows in 28d (positive control: property total 205 sessions).",
+  "no_property_for": [
+   "noovertimetax.com",
+   "dscrradar.com",
+   "ukmoneycalc.com"
+  ],
+  "properties": {
+   "zovo.one": {
+    "sessions_28d": 205,
+    "utm_source_mcp_sessions_28d": 0,
+    "top_sources": [
+     [
+      "(direct)",
+      94
+     ],
+     [
+      "checkout.stripe.com",
+      29
+     ],
+     [
+      "chromewebstore.google.com",
+      25
+     ],
+     [
+      "google",
+      8
+     ],
+     [
+      "chatgpt.com",
+      7
+     ]
+    ]
+   },
+   "belikenative.com (archive until 2026-09-05)": {
+    "sessions_28d": 10,
+    "utm_source_mcp_sessions_28d": 0,
+    "top_sources": [
+     [
+      "google",
+      6
+     ],
+     [
+      "(data not available)",
+      2
+     ],
+     [
+      "(direct)",
+      1
+     ],
+     [
+      "(not set)",
+      1
+     ]
+    ]
+   },
+   "belikenative.com": {
+    "sessions_28d": 3762,
+    "utm_source_mcp_sessions_28d": 0,
+    "top_sources": [
+     [
+      "(direct)",
+      2640
+     ],
+     [
+      "google",
+      728
+     ],
+     [
+      "bing",
+      188
+     ],
+     [
+      "duckduckgo",
+      35
+     ],
+     [
+      "(not set)",
+      16
+     ]
+    ]
+   },
+   "ml0x.com": {
+    "sessions_28d": 837,
+    "utm_source_mcp_sessions_28d": 0,
+    "top_sources": [
+     [
+      "(direct)",
+      311
+     ],
+     [
+      "gpt0x",
+      131
+     ],
+     [
+      "epochpilot",
+      87
+     ],
+     [
+      "heytensor",
+      77
+     ],
+     [
+      "bing",
+      51
+     ]
+    ]
+   },
+   "ingredientcalculator.com": {
+    "sessions_28d": 1193,
+    "utm_source_mcp_sessions_28d": 7,
+    "top_sources": [
+     [
+      "google",
+      561
+     ],
+     [
+      "(direct)",
+      340
+     ],
+     [
+      "bing",
+      104
+     ],
+     [
+      "facebook.com",
+      50
+     ],
+     [
+      "duckduckgo",
+      47
+     ]
+    ]
+   },
+   "kickllm.com": {
+    "sessions_28d": 828,
+    "utm_source_mcp_sessions_28d": 0,
+    "top_sources": [
+     [
+      "(direct)",
+      767
+     ],
+     [
+      "bing",
+      31
+     ],
+     [
+      "chatgpt.com",
+      7
+     ],
+     [
+      "cn.bing.com",
+      5
+     ],
+     [
+      "ga4check",
+      5
+     ]
+    ]
+   },
+   "recipetool.net": {
+    "sessions_28d": 805,
+    "utm_source_mcp_sessions_28d": 0,
+    "top_sources": [
+     [
+      "google",
+      407
+     ],
+     [
+      "(direct)",
+      223
+     ],
+     [
+      "bing",
+      60
+     ],
+     [
+      "chatgpt.com",
+      28
+     ],
+     [
+      "nutrition-result",
+      22
+     ]
+    ]
+   },
+   "lakelevelnow.com": {
+    "sessions_28d": 2234,
+    "utm_source_mcp_sessions_28d": 0,
+    "top_sources": [
+     [
+      "bing",
+      559
+     ],
+     [
+      "(direct)",
+      527
+     ],
+     [
+      "yahoo",
+      380
+     ],
+     [
+      "google",
+      367
+     ],
+     [
+      "duckduckgo",
+      328
+     ]
+    ]
+   },
+   "toolsthatrank.com": {
+    "sessions_28d": 94,
+    "utm_source_mcp_sessions_28d": 0,
+    "top_sources": [
+     [
+      "(direct)",
+      61
+     ],
+     [
+      "bing",
+      10
+     ],
+     [
+      "ga4check",
+      7
+     ],
+     [
+      "aiwebsitepipeline",
+      5
+     ],
+     [
+      "handsofflinks",
+      3
+     ]
+    ]
+   },
+   "handsofflinks.com": {
+    "sessions_28d": 109,
+    "utm_source_mcp_sessions_28d": 0,
+    "top_sources": [
+     [
+      "(direct)",
+      100
+     ],
+     [
+      "ga4check",
+      6
+     ],
+     [
+      "chatgpt.com",
+      2
+     ],
+     [
+      "claudflow",
+      1
+     ]
+    ]
+   },
+   "seeninaianswers.com": {
+    "sessions_28d": 57,
+    "utm_source_mcp_sessions_28d": 0,
+    "top_sources": [
+     [
+      "(direct)",
+      46
+     ],
+     [
+      "ga4check",
+      6
+     ],
+     [
+      "bing",
+      4
+     ],
+     [
+      "github.com",
+      1
+     ]
+    ]
+   },
+   "assetloancalculator.com": {
+    "sessions_28d": 20,
+    "utm_source_mcp_sessions_28d": 0,
+    "top_sources": [
+     [
+      "(direct)",
+      11
+     ],
+     [
+      "google",
+      9
+     ]
+    ]
+   },
+   "claudflow.com": {
+    "sessions_28d": 16,
+    "utm_source_mcp_sessions_28d": 0,
+    "top_sources": [
+     [
+      "google",
+      11
+     ],
+     [
+      "(direct)",
+      3
+     ],
+     [
+      "114.114.114.114:9421",
+      1
+     ],
+     [
+      "chatgpt.com",
+      1
+     ]
+    ]
+   },
+   "aiwebsitepipeline.com": {
+    "sessions_28d": 57,
+    "utm_source_mcp_sessions_28d": 0,
+    "top_sources": [
+     [
+      "(direct)",
+      41
+     ],
+     [
+      "ga4check",
+      8
+     ],
+     [
+      "whatsnew",
+      3
+     ],
+     [
+      "bing",
+      2
+     ],
+     [
+      "claudhq",
+      1
+     ]
+    ]
+   },
+   "goldgramprice.com": {
+    "sessions_28d": 648,
+    "utm_source_mcp_sessions_28d": 0,
+    "top_sources": [
+     [
+      "(direct)",
+      312
+     ],
+     [
+      "google",
+      285
+     ],
+     [
+      "chatgpt.com",
+      16
+     ],
+     [
+      "bing",
+      10
+     ],
+     [
+      "ga4check",
+      10
+     ]
+    ]
+   },
+   "earlythunder.com": {
+    "sessions_28d": 18,
+    "utm_source_mcp_sessions_28d": 0,
+    "top_sources": [
+     [
+      "chatgpt.com",
+      9
+     ],
+     [
+      "(direct)",
+      3
+     ],
+     [
+      "copilot.com",
+      2
+     ],
+     [
+      "techbullion.com",
+      2
+     ],
+     [
+      "duckduckgo",
+      1
+     ]
+    ]
+   },
+   "worthmyclaim.com": {
+    "sessions_28d": 6,
+    "utm_source_mcp_sessions_28d": 0,
+    "top_sources": [
+     [
+      "(direct)",
+      2
+     ],
+     [
+      "bing",
+      2
+     ],
+     [
+      "chatgpt.com",
+      1
+     ],
+     [
+      "yahoo",
+      1
+     ]
+    ]
+   },
+   "deepvalueradar.com": {
+    "sessions_28d": 9,
+    "utm_source_mcp_sessions_28d": 0,
+    "top_sources": [
+     [
+      "(direct)",
+      7
+     ],
+     [
+      "chatgpt.com",
+      2
+     ]
+    ]
+   },
+   "statewage.com": {
+    "sessions_28d": 8,
+    "utm_source_mcp_sessions_28d": 0,
+    "top_sources": [
+     [
+      "google",
+      6
+     ],
+     [
+      "(direct)",
+      1
+     ],
+     [
+      "yahoo",
+      1
+     ]
+    ]
+   },
+   "examscorecalc.com": {
+    "sessions_28d": 2,
+    "utm_source_mcp_sessions_28d": 0,
+    "top_sources": [
+     [
+      "chatgpt.com",
+      2
+     ]
+    ]
+   },
+   "heytensor.com": {
+    "sessions_28d": 3,
+    "utm_source_mcp_sessions_28d": 0,
+    "top_sources": [
+     [
+      "(direct)",
+      1
+     ],
+     [
+      "chatgpt.com",
+      1
+     ],
+     [
+      "duckduckgo",
+      1
+     ]
+    ]
+   },
+   "notemods.com": {
+    "sessions_28d": 343,
+    "utm_source_mcp_sessions_28d": 0,
+    "top_sources": [
+     [
+      "(direct)",
+      322
+     ],
+     [
+      "google",
+      12
+     ],
+     [
+      "gemini.google.com",
+      3
+     ],
+     [
+      "m.facebook.com",
+      2
+     ],
+     [
+      "bing",
+      1
+     ]
+    ]
+   },
+   "ToolRoutine": {
+    "sessions_28d": 29,
+    "utm_source_mcp_sessions_28d": 0,
+    "top_sources": [
+     [
+      "(direct)",
+      26
+     ],
+     [
+      "invoice-maker.zovo.one",
+      2
+     ],
+     [
+      "domain-lookup.zovo.one",
+      1
+     ]
+    ]
+   },
+   "Barframe": {
+    "sessions_28d": 28,
+    "utm_source_mcp_sessions_28d": 0,
+    "top_sources": [
+     [
+      "(direct)",
+      26
+     ],
+     [
+      "t.co",
+      1
+     ],
+     [
+      "whatsnew",
+      1
+     ]
+    ]
+   },
+   "englishlearner.org": {
+    "sessions_28d": 1081,
+    "utm_source_mcp_sessions_28d": 0,
+    "top_sources": [
+     [
+      "(direct)",
+      352
+     ],
+     [
+      "chatgpt.com",
+      235
+     ],
+     [
+      "cn.bing.com",
+      159
+     ],
+     [
+      "google",
+      111
+     ],
+     [
+      "baidu",
+      104
+     ]
+    ]
+   },
+   "Axdale": {
+    "sessions_28d": 163,
+    "utm_source_mcp_sessions_28d": 0,
+    "top_sources": [
+     [
+      "(direct)",
+      157
+     ],
+     [
+      "github.com",
+      4
+     ],
+     [
+      "addthisbot.com",
+      1
+     ],
+     [
+      "t.co",
+      1
+     ]
+    ]
+   },
+   "addthisbot.com": {
+    "sessions_28d": 16,
+    "utm_source_mcp_sessions_28d": 0,
+    "top_sources": [
+     [
+      "(direct)",
+      14
+     ],
+     [
+      "google",
+      2
+     ]
+    ]
+   },
+   "mcpstamp.com": {
+    "sessions_28d": 193,
+    "utm_source_mcp_sessions_28d": 0,
+    "top_sources": [
+     [
+      "(direct)",
+      190
+     ],
+     [
+      "bing",
+      2
+     ],
+     [
+      "m.facebook.com",
+      1
+     ]
+    ]
+   },
+   "makeroll.com": {
+    "sessions_28d": 295,
+    "utm_source_mcp_sessions_28d": 0,
+    "top_sources": [
+     [
+      "(direct)",
+      190
+     ],
+     [
+      "chatgpt.com",
+      33
+     ],
+     [
+      "google",
+      30
+     ],
+     [
+      "ig",
+      11
+     ],
+     [
+      "ga4check",
+      8
+     ]
+    ]
+   },
+   "Zovo extensions (portfolio)": {
+    "sessions_28d": 0,
+    "utm_source_mcp_sessions_28d": 0,
+    "top_sources": []
+   }
+  }
+ }
+}

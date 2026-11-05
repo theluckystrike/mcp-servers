@@ -1,0 +1,53 @@
+{
+  "repo": "student-loan-repayment-assistance-plan-calculator-mcp",
+  "repo_url": "https://github.com/theluckystrike/student-loan-repayment-assistance-plan-calculator-mcp",
+  "hosted_url": "https://student-loan-repayment-assistance-plan-calculator-mcp.lipmichal.workers.dev/mcp",
+  "worker_version_id": "0dec2ab3-3fac-4ac9-a43c-3da776109b85",
+  "rollback": "npx wrangler delete --name student-loan-repayment-assistance-plan-calculator-mcp (brand-new worker)",
+  "registry_name": "io.github.theluckystrike/student-loan-repayment-assistance-plan-calculator-mcp",
+  "registry_visible": true,
+  "tools": [
+    "calculate_rap_payment",
+    "compare_rap_vs_standard",
+    "get_federal_loan_limits",
+    "get_plan_transition_dates"
+  ],
+  "fixtures": 21,
+  "tests_passed": "21/21 (node --test test/*.test.mjs)",
+  "live_calls_ok": {
+    "calculate_rap_payment": true,
+    "compare_rap_vs_standard": true,
+    "get_federal_loan_limits": true,
+    "get_plan_transition_dates": true
+  },
+  "npx_github_ok": true,
+  "npm_ready": true,
+  "npm_published": false,
+  "money_site": "https://www.mcpstamp.com/free-servers/",
+  "money_site_choice": "assetloancalculator.com sitemap.xml lists only asset loan calculators (RV, motorcycle, land, farm, equipment, aircraft...); `curl -s https://assetloancalculator.com/sitemap.xml | /usr/bin/grep -i -c student` -> 0. So more = https://www.mcpstamp.com/free-servers/?utm_source=mcp&utm_medium=student-loan-repayment-assistance-plan-calculator-mcp",
+  "minutes": 12,
+  "name_choice": "gh api search/repositories 2026-11-02: 'student loan mcp' 7, 'repayment assistance plan mcp' 0, 'student loan calculator mcp' 1, 'student loan repayment mcp' 3, 'rap student loan' 6. Registry search 'student' -> only help.studentloan/studentloan-help related. Kept the briefed name: it carries every phrase (student loan, repayment, repayment assistance plan, calculator).",
+  "registry_check": "curl -s 'https://registry.modelcontextprotocol.io/v0/servers?search=student-loan-repayment-assistance-plan-calculator-mcp' -> [student-loan-repayment-assistance-plan-calculator-mcp 1.0.0]. First publish 422: description 106 > 100 chars; shortened to 95, republished.",
+  "live_check": "curl POST tools/call on the URL grepped from README.md, no token, 4/4 !isError with source and more (utm_source=mcp); GET / returns <title>Student Loan RAP Calculator MCP</title>. Raw: ~/mcp-servers/data/s1102/build-rap/live/*.json",
+  "npx_check": "from an empty mktemp dir: npx -y github:theluckystrike/student-loan-repayment-assistance-plan-calculator-mcp answered initialize and tools/list (4 tools); dir deleted",
+  "stdio_local_ok": "initialize + tools/list + 4/4 tools/call OK (node dist/stdio.js)",
+  "npm_check": "npm view student-loan-repayment-assistance-plan-calculator-mcp -> E404 (before and after push). package.json: name = repo, bin dist/stdio.js with shebang, files [dist, README.md, LICENSE, DATA_SOURCES.md], mcpName, keywords",
+  "pushes": 2,
+  "repo_public": true,
+  "topics": 13,
+  "repo_description": "Student loan RAP calculator MCP: Repayment Assistance Plan payment, 2026 loan limits, SAVE/PAYE/ICR end dates (OBBBA)",
+  "sources": [
+    "https://www.govinfo.gov/content/pkg/PLAW-119publ21/html/PLAW-119publ21.htm (P.L. 119-21 enrolled text, secs. 81001, 82001-82004; fetched 2026-11-02; congress.gov text is the same law, not fetched directly)",
+    "https://studentaid.gov/articles/save/ (SAVE end, notice timeline, defaults, IDR eligibility table; published Oct 2026; fetched 2026-11-02)",
+    "https://fsapartners.ed.gov/knowledge-center/fsa-handbook/2025-2026/vol8/ch4-annual-and-aggregate-loan-limits (undergrad limits, pre-2026 grad/PLUS rules; fetched 2026-11-02)",
+    "https://fsapartners.ed.gov/sites/default/files/2026-05/FrequentlyAskedQuestionsLoanLimits.pdf (interim exception, Parent PLUS not prorated; fetched 2026-11-02)"
+  ],
+  "open_issues": [
+    "Final RAP servicing regulations (rounding, daily interest accrual, subsidy allocation across loans) not confirmed on 2026-11-02; every RAP result carries regulation_note saying cents are estimates.",
+    "ed.gov press releases returned an Azure WAF JS challenge to curl; not used. SAVE facts come from studentaid.gov/articles/save/ only.",
+    "Projections hold AGI and dependents constant and use rate/12 monthly interest (servicers use daily simple interest).",
+    "IBR/ICR/PAYE payment amounts and health-professions special limits not calculated.",
+    "README data-servers block does not list this server yet (render_index.py output does not include it); orchestrator index update needed.",
+    "npm: not published (blocked by brief); package is npm-ready. Glama listing not submitted (glama.json in repo)."
+  ]
+}

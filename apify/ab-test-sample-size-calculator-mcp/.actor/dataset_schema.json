@@ -1,0 +1,56 @@
+{
+    "$schema": "https://apify.com/schemas/v1/dataset.ide.json",
+    "actorSpecification": 1,
+    "fields": {
+        "type": "object",
+        "properties": {
+            "actor": {
+                "type": "string"
+            },
+            "mcpEndpoint": {
+                "type": [
+                    "string",
+                    "null"
+                ]
+            },
+            "howToConnect": {
+                "type": "string"
+            },
+            "toolCount": {
+                "type": "integer"
+            },
+            "tools": {
+                "type": "array"
+            },
+            "sampleCall": {
+                "type": "object"
+            }
+        }
+    },
+    "views": {
+        "overview": {
+            "title": "Self-check",
+            "transformation": {
+                "fields": [
+                    "actor",
+                    "mcpEndpoint",
+                    "toolCount"
+                ]
+            },
+            "display": {
+                "component": "table",
+                "properties": {
+                    "actor": {
+                        "label": "Actor"
+                    },
+                    "mcpEndpoint": {
+                        "label": "MCP endpoint"
+                    },
+                    "toolCount": {
+                        "label": "Tools"
+                    }
+                }
+            }
+        }
+    }
+}

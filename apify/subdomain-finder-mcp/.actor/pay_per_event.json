@@ -1,0 +1,7 @@
+{
+    "tool-call": {
+        "eventTitle": "Tool call",
+        "eventDescription": "One successful MCP tool call on Subdomain Finder MCP: Certificate Transparency. Listing tools and initializing are free.",
+        "eventPriceUsd": 0.03
+    }
+}

@@ -1,0 +1,1285 @@
+{
+ "year": 2025,
+ "exams": [
+  {
+   "exam": "AP African American Studies",
+   "label_in_source": "African American Studies",
+   "kind": "exam",
+   "counts": {
+    "5": 3707,
+    "4": 6977,
+    "3": 6289,
+    "2": 3406,
+    "1": 1056
+   },
+   "total": 21435,
+   "percents": {
+    "5": 17.3,
+    "4": 32.5,
+    "3": 29.3,
+    "2": 15.9,
+    "1": 4.9
+   },
+   "three_plus": {
+    "count": 16973,
+    "percent": 79.2
+   },
+   "mean": 3.41,
+   "sd": 1.1
+  },
+  {
+   "exam": "AP Drawing",
+   "label_in_source": "Drawing - Art & Design",
+   "kind": "exam",
+   "counts": {
+    "5": 3946,
+    "4": 7280,
+    "3": 8221,
+    "2": 2910,
+    "1": 750
+   },
+   "total": 23107,
+   "percents": {
+    "5": 17.1,
+    "4": 31.5,
+    "3": 35.6,
+    "2": 12.6,
+    "1": 3.2
+   },
+   "three_plus": {
+    "count": 19447,
+    "percent": 84.2
+   },
+   "mean": 3.47,
+   "sd": 1.02
+  },
+  {
+   "exam": "AP 2-D Art and Design",
+   "label_in_source": "2-D Art and Design",
+   "kind": "exam",
+   "counts": {
+    "5": 5729,
+    "4": 14155,
+    "3": 20189,
+    "2": 6606,
+    "1": 1600
+   },
+   "total": 48279,
+   "percents": {
+    "5": 11.9,
+    "4": 29.3,
+    "3": 41.8,
+    "2": 13.7,
+    "1": 3.3
+   },
+   "three_plus": {
+    "count": 40073,
+    "percent": 83.0
+   },
+   "mean": 3.33,
+   "sd": 0.96
+  },
+  {
+   "exam": "AP 3-D Art and Design",
+   "label_in_source": "3-D Art and Design",
+   "kind": "exam",
+   "counts": {
+    "5": 692,
+    "4": 2567,
+    "3": 4116,
+    "2": 2527,
+    "1": 402
+   },
+   "total": 10304,
+   "percents": {
+    "5": 6.7,
+    "4": 24.9,
+    "3": 39.9,
+    "2": 24.5,
+    "1": 3.9
+   },
+   "three_plus": {
+    "count": 7375,
+    "percent": 71.6
+   },
+   "mean": 3.06,
+   "sd": 0.96
+  },
+  {
+   "exam": "AP Art History",
+   "label_in_source": "Art History",
+   "kind": "exam",
+   "counts": {
+    "5": 4106,
+    "4": 5966,
+    "3": 6702,
+    "2": 6176,
+    "1": 2634
+   },
+   "total": 25584,
+   "percents": {
+    "5": 16.0,
+    "4": 23.3,
+    "3": 26.2,
+    "2": 24.1,
+    "1": 10.3
+   },
+   "three_plus": {
+    "count": 16774,
+    "percent": 65.6
+   },
+   "mean": 3.11,
+   "sd": 1.23
+  },
+  {
+   "exam": "AP Biology",
+   "label_in_source": "Biology",
+   "kind": "exam",
+   "counts": {
+    "5": 54186,
+    "4": 69276,
+    "3": 78700,
+    "2": 60445,
+    "1": 24625
+   },
+   "total": 287232,
+   "percents": {
+    "5": 18.9,
+    "4": 24.1,
+    "3": 27.4,
+    "2": 21.0,
+    "1": 8.6
+   },
+   "three_plus": {
+    "count": 202162,
+    "percent": 70.4
+   },
+   "mean": 3.24,
+   "sd": 1.22
+  },
+  {
+   "exam": "AP Calculus AB",
+   "label_in_source": "Calculus AB",
+   "kind": "exam",
+   "counts": {
+    "5": 58053,
+    "4": 82739,
+    "3": 42786,
+    "2": 65200,
+    "1": 37113
+   },
+   "total": 285891,
+   "percents": {
+    "5": 20.3,
+    "4": 28.9,
+    "3": 15.0,
+    "2": 22.8,
+    "1": 13.0
+   },
+   "three_plus": {
+    "count": 183578,
+    "percent": 64.2
+   },
+   "mean": 3.21,
+   "sd": 1.34
+  },
+  {
+   "exam": "AP Calculus BC",
+   "label_in_source": "Calculus BC",
+   "kind": "exam",
+   "counts": {
+    "5": 70565,
+    "4": 35057,
+    "3": 20541,
+    "2": 24404,
+    "1": 9869
+   },
+   "total": 160436,
+   "percents": {
+    "5": 44.0,
+    "4": 21.9,
+    "3": 12.8,
+    "2": 15.2,
+    "1": 6.2
+   },
+   "three_plus": {
+    "count": 126163,
+    "percent": 78.6
+   },
+   "mean": 3.82,
+   "sd": 1.3
+  },
+  {
+   "exam": "AP Calculus BC: Calculus AB Subscore",
+   "label_in_source": "Calculus AB Subscore",
+   "kind": "subscore",
+   "counts": {
+    "5": 76612,
+    "4": 48992,
+    "3": 15644,
+    "2": 14378,
+    "1": 4810
+   },
+   "total": 160436,
+   "percents": {
+    "5": 47.8,
+    "4": 30.5,
+    "3": 9.8,
+    "2": 9.0,
+    "1": 3.0
+   },
+   "three_plus": {
+    "count": 141248,
+    "percent": 88.0
+   },
+   "mean": 4.11,
+   "sd": 1.09
+  },
+  {
+   "exam": "AP Chemistry",
+   "label_in_source": "Chemistry",
+   "kind": "exam",
+   "counts": {
+    "5": 30143,
+    "4": 48349,
+    "3": 53080,
+    "2": 26846,
+    "1": 10415
+   },
+   "total": 168833,
+   "percents": {
+    "5": 17.9,
+    "4": 28.6,
+    "3": 31.4,
+    "2": 15.9,
+    "1": 6.2
+   },
+   "three_plus": {
+    "count": 131572,
+    "percent": 77.9
+   },
+   "mean": 3.36,
+   "sd": 1.13
+  },
+  {
+   "exam": "AP Chinese Language and Culture",
+   "label_in_source": "Chinese Language (Total Group)",
+   "kind": "exam",
+   "counts": {
+    "5": 10062,
+    "4": 3335,
+    "3": 2945,
+    "2": 843,
+    "1": 1127
+   },
+   "total": 18312,
+   "percents": {
+    "5": 54.9,
+    "4": 18.2,
+    "3": 16.1,
+    "2": 4.6,
+    "1": 6.2
+   },
+   "three_plus": {
+    "count": 16342,
+    "percent": 89.2
+   },
+   "mean": 4.11,
+   "sd": 1.2
+  },
+  {
+   "exam": "AP Chinese Language and Culture (Standard Group)",
+   "label_in_source": "Chinese Language (Standard Group)",
+   "kind": "standard_group",
+   "counts": {
+    "5": 1084,
+    "4": 811,
+    "3": 1356,
+    "2": 596,
+    "1": 865
+   },
+   "total": 4712,
+   "percents": {
+    "5": 23.0,
+    "4": 17.2,
+    "3": 28.8,
+    "2": 12.6,
+    "1": 18.4
+   },
+   "three_plus": {
+    "count": 3251,
+    "percent": 69.0
+   },
+   "mean": 3.14,
+   "sd": 1.39
+  },
+  {
+   "exam": "AP Computer Science A",
+   "label_in_source": "Computer Science A",
+   "kind": "exam",
+   "counts": {
+    "5": 23861,
+    "4": 20357,
+    "3": 18413,
+    "2": 10123,
+    "1": 20463
+   },
+   "total": 93217,
+   "percents": {
+    "5": 25.6,
+    "4": 21.8,
+    "3": 19.8,
+    "2": 10.9,
+    "1": 22.0
+   },
+   "three_plus": {
+    "count": 62631,
+    "percent": 67.2
+   },
+   "mean": 3.18,
+   "sd": 1.48
+  },
+  {
+   "exam": "AP Computer Science Principles",
+   "label_in_source": "Computer Science Principles",
+   "kind": "exam",
+   "counts": {
+    "5": 18815,
+    "4": 34946,
+    "3": 54589,
+    "2": 37429,
+    "1": 29395
+   },
+   "total": 175174,
+   "percents": {
+    "5": 10.7,
+    "4": 19.9,
+    "3": 31.2,
+    "2": 21.4,
+    "1": 16.8
+   },
+   "three_plus": {
+    "count": 108350,
+    "percent": 61.9
+   },
+   "mean": 2.87,
+   "sd": 1.22
+  },
+  {
+   "exam": "AP Macroeconomics",
+   "label_in_source": "Economics - Macro",
+   "kind": "exam",
+   "counts": {
+    "5": 36007,
+    "4": 40429,
+    "3": 42250,
+    "2": 37815,
+    "1": 19855
+   },
+   "total": 176356,
+   "percents": {
+    "5": 20.4,
+    "4": 22.9,
+    "3": 24.0,
+    "2": 21.4,
+    "1": 11.3
+   },
+   "three_plus": {
+    "count": 118686,
+    "percent": 67.3
+   },
+   "mean": 3.2,
+   "sd": 1.29
+  },
+  {
+   "exam": "AP Microeconomics",
+   "label_in_source": "Economics - Micro",
+   "kind": "exam",
+   "counts": {
+    "5": 25334,
+    "4": 28210,
+    "3": 26592,
+    "2": 23843,
+    "1": 13569
+   },
+   "total": 117548,
+   "percents": {
+    "5": 21.6,
+    "4": 24.0,
+    "3": 22.6,
+    "2": 20.3,
+    "1": 11.5
+   },
+   "three_plus": {
+    "count": 80136,
+    "percent": 68.2
+   },
+   "mean": 3.24,
+   "sd": 1.31
+  },
+  {
+   "exam": "AP English Language and Composition",
+   "label_in_source": "English Language & Comp",
+   "kind": "exam",
+   "counts": {
+    "5": 82614,
+    "4": 172836,
+    "3": 202340,
+    "2": 98925,
+    "1": 59579
+   },
+   "total": 616294,
+   "percents": {
+    "5": 13.4,
+    "4": 28.0,
+    "3": 32.8,
+    "2": 16.1,
+    "1": 9.7
+   },
+   "three_plus": {
+    "count": 457790,
+    "percent": 74.3
+   },
+   "mean": 3.19,
+   "sd": 1.15
+  },
+  {
+   "exam": "AP English Literature and Composition",
+   "label_in_source": "English Literature & Comp",
+   "kind": "exam",
+   "counts": {
+    "5": 67642,
+    "4": 112209,
+    "3": 129205,
+    "2": 66030,
+    "1": 41445
+   },
+   "total": 416531,
+   "percents": {
+    "5": 16.2,
+    "4": 26.9,
+    "3": 31.0,
+    "2": 15.9,
+    "1": 10.0
+   },
+   "three_plus": {
+    "count": 309056,
+    "percent": 74.2
+   },
+   "mean": 3.24,
+   "sd": 1.19
+  },
+  {
+   "exam": "AP Environmental Science",
+   "label_in_source": "Environmental Science",
+   "kind": "exam",
+   "counts": {
+    "5": 30851,
+    "4": 68251,
+    "3": 70765,
+    "2": 36702,
+    "1": 38802
+   },
+   "total": 245371,
+   "percents": {
+    "5": 12.6,
+    "4": 27.8,
+    "3": 28.8,
+    "2": 15.0,
+    "1": 15.8
+   },
+   "three_plus": {
+    "count": 169867,
+    "percent": 69.2
+   },
+   "mean": 3.06,
+   "sd": 1.25
+  },
+  {
+   "exam": "AP European History",
+   "label_in_source": "European History",
+   "kind": "exam",
+   "counts": {
+    "5": 12178,
+    "4": 30143,
+    "3": 20687,
+    "2": 16457,
+    "1": 7264
+   },
+   "total": 86729,
+   "percents": {
+    "5": 14.0,
+    "4": 34.8,
+    "3": 23.9,
+    "2": 19.0,
+    "1": 8.4
+   },
+   "three_plus": {
+    "count": 63008,
+    "percent": 72.6
+   },
+   "mean": 3.27,
+   "sd": 1.17
+  },
+  {
+   "exam": "AP French Language and Culture",
+   "label_in_source": "French Language (Total Group)",
+   "kind": "exam",
+   "counts": {
+    "5": 2751,
+    "4": 4904,
+    "3": 6782,
+    "2": 3966,
+    "1": 1236
+   },
+   "total": 19639,
+   "percents": {
+    "5": 14.0,
+    "4": 25.0,
+    "3": 34.5,
+    "2": 20.2,
+    "1": 6.3
+   },
+   "three_plus": {
+    "count": 14437,
+    "percent": 73.5
+   },
+   "mean": 3.2,
+   "sd": 1.11
+  },
+  {
+   "exam": "AP French Language and Culture (Standard Group)",
+   "label_in_source": "French Language (Standard Group)",
+   "kind": "standard_group",
+   "counts": {
+    "5": 1264,
+    "4": 3316,
+    "3": 5456,
+    "2": 3319,
+    "1": 958
+   },
+   "total": 14313,
+   "percents": {
+    "5": 8.8,
+    "4": 23.2,
+    "3": 38.1,
+    "2": 23.2,
+    "1": 6.7
+   },
+   "three_plus": {
+    "count": 10036,
+    "percent": 70.1
+   },
+   "mean": 3.04,
+   "sd": 1.04
+  },
+  {
+   "exam": "AP German Language and Culture",
+   "label_in_source": "German Language (Total Group)",
+   "kind": "exam",
+   "counts": {
+    "5": 899,
+    "4": 1032,
+    "3": 1083,
+    "2": 742,
+    "1": 457
+   },
+   "total": 4213,
+   "percents": {
+    "5": 21.3,
+    "4": 24.5,
+    "3": 25.7,
+    "2": 17.6,
+    "1": 10.8
+   },
+   "three_plus": {
+    "count": 3014,
+    "percent": 71.5
+   },
+   "mean": 3.28,
+   "sd": 1.28
+  },
+  {
+   "exam": "AP German Language and Culture (Standard Group)",
+   "label_in_source": "German Language (Standard Group)",
+   "kind": "standard_group",
+   "counts": {
+    "5": 242,
+    "4": 627,
+    "3": 850,
+    "2": 651,
+    "1": 383
+   },
+   "total": 2753,
+   "percents": {
+    "5": 8.8,
+    "4": 22.8,
+    "3": 30.9,
+    "2": 23.6,
+    "1": 13.9
+   },
+   "three_plus": {
+    "count": 1719,
+    "percent": 62.4
+   },
+   "mean": 2.89,
+   "sd": 1.17
+  },
+  {
+   "exam": "AP Comparative Government and Politics",
+   "label_in_source": "Government & Politics - Comparative",
+   "kind": "exam",
+   "counts": {
+    "5": 4437,
+    "4": 6320,
+    "3": 8738,
+    "2": 4475,
+    "1": 3180
+   },
+   "total": 27150,
+   "percents": {
+    "5": 16.3,
+    "4": 23.3,
+    "3": 32.2,
+    "2": 16.5,
+    "1": 11.7
+   },
+   "three_plus": {
+    "count": 19495,
+    "percent": 71.8
+   },
+   "mean": 3.16,
+   "sd": 1.22
+  },
+  {
+   "exam": "AP United States Government and Politics",
+   "label_in_source": "Government & Politics - U.S.",
+   "kind": "exam",
+   "counts": {
+    "5": 91856,
+    "4": 96345,
+    "3": 90152,
+    "2": 71352,
+    "1": 38268
+   },
+   "total": 387973,
+   "percents": {
+    "5": 23.7,
+    "4": 24.8,
+    "3": 23.2,
+    "2": 18.4,
+    "1": 9.9
+   },
+   "three_plus": {
+    "count": 278353,
+    "percent": 71.7
+   },
+   "mean": 3.34,
+   "sd": 1.29
+  },
+  {
+   "exam": "AP Human Geography",
+   "label_in_source": "Human Geography",
+   "kind": "exam",
+   "counts": {
+    "5": 48039,
+    "4": 71378,
+    "3": 63643,
+    "2": 71829,
+    "1": 27892
+   },
+   "total": 282781,
+   "percents": {
+    "5": 17.0,
+    "4": 25.2,
+    "3": 22.5,
+    "2": 25.4,
+    "1": 9.9
+   },
+   "three_plus": {
+    "count": 183060,
+    "percent": 64.7
+   },
+   "mean": 3.14,
+   "sd": 1.25
+  },
+  {
+   "exam": "AP Italian Language and Culture",
+   "label_in_source": "Italian Language (Total Group)",
+   "kind": "exam",
+   "counts": {
+    "5": 551,
+    "4": 555,
+    "3": 580,
+    "2": 380,
+    "1": 175
+   },
+   "total": 2241,
+   "percents": {
+    "5": 24.6,
+    "4": 24.8,
+    "3": 25.9,
+    "2": 17.0,
+    "1": 7.8
+   },
+   "three_plus": {
+    "count": 1686,
+    "percent": 75.2
+   },
+   "mean": 3.41,
+   "sd": 1.24
+  },
+  {
+   "exam": "AP Italian Language and Culture (Standard Group)",
+   "label_in_source": "Italian Language (Standard Group)",
+   "kind": "standard_group",
+   "counts": {
+    "5": 254,
+    "4": 398,
+    "3": 476,
+    "2": 325,
+    "1": 145
+   },
+   "total": 1598,
+   "percents": {
+    "5": 15.9,
+    "4": 24.9,
+    "3": 29.8,
+    "2": 20.3,
+    "1": 9.1
+   },
+   "three_plus": {
+    "count": 1128,
+    "percent": 70.6
+   },
+   "mean": 3.18,
+   "sd": 1.19
+  },
+  {
+   "exam": "AP Japanese Language and Culture",
+   "label_in_source": "Japanese Language (Total Group)",
+   "kind": "exam",
+   "counts": {
+    "5": 1404,
+    "4": 366,
+    "3": 654,
+    "2": 243,
+    "1": 578
+   },
+   "total": 3245,
+   "percents": {
+    "5": 43.3,
+    "4": 11.3,
+    "3": 20.2,
+    "2": 7.5,
+    "1": 17.8
+   },
+   "three_plus": {
+    "count": 2424,
+    "percent": 74.7
+   },
+   "mean": 3.55,
+   "sd": 1.53
+  },
+  {
+   "exam": "AP Japanese Language and Culture (Standard Group)",
+   "label_in_source": "Japanese Language (Standard Group)",
+   "kind": "standard_group",
+   "counts": {
+    "5": 178,
+    "4": 144,
+    "3": 432,
+    "2": 195,
+    "1": 482
+   },
+   "total": 1431,
+   "percents": {
+    "5": 12.4,
+    "4": 10.1,
+    "3": 30.2,
+    "2": 13.6,
+    "1": 33.7
+   },
+   "three_plus": {
+    "count": 754,
+    "percent": 52.7
+   },
+   "mean": 2.54,
+   "sd": 1.37
+  },
+  {
+   "exam": "AP Latin",
+   "label_in_source": "Latin",
+   "kind": "exam",
+   "counts": {
+    "5": 543,
+    "4": 726,
+    "3": 1274,
+    "2": 1091,
+    "1": 702
+   },
+   "total": 4336,
+   "percents": {
+    "5": 12.5,
+    "4": 16.7,
+    "3": 29.4,
+    "2": 25.2,
+    "1": 16.2
+   },
+   "three_plus": {
+    "count": 2543,
+    "percent": 58.6
+   },
+   "mean": 2.84,
+   "sd": 1.24
+  },
+  {
+   "exam": "AP Music Theory",
+   "label_in_source": "Music - Theory",
+   "kind": "exam",
+   "counts": {
+    "5": 3339,
+    "4": 3211,
+    "3": 4221,
+    "2": 4405,
+    "1": 2623
+   },
+   "total": 17799,
+   "percents": {
+    "5": 18.8,
+    "4": 18.0,
+    "3": 23.7,
+    "2": 24.7,
+    "1": 14.7
+   },
+   "three_plus": {
+    "count": 10771,
+    "percent": 60.5
+   },
+   "mean": 3.01,
+   "sd": 1.33
+  },
+  {
+   "exam": "AP Music Theory: Aural Subscore",
+   "label_in_source": "Music Theory Aural Subscore",
+   "kind": "subscore",
+   "counts": {
+    "5": 3352,
+    "4": 3198,
+    "3": 4195,
+    "2": 4588,
+    "1": 2466
+   },
+   "total": 17799,
+   "percents": {
+    "5": 18.8,
+    "4": 18.0,
+    "3": 23.6,
+    "2": 25.8,
+    "1": 13.9
+   },
+   "three_plus": {
+    "count": 10745,
+    "percent": 60.4
+   },
+   "mean": 3.02,
+   "sd": 1.32
+  },
+  {
+   "exam": "AP Music Theory: Nonaural Subscore",
+   "label_in_source": "Music Theory Nonaural Subscore",
+   "kind": "subscore",
+   "counts": {
+    "5": 3184,
+    "4": 3398,
+    "3": 4074,
+    "2": 4488,
+    "1": 2655
+   },
+   "total": 17799,
+   "percents": {
+    "5": 17.9,
+    "4": 19.1,
+    "3": 22.9,
+    "2": 25.2,
+    "1": 14.9
+   },
+   "three_plus": {
+    "count": 10656,
+    "percent": 59.9
+   },
+   "mean": 3.0,
+   "sd": 1.32
+  },
+  {
+   "exam": "AP Physics 1: Algebra-Based",
+   "label_in_source": "Physics 1: Algebra-Based",
+   "kind": "exam",
+   "counts": {
+    "5": 34447,
+    "4": 43069,
+    "3": 39925,
+    "2": 23411,
+    "1": 33549
+   },
+   "total": 174401,
+   "percents": {
+    "5": 19.8,
+    "4": 24.7,
+    "3": 22.9,
+    "2": 13.4,
+    "1": 19.2
+   },
+   "three_plus": {
+    "count": 117441,
+    "percent": 67.3
+   },
+   "mean": 3.12,
+   "sd": 1.39
+  },
+  {
+   "exam": "AP Physics 2: Algebra-Based",
+   "label_in_source": "Physics 2: Algebra-Based",
+   "kind": "exam",
+   "counts": {
+    "5": 5274,
+    "4": 6982,
+    "3": 5333,
+    "2": 4888,
+    "1": 1734
+   },
+   "total": 24211,
+   "percents": {
+    "5": 21.8,
+    "4": 28.8,
+    "3": 22.0,
+    "2": 20.2,
+    "1": 7.2
+   },
+   "three_plus": {
+    "count": 17589,
+    "percent": 72.6
+   },
+   "mean": 3.38,
+   "sd": 1.23
+  },
+  {
+   "exam": "AP Physics C: Electricity and Magnetism",
+   "label_in_source": "Physics C - Electricity & Magnetism",
+   "kind": "exam",
+   "counts": {
+    "5": 7477,
+    "4": 7030,
+    "3": 7158,
+    "2": 5299,
+    "1": 2744
+   },
+   "total": 29708,
+   "percents": {
+    "5": 25.2,
+    "4": 23.7,
+    "3": 24.1,
+    "2": 17.8,
+    "1": 9.2
+   },
+   "three_plus": {
+    "count": 21665,
+    "percent": 72.9
+   },
+   "mean": 3.38,
+   "sd": 1.28
+  },
+  {
+   "exam": "AP Physics C: Mechanics",
+   "label_in_source": "Physics C - Mechanics",
+   "kind": "exam",
+   "counts": {
+    "5": 14320,
+    "4": 15809,
+    "3": 18137,
+    "2": 10575,
+    "1": 7139
+   },
+   "total": 65980,
+   "percents": {
+    "5": 21.7,
+    "4": 24.0,
+    "3": 27.5,
+    "2": 16.0,
+    "1": 10.8
+   },
+   "three_plus": {
+    "count": 48266,
+    "percent": 73.2
+   },
+   "mean": 3.3,
+   "sd": 1.27
+  },
+  {
+   "exam": "AP Precalculus",
+   "label_in_source": "Precalculus",
+   "kind": "exam",
+   "counts": {
+    "5": 71321,
+    "4": 65410,
+    "3": 68054,
+    "2": 28525,
+    "1": 20286
+   },
+   "total": 253596,
+   "percents": {
+    "5": 28.1,
+    "4": 25.8,
+    "3": 26.8,
+    "2": 11.2,
+    "1": 8.0
+   },
+   "three_plus": {
+    "count": 204785,
+    "percent": 80.8
+   },
+   "mean": 3.55,
+   "sd": 1.23
+  },
+  {
+   "exam": "AP Psychology",
+   "label_in_source": "Psychology",
+   "kind": "exam",
+   "counts": {
+    "5": 48018,
+    "4": 103310,
+    "3": 84276,
+    "2": 65702,
+    "1": 32732
+   },
+   "total": 334038,
+   "percents": {
+    "5": 14.4,
+    "4": 30.9,
+    "3": 25.2,
+    "2": 19.7,
+    "1": 9.8
+   },
+   "three_plus": {
+    "count": 235604,
+    "percent": 70.5
+   },
+   "mean": 3.2,
+   "sd": 1.2
+  },
+  {
+   "exam": "AP Research",
+   "label_in_source": "Research",
+   "kind": "exam",
+   "counts": {
+    "5": 6394,
+    "4": 12152,
+    "3": 19702,
+    "2": 4014,
+    "1": 952
+   },
+   "total": 43214,
+   "percents": {
+    "5": 14.8,
+    "4": 28.1,
+    "3": 45.6,
+    "2": 9.3,
+    "1": 2.2
+   },
+   "three_plus": {
+    "count": 38248,
+    "percent": 88.5
+   },
+   "mean": 3.44,
+   "sd": 0.93
+  },
+  {
+   "exam": "AP Seminar",
+   "label_in_source": "Seminar",
+   "kind": "exam",
+   "counts": {
+    "5": 11850,
+    "4": 23865,
+    "3": 69320,
+    "2": 15725,
+    "1": 5241
+   },
+   "total": 126001,
+   "percents": {
+    "5": 9.4,
+    "4": 18.9,
+    "3": 55.0,
+    "2": 12.5,
+    "1": 4.2
+   },
+   "three_plus": {
+    "count": 105035,
+    "percent": 83.4
+   },
+   "mean": 3.17,
+   "sd": 0.91
+  },
+  {
+   "exam": "AP Spanish Language and Culture",
+   "label_in_source": "Spanish Language (Total Group)",
+   "kind": "exam",
+   "counts": {
+    "5": 40078,
+    "4": 58254,
+    "3": 56856,
+    "2": 22764,
+    "1": 4718
+   },
+   "total": 182670,
+   "percents": {
+    "5": 21.9,
+    "4": 31.9,
+    "3": 31.1,
+    "2": 12.5,
+    "1": 2.6
+   },
+   "three_plus": {
+    "count": 155188,
+    "percent": 85.0
+   },
+   "mean": 3.58,
+   "sd": 1.04
+  },
+  {
+   "exam": "AP Spanish Language and Culture (Standard Group)",
+   "label_in_source": "Spanish Language (Standard Group)",
+   "kind": "standard_group",
+   "counts": {
+    "5": 7765,
+    "4": 14904,
+    "3": 18280,
+    "2": 8291,
+    "1": 1651
+   },
+   "total": 50891,
+   "percents": {
+    "5": 15.3,
+    "4": 29.3,
+    "3": 35.9,
+    "2": 16.3,
+    "1": 3.2
+   },
+   "three_plus": {
+    "count": 40949,
+    "percent": 80.5
+   },
+   "mean": 3.37,
+   "sd": 1.03
+  },
+  {
+   "exam": "AP Spanish Literature and Culture",
+   "label_in_source": "Spanish Literature & Culture",
+   "kind": "exam",
+   "counts": {
+    "5": 2468,
+    "4": 6444,
+    "3": 10269,
+    "2": 5678,
+    "1": 2407
+   },
+   "total": 27266,
+   "percents": {
+    "5": 9.1,
+    "4": 23.6,
+    "3": 37.7,
+    "2": 20.8,
+    "1": 8.8
+   },
+   "three_plus": {
+    "count": 19181,
+    "percent": 70.3
+   },
+   "mean": 3.03,
+   "sd": 1.08
+  },
+  {
+   "exam": "AP Statistics",
+   "label_in_source": "Statistics",
+   "kind": "exam",
+   "counts": {
+    "5": 45383,
+    "4": 57225,
+    "3": 58303,
+    "2": 42527,
+    "1": 63353
+   },
+   "total": 266791,
+   "percents": {
+    "5": 17.0,
+    "4": 21.4,
+    "3": 21.9,
+    "2": 15.9,
+    "1": 23.7
+   },
+   "three_plus": {
+    "count": 160911,
+    "percent": 60.3
+   },
+   "mean": 2.92,
+   "sd": 1.41
+  },
+  {
+   "exam": "AP United States History",
+   "label_in_source": "United States History",
+   "kind": "exam",
+   "counts": {
+    "5": 73142,
+    "4": 186958,
+    "3": 120519,
+    "2": 94862,
+    "1": 41257
+   },
+   "total": 516738,
+   "percents": {
+    "5": 14.2,
+    "4": 36.2,
+    "3": 23.3,
+    "2": 18.4,
+    "1": 8.0
+   },
+   "three_plus": {
+    "count": 380619,
+    "percent": 73.7
+   },
+   "mean": 3.3,
+   "sd": 1.16
+  },
+  {
+   "exam": "AP World History: Modern",
+   "label_in_source": "World History: Modern",
+   "kind": "exam",
+   "counts": {
+    "5": 57107,
+    "4": 137588,
+    "3": 69974,
+    "2": 109098,
+    "1": 37780
+   },
+   "total": 411547,
+   "percents": {
+    "5": 13.9,
+    "4": 33.4,
+    "3": 17.0,
+    "2": 26.5,
+    "1": 9.2
+   },
+   "three_plus": {
+    "count": 264669,
+    "percent": 64.3
+   },
+   "mean": 3.16,
+   "sd": 1.22
+  }
+ ],
+ "footnote": {
+  "exams": 6182171,
+  "students": 3243979,
+  "schools": 23664
+ },
+ "problems": []
+}

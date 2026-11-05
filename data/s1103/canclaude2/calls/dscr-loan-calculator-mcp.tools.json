@@ -1,0 +1,435 @@
+{
+ "result": {
+  "tools": [
+   {
+    "name": "calculate_dscr",
+    "title": "Calculate DSCR for a rental property loan",
+    "description": "Debt service coverage ratio for a DSCR (investor) mortgage: qualifying rent / PITIA. Computes exact principal and interest with the annuity formula (monthly compounding, half-up cents) or the interest-only payment, adds tax, insurance, HOA and other housing costs per the Fannie Mae PITIA definition, and places the result in the common lender bands (1.25+, 1.00-1.24, 0.75-0.99, under 0.75) with sourced notes that minimums vary by lender. Returns JSON plus a plain summary and a dscrradar.com link.",
+    "inputSchema": {
+     "$schema": "http://json-schema.org/draft-07/schema#",
+     "type": "object",
+     "properties": {
+      "monthly_rent": {
+       "type": "number",
+       "exclusiveMinimum": 0,
+       "description": "Gross monthly market rent in USD (lease or appraiser rent schedule)."
+      },
+      "vacancy_pct": {
+       "type": "number",
+       "minimum": 0,
+       "maximum": 50,
+       "description": "Vacancy allowance in percent of gross rent. Default 0. Many lenders use gross rent with no vacancy."
+      },
+      "loan_amount": {
+       "type": "number",
+       "exclusiveMinimum": 0,
+       "description": "Loan amount in USD. Give this, or purchase_price plus down_payment_pct."
+      },
+      "purchase_price": {
+       "type": "number",
+       "exclusiveMinimum": 0,
+       "description": "Purchase price in USD. Used with down_payment_pct when loan_amount is not given."
+      },
+      "down_payment_pct": {
+       "type": "number",
+       "minimum": 0,
+       "maximum": 99,
+       "description": "Down payment in percent of price, e.g. 25."
+      },
+      "annual_rate_pct": {
+       "type": "number",
+       "minimum": 0,
+       "maximum": 30,
+       "description": "Annual note rate in percent, e.g. 7.25. Up to 3 decimals."
+      },
+      "term_years": {
+       "type": "integer",
+       "minimum": 1,
+       "maximum": 40,
+       "description": "Amortization term in years. Default 30."
+      },
+      "interest_only": {
+       "type": "boolean",
+       "description": "Qualify on the interest-only payment (loan x rate / 12). Default false."
+      },
+      "annual_property_tax": {
+       "type": "number",
+       "minimum": 0,
+       "description": "Annual property tax in USD. Default 0, but lenders always include it."
+      },
+      "annual_insurance": {
+       "type": "number",
+       "minimum": 0,
+       "description": "Annual hazard insurance premium in USD. Default 0, but lenders always include it."
+      },
+      "monthly_hoa": {
+       "type": "number",
+       "minimum": 0,
+       "description": "Monthly HOA or association dues in USD. Default 0."
+      },
+      "monthly_other_housing": {
+       "type": "number",
+       "minimum": 0,
+       "description": "Other monthly housing costs in PITIA, such as flood insurance, ground rent or special assessments. Default 0."
+      }
+     },
+     "required": [
+      "monthly_rent",
+      "annual_rate_pct"
+     ]
+    },
+    "annotations": {
+     "title": "Calculate DSCR",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "max_loan_for_target_dscr",
+    "title": "Largest loan that meets a target DSCR",
+    "description": "Solves for the largest whole-dollar loan whose PITIA keeps the DSCR at or above a target (default 1.25), given rent, rate, term, interest-only choice, tax, insurance and HOA. Optional purchase_price and max_ltv_pct give the minimum down payment and which limit binds. Exact cents arithmetic, checked against the rounded payment.",
+    "inputSchema": {
+     "$schema": "http://json-schema.org/draft-07/schema#",
+     "type": "object",
+     "properties": {
+      "monthly_rent": {
+       "type": "number",
+       "exclusiveMinimum": 0,
+       "description": "Gross monthly market rent in USD."
+      },
+      "vacancy_pct": {
+       "type": "number",
+       "minimum": 0,
+       "maximum": 50,
+       "description": "Vacancy allowance in percent of gross rent. Default 0. Many lenders use gross rent with no vacancy."
+      },
+      "target_dscr": {
+       "type": "number",
+       "minimum": 0.5,
+       "maximum": 3,
+       "description": "Target DSCR, e.g. 1.25 or 1.0. Default 1.25."
+      },
+      "annual_rate_pct": {
+       "type": "number",
+       "minimum": 0,
+       "maximum": 30,
+       "description": "Annual note rate in percent, e.g. 7.25. Up to 3 decimals."
+      },
+      "term_years": {
+       "type": "integer",
+       "minimum": 1,
+       "maximum": 40,
+       "description": "Amortization term in years. Default 30."
+      },
+      "interest_only": {
+       "type": "boolean",
+       "description": "Qualify on the interest-only payment (loan x rate / 12). Default false."
+      },
+      "annual_property_tax": {
+       "type": "number",
+       "minimum": 0,
+       "description": "Annual property tax in USD. Default 0, but lenders always include it."
+      },
+      "annual_insurance": {
+       "type": "number",
+       "minimum": 0,
+       "description": "Annual hazard insurance premium in USD. Default 0, but lenders always include it."
+      },
+      "monthly_hoa": {
+       "type": "number",
+       "minimum": 0,
+       "description": "Monthly HOA or association dues in USD. Default 0."
+      },
+      "monthly_other_housing": {
+       "type": "number",
+       "minimum": 0,
+       "description": "Other monthly housing costs in PITIA, such as flood insurance, ground rent or special assessments. Default 0."
+      },
+      "purchase_price": {
+       "type": "number",
+       "exclusiveMinimum": 0,
+       "description": "Optional purchase price in USD, to report LTV and minimum down payment."
+      },
+      "max_ltv_pct": {
+       "type": "number",
+       "minimum": 1,
+       "maximum": 100,
+       "description": "Optional lender LTV cap in percent, e.g. 80. Needs purchase_price."
+      }
+     },
+     "required": [
+      "monthly_rent",
+      "annual_rate_pct"
+     ]
+    },
+    "annotations": {
+     "title": "Max loan for target DSCR",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "rent_needed_for_target_dscr",
+    "title": "Rent needed to reach a target DSCR",
+    "description": "Solves for the smallest monthly rent (to the cent, and rounded up to whole dollars) that reaches a target DSCR (default 1.25) for a given loan, rate, term, tax, insurance, HOA and vacancy. Also returns the rent for 0.75, 1.00 and 1.25. Rounds up, never down, so the rent always meets the target.",
+    "inputSchema": {
+     "$schema": "http://json-schema.org/draft-07/schema#",
+     "type": "object",
+     "properties": {
+      "loan_amount": {
+       "type": "number",
+       "exclusiveMinimum": 0,
+       "description": "Loan amount in USD. Give this, or purchase_price plus down_payment_pct."
+      },
+      "purchase_price": {
+       "type": "number",
+       "exclusiveMinimum": 0,
+       "description": "Purchase price in USD. Used with down_payment_pct when loan_amount is not given."
+      },
+      "down_payment_pct": {
+       "type": "number",
+       "minimum": 0,
+       "maximum": 99,
+       "description": "Down payment in percent of price, e.g. 25."
+      },
+      "annual_rate_pct": {
+       "type": "number",
+       "minimum": 0,
+       "maximum": 30,
+       "description": "Annual note rate in percent, e.g. 7.25. Up to 3 decimals."
+      },
+      "term_years": {
+       "type": "integer",
+       "minimum": 1,
+       "maximum": 40,
+       "description": "Amortization term in years. Default 30."
+      },
+      "interest_only": {
+       "type": "boolean",
+       "description": "Qualify on the interest-only payment (loan x rate / 12). Default false."
+      },
+      "vacancy_pct": {
+       "type": "number",
+       "minimum": 0,
+       "maximum": 50,
+       "description": "Vacancy allowance in percent of gross rent. Default 0. Many lenders use gross rent with no vacancy."
+      },
+      "target_dscr": {
+       "type": "number",
+       "minimum": 0.5,
+       "maximum": 3,
+       "description": "Target DSCR, e.g. 1.25 or 1.0. Default 1.25."
+      },
+      "annual_property_tax": {
+       "type": "number",
+       "minimum": 0,
+       "description": "Annual property tax in USD. Default 0, but lenders always include it."
+      },
+      "annual_insurance": {
+       "type": "number",
+       "minimum": 0,
+       "description": "Annual hazard insurance premium in USD. Default 0, but lenders always include it."
+      },
+      "monthly_hoa": {
+       "type": "number",
+       "minimum": 0,
+       "description": "Monthly HOA or association dues in USD. Default 0."
+      },
+      "monthly_other_housing": {
+       "type": "number",
+       "minimum": 0,
+       "description": "Other monthly housing costs in PITIA, such as flood insurance, ground rent or special assessments. Default 0."
+      }
+     },
+     "required": [
+      "annual_rate_pct"
+     ]
+    },
+    "annotations": {
+     "title": "Rent needed for target DSCR",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "compare_scenarios",
+    "title": "Compare DSCR loan scenarios",
+    "description": "Compares 1 to 5 financing scenarios (rate, down payment, term, interest-only) on one property: loan amount, P&I, PITIA, DSCR, lender band, rent minus PITIA and total interest over the term. Names the scenario with the highest DSCR.",
+    "inputSchema": {
+     "$schema": "http://json-schema.org/draft-07/schema#",
+     "type": "object",
+     "properties": {
+      "purchase_price": {
+       "type": "number",
+       "exclusiveMinimum": 0,
+       "description": "Purchase price in USD."
+      },
+      "monthly_rent": {
+       "type": "number",
+       "exclusiveMinimum": 0,
+       "description": "Gross monthly market rent in USD."
+      },
+      "vacancy_pct": {
+       "type": "number",
+       "minimum": 0,
+       "maximum": 50,
+       "description": "Vacancy allowance in percent of gross rent. Default 0. Many lenders use gross rent with no vacancy."
+      },
+      "annual_property_tax": {
+       "type": "number",
+       "minimum": 0,
+       "description": "Annual property tax in USD. Default 0, but lenders always include it."
+      },
+      "annual_insurance": {
+       "type": "number",
+       "minimum": 0,
+       "description": "Annual hazard insurance premium in USD. Default 0, but lenders always include it."
+      },
+      "monthly_hoa": {
+       "type": "number",
+       "minimum": 0,
+       "description": "Monthly HOA or association dues in USD. Default 0."
+      },
+      "monthly_other_housing": {
+       "type": "number",
+       "minimum": 0,
+       "description": "Other monthly housing costs in PITIA, such as flood insurance, ground rent or special assessments. Default 0."
+      },
+      "scenarios": {
+       "minItems": 1,
+       "maxItems": 5,
+       "type": "array",
+       "items": {
+        "type": "object",
+        "properties": {
+         "label": {
+          "description": "Short name, e.g. \"25% down 30-yr\".",
+          "type": "string",
+          "maxLength": 60
+         },
+         "annual_rate_pct": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 30,
+          "description": "Annual note rate in percent, e.g. 7.25. Up to 3 decimals."
+         },
+         "down_payment_pct": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 99,
+          "description": "Down payment in percent of price."
+         },
+         "term_years": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 40,
+          "description": "Amortization term in years. Default 30."
+         },
+         "interest_only": {
+          "type": "boolean",
+          "description": "Qualify on the interest-only payment (loan x rate / 12). Default false."
+         }
+        },
+        "required": [
+         "annual_rate_pct",
+         "down_payment_pct"
+        ]
+       },
+       "description": "1 to 5 scenarios."
+      }
+     },
+     "required": [
+      "purchase_price",
+      "monthly_rent",
+      "scenarios"
+     ]
+    },
+    "annotations": {
+     "title": "Compare DSCR scenarios",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "amortization_summary",
+    "title": "Amortization summary for a loan",
+    "description": "Exact month-by-month amortization: monthly payment, number of payments, final payment, total interest, total paid and the remaining balance after chosen years. Supports an interest-only period followed by amortization over the remaining term, as many DSCR loans use. Interest is rounded half up to the cent each month, like a lender schedule.",
+    "inputSchema": {
+     "$schema": "http://json-schema.org/draft-07/schema#",
+     "type": "object",
+     "properties": {
+      "loan_amount": {
+       "type": "number",
+       "exclusiveMinimum": 0,
+       "description": "Loan amount in USD."
+      },
+      "annual_rate_pct": {
+       "type": "number",
+       "minimum": 0,
+       "maximum": 30,
+       "description": "Annual note rate in percent, e.g. 7.25. Up to 3 decimals."
+      },
+      "term_years": {
+       "type": "integer",
+       "minimum": 1,
+       "maximum": 40,
+       "description": "Amortization term in years. Default 30."
+      },
+      "interest_only_years": {
+       "type": "integer",
+       "minimum": 0,
+       "maximum": 39,
+       "description": "Interest-only years at the start, e.g. 10. Default 0. Must be less than term_years."
+      },
+      "balance_after_years": {
+       "maxItems": 10,
+       "type": "array",
+       "items": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 40
+       },
+       "description": "Years after which to report the balance. Default [1, 5, 10]."
+      }
+     },
+     "required": [
+      "loan_amount",
+      "annual_rate_pct"
+     ]
+    },
+    "annotations": {
+     "title": "Amortization summary",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   }
+  ]
+ },
+ "jsonrpc": "2.0",
+ "id": 2
+}

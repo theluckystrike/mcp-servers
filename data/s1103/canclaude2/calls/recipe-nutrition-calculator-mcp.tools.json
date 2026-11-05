@@ -1,0 +1,221 @@
+{
+ "result": {
+  "tools": [
+   {
+    "name": "lookup_ingredient_nutrition",
+    "title": "Look up USDA nutrients for an ingredient",
+    "description": "Returns USDA FoodData Central nutrient values per 100 g (calories, protein, total fat, saturated fat, carbohydrate, fiber, total sugars, sodium) for a common recipe ingredient, with its FDC id, the USDA household measures (1 cup, 1 tbsp, 1 large, 1 clove) in grams, and optionally the nutrients for an amount such as 1.5 cup or 3 large. 406 ingredients from SR Legacy and Foundation Foods, embedded, no API key. Use it instead of estimating nutrition from memory.",
+    "inputSchema": {
+     "$schema": "http://json-schema.org/draft-07/schema#",
+     "type": "object",
+     "properties": {
+      "ingredient": {
+       "type": "string",
+       "minLength": 1,
+       "maxLength": 100,
+       "description": "Ingredient name, e.g. \"cheddar cheese\", \"brown rice\", \"olive oil\", \"large egg\"."
+      },
+      "amount": {
+       "type": "number",
+       "exclusiveMinimum": 0,
+       "maximum": 100000,
+       "description": "Optional amount to compute nutrients for, e.g. 1.5."
+      },
+      "unit": {
+       "type": "string",
+       "maxLength": 30,
+       "description": "Unit for amount: g, oz, lb, kg, cup, tbsp, tsp, fl oz, ml, or \"each\" for a counted item (uses the USDA medium or large size). Default g."
+      }
+     },
+     "required": [
+      "ingredient"
+     ]
+    },
+    "annotations": {
+     "title": "Look up ingredient nutrition",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "calculate_recipe_nutrition",
+    "title": "Calculate nutrition for a whole recipe and per serving",
+    "description": "Parses ingredient lines (\"2 cups flour\", \"1 stick butter\" as 8 tbsp, \"3 large eggs\", \"1 lb ground beef\"), converts cups, spoons and counted items to grams with USDA household measure weights for that specific food, and sums USDA FoodData Central nutrients. Returns per-line grams and matches, recipe totals, per-serving values, and the per-serving values rounded by the FDA Nutrition Facts rules (21 CFR 101.9) with percent Daily Value. Lines it cannot match are listed, never guessed.",
+    "inputSchema": {
+     "$schema": "http://json-schema.org/draft-07/schema#",
+     "type": "object",
+     "properties": {
+      "lines": {
+       "minItems": 1,
+       "maxItems": 80,
+       "type": "array",
+       "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 200
+       },
+       "description": "Ingredient lines, one per item, amount first: \"2 cups all-purpose flour\", \"1/2 cup butter\", \"2 large eggs\", \"200 g chicken breast\", \"1 tsp salt\"."
+      },
+      "servings": {
+       "type": "number",
+       "exclusiveMinimum": 0,
+       "maximum": 1000,
+       "description": "Number of servings the recipe makes. Default 1."
+      }
+     },
+     "required": [
+      "lines"
+     ]
+    },
+    "annotations": {
+     "title": "Calculate recipe nutrition",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "round_nutrition_label",
+    "title": "Round values for an FDA Nutrition Facts label",
+    "description": "Applies the FDA Nutrition Facts rounding rules from 21 CFR 101.9(c) to unrounded per-serving values: calories (under 5 = 0, nearest 5 up to 50, nearest 10 above), fat and saturated fat (nearest 0.5 g under 5 g), sodium (nearest 5 mg up to 140 mg, nearest 10 above), carbohydrate, fiber, sugars, added sugars and protein (nearest gram, \"less than 1g\" rules). Adds percent Daily Value from the 2,000-calorie DRVs (fat 78 g, saturated fat 20 g, sodium 2,300 mg, carbohydrate 275 g, fiber 28 g, added sugars 50 g). Rules copied from the eCFR text.",
+    "inputSchema": {
+     "$schema": "http://json-schema.org/draft-07/schema#",
+     "type": "object",
+     "properties": {
+      "kcal": {
+       "type": "number",
+       "minimum": 0,
+       "maximum": 100000,
+       "description": "Calories per serving, unrounded."
+      },
+      "fat_g": {
+       "type": "number",
+       "minimum": 0,
+       "maximum": 10000,
+       "description": "Total fat, g per serving."
+      },
+      "sat_fat_g": {
+       "type": "number",
+       "minimum": 0,
+       "maximum": 10000,
+       "description": "Saturated fat, g per serving."
+      },
+      "sodium_mg": {
+       "type": "number",
+       "minimum": 0,
+       "maximum": 1000000,
+       "description": "Sodium, mg per serving."
+      },
+      "carbs_g": {
+       "type": "number",
+       "minimum": 0,
+       "maximum": 10000,
+       "description": "Total carbohydrate, g per serving."
+      },
+      "fiber_g": {
+       "type": "number",
+       "minimum": 0,
+       "maximum": 10000,
+       "description": "Dietary fiber, g per serving."
+      },
+      "sugars_g": {
+       "type": "number",
+       "minimum": 0,
+       "maximum": 10000,
+       "description": "Total sugars, g per serving."
+      },
+      "added_sugars_g": {
+       "type": "number",
+       "minimum": 0,
+       "maximum": 10000,
+       "description": "Added sugars, g per serving."
+      },
+      "protein_g": {
+       "type": "number",
+       "minimum": 0,
+       "maximum": 10000,
+       "description": "Protein, g per serving."
+      }
+     },
+     "required": [
+      "kcal"
+     ]
+    },
+    "annotations": {
+     "title": "Round nutrition label",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "scale_recipe_nutrition",
+    "title": "Scale a recipe and recompute its nutrition",
+    "description": "Scales ingredient lines by a factor or from original to target servings (parses mixed numbers and fraction characters), then recomputes total and per-serving nutrition with USDA FoodData Central values and FDA label rounding for the scaled recipe.",
+    "inputSchema": {
+     "$schema": "http://json-schema.org/draft-07/schema#",
+     "type": "object",
+     "properties": {
+      "lines": {
+       "minItems": 1,
+       "maxItems": 80,
+       "type": "array",
+       "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 200
+       },
+       "description": "Ingredient lines, one per item, amount first: \"2 cups all-purpose flour\", \"1/2 cup butter\", \"2 large eggs\", \"200 g chicken breast\", \"1 tsp salt\"."
+      },
+      "factor": {
+       "type": "number",
+       "exclusiveMinimum": 0,
+       "maximum": 100,
+       "description": "Multiply every quantity by this, e.g. 2 or 0.5. Or give servings instead."
+      },
+      "original_servings": {
+       "type": "number",
+       "exclusiveMinimum": 0,
+       "maximum": 1000,
+       "description": "Servings the recipe makes now."
+      },
+      "target_servings": {
+       "type": "number",
+       "exclusiveMinimum": 0,
+       "maximum": 1000,
+       "description": "Servings you want."
+      }
+     },
+     "required": [
+      "lines"
+     ]
+    },
+    "annotations": {
+     "title": "Scale recipe nutrition",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   }
+  ]
+ },
+ "jsonrpc": "2.0",
+ "id": 2
+}

@@ -1,0 +1,154 @@
+{
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "2026 to 2027. 401(k)/403(b)/TSP elective deferral: $24,500 to not published. IRA limit: $7,500 to not published. HSA self-only: $4,400 to $4,500 (+$100). HSA family: $8,750 to $9,000 (+$250). Social Security wage base: $184,500 to $192,300 (+$7,800). 2027 plan and IRA limits are not published yet.\n\nThis is general information, not tax or financial advice. Your plan document may allow less (for example no age 60-63 catch-up). Check with your plan administrator or a tax professional."
+      },
+      {
+        "type": "text",
+        "text": "{\n  \"from_year\": 2026,\n  \"to_year\": 2027,\n  \"rows\": [\n    {\n      \"item\": \"401(k)/403(b)/TSP elective deferral\",\n      \"from\": 24500,\n      \"to\": null,\n      \"change\": null,\n      \"percent\": null\n    },\n    {\n      \"item\": \"457(b) deferral\",\n      \"from\": 24500,\n      \"to\": null,\n      \"change\": null,\n      \"percent\": null\n    },\n    {\n      \"item\": \"Catch-up age 50+\",\n      \"from\": 8000,\n      \"to\": null,\n      \"change\": null,\n      \"percent\": null\n    },\n    {\n      \"item\": \"Super catch-up age 60-63\",\n      \"from\": 11250,\n      \"to\": null,\n      \"change\": null,\n      \"percent\": null\n    },\n    {\n      \"item\": \"415(c) total annual additions\",\n      \"from\": 72000,\n      \"to\": null,\n      \"change\": null,\n      \"percent\": null\n    },\n    {\n      \"item\": \"401(a)(17) compensation limit\",\n      \"from\": 360000,\n      \"to\": null,\n      \"change\": null,\n      \"percent\": null\n    },\n    {\n      \"item\": \"Highly compensated employee threshold\",\n      \"from\": 160000,\n      \"to\": null,\n      \"change\": null,\n      \"percent\": null\n    },\n    {\n      \"item\": \"SIMPLE deferral\",\n      \"from\": 17000,\n      \"to\": null,\n      \"change\": null,\n      \"percent\": null\n    },\n    {\n      \"item\": \"SIMPLE catch-up age 50+\",\n      \"from\": 4000,\n      \"to\": null,\n      \"change\": null,\n      \"percent\": null\n    },\n    {\n      \"item\": \"IRA limit\",\n      \"from\": 7500,\n      \"to\": null,\n      \"change\": null,\n      \"percent\": null\n    },\n    {\n      \"item\": \"IRA catch-up age 50+\",\n      \"from\": 1100,\n      \"to\": null,\n      \"change\": null,\n      \"percent\": null\n    },\n    {\n      \"item\": \"Roth catch-up wage threshold\",\n      \"from\": 150000,\n      \"to\": null,\n      \"change\": null,\n      \"percent\": null\n    },\n    {\n      \"item\": \"HSA self-only\",\n      \"from\": 4400,\n      \"to\": 4500,\n      \"change\": 100,\n      \"percent\": 2.27\n    },\n    {\n      \"item\": \"HSA family\",\n      \"from\": 8750,\n      \"to\": 9000,\n      \"change\": 250,\n      \"percent\": 2.86\n    },\n    {\n      \"item\": \"Social Security wage base\",\n      \"from\": 184500,\n      \"to\": 192300,\n      \"change\": 7800,\n      \"percent\": 4.23\n    },\n    {\n      \"item\": \"Earnings test annual (under FRA)\",\n      \"from\": 24480,\n      \"to\": 25560,\n      \"change\": 1080,\n      \"percent\": 4.41\n    },\n    {\n      \"item\": \"Earnings test annual (year of FRA)\",\n      \"from\": 65160,\n      \"to\": 67920,\n      \"change\": 2760,\n      \"percent\": 4.24\n    },\n    {\n      \"item\": \"Social Security COLA percent\",\n      \"from\": 2.8,\n      \"to\": 3.6,\n      \"change\": 0.8000000000000003,\n      \"percent\": 28.57\n    }\n  ],\n  \"not_published\": \"The IRS has not announced the 2027 401(k), 403(b), 457, IRA, SIMPLE, 415(c), compensation or HCE limits. On 2026-11-02 the IRS news release list ran through IR-2026-129 (Oct. 29, 2026) with no cost-of-living notice for 2027 (the 2026 notice, IR-2025-111 / Notice 2025-67, came out in November 2025). This server does not guess or forecast. Use 2026 as the latest published year.\",\n  \"summary\": \"2026 to 2027. 401(k)/403(b)/TSP elective deferral: $24,500 to not published. IRA limit: $7,500 to not published. HSA self-only: $4,400 to $4,500 (+$100). HSA family: $8,750 to $9,000 (+$250). Social Security wage base: $184,500 to $192,300 (+$7,800). 2027 plan and IRA limits are not published yet.\",\n  \"as_of\": \"2026-11-02\",\n  \"source\": \"https://www.irs.gov/pub/irs-drop/n-25-67.pdf ; https://www.irs.gov/pub/irs-drop/rp-26-24.pdf ; https://www.federalregister.gov/documents/2026/10/26/2026-21796/cost-of-living-increase-and-other-determinations-for-2027\",\n  \"more\": \"https://statewage.com/401k-paycheck-calculator/?utm_source=mcp&utm_medium=retirement-contribution-limits-2027-mcp\",\n  \"disclaimer\": \"This is general information, not tax or financial advice. Your plan document may allow less (for example no age 60-63 catch-up). Check with your plan administrator or a tax professional.\"\n}"
+      }
+    ],
+    "structuredContent": {
+      "from_year": 2026,
+      "to_year": 2027,
+      "rows": [
+        {
+          "item": "401(k)/403(b)/TSP elective deferral",
+          "from": 24500,
+          "to": null,
+          "change": null,
+          "percent": null
+        },
+        {
+          "item": "457(b) deferral",
+          "from": 24500,
+          "to": null,
+          "change": null,
+          "percent": null
+        },
+        {
+          "item": "Catch-up age 50+",
+          "from": 8000,
+          "to": null,
+          "change": null,
+          "percent": null
+        },
+        {
+          "item": "Super catch-up age 60-63",
+          "from": 11250,
+          "to": null,
+          "change": null,
+          "percent": null
+        },
+        {
+          "item": "415(c) total annual additions",
+          "from": 72000,
+          "to": null,
+          "change": null,
+          "percent": null
+        },
+        {
+          "item": "401(a)(17) compensation limit",
+          "from": 360000,
+          "to": null,
+          "change": null,
+          "percent": null
+        },
+        {
+          "item": "Highly compensated employee threshold",
+          "from": 160000,
+          "to": null,
+          "change": null,
+          "percent": null
+        },
+        {
+          "item": "SIMPLE deferral",
+          "from": 17000,
+          "to": null,
+          "change": null,
+          "percent": null
+        },
+        {
+          "item": "SIMPLE catch-up age 50+",
+          "from": 4000,
+          "to": null,
+          "change": null,
+          "percent": null
+        },
+        {
+          "item": "IRA limit",
+          "from": 7500,
+          "to": null,
+          "change": null,
+          "percent": null
+        },
+        {
+          "item": "IRA catch-up age 50+",
+          "from": 1100,
+          "to": null,
+          "change": null,
+          "percent": null
+        },
+        {
+          "item": "Roth catch-up wage threshold",
+          "from": 150000,
+          "to": null,
+          "change": null,
+          "percent": null
+        },
+        {
+          "item": "HSA self-only",
+          "from": 4400,
+          "to": 4500,
+          "change": 100,
+          "percent": 2.27
+        },
+        {
+          "item": "HSA family",
+          "from": 8750,
+          "to": 9000,
+          "change": 250,
+          "percent": 2.86
+        },
+        {
+          "item": "Social Security wage base",
+          "from": 184500,
+          "to": 192300,
+          "change": 7800,
+          "percent": 4.23
+        },
+        {
+          "item": "Earnings test annual (under FRA)",
+          "from": 24480,
+          "to": 25560,
+          "change": 1080,
+          "percent": 4.41
+        },
+        {
+          "item": "Earnings test annual (year of FRA)",
+          "from": 65160,
+          "to": 67920,
+          "change": 2760,
+          "percent": 4.24
+        },
+        {
+          "item": "Social Security COLA percent",
+          "from": 2.8,
+          "to": 3.6,
+          "change": 0.8000000000000003,
+          "percent": 28.57
+        }
+      ],
+      "not_published": "The IRS has not announced the 2027 401(k), 403(b), 457, IRA, SIMPLE, 415(c), compensation or HCE limits. On 2026-11-02 the IRS news release list ran through IR-2026-129 (Oct. 29, 2026) with no cost-of-living notice for 2027 (the 2026 notice, IR-2025-111 / Notice 2025-67, came out in November 2025). This server does not guess or forecast. Use 2026 as the latest published year.",
+      "summary": "2026 to 2027. 401(k)/403(b)/TSP elective deferral: $24,500 to not published. IRA limit: $7,500 to not published. HSA self-only: $4,400 to $4,500 (+$100). HSA family: $8,750 to $9,000 (+$250). Social Security wage base: $184,500 to $192,300 (+$7,800). 2027 plan and IRA limits are not published yet.",
+      "as_of": "2026-11-02",
+      "source": "https://www.irs.gov/pub/irs-drop/n-25-67.pdf ; https://www.irs.gov/pub/irs-drop/rp-26-24.pdf ; https://www.federalregister.gov/documents/2026/10/26/2026-21796/cost-of-living-increase-and-other-determinations-for-2027",
+      "more": "https://statewage.com/401k-paycheck-calculator/?utm_source=mcp&utm_medium=retirement-contribution-limits-2027-mcp",
+      "disclaimer": "This is general information, not tax or financial advice. Your plan document may allow less (for example no age 60-63 catch-up). Check with your plan administrator or a tax professional."
+    }
+  },
+  "jsonrpc": "2.0",
+  "id": 13
+}

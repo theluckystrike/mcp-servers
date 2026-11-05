@@ -1,0 +1,172 @@
+{
+ "result": {
+  "tools": [
+   {
+    "name": "get_vegetable_yield",
+    "title": "Get vegetable yield percentage",
+    "description": "USDA edible yield percent for a raw vegetable or fruit (the share left after removing peel, seeds, core, stems and trimmings), the refuse percent and what the refuse is, plus USDA household weights (1 medium, 1 cup chopped, 1 clove) and the as-purchased weight of one whole item. From USDA SR28 refuse data.",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "food": {
+       "type": "string",
+       "minLength": 2,
+       "maxLength": 120,
+       "description": "Raw vegetable or fruit in plain words, for example \"onion\", \"red bell pepper\", \"pineapple\", \"butternut squash\", \"broccoli\", \"avocado\"."
+      }
+     },
+     "required": [
+      "food"
+     ],
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "title": "Vegetable yield percentage",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "calculate_edible_weight",
+    "title": "Calculate edible weight",
+    "description": "Edible weight and trim waste from a purchased (as purchased, untrimmed) weight of a raw vegetable or fruit, using the USDA edible yield percent.",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "food": {
+       "type": "string",
+       "minLength": 2,
+       "maxLength": 120,
+       "description": "Raw vegetable or fruit in plain words, for example \"onion\", \"red bell pepper\", \"pineapple\", \"butternut squash\", \"broccoli\", \"avocado\"."
+      },
+      "purchased_weight": {
+       "type": "number",
+       "exclusiveMinimum": 0,
+       "maximum": 1000000,
+       "description": "Weight as bought, for example 5."
+      },
+      "unit": {
+       "type": "string",
+       "minLength": 1,
+       "maxLength": 12,
+       "description": "g, kg, oz or lb. Default g."
+      }
+     },
+     "required": [
+      "food",
+      "purchased_weight"
+     ],
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "title": "Edible weight",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "calculate_amount_to_buy",
+    "title": "Calculate how much produce to buy",
+    "description": "How much of a raw vegetable or fruit to buy for a recipe amount. Give the prepared amount in g, kg, oz or lb, or as a USDA household measure such as \"cup chopped\", \"cup sliced\", \"medium\" or \"clove\". Returns the edible weight needed, the as-purchased weight to buy at the USDA edible yield, and the number of whole items (for example medium onions) to buy.",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "food": {
+       "type": "string",
+       "minLength": 2,
+       "maxLength": 120,
+       "description": "Raw vegetable or fruit in plain words, for example \"onion\", \"red bell pepper\", \"pineapple\", \"butternut squash\", \"broccoli\", \"avocado\"."
+      },
+      "amount": {
+       "type": "number",
+       "exclusiveMinimum": 0,
+       "maximum": 1000000,
+       "description": "Prepared amount, for example 3 (cups) or 500 (grams)."
+      },
+      "measure": {
+       "type": "string",
+       "minLength": 1,
+       "maxLength": 40,
+       "description": "g, kg, oz, lb, or a household measure such as \"cup chopped\", \"cup sliced\", \"tbsp\", \"medium\", \"large\", \"clove\". Default g."
+      }
+     },
+     "required": [
+      "food",
+      "amount"
+     ],
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "title": "Produce to buy",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "list_vegetable_yields",
+    "title": "List vegetable and fruit yields",
+    "description": "List raw vegetables and fruits with their USDA edible yield percent, filtered to fruit or vegetable and sorted by name, lowest yield or highest yield.",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "category": {
+       "type": "string",
+       "enum": [
+        "fruit",
+        "vegetable"
+       ],
+       "description": "fruit or vegetable."
+      },
+      "sort": {
+       "type": "string",
+       "enum": [
+        "name",
+        "yield_low",
+        "yield_high"
+       ],
+       "description": "name (default), yield_low or yield_high."
+      },
+      "limit": {
+       "type": "integer",
+       "minimum": 1,
+       "maximum": 400,
+       "description": "Rows to return, default 50."
+      }
+     },
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "title": "List yields",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   }
+  ]
+ },
+ "jsonrpc": "2.0",
+ "id": 2
+}

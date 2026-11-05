@@ -1,0 +1,10 @@
+{
+    "title": "Car Loan Interest Deduction Calculator MCP",
+    "sampleTool": "calculate_car_loan_interest_deduction",
+    "sampleArgs": {
+        "filing_status": "single",
+        "magi": 105000,
+        "tax_year": 2026,
+        "interest_paid": 3200
+    }
+}

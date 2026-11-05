@@ -1,0 +1,20 @@
+{
+    "name": "subdomain-finder-mcp",
+    "version": "1.0.0",
+    "type": "module",
+    "private": true,
+    "description": "Passive subdomain finder MCP server for AI agents. Live certificate transparency lookups (certspotter, crt.sh) with DNS-over-HTTPS checks: finds subdomains, flags live hosts and dangling CNAMEs, shows certificate history and groups the attack surface. Read-only, no API key.",
+    "engines": {
+        "node": ">=22"
+    },
+    "dependencies": {
+        "@modelcontextprotocol/sdk": "^1.30.0",
+        "apify": "^3.7.0",
+        "express": "^5.1.0",
+        "zod": "^3.25.76"
+    },
+    "scripts": {
+        "start": "node src/main.js"
+    },
+    "license": "MIT"
+}

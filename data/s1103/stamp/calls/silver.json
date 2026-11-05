@@ -1,0 +1,42 @@
+{
+ "result": {
+  "content": [
+   {
+    "type": "text",
+    "text": "5 USD face of 90% coin contain 3.617 troy oz of silver, a melt value of 177.85 USD at a spot of 49.17 USD per troy ounce (as of 2026-11-03T08:01:55Z). One dollar face of pre-1965 90% dimes, quarters or halves holds 0.723392 troy oz (22.5 g), worth 35.57 USD now; dealers often quote 0.715 oz per dollar for worn coins. With a 10% dealer spread, a buyer would offer about 160.06 USD. As-minted silver content; worn coins hold slightly less.\n\n{\n  \"currency\": \"USD\",\n  \"coins\": [],\n  \"face_value_90_usd\": 5,\n  \"face_value_90_troy_ounces\": 3.616959,\n  \"total_silver_troy_ounces\": 3.616959,\n  \"total_silver_grams\": 112.5,\n  \"total_face_value_usd\": 5,\n  \"melt_value\": 177.85,\n  \"dealer_offer\": 160.06,\n  \"dealer_spread_percent\": 10,\n  \"melt_per_dollar_face_90\": 35.57,\n  \"troy_ounces_per_dollar_face_90\": 0.723392,\n  \"spot_per_troy_ounce\": 49.17,\n  \"usd_to_currency\": 1,\n  \"as_of\": \"2026-11-03T08:01:55Z\",\n  \"fx_date\": null,\n  \"source\": \"https://gold-api.com/\",\n  \"sources\": {\n    \"spot\": \"https://api.gold-api.com/price/XAG\",\n    \"fx\": null,\n    \"coinage_act_1965\": \"https://www.govinfo.gov/content/pkg/STATUTE-79/pdf/STATUTE-79-Pg254.pdf\",\n    \"silver_eagle\": \"https://www.law.cornell.edu/uscode/text/31/5112\"\n  },\n  \"more\": \"https://goldgramprice.com/junk-silver-melt-value/?utm_source=mcp&utm_medium=silver-price-per-gram-mcp\",\n  \"related\": [\n    \"https://goldgramprice.com/learn/how-much-silver-is-in-an-american-silver-eagle/?utm_source=mcp&utm_medium=silver-price-per-gram-mcp\"\n  ],\n  \"summary\": \"5 USD face of 90% coin contain 3.617 troy oz of silver, a melt value of 177.85 USD at a spot of 49.17 USD per troy ounce (as of 2026-11-03T08:01:55Z). One dollar face of pre-1965 90% dimes, quarters or halves holds 0.723392 troy oz (22.5 g), worth 35.57 USD now; dealers often quote 0.715 oz per dollar for worn coins. With a 10% dealer spread, a buyer would offer about 160.06 USD. As-minted silver content; worn coins hold slightly less.\"\n}"
+   }
+  ],
+  "structuredContent": {
+   "currency": "USD",
+   "coins": [],
+   "face_value_90_usd": 5,
+   "face_value_90_troy_ounces": 3.616959,
+   "total_silver_troy_ounces": 3.616959,
+   "total_silver_grams": 112.5,
+   "total_face_value_usd": 5,
+   "melt_value": 177.85,
+   "dealer_offer": 160.06,
+   "dealer_spread_percent": 10,
+   "melt_per_dollar_face_90": 35.57,
+   "troy_ounces_per_dollar_face_90": 0.723392,
+   "spot_per_troy_ounce": 49.17,
+   "usd_to_currency": 1,
+   "as_of": "2026-11-03T08:01:55Z",
+   "fx_date": null,
+   "source": "https://gold-api.com/",
+   "sources": {
+    "spot": "https://api.gold-api.com/price/XAG",
+    "fx": null,
+    "coinage_act_1965": "https://www.govinfo.gov/content/pkg/STATUTE-79/pdf/STATUTE-79-Pg254.pdf",
+    "silver_eagle": "https://www.law.cornell.edu/uscode/text/31/5112"
+   },
+   "more": "https://goldgramprice.com/junk-silver-melt-value/?utm_source=mcp&utm_medium=silver-price-per-gram-mcp",
+   "related": [
+    "https://goldgramprice.com/learn/how-much-silver-is-in-an-american-silver-eagle/?utm_source=mcp&utm_medium=silver-price-per-gram-mcp"
+   ],
+   "summary": "5 USD face of 90% coin contain 3.617 troy oz of silver, a melt value of 177.85 USD at a spot of 49.17 USD per troy ounce (as of 2026-11-03T08:01:55Z). One dollar face of pre-1965 90% dimes, quarters or halves holds 0.723392 troy oz (22.5 g), worth 35.57 USD now; dealers often quote 0.715 oz per dollar for worn coins. With a 10% dealer spread, a buyer would offer about 160.06 USD. As-minted silver content; worn coins hold slightly less."
+  }
+ },
+ "jsonrpc": "2.0",
+ "id": 2
+}

@@ -1,14 +1,15 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/mileage-log",
-  "description": "Mileage log for deductible driving: trips, effective-dated rates, summaries and CSV export.",
+  "title": "McpStamp Mileage Log",
+  "description": "Log drives by purpose, apply your own dated rates, get deductible totals and a CSV for taxes.",
   "version": "0.22.6",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
     "subfolder": "servers/mileage-log"
   },
-  "websiteUrl": "https://mcp.zovo.one/s/mileage-log",
+  "websiteUrl": "https://www.mcpstamp.com/servers/mileage-log/",
   "packages": [
     {
       "registryType": "mcpb",
@@ -31,15 +32,7 @@
   "remotes": [
     {
       "type": "streamable-http",
-      "url": "https://mcp.zovo.one/mcp/mileage-log",
-      "headers": [
-        {
-          "name": "Authorization",
-          "description": "Bearer <Pro license key or anonymous token from GET https://mcp.zovo.one/mcp/token>",
-          "isRequired": true,
-          "isSecret": true
-        }
-      ]
+      "url": "https://mcp.zovo.one/mcp/mileage-log"
     }
   ]
 }

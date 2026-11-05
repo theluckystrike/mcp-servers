@@ -1,0 +1,60 @@
+{
+ "repo": "irs-mileage-rate-per-diem-mcp",
+ "repo_url": "https://github.com/theluckystrike/irs-mileage-rate-per-diem-mcp",
+ "hosted_url": "https://irs-mileage-rate-per-diem-mcp.lipmichal.workers.dev/mcp",
+ "worker_version_id": "1e4f1af4-1278-40e0-a28e-a2580611a59c",
+ "rollback": "npx wrangler delete --name irs-mileage-rate-per-diem-mcp (brand-new worker, one version)",
+ "registry_name": "io.github.theluckystrike/irs-mileage-rate-per-diem-mcp",
+ "registry_visible": true,
+ "tools": [
+  "get_mileage_rate",
+  "calculate_mileage_deduction",
+  "get_per_diem_rates",
+  "calculate_trip_per_diem",
+  "get_high_low_per_diem"
+ ],
+ "fixtures": 18,
+ "tests_passed": "18/18 (node --test test/*.test.mjs)",
+ "live_calls_ok": {
+  "get_mileage_rate": true,
+  "calculate_mileage_deduction": true,
+  "get_per_diem_rates": true,
+  "calculate_trip_per_diem": true,
+  "get_high_low_per_diem": true
+ },
+ "npx_github_ok": true,
+ "npm_ready": true,
+ "npm_published": false,
+ "money_site": "https://taxbreakcalc.com/self-employed-set-aside-calculator/ (200, title 'Self-Employed Set-Aside Calculator 2026 ...'); no mileage or per diem page exists on any money site (checked sitemaps of taxbreakcalc, statewage, noovertimetax, dscrradar, assetloancalculator)",
+ "minutes": 11,
+ "open_issues": [
+  "2027 standard mileage rates not announced on 2026-11-03 (IRS usually announces late December). Add a 2027 period to MILEAGE in src/core.ts, rebuild, redeploy, bump to 1.0.1.",
+  "IRS mileage page labels the July 2026 source 'IR-2026-29' but links IRB 2026-29; the rates are Announcement 2026-11 (verified in the bulletin text). The tool cites the announcement.",
+  "Per diem covers CONUS only; OCONUS (DoD/State) not included. GSA FY2026 and FY2027 only; FY2028 file appears ~Aug 2027.",
+  "GSA per diem API needs an api.data.gov key, so the server bundles GSA's published ZIP files (cross-checked against the API with DEMO_KEY for ZIP 20001 FY2027).",
+  "Worker bundle ~780 KB source (gsa.ts) - within limits, startup measured on deploy.",
+  "npm: not published (owner 2FA per publish, see mcp-servers/CLAUDE.md trap 10); package is npm-ready (name = repo, bin dist/stdio.js with shebang, files, mcpName). Name free: verify with npm view before publishing.",
+  "Glama listing not submitted (glama.json is in the repo)."
+ ],
+ "sources": [
+  "https://www.irs.gov/tax-professionals/standard-mileage-rates (table 2011-2026, page updated 28-Jul-2026; fetched 2026-11-03)",
+  "https://www.irs.gov/irb/2026-29_irb (Announcement 2026-11: 76 / 23.5 cents from July 1, 2026)",
+  "https://www.irs.gov/pub/irs-drop/n-26-10.pdf (2026 rates 72.5/14/20.5, depreciation 26-35 cents 2022-2026, FAVR/FMV $61,700)",
+  "https://www.irs.gov/newsroom/irs-sets-2026-business-standard-mileage-rate-at-725-cents-per-mile-up-25-cents (IR-2025-128)",
+  "https://www.irs.gov/pub/irs-drop/n-25-05.pdf (2025: 70 cents, depreciation 33, FAVR $61,200)",
+  "https://www.gsa.gov/system/files/FY2027PerDiemZipCode_Validated090126.xlsx and FY2026_ZipCodeFile.xlsx (via https://www.gsa.gov/travel/per-diem-rates/per-diem-files)",
+  "https://www.gsa.gov/travel/per-diem-rates/mie-breakdowns (CONUS M&IE breakdown $68-$92)",
+  "https://www.irs.gov/irb/2026-43_irb (Notice 2026-60: $329/$230, meals $86/$74, transport $80/$86, incidentals $5, 91 high-cost localities)",
+  "https://www.irs.gov/irb/2025-41_IRB and https://www.irs.gov/pub/irs-drop/n-25-54.pdf (Notice 2025-54: $319/$225, 88 localities)",
+  "Cross-check: https://api.gsa.gov/travel/perdiem/v2/rates/zip/20001/year/2027?api_key=DEMO_KEY matched the bundled ZIP file"
+ ],
+ "registry_check": "curl -s 'https://registry.modelcontextprotocol.io/v0/servers?search=irs-mileage-rate-per-diem' -> io.github.theluckystrike/irs-mileage-rate-per-diem-mcp 1.0.0 (control search=section-179 returns its server)",
+ "live_check": "node build-fin/smoke.mjs http mil-calls.json mil-raw-http <URL grepped from README.md>, no token: initialize, tools/list (5), 5/5 tools/call !isError with source, as_of, more containing utm_source=mcp; GET / 200",
+ "npx_check": "from an empty mktemp dir: npx -y github:theluckystrike/irs-mileage-rate-per-diem-mcp answered initialize, tools/list (5) and 5/5 tools/call (build-fin/mil-raw-npx)",
+ "stdio_local_ok": "initialize + tools/list + 5/5 tools/call (node dist/stdio.js)",
+ "pushes": 1,
+ "repo_public": true,
+ "topics": 15,
+ "repo_description": "MCP server: IRS mileage rate 2026 (76 cents from July), GSA per diem rates by ZIP FY2026-27, IRS high-low per diem",
+ "name_choice": "gh api search/repositories 2026-11-03: 'mileage rate mcp' 2, 'per diem rates mcp' 2, 'per diem mcp' 3, 'irs mileage mcp' 5"
+}

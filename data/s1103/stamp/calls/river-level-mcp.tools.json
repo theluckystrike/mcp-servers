@@ -1,0 +1,168 @@
+{
+ "result": {
+  "tools": [
+   {
+    "name": "find_river_gauges",
+    "title": "Find river gauges",
+    "description": "Search USGS stream gauges nationwide by river and place name (for example \"mississippi st louis\", \"potomac little falls\"), by state, or within a radius of a latitude and longitude. Returns site numbers with whether each is reporting now and its latest stage and flow, active gauges first.",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "query": {
+       "type": "string",
+       "maxLength": 80,
+       "description": "Words from the gauge name: river plus town, for example \"colorado river austin\". Words like river, at and near are ignored."
+      },
+      "state": {
+       "type": "string",
+       "maxLength": 30,
+       "description": "Two-letter state code (MO) or full state name (Missouri)."
+      },
+      "latitude": {
+       "type": "number",
+       "minimum": -90,
+       "maximum": 90,
+       "description": "Latitude for a nearby search, for example 38.63."
+      },
+      "longitude": {
+       "type": "number",
+       "minimum": -180,
+       "maximum": 180,
+       "description": "Longitude for a nearby search, for example -90.18."
+      },
+      "radius_miles": {
+       "type": "number",
+       "minimum": 1,
+       "maximum": 100,
+       "description": "Radius for a latitude and longitude search, 1 to 100 miles. Default 15."
+      }
+     },
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "title": "Find river gauges",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": true
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "get_river_level",
+    "title": "Get current river level",
+    "description": "Current river stage (gage height in feet), streamflow (discharge in cubic feet per second) and water temperature where measured, read now from a USGS stream gauge (readings every 5 to 60 minutes). Adds the NWS flood stages (action, minor, moderate, major), the current flood category, feet below flood stage and the record crest when the gauge is an NWS forecast point. Flags readings over 48 hours old. Your training data cannot know today's river level.",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "site": {
+       "type": "string",
+       "minLength": 3,
+       "maxLength": 24,
+       "description": "USGS site number (for example \"07010000\" for the Mississippi River at St. Louis) or an NWS gauge id (for example \"EADM7\"). Use find_river_gauges to look one up."
+      }
+     },
+     "required": [
+      "site"
+     ],
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "title": "Get river level",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": true
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "get_river_history",
+    "title": "Get river level history",
+    "description": "Daily mean streamflow (default) or stage for a USGS gauge over the last 2 to 366 days, with first, last, low, high, mean and change. Use it for trend, drought and \"is the river rising\" questions. Many gauges publish daily means for discharge only.",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "site": {
+       "type": "string",
+       "minLength": 3,
+       "maxLength": 24,
+       "description": "USGS site number (for example \"07010000\" for the Mississippi River at St. Louis) or an NWS gauge id (for example \"EADM7\"). Use find_river_gauges to look one up."
+      },
+      "days": {
+       "type": "integer",
+       "minimum": 2,
+       "maximum": 366,
+       "default": 30,
+       "description": "Days back from today, 2 to 366. Default 30."
+      },
+      "parameter": {
+       "type": "string",
+       "enum": [
+        "discharge",
+        "gage_height",
+        "water_temperature"
+       ],
+       "default": "discharge",
+       "description": "discharge (streamflow, ft3/s), gage_height (stage, ft) or water_temperature (deg C). Default discharge."
+      }
+     },
+     "required": [
+      "site"
+     ],
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "title": "Get river history",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": true
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "get_flood_forecast",
+    "title": "Get river flood forecast",
+    "description": "The current NOAA National Water Prediction Service river forecast for a gauge: the forecast stage and flow series, the forecast crest with its flood category, the latest observation, flood stages and the record crest. Works for NWS forecast points (accepts the NWS id or the USGS site number). Forecasts are reissued several times a day.",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "site": {
+       "type": "string",
+       "minLength": 3,
+       "maxLength": 24,
+       "description": "USGS site number (for example \"07010000\" for the Mississippi River at St. Louis) or an NWS gauge id (for example \"EADM7\"). Use find_river_gauges to look one up."
+      }
+     },
+     "required": [
+      "site"
+     ],
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "title": "Get flood forecast",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": true
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   }
+  ]
+ },
+ "jsonrpc": "2.0",
+ "id": 2
+}

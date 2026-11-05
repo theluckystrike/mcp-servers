@@ -1,0 +1,1 @@
+Scanner control first. A sample with an em dash, a banned word, a bold label, a heading colon and an exclamation mark failed with exit 1, and a clean sample passed with exit 0. Then `python3 ~/Desktop/humanize/scan.py --strict` returned exit 0 on the drafts file (drafts.txt) and exit 0 on outreach.md. All four drafts are under 120 words (99, 85, 88 and 88).

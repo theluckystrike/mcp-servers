@@ -1,0 +1,67 @@
+{
+ "result": {
+  "content": [
+   {
+    "type": "text",
+    "text": "1240 business miles in Jan. 1 - June 30, 2026 at 72.5 cents = $899.00; 85 medical miles in Jan. 1 - June 30, 2026 at 20.5 cents = $17.43; 40 charity miles in July 1 - Dec. 31, 2026 at 14 cents = $5.60. Total $922.03. 2026 has two business rates: 72.5 cents before July 1 and 76 cents from July 1 (Announcement 2026-11).\n\nRates from IRS and GSA publications. General information, not tax advice."
+   },
+   {
+    "type": "text",
+    "text": "{\n  \"lines\": [\n    {\n      \"period\": \"Jan. 1 - June 30, 2026\",\n      \"purpose\": \"business\",\n      \"miles\": 1240,\n      \"cents_per_mile\": 72.5,\n      \"amount\": 899,\n      \"source\": \"Notice 2026-10, IR-2025-128\"\n    },\n    {\n      \"period\": \"Jan. 1 - June 30, 2026\",\n      \"purpose\": \"medical\",\n      \"miles\": 85,\n      \"cents_per_mile\": 20.5,\n      \"amount\": 17.43,\n      \"source\": \"Notice 2026-10, IR-2025-128\"\n    },\n    {\n      \"period\": \"July 1 - Dec. 31, 2026\",\n      \"purpose\": \"charity\",\n      \"miles\": 40,\n      \"cents_per_mile\": 14,\n      \"amount\": 5.6,\n      \"source\": \"Announcement 2026-11 (IRB 2026-29)\"\n    }\n  ],\n  \"total_amount\": 922.03,\n  \"by_purpose\": {\n    \"business\": 899,\n    \"medical\": 17.43,\n    \"charity\": 5.6\n  },\n  \"depreciation_basis_reduction\": {\n    \"2026\": {\n      \"business_miles\": 1240,\n      \"cents_per_mile\": 35,\n      \"basis_reduction\": 434\n    }\n  },\n  \"notes\": [\n    \"Employees cannot deduct unreimbursed business mileage as an itemized deduction (made permanent by the One, Big, Beautiful Bill Act); self-employed people deduct it on Schedule C, and employers can reimburse it tax-free at these rates.\",\n    \"Medical mileage counts toward itemized medical expenses, deductible only above 7.5% of AGI.\",\n    \"2026 has two business rates: 72.5 cents before July 1 and 76 cents from July 1 (Announcement 2026-11).\"\n  ],\n  \"summary\": \"1240 business miles in Jan. 1 - June 30, 2026 at 72.5 cents = $899.00; 85 medical miles in Jan. 1 - June 30, 2026 at 20.5 cents = $17.43; 40 charity miles in July 1 - Dec. 31, 2026 at 14 cents = $5.60. Total $922.03. 2026 has two business rates: 72.5 cents before July 1 and 76 cents from July 1 (Announcement 2026-11).\",\n  \"as_of\": \"2026-11-03\",\n  \"source\": \"https://www.irs.gov/tax-professionals/standard-mileage-rates ; https://www.irs.gov/pub/irs-drop/n-26-10.pdf ; https://www.irs.gov/irb/2026-29_irb\",\n  \"more\": \"https://taxbreakcalc.com/self-employed-set-aside-calculator/?utm_source=mcp&utm_medium=irs-mileage-rate-per-diem-mcp\",\n  \"disclaimer\": \"Rates from IRS and GSA publications. General information, not tax advice.\"\n}"
+   }
+  ],
+  "structuredContent": {
+   "lines": [
+    {
+     "period": "Jan. 1 - June 30, 2026",
+     "purpose": "business",
+     "miles": 1240,
+     "cents_per_mile": 72.5,
+     "amount": 899,
+     "source": "Notice 2026-10, IR-2025-128"
+    },
+    {
+     "period": "Jan. 1 - June 30, 2026",
+     "purpose": "medical",
+     "miles": 85,
+     "cents_per_mile": 20.5,
+     "amount": 17.43,
+     "source": "Notice 2026-10, IR-2025-128"
+    },
+    {
+     "period": "July 1 - Dec. 31, 2026",
+     "purpose": "charity",
+     "miles": 40,
+     "cents_per_mile": 14,
+     "amount": 5.6,
+     "source": "Announcement 2026-11 (IRB 2026-29)"
+    }
+   ],
+   "total_amount": 922.03,
+   "by_purpose": {
+    "business": 899,
+    "medical": 17.43,
+    "charity": 5.6
+   },
+   "depreciation_basis_reduction": {
+    "2026": {
+     "business_miles": 1240,
+     "cents_per_mile": 35,
+     "basis_reduction": 434
+    }
+   },
+   "notes": [
+    "Employees cannot deduct unreimbursed business mileage as an itemized deduction (made permanent by the One, Big, Beautiful Bill Act); self-employed people deduct it on Schedule C, and employers can reimburse it tax-free at these rates.",
+    "Medical mileage counts toward itemized medical expenses, deductible only above 7.5% of AGI.",
+    "2026 has two business rates: 72.5 cents before July 1 and 76 cents from July 1 (Announcement 2026-11)."
+   ],
+   "summary": "1240 business miles in Jan. 1 - June 30, 2026 at 72.5 cents = $899.00; 85 medical miles in Jan. 1 - June 30, 2026 at 20.5 cents = $17.43; 40 charity miles in July 1 - Dec. 31, 2026 at 14 cents = $5.60. Total $922.03. 2026 has two business rates: 72.5 cents before July 1 and 76 cents from July 1 (Announcement 2026-11).",
+   "as_of": "2026-11-03",
+   "source": "https://www.irs.gov/tax-professionals/standard-mileage-rates ; https://www.irs.gov/pub/irs-drop/n-26-10.pdf ; https://www.irs.gov/irb/2026-29_irb",
+   "more": "https://taxbreakcalc.com/self-employed-set-aside-calculator/?utm_source=mcp&utm_medium=irs-mileage-rate-per-diem-mcp",
+   "disclaimer": "Rates from IRS and GSA publications. General information, not tax advice."
+  }
+ },
+ "jsonrpc": "2.0",
+ "id": 2
+}

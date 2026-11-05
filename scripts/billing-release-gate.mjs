@@ -8,7 +8,7 @@ import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from "
 import { homedir } from "node:os";
 import { fileURLToPath } from "node:url";
 import { dirname, join, resolve } from "node:path";
-import { PRODUCTS, PRODUCT_ALIASES } from "../billing/src/index.js";
+import { PRODUCTS, PRODUCT_ALIASES, SERVICES, SERVICE_REDIRECTS } from "../billing/src/index.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const BILLING = join(ROOT, "billing");
@@ -95,7 +95,8 @@ export function assertIntentResponse(status, headers, body, path) {
 }
 
 export async function probeBuyPages(fetcher = fetch) {
-  const paths = [...Object.keys(PRODUCTS), ...Object.keys(PRODUCT_ALIASES)].map((id) => `/buy/${encodeURIComponent(id)}`);
+  // A retired service id (SERVICE_REDIRECTS) must 301 to its replacement instead of selling.
+  const paths = [...Object.keys(PRODUCTS), ...Object.keys(SERVICES).filter((id) => !Object.hasOwn(SERVICE_REDIRECTS, id)), ...Object.keys(PRODUCT_ALIASES)].map((id) => `/buy/${encodeURIComponent(id)}`);
   // The former cancel/resume GET path is included: it must never call Stripe.
   paths.push("/buy/bundle?session_id=cs_live_release_gate_sentinel");
   paths.push("/buy/bundle?src=release.gate.probe");
@@ -111,7 +112,17 @@ export async function probeBuyPages(fetcher = fetch) {
     const body = await response.text();
     assertIntentResponse(response.status, response.headers, body, path);
   }
-  return paths.length;
+  for (const [from, to] of Object.entries(SERVICE_REDIRECTS)) {
+    const path = `/buy/${from}?src=release.gate.probe`;
+    const response = await fetcher(`${ORIGIN}${path}`, { method: "GET", redirect: "manual", cache: "no-store",
+      headers: { "user-agent": "Mozilla/5.0 release-gate browser navigation", accept: "text/html", "sec-fetch-mode": "navigate", "x-mcp-probe": "1" } });
+    await response.text();
+    const want = `${ORIGIN}/buy/${to}?src=release.gate.probe`;
+    if (response.status !== 301 || response.headers.get("location") !== want) {
+      throw new Error(`GET ${path} did not 301 to ${want} (HTTP ${response.status}, location=${response.headers.get("location")})`);
+    }
+  }
+  return paths.length + Object.keys(SERVICE_REDIRECTS).length;
 }
 
 async function verify(expectedVersion) {

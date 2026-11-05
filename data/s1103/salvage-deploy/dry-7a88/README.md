@@ -1,0 +1,1 @@
+This folder contains the built output assets for the worker "mcp-billing" generated at 2026-11-03T08:21:58.119Z.

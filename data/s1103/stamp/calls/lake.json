@@ -1,0 +1,47 @@
+{
+ "result": {
+  "content": [
+   {
+    "type": "text",
+    "text": "Lake Travis (TX) is at 677.09 ft above sea level per the USGS gauge, measured 2026-11-03T01:45:00-06:00. That is 3.91 ft below full pool (681.0 ft). Change: -0.04 ft in 24 h, -0.05 ft in 7 days, -0.72 ft in 30 days.\n\n{\n  \"lake\": {\n    \"slug\": \"lake-travis\",\n    \"name\": \"Lake Travis\",\n    \"state\": \"TX\",\n    \"river\": \"Colorado River\",\n    \"operator\": \"LCRA (Mansfield Dam)\"\n  },\n  \"elevation_ft\": 677.09,\n  \"measured_at\": \"2026-11-03T01:45:00-06:00\",\n  \"age_hours\": 0.2,\n  \"fresh\": true,\n  \"change_ft\": {\n    \"h24\": -0.04,\n    \"d7\": -0.05,\n    \"d30\": -0.72\n  },\n  \"full_pool_ft\": 681,\n  \"ft_below_full_pool\": 3.91,\n  \"seasonal_target\": null,\n  \"storage_af\": null,\n  \"pct_full\": null,\n  \"pct_full_basis\": null,\n  \"gauge\": {\n    \"agency\": \"USGS\",\n    \"id\": \"08154500\",\n    \"parameter\": \"00062 reservoir elevation\",\n    \"data_url\": \"https://waterservices.usgs.gov/nwis/iv/?format=rdb&sites=08154500&parameterCd=62614,00062&siteStatus=all&period=P31D\"\n  },\n  \"as_of\": \"2026-11-03T07:58:43.217Z\",\n  \"source\": \"https://waterdata.usgs.gov/monitoring-location/USGS-08154500/\",\n  \"more\": \"https://lakelevelnow.com/lake/lake-travis/?utm_source=mcp&utm_medium=lake-level-mcp\",\n  \"almanac\": null,\n  \"summary\": \"Lake Travis (TX) is at 677.09 ft above sea level per the USGS gauge, measured 2026-11-03T01:45:00-06:00. That is 3.91 ft below full pool (681.0 ft). Change: -0.04 ft in 24 h, -0.05 ft in 7 days, -0.72 ft in 30 days.\"\n}"
+   }
+  ],
+  "structuredContent": {
+   "lake": {
+    "slug": "lake-travis",
+    "name": "Lake Travis",
+    "state": "TX",
+    "river": "Colorado River",
+    "operator": "LCRA (Mansfield Dam)"
+   },
+   "elevation_ft": 677.09,
+   "measured_at": "2026-11-03T01:45:00-06:00",
+   "age_hours": 0.2,
+   "fresh": true,
+   "change_ft": {
+    "h24": -0.04,
+    "d7": -0.05,
+    "d30": -0.72
+   },
+   "full_pool_ft": 681,
+   "ft_below_full_pool": 3.91,
+   "seasonal_target": null,
+   "storage_af": null,
+   "pct_full": null,
+   "pct_full_basis": null,
+   "gauge": {
+    "agency": "USGS",
+    "id": "08154500",
+    "parameter": "00062 reservoir elevation",
+    "data_url": "https://waterservices.usgs.gov/nwis/iv/?format=rdb&sites=08154500&parameterCd=62614,00062&siteStatus=all&period=P31D"
+   },
+   "as_of": "2026-11-03T07:58:43.217Z",
+   "source": "https://waterdata.usgs.gov/monitoring-location/USGS-08154500/",
+   "more": "https://lakelevelnow.com/lake/lake-travis/?utm_source=mcp&utm_medium=lake-level-mcp",
+   "almanac": null,
+   "summary": "Lake Travis (TX) is at 677.09 ft above sea level per the USGS gauge, measured 2026-11-03T01:45:00-06:00. That is 3.91 ft below full pool (681.0 ft). Change: -0.04 ft in 24 h, -0.05 ft in 7 days, -0.72 ft in 30 days."
+  }
+ },
+ "jsonrpc": "2.0",
+ "id": 2
+}

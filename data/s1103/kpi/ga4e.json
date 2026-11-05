@@ -1,0 +1,302 @@
+{
+ "properties/521066195": {
+  "name": "zovo.one",
+  "timeZone": "America/Los_Angeles",
+  "streams": [
+   [
+    "zovo.one - web",
+    "https://zovo.one"
+   ]
+  ]
+ },
+ "properties/539256904": {
+  "name": "belikenative.com (archive until 2026-09-05)",
+  "timeZone": "America/Los_Angeles",
+  "streams": [
+   [
+    "belikenative.com - web (retired 2026-09-05)",
+    "https://wwww.belikenative.com"
+   ]
+  ]
+ },
+ "properties/552914491": {
+  "name": "belikenative.com",
+  "timeZone": "Asia/Saigon",
+  "streams": [
+   [
+    "belikenative.com - web",
+    "https://belikenative.com"
+   ]
+  ]
+ },
+ "properties/555961920": {
+  "name": "ml0x.com",
+  "timeZone": "Europe/Warsaw",
+  "streams": [
+   [
+    "ml0x.com - web",
+    "https://ml0x.com"
+   ]
+  ]
+ },
+ "properties/555964379": {
+  "name": "ingredientcalculator.com",
+  "timeZone": "Europe/Warsaw",
+  "streams": [
+   [
+    "ingredientcalculator.com - web",
+    "https://ingredientcalculator.com"
+   ]
+  ]
+ },
+ "properties/555967369": {
+  "name": "kickllm.com",
+  "timeZone": "Europe/Warsaw",
+  "streams": [
+   [
+    "kickllm.com - web",
+    "https://kickllm.com"
+   ]
+  ]
+ },
+ "properties/555968398": {
+  "name": "recipetool.net",
+  "timeZone": "Europe/Warsaw",
+  "streams": [
+   [
+    "recipetool.net - web",
+    "https://recipetool.net"
+   ]
+  ]
+ },
+ "properties/555976683": {
+  "name": "lakelevelnow.com",
+  "timeZone": "Europe/Warsaw",
+  "streams": [
+   [
+    "lakelevelnow.com - web",
+    "https://lakelevelnow.com"
+   ]
+  ]
+ },
+ "properties/555980388": {
+  "name": "toolsthatrank.com",
+  "timeZone": "Europe/Warsaw",
+  "streams": [
+   [
+    "toolsthatrank.com - web",
+    "https://toolsthatrank.com"
+   ]
+  ]
+ },
+ "properties/555981246": {
+  "name": "handsofflinks.com",
+  "timeZone": "Europe/Warsaw",
+  "streams": [
+   [
+    "handsofflinks.com - web",
+    "https://handsofflinks.com"
+   ]
+  ]
+ },
+ "properties/555981536": {
+  "name": "seeninaianswers.com",
+  "timeZone": "Europe/Warsaw",
+  "streams": [
+   [
+    "seeninaianswers.com - web",
+    "https://seeninaianswers.com"
+   ]
+  ]
+ },
+ "properties/555982609": {
+  "name": "assetloancalculator.com",
+  "timeZone": "Europe/Warsaw",
+  "streams": [
+   [
+    "assetloancalculator.com - web",
+    "https://assetloancalculator.com"
+   ]
+  ]
+ },
+ "properties/555988331": {
+  "name": "claudflow.com",
+  "timeZone": "Europe/Warsaw",
+  "streams": [
+   [
+    "claudflow.com - web",
+    "https://claudflow.com"
+   ]
+  ]
+ },
+ "properties/556001643": {
+  "name": "aiwebsitepipeline.com",
+  "timeZone": "Europe/Warsaw",
+  "streams": [
+   [
+    "aiwebsitepipeline.com - web",
+    "https://aiwebsitepipeline.com"
+   ]
+  ]
+ },
+ "properties/556027513": {
+  "name": "goldgramprice.com",
+  "timeZone": "Europe/Warsaw",
+  "streams": [
+   [
+    "goldgramprice.com - web",
+    "https://goldgramprice.com"
+   ]
+  ]
+ },
+ "properties/556048204": {
+  "name": "earlythunder.com",
+  "timeZone": "Europe/Warsaw",
+  "streams": [
+   [
+    "earlythunder.com - web",
+    "https://earlythunder.com"
+   ]
+  ]
+ },
+ "properties/556091787": {
+  "name": "worthmyclaim.com",
+  "timeZone": "Europe/Warsaw",
+  "streams": [
+   [
+    "worthmyclaim.com - web",
+    "https://worthmyclaim.com"
+   ]
+  ]
+ },
+ "properties/556092989": {
+  "name": "deepvalueradar.com",
+  "timeZone": "Europe/Warsaw",
+  "streams": [
+   [
+    "deepvalueradar.com - web",
+    "https://deepvalueradar.com"
+   ]
+  ]
+ },
+ "properties/556101555": {
+  "name": "statewage.com",
+  "timeZone": "Europe/Warsaw",
+  "streams": [
+   [
+    "statewage.com - web",
+    "https://statewage.com"
+   ]
+  ]
+ },
+ "properties/556120227": {
+  "name": "examscorecalc.com",
+  "timeZone": "Europe/Warsaw",
+  "streams": [
+   [
+    "examscorecalc.com - web",
+    "https://examscorecalc.com"
+   ]
+  ]
+ },
+ "properties/556137338": {
+  "name": "heytensor.com",
+  "timeZone": "Europe/Warsaw",
+  "streams": [
+   [
+    "heytensor.com - web",
+    "https://heytensor.com"
+   ]
+  ]
+ },
+ "properties/558248192": {
+  "name": "notemods.com",
+  "timeZone": "Europe/Warsaw",
+  "streams": [
+   [
+    "notemods.com",
+    "https://notemods.com"
+   ]
+  ]
+ },
+ "properties/558358320": {
+  "name": "ToolRoutine",
+  "timeZone": "Europe/Warsaw",
+  "streams": [
+   [
+    "ToolRoutine website",
+    "https://toolroutine.com"
+   ]
+  ]
+ },
+ "properties/558914876": {
+  "name": "Barframe",
+  "timeZone": "Asia/Saigon",
+  "streams": [
+   [
+    "barframe.com",
+    "https://barframe.com"
+   ]
+  ]
+ },
+ "properties/559047514": {
+  "name": "englishlearner.org",
+  "timeZone": "Europe/Warsaw",
+  "streams": [
+   [
+    "englishlearner.org web",
+    "https://englishlearner.org"
+   ]
+  ]
+ },
+ "properties/560467464": {
+  "name": "Axdale",
+  "timeZone": "America/Los_Angeles",
+  "streams": [
+   [
+    "Axdale website",
+    "https://www.axdale.com"
+   ]
+  ]
+ },
+ "properties/561154408": {
+  "name": "addthisbot.com",
+  "timeZone": "Etc/UTC",
+  "streams": [
+   [
+    "addthisbot.com web",
+    "https://addthisbot.com"
+   ]
+  ]
+ },
+ "properties/561638567": {
+  "name": "mcpstamp.com",
+  "timeZone": "Europe/Warsaw",
+  "streams": [
+   [
+    "www.mcpstamp.com",
+    "https://www.mcpstamp.com"
+   ]
+  ]
+ },
+ "properties/556028183": {
+  "name": "makeroll.com",
+  "timeZone": "Europe/Warsaw",
+  "streams": [
+   [
+    "makeroll.com - web",
+    "https://makeroll.com"
+   ]
+  ]
+ },
+ "properties/556530754": {
+  "name": "Zovo extensions (portfolio)",
+  "timeZone": "America/Los_Angeles",
+  "streams": [
+   [
+    "Chrome extensions - Measurement Protocol",
+    "https://zovo.one"
+   ]
+  ]
+ }
+}

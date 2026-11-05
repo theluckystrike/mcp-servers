@@ -1,0 +1,5 @@
+4912KB	/private/tmp/claude-501/-Users-mike/0aae16dd-365c-4bae-b2e8-e3082a9e13f9/scratchpad/raw
+1488KB	/private/tmp/claude-501/-Users-mike/0aae16dd-365c-4bae-b2e8-e3082a9e13f9/scratchpad/gh
+4KB	/private/tmp/claude-501/-Users-mike/0aae16dd-365c-4bae-b2e8-e3082a9e13f9/scratchpad/ctx.py
+4KB	/private/tmp/claude-501/-Users-mike/0aae16dd-365c-4bae-b2e8-e3082a9e13f9/scratchpad/dircheck.sh
+4KB	/private/tmp/claude-501/-Users-mike/0aae16dd-365c-4bae-b2e8-e3082a9e13f9/scratchpad/dircheck.tsv

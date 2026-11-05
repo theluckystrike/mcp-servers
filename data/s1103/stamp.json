@@ -1,0 +1,123 @@
+{
+  "lane": "stamp",
+  "date": "2026-11-03",
+  "phase": "1, 2, 2b and 3 done",
+  "diagnosis": {
+    "indexed_claim_0_of_144": "false alarm. GSC URL Inspection (searchconsole v1 urlInspection/index:inspect, script data/s1103/stamp/gsc_diag.py) on 10 pages: 10/10 verdict PASS 'Submitted and indexed', google canonical = user canonical = www + trailing slash. Sitemap 'indexed' field reads 0 on every property (s1102 kpi.md caveat).",
+    "negative_control": "https://mcpstamp.com/ (apex) = 'URL is unknown to Google' (301 to www, as intended)",
+    "search_analytics_2026-10-01_11-02_dataState_all": {
+      "clicks": 0,
+      "impressions_by_date": 200,
+      "first_impression_day": "2026-10-30",
+      "pages_with_impressions": 48,
+      "queries_visible": 34
+    },
+    "why_0_clicks": "Site is 4 days in the index. Only one page ranks on page 1 with visible queries: /can-claude/read-zip-files/ (52 impr, pos 7.3; 'can claude open zip files' pos 8.5, 'can claude read zips' 8.7, 'can claude unzip files' 8). Expected clicks at pos 8 for ~17 impressions is under 1. Other impressions sit at pos 25-100. No technical blocker found.",
+    "technical_checks": {
+      "robots": "allows all; /api/ disallowed",
+      "redirects": "apex and http 301 to https://www; no-slash 308 to slash",
+      "canonical_noindex": "all sampled pages self-canonical www + slash, meta robots index,follow",
+      "sitemap_hosts": "168 URLs, all www.mcpstamp.com",
+      "homepage_links_free_servers": "yes, /free-servers/ x4 and all 20 /free-servers/<repo>/ pages",
+      "structured_data": "JSON-LD present on all sampled pages",
+      "issues_found": [
+        "9 duplicate server pairs: /servers/<id>/ and /free-servers/<id>-mcp/ describe the same hosted Worker, both indexable and in the sitemap",
+        "server page titles '<Name> for Claude and Cursor' omit 'MCP' although pages.json primary_keyword is '<name> mcp' and visible queries are 'mcp server receipts', 'mcp server tax', 'cursor mcp expense'",
+        "zip page title says 'read' while queries say 'open'/'unzip'",
+        "/readiness/ (1.5 MB) links 600 /check/?url=... URLs; Google crawled them (seen as referring URL), all canonical to /check/",
+        "production host mcp-showcase-preview.pages.dev served pages without noindex (preview hashes already noindex)"
+      ]
+    }
+  },
+  "fixes_ranked": [
+    {
+      "rank": 1,
+      "fix": "Title/H1/meta for the only page-1 page: /can-claude/read-zip-files/ -> 'Can Claude open zip files? Read and unzip them', meta leads with Claude Desktop/Cursor can't unzip without a tool",
+      "status": "deployed"
+    },
+    {
+      "rank": 2,
+      "fix": "58 /servers/<id>/ titles -> '<Name> MCP server for Claude and Cursor'",
+      "status": "deployed"
+    },
+    {
+      "rank": 3,
+      "fix": "9 satellite /servers/<id>/ pages canonical to /free-servers/<id>-mcp/, removed from sitemap (168 -> 159), internal cards/explorer/chips link to free-servers page, visible link added",
+      "status": "deployed"
+    },
+    {
+      "rank": 4,
+      "fix": "robots.txt Disallow: /check/? for all agents",
+      "status": "deployed"
+    },
+    {
+      "rank": 5,
+      "fix": "_headers X-Robots-Tag noindex on https://mcp-showcase-preview.pages.dev/*",
+      "status": "deployed"
+    },
+    {
+      "rank": 6,
+      "fix": "/use-cases/chase-overdue-invoices/ title -> 'Chase overdue invoices automatically from chat' (13 impr, pos 92)",
+      "status": "deployed"
+    }
+  ],
+  "deploy": {
+    "repo_commit": "theluckystrike/mcp-showcase-site 01f62b9 (main, public repo, 1 push)",
+    "work_copy": "~/mcpstamp-work/s1103-stamp/repo",
+    "build": "buildslot npm run build, 169 pages, log data/s1103/stamp/build1.log",
+    "deployment_id": "75a40491-31fa-4064-acd1-8b1ee5afbafc",
+    "previous_production": "6d9ba0c3-f40c-4833-a678-66976413e92f",
+    "rollback": "npx wrangler pages deployment rollback 6d9ba0c3-f40c-4833-a678-66976413e92f --project-name mcp-showcase-preview",
+    "concurrency": "no pages deploy/astro build running; no ~/mcpstamp-work file changed in prior 30 min; s1102m/integ4 (8 unpushed commits, deploy-chain waiting on Stripe login, not running) test-merged cleanly with new main",
+    "live_verified": "curl www: robots has Disallow: /check/?, /servers/lake-level/ canonical -> /free-servers/lake-level-mcp/, /servers/supplier-list/ title updated, zip title updated, sitemap 159 locs, pages.dev x-robots-tag noindex, www no x-robots-tag",
+    "humanize_gate": "scan.py --strict: 171/172 clean; 1 pre-existing hard fail on /terms/ (not touched; integ4 rewrites terms)"
+  },
+  "resubmit": {
+    "gsc_sitemap": "gsc_tool.py submit -> 204; sitemaps list: submitted 159, last 2026-11-03T07:34:03Z",
+    "indexnow": "api.indexnow.org 200 for 80 URLs (data/s1103/stamp/indexnow.urls), key file 3f114dfa81d0f265b50fa7c8024f76df.txt verified live"
+  },
+  "open": [
+    "Re-measure GSC for /can-claude/* and zip page CTR in 7-14 days"
+  ],
+  "owner_unlocks": [],
+  "phase2b_3": {
+    "can_claude_pages": [
+      "/can-claude/",
+      "/can-claude/check-gold-price/",
+      "/can-claude/check-lake-levels/",
+      "/can-claude/look-up-minimum-wage/",
+      "/can-claude/calculate-no-tax-on-overtime/",
+      "/can-claude/adjust-for-inflation/",
+      "/can-claude/look-up-per-diem-rates/",
+      "/can-claude/calculate-mileage-deduction/",
+      "/can-claude/count-business-days/",
+      "/can-claude/look-up-401k-limits/",
+      "/can-claude/check-silver-price/",
+      "/can-claude/check-river-levels/",
+      "/can-claude/look-up-sat-percentiles/"
+    ],
+    "topic_evidence": "GSC 28d query+page (stamp/gsc_q28.json): only page-1 page is the /can-claude/ zip answer; per diem queries (government per diem rates, domestic per diem, per diem rates for business travel) -> per diem page. Other topics: free satellites with live data or post-training rules.",
+    "template": "site/src/components/LiveAnswerPage.astro + src/data/canClaudeLive.ts, data data/content/can-claude-live.json (generator data/s1103/stamp/make_can_claude_live.py). Answer first, Claude alone vs with server, real tools/call result (raw in data/s1103/stamp/calls/), install lines, link to /free-servers/<repo>/, FAQ JSON-LD.",
+    "free_servers_added": [
+      "cpi-inflation-calculator-mcp",
+      "irs-mileage-rate-per-diem-mcp",
+      "silver-price-per-gram-mcp",
+      "river-level-mcp",
+      "sat-score-percentiles-mcp"
+    ],
+    "free_servers_live_count": "25 (curl www.mcpstamp.com/free-servers/: 25 unique /free-servers/<repo>/ links, meta \"25 free MCP servers\")",
+    "internal_links": "home (FreeServerList \"Questions they answer\": 12 links, verified live), /free-servers/ index, each /free-servers/<repo>/ page, footer /can-claude/, /can-claude/ index",
+    "build": "187 pages (stamp/build4.log); humanize --strict: 189/190 clean, only pre-existing /terms/ hard fail (not touched)",
+    "commit": "theluckystrike/mcp-showcase-site 4452a49 (main); s1102m/integ4 test-merge clean",
+    "deployment_id": "4093cc9c-dc8b-46fa-b267-06dd2187a8e9",
+    "previous_production": "75a40491-31fa-4064-acd1-8b1ee5afbafc",
+    "rollback": "npx wrangler pages deployment rollback 75a40491-31fa-4064-acd1-8b1ee5afbafc --project-name mcp-showcase-preview",
+    "live_check": "18/18 new URLs 200; sitemap 177 locs",
+    "indexnow": "200 for 21 URLs (stamp/indexnow2.urls)",
+    "gsc_sitemap": "204; submitted 177, last 2026-11-03T08:07:26Z",
+    "issues_for_orchestrator": [
+      "cpi-inflation-calculator-mcp: keyless BLS API hit daily threshold on 2026-11-03, answers fall back to bundled data through Sep 2026 (OWNER UNLOCK in its json: BLS key)",
+      "retirement-contribution-limits-2027-mcp rejects plan \"hsa\" (needs hsa_self/hsa_family); fine but tool description could say so"
+    ]
+  }
+}

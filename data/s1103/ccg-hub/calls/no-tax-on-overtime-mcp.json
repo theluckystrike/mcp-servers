@@ -1,0 +1,48 @@
+{
+ "result": {
+  "content": [
+   {
+    "type": "text",
+    "text": "Qualified overtime premium $3,600. After the $12,500 cap: $3,600. MAGI $68,000 is not above the $150,000 threshold, so there is no phase-out. Deduction for 2025: $3,600. Only the FLSA premium (the \"half\" in time-and-a-half) qualifies, not the straight-time part or any extra premium.\n\nThis is an estimate, not tax advice. Check the IRS instructions for Schedule 1-A or ask a tax professional before you file."
+   },
+   {
+    "type": "text",
+    "text": "{\n  \"eligible\": true,\n  \"filing_status\": \"single\",\n  \"tax_year\": 2025,\n  \"magi\": 68000,\n  \"qualified_overtime\": 3600,\n  \"method\": \"hourly_rate_x_hours\",\n  \"regular_rate\": 24,\n  \"overtime_hours\": 300,\n  \"multiplier\": 1.5,\n  \"total_overtime_pay\": 10800,\n  \"non_qualifying_pay\": 7200,\n  \"explanation\": \"Qualified premium = regular rate 24 x 300 overtime hours x 0.5 (the FLSA half-time premium). The straight-time part of overtime pay and any premium above time-and-a-half do not qualify.\",\n  \"cap\": 12500,\n  \"amount_after_cap\": 3600,\n  \"phaseout\": {\n    \"threshold\": 150000,\n    \"excess_magi\": 0,\n    \"reduction_steps\": 0,\n    \"reduction\": 0\n  },\n  \"deduction\": 3600,\n  \"notes\": [\n    \"For 2025 the employer did not have to report the amount separately; Notice 2025-69 lets you use a reasonable method such as the one used here.\",\n    \"The deduction lowers federal income tax only. Social security and Medicare tax still apply to overtime pay.\"\n  ],\n  \"summary\": \"Qualified overtime premium $3,600. After the $12,500 cap: $3,600. MAGI $68,000 is not above the $150,000 threshold, so there is no phase-out. Deduction for 2025: $3,600. Only the FLSA premium (the \\\"half\\\" in time-and-a-half) qualifies, not the straight-time part or any extra premium.\",\n  \"as_of\": \"2026-10-30\",\n  \"source\": \"https://www.irs.gov/pub/irs-pdf/f1040s1a.pdf ; https://www.irs.gov/pub/taxpros/fs-2026-13.pdf\",\n  \"more\": \"https://noovertimetax.com/?utm_source=mcp&utm_medium=no-tax-on-overtime-mcp\",\n  \"disclaimer\": \"This is an estimate, not tax advice. Check the IRS instructions for Schedule 1-A or ask a tax professional before you file.\"\n}"
+   }
+  ],
+  "structuredContent": {
+   "eligible": true,
+   "filing_status": "single",
+   "tax_year": 2025,
+   "magi": 68000,
+   "qualified_overtime": 3600,
+   "method": "hourly_rate_x_hours",
+   "regular_rate": 24,
+   "overtime_hours": 300,
+   "multiplier": 1.5,
+   "total_overtime_pay": 10800,
+   "non_qualifying_pay": 7200,
+   "explanation": "Qualified premium = regular rate 24 x 300 overtime hours x 0.5 (the FLSA half-time premium). The straight-time part of overtime pay and any premium above time-and-a-half do not qualify.",
+   "cap": 12500,
+   "amount_after_cap": 3600,
+   "phaseout": {
+    "threshold": 150000,
+    "excess_magi": 0,
+    "reduction_steps": 0,
+    "reduction": 0
+   },
+   "deduction": 3600,
+   "notes": [
+    "For 2025 the employer did not have to report the amount separately; Notice 2025-69 lets you use a reasonable method such as the one used here.",
+    "The deduction lowers federal income tax only. Social security and Medicare tax still apply to overtime pay."
+   ],
+   "summary": "Qualified overtime premium $3,600. After the $12,500 cap: $3,600. MAGI $68,000 is not above the $150,000 threshold, so there is no phase-out. Deduction for 2025: $3,600. Only the FLSA premium (the \"half\" in time-and-a-half) qualifies, not the straight-time part or any extra premium.",
+   "as_of": "2026-10-30",
+   "source": "https://www.irs.gov/pub/irs-pdf/f1040s1a.pdf ; https://www.irs.gov/pub/taxpros/fs-2026-13.pdf",
+   "more": "https://noovertimetax.com/?utm_source=mcp&utm_medium=no-tax-on-overtime-mcp",
+   "disclaimer": "This is an estimate, not tax advice. Check the IRS instructions for Schedule 1-A or ask a tax professional before you file."
+  }
+ },
+ "jsonrpc": "2.0",
+ "id": 2
+}

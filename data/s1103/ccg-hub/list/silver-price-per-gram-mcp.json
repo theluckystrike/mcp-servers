@@ -1,0 +1,216 @@
+{
+ "result": {
+  "tools": [
+   {
+    "name": "get_silver_price_per_gram",
+    "title": "Get silver price per gram",
+    "description": "Today's silver price per gram, per troy ounce, per kilogram and per tola, read live from the silver spot market, for fine .999, Britannia .9584, sterling .925, coin .900 and 800 silver, in any of about 160 currencies (central-bank FX). Returns the spot time stamp, FX date and sources. Your training data cannot know today's silver price. Omit fineness to get every grade.",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "currency": {
+       "type": "string",
+       "minLength": 3,
+       "maxLength": 3,
+       "default": "USD",
+       "description": "ISO 4217 currency code, for example USD, EUR, GBP, INR, CAD, AUD, MXN. Default USD."
+      },
+      "fineness": {
+       "anyOf": [
+        {
+         "type": "number",
+         "exclusiveMinimum": 0,
+         "maximum": 1000
+        },
+        {
+         "type": "string",
+         "minLength": 1,
+         "maxLength": 20
+        }
+       ],
+       "description": "Silver grade: \"fine\" (999), \"britannia\" (958.4), \"sterling\" (925), \"coin\" (900), \"800\", or parts per thousand such as 925, or a fraction such as 0.925."
+      }
+     },
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "title": "Silver price per gram",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": true
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "calculate_silver_value",
+    "title": "Calculate silver melt value",
+    "description": "Melt value of a silver item (sterling flatware, tea set, jewellery, bar, round, scrap) from its weight, unit and fineness at the live silver spot price, in any currency. Optional dealer_spread_percent returns the likely buyer offer. Sterling means at least 925/1000 silver under 16 CFR 23.5. Default fineness is sterling.",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "weight": {
+       "type": "number",
+       "exclusiveMinimum": 0,
+       "maximum": 10000000,
+       "description": "Weight of the item, for example 250."
+      },
+      "unit": {
+       "type": "string",
+       "minLength": 1,
+       "maxLength": 30,
+       "description": "Weight unit: gram, kilogram, troy_ounce, pennyweight, grain, avoirdupois_ounce, pound, troy_pound, tola. Aliases such as g, kg, oz, ozt, dwt, lb work. \"oz\" means troy ounce; use avoirdupois_ounce for a kitchen scale.",
+       "default": "gram"
+      },
+      "fineness": {
+       "anyOf": [
+        {
+         "type": "number",
+         "exclusiveMinimum": 0,
+         "maximum": 1000
+        },
+        {
+         "type": "string",
+         "minLength": 1,
+         "maxLength": 20
+        }
+       ],
+       "description": "Silver grade: \"fine\" (999), \"britannia\" (958.4), \"sterling\" (925), \"coin\" (900), \"800\", or parts per thousand such as 925, or a fraction such as 0.925.",
+       "default": "sterling"
+      },
+      "currency": {
+       "type": "string",
+       "minLength": 3,
+       "maxLength": 3,
+       "default": "USD",
+       "description": "ISO 4217 currency code, for example USD, EUR, GBP, INR, CAD, AUD, MXN. Default USD."
+      },
+      "dealer_spread_percent": {
+       "type": "number",
+       "minimum": 0,
+       "maximum": 99,
+       "description": "Percent a buyer keeps below melt, for example 15 for an offer at 85% of melt. Default 0."
+      }
+     },
+     "required": [
+      "weight"
+     ],
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "title": "Silver melt value",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": true
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "calculate_junk_silver_value",
+    "title": "Calculate junk silver coin value",
+    "description": "Melt value of US silver coins at the live silver spot: pre-1965 90% dimes, quarters and halves, 1965-1970 40% Kennedy halves (4.6 g silver, Coinage Act of 1965), 1942-1945 35% war nickels, Morgan and Peace dollars and American Silver Eagles. Pass coins with counts, or face_value_90 for a bag of mixed 90% coin (1 dollar face = 22.5 g silver). Returns silver ounces per coin, totals and melt per dollar face.",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "coins": {
+       "type": "array",
+       "items": {
+        "type": "object",
+        "properties": {
+         "coin": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 40,
+          "description": "Coin key: dime_90, quarter_90, half_90, kennedy_40, war_nickel, dollar_90, silver_eagle. Aliases such as dime, quarter, half, kennedy, morgan, eagle work."
+         },
+         "count": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10000000,
+          "description": "Number of coins."
+         }
+        },
+        "required": [
+         "coin",
+         "count"
+        ],
+        "additionalProperties": false
+       },
+       "maxItems": 20,
+       "description": "Coins and counts, for example [{\"coin\":\"quarter_90\",\"count\":40},{\"coin\":\"morgan\",\"count\":3}]."
+      },
+      "face_value_90": {
+       "type": "number",
+       "exclusiveMinimum": 0,
+       "maximum": 10000000,
+       "description": "Dollars of face value in mixed pre-1965 90% dimes, quarters and halves, for example 10."
+      },
+      "currency": {
+       "type": "string",
+       "minLength": 3,
+       "maxLength": 3,
+       "default": "USD",
+       "description": "ISO 4217 currency code, for example USD, EUR, GBP, INR, CAD, AUD, MXN. Default USD."
+      },
+      "dealer_spread_percent": {
+       "type": "number",
+       "minimum": 0,
+       "maximum": 99,
+       "description": "Percent a buyer keeps below melt, for example 15 for an offer at 85% of melt. Default 0."
+      }
+     },
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "title": "Junk silver value",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": true
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "get_gold_silver_ratio",
+    "title": "Get gold to silver ratio",
+    "description": "Live gold to silver ratio (ounces of silver one ounce of gold buys), with both spot prices per troy ounce and per gram in any currency. Read now from the spot feed; the ratio moves every minute.",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "currency": {
+       "type": "string",
+       "minLength": 3,
+       "maxLength": 3,
+       "default": "USD",
+       "description": "ISO 4217 currency code, for example USD, EUR, GBP, INR, CAD, AUD, MXN. Default USD."
+      }
+     },
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "title": "Gold silver ratio",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": true
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   }
+  ]
+ },
+ "jsonrpc": "2.0",
+ "id": 2
+}

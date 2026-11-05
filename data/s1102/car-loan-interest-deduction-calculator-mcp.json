@@ -1,0 +1,638 @@
+{
+  "repo": "car-loan-interest-deduction-calculator-mcp",
+  "repo_url": "https://github.com/theluckystrike/car-loan-interest-deduction-calculator-mcp",
+  "hosted_url": "https://car-loan-interest-deduction-calculator-mcp.lipmichal.workers.dev/mcp",
+  "worker_version_id": "1692d796-c0d6-4bde-84a3-40fb79bd969f",
+  "rollback": "npx wrangler delete --name car-loan-interest-deduction-calculator-mcp (brand-new worker, versions list shows 1 version)",
+  "registry_name": "io.github.theluckystrike/car-loan-interest-deduction-calculator-mcp",
+  "registry_visible": true,
+  "registry_check": "curl -s 'https://registry.modelcontextprotocol.io/v0/servers?search=car-loan-interest-deduction' -> io.github.theluckystrike/car-loan-interest-deduction-calculator-mcp 1.0.0",
+  "tools": [
+    "calculate_car_loan_interest_deduction",
+    "calculate_salt_deduction",
+    "get_tax_brackets_and_standard_deduction",
+    "calculate_child_tax_credit"
+  ],
+  "fixtures": 26,
+  "tests_passed": "26/26 (node --test test/*.test.mjs)",
+  "live_calls_ok": {
+    "calculate_car_loan_interest_deduction": true,
+    "calculate_salt_deduction": true,
+    "get_tax_brackets_and_standard_deduction": true,
+    "calculate_child_tax_credit": true
+  },
+  "live_check": "node data/s1102/build-tax/smoke.mjs http calls-*.json against the URL grepped from README.md, no token; each result checked for !isError, structuredContent.source, as_of and more containing utm_source=mcp; GET / 200",
+  "npx_github_ok": true,
+  "npx_check": "from an empty mktemp dir: npx -y github:theluckystrike/car-loan-interest-deduction-calculator-mcp answered initialize, tools/list (4) and 4/4 tools/call",
+  "stdio_local_ok": "initialize + tools/list + 4/4 tools/call OK (node dist/stdio.js)",
+  "npm_ready": true,
+  "npm_published": false,
+  "pushes": 2,
+  "repo_public": true,
+  "topics": 14,
+  "sources": [
+    "https://www.irs.gov/pub/irs-pdf/f1040s1a.pdf (Schedule 1-A 2025, Part IV lines 22-30, fetched 2026-11-02)",
+    "https://www.irs.gov/pub/irs-pdf/i1040gi.pdf (2025 Form 1040 instructions, Schedule 1-A Part IV and standard deduction, fetched 2026-11-02)",
+    "https://www.irs.gov/pub/irs-drop/n-25-57.pdf (Notice 2025-57, fetched 2026-11-02)",
+    "https://www.irs.gov/pub/irs-pdf/i1040sca.pdf (2025 Schedule A instructions, SALT worksheet, fetched 2026-11-02)",
+    "https://www.irs.gov/pub/irs-dft/f1040sa--dft.pdf (2026 draft Schedule A line 5e: $40,400 / $505,000, fetched 2026-11-02)",
+    "https://www.law.cornell.edu/uscode/text/26/164 (IRC 164(b)(7) statute text for 2027-2030 steps, fetched 2026-11-02; uscode.house.gov returned 404)",
+    "https://www.irs.gov/pub/irs-drop/rp-24-40.pdf (2025 brackets, fetched 2026-11-02)",
+    "https://www.irs.gov/pub/irs-drop/rp-25-32.pdf (2026 brackets 4.01, CTC 4.05, standard deduction 4.14, fetched 2026-11-02)",
+    "https://www.irs.gov/pub/irs-pdf/f1040s8.pdf and https://www.irs.gov/pub/irs-pdf/i1040s8.pdf (2025 Schedule 8812 and instructions, fetched 2026-11-02)",
+    "https://www.irs.gov/irb and https://www.irs.gov/pub/irs-drop/rp-26-NN.pdf probes (2027 check, 2026-11-02)"
+  ],
+  "money_site": "https://taxbreakcalc.com",
+  "open_issues": [
+    "SALT 2027-2029 caps/thresholds are computed from IRC 164(b)(7) (101% of prior year, no rounding rule in the statute); the IRS has not printed them, flagged irs_published_amounts:false in results.",
+    "Not built from the scout list: check_state_overtime_tax (state overtime table) - no IRS source and it overlaps no-tax-on-overtime-mcp; left out per lane brief (no overtime/tips/senior duplication).",
+    "Child tax credit tool omits the Schedule 8812 lines 21-26 alternative (3+ children, SS/Medicare tax); stated in README and result notes.",
+    "Money site check not done in depth: taxbreakcalc.com car-loan page phase-out ladder (zero at $149,001 single, $249,001 joint, $200 steps) agrees with the server; other pages not compared.",
+    "npm: not published (orchestrator batches npm with owner 2FA). package.json is npm-ready: name = repo name (npm view returns E404, control no-tax-on-overtime-mcp resolves), bin dist/stdio.js with shebang, files [dist, README.md, LICENSE, DATA_SOURCES.md], mcpName, keywords include mcp, mcp-server, model-context-protocol, claude. `npm pack --dry-run` lists 9 files including dist/stdio.js. After npm publish, README install lines can switch from github: to the npm name.",
+    "2027: no 2027 inflation Rev. Proc. on 2026-11-02 (rp-26-35..50 all 404 with control rp-25-32 200; IRB 2026-41..44 list Rev. Proc. 2026-14/20/25/29/31 only; Sept and current-month IRS news lists have no 2027 inflation release). Tools return a clear not-published message for 2027; add the year to core.ts tables when it appears (expected Oct-Nov).",
+    "Glama listing not submitted (glama.json is in the repo)."
+  ],
+  "minutes": 18,
+  "live_raw_responses": {
+    "call_calculate_car_loan_interest_deduction.json": {
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Interest counted $3,200, $3,200 after the $10,000 cap. MAGI $110,000 is $10,000 over the $100,000 threshold: 10 step(s) of $200 remove $2,000. Car loan interest deduction for 2026: $1,200. At a 22% rate that saves about $264 of federal income tax. Assumed: the gross vehicle weight rating is under 14,000 pounds; the loan is secured by a first lien on the vehicle.\n\nThis is an estimate, not tax advice. Check the IRS instructions or ask a tax professional before you file."
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"eligible\": true,\n  \"failed_requirements\": [],\n  \"assumed_requirements\": [\n    \"the gross vehicle weight rating is under 14,000 pounds\",\n    \"the loan is secured by a first lien on the vehicle\"\n  ],\n  \"filing_status\": \"single\",\n  \"tax_year\": 2026,\n  \"magi\": 110000,\n  \"interest_paid\": 3200,\n  \"interest_deducted_elsewhere\": 0,\n  \"interest_counted\": 3200,\n  \"cap\": 10000,\n  \"amount_after_cap\": 3200,\n  \"phaseout\": {\n    \"threshold\": 100000,\n    \"excess_magi\": 10000,\n    \"steps\": 10,\n    \"reduction\": 2000,\n    \"rule\": \"$200 for each $1,000 (or part of $1,000) of MAGI over the threshold\"\n  },\n  \"deduction\": 1200,\n  \"deduction_reaches_zero_at_magi\": 149001,\n  \"estimated_tax_saving\": 264,\n  \"schedule_1a_lines\": {\n    \"line23\": 3200,\n    \"line24\": 3200,\n    \"line25_magi\": 110000,\n    \"line26_threshold\": 100000,\n    \"line28_steps\": 10,\n    \"line29_reduction\": 2000,\n    \"line30_deduction\": 1200\n  },\n  \"notes\": [\n    \"You can claim it whether you itemize or take the standard deduction (Schedule 1-A Part IV).\",\n    \"You must enter the vehicle identification number (VIN) on the return.\",\n    \"Married filing separately can claim it; the threshold is $100,000 for every status except married filing jointly.\",\n    \"Interest on negative equity rolled in from a trade-in, insurance or a trailer does not count. Service plans, extended warranties, sales tax and vehicle fees financed with the purchase do.\",\n    \"A refinanced loan keeps qualifying up to the balance refinanced if it stays secured by a first lien on the same vehicle.\"\n  ],\n  \"summary\": \"Interest counted $3,200, $3,200 after the $10,000 cap. MAGI $110,000 is $10,000 over the $100,000 threshold: 10 step(s) of $200 remove $2,000. Car loan interest deduction for 2026: $1,200. At a 22% rate that saves about $264 of federal income tax. Assumed: the gross vehicle weight rating is under 14,000 pounds; the loan is secured by a first lien on the vehicle.\",\n  \"as_of\": \"2026-11-02\",\n  \"source\": \"https://www.irs.gov/pub/irs-pdf/f1040s1a.pdf ; https://www.irs.gov/pub/irs-pdf/i1040gi.pdf ; https://www.irs.gov/pub/irs-drop/n-25-57.pdf\",\n  \"more\": \"https://taxbreakcalc.com/car-loan-interest-calculator/?utm_source=mcp&utm_medium=car-loan-interest-deduction-calculator-mcp\",\n  \"disclaimer\": \"This is an estimate, not tax advice. Check the IRS instructions or ask a tax professional before you file.\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "eligible": true,
+          "failed_requirements": [],
+          "assumed_requirements": [
+            "the gross vehicle weight rating is under 14,000 pounds",
+            "the loan is secured by a first lien on the vehicle"
+          ],
+          "filing_status": "single",
+          "tax_year": 2026,
+          "magi": 110000,
+          "interest_paid": 3200,
+          "interest_deducted_elsewhere": 0,
+          "interest_counted": 3200,
+          "cap": 10000,
+          "amount_after_cap": 3200,
+          "phaseout": {
+            "threshold": 100000,
+            "excess_magi": 10000,
+            "steps": 10,
+            "reduction": 2000,
+            "rule": "$200 for each $1,000 (or part of $1,000) of MAGI over the threshold"
+          },
+          "deduction": 1200,
+          "deduction_reaches_zero_at_magi": 149001,
+          "estimated_tax_saving": 264,
+          "schedule_1a_lines": {
+            "line23": 3200,
+            "line24": 3200,
+            "line25_magi": 110000,
+            "line26_threshold": 100000,
+            "line28_steps": 10,
+            "line29_reduction": 2000,
+            "line30_deduction": 1200
+          },
+          "notes": [
+            "You can claim it whether you itemize or take the standard deduction (Schedule 1-A Part IV).",
+            "You must enter the vehicle identification number (VIN) on the return.",
+            "Married filing separately can claim it; the threshold is $100,000 for every status except married filing jointly.",
+            "Interest on negative equity rolled in from a trade-in, insurance or a trailer does not count. Service plans, extended warranties, sales tax and vehicle fees financed with the purchase do.",
+            "A refinanced loan keeps qualifying up to the balance refinanced if it stays secured by a first lien on the same vehicle."
+          ],
+          "summary": "Interest counted $3,200, $3,200 after the $10,000 cap. MAGI $110,000 is $10,000 over the $100,000 threshold: 10 step(s) of $200 remove $2,000. Car loan interest deduction for 2026: $1,200. At a 22% rate that saves about $264 of federal income tax. Assumed: the gross vehicle weight rating is under 14,000 pounds; the loan is secured by a first lien on the vehicle.",
+          "as_of": "2026-11-02",
+          "source": "https://www.irs.gov/pub/irs-pdf/f1040s1a.pdf ; https://www.irs.gov/pub/irs-pdf/i1040gi.pdf ; https://www.irs.gov/pub/irs-drop/n-25-57.pdf",
+          "more": "https://taxbreakcalc.com/car-loan-interest-calculator/?utm_source=mcp&utm_medium=car-loan-interest-deduction-calculator-mcp",
+          "disclaimer": "This is an estimate, not tax advice. Check the IRS instructions or ask a tax professional before you file."
+        }
+      },
+      "jsonrpc": "2.0",
+      "id": 10
+    },
+    "call_calculate_child_tax_credit.json": {
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Credit before phase-out $4,400 (2 child(ren) x $2,200). MAGI over $400,000 cuts it by $550. Nonrefundable credit $3,850, refundable additional child tax credit $0, total $3,850 for 2026.\n\nThis is an estimate, not tax advice. Check the IRS instructions or ask a tax professional before you file."
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"filing_status\": \"married_filing_jointly\",\n  \"tax_year\": 2026,\n  \"magi\": 410500,\n  \"qualifying_children\": 2,\n  \"other_dependents\": 0,\n  \"credit_per_child\": 2200,\n  \"refundable_limit_per_child\": 1700,\n  \"credit_before_phaseout\": 4400,\n  \"phaseout\": {\n    \"threshold\": 400000,\n    \"excess_rounded_up\": 11000,\n    \"reduction\": 550,\n    \"rule\": \"5% of MAGI over the threshold, with the excess rounded up to the next $1,000\"\n  },\n  \"credit_after_phaseout\": 3850,\n  \"tax_liability_used\": 50000,\n  \"tax_liability_is_estimate\": false,\n  \"nonrefundable_credit\": 3850,\n  \"additional_child_tax_credit\": 0,\n  \"total_benefit\": 3850,\n  \"unused_credit\": 0,\n  \"earned_income_used\": 410500,\n  \"schedule_8812_lines\": {\n    \"line5\": 4400,\n    \"line7\": 0,\n    \"line8\": 4400,\n    \"line9\": 400000,\n    \"line10\": 11000,\n    \"line11\": 550,\n    \"line12\": 3850,\n    \"line14\": 3850,\n    \"line16a\": 0,\n    \"line16b\": 3400,\n    \"line17\": 0,\n    \"line20\": 61200,\n    \"line27\": 0\n  },\n  \"notes\": [\n    \"Each qualifying child must be under 17 at the end of the year and have an SSN valid for employment issued by the return due date. From 2025 the taxpayer (or at least one spouse on a joint return) also needs a valid SSN.\",\n    \"The $500 credit for other dependents is not refundable.\",\n    \"The refundable part uses 15% of earned income over $2,500. The alternative for three or more children based on social security and Medicare tax (Schedule 8812 lines 21-26) is not modeled.\"\n  ],\n  \"summary\": \"Credit before phase-out $4,400 (2 child(ren) x $2,200). MAGI over $400,000 cuts it by $550. Nonrefundable credit $3,850, refundable additional child tax credit $0, total $3,850 for 2026.\",\n  \"as_of\": \"2026-11-02\",\n  \"source\": \"https://www.irs.gov/pub/irs-drop/rp-25-32.pdf ; https://www.irs.gov/pub/irs-pdf/i1040s8.pdf\",\n  \"more\": \"https://taxbreakcalc.com/how-much-is-the-child-tax-credit-worth/?utm_source=mcp&utm_medium=car-loan-interest-deduction-calculator-mcp\",\n  \"disclaimer\": \"This is an estimate, not tax advice. Check the IRS instructions or ask a tax professional before you file.\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "filing_status": "married_filing_jointly",
+          "tax_year": 2026,
+          "magi": 410500,
+          "qualifying_children": 2,
+          "other_dependents": 0,
+          "credit_per_child": 2200,
+          "refundable_limit_per_child": 1700,
+          "credit_before_phaseout": 4400,
+          "phaseout": {
+            "threshold": 400000,
+            "excess_rounded_up": 11000,
+            "reduction": 550,
+            "rule": "5% of MAGI over the threshold, with the excess rounded up to the next $1,000"
+          },
+          "credit_after_phaseout": 3850,
+          "tax_liability_used": 50000,
+          "tax_liability_is_estimate": false,
+          "nonrefundable_credit": 3850,
+          "additional_child_tax_credit": 0,
+          "total_benefit": 3850,
+          "unused_credit": 0,
+          "earned_income_used": 410500,
+          "schedule_8812_lines": {
+            "line5": 4400,
+            "line7": 0,
+            "line8": 4400,
+            "line9": 400000,
+            "line10": 11000,
+            "line11": 550,
+            "line12": 3850,
+            "line14": 3850,
+            "line16a": 0,
+            "line16b": 3400,
+            "line17": 0,
+            "line20": 61200,
+            "line27": 0
+          },
+          "notes": [
+            "Each qualifying child must be under 17 at the end of the year and have an SSN valid for employment issued by the return due date. From 2025 the taxpayer (or at least one spouse on a joint return) also needs a valid SSN.",
+            "The $500 credit for other dependents is not refundable.",
+            "The refundable part uses 15% of earned income over $2,500. The alternative for three or more children based on social security and Medicare tax (Schedule 8812 lines 21-26) is not modeled."
+          ],
+          "summary": "Credit before phase-out $4,400 (2 child(ren) x $2,200). MAGI over $400,000 cuts it by $550. Nonrefundable credit $3,850, refundable additional child tax credit $0, total $3,850 for 2026.",
+          "as_of": "2026-11-02",
+          "source": "https://www.irs.gov/pub/irs-drop/rp-25-32.pdf ; https://www.irs.gov/pub/irs-pdf/i1040s8.pdf",
+          "more": "https://taxbreakcalc.com/how-much-is-the-child-tax-credit-worth/?utm_source=mcp&utm_medium=car-loan-interest-deduction-calculator-mcp",
+          "disclaimer": "This is an estimate, not tax advice. Check the IRS instructions or ask a tax professional before you file."
+        }
+      },
+      "jsonrpc": "2.0",
+      "id": 13
+    },
+    "call_calculate_salt_deduction.json": {
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "State and local taxes paid $48,000. MAGI is $45,000 over the $505,000 threshold, so the cap drops by 30% of that ($13,500) to $26,900. Deductible SALT: $26,900 ($21,100 is over the cap). Itemized total $46,900 vs standard deduction $32,200: itemizing is larger.\n\nThis is an estimate, not tax advice. Check the IRS instructions or ask a tax professional before you file."
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"filing_status\": \"married_filing_jointly\",\n  \"tax_year\": 2026,\n  \"magi\": 550000,\n  \"state_and_local_taxes\": 48000,\n  \"cap\": 40400,\n  \"statutory_cap_full_return\": 40400,\n  \"phase_down\": {\n    \"applies\": true,\n    \"threshold\": 505000,\n    \"excess_magi\": 45000,\n    \"reduction_30_percent\": 13500,\n    \"floor\": 10000\n  },\n  \"cap_after_phase_down\": 26900,\n  \"deduction\": 26900,\n  \"amount_lost_to_cap\": 21100,\n  \"irs_published_amounts\": true,\n  \"comparison\": {\n    \"total_itemized\": 46900,\n    \"standard_deduction\": 32200,\n    \"standard_deduction_year_used\": 2026,\n    \"standard_deduction_is_estimate\": false,\n    \"better_choice\": \"itemize\",\n    \"difference\": 14700\n  },\n  \"notes\": [\n    \"The SALT deduction only helps if you itemize on Schedule A.\",\n    \"MAGI here is Form 1040 line 11b plus excluded foreign and Puerto Rico income.\"\n  ],\n  \"summary\": \"State and local taxes paid $48,000. MAGI is $45,000 over the $505,000 threshold, so the cap drops by 30% of that ($13,500) to $26,900. Deductible SALT: $26,900 ($21,100 is over the cap). Itemized total $46,900 vs standard deduction $32,200: itemizing is larger.\",\n  \"as_of\": \"2026-11-02\",\n  \"source\": \"https://www.irs.gov/pub/irs-pdf/i1040sca.pdf ; https://www.irs.gov/pub/irs-dft/f1040sa--dft.pdf ; https://www.law.cornell.edu/uscode/text/26/164\",\n  \"more\": \"https://taxbreakcalc.com/salt-deduction-calculator/?utm_source=mcp&utm_medium=car-loan-interest-deduction-calculator-mcp\",\n  \"disclaimer\": \"This is an estimate, not tax advice. Check the IRS instructions or ask a tax professional before you file.\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "filing_status": "married_filing_jointly",
+          "tax_year": 2026,
+          "magi": 550000,
+          "state_and_local_taxes": 48000,
+          "cap": 40400,
+          "statutory_cap_full_return": 40400,
+          "phase_down": {
+            "applies": true,
+            "threshold": 505000,
+            "excess_magi": 45000,
+            "reduction_30_percent": 13500,
+            "floor": 10000
+          },
+          "cap_after_phase_down": 26900,
+          "deduction": 26900,
+          "amount_lost_to_cap": 21100,
+          "irs_published_amounts": true,
+          "comparison": {
+            "total_itemized": 46900,
+            "standard_deduction": 32200,
+            "standard_deduction_year_used": 2026,
+            "standard_deduction_is_estimate": false,
+            "better_choice": "itemize",
+            "difference": 14700
+          },
+          "notes": [
+            "The SALT deduction only helps if you itemize on Schedule A.",
+            "MAGI here is Form 1040 line 11b plus excluded foreign and Puerto Rico income."
+          ],
+          "summary": "State and local taxes paid $48,000. MAGI is $45,000 over the $505,000 threshold, so the cap drops by 30% of that ($13,500) to $26,900. Deductible SALT: $26,900 ($21,100 is over the cap). Itemized total $46,900 vs standard deduction $32,200: itemizing is larger.",
+          "as_of": "2026-11-02",
+          "source": "https://www.irs.gov/pub/irs-pdf/i1040sca.pdf ; https://www.irs.gov/pub/irs-dft/f1040sa--dft.pdf ; https://www.law.cornell.edu/uscode/text/26/164",
+          "more": "https://taxbreakcalc.com/salt-deduction-calculator/?utm_source=mcp&utm_medium=car-loan-interest-deduction-calculator-mcp",
+          "disclaimer": "This is an estimate, not tax advice. Check the IRS instructions or ask a tax professional before you file."
+        }
+      },
+      "jsonrpc": "2.0",
+      "id": 11
+    },
+    "call_get_tax_brackets_and_standard_deduction.json": {
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Standard deduction for 2026: single $16,100. single brackets: 10% over $0, 12% over $12,400, 22% over $50,400, 24% over $105,700, 32% over $201,775, 35% over $256,225, 37% over $640,600. Tax on $60,000 of taxable income: $7,912, marginal rate 22%.\n\nThis is an estimate, not tax advice. Check the IRS instructions or ask a tax professional before you file."
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"tax_year\": 2026,\n  \"tables\": [\n    {\n      \"filing_status\": \"single\",\n      \"standard_deduction\": 16100,\n      \"brackets\": [\n        {\n          \"rate\": 0.1,\n          \"over\": 0,\n          \"not_over\": 12400\n        },\n        {\n          \"rate\": 0.12,\n          \"over\": 12400,\n          \"not_over\": 50400\n        },\n        {\n          \"rate\": 0.22,\n          \"over\": 50400,\n          \"not_over\": 105700\n        },\n        {\n          \"rate\": 0.24,\n          \"over\": 105700,\n          \"not_over\": 201775\n        },\n        {\n          \"rate\": 0.32,\n          \"over\": 201775,\n          \"not_over\": 256225\n        },\n        {\n          \"rate\": 0.35,\n          \"over\": 256225,\n          \"not_over\": 640600\n        },\n        {\n          \"rate\": 0.37,\n          \"over\": 640600,\n          \"not_over\": null\n        }\n      ]\n    }\n  ],\n  \"additional_standard_deduction_65_or_blind\": {\n    \"married_or_surviving_spouse\": 1650,\n    \"unmarried\": 2050\n  },\n  \"computed\": {\n    \"taxable_income\": 60000,\n    \"tax\": 7912,\n    \"marginal_rate\": 0.22,\n    \"average_rate\": 0.131867\n  },\n  \"year_2027_status\": \"Not published by the IRS as of 2026-11-02.\",\n  \"summary\": \"Standard deduction for 2026: single $16,100. single brackets: 10% over $0, 12% over $12,400, 22% over $50,400, 24% over $105,700, 32% over $201,775, 35% over $256,225, 37% over $640,600. Tax on $60,000 of taxable income: $7,912, marginal rate 22%.\",\n  \"as_of\": \"2026-11-02\",\n  \"source\": \"https://www.irs.gov/pub/irs-drop/rp-25-32.pdf\",\n  \"more\": \"https://taxbreakcalc.com/standard-deduction-calculator/?utm_source=mcp&utm_medium=car-loan-interest-deduction-calculator-mcp\",\n  \"disclaimer\": \"This is an estimate, not tax advice. Check the IRS instructions or ask a tax professional before you file.\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "tax_year": 2026,
+          "tables": [
+            {
+              "filing_status": "single",
+              "standard_deduction": 16100,
+              "brackets": [
+                {
+                  "rate": 0.1,
+                  "over": 0,
+                  "not_over": 12400
+                },
+                {
+                  "rate": 0.12,
+                  "over": 12400,
+                  "not_over": 50400
+                },
+                {
+                  "rate": 0.22,
+                  "over": 50400,
+                  "not_over": 105700
+                },
+                {
+                  "rate": 0.24,
+                  "over": 105700,
+                  "not_over": 201775
+                },
+                {
+                  "rate": 0.32,
+                  "over": 201775,
+                  "not_over": 256225
+                },
+                {
+                  "rate": 0.35,
+                  "over": 256225,
+                  "not_over": 640600
+                },
+                {
+                  "rate": 0.37,
+                  "over": 640600,
+                  "not_over": null
+                }
+              ]
+            }
+          ],
+          "additional_standard_deduction_65_or_blind": {
+            "married_or_surviving_spouse": 1650,
+            "unmarried": 2050
+          },
+          "computed": {
+            "taxable_income": 60000,
+            "tax": 7912,
+            "marginal_rate": 0.22,
+            "average_rate": 0.131867
+          },
+          "year_2027_status": "Not published by the IRS as of 2026-11-02.",
+          "summary": "Standard deduction for 2026: single $16,100. single brackets: 10% over $0, 12% over $12,400, 22% over $50,400, 24% over $105,700, 32% over $201,775, 35% over $256,225, 37% over $640,600. Tax on $60,000 of taxable income: $7,912, marginal rate 22%.",
+          "as_of": "2026-11-02",
+          "source": "https://www.irs.gov/pub/irs-drop/rp-25-32.pdf",
+          "more": "https://taxbreakcalc.com/standard-deduction-calculator/?utm_source=mcp&utm_medium=car-loan-interest-deduction-calculator-mcp",
+          "disclaimer": "This is an estimate, not tax advice. Check the IRS instructions or ask a tax professional before you file."
+        }
+      },
+      "jsonrpc": "2.0",
+      "id": 12
+    },
+    "initialize.json": {
+      "result": {
+        "protocolVersion": "2025-06-18",
+        "capabilities": {
+          "tools": {
+            "listChanged": true
+          }
+        },
+        "serverInfo": {
+          "name": "car-loan-interest-deduction-calculator-mcp",
+          "version": "1.0.0"
+        }
+      },
+      "jsonrpc": "2.0",
+      "id": 1
+    },
+    "tools_list.json": {
+      "result": {
+        "tools": [
+          {
+            "name": "calculate_car_loan_interest_deduction",
+            "title": "Car loan interest deduction (2025-2028)",
+            "description": "Calculates the 2025-2028 federal deduction for car loan interest created by the One Big Beautiful Bill Act (P.L. 119-21, IRC 163(h)(4)) the way IRS Schedule 1-A Part IV does: up to $10,000 of qualified passenger vehicle loan interest, then $200 off for each $1,000 or part of $1,000 of MAGI over $100,000 ($200,000 married filing jointly), so it reaches $0 at $149,001 ($249,001 joint). Checks the eligibility tests: loan originated after Dec 31 2024, new vehicle, final assembly in the US, personal use, car/minivan/van/SUV/pickup/motorcycle under 14,000 lb GVWR, first lien, not a lease. Available whether or not you itemize. Rules copied from the 2025 Schedule 1-A, Form 1040 instructions and IRS Notice 2025-57.",
+            "inputSchema": {
+              "type": "object",
+              "properties": {
+                "filing_status": {
+                  "type": "string",
+                  "enum": [
+                    "single",
+                    "married_filing_jointly",
+                    "married_filing_separately",
+                    "head_of_household",
+                    "qualifying_surviving_spouse"
+                  ],
+                  "description": "Federal filing status."
+                },
+                "magi": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 10000000000,
+                  "description": "Modified adjusted gross income in USD (Form 1040 line 11b plus excluded foreign and Puerto Rico income)."
+                },
+                "tax_year": {
+                  "type": "integer",
+                  "minimum": 2025,
+                  "maximum": 2028,
+                  "description": "Tax year, 2025 to 2028. The deduction ends after 2028."
+                },
+                "interest_paid": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 10000000000,
+                  "description": "Interest paid or accrued on the vehicle loan in the year, in USD (the lender's year-end statement)."
+                },
+                "interest_deducted_elsewhere": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 10000000000,
+                  "description": "Part of that interest already deducted on Schedule C, E or F. It cannot be deducted twice."
+                },
+                "loan_origination_date": {
+                  "type": "string",
+                  "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+                  "description": "Date the loan was originated, YYYY-MM-DD. Must be after 2024-12-31."
+                },
+                "new_vehicle": {
+                  "type": "boolean",
+                  "description": "True if the original use starts with you (new). Used vehicles do not qualify."
+                },
+                "us_final_assembly": {
+                  "type": "boolean",
+                  "description": "True if final assembly was in the United States (vehicle label or NHTSA VIN decoder)."
+                },
+                "personal_use": {
+                  "type": "boolean",
+                  "description": "True if you expect personal use more than 50% of the time."
+                },
+                "vehicle_type": {
+                  "type": "string",
+                  "enum": [
+                    "car",
+                    "minivan",
+                    "van",
+                    "suv",
+                    "pickup",
+                    "motorcycle",
+                    "other"
+                  ],
+                  "description": "car, minivan, van, suv, pickup, motorcycle or other."
+                },
+                "gvwr_under_14000_lbs": {
+                  "type": "boolean",
+                  "description": "True if the gross vehicle weight rating is under 14,000 pounds."
+                },
+                "secured_by_first_lien": {
+                  "type": "boolean",
+                  "description": "True if the loan is secured by a first lien on the vehicle."
+                },
+                "is_lease": {
+                  "type": "boolean",
+                  "description": "True if this is a lease. Lease payments never qualify."
+                },
+                "marginal_tax_rate": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 0.37,
+                  "description": "Your federal marginal rate as a decimal (e.g. 0.22) to estimate the tax saved."
+                }
+              },
+              "required": [
+                "filing_status",
+                "magi",
+                "tax_year",
+                "interest_paid"
+              ],
+              "additionalProperties": false,
+              "$schema": "http://json-schema.org/draft-07/schema#"
+            },
+            "annotations": {
+              "readOnlyHint": true,
+              "destructiveHint": false,
+              "idempotentHint": true,
+              "openWorldHint": false,
+              "title": "Car loan interest deduction (2025-2028)"
+            },
+            "execution": {
+              "taskSupport": "forbidden"
+            }
+          },
+          {
+            "name": "calculate_salt_deduction",
+            "title": "SALT deduction cap (2025-2030)",
+            "description": "Calculates the deductible state and local tax (SALT) on Schedule A under the One Big Beautiful Bill Act cap (IRC 164(b)(6)-(7)): $40,000 for 2025 and $40,400 for 2026 ($20,000 / $20,200 married filing separately), rising 1% a year through 2029, reduced by 30% of MAGI over $500,000 (2025) or $505,000 (2026) but never below $10,000, then back to a flat $10,000 in 2030. Uses the IRS State and Local Tax Deduction Worksheet. Optionally compares itemizing with the standard deduction. Amounts copied from the 2025 Schedule A instructions, the 2026 draft Schedule A and the statute.",
+            "inputSchema": {
+              "type": "object",
+              "properties": {
+                "filing_status": {
+                  "type": "string",
+                  "enum": [
+                    "single",
+                    "married_filing_jointly",
+                    "married_filing_separately",
+                    "head_of_household",
+                    "qualifying_surviving_spouse"
+                  ],
+                  "description": "Federal filing status."
+                },
+                "magi": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 10000000000,
+                  "description": "Modified adjusted gross income in USD (Form 1040 line 11b plus excluded foreign and Puerto Rico income)."
+                },
+                "tax_year": {
+                  "type": "integer",
+                  "minimum": 2025,
+                  "maximum": 2035,
+                  "description": "Tax year, 2025 or later. 2027-2029 amounts are the statutory 101% steps; 2030 on is $10,000."
+                },
+                "state_and_local_taxes": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 10000000000,
+                  "description": "State and local income (or sales) tax plus real estate and personal property tax paid in the year (Schedule A line 5d)."
+                },
+                "other_itemized_deductions": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 10000000000,
+                  "description": "Other itemized deductions (mortgage interest, gifts to charity, medical over the floor). Give it to compare itemizing with the standard deduction."
+                }
+              },
+              "required": [
+                "filing_status",
+                "magi",
+                "tax_year",
+                "state_and_local_taxes"
+              ],
+              "additionalProperties": false,
+              "$schema": "http://json-schema.org/draft-07/schema#"
+            },
+            "annotations": {
+              "readOnlyHint": true,
+              "destructiveHint": false,
+              "idempotentHint": true,
+              "openWorldHint": false,
+              "title": "SALT deduction cap (2025-2030)"
+            },
+            "execution": {
+              "taskSupport": "forbidden"
+            }
+          },
+          {
+            "name": "get_tax_brackets_and_standard_deduction",
+            "title": "2025 and 2026 federal brackets and standard deduction",
+            "description": "Returns the official 2025 and 2026 federal income tax brackets and standard deductions after the One Big Beautiful Bill Act: 2026 standard deduction $16,100 single, $32,200 joint, $24,150 head of household (Rev. Proc. 2025-32), 2025 $15,750 / $31,500 / $23,625, plus the additional amount for age 65 or blind. Optionally computes the tax and marginal rate on a taxable income. Says plainly that 2027 amounts are not yet published (checked against the Internal Revenue Bulletin and irs-drop on 2026-11-02).",
+            "inputSchema": {
+              "type": "object",
+              "properties": {
+                "tax_year": {
+                  "type": "integer",
+                  "minimum": 2025,
+                  "maximum": 2027,
+                  "description": "2025 or 2026. 2027 returns a not-yet-published error."
+                },
+                "filing_status": {
+                  "type": "string",
+                  "enum": [
+                    "single",
+                    "married_filing_jointly",
+                    "married_filing_separately",
+                    "head_of_household",
+                    "qualifying_surviving_spouse"
+                  ],
+                  "description": "Leave out to get all filing statuses."
+                },
+                "taxable_income": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 10000000000,
+                  "description": "Taxable income to compute tax on (needs filing_status)."
+                }
+              },
+              "required": [
+                "tax_year"
+              ],
+              "additionalProperties": false,
+              "$schema": "http://json-schema.org/draft-07/schema#"
+            },
+            "annotations": {
+              "readOnlyHint": true,
+              "destructiveHint": false,
+              "idempotentHint": true,
+              "openWorldHint": false,
+              "title": "2025 and 2026 federal brackets and standard deduction"
+            },
+            "execution": {
+              "taskSupport": "forbidden"
+            }
+          },
+          {
+            "name": "calculate_child_tax_credit",
+            "title": "Child tax credit (2025-2026)",
+            "description": "Calculates the child tax credit as Schedule 8812 does after the One Big Beautiful Bill Act: $2,200 per qualifying child under 17 for 2025 and 2026, $500 per other dependent, reduced by 5% of MAGI over $400,000 joint / $200,000 others (excess rounded up to the next $1,000), limited by tax liability, with the refundable additional child tax credit of up to $1,700 per child at 15% of earned income over $2,500. Amounts from the 2025 Schedule 8812 and Rev. Proc. 2025-32.",
+            "inputSchema": {
+              "type": "object",
+              "properties": {
+                "filing_status": {
+                  "type": "string",
+                  "enum": [
+                    "single",
+                    "married_filing_jointly",
+                    "married_filing_separately",
+                    "head_of_household",
+                    "qualifying_surviving_spouse"
+                  ],
+                  "description": "Federal filing status."
+                },
+                "magi": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 10000000000,
+                  "description": "Modified adjusted gross income in USD (Form 1040 line 11b plus excluded foreign and Puerto Rico income)."
+                },
+                "tax_year": {
+                  "type": "integer",
+                  "minimum": 2025,
+                  "maximum": 2027,
+                  "description": "2025 or 2026. 2027 is not yet published."
+                },
+                "qualifying_children": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 20,
+                  "description": "Children under 17 at year end with a valid SSN."
+                },
+                "other_dependents": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 20,
+                  "description": "Other dependents (credit for other dependents, $500 each)."
+                },
+                "earned_income": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 10000000000,
+                  "description": "Earned income for the refundable part. Defaults to MAGI."
+                },
+                "tax_liability_before_credits": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 10000000000,
+                  "description": "Income tax before credits (Form 1040 line 18). Estimated from MAGI if left out."
+                }
+              },
+              "required": [
+                "filing_status",
+                "magi",
+                "tax_year",
+                "qualifying_children"
+              ],
+              "additionalProperties": false,
+              "$schema": "http://json-schema.org/draft-07/schema#"
+            },
+            "annotations": {
+              "readOnlyHint": true,
+              "destructiveHint": false,
+              "idempotentHint": true,
+              "openWorldHint": false,
+              "title": "Child tax credit (2025-2026)"
+            },
+            "execution": {
+              "taskSupport": "forbidden"
+            }
+          }
+        ]
+      },
+      "jsonrpc": "2.0",
+      "id": 2
+    }
+  },
+  "minutes_note": "lane wall clock 09:15-09:45 local (first IRS fetch 09:18 by file mtime), split approximately"
+}

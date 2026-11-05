@@ -1,0 +1,25 @@
+{
+    "$schema": "https://apify.com/schemas/v1/actor.ide.json",
+    "actorSpecification": 1,
+    "name": "subdomain-finder-mcp",
+    "title": "Subdomain Finder MCP: Certificate Transparency",
+    "description": "Passive subdomain finder MCP server for AI agents. Live certificate transparency lookups (certspotter, crt.sh) with DNS-over-HTTPS checks: finds subdomains, flags live hosts and dangling CNAMEs, shows certificate history and groups the attack surface. Read-only, no API key.",
+    "version": "1.0",
+    "buildTag": "latest",
+    "usesStandbyMode": true,
+    "meta": {
+        "templateId": "ts-mcp-proxy",
+        "generatedBy": "adapted from apify/actor-templates ts-mcp-proxy (plain JS)"
+    },
+    "minMemoryMbytes": 256,
+    "defaultMemoryMbytes": 512,
+    "maxMemoryMbytes": 1024,
+    "input": "./input_schema.json",
+    "output": "./output_schema.json",
+    "storages": {
+        "dataset": "./dataset_schema.json"
+    },
+    "dockerfile": "../Dockerfile",
+    "readme": "../README.md",
+    "webServerMcpPath": "/mcp"
+}

@@ -1,0 +1,36 @@
+{
+  "lane": "build-tax",
+  "date": "2026-11-02",
+  "servers": [
+    {
+      "repo": "car-loan-interest-deduction-calculator-mcp",
+      "report": "data/s1102/car-loan-interest-deduction-calculator-mcp.json",
+      "hosted_url": "https://car-loan-interest-deduction-calculator-mcp.lipmichal.workers.dev/mcp",
+      "worker_version_id": "1692d796-c0d6-4bde-84a3-40fb79bd969f",
+      "fixtures": "26/26",
+      "live": "4/4",
+      "npx_github": true,
+      "registry_visible": true,
+      "npm_ready": true,
+      "pushes": 2
+    },
+    {
+      "repo": "section-179-deduction-calculator-mcp",
+      "report": "data/s1102/section-179-deduction-calculator-mcp.json",
+      "hosted_url": "https://section-179-deduction-calculator-mcp.lipmichal.workers.dev/mcp",
+      "worker_version_id": "ce1b0808-4348-4788-b029-0579ce01dc36",
+      "fixtures": "20/20",
+      "live": "4/4",
+      "npx_github": true,
+      "registry_visible": true,
+      "npm_ready": true,
+      "pushes": 1
+    }
+  ],
+  "year_2027": "not published on 2026-11-02 (rp-26-35..50 404, control rp-25-32 200; IRB 2026-41..44 no inflation Rev. Proc.)",
+  "owner_unlocks": [
+    "npm publish of both packages (orchestrator batch with 2FA)"
+  ],
+  "work_dir": "data/s1102/build-tax (smoke.mjs, calls-*.json, raw/ responses); IRS PDF downloads deleted",
+  "minutes": 30
+}

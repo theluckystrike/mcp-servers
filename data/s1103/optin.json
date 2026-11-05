@@ -1,0 +1,114 @@
+{
+ "lane": "optin",
+ "date": "2026-11-03",
+ "status": "live",
+ "what": "Double opt-in monthly update list (new free MCP servers and Can Claude answers) on www.mcpstamp.com",
+ "forms": {
+  "pages": [
+   "/free-servers/",
+   "/can-claude/",
+   "every /can-claude/<slug>/ page (33, JobPage + LiveAnswerPage)"
+  ],
+  "fields": [
+   "email",
+   "source (hidden, page path)",
+   "website (honeypot)"
+  ],
+  "verified": "astro build: all 33 /can-claude/*/ pages contain action=/updates/subscribe; live curl /free-servers/, /can-claude/, /can-claude/read-zip-files/ each 1 form"
+ },
+ "backend": {
+  "type": "Cloudflare Pages Functions in project mcp-showcase-preview (no Worker touched)",
+  "files": [
+   "site/functions/updates/subscribe.js",
+   "site/functions/updates/confirm.js",
+   "site/functions/updates/unsubscribe.js",
+   "site/lib/optin.js"
+  ],
+  "notice_pages": [
+   "/updates/check-email/",
+   "/updates/confirm-email/",
+   "/updates/confirmed/",
+   "/updates/leave/",
+   "/updates/unsubscribed/",
+   "/updates/problem/"
+  ],
+  "pages_noindex_not_in_sitemap": true,
+  "token": "HMAC-SHA256 signed; confirm expires 3 days; unsubscribe never expires",
+  "confirm_requires_button_POST": "GET only renders a button, so mail scanners opening the link do not subscribe anyone",
+  "rate_limit": {
+   "per_ip": "5 POSTs / 10 min (counts invalid ones)",
+   "per_email": "2 confirmation sends / hour",
+   "store": "isolate memory + Cache API, hashed keys, no KV"
+  },
+  "anti_bot": "honeypot field + Origin/Referer allowlist (www.mcpstamp.com, mcpstamp.com, *.mcp-showcase-preview.pages.dev); no Turnstile (CF API: widgets exist only for boldtake.io and belikenative.com)",
+  "stored": "only the email in Resend audience mcpstamp-updates, only after confirm click; Resend keeps created_at",
+  "unsubscribe": "link in every email + List-Unsubscribe and List-Unsubscribe-Post (RFC 8058) headers; deletes the contact"
+ },
+ "resend": {
+  "from": "McpStamp updates <hello@zovo.one>",
+  "reply_to": "support@zovo.one",
+  "domains_check": "GET /domains with local RESEND_API_KEY: ml0x.com, belikenative.com, zovo.one all verified, sending enabled",
+  "audience": {
+   "name": "mcpstamp-updates",
+   "id": "0bddb949-303b-42d6-b9bd-51f949bdc03e",
+   "created": "POST /audiences 2026-11-03 (none existed; only 'General')"
+  },
+  "api_key": {
+   "name": "mcpstamp-optin-2026-11-03",
+   "id": "0b1cd435-2311-4ce6-b7cb-9fe62f5715b9",
+   "permission": "full_access (contacts API needs it)",
+   "stored": "only as Pages secret OPTIN_RESEND_KEY; never written to disk; revoke in Resend dashboard to disable"
+  },
+  "pages_secrets": [
+   "OPTIN_RESEND_KEY",
+   "OPTIN_HMAC_SECRET (openssl rand 48 bytes, piped to wrangler)",
+   "PROXY_KEY (pre-existing)"
+  ]
+ },
+ "privacy": {
+  "page": "/privacy/#updates",
+  "changes": "updated 3 November 2026; section 7 retitled 'Setup tips and the update list' with #updates subsection; summary bullet; retention row; legal-basis row (consent); Resend recipient line; rights and deletion lines; removed 'This website has no signup form.'"
+ },
+ "humanize": {
+  "control_bad_exit": 1,
+  "control_good_exit": 0,
+  "copy_strict_exit": 0,
+  "email_strict": "PASS",
+  "files": [
+   "optin/hz_copy.txt",
+   "optin/hz_email.txt"
+  ]
+ },
+ "test_e2e": {
+  "inbox": "delivered@resend.dev (setup doc names no owner test inbox)",
+  "bad_origin": "403 bad_origin",
+  "bad_email_json": "400 invalid_email",
+  "bad_email_form": "400 HTML problem page",
+  "honeypot": "200 check_email, no email sent",
+  "GET": "405",
+  "send": "200, Resend id 01a1a15b-81be-7d9b-b01e-2454282995dd, GET /emails/{id} last_event=delivered",
+  "confirm_GET": "200, token in hidden input; audience still 0 contacts",
+  "bad_token": "400",
+  "confirm_POST": "303 -> /updates/confirmed/; audience 1 contact delivered@resend.dev unsubscribed=false",
+  "unsubscribe_GET": "200, audience unchanged",
+  "one_click_POST": "303 -> /updates/unsubscribed/; audience 0 contacts (test contact removed)",
+  "repeat_unsubscribe": "200",
+  "rate_limit": "after 4 counted calls, 7 bad-email POSTs returned 400 429 429 429 429 429 429",
+  "emails_sent_total": 1,
+  "emails_check": "GET /emails?limit=20: exactly 1 'Confirm the McpStamp' email, to delivered@resend.dev"
+ },
+ "deploy": {
+  "commit": "eb38715 on theluckystrike/mcp-showcase-site (public, 1 push)",
+  "deployment": "349c794b-a8c8-458e-accd-1395b0716ad3",
+  "previous": "5161b1dd-c9bb-4043-b26b-dbcb3d51e1ef",
+  "rollback": "npx wrangler pages deployment rollback 5161b1dd-c9bb-4043-b26b-dbcb3d51e1ef --project-name mcp-showcase-preview",
+  "prechecks": "df 35 GB, memory 62% free, no pages deploy/astro build running, only this lane's files changed, local main = origin/main = live 5161b1dd (0dceb83)",
+  "build": "211 pages (205 + 6 /updates/ notice pages); sitemap 195 unchanged, 0 /updates/ URLs"
+ },
+ "owner_monthly_send": "Resend dashboard > Broadcasts > New: audience mcpstamp-updates, from 'McpStamp updates <hello@zovo.one>', include {{{RESEND_UNSUBSCRIBE_URL}}}; or API POST /broadcasts then POST /broadcasts/{id}/send (see optin.md)",
+ "open": [
+  "No signups yet (audience 0).",
+  "Resend 'unsubscribe' from a broadcast marks contacts unsubscribed=true (kept as suppression); the site link deletes the contact.",
+  "Turnstile can be added later if bots get past the honeypot (needs a widget for www.mcpstamp.com)."
+ ]
+}

@@ -1,0 +1,55 @@
+{
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "IRS high-low per diem for 2026-11-15 (Notice 2026-60, Oct. 1, 2026 - Sept. 30, 2027): high $329 ($86 meals), low $230 ($74 meals). Transportation industry M&IE $80 CONUS / $86 OCONUS; incidentals only $5. Chicago, Illinois is high-cost October 1 – November 30 and April 1 – September 30. On 2026-11-15 the high rate of $329 applies.\n\nRates from IRS and GSA publications. General information, not tax advice."
+      },
+      {
+        "type": "text",
+        "text": "{\n  \"date\": \"2026-11-15\",\n  \"fiscal_year\": 2027,\n  \"period\": \"Oct. 1, 2026 - Sept. 30, 2027\",\n  \"notice\": \"Notice 2026-60\",\n  \"high_rate\": 329,\n  \"low_rate\": 230,\n  \"high_meals_portion\": 86,\n  \"low_meals_portion\": 74,\n  \"high_cost_threshold\": 280,\n  \"transportation_industry_mie\": {\n    \"conus\": 80,\n    \"oconus\": 86\n  },\n  \"incidental_expenses_only\": 5,\n  \"high_cost_locality_count\": 91,\n  \"locality\": {\n    \"matches\": [\n      {\n        \"city\": \"Chicago\",\n        \"state\": \"Illinois\",\n        \"location\": \"Cook and Lake\",\n        \"high_cost_portion\": \"October 1 – November 30 and April 1 – September 30\",\n        \"high_cost_on_date\": true\n      }\n    ],\n    \"rate_on_date\": 329,\n    \"meals_on_date\": 86\n  },\n  \"notes\": [\n    \"High-low method: one high rate for listed high-cost localities during the listed portion of the year, one low rate everywhere else in the continental U.S. Includes lodging and M&IE.\",\n    \"Notice 2026-60 added Tucson, San Mateo/Foster City/Belmont, Albuquerque and Cody, and removed Panama City.\"\n  ],\n  \"summary\": \"IRS high-low per diem for 2026-11-15 (Notice 2026-60, Oct. 1, 2026 - Sept. 30, 2027): high $329 ($86 meals), low $230 ($74 meals). Transportation industry M&IE $80 CONUS / $86 OCONUS; incidentals only $5. Chicago, Illinois is high-cost October 1 – November 30 and April 1 – September 30. On 2026-11-15 the high rate of $329 applies.\",\n  \"as_of\": \"2026-11-03\",\n  \"source\": \"https://www.irs.gov/irb/2026-43_irb (Notice 2026-60)\",\n  \"more\": \"https://taxbreakcalc.com/self-employed-set-aside-calculator/?utm_source=mcp&utm_medium=irs-mileage-rate-per-diem-mcp\",\n  \"disclaimer\": \"Rates from IRS and GSA publications. General information, not tax advice.\"\n}"
+      }
+    ],
+    "structuredContent": {
+      "date": "2026-11-15",
+      "fiscal_year": 2027,
+      "period": "Oct. 1, 2026 - Sept. 30, 2027",
+      "notice": "Notice 2026-60",
+      "high_rate": 329,
+      "low_rate": 230,
+      "high_meals_portion": 86,
+      "low_meals_portion": 74,
+      "high_cost_threshold": 280,
+      "transportation_industry_mie": {
+        "conus": 80,
+        "oconus": 86
+      },
+      "incidental_expenses_only": 5,
+      "high_cost_locality_count": 91,
+      "locality": {
+        "matches": [
+          {
+            "city": "Chicago",
+            "state": "Illinois",
+            "location": "Cook and Lake",
+            "high_cost_portion": "October 1 – November 30 and April 1 – September 30",
+            "high_cost_on_date": true
+          }
+        ],
+        "rate_on_date": 329,
+        "meals_on_date": 86
+      },
+      "notes": [
+        "High-low method: one high rate for listed high-cost localities during the listed portion of the year, one low rate everywhere else in the continental U.S. Includes lodging and M&IE.",
+        "Notice 2026-60 added Tucson, San Mateo/Foster City/Belmont, Albuquerque and Cody, and removed Panama City."
+      ],
+      "summary": "IRS high-low per diem for 2026-11-15 (Notice 2026-60, Oct. 1, 2026 - Sept. 30, 2027): high $329 ($86 meals), low $230 ($74 meals). Transportation industry M&IE $80 CONUS / $86 OCONUS; incidentals only $5. Chicago, Illinois is high-cost October 1 – November 30 and April 1 – September 30. On 2026-11-15 the high rate of $329 applies.",
+      "as_of": "2026-11-03",
+      "source": "https://www.irs.gov/irb/2026-43_irb (Notice 2026-60)",
+      "more": "https://taxbreakcalc.com/self-employed-set-aside-calculator/?utm_source=mcp&utm_medium=irs-mileage-rate-per-diem-mcp",
+      "disclaimer": "Rates from IRS and GSA publications. General information, not tax advice."
+    }
+  },
+  "jsonrpc": "2.0",
+  "id": 14
+}

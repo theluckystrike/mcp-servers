@@ -1,0 +1,984 @@
+{
+ "ab-test-sample-size-calculator-mcp": {
+  "serverInfo": {
+   "name": "ab-test-sample-size-calculator-mcp",
+   "version": "1.0.0",
+   "websiteUrl": "https://abwex.com"
+  },
+  "tools": [
+   {
+    "name": "calculate_sample_size",
+    "title": "A/B test sample size calculator",
+    "annotations": {
+     "title": "Sample size",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false
+    },
+    "desc": "Exact sample size per variant for an A/B test on a conversion rate (two independent proportions): baseline rate, minimum detectable effect (relative or absolute",
+    "hasOutputSchema": false
+   },
+   {
+    "name": "estimate_test_duration",
+    "title": "A/B test duration estimator",
+    "annotations": {
+     "title": "Test duration",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false
+    },
+    "desc": "How many days an A/B test must run: from a known sample size per variant, or from baseline rate and MDE (computed as in calculate_sample_size), plus daily visit",
+    "hasOutputSchema": false
+   },
+   {
+    "name": "test_ab_significance",
+    "title": "A/B test significance calculator",
+    "annotations": {
+     "title": "Significance test",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false
+    },
+    "desc": "Is an A/B test result statistically significant? From visitors and conversions per group: two-proportion z-test (pooled), one or two-sided p-value, Wald confide",
+    "hasOutputSchema": false
+   },
+   {
+    "name": "fisher_exact_test",
+    "title": "Fisher exact and Fisher-Freeman-Halton test",
+    "annotations": {
+     "title": "Exact test",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false
+    },
+    "desc": "Exact p-value for a contingency table of counts. 2x2: Fisher exact test (two-sided, greater or less, as R fisher.test). Larger r x c tables (for example 3 varia",
+    "hasOutputSchema": false
+   },
+   {
+    "name": "check_peeking_risk",
+    "title": "A/B test peeking and sequential testing risk",
+    "annotations": {
+     "title": "Peeking risk",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false
+    },
+    "desc": "What peeking does to an A/B test: the real false positive rate if you check a fixed-horizon test K times and stop at the first p < alpha (for example about 14% ",
+    "hasOutputSchema": false
+   }
+  ]
+ },
+ "ap-score-distributions-mcp": {
+  "serverInfo": {
+   "name": "ap-score-distributions-mcp",
+   "version": "1.0.0"
+  },
+  "tools": [
+   {
+    "name": "get_ap_score_distribution",
+    "title": "Get the official AP score distribution for an exam",
+    "annotations": {
+     "title": "AP score distribution",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false
+    },
+    "desc": "Returns the College Board score distribution (percent of students scoring 5, 4, 3, 2, 1 and 3 or higher) for an AP exam and year, plus student counts, mean and ",
+    "hasOutputSchema": false
+   },
+   {
+    "name": "estimate_ap_percentile",
+    "title": "Estimate the percentile of an AP score",
+    "annotations": {
+     "title": "AP score percentile",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false
+    },
+    "desc": "For an AP exam, year and score from 1 to 5, returns the percent of test takers who scored lower, the same and higher, and the midpoint percentile rank, from the",
+    "hasOutputSchema": false
+   },
+   {
+    "name": "compare_ap_exams",
+    "title": "Compare AP exams by pass rate or share of 5s",
+    "annotations": {
+     "title": "Compare AP exams",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false
+    },
+    "desc": "Ranks AP exams for one year by pass rate (share scoring 3 or higher), share of 5s, mean score or number of test takers (mean and test takers for 2024 and 2025 o",
+    "hasOutputSchema": false
+   },
+   {
+    "name": "list_ap_exams",
+    "title": "List AP exams and years with data",
+    "annotations": {
+     "title": "List AP exams",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false
+    },
+    "desc": "Lists every AP exam with College Board score distributions in this server, the years available for each, the source of each year, and which exams have a College",
+    "hasOutputSchema": false
+   },
+   {
+    "name": "estimate_ap_score_from_composite",
+    "title": "Estimate an AP score from practice exam raw points",
+    "annotations": {
+     "title": "Estimate AP score",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false
+    },
+    "desc": "Converts multiple-choice correct answers and free-response points into a weighted composite and an estimated AP score, using the scoring worksheet and conversio",
+    "hasOutputSchema": false
+   }
+  ]
+ },
+ "car-loan-interest-deduction-calculator-mcp": {
+  "serverInfo": {
+   "name": "car-loan-interest-deduction-calculator-mcp",
+   "version": "1.0.0"
+  },
+  "tools": [
+   {
+    "name": "calculate_car_loan_interest_deduction",
+    "title": "Car loan interest deduction (2025-2028)",
+    "annotations": {
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false,
+     "title": "Car loan interest deduction (2025-2028)"
+    },
+    "desc": "Calculates the 2025-2028 federal deduction for car loan interest created by the One Big Beautiful Bill Act (P.L. 119-21, IRC 163(h)(4)) the way IRS Schedule 1-A",
+    "hasOutputSchema": false
+   },
+   {
+    "name": "calculate_salt_deduction",
+    "title": "SALT deduction cap (2025-2030)",
+    "annotations": {
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false,
+     "title": "SALT deduction cap (2025-2030)"
+    },
+    "desc": "Calculates the deductible state and local tax (SALT) on Schedule A under the One Big Beautiful Bill Act cap (IRC 164(b)(6)-(7)): $40,000 for 2025 and $40,400 fo",
+    "hasOutputSchema": false
+   },
+   {
+    "name": "get_tax_brackets_and_standard_deduction",
+    "title": "2025 and 2026 federal brackets and standard deduction",
+    "annotations": {
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false,
+     "title": "2025 and 2026 federal brackets and standard deduction"
+    },
+    "desc": "Returns the official 2025 and 2026 federal income tax brackets and standard deductions after the One Big Beautiful Bill Act: 2026 standard deduction $16,100 sin",
+    "hasOutputSchema": false
+   },
+   {
+    "name": "calculate_child_tax_credit",
+    "title": "Child tax credit (2025-2026)",
+    "annotations": {
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false,
+     "title": "Child tax credit (2025-2026)"
+    },
+    "desc": "Calculates the child tax credit as Schedule 8812 does after the One Big Beautiful Bill Act: $2,200 per qualifying child under 17 for 2025 and 2026, $500 per oth",
+    "hasOutputSchema": false
+   }
+  ]
+ },
+ "cups-to-grams-mcp": {
+  "serverInfo": {
+   "name": "cups-to-grams-mcp",
+   "version": "1.0.0"
+  },
+  "tools": [
+   {
+    "name": "convert_ingredient",
+    "title": "Convert cups to grams for a named ingredient",
+    "annotations": {
+     "title": "Convert ingredient",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false
+    },
+    "desc": "Converts a kitchen amount between volume and weight for a specific ingredient, using measured grams-per-cup values (USDA FoodData Central portion weights with F",
+    "hasOutputSchema": false
+   },
+   {
+    "name": "search_ingredients",
+    "title": "Search the measured ingredient density table",
+    "annotations": {
+     "title": "Search ingredients",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false
+    },
+    "desc": "Fuzzy search over the ingredient table (flours, sugars, fats, dairy, liquids, nuts, grains, fruit, produce). Returns canonical names, grams per US cup and per t",
+    "hasOutputSchema": false
+   },
+   {
+    "name": "scale_recipe",
+    "title": "Scale a recipe and convert it to grams",
+    "annotations": {
+     "title": "Scale recipe",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false
+    },
+    "desc": "Scales a list of recipe ingredient lines (\"1 1/2 cups all-purpose flour\", \"2 tbsp honey\", \"3 eggs\") by a factor or from original to target servings. Parses mixe",
+    "hasOutputSchema": false
+   },
+   {
+    "name": "convert_oven_temperature",
+    "title": "Convert oven temperature between F, C and gas mark",
+    "annotations": {
+     "title": "Convert oven temperature",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false
+    },
+    "desc": "Converts an oven setting between Fahrenheit, Celsius and UK gas mark (1/4 to 10, from the standard recipe table) and optionally adjusts for a fan (convection) o",
+    "hasOutputSchema": false
+   }
+  ]
+ },
+ "dscr-loan-calculator-mcp": {
+  "serverInfo": {
+   "name": "dscr-loan-calculator-mcp",
+   "version": "1.0.0"
+  },
+  "tools": [
+   {
+    "name": "calculate_dscr",
+    "title": "Calculate DSCR for a rental property loan",
+    "annotations": {
+     "title": "Calculate DSCR",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false
+    },
+    "desc": "Debt service coverage ratio for a DSCR (investor) mortgage: qualifying rent / PITIA. Computes exact principal and interest with the annuity formula (monthly com",
+    "hasOutputSchema": false
+   },
+   {
+    "name": "max_loan_for_target_dscr",
+    "title": "Largest loan that meets a target DSCR",
+    "annotations": {
+     "title": "Max loan for target DSCR",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false
+    },
+    "desc": "Solves for the largest whole-dollar loan whose PITIA keeps the DSCR at or above a target (default 1.25), given rent, rate, term, interest-only choice, tax, insu",
+    "hasOutputSchema": false
+   },
+   {
+    "name": "rent_needed_for_target_dscr",
+    "title": "Rent needed to reach a target DSCR",
+    "annotations": {
+     "title": "Rent needed for target DSCR",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false
+    },
+    "desc": "Solves for the smallest monthly rent (to the cent, and rounded up to whole dollars) that reaches a target DSCR (default 1.25) for a given loan, rate, term, tax,",
+    "hasOutputSchema": false
+   },
+   {
+    "name": "compare_scenarios",
+    "title": "Compare DSCR loan scenarios",
+    "annotations": {
+     "title": "Compare DSCR scenarios",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false
+    },
+    "desc": "Compares 1 to 5 financing scenarios (rate, down payment, term, interest-only) on one property: loan amount, P&I, PITIA, DSCR, lender band, rent minus PITIA and ",
+    "hasOutputSchema": false
+   },
+   {
+    "name": "amortization_summary",
+    "title": "Amortization summary for a loan",
+    "annotations": {
+     "title": "Amortization summary",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false
+    },
+    "desc": "Exact month-by-month amortization: monthly payment, number of payments, final payment, total interest, total paid and the remaining balance after chosen years. ",
+    "hasOutputSchema": false
+   }
+  ]
+ },
+ "gold-price-per-gram-mcp": {
+  "serverInfo": {
+   "name": "gold-price-per-gram-mcp",
+   "version": "1.0.0",
+   "websiteUrl": "https://goldgramprice.com"
+  },
+  "tools": [
+   {
+    "name": "get_gold_price_per_gram",
+    "title": "Get gold price per gram",
+    "annotations": {
+     "title": "Gold price per gram",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": true
+    },
+    "desc": "Today's gold price per gram, per troy ounce, per tola and per kilogram, read live from the gold spot market, for 24K, 22K, 21K, 18K, 14K, 10K and 9K gold, in an",
+    "hasOutputSchema": false
+   },
+   {
+    "name": "get_metal_prices",
+    "title": "Get precious metal prices",
+    "annotations": {
+     "title": "Metal prices",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": true
+    },
+    "desc": "Live spot prices of gold (XAU), silver (XAG), platinum (XPT) and palladium (XPD) per troy ounce, per gram and per kilogram, in any major currency. A metal whose",
+    "hasOutputSchema": false
+   },
+   {
+    "name": "calculate_jewelry_value",
+    "title": "Calculate gold jewelry melt value",
+    "annotations": {
+     "title": "Jewelry melt value",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": true
+    },
+    "desc": "Melt value of a gold item (ring, chain, bracelet, scrap) from its weight, unit and karat at the live spot price, in any currency. Optional dealer_spread_percent",
+    "hasOutputSchema": false
+   },
+   {
+    "name": "convert_gold_units",
+    "title": "Convert gold weight units",
+    "annotations": {
+     "title": "Convert gold units",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false
+    },
+    "desc": "Convert a gold weight between gram, kilogram, troy ounce, pennyweight, grain, avoirdupois ounce, tola, Thai baht (bullion and jewellery), Vietnamese chi and luo",
+    "hasOutputSchema": false
+   }
+  ]
+ },
+ "lake-level-mcp": {
+  "serverInfo": {
+   "name": "lake-level-mcp",
+   "version": "1.0.0",
+   "websiteUrl": "https://lakelevelnow.com"
+  },
+  "tools": [
+   {
+    "name": "search_lakes",
+    "title": "Search US lakes and reservoirs",
+    "annotations": {
+     "title": "Search lakes",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false
+    },
+    "desc": "List the 44 US lakes and reservoirs this server reads live (Lake Mead, Lake Powell, Lake Travis, Shasta, Oroville, Lanier, Texoma, Kentucky Lake and more) by na",
+    "hasOutputSchema": false
+   },
+   {
+    "name": "get_lake_level",
+    "title": "Get current lake level",
+    "annotations": {
+     "title": "Get lake level",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": true
+    },
+    "desc": "Current water surface elevation (ft above sea level) of a US lake or reservoir, read now from its government gauge (USGS, USACE CWMS, CDEC, Reclamation or TWDB)",
+    "hasOutputSchema": false
+   },
+   {
+    "name": "get_lake_history",
+    "title": "Get lake level history",
+    "annotations": {
+     "title": "Get lake history",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": true
+    },
+    "desc": "Daily (or weekly) water elevation series for a US lake or reservoir over the last 2 to 365 days, from the same government gauge as get_lake_level, one reading p",
+    "hasOutputSchema": false
+   },
+   {
+    "name": "compare_lakes",
+    "title": "Compare lake levels",
+    "annotations": {
+     "title": "Compare lakes",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": true
+    },
+    "desc": "Current levels of 2 to 10 US lakes side by side, read live from their gauges: elevation, feet below full pool, percent full, seasonal target and 24 h / 7 day / ",
+    "hasOutputSchema": false
+   }
+  ]
+ },
+ "minimum-wage-mcp": {
+  "serverInfo": {
+   "name": "minimum-wage-mcp",
+   "version": "1.0.0"
+  },
+  "tools": [
+   {
+    "name": "get_minimum_wage",
+    "title": "Get state minimum wage",
+    "annotations": {
+     "title": "Get state minimum wage",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false
+    },
+    "desc": "Minimum wage for one US state or DC on a date in 2026-2027: standard hourly rate, tipped cash wage, tip credit and the date the rate took effect. Uses the US DO",
+    "hasOutputSchema": false
+   },
+   {
+    "name": "list_upcoming_increases",
+    "title": "List upcoming minimum wage increases",
+    "annotations": {
+     "title": "List upcoming minimum wage increases",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false
+    },
+    "desc": "Every scheduled state minimum wage change from a date (default today) through 2027-12-31, sorted by date, with the new rate, the previous rate, the change and t",
+    "hasOutputSchema": false
+   },
+   {
+    "name": "compare_states",
+    "title": "Compare state minimum wages",
+    "annotations": {
+     "title": "Compare state minimum wages",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false
+    },
+    "desc": "Side-by-side minimum wages for 2 to 10 US states (or DC) on one date in 2026-2027: standard rate, tipped cash wage, tip credit, effective date and full-time ann",
+    "hasOutputSchema": false
+   },
+   {
+    "name": "annual_income_at_minimum_wage",
+    "title": "Annual income at minimum wage",
+    "annotations": {
+     "title": "Annual income at minimum wage",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false
+    },
+    "desc": "Gross weekly, monthly and annual pay at a state's minimum wage on a date in 2026-2027, for given hours per week (default 40) and weeks per year (default 52). Us",
+    "hasOutputSchema": false
+   }
+  ]
+ },
+ "no-tax-on-overtime-mcp": {
+  "serverInfo": {
+   "name": "no-tax-on-overtime-mcp",
+   "version": "1.0.0"
+  },
+  "tools": [
+   {
+    "name": "calculate_overtime_deduction",
+    "title": "No Tax on Overtime deduction",
+    "annotations": {
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false,
+     "title": "No Tax on Overtime deduction"
+    },
+    "desc": "Calculates the 2025-2028 federal deduction for qualified overtime pay under the One Big Beautiful Bill Act (P.L. 119-21, IRC 225) as IRS Schedule 1-A Part III d",
+    "hasOutputSchema": false
+   },
+   {
+    "name": "calculate_tips_deduction",
+    "title": "No Tax on Tips deduction",
+    "annotations": {
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false,
+     "title": "No Tax on Tips deduction"
+    },
+    "desc": "Calculates the 2025-2028 federal deduction for qualified tips under the One Big Beautiful Bill Act (P.L. 119-21, IRC 224) as IRS Schedule 1-A Part II does: a $2",
+    "hasOutputSchema": false
+   },
+   {
+    "name": "calculate_senior_deduction",
+    "title": "Enhanced deduction for seniors (65+)",
+    "annotations": {
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false,
+     "title": "Enhanced deduction for seniors (65+)"
+    },
+    "desc": "Calculates the 2025-2028 enhanced deduction for seniors under the One Big Beautiful Bill Act (P.L. 119-21) as IRS Schedule 1-A Part V does: $6,000 per person ag",
+    "hasOutputSchema": false
+   },
+   {
+    "name": "estimate_tax_savings",
+    "title": "Estimate federal tax saved",
+    "annotations": {
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false,
+     "title": "Estimate federal tax saved"
+    },
+    "desc": "Estimates the federal income tax saved in 2025-2028 by the One Big Beautiful Bill Act overtime, tips and senior deductions combined. It applies each deduction's",
+    "hasOutputSchema": false
+   },
+   {
+    "name": "explain_eligibility",
+    "title": "Who qualifies, and how it is reported",
+    "annotations": {
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false,
+     "title": "Who qualifies, and how it is reported"
+    },
+    "desc": "Explains who can claim the 2025-2028 One Big Beautiful Bill Act deductions for overtime, tips and seniors: years covered, excluded filing status (married filing",
+    "hasOutputSchema": false
+   }
+  ]
+ },
+ "paycheck-calculator-mcp": {
+  "serverInfo": {
+   "name": "paycheck-calculator-mcp",
+   "version": "1.0.0"
+  },
+  "tools": [
+   {
+    "name": "calculate_take_home_pay",
+    "title": "Paycheck calculator: take-home pay",
+    "annotations": {
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false,
+     "title": "Paycheck calculator: take-home pay"
+    },
+    "desc": "Calculates take-home (net) pay for a US employee in any of the 50 states or DC for tax year 2025 or 2026: federal income tax from the IRS Rev. Proc. 2024-40 / 2",
+    "hasOutputSchema": false
+   },
+   {
+    "name": "compare_states_take_home",
+    "title": "Compare take-home pay across states",
+    "annotations": {
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false,
+     "title": "Compare take-home pay across states"
+    },
+    "desc": "Runs the same gross pay through 2 to 10 states (or DC) and ranks them by annual take-home pay for tax year 2025 or 2026, showing state income tax, the method fo",
+    "hasOutputSchema": false
+   },
+   {
+    "name": "salary_to_hourly",
+    "title": "Salary to hourly rate",
+    "annotations": {
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false,
+     "title": "Salary to hourly rate"
+    },
+    "desc": "Converts an annual salary to an hourly rate and to weekly, biweekly (26), semimonthly (24) and monthly gross pay. Defaults: 40 hours a week, 52 weeks (2,080 hou",
+    "hasOutputSchema": false
+   },
+   {
+    "name": "hourly_to_salary",
+    "title": "Hourly rate to annual salary",
+    "annotations": {
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false,
+     "title": "Hourly rate to annual salary"
+    },
+    "desc": "Converts an hourly wage to weekly, monthly and annual gross pay, with optional weekly overtime hours at a multiplier (1.5 by default). Defaults: 40 hours a week",
+    "hasOutputSchema": false
+   },
+   {
+    "name": "get_federal_tax_brackets",
+    "title": "Federal income tax brackets and standard deduction",
+    "annotations": {
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false,
+     "title": "Federal income tax brackets and standard deduction"
+    },
+    "desc": "Returns the exact federal income tax brackets (rate, lower and upper bound, tax on lower brackets) and standard deduction for tax year 2025 or 2026 and a filing",
+    "hasOutputSchema": false
+   }
+  ]
+ },
+ "recipe-nutrition-calculator-mcp": {
+  "serverInfo": {
+   "name": "recipe-nutrition-calculator-mcp",
+   "version": "1.0.0"
+  },
+  "tools": [
+   {
+    "name": "lookup_ingredient_nutrition",
+    "title": "Look up USDA nutrients for an ingredient",
+    "annotations": {
+     "title": "Look up ingredient nutrition",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false
+    },
+    "desc": "Returns USDA FoodData Central nutrient values per 100 g (calories, protein, total fat, saturated fat, carbohydrate, fiber, total sugars, sodium) for a common re",
+    "hasOutputSchema": false
+   },
+   {
+    "name": "calculate_recipe_nutrition",
+    "title": "Calculate nutrition for a whole recipe and per serving",
+    "annotations": {
+     "title": "Calculate recipe nutrition",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false
+    },
+    "desc": "Parses ingredient lines (\"2 cups flour\", \"1 stick butter\" as 8 tbsp, \"3 large eggs\", \"1 lb ground beef\"), converts cups, spoons and counted items to grams with ",
+    "hasOutputSchema": false
+   },
+   {
+    "name": "round_nutrition_label",
+    "title": "Round values for an FDA Nutrition Facts label",
+    "annotations": {
+     "title": "Round nutrition label",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false
+    },
+    "desc": "Applies the FDA Nutrition Facts rounding rules from 21 CFR 101.9(c) to unrounded per-serving values: calories (under 5 = 0, nearest 5 up to 50, nearest 10 above",
+    "hasOutputSchema": false
+   },
+   {
+    "name": "scale_recipe_nutrition",
+    "title": "Scale a recipe and recompute its nutrition",
+    "annotations": {
+     "title": "Scale recipe nutrition",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false
+    },
+    "desc": "Scales ingredient lines by a factor or from original to target servings (parses mixed numbers and fraction characters), then recomputes total and per-serving nu",
+    "hasOutputSchema": false
+   }
+  ]
+ },
+ "section-179-deduction-calculator-mcp": {
+  "serverInfo": {
+   "name": "section-179-deduction-calculator-mcp",
+   "version": "1.0.0"
+  },
+  "tools": [
+   {
+    "name": "calculate_section_179",
+    "title": "Section 179 deduction (2025-2026)",
+    "annotations": {
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false,
+     "title": "Section 179 deduction (2025-2026)"
+    },
+    "desc": "Calculates the Section 179 expense deduction as Form 4562 Part I does, with the limits raised by the One Big Beautiful Bill Act: $2,500,000 for 2025 with a doll",
+    "hasOutputSchema": false
+   },
+   {
+    "name": "calculate_bonus_depreciation",
+    "title": "Bonus depreciation rate and amount (168(k))",
+    "annotations": {
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false,
+     "title": "Bonus depreciation rate and amount (168(k))"
+    },
+    "desc": "Finds the special (bonus) depreciation rate under IRC 168(k) from the acquisition and placed-in-service dates and applies it after any Section 179 deduction. Th",
+    "hasOutputSchema": false
+   },
+   {
+    "name": "get_vehicle_depreciation_limits",
+    "title": "Vehicle limits: heavy SUV cap and luxury auto caps",
+    "annotations": {
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false,
+     "title": "Vehicle limits: heavy SUV cap and luxury auto caps"
+    },
+    "desc": "Returns the first-year write-off limits for a business vehicle by gross vehicle weight rating: passenger automobiles of 6,000 lb or less are held to the IRC 280",
+    "hasOutputSchema": false
+   },
+   {
+    "name": "calculate_asset_loan_payment",
+    "title": "Asset loan payment and after-tax cost",
+    "annotations": {
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false,
+     "title": "Asset loan payment and after-tax cost"
+    },
+    "desc": "Calculates the exact monthly payment, total interest and first-year interest for an equipment, truck, tractor, RV, land, manufactured home, ATV, pontoon or othe",
+    "hasOutputSchema": false
+   }
+  ]
+ },
+ "subdomain-finder-mcp": {
+  "serverInfo": {
+   "name": "subdomain-finder-mcp",
+   "version": "1.0.0",
+   "websiteUrl": "https://bugbountyreality.com"
+  },
+  "tools": [
+   {
+    "name": "find_subdomains",
+    "title": "Find subdomains (certificate transparency)",
+    "annotations": {
+     "title": "Find subdomains",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": true
+    },
+    "desc": "Passive subdomain enumeration for a domain from live certificate transparency logs: certspotter (unexpired certificates) with crt.sh as fallback or for expired ",
+    "hasOutputSchema": false
+   },
+   {
+    "name": "resolve_subdomains",
+    "title": "Resolve subdomains (DNS over HTTPS)",
+    "annotations": {
+     "title": "Resolve subdomains",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": true
+    },
+    "desc": "Resolve up to 40 hostnames now through Cloudflare DNS over HTTPS (A, AAAA and the CNAME chain). Each host is marked live, nxdomain, no_records or dangling_cname",
+    "hasOutputSchema": false
+   },
+   {
+    "name": "get_certificate_history",
+    "title": "Get certificate history for a host",
+    "annotations": {
+     "title": "Certificate history",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": true
+    },
+    "desc": "Certificates logged in certificate transparency for one hostname (or a whole domain with include_subdomains): issuer organisation and DN, not_before and not_aft",
+    "hasOutputSchema": false
+   },
+   {
+    "name": "summarize_attack_surface",
+    "title": "Summarize attack surface from CT",
+    "annotations": {
+     "title": "Attack surface summary",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": true
+    },
+    "desc": "Reads a domain's subdomains from live certificate transparency and groups them for recon triage: development and test, staging, admin and internal tools, APIs, ",
+    "hasOutputSchema": false
+   }
+  ]
+ },
+ "uk-income-tax-salary-mcp": {
+  "serverInfo": {
+   "name": "uk-income-tax-salary-mcp",
+   "version": "1.0.0"
+  },
+  "tools": [
+   {
+    "name": "calculate_uk_take_home",
+    "title": "UK take-home pay",
+    "annotations": {
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false,
+     "title": "UK take-home pay"
+    },
+    "desc": "Calculates UK take-home pay for an employee in tax year 2025/26 or 2026/27 from HMRC's published rates: income tax by band (England, Wales and NI, or the six Sc",
+    "hasOutputSchema": false
+   },
+   {
+    "name": "get_uk_tax_bands",
+    "title": "UK income tax bands and thresholds",
+    "annotations": {
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false,
+     "title": "UK income tax bands and thresholds"
+    },
+    "desc": "Returns the official UK income tax bands for 2025/26 or 2026/27, for England, Wales and Northern Ireland or for Scotland (starter 19%, basic 20%, intermediate 2",
+    "hasOutputSchema": false
+   },
+   {
+    "name": "compare_salaries",
+    "title": "Compare UK salaries after tax",
+    "annotations": {
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false,
+     "title": "Compare UK salaries after tax"
+    },
+    "desc": "Compares 1 to 5 UK gross salaries after income tax, National Insurance, student loan and pension for 2025/26 or 2026/27, with the same region, tax code and opti",
+    "hasOutputSchema": false
+   },
+   {
+    "name": "marginal_rate_at_income",
+    "title": "UK marginal tax rate at a salary",
+    "annotations": {
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false,
+     "title": "UK marginal tax rate at a salary"
+    },
+    "desc": "Returns the true UK marginal rate on the next pounds of salary in 2025/26 or 2026/27: income tax band rate, employee NI and student loan together, plus the Pers",
+    "hasOutputSchema": false
+   }
+  ]
+ },
+ "us-federal-holidays-business-days-mcp": {
+  "serverInfo": {
+   "name": "us-federal-holidays-business-days-mcp",
+   "version": "1.0.0"
+  },
+  "tools": [
+   {
+    "name": "list_federal_holidays",
+    "title": "List U.S. federal holidays for a year",
+    "annotations": {
+     "title": "List federal holidays",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false
+    },
+    "desc": "Exact U.S. federal holidays for any year 1971-2100 under 5 U.S.C. 6103: legal date, OPM observed date (Saturday -> Friday, Sunday -> Monday, so New Year's Day 2",
+    "hasOutputSchema": false
+   },
+   {
+    "name": "is_business_day",
+    "title": "Check if a date is a U.S. business day",
+    "annotations": {
+     "title": "Is business day",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false
+    },
+    "desc": "Says whether a date (1971-2100) is a business day on the U.S. federal (OPM) calendar or the Federal Reserve banking calendar, names the holiday if any, and retu",
+    "hasOutputSchema": false
+   },
+   {
+    "name": "add_business_days",
+    "title": "Add or subtract U.S. business days",
+    "annotations": {
+     "title": "Add business days",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false
+    },
+    "desc": "Adds (or with a negative number subtracts) N business days to a date, skipping weekends and observed U.S. federal or Federal Reserve holidays exactly. The start",
+    "hasOutputSchema": false
+   },
+   {
+    "name": "count_business_days",
+    "title": "Count U.S. business days between two dates",
+    "annotations": {
+     "title": "Count business days",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false
+    },
+    "desc": "Counts business days between two dates (1971-2100) on the U.S. federal or Federal Reserve calendar, excluding weekends and observed holidays. include_start and ",
+    "hasOutputSchema": false
+   },
+   {
+    "name": "invoice_due_date",
+    "title": "Invoice due date from net terms",
+    "annotations": {
+     "title": "Invoice due date",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false
+    },
+    "desc": "Computes an invoice due date from an issue date and net terms in calendar days (Net 30 = 30), then optionally rolls a weekend or U.S. holiday due date: followin",
+    "hasOutputSchema": false
+   }
+  ]
+ }
+}

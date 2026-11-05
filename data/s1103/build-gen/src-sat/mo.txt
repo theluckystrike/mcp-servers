@@ -1,0 +1,1073 @@
+2026
+SAT Suite of
+Assessments
+Annual Report
+
+    MISSOURI SUPPLEMENT
+
+
+DATA EMBARGO IN EFFECT. Information in this report is embargoed from dissemination to the media and
+general public until the College Board makes it publicly available by the end of September. Prior to that time,
+you may use the data and other information in this report for internal purposes. If you have any questions,
+please contact the College Board communications department at communications@collegeboard.org.
+                   Contents
+                   Introduction                                                                3
+                        About This Report                                                      3
+
+
+                   Participation and Performance                                               5
+                        SAT Suite Participation                                                5
+                        SAT Score Distributions                                                6
+                        Intended College Major and Degree-Level Goal                           7
+                        Institutions that Received the Most SAT Score Reports from Missouri    8
+
+
+                   Appendix                                                                    9
+                        SAT                                                                   10
+                        PSAT/NMSQT and PSAT 10                                                12
+                        PSAT 8/9                                                              16
+                        Interquartile Ranges                                                  20
+
+
+
+
+2   |   2026 SAT Suite of Assessments Annual Report
+Introduction About This Report                                                                                        Missouri Supplement
+
+
+
+
+Introduction
+
+About This Report
+This report presents data on students in the class of 2026 who took the
+SAT® during high school, as well as takers of PSAT-related assessments—the
+PSAT/NMSQT®, PSAT™ 10, and PSAT™ 8/9­—during the 2025–26 school year.
+Within each assessment, test takers are counted only once and only their
+latest scores and most recent demographic responses are summarized. Most
+students supply optional demographic information when they register for or
+take tests in the SAT Suite of Assessments, which provides valuable contextual
+information to aid in interpreting and understanding individual and group scores.
+This report is compiled by the College Board as a summary of the SAT
+program results, inclusive of all test takers. In some states, the SAT is
+offered as an accountability assessment to all students in 11th grade.*
+Because this report is focused on the total SAT test taking activity of the
+graduating Class of 2026, it is not comparable with or a substitute for data
+that is provided by state agencies regarding their state testing programs.
+
+
+
+
+*
+    Colorado, Connecticut, Delaware, Indiana, Michigan, New Hampshire, New Mexico, Rhode Island, and West Virginia.
+
+
+3     |   2026 SAT Suite of Assessments Annual Report
+Introduction About This Report                                                                                Missouri Supplement
+
+
+
+
+Score Ranges                                                        Statistical Definitions
+Here are the ranges for reported scores for the                     Mean score: The mean score is the arithmetic average
+Reading and Writing (RW) and Math sections                          of a defined set of test scores. Mean score statistics are
+of each assessment in the SAT Suite:                                reported here if there are ten or more students in a group
+                                                                    or subgroup. Due to rounding, the mean section scores
+    y SAT sections: 200–800                                         (RW and Math) may not add up to the Total score.
+    y PSAT/NMSQT and PSAT 10 sections: 160–760
+                                                                    Scaled score: A scaled score is the result of adjusting a
+    y PSAT 8/9 sections: 120–720                                    raw score (the number of questions answered correctly) in
+                                                                    ways that ensure that results across different test forms
+Race/Ethnicity Data Collection and Reporting                        are comparable. The scores shown here and reported to
+In June 2015, the College Board aligned its collection and          educators, students, and institutions are scaled scores.
+reporting of race/ethnicity categories with U.S. Department of      Standard deviation (SD): The standard deviation is a measure
+Education guidelines. In addition, while previous SAT cohort        of the variability of a set of scores. If test scores cluster
+assignment reflected self-reported information collected            tightly around the mean score, as they do when the group
+during SAT or SAT Subject Test registration only, it now            tested is relatively homogeneous, the standard deviation
+leverages the most recent information from the SAT, PSAT-           is smaller than it would be with a more diverse group
+related assessment, or AP programs in an effort to more             and a more widely dispersed distribution of scores.
+closely align with school, district, and state data systems.
+For these reasons, we advise caution when comparing
+                                                                    College and Career Readiness Benchmarks
+data points in this report to those in previous reports.
+                                                                    Each assessment in the SAT Suite has an associated set of
+SAT School Day                                                      metrics called the College and Career Readiness Benchmarks.
+In the United States, students may take the SAT on a weekday         y The SAT Math benchmark is the section score
+in their school when it is provided by their state, district, or       associated with a 75% chance of earning at least a C
+school through the SAT School Day program. SAT School Day              in first-semester, credit-bearing, college-level courses
+is administered on test dates in the fall and spring. Students         in algebra, statistics, precalculus, or calculus.
+testing in the most recent school year as part of a state testing
+                                                                     y The SAT Reading and Writing (RW) benchmark is
+program are only included in the cohort-level data presented
+                                                                       associated with a 75% chance of earning at least a C
+here if they are a member of the graduating class of 2026.
+                                                                       in first-semester, credit-bearing, college-level courses
+                                                                       in history, literature, social science, or writing.
+Median Family Income Estimates
+To generate high-level estimates of participation in the SAT        The grade-level benchmark scores for PSAT-related assessments
+Suite of Assessments by income band, we estimate family             are based on expected student growth toward the SAT
+income by linking students to the median family income in           benchmarks at each grade. While SAT benchmarks indicate
+the census tract in which they live, according to American          likelihood of success in college, grade-level benchmarks indicate
+Community Survey (ACS) data. Each census tract’s income             whether a student is on track for college and career readiness
+estimate is a three-year rolling average of the most recent         for their grade. The benchmarks are set to reflect typical annual
+available ACS data. Median family income estimates are              growth from year to year from 8th through 12th grades.
+available for the total group and for U.S. states only.
+                                                                     Assessment/                   RW                    Math
+Caveat on Using the Data                                             Grade level              Section Score          Section Score
+Relationships between test scores and other background               SAT                            480                   530
+or contextual factors are complex and interdependent.                Grade 11                       460                   510
+Caution is warranted when using scores to compare or
+evaluate teachers, schools, districts, or states, because of         Grade 10                       430                   480
+differences in participation and test taker populations.             Grade 9                        410                   450
+                                                                     Grade 8                        390                   430
+
+                                                                    The current SAT Suite benchmark outcomes should not be
+                                                                    compared against results from the old SAT or PSAT/NMSQT,
+                                                                    as the score scale and benchmark definitions have changed.
+                                                                    Benchmark statistics are reported if there are ten
+                                                                    or more students in a group or subgroup.
+
+
+
+
+4    |   2026 SAT Suite of Assessments Annual Report
+Participation and Performance SAT Suite Participation                                                                    Missouri Supplement
+
+
+
+
+MISSOURI SUPPLEMENT
+
+
+Participation
+and Performance
+
+SAT Suite Participation
+This section reflects SAT test activity for students in the graduating class of                                     18,810
+2026 who took the SAT during high school, including participation rates based                                       Total test takers†
+on the state’s estimated population of high school graduates. In some cases, the
+actual number of test takers may exceed the original enrollment estimates. If a
+student took the SAT more than once, the most recent score is summarized.
+
+SAT Participation by Graduating Class*
+                                                                                                                    67%
+                                                                                                                    Met College and Career
+                                                                                                                    Readiness Benchmarks
+Graduating                      Assessment   Total No.
+Class                                Taken Test Takers                          Participation Rate %
+
+                                                          0%              25%         50%              75%   100%
+
+Class of 2026                            SAT         2,919     4%
+Class of 2027                  PSAT/NMSQT            7,631          11%
+Class of 2028       PSAT/NMSQT or PSAT 10            7,515        10%
+Class of 2029                       PSAT 8/9           692   1%
+
+Class of 2030                       PSAT 8/9            59   0%
+
+
+
+
+                                                                                                                    †
+                                                                                                                        Missouri students completing
+                                                                                                                        the SAT, PSAT/NMSQT,
+*
+    Class enrollment from Knocking at the College Door, WICHE, December 2024. PSAT‐related                              PSAT 10, or PSAT 8/9 during
+    assessment data reflect students who tested during the 2025-26 school year.                                         the 2025-26 school year.
+
+
+5     |   2026 SAT Suite of Assessments Annual Report
+Participation and Performance SAT Score Distributions                                                                                                                  Missouri Supplement
+
+
+
+
+SAT Score Distributions
+Subgroup Scores                                                 400–590      600–790          800–990         1000–1190           1200–1390             1400–1600
+
+Total Students
+
+                      Mean Score                                                        % of Test Takers
+
+                               0%                          20%                    40%                      60%                     80%                         100%
+
+Total Students            1187 3                          17                                  30                                        34                    17
+
+
+Gender
+                      Mean Score                                                        % of Test Takers
+
+                               0%                          20%                    40%                      60%                         80%                     100%
+
+Female                    1156                                 21                                  33                                         32              12
+
+Male                      1220 3                     13                            27                                             36                          22
+
+
+Race/Ethnicity
+
+                      Mean Score                                                        % of Test Takers
+
+                               0%                          20%                    40%                      60%                     80%                         100%
+
+American Indian
+
+Asian                     1303             9                          21                                29                                                   40
+
+African American          1068         5                                     33                                              38                         20     4
+
+Hispanic                  1062             10                                      33                               27                                  25     6
+
+Native Hawaiian
+
+White                     1207                  12                                 31                                                    41                  14
+
+Two or More               1210                       15                            28                                             35                          21
+
+
+
+RW Section Scores     Total Students             Gender                                                    Race/Ethnicity
+                                                                      American                  African                       Native                         Two or
+                                           Female              Male     Indian      Asian      American      Hispanic       Hawaiian          White           More
+
+700–800                        21%              17%            24%                      36%          7%            8%                          21%             25%
+600–690                        36%              35%            37%                      30%        27%            28%                          41%             39%
+500–590                        28%              31%            25%                      22%        40%            29%                          27%             26%
+400–490                        12%              14%            10%                      9%         21%            24%                              9%             9%
+300–390                          3%             3%              3%                      2%           6%           11%                              1%             2%
+200–290                          0%             0%              0%                      1%           0%            0%                              0%             0%
+
+
+
+Math Section Scores   Total Students             Gender                                                    Race/Ethnicity
+                                                                      American                  African                       Native                         Two or
+                                           Female              Male     Indian      Asian      American      Hispanic       Hawaiian          White           More
+
+700–800 (35–40)                18%              12%            25%                      45%          4%            6%                          15%             22%
+600–690 (30–34.5)              29%              27%            32%                      31%        18%            21%                          33%             27%
+500–590 (25–29.5)              29%              32%            25%                      16%        33%            27%                          32%             28%
+400–490 (20–24.5)              20%              24%            15%                      6%         37%            34%                          16%             22%
+300–390 (15–19.5)                4%             5%              3%                      1%           8%           12%                              3%             2%
+200–290 (10–14.5)                0%             0%              0%                      0%           0%            0%                              0%             0%
+
+
+
+
+6   |   2026 SAT Suite of Assessments Annual Report
+Participation and Performance Intended College Major and Degree-Level Goal                                                           Missouri Supplement
+
+
+
+
+Intended College Major
+and Degree-Level Goal
+Data reflect SAT test activity for students who graduated high
+school in 2026. If a student took the SAT more than once,
+the most recent score is summarized. Students can select
+up to five majors of interest; a student selecting multiple
+majors is counted in each corresponding category below.
+
+
+
+
+Intended College Major                                                                                    Degree-Level Goal
+
+                                   Total No.
+
+
+                                                                                                          30%
+Rank                       Major Test Takers                         % of Test Takers
+
+                                           0%            5%          10%         15%          20%   25%
+                                                                                                          Doctoral or Related Degree (679)
+                      Agriculture         53        2%
+                     Architecture         78          3%
+                  Gender Studies           8   0%
+                                                                                 14%
+                                                                                                          28%
+     4              Bio Sciences         414
+     2                  Business         461                                            16%
+                Communications            63        2%                                                    Master’s Degree (639)
+     7        Computer Science           183                  6%
+                    Construction           6   0%
+                       Education          88         3%
+     1               Engineering
+         Engineering Technology
+                                         502
+                                          55        2%
+                                                                                         17%
+                                                                                                          25%
+                          English         55        2%                                                    Bachelor’s Degree (575)
+                Human Sciences            14   0%
+               Foreign Language           58        2%
+     3         Clinical Sciences         456                                            16%
+
+    10
+                          History
+                            Legal
+                                          59
+                                         129
+                                                    2%
+                                                         4%
+                                                                                                          14%
+                                                                                                          Undecided (314)
+                      Liberal Arts        32   1%
+                    Librarianship          2 0%
+                    Mathematics          109             4%
+
+                                                                                                          1%
+          Mechanic/Technicians            21    1%
+           Military Technologies          15    1%
+         Interdisciplinary Studies        49      2%                                                      Certificate Program (19)
+              Natural Resources           36    1%
+           Parks and Recreation           24    1%
+                Culinary Services         20    1%
+
+     9
+                      Philosophy
+              Physical Sciences
+                                          34
+                                         142
+                                                1%
+                                                           5%
+                                                                                                          1%
+                                                                                                          Other (15)
+     6               Psychology          200                    7%
+           Public Administration          22    1%
+                Security Services         97         3%
+
+
+                                                                                                          1%
+     8           Social Sciences         163                  6%
+                        Theology           8   0%
+     5                Visual Arts        213                    7%                                        Associate Degree (14)
+                            Other         28    1%
+                       Undecided          52        2%
+
+7   |    2026 SAT Suite of Assessments Annual Report
+Participation and Performance Institutions that Received the Most SAT Score Reports                                         Missouri Supplement
+
+
+
+
+Institutions that Received the Most
+SAT Score Reports from Missouri
+Of the 2,919 students from Missouri who took the SAT, 1,243
+designated that their score reports be sent to institutions.
+Students may designate more than one institution to
+receive scores. This list includes only the institutions that
+received the most score reports. A total of 687 institutions
+received score reports from Missouri students.
+
+
+
+
+Top Institutions Receiving Score Reports*
+
+                                                        Total No.
+Institution                                             Students                      % of Score Senders
+
+                                                                 0%            10%            20%            30%     40%   687
+University of Missouri: Columbia                              385                                              31%         Total institutions received
+Washington University in St. Louis                            123              10%                                         score reports from
+                                                                                                                           Missouri students
+University of Missouri: Kansas City                           105            8%
+University of Texas at Austin                                 101            8%
+National Merit Scholarship Corporation                         96            8%
+Ohio State University: Columbus Campus                         96            8%
+University of Wisconsin-Madison                                86           7%
+Missouri University of Science and Technology                  80          6%
+Saint Louis University                                         76          6%
+Purdue University                                              63         5%
+University Of Illinois Urbana Champaign                        60         5%
+University of Kansas                                           59         5%
+Princeton University                                           57         5%
+University of Southern California                              57         5%
+Missouri State University                                      56         5%
+Univ of Michigan Ann Arbor                                     51        4%
+Georgetown University                                          48        4%
+University of Florida                                          45        4%
+Penn State University Park                                     44        4%
+Indiana University Bloomington                                 43       3%
+University of Georgia                                          42       3%
+University of Arkansas                                         41       3%
+Georgia Institute Of Technology                                38       3%
+Harvard College                                                38       3%
+Auburn University                                              37       3%
+Kansas State University                                        34       3%
+Texas A&M University                                           34       3%
+Brown University                                               33       3%
+Cornell University                                             33       3%
+University of Maryland: College Park                           33       3%
+
+
+
+
+*
+    Of students who designated that their SAT score reports be sent to institutions, the ‘Percent of Score
+    Senders’ indicates the percent of those students who had their scores sent to each institution listed.
+
+8     |   2026 SAT Suite of Assessments Annual Report
+Appendix                                              Missouri Supplement
+
+
+
+
+Appendix
+
+
+
+
+9   |   2026 SAT Suite of Assessments Annual Report
+Appendix SAT                                                                                                                                         Missouri Supplement
+
+
+
+
+SAT
+Total                                              Test Takers                       Mean Score                             Met Benchmarks
+                                               Number        Percent         Total          RW         Math          Both     RW       Math   None
+
+Total                                            2,919                       1187          604           584          67%    88%        68%   10%
+Took Essay*                                           3           0%
+
+
+
+Race/Ethnicity                                     Test Takers                       Mean Score                             Met Benchmarks
+                                               Number        Percent         Total          RW         Math          Both     RW       Math   None
+
+American Indian/Alaska Native                         6           0%
+Asian                                              363           12%         1303          635           667          84%    92%        90%    2%
+Black/African American                             301           10%         1068          551           517          45%    79%        45%   21%
+Hispanic/Latino                                    280           10%         1062          543           520          44%    70%        45%   28%
+Native Hawaiian/Other Pacific Islander                0           0%
+White                                             1,516          52%         1207          618           589          72%    93%        73%    6%
+Two or More Races                                  191            7%         1210          618           592          70%    92%        70%    8%
+No Response                                        262            9%         1175          598           577          61%    83%        63%   15%
+
+
+
+Gender                                             Test Takers                       Mean Score                             Met Benchmarks
+                                               Number        Percent         Total          RW         Math          Both     RW       Math   None
+
+Female                                           1,501           52%         1156          594           562          60%    88%        61%   11%
+Male                                             1,376           48%         1220          613           607          74%    89%        76%    9%
+No Response                                          42                      1236          641           595          71%    93%        71%    7%
+
+
+
+First Language Learned                             Test Takers                       Mean Score                             Met Benchmarks
+                                               Number        Percent         Total          RW         Math          Both     RW       Math   None
+
+English Only                                     2,057           70%         1196          612           584          69%    91%        70%    9%
+English and Another Language                       419           14%         1193          597           596          68%    86%        69%   13%
+Another Language                                   198            7%         1123          547           575          52%    72%        61%   19%
+No Response                                        245            8%         1158          594           564          61%    87%        62%   12%
+
+
+
+Highest Level of Parental Education                Test Takers                       Mean Score                             Met Benchmarks
+                                               Number        Percent         Total          RW         Math          Both     RW       Math   None
+
+No High School Diploma                               63           2%         1033          524           509          33%    67%        35%   32%
+High School Diploma                                377           13%         1069          550           519          41%    77%        43%   21%
+Associate Degree                                   115            4%         1096          566           530          50%    83%        50%   17%
+Bachelor’s Degree                                  871           30%         1169          596           573          66%    89%        67%   10%
+Graduate Degree                                   1,218          42%         1264          639           625          81%    95%        82%    4%
+No Response                                        275            9%         1142          582           560          57%    79%        59%   19%
+
+
+
+
+*
+    Reflects the most recent essay of test takers who completed the SAT Essay at any point, not necessarily on the most
+    recent test administration date. College Board discontinued the optional SAT Essay after June 2021, but it remains
+    available in states where it is required as part of the use of the SAT as an accountability assessment.
+
+
+10      |   2026 SAT Suite of Assessments Annual Report
+Appendix SAT                                                                                                                                                           Missouri Supplement
+
+
+
+
+SAT Fee Waiver*                                       Test Takers                        Mean Score                                       Met Benchmarks
+                                                 Number        Percent          Total           RW          Math            Both            RW       Math       None
+
+Used at any point                                     182            7%         1140            582           558           55%            86%        57%       12%
+Did not use                                         2,452           93%         1208            613           594           71%            91%        72%        8%
+
+
+
+Test-Taking History†                                  Test Takers                        Mean Score                                       Met Benchmarks
+                                                 Number        Percent          Total           RW          Math            Both            RW       Math       None
+
+School Day                                            486           17%         1138            579           559           59%            80%        60%       19%
+    School Day Only                                   285           10%         1045            539           506           40%            69%        41%       31%
+    School Day and Weekend                            201            7%         1271            636           634           87%            96%        88%        3%
+Weekend Only                                        2,433           83%         1197            609           588           68%            90%        70%        9%
+
+
+
+School Location‡                                      Test Takers                        Mean Score                                       Met Benchmarks
+                                                 Number        Percent          Total           RW          Math            Both            RW       Math       None
+
+City                                                  467           16%         1176            597           580           66%            85%        66%       15%
+Suburb                                              1,284           44%         1227            621           607           75%            92%        77%        7%
+Town/Rural                                            340           12%         1162            590           572           65%            86%        66%       12%
+Unknown                                               828           28%         1142            588           554           55%            86%        57%       13%
+
+
+
+Median Family Income§                                 Test Takers                        Mean Score                                       Met Benchmarks
+                                                 Number        Percent          Total           RW          Math            Both            RW       Math       None
+
+Lowest Quintile ($0–$63,157)                          172            6%         1049            541           508           34%            72%        35%       27%
+2nd Lowest Quintile ($63,158–$80,990)                 273            9%         1102            571           530           48%            82%        49%       16%
+Middle Quintile ($80,991–$100,344)                    370           13%         1158            593           565           60%            86%        61%       12%
+2nd Highest Quintile ($100,345–$131,209)              559           19%         1191            608           583           69%            92%        69%        8%
+Highest Quintile (≥$131,210)                        1,237           42%         1256            635           621           81%            95%        82%        4%
+Unknown                                               308           11%         1094            548           546           51%            72%        56%       24%
+
+
+
+
+*
+    Reflects students who used a fee waiver for an SAT registration for a Weekend administration compared to weekend test takers who did not. Students
+    who take the SAT on a School Day are generally eligible to receive fee waivers or reductions through their schools; for more, visit www.sat.org/register.
+†
+    All students who took the SAT on a School Day as part of a State, District or School testing initiative at any point are classified
+    under the ‘School Day’ breakout, including students who took a test on a weekend in addition to their School Day test. Students
+    who tested exclusively on a nationally offered SAT administration date are classified as ‘Weekend Only’.
+‡
+    Schools are categorized according to the National Center for Education Statistics’ locale classification definitions.
+§
+    “Median family income” refers to the median family income of students’ home census tracts.
+
+
+11      |   2026 SAT Suite of Assessments Annual Report
+Appendix PSAT/NMSQT and PSAT 10                                                                                             Missouri Supplement
+
+
+
+
+PSAT/NMSQT and PSAT 10
+Total                                       Test Takers                 Mean Score
+                                         Number     Percent     Total        RW      Math
+
+Total                                    15,321                 1082         553      530
+  PSAT/NMSQT                             14,509                 1087         555      532
+  PSAT 10                                   845                  998         511      488
+
+
+
+Race/Ethnicity                              Test Takers                 Mean Score
+                                         Number     Percent     Total        RW      Math
+
+American Indian/Alaska Native                22           0%     962         499      463
+Asian                                     1,135           7%    1197         590      607
+Black/African American                    1,211           8%     938         483      455
+Hispanic/Latino                           1,086           7%    1018         524      495
+Native Hawaiian/Other Pacific Islander       26           0%     919         473      446
+White                                     9,559           62%   1099         562      537
+Two or More Races                           803           5%    1086         556      530
+No Response                               1,479           10%   1057         542      516
+
+
+
+Gender                                      Test Takers                 Mean Score
+                                         Number     Percent     Total        RW      Math
+
+Female                                    8,073           53%   1063         548      515
+Male                                      7,158           47%   1103         557      546
+No Response                                  90                 1206         629      576
+
+
+
+Grade Level                                 Test Takers                 Mean Score                 Met Benchmarks
+                                         Number     Percent     Total        RW      Math   Both     RW       Math   None
+
+10th Grade                                7,515           49%   1047         536      511   63%     89%        64%   10%
+11th Grade                                7,631           50%   1118         570      549   64%     88%        65%   10%
+Other/No Response                           175           1%    1050         536      514
+
+
+
+First Language Learned­—11th Grade          Test Takers                 Mean Score                 Met Benchmarks
+                                         Number     Percent     Total        RW      Math   Both     RW       Math   None
+
+English Only                              3,508           46%   1085         555      530   55%     84%        57%   14%
+English and Another Language                423           6%    1099         553      545   57%     79%        58%   20%
+Another Language                            170           2%    1081         530      550   56%     72%        61%   22%
+No Response                               3,530           46%   1156         589      567   74%     94%        75%    5%
+
+
+
+First Language Learned­—10th Grade          Test Takers                 Mean Score                 Met Benchmarks
+                                         Number     Percent     Total        RW      Math   Both     RW       Math   None
+
+English Only                              3,435           46%   1013         520      493   55%     86%        56%   12%
+English and Another Language                341           5%    1007         509      498   52%     82%        54%   16%
+Another Language                            119           2%     964         481      483   46%     67%        51%   28%
+No Response                               3,620           48%   1085         555      530   73%     93%        73%    6%
+
+
+
+
+12      |   2026 SAT Suite of Assessments Annual Report
+Appendix PSAT/NMSQT and PSAT 10                                                                                         Missouri Supplement
+
+
+
+
+Highest Level of Parental
+                                        Test Takers                 Mean Score                 Met Benchmarks
+Education­—11th Grade
+                                     Number     Percent     Total        RW      Math   Both     RW       Math   None
+
+No High School Diploma                  153           2%     951         482      469   33%     61%        35%   37%
+High School Diploma                     898           12%   1039         531      508   49%     80%        50%   18%
+Associate Degree                        276           4%    1047         538      509   46%     84%        47%   14%
+Bachelor’s Degree                      2,519          33%   1126         573      553   67%     92%        68%    7%
+Graduate Degree                        2,359          31%   1192         604      588   79%     94%        80%    5%
+No Response                            1,426          19%   1065         547      518   51%     82%        52%   17%
+
+
+
+Highest Level of Parental
+                                        Test Takers                 Mean Score                 Met Benchmarks
+Education­—10th Grade
+                                     Number     Percent     Total        RW      Math   Both     RW       Math   None
+
+No High School Diploma                  145           2%     900         461      439   26%     69%        27%   30%
+High School Diploma                     768           10%    985         505      480   48%     82%        49%   17%
+Associate Degree                        210           3%    1010         519      490   57%     86%        59%   12%
+Bachelor’s Degree                      2,102          28%   1067         545      522   68%     93%        70%    6%
+Graduate Degree                        2,022          27%   1106         565      541   76%     95%        77%    4%
+No Response                            2,268          30%   1009         517      491   55%     84%        56%   15%
+
+
+
+High School Grade Point
+                                        Test Takers                 Mean Score                 Met Benchmarks
+Average—11th Grade
+                                     Number     Percent     Total        RW      Math   Both     RW       Math   None
+
+A+ (97–100)                            1,731          23%   1237         625      613   89%     98%        89%    2%
+A (93–96)                              1,925          25%   1167         590      577   76%     94%        77%    5%
+A- (90–92)                             1,006          13%   1088         555      533   58%     89%        60%    9%
+B (80–89)                              1,003          13%    966         497      469   29%     69%        30%   29%
+C (70–79)                               106           1%     883         456      427   16%     49%        16%   51%
+D, E, or F (below 70)                     7           0%
+No Response                            1,853          24%   1070         551      518   55%     87%        56%   12%
+
+
+
+High School Grade Point
+                                        Test Takers                 Mean Score                 Met Benchmarks
+Average—10th Grade
+                                     Number     Percent     Total        RW      Math   Both     RW       Math   None
+
+A+ (97–100)                            1,343          18%   1152         585      567   87%     97%        87%    2%
+A (93–96)                              1,855          25%   1082         552      530   74%     95%        75%    4%
+A- (90–92)                              800           11%   1006         515      491   53%     90%        54%    9%
+B (80–89)                               817           11%    914         471      443   26%     70%        28%   28%
+C (70–79)                                87           1%     843         435      407   10%     48%        10%   52%
+D, E, or F (below 70)                     5           0%
+No Response                            2,607          35%   1029         529      500   60%     88%        61%   11%
+
+
+
+
+13   |   2026 SAT Suite of Assessments Annual Report
+Appendix PSAT/NMSQT and PSAT 10                                                                                                     Missouri Supplement
+
+
+
+
+Score Distributions by Subgroup—11th Grade
+Test Takers                             Total Students        Gender                                         Race/Ethnicity
+                                                                               American            African                      Native            Two or
+                                                          Female       Male      Indian   Asian   American      Hispanic      Hawaiian    White    More
+
+Total                                            7,631     4,040       3,533         9     619        602            579            9     4,843     376
+
+
+
+Total Score                             Total Students        Gender                                         Race/Ethnicity
+                                                                               American            African                      Native            Two or
+                                                          Female       Male      Indian   Asian   American      Hispanic      Hawaiian    White    More
+
+1400–1520                                          6%        4%          8%                23%         1%             3%                    4%       8%
+1200–1390                                         30%       27%         32%                35%        10%            19%                   32%      29%
+1000–1190                                         39%       40%         37%                27%        28%            36%                   43%      36%
+800–990                                           22%       25%         18%                13%        41%            31%                   19%      25%
+600–790                                            4%        4%          4%                 1%        18%             9%                    2%       2%
+320–590                                            0%        0%          0%                 0%         2%             1%                    0%       0%
+
+
+
+Section Scores—RW                       Total Students        Gender                                         Race/Ethnicity
+                                                                               American            African                      Native            Two or
+                                                          Female       Male      Indian   Asian   American      Hispanic      Hawaiian    White    More
+
+700–760                                            7%        6%          8%                16%         1%             4%                    6%       8%
+600–690                                           37%       35%         38%                42%        15%            27%                   40%      36%
+500–590                                           34%       35%         33%                26%        31%            34%                   36%      34%
+400–490                                           18%       20%         16%                12%        35%            26%                   16%      19%
+300–390                                            4%        4%          4%                 3%        16%             9%                    2%       3%
+160–290                                            0%        0%          0%                 0%         1%             1%                    0%       0%
+
+
+
+Section Scores—Math                     Total Students        Gender                                         Race/Ethnicity
+                                                                               American            African                      Native            Two or
+                                                          Female       Male      Indian   Asian   American      Hispanic      Hawaiian    White    More
+
+700–760 (35–38)                                    8%        5%         12%                29%         1%             5%                    6%      12%
+600–690 (30–34.5)                                 25%       21%         28%                33%         8%            16%                   27%      22%
+500–590 (25–29.5)                                 36%       38%         34%                24%        23%            31%                   41%      33%
+400–490 (20–24.5)                                 25%       29%         21%                12%        43%            34%                   24%      27%
+300–390 (15–19.5)                                  5%        6%          4%                 1%        22%            14%                    3%       6%
+160–290 (8–14.5)                                   0%        0%          1%                 0%         3%             0%                    0%       0%
+
+
+
+
+14      |   2026 SAT Suite of Assessments Annual Report
+Appendix PSAT/NMSQT and PSAT 10                                                                                                     Missouri Supplement
+
+
+
+
+Score Distributions by Subgroup—10th Grade
+Test Takers                             Total Students        Gender                                         Race/Ethnicity
+                                                                               American            African                      Native            Two or
+                                                          Female       Male      Indian   Asian   American      Hispanic      Hawaiian    White    More
+
+Total                                            7,515     3,942       3,542        13     500        603            497           17     4,587     420
+
+
+
+Total Score                             Total Students        Gender                                         Race/Ethnicity
+                                                                               American            African                      Native            Two or
+                                                          Female       Male      Indian   Asian   American      Hispanic      Hawaiian    White    More
+
+1400–1520                                          1%        1%          2%         8%      9%         0%             0%           0%       1%       1%
+1200–1390                                         18%       14%         21%         0%     35%         7%             9%           6%      19%      18%
+1000–1190                                         43%       43%         42%        38%     39%        24%            43%          12%      47%      46%
+800–990                                           32%       35%         29%        46%     15%        48%            38%          65%      31%      29%
+600–790                                            6%        6%          5%         8%      2%        21%             9%          18%       3%       5%
+320–590                                            0%        0%          0%         0%      0%         0%             1%           0%       0%       0%
+
+
+
+Section Scores—RW                       Total Students        Gender                                         Race/Ethnicity
+                                                                               American            African                      Native            Two or
+                                                          Female       Male      Indian   Asian   American      Hispanic      Hawaiian    White    More
+
+700–760                                            2%        2%          3%         8%      7%         0%             0%           0%       2%       1%
+600–690                                           25%       23%         27%         0%     38%        11%            19%          12%      27%      28%
+500–590                                           40%       40%         39%        46%     37%        28%            39%          12%      43%      40%
+400–490                                           27%       28%         25%        38%     15%        41%            33%          59%      25%      24%
+300–390                                            6%        6%          5%         8%      3%        19%             9%          18%       3%       6%
+160–290                                            0%        0%          0%         0%      0%         1%             1%           0%       0%       0%
+
+
+
+Section Scores—Math                     Total Students        Gender                                         Race/Ethnicity
+                                                                               American            African                      Native            Two or
+                                                          Female       Male      Indian   Asian   American      Hispanic      Hawaiian    White    More
+
+700–760 (35–38)                                    2%        1%          4%         8%     15%         1%             0%           0%       1%       1%
+600–690 (30–34.5)                                 15%       10%         19%         0%     34%         5%             8%           0%      15%      17%
+500–590 (25–29.5)                                 38%       38%         38%        23%     34%        20%            34%          18%      43%      41%
+400–490 (20–24.5)                                 37%       42%         32%        62%     15%        47%            43%          59%      36%      32%
+300–390 (15–19.5)                                  7%        8%          6%         8%      2%        26%            13%          24%       4%       9%
+160–290 (8–14.5)                                   0%        0%          0%         0%      0%         1%             1%           0%       0%       0%
+
+
+
+
+15      |   2026 SAT Suite of Assessments Annual Report
+Appendix PSAT 8/9                                                                                                           Missouri Supplement
+
+
+
+
+PSAT 8/9
+Total                                       Test Takers                 Mean Score
+                                         Number     Percent     Total        RW      Math
+
+Total                                       853                  927         475      452
+  Fall                                      537                  877         450      426
+  Spring                                    370                  974         497      478
+
+
+
+Race/Ethnicity                              Test Takers                 Mean Score
+                                         Number     Percent     Total        RW      Math
+
+American Indian/Alaska Native                 3           0%
+Asian                                        45           5%    1108         550      558
+Black/African American                      114           13%    791         403      389
+Hispanic/Latino                             131           15%    834         426      408
+Native Hawaiian/Other Pacific Islander        0           0%
+White                                       320           38%    991         512      480
+Two or More Races                            52           6%     974         497      477
+No Response                                 188           22%    907         466      440
+
+
+
+Gender                                      Test Takers                 Mean Score
+                                         Number     Percent     Total        RW      Math
+
+Female                                      471           55%    928         480      448
+Male                                        382           45%    925         469      456
+No Response                                   0
+
+
+
+Grade Level                                 Test Takers                 Mean Score                 Met Benchmarks
+                                         Number     Percent     Total        RW      Math   Both     RW       Math   None
+
+8th Grade                                    59           7%     982         509      473   63%     90%        63%   10%
+9th Grade                                   692           81%    930         476      454   47%     73%        47%   27%
+Other/No Response                           102           12%    872         448      424
+
+
+
+First Language Learned­—9th Grade           Test Takers                 Mean Score                 Met Benchmarks
+                                         Number     Percent     Total        RW      Math   Both     RW       Math   None
+
+English Only                                443           64%    932         478      454   49%     77%        50%   23%
+English and Another Language                 82           12%    953         489      464   46%     72%        46%   28%
+Another Language                             28           4%     951         475      475   43%     61%        43%   39%
+No Response                                 139           20%    907         464      444   40%     62%        41%   37%
+
+
+
+First Language Learned­—8th Grade           Test Takers                 Mean Score                 Met Benchmarks
+                                         Number     Percent     Total        RW      Math   Both     RW       Math   None
+
+English Only                                 32           54%   1004         514      490   72%     91%        72%    9%
+English and Another Language                  5           8%
+Another Language                              2           3%
+No Response                                  20           34%    946         506      440   45%     90%        45%   10%
+
+
+
+
+16      |   2026 SAT Suite of Assessments Annual Report
+Appendix PSAT 8/9                                                                                                       Missouri Supplement
+
+
+
+
+High School Grade Point
+                                        Test Takers                 Mean Score                 Met Benchmarks
+Average—9th Grade
+                                     Number     Percent     Total        RW      Math   Both     RW       Math   None
+
+A+ (97–100)                              49           7%    1028         518      510   61%     76%        63%   22%
+A (93–96)                               119           17%   1016         517      498   66%     88%        66%   12%
+A- (90–92)                               58           8%     923         465      458   57%     79%        57%   21%
+B (80–89)                                76           11%    833         425      409   25%     59%        25%   41%
+C (70–79)                                14           2%     693         348      345    0%     14%         0%   86%
+D, E, or F (below 70)                     2           0%
+No Response                             374           54%    922         475      447   43%     71%        44%   28%
+
+
+
+High School Grade Point
+                                        Test Takers                 Mean Score                 Met Benchmarks
+Average—8th Grade
+                                     Number     Percent     Total        RW      Math   Both     RW       Math   None
+
+A+ (97–100)                               8           14%
+A (93–96)                                10           17%   1019         518      501   90%    100%        90%    0%
+A- (90–92)                                6           10%
+B (80–89)                                 1           2%
+C (70–79)                                 0           0%
+D, E, or F (below 70)                     0           0%
+No Response                              34           58%    947         497      450   53%     85%        53%   15%
+
+
+
+
+17   |   2026 SAT Suite of Assessments Annual Report
+Appendix PSAT 8/9                                                                                                                  Missouri Supplement
+
+
+
+
+Score Distributions by Subgroup—9th Grade
+Test Takers                             Total Students        Gender                                        Race/Ethnicity
+                                                                              American            African                      Native            Two or
+                                                          Female       Male     Indian   Asian   American      Hispanic      Hawaiian    White    More
+
+Total                                             692       394        298          3      39        107             82            0      273       46
+
+
+
+Total Score                             Total Students        Gender                                        Race/Ethnicity
+                                                                              American            African                      Native            Two or
+                                                          Female       Male     Indian   Asian   American      Hispanic      Hawaiian    White    More
+
+1400–1440                                          1%        1%         1%                13%         0%             0%                    0%       2%
+1200–1390                                          8%        6%        10%                28%         1%             4%                    9%       7%
+1000–1190                                         27%       28%        24%                33%         7%            16%                   35%      35%
+800–990                                           41%       43%        38%                21%        42%            34%                   46%      39%
+600–790                                           22%       21%        22%                 3%        44%            43%                    9%      15%
+240–590                                            2%        1%         4%                 3%         6%             4%                    0%       2%
+
+
+
+Section Scores—RW                       Total Students        Gender                                        Race/Ethnicity
+                                                                              American            African                      Native            Two or
+                                                          Female       Male     Indian   Asian   American      Hispanic      Hawaiian    White    More
+
+700–720                                            2%        2%         2%                10%         0%             1%                    2%       4%
+600–690                                           12%       12%        13%                36%         3%             2%                   16%      15%
+500–590                                           25%       30%        18%                23%         8%            22%                   33%      30%
+400–490                                           37%       36%        39%                26%        41%            30%                   41%      30%
+300–390                                           21%       19%        24%                 5%        40%            41%                    8%      17%
+120–290                                            2%        2%         3%                 0%         7%             2%                    0%       2%
+
+
+
+Section Scores—Math                     Total Students        Gender                                        Race/Ethnicity
+                                                                              American            African                      Native            Two or
+                                                          Female       Male     Indian   Asian   American      Hispanic      Hawaiian    White    More
+
+700–720 (35–36)                                    2%        1%         3%                21%         0%             0%                    1%       0%
+600–690 (30–34.5)                                  6%        5%         7%                13%         1%             5%                    7%       9%
+500–590 (25–29.5)                                 23%       22%        24%                41%         4%            13%                   30%      35%
+400–490 (20–24.5)                                 41%       45%        37%                23%        38%            35%                   49%      35%
+300–390 (15–19.5)                                 25%       26%        24%                 0%        49%            41%                   13%      22%
+120–290 (6–14.5)                                   3%        1%         5%                 3%         8%             5%                    0%       0%
+
+
+
+
+18      |   2026 SAT Suite of Assessments Annual Report
+Appendix PSAT 8/9                                                                                                                  Missouri Supplement
+
+
+
+
+Score Distributions by Subgroup—8th Grade
+Test Takers                             Total Students        Gender                                        Race/Ethnicity
+                                                                              American            African                      Native            Two or
+                                                          Female       Male     Indian   Asian   American      Hispanic      Hawaiian    White    More
+
+Total                                               59       25         34          0       3          1               1           0       28        2
+
+
+
+Total Score                             Total Students        Gender                                        Race/Ethnicity
+                                                                              American            African                      Native            Two or
+                                                          Female       Male     Indian   Asian   American      Hispanic      Hawaiian    White    More
+
+1400–1440                                          2%        0%         3%                                                                 4%
+1200–1390                                         15%       16%        15%                                                                18%
+1000–1190                                         27%       24%        29%                                                                32%
+800–990                                           42%       52%        35%                                                                43%
+600–790                                           14%        8%        18%                                                                 4%
+240–590                                            0%        0%         0%                                                                 0%
+
+
+
+Section Scores—RW                       Total Students        Gender                                        Race/Ethnicity
+                                                                              American            African                      Native            Two or
+                                                          Female       Male     Indian   Asian   American      Hispanic      Hawaiian    White    More
+
+700–720                                            7%       12%         3%                                                                 7%
+600–690                                           14%        8%        18%                                                                18%
+500–590                                           27%       16%        35%                                                                36%
+400–490                                           41%       52%        32%                                                                32%
+300–390                                           12%       12%        12%                                                                 7%
+120–290                                            0%        0%         0%                                                                 0%
+
+
+
+Section Scores—Math                     Total Students        Gender                                        Race/Ethnicity
+                                                                              American            African                      Native            Two or
+                                                          Female       Male     Indian   Asian   American      Hispanic      Hawaiian    White    More
+
+700–720 (35–36)                                    0%        0%         0%                                                                 0%
+600–690 (30–34.5)                                  8%        4%        12%                                                                14%
+500–590 (25–29.5)                                 29%       36%        24%                                                                32%
+400–490 (20–24.5)                                 47%       56%        41%                                                                50%
+300–390 (15–19.5)                                 15%        4%        24%                                                                 4%
+120–290 (6–14.5)                                   0%        0%         0%                                                                 0%
+
+
+
+
+19      |   2026 SAT Suite of Assessments Annual Report
+Appendix Interquartile Ranges                                                                        Missouri Supplement
+
+
+
+
+Interquartile Ranges
+Comparing the 25th percentile point to the 75th percentile point gives an idea of the range of
+performance in a group. SAT data reflect test activity for students who graduated high school
+in 2026. PSAT/NMSQT and PSAT 10 data reflect 10th or 11th grade students who took the
+PSAT/NMSQT and/or PSAT 10 during the 2025-26 school year. PSAT 8/9 data reflect 8th or
+9th grade students who took the PSAT 8/9 during the 2025-26 school year. If a student took
+the respective assessment more than once, the most recent score is summarized.
+
+SAT
+Percentile                                       Total Students
+                                         Total            RW      Math
+
+75th                                     1340            680       670
+50th                                     1200            620       590
+25th                                     1040            530       500
+
+
+PSAT/NMSQT and PSAT 10
+Percentile                                        11th Grade                     10th Grade
+                                         Total            RW      Math   Total         RW     Math
+
+75th                                     1250            640       620   1160          600     570
+50th                                     1120            580       550   1050          540     510
+25th                                      990            500       480    930          480     450
+
+
+PSAT 8/9
+Percentile                                         9th Grade                     8th Grade
+                                         Total            RW      Math   Total         RW     Math
+
+75th                                     1060            540       510   1090          570     530
+50th                                      910            470       440    950          490     450
+25th                                      800            400       390    840          420     410
+
+
+
+
+20     |   2026 SAT Suite of Assessments Annual Report
+About College Board
+College Board is a mission-driven not-for-profit organization that connects
+students to college success and opportunity. Founded in 1900, the College
+Board was created to expand access to higher education. Today, the
+membership association is made up of over 6,000 of the world’s leading
+educational institutions and is dedicated to promoting excellence and equity
+in education. Each year, the College Board helps more than seven million
+students prepare for a successful transition to college through programs and
+services in college readiness and college success—including the SAT® and
+the Advanced Placement Program® (AP®). The organization also serves the
+education community through research and advocacy on behalf of students,
+educators and schools. For further information, visit www.collegeboard.org.
+
+
+
+
+© 2026 The College Board. College Board, AP, SAT, and the acorn logo are registered trademarks of the
+College Board. PSAT/NMSQT is a registered trademark of the College Board and National Merit Scholarship
+Corporation. PSAT and SAT Subject Tests are trademarks owned by the College Board. All other marks are
+the property of their respective owners. Visit the College Board on the web: collegeboard.org.
+2627-X-491-MO
+

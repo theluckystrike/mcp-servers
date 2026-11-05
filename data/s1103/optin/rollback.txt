@@ -1,0 +1,1 @@
+2026-11-03 12:22:33 s1103 optin deploy new=349c794b-a8c8-458e-accd-1395b0716ad3 previous=5161b1dd-c9bb-4043-b26b-dbcb3d51e1ef commit=eb38715 rollback: npx wrangler pages deployment rollback 5161b1dd-c9bb-4043-b26b-dbcb3d51e1ef --project-name mcp-showcase-preview

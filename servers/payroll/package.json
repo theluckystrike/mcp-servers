@@ -1,5 +1,5 @@
 {
-  "name": "mcp-payroll",
+  "name": "@theluckystrike/mcp-payroll",
   "version": "0.22.6",
   "description": "MCP server: payroll",
   "type": "module",

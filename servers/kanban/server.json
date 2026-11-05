@@ -1,14 +1,15 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/kanban-todo-tasks-projects-board",
-  "description": "A local task board per project: columns, due dates, estimates, priorities, overdue, weekly review.",
+  "title": "McpStamp Kanban Board",
+  "description": "Task boards per project: priorities, due dates, estimates, overdue tasks and a weekly review.",
   "version": "0.22.6",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
     "subfolder": "servers/kanban"
   },
-  "websiteUrl": "https://mcp.zovo.one/s/kanban",
+  "websiteUrl": "https://www.mcpstamp.com/servers/kanban/",
   "packages": [
     {
       "registryType": "mcpb",

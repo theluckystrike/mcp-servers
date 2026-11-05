@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import worker, { PRODUCTS, PRODUCT_ALIASES } from "../../billing/src/index.js";
+import worker, { PRODUCTS, PRODUCT_ALIASES, SERVICES } from "../../billing/src/index.js";
 import { activeVersion, assertIntentResponse, healthSignals, probeBuyPages } from "../billing-release-gate.mjs";
 
 const emptyKv = () => ({ get: async () => null, put: async () => {}, list: async () => ({ keys: [] }) });
@@ -19,7 +19,7 @@ test("every production GET /buy shape serves the intent page without any Stripe 
       return worker.fetch(new Request(url, options), env(), ctx);
     });
     assert.equal(marked, count);
-    assert.equal(count, Object.keys(PRODUCTS).length + Object.keys(PRODUCT_ALIASES).length + 2);
+    assert.equal(count, Object.keys(PRODUCTS).length + Object.keys(SERVICES).length + Object.keys(PRODUCT_ALIASES).length + 2);
     assert.deepEqual(calls, [], "GET must make zero outbound fetches, including Stripe reads and creates");
   } finally {
     globalThis.fetch = original;

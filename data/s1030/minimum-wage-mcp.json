@@ -1,0 +1,52 @@
+{
+  "repo": "minimum-wage-mcp",
+  "repo_url": "https://github.com/theluckystrike/minimum-wage-mcp",
+  "hosted_url": "https://minimum-wage-mcp.lipmichal.workers.dev/mcp",
+  "worker_version_id": "6c9bbe19-3f03-42cd-8c4d-2dd6a04f682a",
+  "rollback": "npx wrangler delete --name minimum-wage-mcp",
+  "registry_name": "io.github.theluckystrike/minimum-wage-mcp",
+  "registry_visible": true,
+  "tools": ["get_minimum_wage", "list_upcoming_increases", "compare_states", "annual_income_at_minimum_wage"],
+  "fixtures": 18,
+  "tests_passed": "18/18 (npm test: node --test)",
+  "live_calls_ok": {
+    "get_minimum_wage": true,
+    "list_upcoming_increases": true,
+    "compare_states": true,
+    "annual_income_at_minimum_wage": true
+  },
+  "npx_github_ok": true,
+  "sources": [
+    "https://www.dol.gov/agencies/whd/minimum-wage/state",
+    "https://www.dol.gov/agencies/whd/state/minimum-wage/tipped",
+    "https://floridajobs.org/florida-minimum-wage",
+    "https://labor.alaska.gov/news/2025/news25-11.htm",
+    "https://dof.ca.gov/media/docs/whats-new/Minimum-Wage-Increase-Notification-Governor-and-Legislative-Letter.pdf",
+    "https://cdle.colorado.gov/press-releases/press-release-colorado-minimum-wage-will-increase-to-1571/hour-in-2027",
+    "https://does.dc.gov/sites/default/files/dc/sites/does/publication/attachments/2026%20Minimum%20Wage%20Increase%20Notice.pdf",
+    "https://www.maine.gov/labor/news_events/article.shtml?id=13362373",
+    "https://www.dli.mn.gov/business/employment-practices/minimum-wage-minnesota",
+    "https://erd.dli.mt.gov/labor-standards/wage-and-hour-payment-act/state-minimum-wage",
+    "https://www.nj.gov/labor/lwdhome/press/2026/20260929_min_wage.shtml",
+    "https://dol.ny.gov/minimum-wage-0",
+    "https://com.ohio.gov/about-us/media-center/news/ohio-minimum-wage-to-increase-in-2027",
+    "https://www.oregon.gov/boli/workers/Pages/minimum-wage-schedule.aspx",
+    "https://dlr.sd.gov/employment_laws/minimum_wage.aspx",
+    "https://doli.virginia.gov/?p=23822346",
+    "https://lni.wa.gov/workers-rights/wages/minimum-wage/",
+    "full per-state list with fetch status in DATA_SOURCES.md"
+  ],
+  "money_site": "https://statewage.com",
+  "open_issues": [
+    "AZ 2027 $15.65, CT 2027 $17.48 and RI 2027 $17.00 could not be read on an official state page (Cloudflare or connection blocks on azica.gov, portal.ct.gov, dlt.ri.gov, rilegislature.gov). Figures come from search-index text of the official notice or statute plus a news report. Each is flagged in the period basis and in DATA_SOURCES.md. Re-check when those sites can be read.",
+    "NE 2027: LB258 sets +1.75 percent on 2027-01-01, but the NDOL figure could not be read and the law gives no rounding rule, so it is announced:false with no number.",
+    "VT, DC (2027-07-01) and OR (2027-07-01) are inflation-indexed and unannounced: announced:false, no number. Update data.ts when published (VT normally announces in the autumn).",
+    "NV effective date 2024-07-01 comes from search results; the $12.00 rate is confirmed by US DOL.",
+    "Michigan source is the official LEO poster hosted on svsu.edu because michigan.gov blocked all reads.",
+    "Federal-floor states ID, IA, KS, KY, NH, ND, OK, PA, TX, UT, GA rest on the US DOL tables because their state pages were blocked or 404.",
+    "Raw live responses and the temp-dir deletion manifest are kept untracked in satellites/minimum-wage-mcp/.live/ (excluded via .git/info/exclude)."
+  ],
+  "pushes": 1,
+  "temp_dirs_deleted": ["/Users/mike/minimum-wage-mcp-work (37 MB, manifest in .live/deletion-manifest.txt)"],
+  "minutes": 35
+}

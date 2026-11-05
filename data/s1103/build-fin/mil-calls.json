@@ -1,0 +1,7 @@
+[
+ {"name":"get_mileage_rate","arguments":{"year":2026}},
+ {"name":"calculate_mileage_deduction","arguments":{"trips":[{"miles":6200,"date":"2026-03-31"},{"miles":5800,"date":"2026-09-30"}]}},
+ {"name":"get_per_diem_rates","arguments":{"zip":"02110","date":"2027-03-15"}},
+ {"name":"calculate_trip_per_diem","arguments":{"city":"Washington","state":"DC","start_date":"2026-09-29","end_date":"2026-10-02","meals_provided":{"lunch":1}}},
+ {"name":"get_high_low_per_diem","arguments":{"date":"2026-11-15","city":"Chicago","state":"IL"}}
+]

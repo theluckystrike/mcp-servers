@@ -1,0 +1,63 @@
+{
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Interest counted $3,200, $3,200 after the $10,000 cap. MAGI $110,000 is $10,000 over the $100,000 threshold: 10 step(s) of $200 remove $2,000. Car loan interest deduction for 2026: $1,200. At a 22% rate that saves about $264 of federal income tax. Assumed: the gross vehicle weight rating is under 14,000 pounds; the loan is secured by a first lien on the vehicle.\n\nThis is an estimate, not tax advice. Check the IRS instructions or ask a tax professional before you file."
+      },
+      {
+        "type": "text",
+        "text": "{\n  \"eligible\": true,\n  \"failed_requirements\": [],\n  \"assumed_requirements\": [\n    \"the gross vehicle weight rating is under 14,000 pounds\",\n    \"the loan is secured by a first lien on the vehicle\"\n  ],\n  \"filing_status\": \"single\",\n  \"tax_year\": 2026,\n  \"magi\": 110000,\n  \"interest_paid\": 3200,\n  \"interest_deducted_elsewhere\": 0,\n  \"interest_counted\": 3200,\n  \"cap\": 10000,\n  \"amount_after_cap\": 3200,\n  \"phaseout\": {\n    \"threshold\": 100000,\n    \"excess_magi\": 10000,\n    \"steps\": 10,\n    \"reduction\": 2000,\n    \"rule\": \"$200 for each $1,000 (or part of $1,000) of MAGI over the threshold\"\n  },\n  \"deduction\": 1200,\n  \"deduction_reaches_zero_at_magi\": 149001,\n  \"estimated_tax_saving\": 264,\n  \"schedule_1a_lines\": {\n    \"line23\": 3200,\n    \"line24\": 3200,\n    \"line25_magi\": 110000,\n    \"line26_threshold\": 100000,\n    \"line28_steps\": 10,\n    \"line29_reduction\": 2000,\n    \"line30_deduction\": 1200\n  },\n  \"notes\": [\n    \"You can claim it whether you itemize or take the standard deduction (Schedule 1-A Part IV).\",\n    \"You must enter the vehicle identification number (VIN) on the return.\",\n    \"Married filing separately can claim it; the threshold is $100,000 for every status except married filing jointly.\",\n    \"Interest on negative equity rolled in from a trade-in, insurance or a trailer does not count. Service plans, extended warranties, sales tax and vehicle fees financed with the purchase do.\",\n    \"A refinanced loan keeps qualifying up to the balance refinanced if it stays secured by a first lien on the same vehicle.\"\n  ],\n  \"summary\": \"Interest counted $3,200, $3,200 after the $10,000 cap. MAGI $110,000 is $10,000 over the $100,000 threshold: 10 step(s) of $200 remove $2,000. Car loan interest deduction for 2026: $1,200. At a 22% rate that saves about $264 of federal income tax. Assumed: the gross vehicle weight rating is under 14,000 pounds; the loan is secured by a first lien on the vehicle.\",\n  \"as_of\": \"2026-11-02\",\n  \"source\": \"https://www.irs.gov/pub/irs-pdf/f1040s1a.pdf ; https://www.irs.gov/pub/irs-pdf/i1040gi.pdf ; https://www.irs.gov/pub/irs-drop/n-25-57.pdf\",\n  \"more\": \"https://taxbreakcalc.com/car-loan-interest-calculator/?utm_source=mcp&utm_medium=car-loan-interest-deduction-calculator-mcp\",\n  \"disclaimer\": \"This is an estimate, not tax advice. Check the IRS instructions or ask a tax professional before you file.\"\n}"
+      }
+    ],
+    "structuredContent": {
+      "eligible": true,
+      "failed_requirements": [],
+      "assumed_requirements": [
+        "the gross vehicle weight rating is under 14,000 pounds",
+        "the loan is secured by a first lien on the vehicle"
+      ],
+      "filing_status": "single",
+      "tax_year": 2026,
+      "magi": 110000,
+      "interest_paid": 3200,
+      "interest_deducted_elsewhere": 0,
+      "interest_counted": 3200,
+      "cap": 10000,
+      "amount_after_cap": 3200,
+      "phaseout": {
+        "threshold": 100000,
+        "excess_magi": 10000,
+        "steps": 10,
+        "reduction": 2000,
+        "rule": "$200 for each $1,000 (or part of $1,000) of MAGI over the threshold"
+      },
+      "deduction": 1200,
+      "deduction_reaches_zero_at_magi": 149001,
+      "estimated_tax_saving": 264,
+      "schedule_1a_lines": {
+        "line23": 3200,
+        "line24": 3200,
+        "line25_magi": 110000,
+        "line26_threshold": 100000,
+        "line28_steps": 10,
+        "line29_reduction": 2000,
+        "line30_deduction": 1200
+      },
+      "notes": [
+        "You can claim it whether you itemize or take the standard deduction (Schedule 1-A Part IV).",
+        "You must enter the vehicle identification number (VIN) on the return.",
+        "Married filing separately can claim it; the threshold is $100,000 for every status except married filing jointly.",
+        "Interest on negative equity rolled in from a trade-in, insurance or a trailer does not count. Service plans, extended warranties, sales tax and vehicle fees financed with the purchase do.",
+        "A refinanced loan keeps qualifying up to the balance refinanced if it stays secured by a first lien on the same vehicle."
+      ],
+      "summary": "Interest counted $3,200, $3,200 after the $10,000 cap. MAGI $110,000 is $10,000 over the $100,000 threshold: 10 step(s) of $200 remove $2,000. Car loan interest deduction for 2026: $1,200. At a 22% rate that saves about $264 of federal income tax. Assumed: the gross vehicle weight rating is under 14,000 pounds; the loan is secured by a first lien on the vehicle.",
+      "as_of": "2026-11-02",
+      "source": "https://www.irs.gov/pub/irs-pdf/f1040s1a.pdf ; https://www.irs.gov/pub/irs-pdf/i1040gi.pdf ; https://www.irs.gov/pub/irs-drop/n-25-57.pdf",
+      "more": "https://taxbreakcalc.com/car-loan-interest-calculator/?utm_source=mcp&utm_medium=car-loan-interest-deduction-calculator-mcp",
+      "disclaimer": "This is an estimate, not tax advice. Check the IRS instructions or ask a tax professional before you file."
+    }
+  },
+  "jsonrpc": "2.0",
+  "id": 10
+}

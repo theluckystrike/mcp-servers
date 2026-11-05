@@ -1,0 +1,16 @@
+{
+ "result": {
+  "content": [
+   {
+    "type": "text",
+    "text": "{\n  \"amount\": 250,\n  \"from\": \"EUR\",\n  \"to\": \"USD\",\n  \"rate\": 1.1216,\n  \"rate_meaning\": \"1 EUR = 1.1216 USD\",\n  \"rate_exact\": 1.1216,\n  \"rate_note\": \"rate is the cross rate rounded to 6 decimals for display; the conversion multiplied by the full-precision rate_exact and rounded once, at the end, to 2 decimal places. Recomputing from the 6-decimal rate can differ by a minor unit or two.\",\n  \"rate_date\": \"2026-11-02\",\n  \"result\": \"USD 280.40\",\n  \"result_number\": 280.4,\n  \"rounding\": \"rounded to 2 decimal places, the ISO 4217 minor units of USD\",\n  \"source\": \"European Central Bank\",\n  \"note\": \"Rate date: 2026-11-02 (ECB reference rate). ECB reference rates are published around 16:00 CET on TARGET business days; there is no rate for a weekend or a TARGET holiday.\"\n}"
+   },
+   {
+    "type": "text",
+    "text": "Free tier: 600 calls/hour, 30-day retention. Pro ($19/server or $39 for all 49, one-time): https://mcp.zovo.one/buy/bundle?tenant=anon_955ffdc79c3919c738b03f200029fbd3&src=currency.success"
+   }
+  ]
+ },
+ "jsonrpc": "2.0",
+ "id": 2
+}

@@ -1,0 +1,37 @@
+{
+    "title": "Car Loan Interest Deduction Calculator MCP",
+    "description": "Car loan interest deduction calculator for AI agents (MCP server). The 2025-2028 OBBBA deduction with the $10,000 cap and MAGI phase-out, plus the new SALT cap, child tax credit, 2025 and 2026 federal brackets and standard deduction. Every answer cites the IRS source.",
+    "seoTitle": "Car Loan Interest Deduction Calculator MCP Server",
+    "seoDescription": "Car loan interest deduction calculator for AI agents: 2025-2028 OBBBA rules, MAGI phase-out, SALT cap, child tax credit and 2026 brackets. MCP server.",
+    "categories": [
+        "MCP_SERVERS",
+        "BUSINESS",
+        "AGENTS"
+    ],
+    "actorStandby": {
+        "isEnabled": true,
+        "idleTimeoutSecs": 300
+    },
+    "pricingInfos": [
+        {
+            "pricingModel": "PAY_PER_EVENT",
+            "pricingPerEvent": {
+                "actorChargeEvents": {
+                    "apify-actor-start": {
+                        "eventTitle": "Actor start",
+                        "eventDescription": "Apify synthetic event: covers the first 5 seconds of compute of each run. Charged by the platform, not by the Actor code.",
+                        "eventPriceUsd": 0.00005
+                    },
+                    "tool-call": {
+                        "eventTitle": "Tool call",
+                        "eventDescription": "One successful MCP tool call on Car Loan Interest Deduction Calculator MCP. Listing tools and initializing are free.",
+                        "eventPriceUsd": 0.03,
+                        "isPrimaryEvent": true
+                    }
+                }
+            },
+            "minimalMaxTotalChargeUsd": 0.15,
+            "isPPEPlatformUsagePaidByUser": false
+        }
+    ]
+}

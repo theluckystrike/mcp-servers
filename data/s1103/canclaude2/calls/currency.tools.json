@@ -1,0 +1,352 @@
+{
+ "jsonrpc": "2.0",
+ "id": 2,
+ "result": {
+  "tools": [
+   {
+    "name": "rates_latest",
+    "title": "Latest ECB reference rates",
+    "description": "Call this tool for the latest ECB daily reference rates against any base: 1.0812 for USD means 1 base = 1.0812 USD. Crosses go through the euro. Returns the ECB rate date and the cache age.",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "base": {
+       "type": "string",
+       "pattern": "^[A-Za-z]{3}$",
+       "description": "Base currency; defaults to the shared business profile's default_currency, else EUR. A rate of 1.0812 for USD means 1 base = 1.0812 USD. Cross rates go through the euro, the only pair the ECB publishes"
+      },
+      "quotes": {
+       "type": "array",
+       "items": {
+        "type": "string",
+        "pattern": "^[A-Za-z]{3}$"
+       },
+       "maxItems": 200,
+       "description": "Only these currencies, at most 200. Omit for all of them"
+      }
+     },
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "convert",
+    "title": "Convert an amount",
+    "description": "Call this tool to convert an amount between any two ECB-quoted currencies, today or on a past date. Returns the converted amount, the cross rate to 6 decimals, the rounding applied and the rate date used.",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "amount": {
+       "type": "number",
+       "description": "Amount in major units of the from currency, e.g. 100 or 12.34"
+      },
+      "from": {
+       "type": "string",
+       "pattern": "^[A-Za-z]{3}$",
+       "description": "Currency the amount is in. Cross rates go through the euro, the only pair the ECB publishes"
+      },
+      "to": {
+       "type": "string",
+       "pattern": "^[A-Za-z]{3}$",
+       "description": "Currency to convert into; defaults to the shared business profile's default_currency, so you are never asked what currency you invoice in. The result is rounded once, at the end, to this currency's own ISO 4217 minor units, so JPY comes back whole and BHD to three places"
+      },
+      "date": {
+       "type": "string",
+       "maxLength": 10,
+       "description": "ISO date YYYY-MM-DD. Omit for the latest published rate. A weekend or TARGET holiday falls back to the last rate published on or before it, and the answer says so. A date older than the free 90-day window is shortened to the oldest free day, not refused, and the answer names the date it really used"
+      }
+     },
+     "required": [
+      "amount",
+      "from"
+     ],
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "readOnlyHint": false,
+     "destructiveHint": false,
+     "idempotentHint": false,
+     "openWorldHint": false
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "convert_many",
+    "title": "Convert one amount into several currencies",
+    "description": "Convert one amount into many currencies off the SAME ECB rate date, each rounded to its own minor units. For several lines at once (mixed-currency invoice lines), call it once per line: every line then shares one rate date. Unknown targets are listed, never failed.",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "amount": {
+       "type": "number"
+      },
+      "from": {
+       "type": "string",
+       "pattern": "^[A-Za-z]{3}$"
+      },
+      "to": {
+       "type": "array",
+       "items": {
+        "type": "string",
+        "pattern": "^[A-Za-z]{3}$"
+       },
+       "minItems": 1,
+       "maxItems": 60,
+       "description": "Target currencies"
+      }
+     },
+     "required": [
+      "amount",
+      "from",
+      "to"
+     ],
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "readOnlyHint": false,
+     "destructiveHint": false,
+     "idempotentHint": false,
+     "openWorldHint": false
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "fx_rates_for",
+    "title": "FX rates in the shape expense-tracker wants",
+    "description": "Call this tool when a rebill or an invoice spans more than one currency, instead of asking the user for rates. Returns the fx_rates object expense_to_invoice takes, plus the rate date to write on the invoice.",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "target": {
+       "type": "string",
+       "pattern": "^[A-Za-z]{3}$",
+       "description": "The currency the invoice will be issued in; defaults to the shared business profile's default_currency. Pass it on as target_currency alongside the fx_rates object"
+      },
+      "currencies": {
+       "type": "array",
+       "items": {
+        "type": "string",
+        "pattern": "^[A-Za-z]{3}$"
+       },
+       "minItems": 1,
+       "maxItems": 60,
+       "description": "The other currencies present, e.g. [\"EUR\", \"GBP\"]. Direction: each returned rate means 1 unit of that key = X units of the target, so {\"EUR\": 1.08} is 1 EUR = 1.08 of the target. The target needs no rate of its own"
+      }
+     },
+     "required": [
+      "currencies"
+     ],
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "readOnlyHint": false,
+     "destructiveHint": false,
+     "idempotentHint": false,
+     "openWorldHint": false
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "rate_history",
+    "title": "Rate history for a pair",
+    "description": "Call this tool for the ECB rate of one currency pair across a window. Returns one row per published day plus the min, max, average and the change. A window wider than the free 90 days is shortened, not refused.",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "from": {
+       "type": "string",
+       "pattern": "^[A-Za-z]{3}$",
+       "description": "Base currency of the pair"
+      },
+      "to": {
+       "type": "string",
+       "pattern": "^[A-Za-z]{3}$",
+       "description": "Quote currency of the pair. Each row is 1 from = X to"
+      },
+      "days": {
+       "type": "integer",
+       "minimum": 1,
+       "maximum": 20000,
+       "description": "Trailing window in calendar days, default 30. Only TARGET business days carry a rate, so 30 days holds about 21 rows. Free reads up to 90 days back; Pro reads the whole series back to 1999-01-04"
+      },
+      "from_date": {
+       "type": "string",
+       "maxLength": 10,
+       "description": "ISO date, inclusive. Overrides days. Free is limited to the last 90 days"
+      },
+      "to_date": {
+       "type": "string",
+       "maxLength": 10,
+       "description": "ISO date, inclusive, default today"
+      },
+      "max_rows": {
+       "type": "integer",
+       "minimum": 1,
+       "maximum": 2000,
+       "description": "Cap the table, default 200. min/max/avg still cover the whole window"
+      }
+     },
+     "required": [
+      "from",
+      "to"
+     ],
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "readOnlyHint": false,
+     "destructiveHint": false,
+     "idempotentHint": false,
+     "openWorldHint": false
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "rate_on",
+    "title": "Rate on a given date",
+    "description": "Call this tool for the ECB rate of one pair on one date. Returns both directions and the rate date, so a reciprocal is never reported as the published figure. A date beyond the free window is shortened, never refused.",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "from": {
+       "type": "string",
+       "pattern": "^[A-Za-z]{3}$",
+       "description": "Base currency. The ECB quotes every currency per 1 euro, so \"the ECB rate for USD\" is from EUR to USD, not the other way round; invert only if the user asked for the inverse"
+      },
+      "to": {
+       "type": "string",
+       "pattern": "^[A-Za-z]{3}$",
+       "description": "Quote currency. The rate returned is 1 from = X to"
+      },
+      "date": {
+       "type": "string",
+       "maxLength": 10,
+       "description": "ISO date YYYY-MM-DD. If the ECB published nothing that day - every weekend, 1 January, Good Friday, Easter Monday, 1 May, 25 and 26 December - the last rate published on or before it is returned and the answer names that date. Free covers the last 90 days: an older date is shortened to the oldest free day rather than refused, and rate_date says which day the numbers are really from. Pro covers every date back to 1999-01-04"
+      }
+     },
+     "required": [
+      "from",
+      "to",
+      "date"
+     ],
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "readOnlyHint": false,
+     "destructiveHint": false,
+     "idempotentHint": false,
+     "openWorldHint": false
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "currencies_list",
+    "title": "Currencies the ECB quotes",
+    "description": "Every currency in the ECB daily set with its rate against the euro and its decimal places. This is the whole domain: a code not on this list cannot be converted, quoted or historised here.",
+    "inputSchema": {
+     "$schema": "http://json-schema.org/draft-07/schema#",
+     "type": "object",
+     "properties": {}
+    },
+    "annotations": {
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "cache_status",
+    "title": "Rate cache status",
+    "description": "Report the ECB rate cache here: which dates are held, how old they are and when they refresh. Reads only. Check it before trusting a rate after time offline; a cache that no longer parses is quarantined and named.",
+    "inputSchema": {
+     "$schema": "http://json-schema.org/draft-07/schema#",
+     "type": "object",
+     "properties": {}
+    },
+    "annotations": {
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "license_status",
+    "title": "License status",
+    "description": "Report this endpoint's licence state for your token as JSON: the product, the tier free or pro, why it is not Pro, and the checkout URL. Call it to explain a free-tier refusal. No arguments, nothing changes.",
+    "inputSchema": {
+     "$schema": "http://json-schema.org/draft-07/schema#",
+     "type": "object",
+     "properties": {}
+    },
+    "annotations": {
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "license_activate",
+    "title": "Activate license",
+    "description": "Turn Pro on for this connection with key, an MCPL1.<payload>.<signature> issued at checkout for this server or the bundle. Data under your token stays; a wrong or expired key changes nothing. license_status confirms it.",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "key": {
+       "type": "string",
+       "description": "License key from checkout, MCPL1.<payload>.<signature>"
+      }
+     },
+     "required": [
+      "key"
+     ],
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "readOnlyHint": false,
+     "destructiveHint": false,
+     "idempotentHint": false,
+     "openWorldHint": false
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   }
+  ]
+ }
+}

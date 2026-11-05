@@ -55,10 +55,11 @@ test("RFC 8414 authorization-server metadata has the endpoints an MCP client nee
   assert.equal(doc.token_endpoint, "https://mcp.zovo.one/oauth/token");
   assert.equal(doc.registration_endpoint, "https://mcp.zovo.one/oauth/register");
   assert.deepEqual(doc.response_types_supported, ["code"]);
-  assert.deepEqual(doc.grant_types_supported, ["authorization_code"]);
+  assert.deepEqual(doc.grant_types_supported, ["authorization_code", "refresh_token"]);
   // PKCE S256 is mandatory in OAuth 2.1; plain must never be advertised.
   assert.deepEqual(doc.code_challenge_methods_supported, ["S256"]);
-  assert.deepEqual(doc.token_endpoint_auth_methods_supported, ["none"]);
+  // Public clients (PKCE only) and confidential clients (secret + PKCE), see oauth-confidential.test.mjs.
+  assert.deepEqual(doc.token_endpoint_auth_methods_supported, ["none", "client_secret_basic", "client_secret_post"]);
 });
 
 test("dynamic client registration derives a stable id from the metadata", async () => {
@@ -93,8 +94,8 @@ test("route contract: all five endpoints are wired into the fetch router", () =>
 
 test("route contract: the 401 advertises RFC 9728 resource metadata", () => {
   assert.ok(
-    src.includes('resource_metadata="${OAUTH_RESOURCE_META}"'),
-    "the no-token 401 must carry resource_metadata so clients can discover the AS",
+    src.includes('resource_metadata="${resourceMeta}"') && src.includes("resourceMeta = OAUTH_RESOURCE_META"),
+    "the no-token 401 must carry resource_metadata (root document by default) so clients can discover the AS",
   );
 });
 

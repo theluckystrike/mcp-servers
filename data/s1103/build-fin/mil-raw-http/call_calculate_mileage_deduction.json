@@ -1,0 +1,56 @@
+{
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "6200 business miles in Jan. 1 - June 30, 2026 at 72.5 cents = $4,495.00; 5800 business miles in July 1 - Dec. 31, 2026 at 76 cents = $4,408.00. Total $8,903.00. 2026 has two business rates: 72.5 cents before July 1 and 76 cents from July 1 (Announcement 2026-11).\n\nRates from IRS and GSA publications. General information, not tax advice."
+      },
+      {
+        "type": "text",
+        "text": "{\n  \"lines\": [\n    {\n      \"period\": \"Jan. 1 - June 30, 2026\",\n      \"purpose\": \"business\",\n      \"miles\": 6200,\n      \"cents_per_mile\": 72.5,\n      \"amount\": 4495,\n      \"source\": \"Notice 2026-10, IR-2025-128\"\n    },\n    {\n      \"period\": \"July 1 - Dec. 31, 2026\",\n      \"purpose\": \"business\",\n      \"miles\": 5800,\n      \"cents_per_mile\": 76,\n      \"amount\": 4408,\n      \"source\": \"Announcement 2026-11 (IRB 2026-29)\"\n    }\n  ],\n  \"total_amount\": 8903,\n  \"by_purpose\": {\n    \"business\": 8903\n  },\n  \"depreciation_basis_reduction\": {\n    \"2026\": {\n      \"business_miles\": 12000,\n      \"cents_per_mile\": 35,\n      \"basis_reduction\": 4200\n    }\n  },\n  \"notes\": [\n    \"Employees cannot deduct unreimbursed business mileage as an itemized deduction (made permanent by the One, Big, Beautiful Bill Act); self-employed people deduct it on Schedule C, and employers can reimburse it tax-free at these rates.\",\n    \"2026 has two business rates: 72.5 cents before July 1 and 76 cents from July 1 (Announcement 2026-11).\"\n  ],\n  \"summary\": \"6200 business miles in Jan. 1 - June 30, 2026 at 72.5 cents = $4,495.00; 5800 business miles in July 1 - Dec. 31, 2026 at 76 cents = $4,408.00. Total $8,903.00. 2026 has two business rates: 72.5 cents before July 1 and 76 cents from July 1 (Announcement 2026-11).\",\n  \"as_of\": \"2026-11-03\",\n  \"source\": \"https://www.irs.gov/tax-professionals/standard-mileage-rates ; https://www.irs.gov/pub/irs-drop/n-26-10.pdf ; https://www.irs.gov/irb/2026-29_irb\",\n  \"more\": \"https://taxbreakcalc.com/self-employed-set-aside-calculator/?utm_source=mcp&utm_medium=irs-mileage-rate-per-diem-mcp\",\n  \"disclaimer\": \"Rates from IRS and GSA publications. General information, not tax advice.\"\n}"
+      }
+    ],
+    "structuredContent": {
+      "lines": [
+        {
+          "period": "Jan. 1 - June 30, 2026",
+          "purpose": "business",
+          "miles": 6200,
+          "cents_per_mile": 72.5,
+          "amount": 4495,
+          "source": "Notice 2026-10, IR-2025-128"
+        },
+        {
+          "period": "July 1 - Dec. 31, 2026",
+          "purpose": "business",
+          "miles": 5800,
+          "cents_per_mile": 76,
+          "amount": 4408,
+          "source": "Announcement 2026-11 (IRB 2026-29)"
+        }
+      ],
+      "total_amount": 8903,
+      "by_purpose": {
+        "business": 8903
+      },
+      "depreciation_basis_reduction": {
+        "2026": {
+          "business_miles": 12000,
+          "cents_per_mile": 35,
+          "basis_reduction": 4200
+        }
+      },
+      "notes": [
+        "Employees cannot deduct unreimbursed business mileage as an itemized deduction (made permanent by the One, Big, Beautiful Bill Act); self-employed people deduct it on Schedule C, and employers can reimburse it tax-free at these rates.",
+        "2026 has two business rates: 72.5 cents before July 1 and 76 cents from July 1 (Announcement 2026-11)."
+      ],
+      "summary": "6200 business miles in Jan. 1 - June 30, 2026 at 72.5 cents = $4,495.00; 5800 business miles in July 1 - Dec. 31, 2026 at 76 cents = $4,408.00. Total $8,903.00. 2026 has two business rates: 72.5 cents before July 1 and 76 cents from July 1 (Announcement 2026-11).",
+      "as_of": "2026-11-03",
+      "source": "https://www.irs.gov/tax-professionals/standard-mileage-rates ; https://www.irs.gov/pub/irs-drop/n-26-10.pdf ; https://www.irs.gov/irb/2026-29_irb",
+      "more": "https://taxbreakcalc.com/self-employed-set-aside-calculator/?utm_source=mcp&utm_medium=irs-mileage-rate-per-diem-mcp",
+      "disclaimer": "Rates from IRS and GSA publications. General information, not tax advice."
+    }
+  },
+  "jsonrpc": "2.0",
+  "id": 11
+}

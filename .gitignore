@@ -10,3 +10,12 @@ bundles/*/server/
 .scratch-distribution/
 bundles/releases/*/*.mcpb
 bundles/cache-backups/
+satellites/
+
+# s1102: private-repo clones and tool installs stay local
+data/s1102/crosslink/src-*/
+data/s1102/crosslink2/src-*/
+apify/.tools/
+node_modules/
+data/s1102/kpi/
+data/s1102/scout/

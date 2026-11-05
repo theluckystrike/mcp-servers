@@ -1,0 +1,78 @@
+{
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Standard deduction for 2026: single $16,100. single brackets: 10% over $0, 12% over $12,400, 22% over $50,400, 24% over $105,700, 32% over $201,775, 35% over $256,225, 37% over $640,600. Tax on $60,000 of taxable income: $7,912, marginal rate 22%.\n\nThis is an estimate, not tax advice. Check the IRS instructions or ask a tax professional before you file."
+      },
+      {
+        "type": "text",
+        "text": "{\n  \"tax_year\": 2026,\n  \"tables\": [\n    {\n      \"filing_status\": \"single\",\n      \"standard_deduction\": 16100,\n      \"brackets\": [\n        {\n          \"rate\": 0.1,\n          \"over\": 0,\n          \"not_over\": 12400\n        },\n        {\n          \"rate\": 0.12,\n          \"over\": 12400,\n          \"not_over\": 50400\n        },\n        {\n          \"rate\": 0.22,\n          \"over\": 50400,\n          \"not_over\": 105700\n        },\n        {\n          \"rate\": 0.24,\n          \"over\": 105700,\n          \"not_over\": 201775\n        },\n        {\n          \"rate\": 0.32,\n          \"over\": 201775,\n          \"not_over\": 256225\n        },\n        {\n          \"rate\": 0.35,\n          \"over\": 256225,\n          \"not_over\": 640600\n        },\n        {\n          \"rate\": 0.37,\n          \"over\": 640600,\n          \"not_over\": null\n        }\n      ]\n    }\n  ],\n  \"additional_standard_deduction_65_or_blind\": {\n    \"married_or_surviving_spouse\": 1650,\n    \"unmarried\": 2050\n  },\n  \"computed\": {\n    \"taxable_income\": 60000,\n    \"tax\": 7912,\n    \"marginal_rate\": 0.22,\n    \"average_rate\": 0.131867\n  },\n  \"year_2027_status\": \"Not published by the IRS as of 2026-11-02.\",\n  \"summary\": \"Standard deduction for 2026: single $16,100. single brackets: 10% over $0, 12% over $12,400, 22% over $50,400, 24% over $105,700, 32% over $201,775, 35% over $256,225, 37% over $640,600. Tax on $60,000 of taxable income: $7,912, marginal rate 22%.\",\n  \"as_of\": \"2026-11-02\",\n  \"source\": \"https://www.irs.gov/pub/irs-drop/rp-25-32.pdf\",\n  \"more\": \"https://taxbreakcalc.com/standard-deduction-calculator/?utm_source=mcp&utm_medium=car-loan-interest-deduction-calculator-mcp\",\n  \"disclaimer\": \"This is an estimate, not tax advice. Check the IRS instructions or ask a tax professional before you file.\"\n}"
+      }
+    ],
+    "structuredContent": {
+      "tax_year": 2026,
+      "tables": [
+        {
+          "filing_status": "single",
+          "standard_deduction": 16100,
+          "brackets": [
+            {
+              "rate": 0.1,
+              "over": 0,
+              "not_over": 12400
+            },
+            {
+              "rate": 0.12,
+              "over": 12400,
+              "not_over": 50400
+            },
+            {
+              "rate": 0.22,
+              "over": 50400,
+              "not_over": 105700
+            },
+            {
+              "rate": 0.24,
+              "over": 105700,
+              "not_over": 201775
+            },
+            {
+              "rate": 0.32,
+              "over": 201775,
+              "not_over": 256225
+            },
+            {
+              "rate": 0.35,
+              "over": 256225,
+              "not_over": 640600
+            },
+            {
+              "rate": 0.37,
+              "over": 640600,
+              "not_over": null
+            }
+          ]
+        }
+      ],
+      "additional_standard_deduction_65_or_blind": {
+        "married_or_surviving_spouse": 1650,
+        "unmarried": 2050
+      },
+      "computed": {
+        "taxable_income": 60000,
+        "tax": 7912,
+        "marginal_rate": 0.22,
+        "average_rate": 0.131867
+      },
+      "year_2027_status": "Not published by the IRS as of 2026-11-02.",
+      "summary": "Standard deduction for 2026: single $16,100. single brackets: 10% over $0, 12% over $12,400, 22% over $50,400, 24% over $105,700, 32% over $201,775, 35% over $256,225, 37% over $640,600. Tax on $60,000 of taxable income: $7,912, marginal rate 22%.",
+      "as_of": "2026-11-02",
+      "source": "https://www.irs.gov/pub/irs-drop/rp-25-32.pdf",
+      "more": "https://taxbreakcalc.com/standard-deduction-calculator/?utm_source=mcp&utm_medium=car-loan-interest-deduction-calculator-mcp",
+      "disclaimer": "This is an estimate, not tax advice. Check the IRS instructions or ask a tax professional before you file."
+    }
+  },
+  "jsonrpc": "2.0",
+  "id": 12
+}

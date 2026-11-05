@@ -1,0 +1,6 @@
+[
+ {"name":"calculate_section_179","arguments":{"tax_year":2026,"total_section_179_property_cost":4190000,"business_taxable_income":3000000}},
+ {"name":"calculate_bonus_depreciation","arguments":{"acquired_date":"2025-03-01","placed_in_service_date":"2026-04-15","depreciable_basis":250000,"section_179_deduction":100000}},
+ {"name":"get_vehicle_depreciation_limits","arguments":{"tax_year":2026,"gvwr_lbs":6500,"cost":80000,"business_use_percent":90}},
+ {"name":"calculate_asset_loan_payment","arguments":{"price":120000,"down_payment":20000,"apr_percent":6,"term_months":60,"asset_type":"equipment","business_use_percent":100,"marginal_tax_rate":0.3}}
+]

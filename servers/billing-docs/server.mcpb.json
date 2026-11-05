@@ -1,14 +1,15 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/billing-docs-credit-notes-purchase-orders",
-  "description": "Credit notes against your invoices and purchase orders to suppliers, with VAT and A4 PDFs.",
+  "title": "McpStamp Credit Notes and Purchase Orders",
+  "description": "Credit notes against issued invoices and purchase orders to suppliers, with VAT and A4 PDFs.",
   "version": "0.22.6",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
     "subfolder": "servers/billing-docs"
   },
-  "websiteUrl": "https://mcp.zovo.one/s/billing-docs",
+  "websiteUrl": "https://www.mcpstamp.com/servers/billing-docs/",
   "packages": [
     {
       "registryType": "mcpb",
@@ -31,15 +32,7 @@
   "remotes": [
     {
       "type": "streamable-http",
-      "url": "https://mcp.zovo.one/mcp/billing-docs",
-      "headers": [
-        {
-          "name": "Authorization",
-          "description": "Bearer <Pro license key or anonymous token from GET https://mcp.zovo.one/mcp/token>",
-          "isRequired": true,
-          "isSecret": true
-        }
-      ]
+      "url": "https://mcp.zovo.one/mcp/billing-docs"
     }
   ]
 }

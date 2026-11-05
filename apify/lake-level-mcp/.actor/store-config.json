@@ -1,0 +1,37 @@
+{
+    "title": "Lake Level MCP Server: Live US Lake Levels",
+    "description": "Live US lake and reservoir water levels for AI agents (MCP server). Reads USGS, USACE, CDEC, Reclamation and TWDB gauges at call time for 44 lakes in 12 states, including Lake Mead, Lake Powell, Lake Travis and Shasta: elevation, 24h/7d/30d change, feet below full pool, history.",
+    "seoTitle": "Lake Level MCP Server: Live US Lake Data",
+    "seoDescription": "Live US lake levels for AI agents: Lake Mead, Lake Powell, Shasta and 40 more lakes from USGS, USACE, CDEC and Reclamation gauges. MCP server, no API key.",
+    "categories": [
+        "MCP_SERVERS",
+        "NEWS",
+        "AGENTS"
+    ],
+    "actorStandby": {
+        "isEnabled": true,
+        "idleTimeoutSecs": 300
+    },
+    "pricingInfos": [
+        {
+            "pricingModel": "PAY_PER_EVENT",
+            "pricingPerEvent": {
+                "actorChargeEvents": {
+                    "apify-actor-start": {
+                        "eventTitle": "Actor start",
+                        "eventDescription": "Apify synthetic event: covers the first 5 seconds of compute of each run. Charged by the platform, not by the Actor code.",
+                        "eventPriceUsd": 0.00005
+                    },
+                    "tool-call": {
+                        "eventTitle": "Tool call",
+                        "eventDescription": "One successful MCP tool call on Lake Level MCP Server: Live US Lake Levels. Listing tools and initializing are free.",
+                        "eventPriceUsd": 0.01,
+                        "isPrimaryEvent": true
+                    }
+                }
+            },
+            "minimalMaxTotalChargeUsd": 0.05,
+            "isPPEPlatformUsagePaidByUser": false
+        }
+    ]
+}

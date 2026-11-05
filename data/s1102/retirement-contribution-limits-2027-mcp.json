@@ -1,0 +1,642 @@
+{
+  "repo": "retirement-contribution-limits-2027-mcp",
+  "repo_url": "https://github.com/theluckystrike/retirement-contribution-limits-2027-mcp",
+  "hosted_url": "https://retirement-contribution-limits-2027-mcp.lipmichal.workers.dev/mcp",
+  "worker_version_id": "e114101f-2a37-45f4-85c0-d664035cc259",
+  "rollback": "npx wrangler delete --name retirement-contribution-limits-2027-mcp (brand-new worker)",
+  "registry_name": "io.github.theluckystrike/retirement-contribution-limits-2027-mcp",
+  "registry_visible": true,
+  "tools": [
+    "get_contribution_limits",
+    "calculate_max_contribution",
+    "get_social_security_cola",
+    "compare_years"
+  ],
+  "fixtures": 21,
+  "tests_passed": "21/21 (node --test test/*.test.mjs)",
+  "live_calls_ok": {
+    "get_contribution_limits": true,
+    "calculate_max_contribution": true,
+    "get_social_security_cola": true,
+    "compare_years": true
+  },
+  "npx_github_ok": true,
+  "npm_ready": true,
+  "npm_published": false,
+  "money_site": "https://statewage.com",
+  "minutes": 48,
+  "open_issues": [
+    "2027 401(k)/IRA/SIMPLE/415(c)/HCE limits and the 2027 Roth catch-up wage threshold not published by the IRS on 2026-11-02 (news list through IR-2026-129, Oct 29). Tools return a clear not-published message. Add a 2027 entry to PLAN_LIMITS in src/core.ts when the IRS notice appears (expected November), rebuild, redeploy, bump to 1.0.1.",
+    "ssa.gov returned HTTP 403 (Akamai) to this host, with a browser UA, over IPv6, and from a temporary Cloudflare Worker (s1102-ssa-fetch-tmp, deployed and deleted within minutes); Wayback returned 429. SSA figures therefore come from SSA's own Federal Register notices (same determinations). Max benefit at FRA is only on the SSA fact sheet, so it is reported as null with a note, not guessed. Max Social Security tax (6.2% x base) not included because the IRS Pub 15 fetch failed (DNS exit 6).",
+    "2025 SGA amounts not extracted (null); 2026/2027 present.",
+    "Not covered: 403(b) 15-year catch-up, 457(b) last-3-years catch-up, IRA deduction phase-outs math, employer match formulas.",
+    "npm: not published (blocked by brief); package is npm-ready.",
+    "Glama listing not submitted (glama.json is in the repo)."
+  ],
+  "sources": [
+    "https://www.irs.gov/pub/irs-drop/n-25-67.pdf (2026 plan/IRA limits, 2025 'from' values; fetched 2026-11-02)",
+    "https://www.irs.gov/pub/irs-drop/n-24-80.pdf (2025 plan/IRA limits; fetched 2026-11-02)",
+    "https://www.irs.gov/newsroom/401k-limit-increases-to-24500-for-2026-ira-limit-increases-to-7500 (IR-2025-111; fetched 2026-11-02)",
+    "https://www.irs.gov/newsroom/news-releases-for-current-month (2027 check: list through IR-2026-129 Oct 29 2026, no 2027 COLA notice; fetched 2026-11-02)",
+    "https://www.irs.gov/pub/irs-drop/rp-26-24.pdf (2027 HSA 4,500/9,000; fetched 2026-11-02)",
+    "https://www.irs.gov/pub/irs-drop/rp-25-19.pdf (2026 HSA), https://www.irs.gov/pub/irs-drop/rp-24-25.pdf (2025 HSA)",
+    "https://www.irs.gov/pub/irs-pdf/p969.pdf (HSA ,000 55+ catch-up)",
+    "https://www.irs.gov/newsroom/treasury-irs-issue-final-regulations-on-new-roth-catch-up-rule-other-secure-2point0-act-provisions (IR-2025-91, Roth catch-up final regs apply after Dec 31 2026)",
+    "https://www.federalregister.gov/documents/2026/10/26/2026-21796 (SSA 2027 COLA 3.6%, wage base 192,300, RET 2,130/5,660 monthly)",
+    "https://www.federalregister.gov/documents/2025/11/03/2025-19763 (SSA 2026), https://www.federalregister.gov/documents/2024/10/25/2024-24871 (SSA 2025)"
+  ],
+  "registry_check": "curl -s 'https://registry.modelcontextprotocol.io/v0/servers?search=retirement-contribution' -> io.github.theluckystrike/retirement-contribution-limits-2027-mcp 1.0.0 (control search=section-179 returns its server). First publish 422: description 101 > 100 chars; shortened to 97 and republished.",
+  "live_check": "node build-retire/smoke.mjs http calls.json against the URL grepped from README.md, no token; each result !isError with structuredContent.source, as_of, more containing utm_source=mcp; GET / 200",
+  "npx_check": "from an empty mktemp dir: npx -y github:theluckystrike/retirement-contribution-limits-2027-mcp answered initialize, tools/list (4) and 4/4 tools/call",
+  "stdio_local_ok": "initialize + tools/list + 4/4 tools/call OK (node dist/stdio.js)",
+  "npm_check": "npm view retirement-contribution-limits-2027-mcp -> E404; control npm view no-tax-on-overtime-mcp resolves. package.json: name = repo, bin dist/stdio.js with shebang, files [dist, README.md, LICENSE, DATA_SOURCES.md], mcpName, keywords incl. mcp/mcp-server/model-context-protocol/claude",
+  "pushes": 2,
+  "repo_public": true,
+  "topics": 15,
+  "repo_description": "MCP server: 401k limit, IRA and HSA contribution limits 2025-2027, age 60-63 catch-up, Social Security COLA 2027",
+  "name_choice": "GitHub repo search counts 2026-11-02 (gh api search/repositories): '401k limit mcp' 0, 'contribution limits mcp' 0, 'retirement contribution limits mcp' 0, 'ira contribution limit mcp' 0, 'hsa limit mcp' 0, 'social security cola mcp' 1, '401k mcp' 1 (prismhr-mcp, unrelated). No field is contested, so no better full-query name was obvious; kept the briefed name (covers 'contribution limits' and 'retirement') and carried '401k limit', 'social security cola', 'ira', 'hsa' in description and topics. Registry: no contribution-limit or SS COLA server (search 401k -> 401k-loans only).",
+  "money_site_choice": "statewage.com has /401k-paycheck-calculator/, /hsa-paycheck-calculator/, /social-security-tax-calculator/ (all 200, sitemap-0.xml); taxbreakcalc.com has only /hsa-calculator/; noovertimetax.com none. more links route by tool: plan -> 401k page, HSA -> hsa page, SS -> social-security page.",
+  "temp_worker": "s1102-ssa-fetch-tmp deployed (version dd3fc246-4a0b-4586-aba0-9f2e2d50916b) to test SSA access, deleted with wrangler delete --force; not part of the product.",
+  "live_raw_responses": {
+    "call_calculate_max_contribution.json": {
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Age 61 in 2026: 401k $35,750 (incl. $11,250 age 60 63 super catch-up); ira $8,600 (incl. $1,100 age 50 plus catch-up); hsa_family $9,750 (incl. $1,000 age 55 plus catch-up). Combined employee maximum $54,100. Eligible for the age 60-63 super catch-up. Catch-up contributions must be Roth because prior-year FICA wages exceed the threshold.\n\nThis is general information, not tax or financial advice. Your plan document may allow less (for example no age 60-63 catch-up). Check with your plan administrator or a tax professional."
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"year\": 2026,\n  \"age\": 61,\n  \"catch_up_tier\": \"age_60_63\",\n  \"super_catch_up_eligible\": true,\n  \"super_catch_up_rule\": \"The higher catch-up applies if you attain age 60, 61, 62 or 63 by Dec. 31 of the year (IRC 414(v)(2)(E), SECURE 2.0 sec. 109). At 64 you return to the regular age 50+ catch-up. Plans are not required to offer it.\",\n  \"contributions\": [\n    {\n      \"plan\": \"401k\",\n      \"shared_limit\": true,\n      \"base_limit\": 24500,\n      \"catch_up\": 11250,\n      \"catch_up_type\": \"age_60_63_super\",\n      \"max_employee_contribution\": 35750,\n      \"total_with_employer_415c\": 83250\n    },\n    {\n      \"plan\": \"ira\",\n      \"shared_limit\": false,\n      \"base_limit\": 7500,\n      \"catch_up\": 1100,\n      \"catch_up_type\": \"age_50_plus\",\n      \"max_employee_contribution\": 8600,\n      \"note\": \"One limit across traditional and Roth IRAs. Roth IRA eligibility phases out by income.\"\n    },\n    {\n      \"plan\": \"hsa_family\",\n      \"shared_limit\": false,\n      \"base_limit\": 8750,\n      \"catch_up\": 1000,\n      \"catch_up_type\": \"age_55_plus\",\n      \"max_employee_contribution\": 9750,\n      \"note\": \"Includes employer HSA contributions. Prorated by months of HDHP coverage; no contributions after Medicare enrollment.\"\n    }\n  ],\n  \"total_max_employee_contributions\": 54100,\n  \"roth_catch_up\": {\n    \"must_be_roth\": true,\n    \"threshold\": 150000,\n    \"wage_year\": 2025,\n    \"prior_year_fica_wages\": 195000,\n    \"status\": \"Transition relief ended Dec. 31, 2025. The final regulations (IR-2025-91, Sept. 15, 2025) generally apply to taxable years beginning after Dec. 31, 2026; for 2026 plans apply the rule with a reasonable, good-faith interpretation of the statute. Later dates apply to some governmental and collectively bargained plans.\"\n  },\n  \"notes\": [],\n  \"summary\": \"Age 61 in 2026: 401k $35,750 (incl. $11,250 age 60 63 super catch-up); ira $8,600 (incl. $1,100 age 50 plus catch-up); hsa_family $9,750 (incl. $1,000 age 55 plus catch-up). Combined employee maximum $54,100. Eligible for the age 60-63 super catch-up. Catch-up contributions must be Roth because prior-year FICA wages exceed the threshold.\",\n  \"as_of\": \"2026-11-02\",\n  \"source\": \"https://www.irs.gov/pub/irs-drop/n-25-67.pdf ; https://www.irs.gov/newsroom/treasury-irs-issue-final-regulations-on-new-roth-catch-up-rule-other-secure-2point0-act-provisions\",\n  \"more\": \"https://statewage.com/401k-paycheck-calculator/?utm_source=mcp&utm_medium=retirement-contribution-limits-2027-mcp\",\n  \"disclaimer\": \"This is general information, not tax or financial advice. Your plan document may allow less (for example no age 60-63 catch-up). Check with your plan administrator or a tax professional.\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "year": 2026,
+          "age": 61,
+          "catch_up_tier": "age_60_63",
+          "super_catch_up_eligible": true,
+          "super_catch_up_rule": "The higher catch-up applies if you attain age 60, 61, 62 or 63 by Dec. 31 of the year (IRC 414(v)(2)(E), SECURE 2.0 sec. 109). At 64 you return to the regular age 50+ catch-up. Plans are not required to offer it.",
+          "contributions": [
+            {
+              "plan": "401k",
+              "shared_limit": true,
+              "base_limit": 24500,
+              "catch_up": 11250,
+              "catch_up_type": "age_60_63_super",
+              "max_employee_contribution": 35750,
+              "total_with_employer_415c": 83250
+            },
+            {
+              "plan": "ira",
+              "shared_limit": false,
+              "base_limit": 7500,
+              "catch_up": 1100,
+              "catch_up_type": "age_50_plus",
+              "max_employee_contribution": 8600,
+              "note": "One limit across traditional and Roth IRAs. Roth IRA eligibility phases out by income."
+            },
+            {
+              "plan": "hsa_family",
+              "shared_limit": false,
+              "base_limit": 8750,
+              "catch_up": 1000,
+              "catch_up_type": "age_55_plus",
+              "max_employee_contribution": 9750,
+              "note": "Includes employer HSA contributions. Prorated by months of HDHP coverage; no contributions after Medicare enrollment."
+            }
+          ],
+          "total_max_employee_contributions": 54100,
+          "roth_catch_up": {
+            "must_be_roth": true,
+            "threshold": 150000,
+            "wage_year": 2025,
+            "prior_year_fica_wages": 195000,
+            "status": "Transition relief ended Dec. 31, 2025. The final regulations (IR-2025-91, Sept. 15, 2025) generally apply to taxable years beginning after Dec. 31, 2026; for 2026 plans apply the rule with a reasonable, good-faith interpretation of the statute. Later dates apply to some governmental and collectively bargained plans."
+          },
+          "notes": [],
+          "summary": "Age 61 in 2026: 401k $35,750 (incl. $11,250 age 60 63 super catch-up); ira $8,600 (incl. $1,100 age 50 plus catch-up); hsa_family $9,750 (incl. $1,000 age 55 plus catch-up). Combined employee maximum $54,100. Eligible for the age 60-63 super catch-up. Catch-up contributions must be Roth because prior-year FICA wages exceed the threshold.",
+          "as_of": "2026-11-02",
+          "source": "https://www.irs.gov/pub/irs-drop/n-25-67.pdf ; https://www.irs.gov/newsroom/treasury-irs-issue-final-regulations-on-new-roth-catch-up-rule-other-secure-2point0-act-provisions",
+          "more": "https://statewage.com/401k-paycheck-calculator/?utm_source=mcp&utm_medium=retirement-contribution-limits-2027-mcp",
+          "disclaimer": "This is general information, not tax or financial advice. Your plan document may allow less (for example no age 60-63 catch-up). Check with your plan administrator or a tax professional."
+        }
+      },
+      "jsonrpc": "2.0",
+      "id": 11
+    },
+    "call_compare_years.json": {
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "2026 to 2027. 401(k)/403(b)/TSP elective deferral: $24,500 to not published. IRA limit: $7,500 to not published. HSA self-only: $4,400 to $4,500 (+$100). HSA family: $8,750 to $9,000 (+$250). Social Security wage base: $184,500 to $192,300 (+$7,800). 2027 plan and IRA limits are not published yet.\n\nThis is general information, not tax or financial advice. Your plan document may allow less (for example no age 60-63 catch-up). Check with your plan administrator or a tax professional."
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"from_year\": 2026,\n  \"to_year\": 2027,\n  \"rows\": [\n    {\n      \"item\": \"401(k)/403(b)/TSP elective deferral\",\n      \"from\": 24500,\n      \"to\": null,\n      \"change\": null,\n      \"percent\": null\n    },\n    {\n      \"item\": \"457(b) deferral\",\n      \"from\": 24500,\n      \"to\": null,\n      \"change\": null,\n      \"percent\": null\n    },\n    {\n      \"item\": \"Catch-up age 50+\",\n      \"from\": 8000,\n      \"to\": null,\n      \"change\": null,\n      \"percent\": null\n    },\n    {\n      \"item\": \"Super catch-up age 60-63\",\n      \"from\": 11250,\n      \"to\": null,\n      \"change\": null,\n      \"percent\": null\n    },\n    {\n      \"item\": \"415(c) total annual additions\",\n      \"from\": 72000,\n      \"to\": null,\n      \"change\": null,\n      \"percent\": null\n    },\n    {\n      \"item\": \"401(a)(17) compensation limit\",\n      \"from\": 360000,\n      \"to\": null,\n      \"change\": null,\n      \"percent\": null\n    },\n    {\n      \"item\": \"Highly compensated employee threshold\",\n      \"from\": 160000,\n      \"to\": null,\n      \"change\": null,\n      \"percent\": null\n    },\n    {\n      \"item\": \"SIMPLE deferral\",\n      \"from\": 17000,\n      \"to\": null,\n      \"change\": null,\n      \"percent\": null\n    },\n    {\n      \"item\": \"SIMPLE catch-up age 50+\",\n      \"from\": 4000,\n      \"to\": null,\n      \"change\": null,\n      \"percent\": null\n    },\n    {\n      \"item\": \"IRA limit\",\n      \"from\": 7500,\n      \"to\": null,\n      \"change\": null,\n      \"percent\": null\n    },\n    {\n      \"item\": \"IRA catch-up age 50+\",\n      \"from\": 1100,\n      \"to\": null,\n      \"change\": null,\n      \"percent\": null\n    },\n    {\n      \"item\": \"Roth catch-up wage threshold\",\n      \"from\": 150000,\n      \"to\": null,\n      \"change\": null,\n      \"percent\": null\n    },\n    {\n      \"item\": \"HSA self-only\",\n      \"from\": 4400,\n      \"to\": 4500,\n      \"change\": 100,\n      \"percent\": 2.27\n    },\n    {\n      \"item\": \"HSA family\",\n      \"from\": 8750,\n      \"to\": 9000,\n      \"change\": 250,\n      \"percent\": 2.86\n    },\n    {\n      \"item\": \"Social Security wage base\",\n      \"from\": 184500,\n      \"to\": 192300,\n      \"change\": 7800,\n      \"percent\": 4.23\n    },\n    {\n      \"item\": \"Earnings test annual (under FRA)\",\n      \"from\": 24480,\n      \"to\": 25560,\n      \"change\": 1080,\n      \"percent\": 4.41\n    },\n    {\n      \"item\": \"Earnings test annual (year of FRA)\",\n      \"from\": 65160,\n      \"to\": 67920,\n      \"change\": 2760,\n      \"percent\": 4.24\n    },\n    {\n      \"item\": \"Social Security COLA percent\",\n      \"from\": 2.8,\n      \"to\": 3.6,\n      \"change\": 0.8000000000000003,\n      \"percent\": 28.57\n    }\n  ],\n  \"not_published\": \"The IRS has not announced the 2027 401(k), 403(b), 457, IRA, SIMPLE, 415(c), compensation or HCE limits. On 2026-11-02 the IRS news release list ran through IR-2026-129 (Oct. 29, 2026) with no cost-of-living notice for 2027 (the 2026 notice, IR-2025-111 / Notice 2025-67, came out in November 2025). This server does not guess or forecast. Use 2026 as the latest published year.\",\n  \"summary\": \"2026 to 2027. 401(k)/403(b)/TSP elective deferral: $24,500 to not published. IRA limit: $7,500 to not published. HSA self-only: $4,400 to $4,500 (+$100). HSA family: $8,750 to $9,000 (+$250). Social Security wage base: $184,500 to $192,300 (+$7,800). 2027 plan and IRA limits are not published yet.\",\n  \"as_of\": \"2026-11-02\",\n  \"source\": \"https://www.irs.gov/pub/irs-drop/n-25-67.pdf ; https://www.irs.gov/pub/irs-drop/rp-26-24.pdf ; https://www.federalregister.gov/documents/2026/10/26/2026-21796/cost-of-living-increase-and-other-determinations-for-2027\",\n  \"more\": \"https://statewage.com/401k-paycheck-calculator/?utm_source=mcp&utm_medium=retirement-contribution-limits-2027-mcp\",\n  \"disclaimer\": \"This is general information, not tax or financial advice. Your plan document may allow less (for example no age 60-63 catch-up). Check with your plan administrator or a tax professional.\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "from_year": 2026,
+          "to_year": 2027,
+          "rows": [
+            {
+              "item": "401(k)/403(b)/TSP elective deferral",
+              "from": 24500,
+              "to": null,
+              "change": null,
+              "percent": null
+            },
+            {
+              "item": "457(b) deferral",
+              "from": 24500,
+              "to": null,
+              "change": null,
+              "percent": null
+            },
+            {
+              "item": "Catch-up age 50+",
+              "from": 8000,
+              "to": null,
+              "change": null,
+              "percent": null
+            },
+            {
+              "item": "Super catch-up age 60-63",
+              "from": 11250,
+              "to": null,
+              "change": null,
+              "percent": null
+            },
+            {
+              "item": "415(c) total annual additions",
+              "from": 72000,
+              "to": null,
+              "change": null,
+              "percent": null
+            },
+            {
+              "item": "401(a)(17) compensation limit",
+              "from": 360000,
+              "to": null,
+              "change": null,
+              "percent": null
+            },
+            {
+              "item": "Highly compensated employee threshold",
+              "from": 160000,
+              "to": null,
+              "change": null,
+              "percent": null
+            },
+            {
+              "item": "SIMPLE deferral",
+              "from": 17000,
+              "to": null,
+              "change": null,
+              "percent": null
+            },
+            {
+              "item": "SIMPLE catch-up age 50+",
+              "from": 4000,
+              "to": null,
+              "change": null,
+              "percent": null
+            },
+            {
+              "item": "IRA limit",
+              "from": 7500,
+              "to": null,
+              "change": null,
+              "percent": null
+            },
+            {
+              "item": "IRA catch-up age 50+",
+              "from": 1100,
+              "to": null,
+              "change": null,
+              "percent": null
+            },
+            {
+              "item": "Roth catch-up wage threshold",
+              "from": 150000,
+              "to": null,
+              "change": null,
+              "percent": null
+            },
+            {
+              "item": "HSA self-only",
+              "from": 4400,
+              "to": 4500,
+              "change": 100,
+              "percent": 2.27
+            },
+            {
+              "item": "HSA family",
+              "from": 8750,
+              "to": 9000,
+              "change": 250,
+              "percent": 2.86
+            },
+            {
+              "item": "Social Security wage base",
+              "from": 184500,
+              "to": 192300,
+              "change": 7800,
+              "percent": 4.23
+            },
+            {
+              "item": "Earnings test annual (under FRA)",
+              "from": 24480,
+              "to": 25560,
+              "change": 1080,
+              "percent": 4.41
+            },
+            {
+              "item": "Earnings test annual (year of FRA)",
+              "from": 65160,
+              "to": 67920,
+              "change": 2760,
+              "percent": 4.24
+            },
+            {
+              "item": "Social Security COLA percent",
+              "from": 2.8,
+              "to": 3.6,
+              "change": 0.8000000000000003,
+              "percent": 28.57
+            }
+          ],
+          "not_published": "The IRS has not announced the 2027 401(k), 403(b), 457, IRA, SIMPLE, 415(c), compensation or HCE limits. On 2026-11-02 the IRS news release list ran through IR-2026-129 (Oct. 29, 2026) with no cost-of-living notice for 2027 (the 2026 notice, IR-2025-111 / Notice 2025-67, came out in November 2025). This server does not guess or forecast. Use 2026 as the latest published year.",
+          "summary": "2026 to 2027. 401(k)/403(b)/TSP elective deferral: $24,500 to not published. IRA limit: $7,500 to not published. HSA self-only: $4,400 to $4,500 (+$100). HSA family: $8,750 to $9,000 (+$250). Social Security wage base: $184,500 to $192,300 (+$7,800). 2027 plan and IRA limits are not published yet.",
+          "as_of": "2026-11-02",
+          "source": "https://www.irs.gov/pub/irs-drop/n-25-67.pdf ; https://www.irs.gov/pub/irs-drop/rp-26-24.pdf ; https://www.federalregister.gov/documents/2026/10/26/2026-21796/cost-of-living-increase-and-other-determinations-for-2027",
+          "more": "https://statewage.com/401k-paycheck-calculator/?utm_source=mcp&utm_medium=retirement-contribution-limits-2027-mcp",
+          "disclaimer": "This is general information, not tax or financial advice. Your plan document may allow less (for example no age 60-63 catch-up). Check with your plan administrator or a tax professional."
+        }
+      },
+      "jsonrpc": "2.0",
+      "id": 13
+    },
+    "call_get_contribution_limits.json": {
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "2026 limits: 401(k)/403(b)/TSP deferral $24,500, catch-up $8,000 at 50+ (total $32,500), $11,250 at 60-63 (total $35,750); IRA $7,500 plus $1,100 at 50+; SIMPLE $17,000 plus $4,000 at 50+; 415(c) total $72,000; HCE threshold $160,000, compensation limit $360,000; HSA $4,400 self-only / $8,750 family plus $1,000 at 55+; Social Security wage base $184,500.\n\nThis is general information, not tax or financial advice. Your plan document may allow less (for example no age 60-63 catch-up). Check with your plan administrator or a tax professional."
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"year\": 2026,\n  \"account\": \"all\",\n  \"plan_limits_published\": true,\n  \"401k_403b_tsp\": {\n    \"elective_deferral\": 24500,\n    \"catch_up_50_plus\": 8000,\n    \"super_catch_up_60_63\": 11250,\n    \"total_age_50_59_or_64_plus\": 32500,\n    \"total_age_60_63\": 35750\n  },\n  \"governmental_457b\": {\n    \"elective_deferral\": 24500,\n    \"catch_up_50_plus\": 8000,\n    \"super_catch_up_60_63\": 11250,\n    \"total_age_50_59_or_64_plus\": 32500,\n    \"total_age_60_63\": 35750,\n    \"note\": \"Separate from the 401(k)/403(b) limit, so a worker with both can defer to each. Age 50+ catch-up applies to governmental 457(b) only. The special last-3-years 457 catch-up is not covered.\"\n  },\n  \"simple\": {\n    \"deferral\": 17000,\n    \"catch_up_50_plus\": 4000,\n    \"super_catch_up_60_63\": 5250,\n    \"deferral_small_employer_higher\": 18100,\n    \"catch_up_small_employer_higher\": 3850,\n    \"note\": \"Higher SIMPLE limits apply to employers with 25 or fewer employees, or 26-100 that elect a higher contribution (SECURE 2.0 sec. 117).\"\n  },\n  \"ira\": {\n    \"limit\": 7500,\n    \"catch_up_50_plus\": 1100,\n    \"total_50_plus\": 8600,\n    \"note\": \"One limit shared by all traditional and Roth IRAs; capped at taxable compensation.\",\n    \"roth_ira_phase_out_single_hoh\": [\n      153000,\n      168000\n    ],\n    \"roth_ira_phase_out_married_joint\": [\n      242000,\n      252000\n    ]\n  },\n  \"total_annual_additions_415c\": {\n    \"limit\": 72000,\n    \"note\": \"Employee plus employer contributions to one employer's defined contribution plans, capped at 100% of compensation. Catch-up contributions are on top.\"\n  },\n  \"compensation_and_hce\": {\n    \"compensation_limit_401a17\": 360000,\n    \"highly_compensated_threshold\": 160000,\n    \"key_employee_threshold\": 235000,\n    \"defined_benefit_415b\": 290000\n  },\n  \"roth_catch_up_rule\": {\n    \"rule\": \"If your FICA wages (Form W-2 box 3) from the employer sponsoring the plan were over the threshold in the prior year, your age-50+ (and age 60-63) catch-up contributions to a 401(k), 403(b) or governmental 457(b) must be Roth. SIMPLE IRAs and SEPs are exempt.\",\n    \"statute\": \"IRC 414(v)(7), added by SECURE 2.0 Act section 603\",\n    \"required_this_year\": true,\n    \"wage_threshold\": 150000,\n    \"wage_year\": 2025,\n    \"status\": \"Transition relief ended Dec. 31, 2025. The final regulations (IR-2025-91, Sept. 15, 2025) generally apply to taxable years beginning after Dec. 31, 2026; for 2026 plans apply the rule with a reasonable, good-faith interpretation of the statute. Later dates apply to some governmental and collectively bargained plans.\"\n  },\n  \"hsa\": {\n    \"self_only\": 4400,\n    \"family\": 8750,\n    \"catch_up_55_plus\": 1000,\n    \"hdhp_min_deductible_self\": 1700,\n    \"hdhp_min_deductible_family\": 3400,\n    \"hdhp_oop_max_self\": 8500,\n    \"hdhp_oop_max_family\": 17000,\n    \"source\": \"https://www.irs.gov/pub/irs-drop/rp-25-19.pdf\"\n  },\n  \"social_security_wage_base\": 184500,\n  \"summary\": \"2026 limits: 401(k)/403(b)/TSP deferral $24,500, catch-up $8,000 at 50+ (total $32,500), $11,250 at 60-63 (total $35,750); IRA $7,500 plus $1,100 at 50+; SIMPLE $17,000 plus $4,000 at 50+; 415(c) total $72,000; HCE threshold $160,000, compensation limit $360,000; HSA $4,400 self-only / $8,750 family plus $1,000 at 55+; Social Security wage base $184,500.\",\n  \"as_of\": \"2026-11-02\",\n  \"source\": \"https://www.irs.gov/pub/irs-drop/n-25-67.pdf\",\n  \"more\": \"https://statewage.com/401k-paycheck-calculator/?utm_source=mcp&utm_medium=retirement-contribution-limits-2027-mcp\",\n  \"disclaimer\": \"This is general information, not tax or financial advice. Your plan document may allow less (for example no age 60-63 catch-up). Check with your plan administrator or a tax professional.\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "year": 2026,
+          "account": "all",
+          "plan_limits_published": true,
+          "401k_403b_tsp": {
+            "elective_deferral": 24500,
+            "catch_up_50_plus": 8000,
+            "super_catch_up_60_63": 11250,
+            "total_age_50_59_or_64_plus": 32500,
+            "total_age_60_63": 35750
+          },
+          "governmental_457b": {
+            "elective_deferral": 24500,
+            "catch_up_50_plus": 8000,
+            "super_catch_up_60_63": 11250,
+            "total_age_50_59_or_64_plus": 32500,
+            "total_age_60_63": 35750,
+            "note": "Separate from the 401(k)/403(b) limit, so a worker with both can defer to each. Age 50+ catch-up applies to governmental 457(b) only. The special last-3-years 457 catch-up is not covered."
+          },
+          "simple": {
+            "deferral": 17000,
+            "catch_up_50_plus": 4000,
+            "super_catch_up_60_63": 5250,
+            "deferral_small_employer_higher": 18100,
+            "catch_up_small_employer_higher": 3850,
+            "note": "Higher SIMPLE limits apply to employers with 25 or fewer employees, or 26-100 that elect a higher contribution (SECURE 2.0 sec. 117)."
+          },
+          "ira": {
+            "limit": 7500,
+            "catch_up_50_plus": 1100,
+            "total_50_plus": 8600,
+            "note": "One limit shared by all traditional and Roth IRAs; capped at taxable compensation.",
+            "roth_ira_phase_out_single_hoh": [
+              153000,
+              168000
+            ],
+            "roth_ira_phase_out_married_joint": [
+              242000,
+              252000
+            ]
+          },
+          "total_annual_additions_415c": {
+            "limit": 72000,
+            "note": "Employee plus employer contributions to one employer's defined contribution plans, capped at 100% of compensation. Catch-up contributions are on top."
+          },
+          "compensation_and_hce": {
+            "compensation_limit_401a17": 360000,
+            "highly_compensated_threshold": 160000,
+            "key_employee_threshold": 235000,
+            "defined_benefit_415b": 290000
+          },
+          "roth_catch_up_rule": {
+            "rule": "If your FICA wages (Form W-2 box 3) from the employer sponsoring the plan were over the threshold in the prior year, your age-50+ (and age 60-63) catch-up contributions to a 401(k), 403(b) or governmental 457(b) must be Roth. SIMPLE IRAs and SEPs are exempt.",
+            "statute": "IRC 414(v)(7), added by SECURE 2.0 Act section 603",
+            "required_this_year": true,
+            "wage_threshold": 150000,
+            "wage_year": 2025,
+            "status": "Transition relief ended Dec. 31, 2025. The final regulations (IR-2025-91, Sept. 15, 2025) generally apply to taxable years beginning after Dec. 31, 2026; for 2026 plans apply the rule with a reasonable, good-faith interpretation of the statute. Later dates apply to some governmental and collectively bargained plans."
+          },
+          "hsa": {
+            "self_only": 4400,
+            "family": 8750,
+            "catch_up_55_plus": 1000,
+            "hdhp_min_deductible_self": 1700,
+            "hdhp_min_deductible_family": 3400,
+            "hdhp_oop_max_self": 8500,
+            "hdhp_oop_max_family": 17000,
+            "source": "https://www.irs.gov/pub/irs-drop/rp-25-19.pdf"
+          },
+          "social_security_wage_base": 184500,
+          "summary": "2026 limits: 401(k)/403(b)/TSP deferral $24,500, catch-up $8,000 at 50+ (total $32,500), $11,250 at 60-63 (total $35,750); IRA $7,500 plus $1,100 at 50+; SIMPLE $17,000 plus $4,000 at 50+; 415(c) total $72,000; HCE threshold $160,000, compensation limit $360,000; HSA $4,400 self-only / $8,750 family plus $1,000 at 55+; Social Security wage base $184,500.",
+          "as_of": "2026-11-02",
+          "source": "https://www.irs.gov/pub/irs-drop/n-25-67.pdf",
+          "more": "https://statewage.com/401k-paycheck-calculator/?utm_source=mcp&utm_medium=retirement-contribution-limits-2027-mcp",
+          "disclaimer": "This is general information, not tax or financial advice. Your plan document may allow less (for example no age 60-63 catch-up). Check with your plan administrator or a tax professional."
+        }
+      },
+      "jsonrpc": "2.0",
+      "id": 10
+    },
+    "call_get_social_security_cola.json": {
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "2027 Social Security: COLA 3.6% (December 2026 benefits, payable January 2027). Wage base $192,300. Earnings test $25,560 a year under full retirement age ($1 withheld per $2 over), $67,920 in the year you reach it ($1 per $3 over). Quarter of coverage $1,970. SSI federal payment $1,029 a month for an individual.\n\nThis is general information, not tax or financial advice. Your plan document may allow less (for example no age 60-63 catch-up). Check with your plan administrator or a tax professional."
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"year\": 2027,\n  \"cola_percent\": 3.6,\n  \"cola_effective\": \"December 2026 benefits, payable January 2027\",\n  \"wage_base\": 192300,\n  \"earnings_test\": {\n    \"under_full_retirement_age\": {\n      \"monthly\": 2130,\n      \"annual\": 25560,\n      \"withholding\": \"$1 of benefits for every $2 earned over the limit\"\n    },\n    \"year_reaching_full_retirement_age\": {\n      \"monthly\": 5660,\n      \"annual\": 67920,\n      \"withholding\": \"$1 for every $3 over the limit, counting only earnings before the month you reach FRA\"\n    },\n    \"from_full_retirement_age\": \"No earnings limit.\"\n  },\n  \"quarter_of_coverage\": 1970,\n  \"substantial_gainful_activity_monthly\": {\n    \"non_blind\": 1770,\n    \"blind\": 2950\n  },\n  \"ssi_federal_payment_monthly\": {\n    \"individual\": 1029,\n    \"couple\": 1544\n  },\n  \"max_benefit_at_full_retirement_age\": null,\n  \"max_benefit_note\": \"Not in SSA's Federal Register notice; it is on SSA's fact sheet (ssa.gov), which this server could not fetch on 2026-11-02, so it is left out rather than guessed.\",\n  \"source\": \"https://www.federalregister.gov/documents/2026/10/26/2026-21796/cost-of-living-increase-and-other-determinations-for-2027\",\n  \"summary\": \"2027 Social Security: COLA 3.6% (December 2026 benefits, payable January 2027). Wage base $192,300. Earnings test $25,560 a year under full retirement age ($1 withheld per $2 over), $67,920 in the year you reach it ($1 per $3 over). Quarter of coverage $1,970. SSI federal payment $1,029 a month for an individual.\",\n  \"as_of\": \"2026-11-02\",\n  \"more\": \"https://statewage.com/social-security-tax-calculator/?utm_source=mcp&utm_medium=retirement-contribution-limits-2027-mcp\",\n  \"disclaimer\": \"This is general information, not tax or financial advice. Your plan document may allow less (for example no age 60-63 catch-up). Check with your plan administrator or a tax professional.\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "year": 2027,
+          "cola_percent": 3.6,
+          "cola_effective": "December 2026 benefits, payable January 2027",
+          "wage_base": 192300,
+          "earnings_test": {
+            "under_full_retirement_age": {
+              "monthly": 2130,
+              "annual": 25560,
+              "withholding": "$1 of benefits for every $2 earned over the limit"
+            },
+            "year_reaching_full_retirement_age": {
+              "monthly": 5660,
+              "annual": 67920,
+              "withholding": "$1 for every $3 over the limit, counting only earnings before the month you reach FRA"
+            },
+            "from_full_retirement_age": "No earnings limit."
+          },
+          "quarter_of_coverage": 1970,
+          "substantial_gainful_activity_monthly": {
+            "non_blind": 1770,
+            "blind": 2950
+          },
+          "ssi_federal_payment_monthly": {
+            "individual": 1029,
+            "couple": 1544
+          },
+          "max_benefit_at_full_retirement_age": null,
+          "max_benefit_note": "Not in SSA's Federal Register notice; it is on SSA's fact sheet (ssa.gov), which this server could not fetch on 2026-11-02, so it is left out rather than guessed.",
+          "source": "https://www.federalregister.gov/documents/2026/10/26/2026-21796/cost-of-living-increase-and-other-determinations-for-2027",
+          "summary": "2027 Social Security: COLA 3.6% (December 2026 benefits, payable January 2027). Wage base $192,300. Earnings test $25,560 a year under full retirement age ($1 withheld per $2 over), $67,920 in the year you reach it ($1 per $3 over). Quarter of coverage $1,970. SSI federal payment $1,029 a month for an individual.",
+          "as_of": "2026-11-02",
+          "more": "https://statewage.com/social-security-tax-calculator/?utm_source=mcp&utm_medium=retirement-contribution-limits-2027-mcp",
+          "disclaimer": "This is general information, not tax or financial advice. Your plan document may allow less (for example no age 60-63 catch-up). Check with your plan administrator or a tax professional."
+        }
+      },
+      "jsonrpc": "2.0",
+      "id": 12
+    },
+    "initialize.json": {
+      "result": {
+        "protocolVersion": "2025-06-18",
+        "capabilities": {
+          "tools": {
+            "listChanged": true
+          }
+        },
+        "serverInfo": {
+          "name": "retirement-contribution-limits-2027-mcp",
+          "version": "1.0.0"
+        }
+      },
+      "jsonrpc": "2.0",
+      "id": 1
+    },
+    "tools_list.json": {
+      "result": {
+        "tools": [
+          {
+            "name": "get_contribution_limits",
+            "title": "401(k), IRA, HSA and SIMPLE contribution limits (2025-2027)",
+            "description": "Returns official IRS contribution limits for 2025, 2026 and 2027: 401(k)/403(b)/TSP and 457(b) elective deferral ($24,500 for 2026), age 50+ catch-up ($8,000 for 2026), the SECURE 2.0 age 60-63 super catch-up ($11,250), IRA limit and catch-up ($7,500 + $1,100 for 2026), SIMPLE limits, 415(c) total ($72,000), 401(a)(17) compensation limit, highly compensated employee threshold, Roth IRA phase-outs, HSA self/family limits (2027: $4,500 / $9,000, Rev. Proc. 2026-24) and the Social Security wage base (2027: $192,300). Also states the Roth catch-up rule status. Figures copied from IRS Notices 2024-80 and 2025-67 and the HSA Rev. Procs. 2027 plan and IRA limits were not yet announced on 2026-11-02 and the tool says so instead of guessing.",
+            "inputSchema": {
+              "type": "object",
+              "properties": {
+                "year": {
+                  "type": "integer",
+                  "minimum": 2025,
+                  "maximum": 2027,
+                  "description": "Calendar year: 2025, 2026 or 2027."
+                },
+                "account": {
+                  "type": "string",
+                  "enum": [
+                    "all",
+                    "401k",
+                    "403b",
+                    "457b",
+                    "tsp",
+                    "simple",
+                    "ira",
+                    "roth_ira",
+                    "hsa",
+                    "415c",
+                    "hce",
+                    "social_security"
+                  ],
+                  "description": "Which limits: all (default), 401k, 403b, 457b, tsp, simple, ira, roth_ira, hsa, 415c, hce, social_security."
+                }
+              },
+              "required": [
+                "year"
+              ],
+              "additionalProperties": false,
+              "$schema": "http://json-schema.org/draft-07/schema#"
+            },
+            "annotations": {
+              "readOnlyHint": true,
+              "destructiveHint": false,
+              "idempotentHint": true,
+              "openWorldHint": false,
+              "title": "Contribution limits (2025-2027)"
+            },
+            "execution": {
+              "taskSupport": "forbidden"
+            }
+          },
+          {
+            "name": "calculate_max_contribution",
+            "title": "Maximum contribution by age, year and plans",
+            "description": "Calculates the most a person can contribute for a year given age (on Dec. 31), plans held (401k, 403b, 457b, tsp, simple, ira, hsa_self, hsa_family) and optional wages. Applies the age 50+ catch-up, the SECURE 2.0 age 60-63 super catch-up (eligible only if age 60, 61, 62 or 63 at year end; 64 drops back), the HSA $1,000 catch-up at 55, the shared 402(g) limit across 401(k)/403(b)/TSP/SIMPLE, the separate 457(b) limit, and the compensation cap. With prior_year_fica_wages it tells whether catch-ups must be Roth under SECURE 2.0 section 603 (2026: over $150,000 of 2025 FICA wages).",
+            "inputSchema": {
+              "type": "object",
+              "properties": {
+                "age": {
+                  "type": "integer",
+                  "minimum": 14,
+                  "maximum": 120,
+                  "description": "Age on December 31 of the year."
+                },
+                "year": {
+                  "type": "integer",
+                  "minimum": 2025,
+                  "maximum": 2027,
+                  "description": "Calendar year: 2025, 2026 or 2027."
+                },
+                "plans": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "401k",
+                      "403b",
+                      "457b",
+                      "tsp",
+                      "simple",
+                      "ira",
+                      "hsa_self",
+                      "hsa_family"
+                    ]
+                  },
+                  "minItems": 1,
+                  "maxItems": 8,
+                  "description": "Plans the person contributes to, e.g. [\"401k\",\"ira\",\"hsa_family\"]."
+                },
+                "wages": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1000000000,
+                  "description": "Compensation for the year in USD, used to cap deferrals and IRA contributions."
+                },
+                "prior_year_fica_wages": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 1000000000,
+                  "description": "Prior-year FICA wages (W-2 box 3) from the plan sponsor, for the Roth catch-up rule."
+                },
+                "plan_offers_super_catch_up": {
+                  "type": "boolean",
+                  "description": "False if the employer plan does not offer the age 60-63 catch-up. Default true."
+                },
+                "simple_higher_limits": {
+                  "type": "boolean",
+                  "description": "True if the SIMPLE plan uses the higher small-employer limits."
+                }
+              },
+              "required": [
+                "age",
+                "year",
+                "plans"
+              ],
+              "additionalProperties": false,
+              "$schema": "http://json-schema.org/draft-07/schema#"
+            },
+            "annotations": {
+              "readOnlyHint": true,
+              "destructiveHint": false,
+              "idempotentHint": true,
+              "openWorldHint": false,
+              "title": "Maximum contribution by age, year and plans"
+            },
+            "execution": {
+              "taskSupport": "forbidden"
+            }
+          },
+          {
+            "name": "get_social_security_cola",
+            "title": "Social Security COLA, wage base and earnings test",
+            "description": "Returns the Social Security cost-of-living adjustment and related figures from SSA's official annual notice in the Federal Register: 2027 COLA 3.6% (announced October 2026), 2027 taxable maximum (wage base) $192,300, retirement earnings test limits ($25,560 under full retirement age, $67,920 in the year you reach it, for 2027), quarter of coverage, SGA amounts and SSI federal payment. Covers 2025, 2026 and 2027.",
+            "inputSchema": {
+              "type": "object",
+              "properties": {
+                "year": {
+                  "type": "integer",
+                  "minimum": 2025,
+                  "maximum": 2027,
+                  "description": "Calendar year: 2025, 2026 or 2027."
+                }
+              },
+              "required": [
+                "year"
+              ],
+              "additionalProperties": false,
+              "$schema": "http://json-schema.org/draft-07/schema#"
+            },
+            "annotations": {
+              "readOnlyHint": true,
+              "destructiveHint": false,
+              "idempotentHint": true,
+              "openWorldHint": false,
+              "title": "Social Security COLA, wage base and earnings test"
+            },
+            "execution": {
+              "taskSupport": "forbidden"
+            }
+          },
+          {
+            "name": "compare_years",
+            "title": "Compare limits between 2025, 2026 and 2027",
+            "description": "Shows each retirement, IRA, HSA and Social Security figure for two years side by side with the dollar and percent change: 401(k) deferral, catch-ups, 415(c), compensation limit, HCE threshold, SIMPLE, IRA, Roth catch-up threshold, HSA, wage base, earnings test and COLA. Items the IRS has not yet published (2027 plan limits on 2026-11-02) come back as null, never estimated.",
+            "inputSchema": {
+              "type": "object",
+              "properties": {
+                "from_year": {
+                  "type": "integer",
+                  "minimum": 2025,
+                  "maximum": 2027,
+                  "description": "Calendar year: 2025, 2026 or 2027."
+                },
+                "to_year": {
+                  "$ref": "#/properties/from_year"
+                }
+              },
+              "required": [
+                "from_year",
+                "to_year"
+              ],
+              "additionalProperties": false,
+              "$schema": "http://json-schema.org/draft-07/schema#"
+            },
+            "annotations": {
+              "readOnlyHint": true,
+              "destructiveHint": false,
+              "idempotentHint": true,
+              "openWorldHint": false,
+              "title": "Compare limits between years"
+            },
+            "execution": {
+              "taskSupport": "forbidden"
+            }
+          }
+        ]
+      },
+      "jsonrpc": "2.0",
+      "id": 2
+    }
+  }
+}

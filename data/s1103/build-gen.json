@@ -1,0 +1,20 @@
+{
+ "lane": "build-gen",
+ "satellites": [
+  "silver-price-per-gram-mcp",
+  "river-level-mcp",
+  "sat-score-percentiles-mcp"
+ ],
+ "all_live_calls_ok": true,
+ "registry_visible": 3,
+ "npm_published": 0,
+ "npm_ready": 3,
+ "pushes_per_repo": 1,
+ "existing_workers_touched": 0,
+ "details": [
+  "silver-price-per-gram-mcp.json",
+  "river-level-mcp.json",
+  "sat-score-percentiles-mcp.json"
+ ],
+ "report": "build-gen.md"
+}

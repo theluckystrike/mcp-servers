@@ -1,0 +1,20 @@
+{
+    "name": "lake-level-mcp",
+    "version": "1.0.0",
+    "type": "module",
+    "private": true,
+    "description": "Live US lake and reservoir water levels for AI agents (MCP server). Reads USGS, USACE, CDEC, Reclamation and TWDB gauges at call time for 44 lakes in 12 states, including Lake Mead, Lake Powell, Lake Travis and Shasta: elevation, 24h/7d/30d change, feet below full pool, history.",
+    "engines": {
+        "node": ">=22"
+    },
+    "dependencies": {
+        "@modelcontextprotocol/sdk": "^1.30.0",
+        "apify": "^3.7.0",
+        "express": "^5.1.0",
+        "zod": "^3.25.76"
+    },
+    "scripts": {
+        "start": "node src/main.js"
+    },
+    "license": "MIT"
+}

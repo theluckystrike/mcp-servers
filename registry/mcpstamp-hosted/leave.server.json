@@ -1,0 +1,37 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.theluckystrike/leave",
+  "title": "McpStamp Leave Tracker",
+  "description": "Employee leave and PTO: requests, approvals, balances, who is out, and conflict checks.",
+  "version": "0.23.0",
+  "repository": {
+    "url": "https://github.com/theluckystrike/mcp-servers",
+    "source": "github",
+    "subfolder": "servers/leave"
+  },
+  "websiteUrl": "https://www.mcpstamp.com/servers/leave/",
+  "packages": [
+    {
+      "registryType": "mcpb",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.22.0/leave.mcpb",
+      "version": "0.22.0",
+      "fileSha256": "e83ac96a30dccf429639d530aaa3701ad70995a44dd87e9d8bf0106b8565867b",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "description": "Optional Pro license key (MCPL1....). Verified offline.",
+          "isSecret": true,
+          "name": "MCP_LICENSE_KEY"
+        }
+      ]
+    }
+  ],
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.zovo.one/mcp/leave"
+    }
+  ]
+}

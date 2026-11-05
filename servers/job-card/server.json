@@ -1,14 +1,15 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/job-card",
-  "description": "Job cards for trades and field service: hours and materials per job, open to invoiced.",
+  "title": "McpStamp Job Cards",
+  "description": "Job cards for on-site crews: labour hours and materials per job, client signature, totals.",
   "version": "0.22.6",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
     "subfolder": "servers/job-card"
   },
-  "websiteUrl": "https://mcp.zovo.one/s/job-card",
+  "websiteUrl": "https://www.mcpstamp.com/servers/job-card/",
   "packages": [
     {
       "registryType": "mcpb",

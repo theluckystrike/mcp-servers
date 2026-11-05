@@ -1,0 +1,43 @@
+{
+ "result": {
+  "content": [
+   {
+    "type": "text",
+    "text": "An SAT total score of 1350 is at the 89th percentile of recent SAT takers (College Board user group percentile) and the 94th percentile of all US 11th and 12th graders (nationally representative percentile). It is 305 points above the class of 2026 mean of 1045 (1,954,833 test takers). 19% of the class of 2026 (377,381 students) scored 1200-1390.\n\n{\n  \"score\": 1350,\n  \"section\": \"total\",\n  \"section_name\": \"Total score (400-1600)\",\n  \"percentiles\": {\n    \"nationally_representative\": \"94\",\n    \"user_group\": \"89\"\n  },\n  \"meaning\": \"A percentile is the percent of the comparison group scoring at or below this score. User group = actual SAT takers who graduated in the past three school years. Nationally representative = weighted research sample of all US 11th and 12th graders, including students who do not take the SAT. \\\"99+\\\" means above the 99th percentile; \\\"1-\\\" below the 1st.\",\n  \"class_of_2026\": {\n    \"mean\": 1045,\n    \"points_vs_mean\": 305,\n    \"score_band\": {\n      \"band\": \"1200-1390\",\n      \"test_takers\": 377381,\n      \"pct\": 19\n    },\n    \"test_takers\": 1954833\n  },\n  \"as_of\": \"2026-11-03\",\n  \"source\": \"https://research.collegeboard.org/reports/sat-suite/understanding-scores/sat\",\n  \"sources\": {\n    \"percentiles\": \"https://research.collegeboard.org/reports/sat-suite/understanding-scores/sat\",\n    \"class_of_2026\": \"https://reports.collegeboard.org/media/pdf/2026-total-group-sat-suite-of-assessments-annual-report-ada.pdf\"\n  },\n  \"more\": \"https://examscorecalc.com/digital-sat-score-calculator/?utm_source=mcp&utm_medium=sat-score-percentiles-mcp\",\n  \"related\": [\n    \"https://examscorecalc.com/sat/?utm_source=mcp&utm_medium=sat-score-percentiles-mcp\"\n  ],\n  \"summary\": \"An SAT total score of 1350 is at the 89th percentile of recent SAT takers (College Board user group percentile) and the 94th percentile of all US 11th and 12th graders (nationally representative percentile). It is 305 points above the class of 2026 mean of 1045 (1,954,833 test takers). 19% of the class of 2026 (377,381 students) scored 1200-1390.\"\n}"
+   }
+  ],
+  "structuredContent": {
+   "score": 1350,
+   "section": "total",
+   "section_name": "Total score (400-1600)",
+   "percentiles": {
+    "nationally_representative": "94",
+    "user_group": "89"
+   },
+   "meaning": "A percentile is the percent of the comparison group scoring at or below this score. User group = actual SAT takers who graduated in the past three school years. Nationally representative = weighted research sample of all US 11th and 12th graders, including students who do not take the SAT. \"99+\" means above the 99th percentile; \"1-\" below the 1st.",
+   "class_of_2026": {
+    "mean": 1045,
+    "points_vs_mean": 305,
+    "score_band": {
+     "band": "1200-1390",
+     "test_takers": 377381,
+     "pct": 19
+    },
+    "test_takers": 1954833
+   },
+   "as_of": "2026-11-03",
+   "source": "https://research.collegeboard.org/reports/sat-suite/understanding-scores/sat",
+   "sources": {
+    "percentiles": "https://research.collegeboard.org/reports/sat-suite/understanding-scores/sat",
+    "class_of_2026": "https://reports.collegeboard.org/media/pdf/2026-total-group-sat-suite-of-assessments-annual-report-ada.pdf"
+   },
+   "more": "https://examscorecalc.com/digital-sat-score-calculator/?utm_source=mcp&utm_medium=sat-score-percentiles-mcp",
+   "related": [
+    "https://examscorecalc.com/sat/?utm_source=mcp&utm_medium=sat-score-percentiles-mcp"
+   ],
+   "summary": "An SAT total score of 1350 is at the 89th percentile of recent SAT takers (College Board user group percentile) and the 94th percentile of all US 11th and 12th graders (nationally representative percentile). It is 305 points above the class of 2026 mean of 1045 (1,954,833 test takers). 19% of the class of 2026 (377,381 students) scored 1200-1390."
+  }
+ },
+ "jsonrpc": "2.0",
+ "id": 2
+}

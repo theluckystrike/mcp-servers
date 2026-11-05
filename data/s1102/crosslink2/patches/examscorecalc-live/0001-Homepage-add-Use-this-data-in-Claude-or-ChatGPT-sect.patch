@@ -1,0 +1,31 @@
+From b279b7d8c20a6eb5b86215b679409e7acf1e488e Mon Sep 17 00:00:00 2001
+From: theluckystrike <51033404+theluckystrike@users.noreply.github.com>
+Date: Mon, 2 Nov 2026 10:33:31 +0700
+Subject: [PATCH] Homepage: add Use this data in Claude or ChatGPT section
+
+---
+ index.html | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/index.html b/index.html
+index aba01eb..42cdb93 100644
+--- a/index.html
++++ b/index.html
+@@ -36,6 +36,14 @@
+       <p class="prose">Every calculator tells you it's an estimate, shown right next to your score, not buried in fine print. We use publicly released College Board scoring worksheets and recent score distributions to project cut-offs, and update them each cycle.</p>
+       <p class="prose">No ads, no sign-ups, no gated features. Just the tool. <a href="/about/">How the estimates are built &rsaquo;</a></p>
+     </section>
++    <section class="sec" id="use-in-ai"><h2 class="h2">Use this data in Claude or ChatGPT</h2>
++      <p class="prose">The AP score distributions on this site are also available as a free MCP server. An AI assistant can use it to look up the College Board score distribution for an AP exam, find the percentile of a score, rank exams by pass rate, and estimate a score from a composite on the seven exams with a printed worksheet. The data covers 2024, 2025 and 2026. There is no account or API key.</p>
++      <p class="prose"><strong>Claude.ai or ChatGPT.</strong> Add a custom connector with this URL.</p>
++      <pre style="margin:0 0 10px;padding:11px 13px;background:var(--card);border:1px solid var(--s200);border-radius:var(--radius);font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;overflow-x:auto;white-space:pre;color:var(--ink);"><code>https://ap-score-distributions-mcp.lipmichal.workers.dev/mcp</code></pre>
++      <p class="prose"><strong>Claude Code.</strong></p>
++      <pre style="margin:0 0 10px;padding:11px 13px;background:var(--card);border:1px solid var(--s200);border-radius:var(--radius);font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;overflow-x:auto;white-space:pre;color:var(--ink);"><code>claude mcp add --transport http ap-score-distributions https://ap-score-distributions-mcp.lipmichal.workers.dev/mcp</code></pre>
++      <p class="prose"><a href="https://www.mcpstamp.com/free-servers/ap-score-distributions-mcp/">Setup steps &rsaquo;</a> &middot; <a href="https://github.com/theluckystrike/ap-score-distributions-mcp">Source on GitHub &rsaquo;</a></p>
++    </section>
+   </main><footer class="site-foot"><div class="wrap"><div class="foot-tip" data-support-cta="footer"><h2 class="tip-h sct-maker"><img class="sct-face" src="/assets/michael-128.webp" width="40" height="40" loading="lazy" alt="Michael Lip">Made by Michael, one person and a lot of coffee.</h2><p>If ExamScoreCalc has helped you, you can buy me a coffee. It honestly makes my day, and I read every note that comes with one.</p><div class="tip-btns"><a class="tip-btn solid" data-rail="paypal" href="https://paypal.me/najzzz/5USD" rel="noopener" target="_blank">Buy me a coffee · $5 <small>via PayPal</small></a><a class="tip-btn" data-rail="bmc" href="https://buymeacoffee.com/michaellip" rel="noopener" target="_blank">Card, any amount or monthly</a><a class="tip-btn sct-github" href="https://github.com/sponsors/theluckystrike" data-rail="github" target="_blank" rel="noopener">Sponsor on GitHub<small>monthly or one-time</small></a><a class="tip-why" href="/support/">Why I ask</a></div></div>
+   <div class="foot-links"><a href="/ap/ap-us-history/">APUSH</a><a href="/ap/ap-english-language/">Lang</a><a href="/ap/ap-calculus-ab/">Calc AB</a><a href="/ap/ap-calculus-bc/">Calc BC</a><a href="/ap/ap-biology/">Bio</a><a href="/ap/ap-chemistry/">Chem</a><a href="/ap/ap-psychology/">Psych</a><a href="/ap/ap-us-government/">Gov</a><a href="/ap/ap-english-literature/">Lit</a><a href="/ap-score-distributions/">AP score distributions</a><a href="/sat/">SAT</a><a href="/digital-sat-score-calculator/">Digital SAT calculator</a><a href="/act-score-calculator/">ACT</a><a href="/about/">About</a><a href="/support/">Support</a><a href="https://tg.zovo.one">Tiny Telegram Tools</a></div>
+   <p class="disc">Estimates only. Exam formats follow published College Board Course &amp; Exam Descriptions and official ACT/SAT structures, but score cut-offs are estimates based on publicly released scoring worksheets. College Board does not publish exact annual cut scores, and the digital SAT is adaptive, so results here are projections. Updated for 2025-26. Not affiliated with the College Board, ACT, or ETS. AP&reg; is a trademark of the College Board.</p>
+-- 
+2.50.1 (Apple Git-155)
+

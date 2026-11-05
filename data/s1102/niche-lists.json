@@ -1,0 +1,292 @@
+{
+ "lane": "niche-lists",
+ "date": "2026-11-02",
+ "prs": [
+  "https://github.com/edoardottt/awesome-hacker-search-engines/pull/389",
+  "https://github.com/PavelGrigoryevDS/awesome-data-analysis/pull/113",
+  "https://github.com/hanlulong/awesome-ai-for-economists/pull/34"
+ ],
+ "satellites_without_list": [
+  "no-tax-on-overtime-mcp",
+  "car-loan-interest-deduction-calculator-mcp",
+  "section-179-deduction-calculator-mcp",
+  "paycheck-calculator-mcp",
+  "uk-income-tax-salary-mcp",
+  "gold-price-per-gram-mcp",
+  "us-federal-holidays-business-days-mcp",
+  "ap-score-distributions-mcp",
+  "dscr-loan-calculator-mcp",
+  "cups-to-grams-mcp (only open PR awesome-recipes)",
+  "recipe-nutrition-calculator-mcp (RecipeTool already merged)",
+  "lake-level-mcp (4 geo lists already)"
+ ],
+ "method": "gh api search/repositories with many awesome-<domain> keyword/topic queries (stars>=150-200); gh pr list -R <repo> --state merged; gh search prs --author theluckystrike --repo <repo> before each PR (all empty). Multi-word GitHub searches mostly returned nothing, so personal finance, tax, payroll, hydrology, education, calendar, gold, cooking lists with 200+ stars and recent activity do not appear to exist.",
+ "candidates": [
+  {
+   "repo": "edoardottt/awesome-hacker-search-engines",
+   "stars": 11453,
+   "last_merge": "2026-10-27",
+   "decision": "PR OPENED",
+   "reason": "Domains section fits CT-based subdomain search; no CONTRIBUTING file, no agent ban; list appends newest entries at section end",
+   "satellite": "subdomain-finder-mcp",
+   "pr": "https://github.com/edoardottt/awesome-hacker-search-engines/pull/389"
+  },
+  {
+   "repo": "PavelGrigoryevDS/awesome-data-analysis",
+   "stars": 2159,
+   "last_merge": "2026-11-01",
+   "decision": "PR OPENED",
+   "reason": "A/B Testing section lists calculators; format '- [Name](URL) - Description.', alphabetical, one resource per PR",
+   "satellite": "ab-test-sample-size-calculator-mcp",
+   "pr": "https://github.com/PavelGrigoryevDS/awesome-data-analysis/pull/113"
+  },
+  {
+   "repo": "hanlulong/awesome-ai-for-economists",
+   "stars": 701,
+   "last_merge": "2026-10-12",
+   "decision": "PR OPENED",
+   "reason": "MCP Servers for Economic Data section; MCP rule needs open source or free hosted, updated within 12 months, new capability; stars badge, <=20 words, PR template followed. Note: domain list with an MCP subsection",
+   "satellite": "minimum-wage-mcp",
+   "pr": "https://github.com/hanlulong/awesome-ai-for-economists/pull/34"
+  },
+  {
+   "repo": "jivoi/awesome-osint",
+   "stars": 30635,
+   "last_merge": "2026-10-31",
+   "decision": "SKIP",
+   "reason": "CONTRIBUTING.md says 'If you are an LLM or agent, you cannot submit a Pull Request here'; section Domain and IP Research would have fit",
+   "satellite": "subdomain-finder-mcp",
+   "pr": null
+  },
+  {
+   "repo": "vavkamil/awesome-bugbounty-tools",
+   "stars": 6446,
+   "last_merge": "2026-11-01",
+   "decision": "SKIP",
+   "reason": "PR template requires GitHub repos with at least 50 stars; ours has 0 (Recon > Subdomain Enumeration would fit)",
+   "satellite": "subdomain-finder-mcp",
+   "pr": null
+  },
+  {
+   "repo": "Astrosp/Awesome-OSINT-List",
+   "stars": 4623,
+   "last_merge": "2026-10-28",
+   "decision": "NOT USED",
+   "reason": "Fits Recon section, merges recent, but 1 PR per satellite and hacker-search-engines chosen; spare option",
+   "satellite": "subdomain-finder-mcp",
+   "pr": null
+  },
+  {
+   "repo": "infoslack/awesome-web-hacking",
+   "stars": 7337,
+   "last_merge": "2026-10-29",
+   "decision": "NOT USED",
+   "reason": "Web hacking tools list, weaker fit than chosen list; 1 PR per satellite",
+   "satellite": "subdomain-finder-mcp",
+   "pr": null
+  },
+  {
+   "repo": "enaqx/awesome-pentest",
+   "stars": 27609,
+   "last_merge": "2026-07-25",
+   "decision": "SKIP",
+   "reason": "Last merge about 100 days ago (over 90 day rule)",
+   "satellite": "subdomain-finder-mcp",
+   "pr": null
+  },
+  {
+   "repo": "Hack-with-Github/Awesome-Hacking",
+   "stars": 124348,
+   "last_merge": "not checked",
+   "decision": "SKIP",
+   "reason": "Meta list of other awesome lists, no tool entries",
+   "satellite": "subdomain-finder-mcp",
+   "pr": null
+  },
+  {
+   "repo": "etewiah/awesome-real-estate",
+   "stars": 382,
+   "last_merge": "2026-10-24",
+   "decision": "SKIP",
+   "reason": "Curation bar rejects thin tools and requires independent evidence of use beyond a landing page; DSCR MCP has none yet",
+   "satellite": "dscr-loan-calculator-mcp",
+   "pr": null
+  },
+  {
+   "repo": "wilsonfreitas/awesome-quant",
+   "stars": 30405,
+   "last_merge": "2026-10-19",
+   "decision": "SKIP",
+   "reason": "Quant libraries and market-data sources; gold per gram and jewelry value tools are consumer calculators, no fitting section",
+   "satellite": "gold-price-per-gram-mcp",
+   "pr": null
+  },
+  {
+   "repo": "georgezouq/awesome-ai-in-finance",
+   "stars": 6716,
+   "last_merge": "2026-09-08",
+   "decision": "SKIP",
+   "reason": "Only fitting section is its MCP Servers list (MCP-list rule) and it is trading focused",
+   "satellite": "gold-price-per-gram-mcp",
+   "pr": null
+  },
+  {
+   "repo": "moov-io/awesome-fintech",
+   "stars": 396,
+   "last_merge": "n/a",
+   "decision": "SKIP",
+   "reason": "Already an open TapVow PR from this account (1 per list)",
+   "satellite": null,
+   "pr": null
+  },
+  {
+   "repo": "jzarca01/awesome-food",
+   "stars": 254,
+   "last_merge": "2026-03-17",
+   "decision": "SKIP",
+   "reason": "Last merge over 90 days ago",
+   "satellite": "recipe-nutrition-calculator-mcp",
+   "pr": null
+  },
+  {
+   "repo": "jrhizor/awesome-nutrition-tracking",
+   "stars": 153,
+   "last_merge": "2026-11-01",
+   "decision": "SKIP",
+   "reason": "Below 200 stars and RecipeTool PR #60 already merged there",
+   "satellite": "recipe-nutrition-calculator-mcp",
+   "pr": null
+  },
+  {
+   "repo": "bbbenji/awesome-recipes",
+   "stars": "n/a",
+   "last_merge": "n/a",
+   "decision": "SKIP",
+   "reason": "Open PR #18 (Ingredient Calculator) from this account",
+   "satellite": "cups-to-grams-mcp",
+   "pr": null
+  },
+  {
+   "repo": "sshuair/awesome-gis; okhosting/awesome-open-data; iamtekson/awesome-geospatial-data-sources; sacridini/Awesome-Geospatial",
+   "stars": "n/a",
+   "last_merge": "n/a",
+   "decision": "SKIP",
+   "reason": "Lake Level already submitted to all four by earlier sessions",
+   "satellite": "lake-level-mcp",
+   "pr": null
+  },
+  {
+   "repo": "softwareunderground/awesome-open-geoscience",
+   "stars": 1867,
+   "last_merge": "2026-05-26",
+   "decision": "SKIP",
+   "reason": "Last merge over 90 days ago; lake-level already covered",
+   "satellite": "lake-level-mcp",
+   "pr": null
+  },
+  {
+   "repo": "ESIPFed/Awesome-Earth-Artificial-Intelligence",
+   "stars": 252,
+   "last_merge": "2026-10-13",
+   "decision": "SKIP",
+   "reason": "ML-for-earth-science focus, no section for a lake data tool; lake-level already covered",
+   "satellite": "lake-level-mcp",
+   "pr": null
+  },
+  {
+   "repo": "awesomedata/awesome-public-datasets",
+   "stars": 79901,
+   "last_merge": "2021-03-11",
+   "decision": "SKIP",
+   "reason": "No merge in years",
+   "satellite": null,
+   "pr": null
+  },
+  {
+   "repo": "erikgahner/awesome-statistics",
+   "stars": 169,
+   "last_merge": "not checked",
+   "decision": "SKIP",
+   "reason": "Below 200 stars",
+   "satellite": "ab-test-sample-size-calculator-mcp",
+   "pr": null
+  },
+  {
+   "repo": "servicelogon/awesome-recon-tools",
+   "stars": 183,
+   "last_merge": "not checked",
+   "decision": "SKIP",
+   "reason": "Below 200 stars",
+   "satellite": "subdomain-finder-mcp",
+   "pr": null
+  },
+  {
+   "repo": "soxoj/awesome-osint-mcp-servers",
+   "stars": 535,
+   "last_merge": "not checked",
+   "decision": "SKIP",
+   "reason": "MCP-specific list (excluded by lane rules)",
+   "satellite": "subdomain-finder-mcp",
+   "pr": null
+  },
+  {
+   "repo": "public-api-lists/public-api-lists",
+   "stars": 16279,
+   "last_merge": "not checked",
+   "decision": "SKIP",
+   "reason": "Lists REST APIs, our endpoints are MCP; not read in depth",
+   "satellite": null,
+   "pr": null
+  },
+  {
+   "repo": "lukasz-madon/awesome-remote-job",
+   "stars": 50269,
+   "last_merge": "2026-09-21",
+   "decision": "SKIP",
+   "reason": "Remote jobs list, no section for payroll or tax tools (only checked section names via merged PR title)",
+   "satellite": "paycheck-calculator-mcp",
+   "pr": null
+  },
+  {
+   "repo": "Ibexoft/awesome-startup-tools-list",
+   "stars": 1098,
+   "last_merge": "2026-10-31",
+   "decision": "SKIP",
+   "reason": "Startup SaaS directory with featured listings; not read in depth, no clear fit",
+   "satellite": null,
+   "pr": null
+  },
+  {
+   "repo": "kdeldycke/awesome-billing",
+   "stars": 1367,
+   "last_merge": "not checked",
+   "decision": "SKIP",
+   "reason": "Cloud billing and payments knowledge, no fit for tax or payroll calculators; not read in depth",
+   "satellite": null,
+   "pr": null
+  },
+  {
+   "repo": "siddhantgoel/awesome-beancount",
+   "stars": 388,
+   "last_merge": "2026-10-23",
+   "decision": "SKIP",
+   "reason": "Plain-text accounting tools, no fit for tax calculators; not read in depth",
+   "satellite": null,
+   "pr": null
+  },
+  {
+   "repo": "thuquant/awesome-quant",
+   "stars": 5704,
+   "last_merge": "2026-11-02",
+   "decision": "SKIP",
+   "reason": "Chinese-language quant list, no fit",
+   "satellite": null,
+   "pr": null
+  }
+ ],
+ "verification": "Each PR diff is one line; commit author theluckystrike noreply, no trailers; PR URLs returned by gh pr create.",
+ "open_items": [
+  "PRs 389, 113, 34 awaiting maintainer review",
+  "Spare lists if a PR is rejected: Astrosp/Awesome-OSINT-List (Recon), infoslack/awesome-web-hacking"
+ ]
+}

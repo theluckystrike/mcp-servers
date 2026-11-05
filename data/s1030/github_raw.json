@@ -1,0 +1,1361 @@
+[
+ {
+  "repo": "theluckystrike/bln-mcp-grammar-server",
+  "stars": 0,
+  "forks": 0,
+  "views": 2,
+  "view_uniques": 2,
+  "clones": 2274,
+  "clone_uniques": 32,
+  "referrers": [],
+  "paths": [
+   {
+    "path": "/theluckystrike/bln-mcp-grammar-server",
+    "title": "Overview",
+    "count": 2,
+    "uniques": 2
+   }
+  ],
+  "errors": []
+ },
+ {
+  "repo": "theluckystrike/mcp-coda",
+  "stars": 0,
+  "forks": 0,
+  "views": 0,
+  "view_uniques": 0,
+  "clones": 2,
+  "clone_uniques": 2,
+  "referrers": [],
+  "paths": [],
+  "errors": []
+ },
+ {
+  "repo": "theluckystrike/mcp-gitlab",
+  "stars": 0,
+  "forks": 0,
+  "views": 0,
+  "view_uniques": 0,
+  "clones": 1,
+  "clone_uniques": 1,
+  "referrers": [],
+  "paths": [],
+  "errors": []
+ },
+ {
+  "repo": "theluckystrike/mcp-hub-lc",
+  "stars": 0,
+  "forks": 0,
+  "views": 0,
+  "view_uniques": 0,
+  "clones": 3,
+  "clone_uniques": 3,
+  "referrers": [],
+  "paths": [],
+  "errors": []
+ },
+ {
+  "repo": "theluckystrike/mcp-registry-zovo",
+  "stars": 0,
+  "forks": 0,
+  "views": 0,
+  "view_uniques": 0,
+  "clones": 4,
+  "clone_uniques": 4,
+  "referrers": [],
+  "paths": [],
+  "errors": []
+ },
+ {
+  "repo": "theluckystrike/mcp-servers",
+  "stars": 2,
+  "forks": 3,
+  "views": 136,
+  "view_uniques": 50,
+  "clones": 2124,
+  "clone_uniques": 377,
+  "referrers": [
+   {
+    "referrer": "github.com",
+    "count": 15,
+    "uniques": 5
+   },
+   {
+    "referrer": "Google",
+    "count": 2,
+    "uniques": 1
+   },
+   {
+    "referrer": "registry.modelcontextprotocol.io",
+    "count": 1,
+    "uniques": 1
+   }
+  ],
+  "paths": [
+   {
+    "path": "/theluckystrike/mcp-servers",
+    "title": "Overview",
+    "count": 19,
+    "uniques": 15
+   },
+   {
+    "path": "/theluckystrike/mcp-servers/pull/94",
+    "title": "/pull/94",
+    "count": 10,
+    "uniques": 2
+   },
+   {
+    "path": "/theluckystrike/mcp-servers/issues",
+    "title": "/issues",
+    "count": 7,
+    "uniques": 4
+   },
+   {
+    "path": "/theluckystrike/mcp-servers/releases/tag/v0.22.5",
+    "title": "/releases/tag/v0.22.5",
+    "count": 4,
+    "uniques": 3
+   },
+   {
+    "path": "/theluckystrike/mcp-servers/blob/main/servers/loan-calculator/README.md",
+    "title": "/blob/main/servers/loan-calculator/README.md",
+    "count": 3,
+    "uniques": 2
+   },
+   {
+    "path": "/theluckystrike/mcp-servers/issues/90",
+    "title": "/issues/90",
+    "count": 3,
+    "uniques": 2
+   },
+   {
+    "path": "/theluckystrike/mcp-servers/fork",
+    "title": "/fork",
+    "count": 2,
+    "uniques": 2
+   },
+   {
+    "path": "/theluckystrike/mcp-servers/pulls",
+    "title": "/pulls",
+    "count": 2,
+    "uniques": 2
+   },
+   {
+    "path": "/theluckystrike/mcp-servers/commit/7ae8d9a4cb319b0c709eca8d4e7b8f77bcb32f28",
+    "title": "/commit/7ae8d9a4cb319b0c709eca8d4e7b8f77bcb32f28",
+    "count": 2,
+    "uniques": 1
+   },
+   {
+    "path": "/theluckystrike/mcp-servers/issues/88",
+    "title": "/issues/88",
+    "count": 2,
+    "uniques": 1
+   }
+  ],
+  "errors": []
+ },
+ {
+  "repo": "theluckystrike/mcp-servers-1",
+  "stars": 0,
+  "forks": 0,
+  "views": 0,
+  "view_uniques": 0,
+  "clones": 2,
+  "clone_uniques": 2,
+  "referrers": [],
+  "paths": [],
+  "errors": []
+ },
+ {
+  "repo": "zovo-one/mcp-time-tracker",
+  "stars": 0,
+  "forks": 0,
+  "views": 0,
+  "view_uniques": 0,
+  "clones": 12,
+  "clone_uniques": 11,
+  "referrers": [],
+  "paths": [],
+  "errors": []
+ },
+ {
+  "repo": "zovo-one/mcp-price-tracker",
+  "stars": 0,
+  "forks": 0,
+  "views": 6,
+  "view_uniques": 6,
+  "clones": 15,
+  "clone_uniques": 14,
+  "referrers": [
+   {
+    "referrer": "Google",
+    "count": 6,
+    "uniques": 6
+   }
+  ],
+  "paths": [
+   {
+    "path": "/theluckystrike/mcp-price-tracker",
+    "title": "Overview",
+    "count": 5,
+    "uniques": 5
+   },
+   {
+    "path": "/zovo-one/mcp-price-tracker",
+    "title": "Overview",
+    "count": 1,
+    "uniques": 1
+   }
+  ],
+  "errors": []
+ },
+ {
+  "repo": "zovo-one/mcp-spreadsheet",
+  "stars": 0,
+  "forks": 0,
+  "views": 13,
+  "view_uniques": 4,
+  "clones": 31,
+  "clone_uniques": 21,
+  "referrers": [],
+  "paths": [
+   {
+    "path": "/theluckystrike/mcp-spreadsheet",
+    "title": "Overview",
+    "count": 6,
+    "uniques": 4
+   },
+   {
+    "path": "/theluckystrike/mcp-spreadsheet/activity",
+    "title": "/activity",
+    "count": 1,
+    "uniques": 1
+   },
+   {
+    "path": "/theluckystrike/mcp-spreadsheet/blob/main/LICENSE",
+    "title": "/blob/main/LICENSE",
+    "count": 1,
+    "uniques": 1
+   },
+   {
+    "path": "/theluckystrike/mcp-spreadsheet/blob/main/gemini-extension.json",
+    "title": "/blob/main/gemini-extension.json",
+    "count": 1,
+    "uniques": 1
+   },
+   {
+    "path": "/theluckystrike/mcp-spreadsheet/blob/main/server.pivot.json",
+    "title": "/blob/main/server.pivot.json",
+    "count": 1,
+    "uniques": 1
+   },
+   {
+    "path": "/theluckystrike/mcp-spreadsheet/blob/main/tsconfig.json",
+    "title": "/blob/main/tsconfig.json",
+    "count": 1,
+    "uniques": 1
+   },
+   {
+    "path": "/theluckystrike/mcp-spreadsheet/commit/ef715332a2e72b86bc9f6e328bcef674b8f9a8ef",
+    "title": "/commit/ef715332a2e72b86bc9f6e328bcef674b8f9a8ef",
+    "count": 1,
+    "uniques": 1
+   },
+   {
+    "path": "/theluckystrike/mcp-spreadsheet/releases",
+    "title": "/releases",
+    "count": 1,
+    "uniques": 1
+   }
+  ],
+  "errors": []
+ },
+ {
+  "repo": "zovo-one/mcp-invoice-generator",
+  "stars": 0,
+  "forks": 0,
+  "views": 28,
+  "view_uniques": 4,
+  "clones": 25,
+  "clone_uniques": 19,
+  "referrers": [
+   {
+    "referrer": "geminicli.com",
+    "count": 2,
+    "uniques": 1
+   }
+  ],
+  "paths": [
+   {
+    "path": "/theluckystrike/mcp-invoice-generator",
+    "title": "Overview",
+    "count": 11,
+    "uniques": 3
+   },
+   {
+    "path": "/zovo-one/mcp-invoice-generator",
+    "title": "Overview",
+    "count": 4,
+    "uniques": 3
+   },
+   {
+    "path": "/theluckystrike/mcp-invoice-generator/activity",
+    "title": "/activity",
+    "count": 1,
+    "uniques": 1
+   },
+   {
+    "path": "/theluckystrike/mcp-invoice-generator/blob/main/.gitignore",
+    "title": "/blob/main/.gitignore",
+    "count": 1,
+    "uniques": 1
+   },
+   {
+    "path": "/theluckystrike/mcp-invoice-generator/blob/main/mcpservers.org",
+    "title": "/blob/main/mcpservers.org",
+    "count": 1,
+    "uniques": 1
+   },
+   {
+    "path": "/theluckystrike/mcp-invoice-generator/blob/main/package.json",
+    "title": "/blob/main/package.json",
+    "count": 1,
+    "uniques": 1
+   },
+   {
+    "path": "/theluckystrike/mcp-invoice-generator/blob/main/server.json",
+    "title": "/blob/main/server.json",
+    "count": 1,
+    "uniques": 1
+   },
+   {
+    "path": "/theluckystrike/mcp-invoice-generator/blob/main/server.mcpb.json",
+    "title": "/blob/main/server.mcpb.json",
+    "count": 1,
+    "uniques": 1
+   },
+   {
+    "path": "/theluckystrike/mcp-invoice-generator/blob/main/server.npm-package.json",
+    "title": "/blob/main/server.npm-package.json",
+    "count": 1,
+    "uniques": 1
+   },
+   {
+    "path": "/theluckystrike/mcp-invoice-generator/blob/main/server.variant-invoice-generator-freelancers.json",
+    "title": "/blob/main/server.variant-invoice-generator-freelancers.json",
+    "count": 1,
+    "uniques": 1
+   }
+  ],
+  "errors": []
+ },
+ {
+  "repo": "zovo-one/mcp-expense-tracker",
+  "stars": 0,
+  "forks": 0,
+  "views": 3,
+  "view_uniques": 3,
+  "clones": 38,
+  "clone_uniques": 26,
+  "referrers": [],
+  "paths": [
+   {
+    "path": "/theluckystrike/mcp-expense-tracker",
+    "title": "Overview",
+    "count": 3,
+    "uniques": 3
+   }
+  ],
+  "errors": []
+ },
+ {
+  "repo": "zovo-one/mcp-office-suite",
+  "stars": 0,
+  "forks": 0,
+  "views": 1,
+  "view_uniques": 1,
+  "clones": 155,
+  "clone_uniques": 71,
+  "referrers": [],
+  "paths": [
+   {
+    "path": "/theluckystrike/mcp-office-suite",
+    "title": "Overview",
+    "count": 1,
+    "uniques": 1
+   }
+  ],
+  "errors": []
+ },
+ {
+  "repo": "zovo-one/mcp-currency",
+  "stars": 0,
+  "forks": 0,
+  "views": 1,
+  "view_uniques": 1,
+  "clones": 23,
+  "clone_uniques": 20,
+  "referrers": [],
+  "paths": [
+   {
+    "path": "/theluckystrike/mcp-currency",
+    "title": "Overview",
+    "count": 1,
+    "uniques": 1
+   }
+  ],
+  "errors": []
+ },
+ {
+  "repo": "zovo-one/mcp-timezone",
+  "stars": 0,
+  "forks": 0,
+  "views": 2,
+  "view_uniques": 2,
+  "clones": 12,
+  "clone_uniques": 11,
+  "referrers": [],
+  "paths": [
+   {
+    "path": "/theluckystrike/mcp-timezone",
+    "title": "Overview",
+    "count": 2,
+    "uniques": 2
+   }
+  ],
+  "errors": []
+ },
+ {
+  "repo": "zovo-one/mcp-docx",
+  "stars": 0,
+  "forks": 0,
+  "views": 4,
+  "view_uniques": 3,
+  "clones": 11,
+  "clone_uniques": 10,
+  "referrers": [],
+  "paths": [
+   {
+    "path": "/theluckystrike/mcp-docx",
+    "title": "Overview",
+    "count": 2,
+    "uniques": 2
+   },
+   {
+    "path": "/theluckystrike/mcp-docx/blob/HEAD/MIRROR.md",
+    "title": "/blob/HEAD/MIRROR.md",
+    "count": 2,
+    "uniques": 1
+   }
+  ],
+  "errors": []
+ },
+ {
+  "repo": "zovo-one/mcp-resume",
+  "stars": 0,
+  "forks": 0,
+  "views": 5,
+  "view_uniques": 4,
+  "clones": 17,
+  "clone_uniques": 16,
+  "referrers": [],
+  "paths": [
+   {
+    "path": "/theluckystrike/mcp-resume",
+    "title": "Overview",
+    "count": 3,
+    "uniques": 3
+   },
+   {
+    "path": "/zovo-one/mcp-resume",
+    "title": "Overview",
+    "count": 2,
+    "uniques": 1
+   }
+  ],
+  "errors": []
+ },
+ {
+  "repo": "zovo-one/mcp-recurring",
+  "stars": 0,
+  "forks": 0,
+  "views": 0,
+  "view_uniques": 0,
+  "clones": 15,
+  "clone_uniques": 14,
+  "referrers": [],
+  "paths": [],
+  "errors": []
+ },
+ {
+  "repo": "zovo-one/mcp-clauses",
+  "stars": 0,
+  "forks": 0,
+  "views": 3,
+  "view_uniques": 2,
+  "clones": 15,
+  "clone_uniques": 14,
+  "referrers": [
+   {
+    "referrer": "github.com",
+    "count": 2,
+    "uniques": 1
+   }
+  ],
+  "paths": [
+   {
+    "path": "/theluckystrike/mcp-clauses",
+    "title": "Overview",
+    "count": 3,
+    "uniques": 2
+   }
+  ],
+  "errors": []
+ },
+ {
+  "repo": "zovo-one/mcp-pdf",
+  "stars": 0,
+  "forks": 0,
+  "views": 3,
+  "view_uniques": 3,
+  "clones": 20,
+  "clone_uniques": 14,
+  "referrers": [
+   {
+    "referrer": "search.brave.com",
+    "count": 1,
+    "uniques": 1
+   }
+  ],
+  "paths": [
+   {
+    "path": "/theluckystrike/mcp-pdf",
+    "title": "Overview",
+    "count": 3,
+    "uniques": 3
+   }
+  ],
+  "errors": []
+ },
+ {
+  "repo": "zovo-one/mcp-calendar",
+  "stars": 0,
+  "forks": 0,
+  "views": 1,
+  "view_uniques": 1,
+  "clones": 11,
+  "clone_uniques": 10,
+  "referrers": [
+   {
+    "referrer": "yandex.ru",
+    "count": 1,
+    "uniques": 1
+   }
+  ],
+  "paths": [
+   {
+    "path": "/theluckystrike/mcp-calendar/tree/main/src",
+    "title": "/tree/main/src",
+    "count": 1,
+    "uniques": 1
+   }
+  ],
+  "errors": []
+ },
+ {
+  "repo": "zovo-one/mcp-kanban",
+  "stars": 0,
+  "forks": 0,
+  "views": 3,
+  "view_uniques": 3,
+  "clones": 17,
+  "clone_uniques": 16,
+  "referrers": [],
+  "paths": [
+   {
+    "path": "/theluckystrike/mcp-kanban",
+    "title": "Overview",
+    "count": 1,
+    "uniques": 1
+   },
+   {
+    "path": "/theluckystrike/mcp-kanban/pulls",
+    "title": "/pulls",
+    "count": 1,
+    "uniques": 1
+   },
+   {
+    "path": "/zovo-one/mcp-kanban",
+    "title": "Overview",
+    "count": 1,
+    "uniques": 1
+   }
+  ],
+  "errors": []
+ },
+ {
+  "repo": "zovo-one/mcp-image",
+  "stars": 0,
+  "forks": 0,
+  "views": 0,
+  "view_uniques": 0,
+  "clones": 15,
+  "clone_uniques": 14,
+  "referrers": [],
+  "paths": [],
+  "errors": []
+ },
+ {
+  "repo": "zovo-one/mcp-bank-statement",
+  "stars": 0,
+  "forks": 0,
+  "views": 0,
+  "view_uniques": 0,
+  "clones": 13,
+  "clone_uniques": 12,
+  "referrers": [],
+  "paths": [],
+  "errors": []
+ },
+ {
+  "repo": "zovo-one/mcp-quotes",
+  "stars": 0,
+  "forks": 0,
+  "views": 1,
+  "view_uniques": 1,
+  "clones": 26,
+  "clone_uniques": 20,
+  "referrers": [],
+  "paths": [
+   {
+    "path": "/zovo-one/mcp-quotes",
+    "title": "Overview",
+    "count": 1,
+    "uniques": 1
+   }
+  ],
+  "errors": []
+ },
+ {
+  "repo": "zovo-one/mcp-barcode",
+  "stars": 0,
+  "forks": 0,
+  "views": 1,
+  "view_uniques": 1,
+  "clones": 13,
+  "clone_uniques": 12,
+  "referrers": [
+   {
+    "referrer": "geminicli.com",
+    "count": 1,
+    "uniques": 1
+   }
+  ],
+  "paths": [
+   {
+    "path": "/zovo-one/mcp-barcode",
+    "title": "Overview",
+    "count": 1,
+    "uniques": 1
+   }
+  ],
+  "errors": []
+ },
+ {
+  "repo": "zovo-one/mcp-zip",
+  "stars": 0,
+  "forks": 0,
+  "views": 1,
+  "view_uniques": 1,
+  "clones": 14,
+  "clone_uniques": 13,
+  "referrers": [],
+  "paths": [
+   {
+    "path": "/theluckystrike/mcp-zip",
+    "title": "Overview",
+    "count": 1,
+    "uniques": 1
+   }
+  ],
+  "errors": []
+ },
+ {
+  "repo": "zovo-one/mcp-billing-docs",
+  "stars": 0,
+  "forks": 0,
+  "views": 1,
+  "view_uniques": 1,
+  "clones": 28,
+  "clone_uniques": 19,
+  "referrers": [],
+  "paths": [
+   {
+    "path": "/theluckystrike/mcp-billing-docs",
+    "title": "Overview",
+    "count": 1,
+    "uniques": 1
+   }
+  ],
+  "errors": []
+ },
+ {
+  "repo": "zovo-one/mcp-deposits",
+  "stars": 0,
+  "forks": 0,
+  "views": 0,
+  "view_uniques": 0,
+  "clones": 20,
+  "clone_uniques": 18,
+  "referrers": [],
+  "paths": [],
+  "errors": []
+ },
+ {
+  "repo": "zovo-one/mcp-per-diem",
+  "stars": 0,
+  "forks": 0,
+  "views": 0,
+  "view_uniques": 0,
+  "clones": 13,
+  "clone_uniques": 12,
+  "referrers": [],
+  "paths": [],
+  "errors": []
+ },
+ {
+  "repo": "zovo-one/mcp-asset-register",
+  "stars": 0,
+  "forks": 0,
+  "views": 2,
+  "view_uniques": 2,
+  "clones": 14,
+  "clone_uniques": 13,
+  "referrers": [
+   {
+    "referrer": "github.com",
+    "count": 1,
+    "uniques": 1
+   }
+  ],
+  "paths": [
+   {
+    "path": "/theluckystrike/mcp-asset-register",
+    "title": "Overview",
+    "count": 2,
+    "uniques": 2
+   }
+  ],
+  "errors": []
+ },
+ {
+  "repo": "zovo-one/mcp-statement-of-account",
+  "stars": 0,
+  "forks": 0,
+  "views": 1,
+  "view_uniques": 1,
+  "clones": 49,
+  "clone_uniques": 32,
+  "referrers": [],
+  "paths": [
+   {
+    "path": "/theluckystrike/mcp-statement-of-account",
+    "title": "Overview",
+    "count": 1,
+    "uniques": 1
+   }
+  ],
+  "errors": []
+ },
+ {
+  "repo": "zovo-one/mcp-cash-book",
+  "stars": 0,
+  "forks": 0,
+  "views": 1,
+  "view_uniques": 1,
+  "clones": 13,
+  "clone_uniques": 12,
+  "referrers": [],
+  "paths": [
+   {
+    "path": "/zovo-one/mcp-cash-book",
+    "title": "Overview",
+    "count": 1,
+    "uniques": 1
+   }
+  ],
+  "errors": []
+ },
+ {
+  "repo": "zovo-one/mcp-amortization",
+  "stars": 0,
+  "forks": 0,
+  "views": 0,
+  "view_uniques": 0,
+  "clones": 13,
+  "clone_uniques": 12,
+  "referrers": [],
+  "paths": [],
+  "errors": []
+ },
+ {
+  "repo": "zovo-one/mcp-petty-cash",
+  "stars": 0,
+  "forks": 0,
+  "views": 0,
+  "view_uniques": 0,
+  "clones": 35,
+  "clone_uniques": 16,
+  "referrers": [],
+  "paths": [],
+  "errors": []
+ },
+ {
+  "repo": "zovo-one/mcp-work-order",
+  "stars": 0,
+  "forks": 0,
+  "views": 1,
+  "view_uniques": 1,
+  "clones": 15,
+  "clone_uniques": 14,
+  "referrers": [],
+  "paths": [
+   {
+    "path": "/theluckystrike/mcp-work-order",
+    "title": "Overview",
+    "count": 1,
+    "uniques": 1
+   }
+  ],
+  "errors": []
+ },
+ {
+  "repo": "zovo-one/mcp-catalogue",
+  "stars": 0,
+  "forks": 0,
+  "views": 0,
+  "view_uniques": 0,
+  "clones": 11,
+  "clone_uniques": 10,
+  "referrers": [],
+  "paths": [],
+  "errors": []
+ },
+ {
+  "repo": "zovo-one/mcp-change-order",
+  "stars": 0,
+  "forks": 0,
+  "views": 1,
+  "view_uniques": 1,
+  "clones": 51,
+  "clone_uniques": 36,
+  "referrers": [],
+  "paths": [
+   {
+    "path": "/theluckystrike/mcp-change-order",
+    "title": "Overview",
+    "count": 1,
+    "uniques": 1
+   }
+  ],
+  "errors": []
+ },
+ {
+  "repo": "zovo-one/mcp-delivery-schedule",
+  "stars": 0,
+  "forks": 0,
+  "views": 1,
+  "view_uniques": 1,
+  "clones": 37,
+  "clone_uniques": 24,
+  "referrers": [],
+  "paths": [
+   {
+    "path": "/theluckystrike/mcp-delivery-schedule",
+    "title": "Overview",
+    "count": 1,
+    "uniques": 1
+   }
+  ],
+  "errors": []
+ },
+ {
+  "repo": "zovo-one/mcp-checklist",
+  "stars": 0,
+  "forks": 0,
+  "views": 1,
+  "view_uniques": 1,
+  "clones": 53,
+  "clone_uniques": 35,
+  "referrers": [],
+  "paths": [
+   {
+    "path": "/theluckystrike/mcp-checklist",
+    "title": "Overview",
+    "count": 1,
+    "uniques": 1
+   }
+  ],
+  "errors": []
+ },
+ {
+  "repo": "zovo-one/mcp-packing-list",
+  "stars": 0,
+  "forks": 0,
+  "views": 0,
+  "view_uniques": 0,
+  "clones": 34,
+  "clone_uniques": 23,
+  "referrers": [],
+  "paths": [],
+  "errors": []
+ },
+ {
+  "repo": "zovo-one/mcp-ecosystem-measurements",
+  "stars": 0,
+  "forks": 0,
+  "views": 0,
+  "view_uniques": 0,
+  "clones": 8,
+  "clone_uniques": 8,
+  "referrers": [],
+  "paths": [],
+  "errors": []
+ },
+ {
+  "repo": "zovo-one/mcp-bill-of-sale",
+  "stars": 0,
+  "forks": 0,
+  "views": 2,
+  "view_uniques": 1,
+  "clones": 48,
+  "clone_uniques": 31,
+  "referrers": [],
+  "paths": [
+   {
+    "path": "/theluckystrike/mcp-bill-of-sale",
+    "title": "Overview",
+    "count": 2,
+    "uniques": 1
+   }
+  ],
+  "errors": []
+ },
+ {
+  "repo": "zovo-one/mcp-credit-note",
+  "stars": 0,
+  "forks": 0,
+  "views": 6,
+  "view_uniques": 4,
+  "clones": 36,
+  "clone_uniques": 24,
+  "referrers": [
+   {
+    "referrer": "github.com",
+    "count": 2,
+    "uniques": 1
+   }
+  ],
+  "paths": [
+   {
+    "path": "/theluckystrike/mcp-credit-note",
+    "title": "Overview",
+    "count": 5,
+    "uniques": 4
+   },
+   {
+    "path": "/zovo-one/mcp-credit-note",
+    "title": "Overview",
+    "count": 1,
+    "uniques": 1
+   }
+  ],
+  "errors": []
+ },
+ {
+  "repo": "zovo-one/mcp-job-card",
+  "stars": 0,
+  "forks": 0,
+  "views": 5,
+  "view_uniques": 4,
+  "clones": 30,
+  "clone_uniques": 19,
+  "referrers": [],
+  "paths": [
+   {
+    "path": "/theluckystrike/mcp-job-card",
+    "title": "Overview",
+    "count": 4,
+    "uniques": 3
+   },
+   {
+    "path": "/theluckystrike/mcp-job-card",
+    "title": "b-card",
+    "count": 1,
+    "uniques": 1
+   }
+  ],
+  "errors": []
+ },
+ {
+  "repo": "zovo-one/mcp-dunning-letters",
+  "stars": 0,
+  "forks": 0,
+  "views": 6,
+  "view_uniques": 4,
+  "clones": 37,
+  "clone_uniques": 24,
+  "referrers": [
+   {
+    "referrer": "github.com",
+    "count": 2,
+    "uniques": 1
+   }
+  ],
+  "paths": [
+   {
+    "path": "/theluckystrike/mcp-dunning-letters",
+    "title": "Overview",
+    "count": 5,
+    "uniques": 3
+   },
+   {
+    "path": "/zovo-one/mcp-dunning-letters",
+    "title": "Overview",
+    "count": 1,
+    "uniques": 1
+   }
+  ],
+  "errors": []
+ },
+ {
+  "repo": "zovo-one/mcp-supplier-list",
+  "stars": 0,
+  "forks": 0,
+  "views": 0,
+  "view_uniques": 0,
+  "clones": 32,
+  "clone_uniques": 20,
+  "referrers": [],
+  "paths": [],
+  "errors": []
+ },
+ {
+  "repo": "zovo-one/mcp-service-agreement",
+  "stars": 0,
+  "forks": 0,
+  "views": 2,
+  "view_uniques": 2,
+  "clones": 33,
+  "clone_uniques": 21,
+  "referrers": [],
+  "paths": [
+   {
+    "path": "/theluckystrike/mcp-service-agreement",
+    "title": "Overview",
+    "count": 2,
+    "uniques": 2
+   }
+  ],
+  "errors": []
+ },
+ {
+  "repo": "zovo-one/mcp-maintenance-log",
+  "stars": 0,
+  "forks": 0,
+  "views": 1,
+  "view_uniques": 1,
+  "clones": 27,
+  "clone_uniques": 18,
+  "referrers": [],
+  "paths": [
+   {
+    "path": "/zovo-one/mcp-maintenance-log",
+    "title": "Overview",
+    "count": 1,
+    "uniques": 1
+   }
+  ],
+  "errors": []
+ },
+ {
+  "repo": "zovo-one/mcp-mileage-log",
+  "stars": 0,
+  "forks": 0,
+  "views": 1,
+  "view_uniques": 1,
+  "clones": 38,
+  "clone_uniques": 21,
+  "referrers": [],
+  "paths": [
+   {
+    "path": "/theluckystrike/mcp-mileage-log",
+    "title": "Overview",
+    "count": 1,
+    "uniques": 1
+   }
+  ],
+  "errors": []
+ },
+ {
+  "repo": "zovo-one/mcp-goods-receipt",
+  "stars": 0,
+  "forks": 0,
+  "views": 2,
+  "view_uniques": 2,
+  "clones": 47,
+  "clone_uniques": 28,
+  "referrers": [],
+  "paths": [
+   {
+    "path": "/theluckystrike/mcp-goods-receipt",
+    "title": "Overview",
+    "count": 2,
+    "uniques": 2
+   }
+  ],
+  "errors": []
+ },
+ {
+  "repo": "zovo-one/mcp-leave",
+  "stars": 1,
+  "forks": 0,
+  "views": 4,
+  "view_uniques": 3,
+  "clones": 18,
+  "clone_uniques": 13,
+  "referrers": [
+   {
+    "referrer": "github.com",
+    "count": 1,
+    "uniques": 1
+   }
+  ],
+  "paths": [
+   {
+    "path": "/zovo-one/mcp-leave",
+    "title": "Overview",
+    "count": 3,
+    "uniques": 2
+   },
+   {
+    "path": "/theluckystrike/mcp-leave",
+    "title": "Overview",
+    "count": 1,
+    "uniques": 1
+   }
+  ],
+  "errors": []
+ },
+ {
+  "repo": "zovo-one/mcp-onboarding",
+  "stars": 0,
+  "forks": 0,
+  "views": 1,
+  "view_uniques": 1,
+  "clones": 42,
+  "clone_uniques": 27,
+  "referrers": [],
+  "paths": [
+   {
+    "path": "/zovo-one/mcp-onboarding",
+    "title": "Overview",
+    "count": 1,
+    "uniques": 1
+   }
+  ],
+  "errors": []
+ },
+ {
+  "repo": "zovo-one/mcp-purchase-requisition",
+  "stars": 0,
+  "forks": 0,
+  "views": 2,
+  "view_uniques": 2,
+  "clones": 34,
+  "clone_uniques": 21,
+  "referrers": [],
+  "paths": [
+   {
+    "path": "/theluckystrike/mcp-purchase-requisition",
+    "title": "Overview",
+    "count": 2,
+    "uniques": 2
+   }
+  ],
+  "errors": []
+ },
+ {
+  "repo": "zovo-one/mcp-backlink-checker",
+  "stars": 0,
+  "forks": 0,
+  "views": 1,
+  "view_uniques": 1,
+  "clones": 13,
+  "clone_uniques": 11,
+  "referrers": [],
+  "paths": [
+   {
+    "path": "/theluckystrike/mcp-backlink-checker/blob/main/SPEC.md",
+    "title": "/blob/main/SPEC.md",
+    "count": 1,
+    "uniques": 1
+   }
+  ],
+  "errors": []
+ },
+ {
+  "repo": "zovo-one/mcp-pomodoro",
+  "stars": 0,
+  "forks": 0,
+  "views": 0,
+  "view_uniques": 0,
+  "clones": 60,
+  "clone_uniques": 31,
+  "referrers": [],
+  "paths": [],
+  "errors": []
+ },
+ {
+  "repo": "zovo-one/mcp-loan-calculator",
+  "stars": 0,
+  "forks": 0,
+  "views": 0,
+  "view_uniques": 0,
+  "clones": 49,
+  "clone_uniques": 33,
+  "referrers": [],
+  "paths": [],
+  "errors": []
+ },
+ {
+  "repo": "zovo-one/mcp-receipts",
+  "stars": 0,
+  "forks": 0,
+  "views": 0,
+  "view_uniques": 0,
+  "clones": 37,
+  "clone_uniques": 27,
+  "referrers": [],
+  "paths": [],
+  "errors": []
+ },
+ {
+  "repo": "zovo-one/mcp-budget",
+  "stars": 0,
+  "forks": 0,
+  "views": 0,
+  "view_uniques": 0,
+  "clones": 43,
+  "clone_uniques": 30,
+  "referrers": [],
+  "paths": [],
+  "errors": []
+ },
+ {
+  "repo": "zovo-one/mcp-payroll",
+  "stars": 0,
+  "forks": 0,
+  "views": 0,
+  "view_uniques": 0,
+  "clones": 32,
+  "clone_uniques": 22,
+  "referrers": [],
+  "paths": [],
+  "errors": []
+ },
+ {
+  "repo": "zovo-one/mcp-tax-calc",
+  "stars": 0,
+  "forks": 0,
+  "views": 1,
+  "view_uniques": 1,
+  "clones": 39,
+  "clone_uniques": 28,
+  "referrers": [
+   {
+    "referrer": "kagi.com",
+    "count": 1,
+    "uniques": 1
+   }
+  ],
+  "paths": [
+   {
+    "path": "/theluckystrike/mcp-tax-calc",
+    "title": "Overview",
+    "count": 1,
+    "uniques": 1
+   }
+  ],
+  "errors": []
+ },
+ {
+  "repo": "zovo-one/mcp-stripe-billing",
+  "stars": 0,
+  "forks": 0,
+  "views": 0,
+  "view_uniques": 0,
+  "clones": 38,
+  "clone_uniques": 23,
+  "referrers": [],
+  "paths": [],
+  "errors": []
+ },
+ {
+  "repo": "zovo-one/mcp-three-way-match",
+  "stars": 0,
+  "forks": 0,
+  "views": 3,
+  "view_uniques": 3,
+  "clones": 127,
+  "clone_uniques": 74,
+  "referrers": [],
+  "paths": [
+   {
+    "path": "/theluckystrike/mcp-three-way-match",
+    "title": "Overview",
+    "count": 2,
+    "uniques": 2
+   },
+   {
+    "path": "/theluckystrike/mcp-three-way-match/blob/main/llms-install.md",
+    "title": "/blob/main/llms-install.md",
+    "count": 1,
+    "uniques": 1
+   }
+  ],
+  "errors": []
+ },
+ {
+  "repo": "zovo-one/mcp-duplicate-invoice-check",
+  "stars": 0,
+  "forks": 0,
+  "views": 1,
+  "view_uniques": 1,
+  "clones": 116,
+  "clone_uniques": 63,
+  "referrers": [],
+  "paths": [
+   {
+    "path": "/theluckystrike/mcp-duplicate-invoice-check",
+    "title": "Overview",
+    "count": 1,
+    "uniques": 1
+   }
+  ],
+  "errors": []
+ },
+ {
+  "repo": "zovo-one/mcp-supplier-statement-check",
+  "stars": 0,
+  "forks": 0,
+  "views": 0,
+  "view_uniques": 0,
+  "clones": 52,
+  "clone_uniques": 30,
+  "referrers": [],
+  "paths": [],
+  "errors": []
+ }
+]

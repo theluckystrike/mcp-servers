@@ -55,6 +55,12 @@ export interface RequestCtx {
    * way a hosted purchase does. Left unset by every other path.
    */
   bindKey?: string;
+  /**
+   * Clean mode, the /mcp/<server>/v1 path: no licence tools, no pricing resource or upgrade
+   * prompt, and a free-tier refusal says only that Pro lifts the limit, with no link. For
+   * directories whose policy forbids promotional text in tool results.
+   */
+  clean?: boolean;
   /** Open file descriptors, request-local: fd -> buffer plus its own read offset. */
   fds: Map<number, { buf: Buffer; pos: number }>;
   nextFd: number;

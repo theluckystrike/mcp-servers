@@ -1,0 +1,37 @@
+{
+    "title": "A/B Test Sample Size Calculator MCP Server",
+    "description": "A/B test sample size calculator and significance tests for AI agents (MCP server). Exact sample size per variant, test duration, z-test, chi-square, Fisher exact and Fisher-Freeman-Halton p-values, and peeking risk with Pocock and O'Brien-Fleming boundaries. No network calls.",
+    "seoTitle": "A/B Test Sample Size Calculator MCP Server",
+    "seoDescription": "A/B test sample size calculator for AI agents: exact sample size, duration, z-test, chi-square, Fisher exact test and peeking risk. MCP server, no API key.",
+    "categories": [
+        "MCP_SERVERS",
+        "MARKETING",
+        "AGENTS"
+    ],
+    "actorStandby": {
+        "isEnabled": true,
+        "idleTimeoutSecs": 300
+    },
+    "pricingInfos": [
+        {
+            "pricingModel": "PAY_PER_EVENT",
+            "pricingPerEvent": {
+                "actorChargeEvents": {
+                    "apify-actor-start": {
+                        "eventTitle": "Actor start",
+                        "eventDescription": "Apify synthetic event: covers the first 5 seconds of compute of each run. Charged by the platform, not by the Actor code.",
+                        "eventPriceUsd": 0.00005
+                    },
+                    "tool-call": {
+                        "eventTitle": "Tool call",
+                        "eventDescription": "One successful MCP tool call on A/B Test Sample Size Calculator MCP Server. Listing tools and initializing are free.",
+                        "eventPriceUsd": 0.02,
+                        "isPrimaryEvent": true
+                    }
+                }
+            },
+            "minimalMaxTotalChargeUsd": 0.1,
+            "isPPEPlatformUsagePaidByUser": false
+        }
+    ]
+}

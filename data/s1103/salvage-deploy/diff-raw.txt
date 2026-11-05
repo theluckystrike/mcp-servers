@@ -1,0 +1,64 @@
+4c4
+< // ../../../../../.npm-global/lib/node_modules/wrangler/node_modules/unenv/dist/runtime/_internal/utils.mjs
+---
+> // ../../../../../../.npm-global/lib/node_modules/wrangler/node_modules/unenv/dist/runtime/_internal/utils.mjs
+29c29
+< // ../../../../../.npm-global/lib/node_modules/wrangler/node_modules/unenv/dist/runtime/node/internal/perf_hooks/performance.mjs
+---
+> // ../../../../../../.npm-global/lib/node_modules/wrangler/node_modules/unenv/dist/runtime/node/internal/perf_hooks/performance.mjs
+267c267
+< // ../../../../../.npm-global/lib/node_modules/wrangler/node_modules/@cloudflare/unenv-preset/dist/runtime/polyfill/performance.mjs
+---
+> // ../../../../../../.npm-global/lib/node_modules/wrangler/node_modules/@cloudflare/unenv-preset/dist/runtime/polyfill/performance.mjs
+288c288
+< // ../../../../../.npm-global/lib/node_modules/wrangler/node_modules/unenv/dist/runtime/node/console.mjs
+---
+> // ../../../../../../.npm-global/lib/node_modules/wrangler/node_modules/unenv/dist/runtime/node/console.mjs
+291c291
+< // ../../../../../.npm-global/lib/node_modules/wrangler/node_modules/unenv/dist/runtime/mock/noop.mjs
+---
+> // ../../../../../../.npm-global/lib/node_modules/wrangler/node_modules/unenv/dist/runtime/mock/noop.mjs
+295c295
+< // ../../../../../.npm-global/lib/node_modules/wrangler/node_modules/unenv/dist/runtime/node/console.mjs
+---
+> // ../../../../../../.npm-global/lib/node_modules/wrangler/node_modules/unenv/dist/runtime/node/console.mjs
+327c327
+< // ../../../../../.npm-global/lib/node_modules/wrangler/node_modules/@cloudflare/unenv-preset/dist/runtime/node/console.mjs
+---
+> // ../../../../../../.npm-global/lib/node_modules/wrangler/node_modules/@cloudflare/unenv-preset/dist/runtime/node/console.mjs
+368c368
+< // ../../../../../.npm-global/lib/node_modules/wrangler/_virtual_unenv_global_polyfill-@cloudflare-unenv-preset-node-console
+---
+> // ../../../../../../.npm-global/lib/node_modules/wrangler/_virtual_unenv_global_polyfill-@cloudflare-unenv-preset-node-console
+371c371
+< // ../../../../../.npm-global/lib/node_modules/wrangler/node_modules/unenv/dist/runtime/node/internal/process/hrtime.mjs
+---
+> // ../../../../../../.npm-global/lib/node_modules/wrangler/node_modules/unenv/dist/runtime/node/internal/process/hrtime.mjs
+390c390
+< // ../../../../../.npm-global/lib/node_modules/wrangler/node_modules/unenv/dist/runtime/node/internal/process/process.mjs
+---
+> // ../../../../../../.npm-global/lib/node_modules/wrangler/node_modules/unenv/dist/runtime/node/internal/process/process.mjs
+393c393
+< // ../../../../../.npm-global/lib/node_modules/wrangler/node_modules/unenv/dist/runtime/node/internal/tty/read-stream.mjs
+---
+> // ../../../../../../.npm-global/lib/node_modules/wrangler/node_modules/unenv/dist/runtime/node/internal/tty/read-stream.mjs
+410c410
+< // ../../../../../.npm-global/lib/node_modules/wrangler/node_modules/unenv/dist/runtime/node/internal/tty/write-stream.mjs
+---
+> // ../../../../../../.npm-global/lib/node_modules/wrangler/node_modules/unenv/dist/runtime/node/internal/tty/write-stream.mjs
+460c460
+< // ../../../../../.npm-global/lib/node_modules/wrangler/node_modules/unenv/dist/runtime/node/internal/process/node-version.mjs
+---
+> // ../../../../../../.npm-global/lib/node_modules/wrangler/node_modules/unenv/dist/runtime/node/internal/process/node-version.mjs
+463c463
+< // ../../../../../.npm-global/lib/node_modules/wrangler/node_modules/unenv/dist/runtime/node/internal/process/process.mjs
+---
+> // ../../../../../../.npm-global/lib/node_modules/wrangler/node_modules/unenv/dist/runtime/node/internal/process/process.mjs
+698c698
+< // ../../../../../.npm-global/lib/node_modules/wrangler/node_modules/@cloudflare/unenv-preset/dist/runtime/node/process.mjs
+---
+> // ../../../../../../.npm-global/lib/node_modules/wrangler/node_modules/@cloudflare/unenv-preset/dist/runtime/node/process.mjs
+928c928
+< // ../../../../../.npm-global/lib/node_modules/wrangler/_virtual_unenv_global_polyfill-@cloudflare-unenv-preset-node-process
+---
+> // ../../../../../../.npm-global/lib/node_modules/wrangler/_virtual_unenv_global_polyfill-@cloudflare-unenv-preset-node-process

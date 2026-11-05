@@ -1,14 +1,15 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/recurring-invoice-scheduler-subscription-billing-due-reminders",
-  "description": "Recurring invoices on a schedule: define once, generate the due PDFs, forecast revenue.",
+  "title": "McpStamp Recurring Invoices",
+  "description": "Repeating invoice schedules per client: what falls due, the due invoices as PDFs, revenue ahead.",
   "version": "0.22.6",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
     "subfolder": "servers/recurring"
   },
-  "websiteUrl": "https://mcp.zovo.one/s/recurring",
+  "websiteUrl": "https://www.mcpstamp.com/servers/recurring/",
   "packages": [
     {
       "registryType": "mcpb",
@@ -31,15 +32,7 @@
   "remotes": [
     {
       "type": "streamable-http",
-      "url": "https://mcp.zovo.one/mcp/recurring",
-      "headers": [
-        {
-          "name": "Authorization",
-          "description": "Bearer <Pro license key or anonymous token from GET https://mcp.zovo.one/mcp/token>",
-          "isRequired": true,
-          "isSecret": true
-        }
-      ]
+      "url": "https://mcp.zovo.one/mcp/recurring"
     }
   ]
 }

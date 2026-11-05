@@ -1,0 +1,884 @@
+{
+ "repo": "uk-income-tax-salary-mcp",
+ "repo_url": "https://github.com/theluckystrike/uk-income-tax-salary-mcp",
+ "hosted_url": "https://uk-income-tax-salary-mcp.lipmichal.workers.dev/mcp",
+ "worker_version_id": "d6200f4f-0388-4f64-bb12-cd6d8fb92aba",
+ "rollback": "npx wrangler delete --name uk-income-tax-salary-mcp (brand-new worker, no prior version)",
+ "registry_name": "io.github.theluckystrike/uk-income-tax-salary-mcp",
+ "registry_visible": true,
+ "registry_check": "curl -s 'https://registry.modelcontextprotocol.io/v0/servers?search=uk-income-tax-salary-mcp' -> 1 result, version 1.0.0, remote .../mcp",
+ "tools": [
+  "calculate_uk_take_home",
+  "get_uk_tax_bands",
+  "compare_salaries",
+  "marginal_rate_at_income"
+ ],
+ "fixtures": 26,
+ "tests_passed": "26/26 (node --test test/*.test.mjs)",
+ "fixture_basis": "gov.uk worked examples: NI GBP 1,000/week -> 58.66; GBP 35,000 -> 20% on 22,430; Plan 1 GBP 42,000 -> 1,359; several-plan and postgraduate rules; relief at source 12,000 with 10,000 taxed at 40% -> 2,000 extra relief. Others: hand arithmetic on HMRC employer tables (rUK and Scottish 2025/26 + 2026/27 band splits, taper at 110k/125,140, marginal 62% / 69.5% / 37%, salary sacrifice, K/BR/SD1 codes, Plan 5).",
+ "live_calls_ok": {
+  "calculate_uk_take_home": true,
+  "get_uk_tax_bands": true,
+  "compare_salaries": true,
+  "marginal_rate_at_income": true
+ },
+ "npx_github_ok": true,
+ "stdio_local_ok": "initialize + tools/list + 4/4 tools/call OK, plus a Plan 5 2025/26 error case returning isError with a clear message (node dist/stdio.js)",
+ "landing_get_ok": "GET / 200",
+ "repo_meta": {
+  "visibility": "PUBLIC",
+  "description_chars": 111,
+  "topics": 15
+ },
+ "sources": [
+  "https://www.gov.uk/guidance/rates-and-thresholds-for-employers-2026-to-2027 (page updated 2026-09-01, fetched 2026-10-30)",
+  "https://www.gov.uk/guidance/rates-and-thresholds-for-employers-2025-to-2026 (fetched 2026-10-30)",
+  "https://www.gov.uk/income-tax-rates (fetched 2026-10-30)",
+  "https://www.gov.uk/scottish-income-tax (2026/27 table, fetched 2026-10-30)",
+  "https://www.gov.uk/scottish-income-tax/2025-to-2026-tax-year (fetched 2026-10-30)",
+  "https://www.gov.uk/national-insurance-rates-letters (fetched 2026-10-30)",
+  "https://www.gov.uk/repaying-your-student-loan/what-you-pay (fetched 2026-10-30)",
+  "https://www.gov.uk/tax-on-your-private-pension/pension-tax-relief (fetched 2026-10-30)",
+  "https://www.gov.uk/guidance/adjusted-net-income (fetched 2026-10-30)",
+  "https://www.gov.uk/tax-codes (fetched 2026-10-30)"
+ ],
+ "unannounced": "none: 2026/27 Scottish bands and all 2026/27 student loan thresholds are published. Plan 5 in 2025/26 is marked not_set (HMRC 2025 to 2026 employer table lists no Plan 5 threshold) and the tool refuses with a message rather than guess.",
+ "money_site": "https://ukmoneycalc.com",
+ "more_urls_verified_200": [
+  "/calculators/take-home-pay/",
+  "/calculators/marginal-tax-rate/",
+  "/calculators/100k-tax-trap/",
+  "/calculators/salary-sacrifice/",
+  "/ (all with ?utm_source=mcp&utm_medium=uk-income-tax-salary-mcp)"
+ ],
+ "open_issues": [
+  "Annual calculation only; payroll per-period rounding (monthly NI/student loan thresholds) can differ by a few pounds. Stated in every result.",
+  "Not modelled: net pay arrangement pensions, employer pension, benefits in kind, HICBC, K-code 50% overriding limit, savings/dividends. Listed in README Limitations.",
+  "Site ukmoneycalc.com engine values match gov.uk for 2026/27 (checked src/consts.ts); site comment says Plan 5 'unchanged' although HMRC's 2025/26 employer table lists no Plan 5 threshold. Cosmetic, no number differs.",
+  "GitHub search rank not measured (search API rate-limited, not called per instructions)."
+ ],
+ "pushes": 1,
+ "minutes": 30,
+ "live_raw_responses": {
+  "live_calculate_uk_take_home.json": {
+   "result": {
+    "content": [
+     {
+      "type": "text",
+      "text": "On £48,000 in 2026/27 (England, Wales or NI, code 1257L) take-home pay is £34,892.25 a year, £2,907.69 a month or £671 a week. Income tax £6,606, National Insurance £2,642.40, student loan £1,459.35, pension £2,400 (salary sacrifice).\n\nEstimate for one employment, worked out on annual figures. Payroll works per pay period, so a payslip can differ by a few pounds. Not tax advice."
+     },
+     {
+      "type": "text",
+      "text": "{\n  \"tax_year\": \"2026/27\",\n  \"region\": \"england_wales_ni\",\n  \"tax_code\": \"1257L\",\n  \"tax_code_meaning\": \"Tax-free amount £12,570 a year (standard Personal Allowance).\",\n  \"gross_salary\": 48000,\n  \"pension\": {\n    \"method\": \"salary_sacrifice\",\n    \"gross_contribution\": 2400,\n    \"salary_sacrificed\": 2400,\n    \"relief_at_source_paid_from_net_pay\": 0,\n    \"relief_at_source_extra_relief\": 0\n  },\n  \"pay_after_salary_sacrifice\": 45600,\n  \"adjusted_net_income\": 45600,\n  \"personal_allowance\": 12570,\n  \"allowance_lost_to_taper\": 0,\n  \"taxable_income\": 33030,\n  \"income_tax\": {\n    \"by_band\": [\n      {\n        \"band\": \"basic\",\n        \"rate\": 0.2,\n        \"from\": 0,\n        \"to\": 37700,\n        \"income_in_band\": 33030,\n        \"tax\": 6606\n      },\n      {\n        \"band\": \"higher\",\n        \"rate\": 0.4,\n        \"from\": 37700,\n        \"to\": 125140,\n        \"income_in_band\": 0,\n        \"tax\": 0\n      },\n      {\n        \"band\": \"additional\",\n        \"rate\": 0.45,\n        \"from\": 125140,\n        \"to\": null,\n        \"income_in_band\": 0,\n        \"tax\": 0\n      }\n    ],\n    \"before_pension_relief\": 6606,\n    \"total\": 6606\n  },\n  \"national_insurance\": {\n    \"category\": \"A\",\n    \"total\": 2642.4,\n    \"primary_threshold\": 12570,\n    \"upper_earnings_limit\": 50270,\n    \"main_rate\": 0.08,\n    \"upper_rate\": 0.02\n  },\n  \"student_loan\": {\n    \"plans\": [\n      {\n        \"plan\": \"plan_2\",\n        \"threshold\": 29385,\n        \"rate\": 0.09,\n        \"repayment\": 1459.35\n      }\n    ],\n    \"total\": 1459.35\n  },\n  \"total_deductions\": 13107.75,\n  \"net\": {\n    \"annual\": 34892.25,\n    \"monthly\": 2907.69,\n    \"weekly\": 671\n  },\n  \"effective_tax_rate\": 0.2231,\n  \"notes\": [\n    \"Salary sacrifice lowers the pay used for income tax, NI and student loan.\"\n  ],\n  \"summary\": \"On £48,000 in 2026/27 (England, Wales or NI, code 1257L) take-home pay is £34,892.25 a year, £2,907.69 a month or £671 a week. Income tax £6,606, National Insurance £2,642.40, student loan £1,459.35, pension £2,400 (salary sacrifice).\",\n  \"as_of\": \"2026-10-30\",\n  \"source\": \"https://www.gov.uk/guidance/rates-and-thresholds-for-employers-2026-to-2027 ; https://www.gov.uk/income-tax-rates ; https://www.gov.uk/national-insurance-rates-letters ; https://www.gov.uk/repaying-your-student-loan/what-you-pay\",\n  \"more\": \"https://ukmoneycalc.com/calculators/salary-sacrifice/?utm_source=mcp&utm_medium=uk-income-tax-salary-mcp\",\n  \"disclaimer\": \"Estimate for one employment, worked out on annual figures. Payroll works per pay period, so a payslip can differ by a few pounds. Not tax advice.\"\n}"
+     }
+    ],
+    "structuredContent": {
+     "tax_year": "2026/27",
+     "region": "england_wales_ni",
+     "tax_code": "1257L",
+     "tax_code_meaning": "Tax-free amount £12,570 a year (standard Personal Allowance).",
+     "gross_salary": 48000,
+     "pension": {
+      "method": "salary_sacrifice",
+      "gross_contribution": 2400,
+      "salary_sacrificed": 2400,
+      "relief_at_source_paid_from_net_pay": 0,
+      "relief_at_source_extra_relief": 0
+     },
+     "pay_after_salary_sacrifice": 45600,
+     "adjusted_net_income": 45600,
+     "personal_allowance": 12570,
+     "allowance_lost_to_taper": 0,
+     "taxable_income": 33030,
+     "income_tax": {
+      "by_band": [
+       {
+        "band": "basic",
+        "rate": 0.2,
+        "from": 0,
+        "to": 37700,
+        "income_in_band": 33030,
+        "tax": 6606
+       },
+       {
+        "band": "higher",
+        "rate": 0.4,
+        "from": 37700,
+        "to": 125140,
+        "income_in_band": 0,
+        "tax": 0
+       },
+       {
+        "band": "additional",
+        "rate": 0.45,
+        "from": 125140,
+        "to": null,
+        "income_in_band": 0,
+        "tax": 0
+       }
+      ],
+      "before_pension_relief": 6606,
+      "total": 6606
+     },
+     "national_insurance": {
+      "category": "A",
+      "total": 2642.4,
+      "primary_threshold": 12570,
+      "upper_earnings_limit": 50270,
+      "main_rate": 0.08,
+      "upper_rate": 0.02
+     },
+     "student_loan": {
+      "plans": [
+       {
+        "plan": "plan_2",
+        "threshold": 29385,
+        "rate": 0.09,
+        "repayment": 1459.35
+       }
+      ],
+      "total": 1459.35
+     },
+     "total_deductions": 13107.75,
+     "net": {
+      "annual": 34892.25,
+      "monthly": 2907.69,
+      "weekly": 671
+     },
+     "effective_tax_rate": 0.2231,
+     "notes": [
+      "Salary sacrifice lowers the pay used for income tax, NI and student loan."
+     ],
+     "summary": "On £48,000 in 2026/27 (England, Wales or NI, code 1257L) take-home pay is £34,892.25 a year, £2,907.69 a month or £671 a week. Income tax £6,606, National Insurance £2,642.40, student loan £1,459.35, pension £2,400 (salary sacrifice).",
+     "as_of": "2026-10-30",
+     "source": "https://www.gov.uk/guidance/rates-and-thresholds-for-employers-2026-to-2027 ; https://www.gov.uk/income-tax-rates ; https://www.gov.uk/national-insurance-rates-letters ; https://www.gov.uk/repaying-your-student-loan/what-you-pay",
+     "more": "https://ukmoneycalc.com/calculators/salary-sacrifice/?utm_source=mcp&utm_medium=uk-income-tax-salary-mcp",
+     "disclaimer": "Estimate for one employment, worked out on annual figures. Payroll works per pay period, so a payslip can differ by a few pounds. Not tax advice."
+    }
+   },
+   "jsonrpc": "2.0",
+   "id": 3
+  },
+  "live_compare_salaries.json": {
+   "result": {
+    "content": [
+     {
+      "type": "text",
+      "text": "Take-home pay for 2026/27: £95,000 gives £65,657.40 (£5,471.45 a month); £105,000 gives £70,457.40 (£5,871.45 a month); £125,140 gives £78,110.60 (£6,509.22 a month). Going from £95,000 to £105,000 adds £4,800 net, 48% of the rise; going from £95,000 to £125,140 adds £12,453.20 net, 41.32% of the rise.\n\nEstimate for one employment, worked out on annual figures. Payroll works per pay period, so a payslip can differ by a few pounds. Not tax advice."
+     },
+     {
+      "type": "text",
+      "text": "{\n  \"tax_year\": \"2026/27\",\n  \"rows\": [\n    {\n      \"gross_salary\": 95000,\n      \"income_tax\": 25432,\n      \"national_insurance\": 3910.6,\n      \"student_loan\": 0,\n      \"pension\": 0,\n      \"net_annual\": 65657.4,\n      \"net_monthly\": 5471.45,\n      \"net_weekly\": 1262.64,\n      \"effective_tax_rate\": 0.3089,\n      \"marginal_rate\": 0.42,\n      \"in_allowance_taper\": false\n    },\n    {\n      \"gross_salary\": 105000,\n      \"income_tax\": 30432,\n      \"national_insurance\": 4110.6,\n      \"student_loan\": 0,\n      \"pension\": 0,\n      \"net_annual\": 70457.4,\n      \"net_monthly\": 5871.45,\n      \"net_weekly\": 1354.95,\n      \"effective_tax_rate\": 0.32899999999999996,\n      \"marginal_rate\": 0.62,\n      \"in_allowance_taper\": true\n    },\n    {\n      \"gross_salary\": 125140,\n      \"income_tax\": 42516,\n      \"national_insurance\": 4513.4,\n      \"student_loan\": 0,\n      \"pension\": 0,\n      \"net_annual\": 78110.6,\n      \"net_monthly\": 6509.22,\n      \"net_weekly\": 1502.13,\n      \"effective_tax_rate\": 0.37579999999999997,\n      \"marginal_rate\": 0.47,\n      \"in_allowance_taper\": false\n    }\n  ],\n  \"vs_first\": [\n    {\n      \"gross_salary\": 105000,\n      \"extra_gross\": 10000,\n      \"extra_net\": 4800,\n      \"share_kept\": 0.48\n    },\n    {\n      \"gross_salary\": 125140,\n      \"extra_gross\": 30140,\n      \"extra_net\": 12453.2,\n      \"share_kept\": 0.413179\n    }\n  ],\n  \"summary\": \"Take-home pay for 2026/27: £95,000 gives £65,657.40 (£5,471.45 a month); £105,000 gives £70,457.40 (£5,871.45 a month); £125,140 gives £78,110.60 (£6,509.22 a month). Going from £95,000 to £105,000 adds £4,800 net, 48% of the rise; going from £95,000 to £125,140 adds £12,453.20 net, 41.32% of the rise.\",\n  \"as_of\": \"2026-10-30\",\n  \"source\": \"https://www.gov.uk/guidance/rates-and-thresholds-for-employers-2026-to-2027 ; https://www.gov.uk/income-tax-rates ; https://www.gov.uk/national-insurance-rates-letters\",\n  \"more\": \"https://ukmoneycalc.com/calculators/100k-tax-trap/?utm_source=mcp&utm_medium=uk-income-tax-salary-mcp\",\n  \"disclaimer\": \"Estimate for one employment, worked out on annual figures. Payroll works per pay period, so a payslip can differ by a few pounds. Not tax advice.\"\n}"
+     }
+    ],
+    "structuredContent": {
+     "tax_year": "2026/27",
+     "rows": [
+      {
+       "gross_salary": 95000,
+       "income_tax": 25432,
+       "national_insurance": 3910.6,
+       "student_loan": 0,
+       "pension": 0,
+       "net_annual": 65657.4,
+       "net_monthly": 5471.45,
+       "net_weekly": 1262.64,
+       "effective_tax_rate": 0.3089,
+       "marginal_rate": 0.42,
+       "in_allowance_taper": false
+      },
+      {
+       "gross_salary": 105000,
+       "income_tax": 30432,
+       "national_insurance": 4110.6,
+       "student_loan": 0,
+       "pension": 0,
+       "net_annual": 70457.4,
+       "net_monthly": 5871.45,
+       "net_weekly": 1354.95,
+       "effective_tax_rate": 0.32899999999999996,
+       "marginal_rate": 0.62,
+       "in_allowance_taper": true
+      },
+      {
+       "gross_salary": 125140,
+       "income_tax": 42516,
+       "national_insurance": 4513.4,
+       "student_loan": 0,
+       "pension": 0,
+       "net_annual": 78110.6,
+       "net_monthly": 6509.22,
+       "net_weekly": 1502.13,
+       "effective_tax_rate": 0.37579999999999997,
+       "marginal_rate": 0.47,
+       "in_allowance_taper": false
+      }
+     ],
+     "vs_first": [
+      {
+       "gross_salary": 105000,
+       "extra_gross": 10000,
+       "extra_net": 4800,
+       "share_kept": 0.48
+      },
+      {
+       "gross_salary": 125140,
+       "extra_gross": 30140,
+       "extra_net": 12453.2,
+       "share_kept": 0.413179
+      }
+     ],
+     "summary": "Take-home pay for 2026/27: £95,000 gives £65,657.40 (£5,471.45 a month); £105,000 gives £70,457.40 (£5,871.45 a month); £125,140 gives £78,110.60 (£6,509.22 a month). Going from £95,000 to £105,000 adds £4,800 net, 48% of the rise; going from £95,000 to £125,140 adds £12,453.20 net, 41.32% of the rise.",
+     "as_of": "2026-10-30",
+     "source": "https://www.gov.uk/guidance/rates-and-thresholds-for-employers-2026-to-2027 ; https://www.gov.uk/income-tax-rates ; https://www.gov.uk/national-insurance-rates-letters",
+     "more": "https://ukmoneycalc.com/calculators/100k-tax-trap/?utm_source=mcp&utm_medium=uk-income-tax-salary-mcp",
+     "disclaimer": "Estimate for one employment, worked out on annual figures. Payroll works per pay period, so a payslip can differ by a few pounds. Not tax advice."
+    }
+   },
+   "jsonrpc": "2.0",
+   "id": 5
+  },
+  "live_get_uk_tax_bands.json": {
+   "result": {
+    "content": [
+     {
+      "type": "text",
+      "text": "Scottish income tax for 2026/27, on gross pay with the standard £12,570 allowance: starter 19% from £12,571 to £16,537; basic 20% from £16,538 to £29,526; intermediate 21% from £29,527 to £43,662; higher 42% from £43,663 to £75,000; advanced 45% from £75,001 to £125,140; top 48% from £125,141 up. The allowance falls by £1 for every £2 over £100,000 and is gone at £125,140. Employee NI is 8% from £12,570 to £50,270 and 2% above. Student loan thresholds: Plan 1 £26,900, Plan 2 £29,385, Plan 4 £33,795, Plan 5 £25,000, Postgraduate £21,000.\n\nEstimate for one employment, worked out on annual figures. Payroll works per pay period, so a payslip can differ by a few pounds. Not tax advice."
+     },
+     {
+      "type": "text",
+      "text": "{\n  \"tax_year\": \"2026/27\",\n  \"region\": \"scotland\",\n  \"status\": \"published\",\n  \"personal_allowance\": 12570,\n  \"allowance_taper\": {\n    \"starts_at_adjusted_net_income\": 100000,\n    \"rule\": \"£1 off for every £2 over £100,000\",\n    \"allowance_gone_at\": 125140\n  },\n  \"bands_on_taxable_income\": [\n    {\n      \"band\": \"starter\",\n      \"rate\": 0.19,\n      \"from\": 0,\n      \"to\": 3967\n    },\n    {\n      \"band\": \"basic\",\n      \"rate\": 0.2,\n      \"from\": 3968,\n      \"to\": 16956\n    },\n    {\n      \"band\": \"intermediate\",\n      \"rate\": 0.21,\n      \"from\": 16957,\n      \"to\": 31092\n    },\n    {\n      \"band\": \"higher\",\n      \"rate\": 0.42,\n      \"from\": 31093,\n      \"to\": 62430\n    },\n    {\n      \"band\": \"advanced\",\n      \"rate\": 0.45,\n      \"from\": 62431,\n      \"to\": 125140\n    },\n    {\n      \"band\": \"top\",\n      \"rate\": 0.48,\n      \"from\": 125141,\n      \"to\": null\n    }\n  ],\n  \"bands_on_gross_with_standard_allowance\": [\n    {\n      \"band\": \"personal_allowance\",\n      \"rate\": 0,\n      \"from\": 0,\n      \"to\": 12570\n    },\n    {\n      \"band\": \"starter\",\n      \"rate\": 0.19,\n      \"from\": 12571,\n      \"to\": 16537\n    },\n    {\n      \"band\": \"basic\",\n      \"rate\": 0.2,\n      \"from\": 16538,\n      \"to\": 29526\n    },\n    {\n      \"band\": \"intermediate\",\n      \"rate\": 0.21,\n      \"from\": 29527,\n      \"to\": 43662\n    },\n    {\n      \"band\": \"higher\",\n      \"rate\": 0.42,\n      \"from\": 43663,\n      \"to\": 75000\n    },\n    {\n      \"band\": \"advanced\",\n      \"rate\": 0.45,\n      \"from\": 75001,\n      \"to\": 125140\n    },\n    {\n      \"band\": \"top\",\n      \"rate\": 0.48,\n      \"from\": 125141,\n      \"to\": null\n    }\n  ],\n  \"gross_view_note\": \"Gross view assumes the standard £12,570 allowance. Above £100,000 the allowance tapers, and at £125,140 it is gone, so the top boundary is the same in both views.\",\n  \"national_insurance\": {\n    \"lower_earnings_limit\": 6708,\n    \"primary_threshold\": 12570,\n    \"upper_earnings_limit\": 50270,\n    \"weekly\": {\n      \"pt\": 242,\n      \"uel\": 967\n    },\n    \"monthly\": {\n      \"pt\": 1048,\n      \"uel\": 4189\n    },\n    \"employee_rates\": {\n      \"A\": {\n        \"main\": 0.08,\n        \"upper\": 0.02,\n        \"note\": \"standard rate\"\n      },\n      \"B\": {\n        \"main\": 0.0185,\n        \"upper\": 0.02,\n        \"note\": \"married women and widows reduced rate\"\n      },\n      \"C\": {\n        \"main\": 0,\n        \"upper\": 0,\n        \"note\": \"over State Pension age, no employee NI\"\n      },\n      \"H\": {\n        \"main\": 0.08,\n        \"upper\": 0.02,\n        \"note\": \"apprentice under 25\"\n      },\n      \"J\": {\n        \"main\": 0.02,\n        \"upper\": 0.02,\n        \"note\": \"deferment\"\n      },\n      \"M\": {\n        \"main\": 0.08,\n        \"upper\": 0.02,\n        \"note\": \"under 21\"\n      },\n      \"V\": {\n        \"main\": 0.08,\n        \"upper\": 0.02,\n        \"note\": \"veteran\"\n      },\n      \"Z\": {\n        \"main\": 0.02,\n        \"upper\": 0.02,\n        \"note\": \"under 21, deferment\"\n      }\n    }\n  },\n  \"student_loans\": {\n    \"plan_1\": {\n      \"threshold\": 26900,\n      \"rate\": 0.09,\n      \"status\": \"published\"\n    },\n    \"plan_2\": {\n      \"threshold\": 29385,\n      \"rate\": 0.09,\n      \"status\": \"published\"\n    },\n    \"plan_4\": {\n      \"threshold\": 33795,\n      \"rate\": 0.09,\n      \"status\": \"published\"\n    },\n    \"plan_5\": {\n      \"threshold\": 25000,\n      \"rate\": 0.09,\n      \"status\": \"published\"\n    },\n    \"postgraduate\": {\n      \"threshold\": 21000,\n      \"rate\": 0.06,\n      \"status\": \"published\"\n    }\n  },\n  \"summary\": \"Scottish income tax for 2026/27, on gross pay with the standard £12,570 allowance: starter 19% from £12,571 to £16,537; basic 20% from £16,538 to £29,526; intermediate 21% from £29,527 to £43,662; higher 42% from £43,663 to £75,000; advanced 45% from £75,001 to £125,140; top 48% from £125,141 up. The allowance falls by £1 for every £2 over £100,000 and is gone at £125,140. Employee NI is 8% from £12,570 to £50,270 and 2% above. Student loan thresholds: Plan 1 £26,900, Plan 2 £29,385, Plan 4 £33,795, Plan 5 £25,000, Postgraduate £21,000.\",\n  \"as_of\": \"2026-10-30\",\n  \"source\": \"https://www.gov.uk/guidance/rates-and-thresholds-for-employers-2026-to-2027 ; https://www.gov.uk/scottish-income-tax ; https://www.gov.uk/national-insurance-rates-letters ; https://www.gov.uk/repaying-your-student-loan/what-you-pay\",\n  \"more\": \"https://ukmoneycalc.com/calculators/take-home-pay/?utm_source=mcp&utm_medium=uk-income-tax-salary-mcp\",\n  \"disclaimer\": \"Estimate for one employment, worked out on annual figures. Payroll works per pay period, so a payslip can differ by a few pounds. Not tax advice.\"\n}"
+     }
+    ],
+    "structuredContent": {
+     "tax_year": "2026/27",
+     "region": "scotland",
+     "status": "published",
+     "personal_allowance": 12570,
+     "allowance_taper": {
+      "starts_at_adjusted_net_income": 100000,
+      "rule": "£1 off for every £2 over £100,000",
+      "allowance_gone_at": 125140
+     },
+     "bands_on_taxable_income": [
+      {
+       "band": "starter",
+       "rate": 0.19,
+       "from": 0,
+       "to": 3967
+      },
+      {
+       "band": "basic",
+       "rate": 0.2,
+       "from": 3968,
+       "to": 16956
+      },
+      {
+       "band": "intermediate",
+       "rate": 0.21,
+       "from": 16957,
+       "to": 31092
+      },
+      {
+       "band": "higher",
+       "rate": 0.42,
+       "from": 31093,
+       "to": 62430
+      },
+      {
+       "band": "advanced",
+       "rate": 0.45,
+       "from": 62431,
+       "to": 125140
+      },
+      {
+       "band": "top",
+       "rate": 0.48,
+       "from": 125141,
+       "to": null
+      }
+     ],
+     "bands_on_gross_with_standard_allowance": [
+      {
+       "band": "personal_allowance",
+       "rate": 0,
+       "from": 0,
+       "to": 12570
+      },
+      {
+       "band": "starter",
+       "rate": 0.19,
+       "from": 12571,
+       "to": 16537
+      },
+      {
+       "band": "basic",
+       "rate": 0.2,
+       "from": 16538,
+       "to": 29526
+      },
+      {
+       "band": "intermediate",
+       "rate": 0.21,
+       "from": 29527,
+       "to": 43662
+      },
+      {
+       "band": "higher",
+       "rate": 0.42,
+       "from": 43663,
+       "to": 75000
+      },
+      {
+       "band": "advanced",
+       "rate": 0.45,
+       "from": 75001,
+       "to": 125140
+      },
+      {
+       "band": "top",
+       "rate": 0.48,
+       "from": 125141,
+       "to": null
+      }
+     ],
+     "gross_view_note": "Gross view assumes the standard £12,570 allowance. Above £100,000 the allowance tapers, and at £125,140 it is gone, so the top boundary is the same in both views.",
+     "national_insurance": {
+      "lower_earnings_limit": 6708,
+      "primary_threshold": 12570,
+      "upper_earnings_limit": 50270,
+      "weekly": {
+       "pt": 242,
+       "uel": 967
+      },
+      "monthly": {
+       "pt": 1048,
+       "uel": 4189
+      },
+      "employee_rates": {
+       "A": {
+        "main": 0.08,
+        "upper": 0.02,
+        "note": "standard rate"
+       },
+       "B": {
+        "main": 0.0185,
+        "upper": 0.02,
+        "note": "married women and widows reduced rate"
+       },
+       "C": {
+        "main": 0,
+        "upper": 0,
+        "note": "over State Pension age, no employee NI"
+       },
+       "H": {
+        "main": 0.08,
+        "upper": 0.02,
+        "note": "apprentice under 25"
+       },
+       "J": {
+        "main": 0.02,
+        "upper": 0.02,
+        "note": "deferment"
+       },
+       "M": {
+        "main": 0.08,
+        "upper": 0.02,
+        "note": "under 21"
+       },
+       "V": {
+        "main": 0.08,
+        "upper": 0.02,
+        "note": "veteran"
+       },
+       "Z": {
+        "main": 0.02,
+        "upper": 0.02,
+        "note": "under 21, deferment"
+       }
+      }
+     },
+     "student_loans": {
+      "plan_1": {
+       "threshold": 26900,
+       "rate": 0.09,
+       "status": "published"
+      },
+      "plan_2": {
+       "threshold": 29385,
+       "rate": 0.09,
+       "status": "published"
+      },
+      "plan_4": {
+       "threshold": 33795,
+       "rate": 0.09,
+       "status": "published"
+      },
+      "plan_5": {
+       "threshold": 25000,
+       "rate": 0.09,
+       "status": "published"
+      },
+      "postgraduate": {
+       "threshold": 21000,
+       "rate": 0.06,
+       "status": "published"
+      }
+     },
+     "summary": "Scottish income tax for 2026/27, on gross pay with the standard £12,570 allowance: starter 19% from £12,571 to £16,537; basic 20% from £16,538 to £29,526; intermediate 21% from £29,527 to £43,662; higher 42% from £43,663 to £75,000; advanced 45% from £75,001 to £125,140; top 48% from £125,141 up. The allowance falls by £1 for every £2 over £100,000 and is gone at £125,140. Employee NI is 8% from £12,570 to £50,270 and 2% above. Student loan thresholds: Plan 1 £26,900, Plan 2 £29,385, Plan 4 £33,795, Plan 5 £25,000, Postgraduate £21,000.",
+     "as_of": "2026-10-30",
+     "source": "https://www.gov.uk/guidance/rates-and-thresholds-for-employers-2026-to-2027 ; https://www.gov.uk/scottish-income-tax ; https://www.gov.uk/national-insurance-rates-letters ; https://www.gov.uk/repaying-your-student-loan/what-you-pay",
+     "more": "https://ukmoneycalc.com/calculators/take-home-pay/?utm_source=mcp&utm_medium=uk-income-tax-salary-mcp",
+     "disclaimer": "Estimate for one employment, worked out on annual figures. Payroll works per pay period, so a payslip can differ by a few pounds. Not tax advice."
+    }
+   },
+   "jsonrpc": "2.0",
+   "id": 4
+  },
+  "live_initialize.json": {
+   "result": {
+    "protocolVersion": "2025-06-18",
+    "capabilities": {
+     "tools": {
+      "listChanged": true
+     }
+    },
+    "serverInfo": {
+     "name": "uk-income-tax-salary-mcp",
+     "version": "1.0.0"
+    }
+   },
+   "jsonrpc": "2.0",
+   "id": 1
+  },
+  "live_marginal_rate_at_income.json": {
+   "result": {
+    "content": [
+     {
+      "type": "text",
+      "text": "At £110,000 in 2026/27 (Scotland) the marginal rate on the next £100 is 69.5%: income tax 67.5%, National Insurance 2%. This income is inside the £100,000 to £125,140 taper: each extra £1 also removes £0.50 of Personal Allowance, so the 45% band works out at 67.5%. You keep £30.50 of each extra £100.\n\nEstimate for one employment, worked out on annual figures. Payroll works per pay period, so a payslip can differ by a few pounds. Not tax advice."
+     },
+     {
+      "type": "text",
+      "text": "{\n  \"tax_year\": \"2026/27\",\n  \"region\": \"scotland\",\n  \"gross_salary\": 110000,\n  \"step\": 100,\n  \"marginal_rate\": 0.695,\n  \"components\": {\n    \"income_tax\": 0.675,\n    \"national_insurance\": 0.02,\n    \"student_loan\": 0\n  },\n  \"in_allowance_taper\": true,\n  \"allowance_lost_per_pound\": 0.5,\n  \"current_band\": {\n    \"band\": \"advanced\",\n    \"rate\": 0.45\n  },\n  \"pension_per_pound\": 0,\n  \"kept_per_100_pounds\": 30.5,\n  \"adjusted_net_income\": 110000,\n  \"summary\": \"At £110,000 in 2026/27 (Scotland) the marginal rate on the next £100 is 69.5%: income tax 67.5%, National Insurance 2%. This income is inside the £100,000 to £125,140 taper: each extra £1 also removes £0.50 of Personal Allowance, so the 45% band works out at 67.5%. You keep £30.50 of each extra £100.\",\n  \"as_of\": \"2026-10-30\",\n  \"source\": \"https://www.gov.uk/guidance/rates-and-thresholds-for-employers-2026-to-2027 ; https://www.gov.uk/scottish-income-tax ; https://www.gov.uk/national-insurance-rates-letters ; https://www.gov.uk/guidance/adjusted-net-income\",\n  \"more\": \"https://ukmoneycalc.com/calculators/100k-tax-trap/?utm_source=mcp&utm_medium=uk-income-tax-salary-mcp\",\n  \"disclaimer\": \"Estimate for one employment, worked out on annual figures. Payroll works per pay period, so a payslip can differ by a few pounds. Not tax advice.\"\n}"
+     }
+    ],
+    "structuredContent": {
+     "tax_year": "2026/27",
+     "region": "scotland",
+     "gross_salary": 110000,
+     "step": 100,
+     "marginal_rate": 0.695,
+     "components": {
+      "income_tax": 0.675,
+      "national_insurance": 0.02,
+      "student_loan": 0
+     },
+     "in_allowance_taper": true,
+     "allowance_lost_per_pound": 0.5,
+     "current_band": {
+      "band": "advanced",
+      "rate": 0.45
+     },
+     "pension_per_pound": 0,
+     "kept_per_100_pounds": 30.5,
+     "adjusted_net_income": 110000,
+     "summary": "At £110,000 in 2026/27 (Scotland) the marginal rate on the next £100 is 69.5%: income tax 67.5%, National Insurance 2%. This income is inside the £100,000 to £125,140 taper: each extra £1 also removes £0.50 of Personal Allowance, so the 45% band works out at 67.5%. You keep £30.50 of each extra £100.",
+     "as_of": "2026-10-30",
+     "source": "https://www.gov.uk/guidance/rates-and-thresholds-for-employers-2026-to-2027 ; https://www.gov.uk/scottish-income-tax ; https://www.gov.uk/national-insurance-rates-letters ; https://www.gov.uk/guidance/adjusted-net-income",
+     "more": "https://ukmoneycalc.com/calculators/100k-tax-trap/?utm_source=mcp&utm_medium=uk-income-tax-salary-mcp",
+     "disclaimer": "Estimate for one employment, worked out on annual figures. Payroll works per pay period, so a payslip can differ by a few pounds. Not tax advice."
+    }
+   },
+   "jsonrpc": "2.0",
+   "id": 6
+  },
+  "live_tools_list.json": {
+   "result": {
+    "tools": [
+     {
+      "name": "calculate_uk_take_home",
+      "title": "UK take-home pay",
+      "description": "Calculates UK take-home pay for an employee in tax year 2025/26 or 2026/27 from HMRC's published rates: income tax by band (England, Wales and NI, or the six Scottish bands incl. the 2026/27 Scottish starter and basic bands), employee Class 1 National Insurance (8% / 2%), student loan repayments (Plan 1, 2, 4, 5 and Postgraduate, with 2026/27 thresholds), and pension by salary sacrifice or relief at source. Applies the Personal Allowance taper above £100,000 (£1 per £2, the 60% trap) and reads tax codes such as 1257L, S1257L, K475, BR and D0. Returns net pay a year, a month and a week. Figures copied from gov.uk and HMRC in Oct 2026.",
+      "inputSchema": {
+       "type": "object",
+       "properties": {
+        "gross_salary": {
+         "type": "number",
+         "minimum": 0,
+         "maximum": 100000000,
+         "description": "Annual gross salary in pounds (GBP), before any deductions."
+        },
+        "tax_year": {
+         "type": "string",
+         "enum": [
+          "2025/26",
+          "2026/27"
+         ],
+         "description": "UK tax year, 6 April to 5 April. 2025/26 or 2026/27 (default 2026/27)."
+        },
+        "region": {
+         "type": "string",
+         "enum": [
+          "england",
+          "wales",
+          "northern_ireland",
+          "england_wales_ni",
+          "scotland"
+         ],
+         "description": "Where you live for tax. england, wales, northern_ireland (same bands) or scotland (six Scottish bands). Default england, or taken from an S or C tax code."
+        },
+        "tax_code": {
+         "type": "string",
+         "maxLength": 16,
+         "description": "PAYE tax code, default 1257L. Supports nnnnL/M/N/T, S and C prefixes, K codes, BR, D0, D1, SBR, SD0-SD3, 0T, NT and W1/M1/X suffixes."
+        },
+        "pension_method": {
+         "type": "string",
+         "enum": [
+          "none",
+          "relief_at_source",
+          "salary_sacrifice"
+         ],
+         "description": "relief_at_source (you pay 80%, provider adds 20%, higher-rate relief claimed back) or salary_sacrifice (cuts pay before tax, NI and student loan). Default salary_sacrifice if a pension is given."
+        },
+        "pension_percent": {
+         "type": "number",
+         "minimum": 0,
+         "maximum": 100,
+         "description": "Employee pension contribution as a percent of gross salary, e.g. 5. For relief at source this is the gross (grossed-up) contribution."
+        },
+        "pension_amount": {
+         "type": "number",
+         "minimum": 0,
+         "maximum": 100000000,
+         "description": "Employee pension contribution in pounds a year (gross). Use this OR pension_percent."
+        },
+        "student_loan_plans": {
+         "type": "array",
+         "items": {
+          "type": "string",
+          "enum": [
+           "plan_1",
+           "plan_2",
+           "plan_4",
+           "plan_5",
+           "postgraduate"
+          ]
+         },
+         "maxItems": 5,
+         "description": "Student loan plans you repay: plan_1, plan_2, plan_4 (Scotland), plan_5, postgraduate. Several are allowed, as gov.uk describes."
+        },
+        "ni_category": {
+         "type": "string",
+         "enum": [
+          "A",
+          "B",
+          "C",
+          "H",
+          "J",
+          "M",
+          "V",
+          "Z"
+         ],
+         "description": "National Insurance category letter, default A. C = over State Pension age (no employee NI)."
+        }
+       },
+       "required": [
+        "gross_salary"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+       "readOnlyHint": true,
+       "destructiveHint": false,
+       "idempotentHint": true,
+       "openWorldHint": false,
+       "title": "UK take-home pay"
+      },
+      "execution": {
+       "taskSupport": "forbidden"
+      }
+     },
+     {
+      "name": "get_uk_tax_bands",
+      "title": "UK income tax bands and thresholds",
+      "description": "Returns the official UK income tax bands for 2025/26 or 2026/27, for England, Wales and Northern Ireland or for Scotland (starter 19%, basic 20%, intermediate 21%, higher 42%, advanced 45%, top 48%), both as taxable-income bands from HMRC's employer tables and as gross-salary bands with the standard £12,570 allowance. Also returns the £100,000 allowance taper, Class 1 NI thresholds and employee rates by category letter, and student loan thresholds for each plan. A figure that is not published is marked unannounced, never guessed. Copied from gov.uk and HMRC in Oct 2026.",
+      "inputSchema": {
+       "type": "object",
+       "properties": {
+        "tax_year": {
+         "type": "string",
+         "enum": [
+          "2025/26",
+          "2026/27"
+         ],
+         "description": "UK tax year: 2025/26 or 2026/27."
+        },
+        "region": {
+         "type": "string",
+         "enum": [
+          "england",
+          "wales",
+          "northern_ireland",
+          "england_wales_ni",
+          "scotland"
+         ],
+         "description": "england, wales, northern_ireland, england_wales_ni or scotland."
+        }
+       },
+       "required": [
+        "tax_year",
+        "region"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+       "readOnlyHint": true,
+       "destructiveHint": false,
+       "idempotentHint": true,
+       "openWorldHint": false,
+       "title": "UK income tax bands and thresholds"
+      },
+      "execution": {
+       "taskSupport": "forbidden"
+      }
+     },
+     {
+      "name": "compare_salaries",
+      "title": "Compare UK salaries after tax",
+      "description": "Compares 1 to 5 UK gross salaries after income tax, National Insurance, student loan and pension for 2025/26 or 2026/27, with the same region, tax code and options for each. Shows net pay a year, month and week, effective and marginal rates, and how much of each pay rise you keep compared with the first salary. Shows when a rise lands in the £100,000 to £125,140 Personal Allowance taper (60% in England, 69.5% in Scotland in 2026/27 with NI). Uses HMRC 2025/26 and 2026/27 rates fetched in Oct 2026.",
+      "inputSchema": {
+       "type": "object",
+       "properties": {
+        "salaries": {
+         "type": "array",
+         "items": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100000000,
+          "description": "Annual gross salary in pounds (GBP), before any deductions."
+         },
+         "minItems": 1,
+         "maxItems": 5,
+         "description": "1 to 5 annual gross salaries in pounds. The first is the baseline."
+        },
+        "tax_year": {
+         "type": "string",
+         "enum": [
+          "2025/26",
+          "2026/27"
+         ],
+         "description": "UK tax year, 6 April to 5 April. 2025/26 or 2026/27 (default 2026/27)."
+        },
+        "region": {
+         "type": "string",
+         "enum": [
+          "england",
+          "wales",
+          "northern_ireland",
+          "england_wales_ni",
+          "scotland"
+         ],
+         "description": "Where you live for tax. england, wales, northern_ireland (same bands) or scotland (six Scottish bands). Default england, or taken from an S or C tax code."
+        },
+        "tax_code": {
+         "type": "string",
+         "maxLength": 16,
+         "description": "PAYE tax code, default 1257L. Supports nnnnL/M/N/T, S and C prefixes, K codes, BR, D0, D1, SBR, SD0-SD3, 0T, NT and W1/M1/X suffixes."
+        },
+        "pension_method": {
+         "type": "string",
+         "enum": [
+          "none",
+          "relief_at_source",
+          "salary_sacrifice"
+         ],
+         "description": "relief_at_source (you pay 80%, provider adds 20%, higher-rate relief claimed back) or salary_sacrifice (cuts pay before tax, NI and student loan). Default salary_sacrifice if a pension is given."
+        },
+        "pension_percent": {
+         "type": "number",
+         "minimum": 0,
+         "maximum": 100,
+         "description": "Employee pension contribution as a percent of gross salary, e.g. 5. For relief at source this is the gross (grossed-up) contribution."
+        },
+        "pension_amount": {
+         "type": "number",
+         "minimum": 0,
+         "maximum": 100000000,
+         "description": "Employee pension contribution in pounds a year (gross). Use this OR pension_percent."
+        },
+        "student_loan_plans": {
+         "type": "array",
+         "items": {
+          "type": "string",
+          "enum": [
+           "plan_1",
+           "plan_2",
+           "plan_4",
+           "plan_5",
+           "postgraduate"
+          ]
+         },
+         "maxItems": 5,
+         "description": "Student loan plans you repay: plan_1, plan_2, plan_4 (Scotland), plan_5, postgraduate. Several are allowed, as gov.uk describes."
+        },
+        "ni_category": {
+         "type": "string",
+         "enum": [
+          "A",
+          "B",
+          "C",
+          "H",
+          "J",
+          "M",
+          "V",
+          "Z"
+         ],
+         "description": "National Insurance category letter, default A. C = over State Pension age (no employee NI)."
+        }
+       },
+       "required": [
+        "salaries"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+       "readOnlyHint": true,
+       "destructiveHint": false,
+       "idempotentHint": true,
+       "openWorldHint": false,
+       "title": "Compare UK salaries after tax"
+      },
+      "execution": {
+       "taskSupport": "forbidden"
+      }
+     },
+     {
+      "name": "marginal_rate_at_income",
+      "title": "UK marginal tax rate at a salary",
+      "description": "Returns the true UK marginal rate on the next pounds of salary in 2025/26 or 2026/27: income tax band rate, employee NI and student loan together, plus the Personal Allowance taper between £100,000 and £125,140 that makes it 60% plus NI in England, Wales and NI and 67.5% plus NI in Scotland's advanced band. Handles salary sacrifice, relief at source, Scottish bands and tax codes. Measured as the change in deductions over the next `step` pounds (default £100). Rates from gov.uk and HMRC, fetched Oct 2026.",
+      "inputSchema": {
+       "type": "object",
+       "properties": {
+        "gross_salary": {
+         "type": "number",
+         "minimum": 0,
+         "maximum": 100000000,
+         "description": "Annual gross salary in pounds (GBP), before any deductions."
+        },
+        "tax_year": {
+         "type": "string",
+         "enum": [
+          "2025/26",
+          "2026/27"
+         ],
+         "description": "UK tax year, 6 April to 5 April. 2025/26 or 2026/27 (default 2026/27)."
+        },
+        "region": {
+         "type": "string",
+         "enum": [
+          "england",
+          "wales",
+          "northern_ireland",
+          "england_wales_ni",
+          "scotland"
+         ],
+         "description": "Where you live for tax. england, wales, northern_ireland (same bands) or scotland (six Scottish bands). Default england, or taken from an S or C tax code."
+        },
+        "tax_code": {
+         "type": "string",
+         "maxLength": 16,
+         "description": "PAYE tax code, default 1257L. Supports nnnnL/M/N/T, S and C prefixes, K codes, BR, D0, D1, SBR, SD0-SD3, 0T, NT and W1/M1/X suffixes."
+        },
+        "pension_method": {
+         "type": "string",
+         "enum": [
+          "none",
+          "relief_at_source",
+          "salary_sacrifice"
+         ],
+         "description": "relief_at_source (you pay 80%, provider adds 20%, higher-rate relief claimed back) or salary_sacrifice (cuts pay before tax, NI and student loan). Default salary_sacrifice if a pension is given."
+        },
+        "pension_percent": {
+         "type": "number",
+         "minimum": 0,
+         "maximum": 100,
+         "description": "Employee pension contribution as a percent of gross salary, e.g. 5. For relief at source this is the gross (grossed-up) contribution."
+        },
+        "pension_amount": {
+         "type": "number",
+         "minimum": 0,
+         "maximum": 100000000,
+         "description": "Employee pension contribution in pounds a year (gross). Use this OR pension_percent."
+        },
+        "student_loan_plans": {
+         "type": "array",
+         "items": {
+          "type": "string",
+          "enum": [
+           "plan_1",
+           "plan_2",
+           "plan_4",
+           "plan_5",
+           "postgraduate"
+          ]
+         },
+         "maxItems": 5,
+         "description": "Student loan plans you repay: plan_1, plan_2, plan_4 (Scotland), plan_5, postgraduate. Several are allowed, as gov.uk describes."
+        },
+        "ni_category": {
+         "type": "string",
+         "enum": [
+          "A",
+          "B",
+          "C",
+          "H",
+          "J",
+          "M",
+          "V",
+          "Z"
+         ],
+         "description": "National Insurance category letter, default A. C = over State Pension age (no employee NI)."
+        },
+        "step": {
+         "type": "number",
+         "minimum": 1,
+         "maximum": 10000,
+         "description": "Size of the pay rise to measure over, in pounds (default 100)."
+        }
+       },
+       "required": [
+        "gross_salary"
+       ],
+       "additionalProperties": false,
+       "$schema": "http://json-schema.org/draft-07/schema#"
+      },
+      "annotations": {
+       "readOnlyHint": true,
+       "destructiveHint": false,
+       "idempotentHint": true,
+       "openWorldHint": false,
+       "title": "UK marginal tax rate at a salary"
+      },
+      "execution": {
+       "taskSupport": "forbidden"
+      }
+     }
+    ]
+   },
+   "jsonrpc": "2.0",
+   "id": 2
+  }
+ },
+ "deletions": [
+  {
+   "path": "/Users/mike/uk-income-tax-salary-mcp-work",
+   "size_kb": 2196,
+   "what": "temp work dir: gov.uk content-API JSON/text, read-only ukmoneycalc clone, extraction script, stdio/npx/live raw responses (live responses copied into live_raw_responses first)"
+  }
+ ]
+}

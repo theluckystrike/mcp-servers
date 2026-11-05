@@ -1,0 +1,98 @@
+{
+ "zovo-one/mcp-barcode": {
+  "released": true,
+  "test_status": "success",
+  "test": "/mcp/servers/zovo-one/mcp-barcode/admin/dockerfile/tests/01a18a8e-cda7-7132-a4de-bcbd72130858",
+  "done": true,
+  "round": 1,
+  "at": "2026-10-30T02:12:47.327Z"
+ },
+ "zovo-one/mcp-pdf": {
+  "released": true,
+  "test_status": "success",
+  "test": "/mcp/servers/zovo-one/mcp-pdf/admin/dockerfile/tests/01a18a8f-1f27-7b18-a01d-49a3c62c8983",
+  "done": true,
+  "round": 1,
+  "at": "2026-10-30T02:12:54.561Z"
+ },
+ "zovo-one/mcp-spreadsheet": {
+  "released": true,
+  "test_status": "success",
+  "test": "/mcp/servers/zovo-one/mcp-spreadsheet/admin/dockerfile/tests/01a18a8f-71c2-71f5-9631-3e56784cda94",
+  "done": true,
+  "round": 2,
+  "at": "2026-10-30T02:17:18.143Z"
+ },
+ "theluckystrike/no-tax-on-overtime-mcp": {
+  "released": true,
+  "test_status": "testing",
+  "test": "/mcp/servers/theluckystrike/no-tax-on-overtime-mcp/admin/dockerfile/tests/01a18a91-78d9-7f91-9c79-ae5758ccd983",
+  "done": true,
+  "round": 1,
+  "at": "2026-10-30T02:13:08.532Z"
+ },
+ "theluckystrike/minimum-wage-mcp": {
+  "released": true,
+  "test_status": "pending",
+  "test": "/mcp/servers/theluckystrike/minimum-wage-mcp/admin/dockerfile/tests/01a18a91-c8ca-71f4-8a10-9bceccbe4dc5",
+  "done": true,
+  "round": 1,
+  "at": "2026-10-30T02:13:15.362Z"
+ },
+ "theluckystrike/paycheck-calculator-mcp": {
+  "released": true,
+  "test_status": "pending",
+  "test": "/mcp/servers/theluckystrike/paycheck-calculator-mcp/admin/dockerfile/tests/01a18a92-1972-7f34-a601-d58b5b062522",
+  "done": true,
+  "round": 1,
+  "at": "2026-10-30T02:13:21.995Z"
+ },
+ "theluckystrike/uk-income-tax-salary-mcp": {
+  "released": true,
+  "test_status": "pending",
+  "test": "/mcp/servers/theluckystrike/uk-income-tax-salary-mcp/admin/dockerfile/tests/01a18a92-6c55-7c98-86a4-99738a887af4",
+  "done": true,
+  "round": 1,
+  "at": "2026-10-30T02:13:28.846Z"
+ },
+ "theluckystrike/gold-price-per-gram-mcp": {
+  "released": true,
+  "test_status": "pending",
+  "test": "/mcp/servers/theluckystrike/gold-price-per-gram-mcp/admin/dockerfile/tests/01a18a92-c01f-77d3-b5aa-85fda2c13546",
+  "done": true,
+  "round": 1,
+  "at": "2026-10-30T02:13:37.337Z"
+ },
+ "theluckystrike/lake-level-mcp": {
+  "released": true,
+  "test_status": "success",
+  "test": "/mcp/servers/theluckystrike/lake-level-mcp/admin/dockerfile/tests/01a18a93-0ed6-7fe3-8111-5acac8f6f98e",
+  "done": true,
+  "round": 3,
+  "at": "2026-10-30T02:20:41.364Z"
+ },
+ "theluckystrike/dscr-loan-calculator-mcp": {
+  "released": true,
+  "test_status": "pending",
+  "test": "/mcp/servers/theluckystrike/dscr-loan-calculator-mcp/admin/dockerfile/tests/01a18a93-626e-7543-af84-f5775f75f3c9",
+  "done": true,
+  "round": 1,
+  "at": "2026-10-30T02:13:57.265Z"
+ },
+ "theluckystrike/cups-to-grams-mcp": {
+  "released": true,
+  "test_status": "pending",
+  "test": "/mcp/servers/theluckystrike/cups-to-grams-mcp/admin/dockerfile/tests/01a18a93-b46f-7743-98bd-14da8f1a2a6b",
+  "done": true,
+  "round": 1,
+  "at": "2026-10-30T02:14:04.013Z"
+ },
+ "theluckystrike/us-federal-holidays-business-days-mcp": {
+  "released": true,
+  "test_status": "success",
+  "test": "/mcp/servers/theluckystrike/us-federal-holidays-business-days-mcp/admin/dockerfile/tests/01a18a94-0a50-732d-9636-6ddad5e284a3",
+  "done": true,
+  "round": 4,
+  "at": "2026-10-30T02:23:55.104Z"
+ }
+}

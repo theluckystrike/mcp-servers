@@ -1,0 +1,37 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.theluckystrike/timezone-world-clock-meeting-slots-overlap-ics",
+  "title": "McpStamp Time Zones",
+  "description": "Convert times between zones, find shared working hours and meeting slots, check DST changes.",
+  "version": "0.23.0",
+  "repository": {
+    "url": "https://github.com/theluckystrike/mcp-servers",
+    "source": "github",
+    "subfolder": "servers/timezone"
+  },
+  "websiteUrl": "https://www.mcpstamp.com/servers/timezone/",
+  "packages": [
+    {
+      "registryType": "mcpb",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.22.0/timezone.mcpb",
+      "version": "0.21.0",
+      "fileSha256": "f70084d03b415a60c2c2e5ccfb280814dfc64851ec58caa946286cb9e7e1f63d",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "description": "Optional Pro license key (MCPL1....). Verified offline.",
+          "isSecret": true,
+          "name": "MCP_LICENSE_KEY"
+        }
+      ]
+    }
+  ],
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.zovo.one/mcp/timezone"
+    }
+  ]
+}

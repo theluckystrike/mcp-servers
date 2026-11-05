@@ -1,0 +1,224 @@
+{
+ "result": {
+  "tools": [
+   {
+    "name": "get_ap_score_distribution",
+    "title": "Get the official AP score distribution for an exam",
+    "description": "Returns the College Board score distribution (percent of students scoring 5, 4, 3, 2, 1 and 3 or higher) for an AP exam and year, plus student counts, mean and standard deviation where College Board published them (2024 and 2025 PDFs). Includes the May 2026 results from the College Board 2026 AP Score Distributions page, which are newer than most model training data. Shows the 2024/2025/2026 history for the exam.",
+    "inputSchema": {
+     "$schema": "http://json-schema.org/draft-07/schema#",
+     "type": "object",
+     "properties": {
+      "exam": {
+       "type": "string",
+       "minLength": 1,
+       "maxLength": 80,
+       "description": "AP exam name or common short name, e.g. \"AP Biology\", \"APUSH\", \"Calc BC\", \"Lang\", \"Physics 1\", \"APES\"."
+      },
+      "year": {
+       "type": "integer",
+       "minimum": 2024,
+       "maximum": 2030,
+       "description": "Exam year (May administration). Available: 2024, 2025, 2026. Default 2026, the latest College Board release."
+      }
+     },
+     "required": [
+      "exam"
+     ]
+    },
+    "annotations": {
+     "title": "AP score distribution",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "estimate_ap_percentile",
+    "title": "Estimate the percentile of an AP score",
+    "description": "For an AP exam, year and score from 1 to 5, returns the percent of test takers who scored lower, the same and higher, and the midpoint percentile rank, from the official College Board distribution. Uses exact counts for 2024 and 2025 and the published whole percents for 2026.",
+    "inputSchema": {
+     "$schema": "http://json-schema.org/draft-07/schema#",
+     "type": "object",
+     "properties": {
+      "exam": {
+       "type": "string",
+       "minLength": 1,
+       "maxLength": 80,
+       "description": "AP exam name or common short name, e.g. \"AP Biology\", \"APUSH\", \"Calc BC\", \"Lang\", \"Physics 1\", \"APES\"."
+      },
+      "score": {
+       "type": "integer",
+       "minimum": 1,
+       "maximum": 5,
+       "description": "AP score, 1 to 5."
+      },
+      "year": {
+       "type": "integer",
+       "minimum": 2024,
+       "maximum": 2030,
+       "description": "Exam year (May administration). Available: 2024, 2025, 2026. Default 2026, the latest College Board release."
+      }
+     },
+     "required": [
+      "exam",
+      "score"
+     ]
+    },
+    "annotations": {
+     "title": "AP score percentile",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "compare_ap_exams",
+    "title": "Compare AP exams by pass rate or share of 5s",
+    "description": "Ranks AP exams for one year by pass rate (share scoring 3 or higher), share of 5s, mean score or number of test takers (mean and test takers for 2024 and 2025 only), using the official College Board distributions. Give a list of exams to compare a few, or leave it empty to rank all of them.",
+    "inputSchema": {
+     "$schema": "http://json-schema.org/draft-07/schema#",
+     "type": "object",
+     "properties": {
+      "exams": {
+       "maxItems": 60,
+       "type": "array",
+       "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 80
+       },
+       "description": "Exams to compare, e.g. [\"Calc AB\", \"Calc BC\", \"Statistics\"]. Empty means all exams."
+      },
+      "year": {
+       "type": "integer",
+       "minimum": 2024,
+       "maximum": 2030,
+       "description": "Exam year (May administration). Available: 2024, 2025, 2026. Default 2026, the latest College Board release."
+      },
+      "sort_by": {
+       "type": "string",
+       "enum": [
+        "pass_rate",
+        "five_rate",
+        "mean",
+        "test_takers"
+       ],
+       "description": "Ranking key. Default pass_rate (3 or higher)."
+      },
+      "order": {
+       "type": "string",
+       "enum": [
+        "desc",
+        "asc"
+       ],
+       "description": "desc = highest first (default), asc = lowest first."
+      },
+      "limit": {
+       "type": "integer",
+       "minimum": 1,
+       "maximum": 60,
+       "description": "Maximum rows. Default 50."
+      }
+     }
+    },
+    "annotations": {
+     "title": "Compare AP exams",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "list_ap_exams",
+    "title": "List AP exams and years with data",
+    "description": "Lists every AP exam with College Board score distributions in this server, the years available for each, the source of each year, and which exams have a College Board scoring worksheet for composite score estimates.",
+    "inputSchema": {
+     "$schema": "http://json-schema.org/draft-07/schema#",
+     "type": "object",
+     "properties": {
+      "year": {
+       "type": "integer",
+       "minimum": 2024,
+       "maximum": 2030,
+       "description": "Exam year (May administration). Available: 2024, 2025, 2026. Default 2026, the latest College Board release."
+      }
+     }
+    },
+    "annotations": {
+     "title": "List AP exams",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "estimate_ap_score_from_composite",
+    "title": "Estimate an AP score from practice exam raw points",
+    "description": "Converts multiple-choice correct answers and free-response points into a weighted composite and an estimated AP score, using the scoring worksheet and conversion chart College Board printed in its official practice exams. Only for the 7 exams with such a worksheet: AP Calculus AB (2012), AP Biology (2013), AP Statistics (2012), AP World History (2013), AP Psychology (2012), AP Macroeconomics (2012), AP Microeconomics (2012). Cut scores are never invented; other exams return an error.",
+    "inputSchema": {
+     "$schema": "http://json-schema.org/draft-07/schema#",
+     "type": "object",
+     "properties": {
+      "exam": {
+       "type": "string",
+       "minLength": 1,
+       "maxLength": 80,
+       "description": "AP exam name or common short name, e.g. \"AP Biology\", \"APUSH\", \"Calc BC\", \"Lang\", \"Physics 1\", \"APES\"."
+      },
+      "multiple_choice_correct": {
+       "type": "number",
+       "minimum": 0,
+       "maximum": 200,
+       "description": "Number of multiple-choice questions answered correctly."
+      },
+      "free_response_points": {
+       "minItems": 1,
+       "maxItems": 12,
+       "type": "array",
+       "items": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 100
+       },
+       "description": "Points earned on each free-response question, in order. The error message lists how many questions and the maximum for each."
+      }
+     },
+     "required": [
+      "exam",
+      "multiple_choice_correct",
+      "free_response_points"
+     ]
+    },
+    "annotations": {
+     "title": "Estimate AP score",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   }
+  ]
+ },
+ "jsonrpc": "2.0",
+ "id": 2
+}

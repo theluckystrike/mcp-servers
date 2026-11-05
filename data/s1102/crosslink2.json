@@ -1,0 +1,106 @@
+{
+ "lane": "crosslink2",
+ "date": "2026-11-02",
+ "budget": "60 min, about 25 used",
+ "section": "'Use this data in Claude or ChatGPT' (id use-in-ai), one per homepage. It has the connector URL, the Claude Code command, a Setup steps link to mcpstamp and a GitHub link",
+ "method": "fresh gh clone, find the real deploy path, prove source equals live before the change, insert with crosslink2/insert2.py, check the diff is only the section, deploy, curl live. Every git and find call wrapped in timeout 20",
+ "setup_pages_200": "curl -s -o /dev/null -w %{http_code} https://www.mcpstamp.com/free-servers/<repo>/ gave 200 for all 6; all 6 hosted /mcp URLs answered initialize with serverInfo",
+ "llms_txt": "none of the 6 serves a real /llms.txt (404 on 5; bugbountyreality returns a 200 text/html soft fallback of the homepage)",
+ "class_A": [
+  {
+   "site": "taxbreakcalc.com",
+   "repo": "car-loan-interest-deduction-calculator-mcp",
+   "hosted_url": "https://car-loan-interest-deduction-calculator-mcp.lipmichal.workers.dev/mcp",
+   "build": "Astro 4, Cloudflare Pages project taxbreakcalc (direct upload, branch main, Pages Function _middleware.js), private repo theluckystrike/taxbreakcalc",
+   "base_proof": "wrangler pages deployment list showed production ca6cf6ac with source b2e21af = origin/main HEAD. Clean astro build of b2e21af: homepage equal to live, 0 diff lines after masking the astro-island uid",
+   "change": "commit ce89f6e, src/pages/index.astro +13, section before About TaxBreakCalc, message ends [skip ci]",
+   "diff_check": "dist differs from base only in index.html (diff -rq); new index.html minus the section equals base ignoring whitespace; 75 pages in both",
+   "deploy_id": "22f7e59b-ad60-43e7-b8bf-9d7427807c03",
+   "prev": "ca6cf6ac-5e18-49b4-8454-ddca458eb433",
+   "rollback": "Cloudflare Pages rollback, not exercised. Dashboard https://dash.cloudflare.com/dd3f2a29b7707e21a87f26a622c0bb9d/pages/view/taxbreakcalc/ca6cf6ac-5e18-49b4-8454-ddca458eb433 (Rollback to this deployment), or API POST /accounts/dd3f2a29b7707e21a87f26a622c0bb9d/pages/projects/taxbreakcalc/deployments/ca6cf6ac-5e18-49b4-8454-ddca458eb433/rollback, or git revert the commit, rebuild and wrangler pages deploy",
+   "push": "gh api: private=true. One push b2e21af..ce89f6e with [skip ci]; the repo has no workflows",
+   "live_check": "https://taxbreakcalc.com/ 200, live homepage equals local build (0 diff after uid mask), heading x1, connector URL x2, setup link x1, repo link x1. /overtime-tax-calculator/, /state-overtime-tax-map/, /about/ 200, www 301 (middleware intact)"
+  },
+  {
+   "site": "assetloancalculator.com",
+   "repo": "section-179-deduction-calculator-mcp",
+   "hosted_url": "https://section-179-deduction-calculator-mcp.lipmichal.workers.dev/mcp",
+   "build": "Astro 4, Cloudflare Pages project assetloancalculator (direct upload, branch main, Pages Function), private repo theluckystrike/assetloancalculator",
+   "base_proof": "production 11a25317 source 12853ab = origin/main HEAD. Clean build of 12853ab: homepage differs from live in 4 diff lines, all of them the build-time FRED Prime Rate as-of date (live 2026-10-26, build 2026-10-27, value 7.00% in both). Nothing else differs",
+   "change": "commit cc16643, src/pages/index.astro +10, section after Honest by design, message ends [skip ci]",
+   "diff_check": "dist differs from base only in index.html; new index.html minus the section equals base ignoring whitespace",
+   "side_effect": "the deploy moved the Prime benchmark as-of date from 2026-10-26 to 2026-10-27 on the pages that show it (wrangler uploaded 33 files). Same documented build-time fetch, value unchanged",
+   "deploy_id": "ca8d186b-071f-485b-a65f-184afecb773e",
+   "prev": "11a25317-e931-4b2b-911a-e1cf4bc2dd38",
+   "rollback": "Cloudflare Pages rollback, not exercised. Dashboard https://dash.cloudflare.com/dd3f2a29b7707e21a87f26a622c0bb9d/pages/view/assetloancalculator/11a25317-e931-4b2b-911a-e1cf4bc2dd38 (Rollback to this deployment), or API POST /accounts/dd3f2a29b7707e21a87f26a622c0bb9d/pages/projects/assetloancalculator/deployments/11a25317-e931-4b2b-911a-e1cf4bc2dd38/rollback, or git revert the commit, rebuild and wrangler pages deploy",
+   "push": "private=true. One push 12853ab..cc16643 with [skip ci]; no workflows in the repo",
+   "live_check": "https://assetloancalculator.com/ 200, equals local build (0 diff), heading x1, connector x2, setup x1, repo x1. /rv-loan-calculator/, /land-loan-calculator/, /about/ 200"
+  },
+  {
+   "site": "bugbountyreality.com",
+   "repo": "subdomain-finder-mcp",
+   "hosted_url": "https://subdomain-finder-mcp.lipmichal.workers.dev/mcp",
+   "build": "Static HTML, public repo theluckystrike/bugbountyreality.com, served from Cloudflare Pages project bugbountyreality (direct upload, not GitHub Pages)",
+   "base_proof": "production b3a8ac65 source 27f5cec = origin/main HEAD. Homepage and all 47 other html pages byte-identical to the repo files (curl -L vs git file, 0 diff)",
+   "change": "commit efbbeac, index.html +16 -0 (git diff 27f5cec efbbeac --numstat), section after the essay and before the colophon",
+   "deploy_id": "ebb28fb0-a2d0-44d9-9c7a-7305e526f7ed",
+   "prev": "b3a8ac65-a10f-4b0c-a828-ee54a6dbb223",
+   "rollback": "Cloudflare Pages rollback, not exercised. Dashboard https://dash.cloudflare.com/dd3f2a29b7707e21a87f26a622c0bb9d/pages/view/bugbountyreality/b3a8ac65-a10f-4b0c-a828-ee54a6dbb223 (Rollback to this deployment), or API POST /accounts/dd3f2a29b7707e21a87f26a622c0bb9d/pages/projects/bugbountyreality/deployments/b3a8ac65-a10f-4b0c-a828-ee54a6dbb223/rollback, or git revert the commit, rebuild and wrangler pages deploy",
+   "deploy_command": "git archive HEAD into a clean dir, then wrangler pages deploy --project-name=bugbountyreality --branch=main --commit-hash=efbbeac. Wrangler uploaded 1 file, 58 already uploaded",
+   "push": "public. One push 27f5cec..efbbeac. I pushed before I confirmed the site is not on GitHub Pages; harmless, main now equals the deployed tree",
+   "note": "the h2 is 'Use this data in Claude <em>or ChatGPT.</em>' to match the site's italic title style, so a grep for the exact heading string returns 0 although the text reads the same",
+   "live_check": "https://bugbountyreality.com/ 200, cmp live vs repo HEAD index.html equal, connector x2, setup x1, repo x1. /tools/subdomain-finder-real/, /tools/dns-lookup-tool/, /support/ 200"
+  },
+  {
+   "site": "abwex.com",
+   "repo": "ab-test-sample-size-calculator-mcp",
+   "hosted_url": "https://ab-test-sample-size-calculator-mcp.lipmichal.workers.dev/mcp",
+   "build": "Static HTML, public repo toolsthatrank/abwex.com. A push to main triggers a GitHub Pages build and the workflow 'Publish verified static assets to Cloudflare'",
+   "base_proof": "live homepage byte-identical to origin/main d49b1b5 index.html (cmp, 0 diff)",
+   "change": "commit 7ffc94e, index.html +10 -0, section before Common questions",
+   "deploy_id": "GitHub Pages build 7ffc94e (built 2026-11-02T03:34:24Z), workflow run 41383745942 success",
+   "prev": "d49b1b5",
+   "rollback": "git revert 7ffc94e and push to main; previous commit d49b1b5",
+   "push": "public. One push d49b1b5..7ffc94e",
+   "live_check": "https://abwex.com/ 200, cmp live vs repo HEAD equal, heading x1, connector x2, setup x1, repo x1. /tools/sample-size-calculator.html and /answers/is-my-ab-test-significant.html 200"
+  },
+  {
+   "site": "examscorecalc.com",
+   "repo": "ap-score-distributions-mcp",
+   "hosted_url": "https://ap-score-distributions-mcp.lipmichal.workers.dev/mcp",
+   "build": "Static HTML on GitHub Pages (legacy branch build), public repo theluckystrike/examscorecalc-live (redirects to toolsthatrank/examscorecalc-live)",
+   "base_proof": "live homepage byte-identical to origin/main 7d03985 index.html (cmp, 0 diff); last-modified 2026-10-28 07:14:59Z matches that Pages build",
+   "change": "commit b279b7d, index.html +8 -0, section after Honest by design",
+   "deploy_id": "GitHub Pages build b279b7d (built 2026-11-02T03:33:55Z)",
+   "prev": "7d03985",
+   "rollback": "git revert b279b7d and push to main; previous commit 7d03985",
+   "push": "public. One push 7d03985..b279b7d",
+   "live_check": "https://examscorecalc.com/ 200, cmp live vs repo HEAD equal, heading x1, connector x2, setup x1, repo x1. /ap-score-distributions/ and /ap/ 200"
+  }
+ ],
+ "class_B": [
+  {
+   "site": "recipetool.net",
+   "repo": "recipe-nutrition-calculator-mcp",
+   "hosted_url": "https://recipe-nutrition-calculator-mcp.lipmichal.workers.dev/mcp",
+   "why": "Another session is active on recipetool. Commits 9ffc3e5 (09:39), a96bd31 (09:45), e2603cd (10:19, local time) and three Pages production deploys in about an hour. The newest, cf53c05f-05f5-4a0d-b7bd-20268def9ca0 (source e2603cd), was about 22 minutes old when I checked at 10:41. A deploy from me could race its next one.",
+   "base_proof": "live homepage byte-identical to origin/main e2603cd recipe-dist/index.html (cmp, 0 diff), so the patch applies to the live tree",
+   "where": "~/mcp-servers/data/s1102/crosslink2/src-recipetool (clone of private theluckystrike/recipetool). Local commit 3d35f96 on e2603cd, NOT pushed. Patch patches/recipetool/0001-*.patch. The section sits after the FAQ and before the end-position ad-slot in recipe-dist/index.html",
+   "deploy_target": "Cloudflare Pages project recipetool, wrangler pages deploy recipe-dist --project-name=recipetool --branch=main from the repo root (it has _worker.js). Previous production cf53c05f-05f5-4a0d-b7bd-20268def9ca0",
+   "how_to_ship": "in the other session's tree (~/cro-exec/recipetool) git am the patch or insert snippets/recipetool.html, commit with [skip ci], deploy with its usual command, push once (private, no workflow), curl live for use-in-ai x1"
+  }
+ ],
+ "files": {
+  "insert": "~/mcp-servers/data/s1102/crosslink2/insert2.py",
+  "snippets": "~/mcp-servers/data/s1102/crosslink2/snippets/<site>.html",
+  "patches": "~/mcp-servers/data/s1102/crosslink2/patches/<repo>/",
+  "clones": "~/mcp-servers/data/s1102/crosslink2/src-*",
+  "deleted": "deleted-manifest.txt in crosslink2 (node_modules, dist and base copies, about 335 MB, none open per lsof)"
+ },
+ "host_checks": "df -g Data Avail 38 GB before builds, memory_pressure free 44 to 47 percent, builds through buildslot, ps showed no wrangler or build for these six sites before each deploy, no commits by other sessions in the last 2 hours except recipetool",
+ "open": [
+  "recipetool snippet waits for the other session",
+  "Pages rollback commands for the 3 Pages sites not exercised",
+  "bugbountyreality heading wraps 'or ChatGPT.' in em"
+ ]
+}

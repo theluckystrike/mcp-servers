@@ -1,0 +1,65 @@
+{
+ "result": {
+  "content": [
+   {
+    "type": "text",
+    "text": "1 us_cup of Brown sugar (packed) = 220 g. Density 220 g per US cup from USDA FoodData Central FDC 168833 (1 cup packed = 220 g). Cup definition used: US cup (236.5882365 mL). Dry values assume spoon-and-level filling; scooping packs more in.\n\n{\n  \"summary\": \"1 us_cup of Brown sugar (packed) = 220 g. Density 220 g per US cup from USDA FoodData Central FDC 168833 (1 cup packed = 220 g). Cup definition used: US cup (236.5882365 mL). Dry values assume spoon-and-level filling; scooping packs more in.\",\n  \"amount\": 1,\n  \"from_unit\": \"us_cup\",\n  \"to_unit\": \"g\",\n  \"result\": 220,\n  \"result_exact\": 220,\n  \"cup_definition_used\": {\n    \"unit\": \"us_cup\",\n    \"ml\": 236.5882365,\n    \"label\": \"US cup (236.5882365 mL)\"\n  },\n  \"unit_factors\": {\n    \"us_cup\": {\n      \"kind\": \"volume\",\n      \"per_unit\": 236.5882365,\n      \"base\": \"mL\"\n    },\n    \"g\": {\n      \"kind\": \"weight\",\n      \"per_unit\": 1,\n      \"base\": \"g\"\n    }\n  },\n  \"ingredient\": {\n    \"id\": \"brown-sugar-packed\",\n    \"name\": \"Brown sugar (packed)\",\n    \"g_per_us_cup\": 220,\n    \"g_per_us_tbsp\": 13.75,\n    \"g_per_us_tsp\": 4.583,\n    \"g_per_ml\": 0.929886,\n    \"density_source\": {\n      \"source\": \"usda_fdc\",\n      \"url\": \"https://fdc.nal.usda.gov/fdc-datasets/FoodData_Central_sr_legacy_food_csv_2018-04.zip\",\n      \"fdc_page\": \"https://fdc.nal.usda.gov/food-details/168833/measures\",\n      \"fdc_id\": 168833,\n      \"description\": \"Sugars, brown\",\n      \"portion\": \"1 cup packed\",\n      \"gram_weight\": 220,\n      \"g_per_cup\": 220\n    },\n    \"other_published_values\": [\n      {\n        \"source\": \"king_arthur\",\n        \"g_per_cup\": 213,\n        \"row\": \"Brown sugar (dark or light, packed)\"\n      }\n    ]\n  },\n  \"as_of\": \"2026-10-30\",\n  \"source\": \"https://fdc.nal.usda.gov/fdc-datasets/FoodData_Central_sr_legacy_food_csv_2018-04.zip\",\n  \"more\": \"https://ingredientcalculator.com/cups-to-grams?utm_source=mcp&utm_medium=cups-to-grams-mcp\"\n}"
+   }
+  ],
+  "structuredContent": {
+   "summary": "1 us_cup of Brown sugar (packed) = 220 g. Density 220 g per US cup from USDA FoodData Central FDC 168833 (1 cup packed = 220 g). Cup definition used: US cup (236.5882365 mL). Dry values assume spoon-and-level filling; scooping packs more in.",
+   "amount": 1,
+   "from_unit": "us_cup",
+   "to_unit": "g",
+   "result": 220,
+   "result_exact": 220,
+   "cup_definition_used": {
+    "unit": "us_cup",
+    "ml": 236.5882365,
+    "label": "US cup (236.5882365 mL)"
+   },
+   "unit_factors": {
+    "us_cup": {
+     "kind": "volume",
+     "per_unit": 236.5882365,
+     "base": "mL"
+    },
+    "g": {
+     "kind": "weight",
+     "per_unit": 1,
+     "base": "g"
+    }
+   },
+   "ingredient": {
+    "id": "brown-sugar-packed",
+    "name": "Brown sugar (packed)",
+    "g_per_us_cup": 220,
+    "g_per_us_tbsp": 13.75,
+    "g_per_us_tsp": 4.583,
+    "g_per_ml": 0.929886,
+    "density_source": {
+     "source": "usda_fdc",
+     "url": "https://fdc.nal.usda.gov/fdc-datasets/FoodData_Central_sr_legacy_food_csv_2018-04.zip",
+     "fdc_page": "https://fdc.nal.usda.gov/food-details/168833/measures",
+     "fdc_id": 168833,
+     "description": "Sugars, brown",
+     "portion": "1 cup packed",
+     "gram_weight": 220,
+     "g_per_cup": 220
+    },
+    "other_published_values": [
+     {
+      "source": "king_arthur",
+      "g_per_cup": 213,
+      "row": "Brown sugar (dark or light, packed)"
+     }
+    ]
+   },
+   "as_of": "2026-10-30",
+   "source": "https://fdc.nal.usda.gov/fdc-datasets/FoodData_Central_sr_legacy_food_csv_2018-04.zip",
+   "more": "https://ingredientcalculator.com/cups-to-grams?utm_source=mcp&utm_medium=cups-to-grams-mcp"
+  }
+ },
+ "jsonrpc": "2.0",
+ "id": 2
+}

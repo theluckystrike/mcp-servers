@@ -1,0 +1,64 @@
+{
+ "result": {
+  "content": [
+   {
+    "type": "text",
+    "text": "On 2027-01-01, Florida has the highest minimum wage of these at $15.00 and Ohio the lowest at $11.40, a gap of $3.60 an hour or $7,488.00 a year full time. State-level rates only. City and county minimum wages (for example Seattle, Denver, Chicago, San Francisco) are out of scope and can be higher.\n\n{\n  \"date\": \"2027-01-01\",\n  \"states\": [\n    {\n      \"state\": \"Florida\",\n      \"code\": \"FL\",\n      \"status\": \"in_force\",\n      \"standard_rate\": 15,\n      \"tipped_cash_wage\": 11.98,\n      \"tip_credit\": 3.02,\n      \"effective_date\": \"2026-09-30\",\n      \"federal_floor_applies\": false,\n      \"regional_rates\": null,\n      \"full_time_annual\": 31200,\n      \"source\": \"https://floridajobs.org/florida-minimum-wage\",\n      \"more\": \"https://statewage.com/states/florida/?utm_source=mcp&utm_medium=minimum-wage-mcp\"\n    },\n    {\n      \"state\": \"Michigan\",\n      \"code\": \"MI\",\n      \"status\": \"in_force\",\n      \"standard_rate\": 15,\n      \"tipped_cash_wage\": 6.3,\n      \"tip_credit\": 8.7,\n      \"effective_date\": \"2027-01-01\",\n      \"federal_floor_applies\": false,\n      \"regional_rates\": null,\n      \"full_time_annual\": 31200,\n      \"source\": \"https://svsuedu-lb01-production.terminalfour.net/media/hr/currentdocs/Michigan%20Minimum%20Wage%20and%20Overtime%20Poster.pdf\",\n      \"more\": \"https://statewage.com/states/michigan/?utm_source=mcp&utm_medium=minimum-wage-mcp\"\n    },\n    {\n      \"state\": \"Ohio\",\n      \"code\": \"OH\",\n      \"status\": \"in_force\",\n      \"standard_rate\": 11.4,\n      \"tipped_cash_wage\": 5.7,\n      \"tip_credit\": 5.7,\n      \"effective_date\": \"2027-01-01\",\n      \"federal_floor_applies\": false,\n      \"regional_rates\": null,\n      \"full_time_annual\": 23712,\n      \"source\": \"https://com.ohio.gov/about-us/media-center/news/ohio-minimum-wage-to-increase-in-2027\",\n      \"more\": \"https://statewage.com/states/ohio/?utm_source=mcp&utm_medium=minimum-wage-mcp\"\n    }\n  ],\n  \"locality_note\": \"State-level rates only. City and county minimum wages (for example Seattle, Denver, Chicago, San Francisco) are out of scope and can be higher.\",\n  \"as_of\": \"2026-10-30\",\n  \"source\": \"https://www.dol.gov/agencies/whd/minimum-wage/state\",\n  \"more\": \"https://statewage.com/?utm_source=mcp&utm_medium=minimum-wage-mcp\",\n  \"summary\": \"On 2027-01-01, Florida has the highest minimum wage of these at $15.00 and Ohio the lowest at $11.40, a gap of $3.60 an hour or $7,488.00 a year full time. State-level rates only. City and county minimum wages (for example Seattle, Denver, Chicago, San Francisco) are out of scope and can be higher.\"\n}"
+   }
+  ],
+  "structuredContent": {
+   "date": "2027-01-01",
+   "states": [
+    {
+     "state": "Florida",
+     "code": "FL",
+     "status": "in_force",
+     "standard_rate": 15,
+     "tipped_cash_wage": 11.98,
+     "tip_credit": 3.02,
+     "effective_date": "2026-09-30",
+     "federal_floor_applies": false,
+     "regional_rates": null,
+     "full_time_annual": 31200,
+     "source": "https://floridajobs.org/florida-minimum-wage",
+     "more": "https://statewage.com/states/florida/?utm_source=mcp&utm_medium=minimum-wage-mcp"
+    },
+    {
+     "state": "Michigan",
+     "code": "MI",
+     "status": "in_force",
+     "standard_rate": 15,
+     "tipped_cash_wage": 6.3,
+     "tip_credit": 8.7,
+     "effective_date": "2027-01-01",
+     "federal_floor_applies": false,
+     "regional_rates": null,
+     "full_time_annual": 31200,
+     "source": "https://svsuedu-lb01-production.terminalfour.net/media/hr/currentdocs/Michigan%20Minimum%20Wage%20and%20Overtime%20Poster.pdf",
+     "more": "https://statewage.com/states/michigan/?utm_source=mcp&utm_medium=minimum-wage-mcp"
+    },
+    {
+     "state": "Ohio",
+     "code": "OH",
+     "status": "in_force",
+     "standard_rate": 11.4,
+     "tipped_cash_wage": 5.7,
+     "tip_credit": 5.7,
+     "effective_date": "2027-01-01",
+     "federal_floor_applies": false,
+     "regional_rates": null,
+     "full_time_annual": 23712,
+     "source": "https://com.ohio.gov/about-us/media-center/news/ohio-minimum-wage-to-increase-in-2027",
+     "more": "https://statewage.com/states/ohio/?utm_source=mcp&utm_medium=minimum-wage-mcp"
+    }
+   ],
+   "locality_note": "State-level rates only. City and county minimum wages (for example Seattle, Denver, Chicago, San Francisco) are out of scope and can be higher.",
+   "as_of": "2026-10-30",
+   "source": "https://www.dol.gov/agencies/whd/minimum-wage/state",
+   "more": "https://statewage.com/?utm_source=mcp&utm_medium=minimum-wage-mcp",
+   "summary": "On 2027-01-01, Florida has the highest minimum wage of these at $15.00 and Ohio the lowest at $11.40, a gap of $3.60 an hour or $7,488.00 a year full time. State-level rates only. City and county minimum wages (for example Seattle, Denver, Chicago, San Francisco) are out of scope and can be higher."
+  }
+ },
+ "jsonrpc": "2.0",
+ "id": 2
+}

@@ -1,0 +1,65 @@
+{
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Credit before phase-out $4,400 (2 child(ren) x $2,200). MAGI over $400,000 cuts it by $550. Nonrefundable credit $3,850, refundable additional child tax credit $0, total $3,850 for 2026.\n\nThis is an estimate, not tax advice. Check the IRS instructions or ask a tax professional before you file."
+      },
+      {
+        "type": "text",
+        "text": "{\n  \"filing_status\": \"married_filing_jointly\",\n  \"tax_year\": 2026,\n  \"magi\": 410500,\n  \"qualifying_children\": 2,\n  \"other_dependents\": 0,\n  \"credit_per_child\": 2200,\n  \"refundable_limit_per_child\": 1700,\n  \"credit_before_phaseout\": 4400,\n  \"phaseout\": {\n    \"threshold\": 400000,\n    \"excess_rounded_up\": 11000,\n    \"reduction\": 550,\n    \"rule\": \"5% of MAGI over the threshold, with the excess rounded up to the next $1,000\"\n  },\n  \"credit_after_phaseout\": 3850,\n  \"tax_liability_used\": 50000,\n  \"tax_liability_is_estimate\": false,\n  \"nonrefundable_credit\": 3850,\n  \"additional_child_tax_credit\": 0,\n  \"total_benefit\": 3850,\n  \"unused_credit\": 0,\n  \"earned_income_used\": 410500,\n  \"schedule_8812_lines\": {\n    \"line5\": 4400,\n    \"line7\": 0,\n    \"line8\": 4400,\n    \"line9\": 400000,\n    \"line10\": 11000,\n    \"line11\": 550,\n    \"line12\": 3850,\n    \"line14\": 3850,\n    \"line16a\": 0,\n    \"line16b\": 3400,\n    \"line17\": 0,\n    \"line20\": 61200,\n    \"line27\": 0\n  },\n  \"notes\": [\n    \"Each qualifying child must be under 17 at the end of the year and have an SSN valid for employment issued by the return due date. From 2025 the taxpayer (or at least one spouse on a joint return) also needs a valid SSN.\",\n    \"The $500 credit for other dependents is not refundable.\",\n    \"The refundable part uses 15% of earned income over $2,500. The alternative for three or more children based on social security and Medicare tax (Schedule 8812 lines 21-26) is not modeled.\"\n  ],\n  \"summary\": \"Credit before phase-out $4,400 (2 child(ren) x $2,200). MAGI over $400,000 cuts it by $550. Nonrefundable credit $3,850, refundable additional child tax credit $0, total $3,850 for 2026.\",\n  \"as_of\": \"2026-11-02\",\n  \"source\": \"https://www.irs.gov/pub/irs-drop/rp-25-32.pdf ; https://www.irs.gov/pub/irs-pdf/i1040s8.pdf\",\n  \"more\": \"https://taxbreakcalc.com/how-much-is-the-child-tax-credit-worth/?utm_source=mcp&utm_medium=car-loan-interest-deduction-calculator-mcp\",\n  \"disclaimer\": \"This is an estimate, not tax advice. Check the IRS instructions or ask a tax professional before you file.\"\n}"
+      }
+    ],
+    "structuredContent": {
+      "filing_status": "married_filing_jointly",
+      "tax_year": 2026,
+      "magi": 410500,
+      "qualifying_children": 2,
+      "other_dependents": 0,
+      "credit_per_child": 2200,
+      "refundable_limit_per_child": 1700,
+      "credit_before_phaseout": 4400,
+      "phaseout": {
+        "threshold": 400000,
+        "excess_rounded_up": 11000,
+        "reduction": 550,
+        "rule": "5% of MAGI over the threshold, with the excess rounded up to the next $1,000"
+      },
+      "credit_after_phaseout": 3850,
+      "tax_liability_used": 50000,
+      "tax_liability_is_estimate": false,
+      "nonrefundable_credit": 3850,
+      "additional_child_tax_credit": 0,
+      "total_benefit": 3850,
+      "unused_credit": 0,
+      "earned_income_used": 410500,
+      "schedule_8812_lines": {
+        "line5": 4400,
+        "line7": 0,
+        "line8": 4400,
+        "line9": 400000,
+        "line10": 11000,
+        "line11": 550,
+        "line12": 3850,
+        "line14": 3850,
+        "line16a": 0,
+        "line16b": 3400,
+        "line17": 0,
+        "line20": 61200,
+        "line27": 0
+      },
+      "notes": [
+        "Each qualifying child must be under 17 at the end of the year and have an SSN valid for employment issued by the return due date. From 2025 the taxpayer (or at least one spouse on a joint return) also needs a valid SSN.",
+        "The $500 credit for other dependents is not refundable.",
+        "The refundable part uses 15% of earned income over $2,500. The alternative for three or more children based on social security and Medicare tax (Schedule 8812 lines 21-26) is not modeled."
+      ],
+      "summary": "Credit before phase-out $4,400 (2 child(ren) x $2,200). MAGI over $400,000 cuts it by $550. Nonrefundable credit $3,850, refundable additional child tax credit $0, total $3,850 for 2026.",
+      "as_of": "2026-11-02",
+      "source": "https://www.irs.gov/pub/irs-drop/rp-25-32.pdf ; https://www.irs.gov/pub/irs-pdf/i1040s8.pdf",
+      "more": "https://taxbreakcalc.com/how-much-is-the-child-tax-credit-worth/?utm_source=mcp&utm_medium=car-loan-interest-deduction-calculator-mcp",
+      "disclaimer": "This is an estimate, not tax advice. Check the IRS instructions or ask a tax professional before you file."
+    }
+  },
+  "jsonrpc": "2.0",
+  "id": 13
+}

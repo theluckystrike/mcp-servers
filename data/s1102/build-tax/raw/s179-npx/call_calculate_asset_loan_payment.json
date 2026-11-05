@@ -1,0 +1,49 @@
+{
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Financing $100,000 at 6% APR for 60 months: $1,933.28 a month, $15,996.81 total interest, $5,519.05 interest in the first 12 months. With a $120,000 first-year deduction at a 30% rate, year-1 tax saving is $37,655.71, so year-1 net cash is $5,543.65. After-tax total cost over the loan: $95,197.77.\n\nThis is an estimate, not tax advice. Check Form 4562, its instructions and Pub. 946, or ask a tax professional before you file."
+      },
+      {
+        "type": "text",
+        "text": "{\n  \"asset_type\": \"equipment\",\n  \"price\": 120000,\n  \"down_payment\": 20000,\n  \"amount_financed\": 100000,\n  \"apr_percent\": 6,\n  \"term_months\": 60,\n  \"monthly_payment\": 1933.28,\n  \"total_of_payments\": 115996.81,\n  \"total_interest\": 15996.81,\n  \"total_cost_with_down_payment\": 135996.81,\n  \"first_12_months\": {\n    \"payments\": 23199.36,\n    \"interest\": 5519.05,\n    \"principal\": 17680.32\n  },\n  \"after_tax\": {\n    \"marginal_tax_rate\": 0.3,\n    \"business_use_percent\": 100,\n    \"first_year_deduction\": 120000,\n    \"first_year_interest_deduction\": 5519.05,\n    \"first_year_tax_saving\": 37655.71,\n    \"first_year_net_cash\": 5543.65,\n    \"lifetime_tax_saving\": 40799.04,\n    \"after_tax_total_cost\": 95197.77,\n    \"note\": \"Assumes the business share of the price is fully deducted over time (first_year_deduction in year 1, the rest later) and the business share of interest is deductible, all at one flat marginal rate. Recapture on sale and state conformity are ignored.\"\n  },\n  \"summary\": \"Financing $100,000 at 6% APR for 60 months: $1,933.28 a month, $15,996.81 total interest, $5,519.05 interest in the first 12 months. With a $120,000 first-year deduction at a 30% rate, year-1 tax saving is $37,655.71, so year-1 net cash is $5,543.65. After-tax total cost over the loan: $95,197.77.\",\n  \"as_of\": \"2026-11-02\",\n  \"source\": \"https://www.irs.gov/pub/irs-pdf/p946.pdf ; https://www.irs.gov/pub/irs-drop/rp-25-32.pdf\",\n  \"more\": \"https://assetloancalculator.com/equipment-loan-calculator/?utm_source=mcp&utm_medium=section-179-deduction-calculator-mcp\",\n  \"disclaimer\": \"This is an estimate, not tax advice. Check Form 4562, its instructions and Pub. 946, or ask a tax professional before you file.\"\n}"
+      }
+    ],
+    "structuredContent": {
+      "asset_type": "equipment",
+      "price": 120000,
+      "down_payment": 20000,
+      "amount_financed": 100000,
+      "apr_percent": 6,
+      "term_months": 60,
+      "monthly_payment": 1933.28,
+      "total_of_payments": 115996.81,
+      "total_interest": 15996.81,
+      "total_cost_with_down_payment": 135996.81,
+      "first_12_months": {
+        "payments": 23199.36,
+        "interest": 5519.05,
+        "principal": 17680.32
+      },
+      "after_tax": {
+        "marginal_tax_rate": 0.3,
+        "business_use_percent": 100,
+        "first_year_deduction": 120000,
+        "first_year_interest_deduction": 5519.05,
+        "first_year_tax_saving": 37655.71,
+        "first_year_net_cash": 5543.65,
+        "lifetime_tax_saving": 40799.04,
+        "after_tax_total_cost": 95197.77,
+        "note": "Assumes the business share of the price is fully deducted over time (first_year_deduction in year 1, the rest later) and the business share of interest is deductible, all at one flat marginal rate. Recapture on sale and state conformity are ignored."
+      },
+      "summary": "Financing $100,000 at 6% APR for 60 months: $1,933.28 a month, $15,996.81 total interest, $5,519.05 interest in the first 12 months. With a $120,000 first-year deduction at a 30% rate, year-1 tax saving is $37,655.71, so year-1 net cash is $5,543.65. After-tax total cost over the loan: $95,197.77.",
+      "as_of": "2026-11-02",
+      "source": "https://www.irs.gov/pub/irs-pdf/p946.pdf ; https://www.irs.gov/pub/irs-drop/rp-25-32.pdf",
+      "more": "https://assetloancalculator.com/equipment-loan-calculator/?utm_source=mcp&utm_medium=section-179-deduction-calculator-mcp",
+      "disclaimer": "This is an estimate, not tax advice. Check Form 4562, its instructions and Pub. 946, or ask a tax professional before you file."
+    }
+  },
+  "jsonrpc": "2.0",
+  "id": 13
+}

@@ -1,5 +1,5 @@
 {
-  "name": "mcp-stripe-billing",
+  "name": "@theluckystrike/mcp-stripe-billing",
   "version": "0.22.6",
   "description": "MCP server: stripe-billing",
   "type": "module",

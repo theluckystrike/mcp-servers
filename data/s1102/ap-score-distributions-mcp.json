@@ -1,0 +1,74 @@
+{
+ "repo": "ap-score-distributions-mcp",
+ "repo_url": "https://github.com/theluckystrike/ap-score-distributions-mcp",
+ "hosted_url": "https://ap-score-distributions-mcp.lipmichal.workers.dev/mcp",
+ "worker_version_id": "68e9e6cf-78d4-4d8a-9113-fee80ee00316",
+ "rollback": "npx wrangler delete --name ap-score-distributions-mcp (brand-new worker, one version)",
+ "registry_name": "io.github.theluckystrike/ap-score-distributions-mcp",
+ "registry_visible": true,
+ "tools": [
+  "get_ap_score_distribution",
+  "estimate_ap_percentile",
+  "compare_ap_exams",
+  "list_ap_exams",
+  "estimate_ap_score_from_composite"
+ ],
+ "data": {
+  "2026": "40 exams, whole percents only (counts/mean/SD not published by College Board)",
+  "2025": "49 rows (40 exams, 3 subscores, 6 Standard Group) with counts, %, 3+, mean, SD",
+  "2024": "49 rows, same fields"
+ },
+ "worksheets": [
+  "AP Calculus AB 2012",
+  "AP Biology 2013",
+  "AP Statistics 2012",
+  "AP World History 2013",
+  "AP Psychology 2012",
+  "AP Macroeconomics 2012",
+  "AP Microeconomics 2012"
+ ],
+ "fixtures": 15,
+ "tests_passed": "20/20 (node --test: 15 fixtures + 5 checks incl. every 2024/2025 row sums to its total and 5+4+3 = printed 3+, every 2026 row sums to 100 +-2)",
+ "local_stdio_ok": true,
+ "live_calls_ok": {
+  "get_ap_score_distribution": true,
+  "estimate_ap_percentile": true,
+  "compare_ap_exams": true,
+  "list_ap_exams": true,
+  "estimate_ap_score_from_composite": true
+ },
+ "live_raw_responses": "/Users/mike/mcp-servers/satellites/ap-score-distributions-mcp/.live-raw/ (untracked)",
+ "npx_github_ok": true,
+ "pushes": 1,
+ "npm_ready": true,
+ "npm_ready_detail": "npm view ap-score-distributions-mcp -> E404 (positive control cups-to-grams-mcp -> 1.0.0); bin, files, mcpName, keywords incl mcp/mcp-server/model-context-protocol/claude; npm pack --dry-run 8 files, 22.5 kB. Not published.",
+ "sources": [
+  "https://apstudents.collegeboard.org/about-ap-scores/score-distributions (2026 AP Score Distributions page, fetched 2026-11-02, sha256 0d79311c...)",
+  "https://apcentral.collegeboard.org/media/pdf/ap-score-distributions-by-subject-2025.pdf (fetched 2026-11-02, sha256 2334b633...)",
+  "https://apcentral.collegeboard.org/media/pdf/ap-score-distributions-by-subject-2024.pdf (fetched 2026-11-02, sha256 67a34db9...)",
+  "https://apstudents.collegeboard.org/about-ap-scores/score-distributions/ap-biology (cross-check, 2025 row matches PDF)",
+  "https://secure-media.collegeboard.org/digitalServices/pdf/ap/ap-{calculus-ab,statistics,psychology,macroeconomics,microeconomics}-practice-exam-2012.pdf and ap-{biology,world-history}-practice-exam-2013.pdf (fetched 2026-11-02)",
+  "https://examscorecalc.com/sitemap.xml (money-site page list)"
+ ],
+ "money_site": "https://examscorecalc.com",
+ "more_pages": [
+  "/ap-score-distributions/",
+  "/ap/",
+  "/ap/raw-score-for-a-5/",
+  "/ap/<9 exam calculators>/"
+ ],
+ "open_issues": [
+  "No 2026 PDF with counts exists yet: 13 guessed PDF/xlsx URLs on apcentral and reports.collegeboard.org returned 404 (list in DATA_SOURCES.md). 2026 is the HTML page with whole percents; the page says it updates on a rolling basis. Re-run the build when a 2026 counts PDF appears.",
+  "Composite charts are from 2012/2013 practice exams. Current exam formats were not checked against current Course and Exam Descriptions; World History 2013 is kept separate from World History: Modern and only matches the exact name 'AP World History'.",
+  "Data gathering was done by a forked subagent; I spot-checked 2026 rows (US History, Calc BC, Psychology) against the raw page text and transcribed 2024/2025 fixture values from the PDF text myself.",
+  "Music Theory subscore and Standard Group rows exist only for 2024/2025."
+ ],
+ "minutes": 26,
+ "temp_cleanup": [
+  {
+   "path": "/Users/mike/mcp-servers/data/s1102/build-edu/ap/raw (PDFs, xlsx, worksheet PDFs)",
+   "size": "38M+1.7M",
+   "contents": "deleted after parsing; sha256 kept in DATA_SOURCES.md"
+  }
+ ]
+}

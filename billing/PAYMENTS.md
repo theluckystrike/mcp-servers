@@ -58,6 +58,31 @@ Adding a product is therefore a code change, not a dashboard change:
    A Stripe redirect is expected only after a valid form POST. Deliberate live
    probes must send `x-mcp-probe: 1` and a fresh bounded `order_token`.
 
+McpStamp services (added 2026-11-02, run s1102m) are sold through the same Checkout but
+live in a separate `SERVICES` table in billing/src/index.js, not in PRODUCTS, so server
+counts, bundle arithmetic and license minting never see them. Every service is paid
+upfront in full before work starts (no balance invoiced after delivery): `svc-audit` $490,
+`svc-launch` $4,900 (4 stores), `svc-launch-one` $1,900 (1 store), `svc-custom-simple`
+$2,900 (read-only, no auth, up to 10 tools), `svc-custom-deposit` $1,500 (spec and fixed
+quote for a custom build from $4,500, counted toward it, refunded in full if the buyer
+declines the quote) and `svc-care-quarter` $1,470 (3 months at $490, renewed by paying
+again, no automatic charge). `svc-launch-deposit` $1,500 (old deposit-plus-balance model)
+stays in the table only so a session paid before the change still fulfils and recovers;
+GET and POST `/buy/svc-launch-deposit` 301 to `/buy/svc-launch` with the query string kept
+(`SERVICE_REDIRECTS`). Service emails (buyer confirmation and owner alert) are sent from
+`Mike <support@zovo.one>`; the buyer email replies to support@zovo.one, the owner alert to
+the buyer. Service intent and success pages use the lean `servicePage` layout (no guide
+nav, no newsletter form, no cross-sell).
+Paying triggers the owner alert to support@zovo.one; work starts the next business day
+and everything runs by email, no calls (run s1102m sales lane, 2026-11-02).
+GET `/buy/svc-*` serves a service intent page (same POST form contract). The Session adds
+one optional text field (`custom_fields` key `mcpserver`, "MCP server URL or repo") and
+`metadata[kind]=service`. On a paid Session the webhook and `/success` call
+`fulfillService`: one LICENSES record `service:<session>`, one Resend email to the owner
+at support@zovo.one (reply-to = buyer) and one confirmation to the buyer, each guarded by
+a KV flag. No key is minted and no hosted tenant is bound. The scheduled and operations
+monitors check `service:<session>` for those Sessions instead of `session:<session>`.
+
 The remaining operational checks are a controlled paid MCP purchase and license
 verification, paid-Session-to-key and hosted-bind reconciliation, and webhook
 delivery monitoring. The 2026-09-27 audit also found a duplicate webhook endpoint

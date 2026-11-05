@@ -1,0 +1,15 @@
+{
+  "status": "interpreted",
+  "instrument": 3,
+  "generated_at": "2026-11-03T07:43:02.890Z",
+  "guard_passing_navigation_total": 1020,
+  "guard_passing_navigation_7d": 26,
+  "known_dead_product_navigation_total": 39,
+  "known_dead_product_navigation_7d": 23,
+  "other_guard_passing_navigation_total": 981,
+  "other_guard_passing_navigation_7d": 3,
+  "verified_valid_product_navigation_7d": null,
+  "verified_buyers": null,
+  "interpretation": "Known dead-route observations are a minimum: unknown-product requests can retain a supplied source. The remainder is not verified valid-product intent, people, successful jobs or purchases. Zero remaining observations applies only to the counted population, not all traffic.",
+  "window": "Seven UTC dates in the source instrument; current UTC date is partial. Lifetime counters have a different window."
+}

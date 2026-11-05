@@ -1,0 +1,18 @@
+{
+ "lane": "build-fin",
+ "date": "2026-11-03",
+ "shipped": [
+  "cpi-inflation-calculator-mcp",
+  "irs-mileage-rate-per-diem-mcp"
+ ],
+ "result_files": [
+  "data/s1103/cpi-inflation-calculator-mcp.json",
+  "data/s1103/irs-mileage-rate-per-diem-mcp.json"
+ ],
+ "third_satellite": "skipped: I bond / T-bill / Treasury yields had small fields ('i bond rate mcp' 0, 'savings bond mcp' 0, 't-bill mcp' 3) but no money-site page fits; FPL and tax brackets already covered by aca-premium-tax-credit-calculator-mcp and car-loan/paycheck satellites; mortgage rates field 13",
+ "owner_unlocks": [
+  "BLS registration key https://data.bls.gov/registrationEngine/ -> wrangler secret BLS_API_KEY on cpi-inflation-calculator-mcp",
+  "npm publish of both packages (2FA)"
+ ],
+ "minutes": 25
+}

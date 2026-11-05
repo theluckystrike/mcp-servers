@@ -1,0 +1,81 @@
+{
+ "result": {
+  "content": [
+   {
+    "type": "text",
+    "text": "Fine silver .999 (bullion bars and rounds) is 1.5691 USD per gram (48.80 USD per troy ounce, 1,569.09 USD per kilogram) at a silver spot of 48.85 USD per troy ounce of pure silver, as of 2026-11-03T08:50:26Z. Per gram by grade: 958.4 1.5053 USD, 925 1.4529 USD, 900 1.4136 USD, 800 1.2565 USD. Melt (spot) value only. Dealers sell bullion and coins above spot (premium) and buy below it; numismatic coins can be worth far more than melt.\n\n{\n  \"currency\": \"USD\",\n  \"spot_per_troy_ounce\": 48.85,\n  \"spot_per_gram\": 1.5707,\n  \"spot_usd_per_troy_ounce\": 48.853001,\n  \"usd_to_currency\": 1,\n  \"grades\": [\n    {\n      \"fineness\": 999,\n      \"name\": \"Fine silver .999 (bullion bars and rounds)\",\n      \"rule\": \"UK hallmark standard 999\",\n      \"per_gram\": 1.5691,\n      \"per_troy_ounce\": 48.8,\n      \"per_kilogram\": 1569.09,\n      \"per_tola\": 18.3\n    },\n    {\n      \"fineness\": 958.4,\n      \"name\": \"Britannia silver .9584\",\n      \"rule\": \"UK hallmark standard 958.4\",\n      \"per_gram\": 1.5053,\n      \"per_troy_ounce\": 46.82,\n      \"per_kilogram\": 1505.32,\n      \"per_tola\": 17.56\n    },\n    {\n      \"fineness\": 925,\n      \"name\": \"Sterling silver .925\",\n      \"rule\": \"\\\"Sterling\\\" requires at least 925/1000 pure silver (16 CFR 23.5(b)(2)); UK hallmark standard 925\",\n      \"per_gram\": 1.4529,\n      \"per_troy_ounce\": 45.19,\n      \"per_kilogram\": 1452.86,\n      \"per_tola\": 16.95\n    },\n    {\n      \"fineness\": 900,\n      \"name\": \"Coin silver .900 (US coins before 1965)\",\n      \"rule\": \"\\\"Coin silver\\\" requires at least 900/1000 pure silver (16 CFR 23.5(b)(3))\",\n      \"per_gram\": 1.4136,\n      \"per_troy_ounce\": 43.97,\n      \"per_kilogram\": 1413.59,\n      \"per_tola\": 16.49\n    },\n    {\n      \"fineness\": 800,\n      \"name\": \"800 silver (Continental Europe)\",\n      \"rule\": \"UK hallmark standard 800\",\n      \"per_gram\": 1.2565,\n      \"per_troy_ounce\": 39.08,\n      \"per_kilogram\": 1256.53,\n      \"per_tola\": 14.66\n    }\n  ],\n  \"fineness_rule\": \"price per gram = spot per troy ounce / 31.1034768 x fineness / 1000\",\n  \"as_of\": \"2026-11-03T08:50:26Z\",\n  \"fx_date\": null,\n  \"source\": \"https://gold-api.com/\",\n  \"sources\": {\n    \"spot\": \"https://api.gold-api.com/price/XAG\",\n    \"fx\": null,\n    \"fineness\": [\n      \"https://www.ecfr.gov/current/title-16/chapter-I/subchapter-B/part-23/section-23.5\",\n      \"https://www.legislation.gov.uk/ukpga/1973/43/schedule/2\"\n    ],\n    \"units\": \"https://www.nist.gov/system/files/documents/2024/01/14/NIST%20HB%2044%202024%20Appendix%20C%20General%20Tables%20of%20Units%20of%20Measurement.pdf\"\n  },\n  \"more\": \"https://goldgramprice.com/silver-price-per-gram/?utm_source=mcp&utm_medium=silver-price-per-gram-mcp\",\n  \"summary\": \"Fine silver .999 (bullion bars and rounds) is 1.5691 USD per gram (48.80 USD per troy ounce, 1,569.09 USD per kilogram) at a silver spot of 48.85 USD per troy ounce of pure silver, as of 2026-11-03T08:50:26Z. Per gram by grade: 958.4 1.5053 USD, 925 1.4529 USD, 900 1.4136 USD, 800 1.2565 USD. Melt (spot) value only. Dealers sell bullion and coins above spot (premium) and buy below it; numismatic coins can be worth far more than melt.\"\n}"
+   }
+  ],
+  "structuredContent": {
+   "currency": "USD",
+   "spot_per_troy_ounce": 48.85,
+   "spot_per_gram": 1.5707,
+   "spot_usd_per_troy_ounce": 48.853001,
+   "usd_to_currency": 1,
+   "grades": [
+    {
+     "fineness": 999,
+     "name": "Fine silver .999 (bullion bars and rounds)",
+     "rule": "UK hallmark standard 999",
+     "per_gram": 1.5691,
+     "per_troy_ounce": 48.8,
+     "per_kilogram": 1569.09,
+     "per_tola": 18.3
+    },
+    {
+     "fineness": 958.4,
+     "name": "Britannia silver .9584",
+     "rule": "UK hallmark standard 958.4",
+     "per_gram": 1.5053,
+     "per_troy_ounce": 46.82,
+     "per_kilogram": 1505.32,
+     "per_tola": 17.56
+    },
+    {
+     "fineness": 925,
+     "name": "Sterling silver .925",
+     "rule": "\"Sterling\" requires at least 925/1000 pure silver (16 CFR 23.5(b)(2)); UK hallmark standard 925",
+     "per_gram": 1.4529,
+     "per_troy_ounce": 45.19,
+     "per_kilogram": 1452.86,
+     "per_tola": 16.95
+    },
+    {
+     "fineness": 900,
+     "name": "Coin silver .900 (US coins before 1965)",
+     "rule": "\"Coin silver\" requires at least 900/1000 pure silver (16 CFR 23.5(b)(3))",
+     "per_gram": 1.4136,
+     "per_troy_ounce": 43.97,
+     "per_kilogram": 1413.59,
+     "per_tola": 16.49
+    },
+    {
+     "fineness": 800,
+     "name": "800 silver (Continental Europe)",
+     "rule": "UK hallmark standard 800",
+     "per_gram": 1.2565,
+     "per_troy_ounce": 39.08,
+     "per_kilogram": 1256.53,
+     "per_tola": 14.66
+    }
+   ],
+   "fineness_rule": "price per gram = spot per troy ounce / 31.1034768 x fineness / 1000",
+   "as_of": "2026-11-03T08:50:26Z",
+   "fx_date": null,
+   "source": "https://gold-api.com/",
+   "sources": {
+    "spot": "https://api.gold-api.com/price/XAG",
+    "fx": null,
+    "fineness": [
+     "https://www.ecfr.gov/current/title-16/chapter-I/subchapter-B/part-23/section-23.5",
+     "https://www.legislation.gov.uk/ukpga/1973/43/schedule/2"
+    ],
+    "units": "https://www.nist.gov/system/files/documents/2024/01/14/NIST%20HB%2044%202024%20Appendix%20C%20General%20Tables%20of%20Units%20of%20Measurement.pdf"
+   },
+   "more": "https://goldgramprice.com/silver-price-per-gram/?utm_source=mcp&utm_medium=silver-price-per-gram-mcp",
+   "summary": "Fine silver .999 (bullion bars and rounds) is 1.5691 USD per gram (48.80 USD per troy ounce, 1,569.09 USD per kilogram) at a silver spot of 48.85 USD per troy ounce of pure silver, as of 2026-11-03T08:50:26Z. Per gram by grade: 958.4 1.5053 USD, 925 1.4529 USD, 900 1.4136 USD, 800 1.2565 USD. Melt (spot) value only. Dealers sell bullion and coins above spot (premium) and buy below it; numismatic coins can be worth far more than melt."
+  }
+ },
+ "jsonrpc": "2.0",
+ "id": 2
+}

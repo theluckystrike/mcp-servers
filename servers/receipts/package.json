@@ -1,5 +1,5 @@
 {
-  "name": "mcp-receipts",
+  "name": "@theluckystrike/mcp-receipts",
   "version": "0.22.6",
   "description": "MCP server: receipts",
   "type": "module",

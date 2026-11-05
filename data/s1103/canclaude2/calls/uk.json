@@ -1,0 +1,99 @@
+{
+ "result": {
+  "content": [
+   {
+    "type": "text",
+    "text": "On \u00a345,000 in 2026/27 (England, Wales or NI, code 1257L) take-home pay is \u00a333,096.75 a year, \u00a32,758.06 a month or \u00a3636.48 a week. Income tax \u00a36,036, National Insurance \u00a32,414.40, student loan \u00a31,202.85, pension \u00a32,250 (salary sacrifice).\n\nEstimate for one employment, worked out on annual figures. Payroll works per pay period, so a payslip can differ by a few pounds. Not tax advice."
+   },
+   {
+    "type": "text",
+    "text": "{\n  \"tax_year\": \"2026/27\",\n  \"region\": \"england_wales_ni\",\n  \"tax_code\": \"1257L\",\n  \"tax_code_meaning\": \"Tax-free amount \u00a312,570 a year (standard Personal Allowance).\",\n  \"gross_salary\": 45000,\n  \"pension\": {\n    \"method\": \"salary_sacrifice\",\n    \"gross_contribution\": 2250,\n    \"salary_sacrificed\": 2250,\n    \"relief_at_source_paid_from_net_pay\": 0,\n    \"relief_at_source_extra_relief\": 0\n  },\n  \"pay_after_salary_sacrifice\": 42750,\n  \"adjusted_net_income\": 42750,\n  \"personal_allowance\": 12570,\n  \"allowance_lost_to_taper\": 0,\n  \"taxable_income\": 30180,\n  \"income_tax\": {\n    \"by_band\": [\n      {\n        \"band\": \"basic\",\n        \"rate\": 0.2,\n        \"from\": 0,\n        \"to\": 37700,\n        \"income_in_band\": 30180,\n        \"tax\": 6036\n      },\n      {\n        \"band\": \"higher\",\n        \"rate\": 0.4,\n        \"from\": 37700,\n        \"to\": 125140,\n        \"income_in_band\": 0,\n        \"tax\": 0\n      },\n      {\n        \"band\": \"additional\",\n        \"rate\": 0.45,\n        \"from\": 125140,\n        \"to\": null,\n        \"income_in_band\": 0,\n        \"tax\": 0\n      }\n    ],\n    \"before_pension_relief\": 6036,\n    \"total\": 6036\n  },\n  \"national_insurance\": {\n    \"category\": \"A\",\n    \"total\": 2414.4,\n    \"primary_threshold\": 12570,\n    \"upper_earnings_limit\": 50270,\n    \"main_rate\": 0.08,\n    \"upper_rate\": 0.02\n  },\n  \"student_loan\": {\n    \"plans\": [\n      {\n        \"plan\": \"plan_2\",\n        \"threshold\": 29385,\n        \"rate\": 0.09,\n        \"repayment\": 1202.85\n      }\n    ],\n    \"total\": 1202.85\n  },\n  \"total_deductions\": 11903.25,\n  \"net\": {\n    \"annual\": 33096.75,\n    \"monthly\": 2758.06,\n    \"weekly\": 636.48\n  },\n  \"effective_tax_rate\": 0.2145,\n  \"notes\": [\n    \"Salary sacrifice lowers the pay used for income tax, NI and student loan.\"\n  ],\n  \"summary\": \"On \u00a345,000 in 2026/27 (England, Wales or NI, code 1257L) take-home pay is \u00a333,096.75 a year, \u00a32,758.06 a month or \u00a3636.48 a week. Income tax \u00a36,036, National Insurance \u00a32,414.40, student loan \u00a31,202.85, pension \u00a32,250 (salary sacrifice).\",\n  \"as_of\": \"2026-10-30\",\n  \"source\": \"https://www.gov.uk/guidance/rates-and-thresholds-for-employers-2026-to-2027 ; https://www.gov.uk/income-tax-rates ; https://www.gov.uk/national-insurance-rates-letters ; https://www.gov.uk/repaying-your-student-loan/what-you-pay\",\n  \"more\": \"https://ukmoneycalc.com/calculators/salary-sacrifice/?utm_source=mcp&utm_medium=uk-income-tax-salary-mcp\",\n  \"disclaimer\": \"Estimate for one employment, worked out on annual figures. Payroll works per pay period, so a payslip can differ by a few pounds. Not tax advice.\"\n}"
+   }
+  ],
+  "structuredContent": {
+   "tax_year": "2026/27",
+   "region": "england_wales_ni",
+   "tax_code": "1257L",
+   "tax_code_meaning": "Tax-free amount \u00a312,570 a year (standard Personal Allowance).",
+   "gross_salary": 45000,
+   "pension": {
+    "method": "salary_sacrifice",
+    "gross_contribution": 2250,
+    "salary_sacrificed": 2250,
+    "relief_at_source_paid_from_net_pay": 0,
+    "relief_at_source_extra_relief": 0
+   },
+   "pay_after_salary_sacrifice": 42750,
+   "adjusted_net_income": 42750,
+   "personal_allowance": 12570,
+   "allowance_lost_to_taper": 0,
+   "taxable_income": 30180,
+   "income_tax": {
+    "by_band": [
+     {
+      "band": "basic",
+      "rate": 0.2,
+      "from": 0,
+      "to": 37700,
+      "income_in_band": 30180,
+      "tax": 6036
+     },
+     {
+      "band": "higher",
+      "rate": 0.4,
+      "from": 37700,
+      "to": 125140,
+      "income_in_band": 0,
+      "tax": 0
+     },
+     {
+      "band": "additional",
+      "rate": 0.45,
+      "from": 125140,
+      "to": null,
+      "income_in_band": 0,
+      "tax": 0
+     }
+    ],
+    "before_pension_relief": 6036,
+    "total": 6036
+   },
+   "national_insurance": {
+    "category": "A",
+    "total": 2414.4,
+    "primary_threshold": 12570,
+    "upper_earnings_limit": 50270,
+    "main_rate": 0.08,
+    "upper_rate": 0.02
+   },
+   "student_loan": {
+    "plans": [
+     {
+      "plan": "plan_2",
+      "threshold": 29385,
+      "rate": 0.09,
+      "repayment": 1202.85
+     }
+    ],
+    "total": 1202.85
+   },
+   "total_deductions": 11903.25,
+   "net": {
+    "annual": 33096.75,
+    "monthly": 2758.06,
+    "weekly": 636.48
+   },
+   "effective_tax_rate": 0.2145,
+   "notes": [
+    "Salary sacrifice lowers the pay used for income tax, NI and student loan."
+   ],
+   "summary": "On \u00a345,000 in 2026/27 (England, Wales or NI, code 1257L) take-home pay is \u00a333,096.75 a year, \u00a32,758.06 a month or \u00a3636.48 a week. Income tax \u00a36,036, National Insurance \u00a32,414.40, student loan \u00a31,202.85, pension \u00a32,250 (salary sacrifice).",
+   "as_of": "2026-10-30",
+   "source": "https://www.gov.uk/guidance/rates-and-thresholds-for-employers-2026-to-2027 ; https://www.gov.uk/income-tax-rates ; https://www.gov.uk/national-insurance-rates-letters ; https://www.gov.uk/repaying-your-student-loan/what-you-pay",
+   "more": "https://ukmoneycalc.com/calculators/salary-sacrifice/?utm_source=mcp&utm_medium=uk-income-tax-salary-mcp",
+   "disclaimer": "Estimate for one employment, worked out on annual figures. Payroll works per pay period, so a payslip can differ by a few pounds. Not tax advice."
+  }
+ },
+ "jsonrpc": "2.0",
+ "id": 2
+}

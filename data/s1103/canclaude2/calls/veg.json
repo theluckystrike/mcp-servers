@@ -1,0 +1,42 @@
+{
+ "result": {
+  "content": [
+   {
+    "type": "text",
+    "text": "3 pounds of squash, winter, butternut, raw as purchased gives about 2.52 pounds (1143 g) edible after removing seeds, rind and trimmings (USDA edible yield 84%). Waste: 218 g.\n\n{\n  \"summary\": \"3 pounds of squash, winter, butternut, raw as purchased gives about 2.52 pounds (1143 g) edible after removing seeds, rind and trimmings (USDA edible yield 84%). Waste: 218 g.\",\n  \"food\": \"Squash, winter, butternut, raw\",\n  \"usda_ndb_number\": \"11485\",\n  \"edible_yield_percent\": 84,\n  \"refuse_is\": \"Seeds, rind and trimmings\",\n  \"purchased\": {\n    \"grams\": 1360.8,\n    \"ounces\": 48,\n    \"pounds\": 3,\n    \"kilograms\": 1.361\n  },\n  \"edible\": {\n    \"grams\": 1143.1,\n    \"ounces\": 40.32,\n    \"pounds\": 2.52,\n    \"kilograms\": 1.143,\n    \"in_input_unit\": 2.52\n  },\n  \"waste\": {\n    \"grams\": 217.7,\n    \"ounces\": 7.68,\n    \"pounds\": 0.48,\n    \"kilograms\": 0.218\n  },\n  \"source\": \"https://www.ars.usda.gov/ARSUserFiles/80400535/DATA/SR/sr28/dnload/sr28asc.zip\",\n  \"source_doc\": \"https://www.ars.usda.gov/ARSUserFiles/80400535/DATA/SR/sr28/sr28_doc.pdf\",\n  \"as_of\": \"2015-09 (USDA National Nutrient Database for Standard Reference, Release 28; file checked 2026-11-03)\",\n  \"more\": \"https://ingredientcalculator.com/vegetable-yield-percentage-calculator?utm_source=mcp&utm_medium=vegetable-yield-percentage-mcp\"\n}"
+   }
+  ],
+  "structuredContent": {
+   "summary": "3 pounds of squash, winter, butternut, raw as purchased gives about 2.52 pounds (1143 g) edible after removing seeds, rind and trimmings (USDA edible yield 84%). Waste: 218 g.",
+   "food": "Squash, winter, butternut, raw",
+   "usda_ndb_number": "11485",
+   "edible_yield_percent": 84,
+   "refuse_is": "Seeds, rind and trimmings",
+   "purchased": {
+    "grams": 1360.8,
+    "ounces": 48,
+    "pounds": 3,
+    "kilograms": 1.361
+   },
+   "edible": {
+    "grams": 1143.1,
+    "ounces": 40.32,
+    "pounds": 2.52,
+    "kilograms": 1.143,
+    "in_input_unit": 2.52
+   },
+   "waste": {
+    "grams": 217.7,
+    "ounces": 7.68,
+    "pounds": 0.48,
+    "kilograms": 0.218
+   },
+   "source": "https://www.ars.usda.gov/ARSUserFiles/80400535/DATA/SR/sr28/dnload/sr28asc.zip",
+   "source_doc": "https://www.ars.usda.gov/ARSUserFiles/80400535/DATA/SR/sr28/sr28_doc.pdf",
+   "as_of": "2015-09 (USDA National Nutrient Database for Standard Reference, Release 28; file checked 2026-11-03)",
+   "more": "https://ingredientcalculator.com/vegetable-yield-percentage-calculator?utm_source=mcp&utm_medium=vegetable-yield-percentage-mcp"
+  }
+ },
+ "jsonrpc": "2.0",
+ "id": 2
+}

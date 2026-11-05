@@ -1,0 +1,47 @@
+{
+ "result": {
+  "content": [
+   {
+    "type": "text",
+    "text": "6.2 gram (g) of 18K gold (75% pure) holds 4.65 g of fine gold, a melt value of 584.47 USD at a spot of 3,909.50 USD per troy ounce (as of 2026-11-03T07:58:26Z). With a 15% dealer spread, a buyer would offer about 496.80 USD. Melt value is not a shop price: retail jewellery sells above melt (making charges, design, brand, tax) and buyers pay below it (refining cost and margin). Ask several buyers for their percentage of melt.\n\n{\n  \"input\": {\n    \"weight\": 6.2,\n    \"unit\": \"gram\",\n    \"karat\": 18,\n    \"currency\": \"USD\",\n    \"dealer_spread_percent\": 15\n  },\n  \"purity\": 0.75,\n  \"unit\": \"gram\",\n  \"grams\": 6.2,\n  \"fine_gold_grams\": 4.65,\n  \"fine_gold_troy_ounces\": 0.149501,\n  \"melt_value\": 584.47,\n  \"dealer_offer\": 496.8,\n  \"spread_amount\": 87.67,\n  \"spot_per_troy_ounce\": 3909.5,\n  \"usd_to_currency\": 1,\n  \"note\": \"melt_value = weight in grams x karat/24 / 31.1034768 x spot per troy ounce. dealer_offer = melt_value x (1 - spread/100). Retail and buyback prices differ from melt value.\",\n  \"as_of\": \"2026-11-03T07:58:26Z\",\n  \"fx_date\": null,\n  \"source\": \"https://gold-api.com/\",\n  \"sources\": {\n    \"spot\": \"https://api.gold-api.com/price/XAU\",\n    \"fx\": null,\n    \"karat\": \"https://www.ecfr.gov/current/title-16/chapter-I/subchapter-B/part-23/section-23.3\",\n    \"units\": \"https://www.nist.gov/system/files/documents/2024/01/14/NIST%20HB%2044%202024%20Appendix%20C%20General%20Tables%20of%20Units%20of%20Measurement.pdf\"\n  },\n  \"more\": \"https://goldgramprice.com/scrap-gold-calculator/?utm_source=mcp&utm_medium=gold-price-per-gram-mcp\",\n  \"related\": [\n    \"https://goldgramprice.com/learn/how-gold-buyers-calculate-offers/?utm_source=mcp&utm_medium=gold-price-per-gram-mcp\",\n    \"https://goldgramprice.com/18k-gold-price-per-gram/?utm_source=mcp&utm_medium=gold-price-per-gram-mcp\"\n  ],\n  \"summary\": \"6.2 gram (g) of 18K gold (75% pure) holds 4.65 g of fine gold, a melt value of 584.47 USD at a spot of 3,909.50 USD per troy ounce (as of 2026-11-03T07:58:26Z). With a 15% dealer spread, a buyer would offer about 496.80 USD. Melt value is not a shop price: retail jewellery sells above melt (making charges, design, brand, tax) and buyers pay below it (refining cost and margin). Ask several buyers for their percentage of melt.\"\n}"
+   }
+  ],
+  "structuredContent": {
+   "input": {
+    "weight": 6.2,
+    "unit": "gram",
+    "karat": 18,
+    "currency": "USD",
+    "dealer_spread_percent": 15
+   },
+   "purity": 0.75,
+   "unit": "gram",
+   "grams": 6.2,
+   "fine_gold_grams": 4.65,
+   "fine_gold_troy_ounces": 0.149501,
+   "melt_value": 584.47,
+   "dealer_offer": 496.8,
+   "spread_amount": 87.67,
+   "spot_per_troy_ounce": 3909.5,
+   "usd_to_currency": 1,
+   "note": "melt_value = weight in grams x karat/24 / 31.1034768 x spot per troy ounce. dealer_offer = melt_value x (1 - spread/100). Retail and buyback prices differ from melt value.",
+   "as_of": "2026-11-03T07:58:26Z",
+   "fx_date": null,
+   "source": "https://gold-api.com/",
+   "sources": {
+    "spot": "https://api.gold-api.com/price/XAU",
+    "fx": null,
+    "karat": "https://www.ecfr.gov/current/title-16/chapter-I/subchapter-B/part-23/section-23.3",
+    "units": "https://www.nist.gov/system/files/documents/2024/01/14/NIST%20HB%2044%202024%20Appendix%20C%20General%20Tables%20of%20Units%20of%20Measurement.pdf"
+   },
+   "more": "https://goldgramprice.com/scrap-gold-calculator/?utm_source=mcp&utm_medium=gold-price-per-gram-mcp",
+   "related": [
+    "https://goldgramprice.com/learn/how-gold-buyers-calculate-offers/?utm_source=mcp&utm_medium=gold-price-per-gram-mcp",
+    "https://goldgramprice.com/18k-gold-price-per-gram/?utm_source=mcp&utm_medium=gold-price-per-gram-mcp"
+   ],
+   "summary": "6.2 gram (g) of 18K gold (75% pure) holds 4.65 g of fine gold, a melt value of 584.47 USD at a spot of 3,909.50 USD per troy ounce (as of 2026-11-03T07:58:26Z). With a 15% dealer spread, a buyer would offer about 496.80 USD. Melt value is not a shop price: retail jewellery sells above melt (making charges, design, brand, tax) and buyers pay below it (refining cost and margin). Ask several buyers for their percentage of melt."
+  }
+ },
+ "jsonrpc": "2.0",
+ "id": 2
+}

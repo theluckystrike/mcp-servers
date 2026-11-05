@@ -1,0 +1,1362 @@
+{
+ "inspect": {
+  "https://www.mcpstamp.com/": {
+   "verdict": "PASS",
+   "coverageState": "Submitted and indexed",
+   "robotsTxtState": "ALLOWED",
+   "indexingState": "INDEXING_ALLOWED",
+   "lastCrawlTime": "2026-11-01T17:24:34Z",
+   "pageFetchState": "SUCCESSFUL",
+   "googleCanonical": "https://www.mcpstamp.com/",
+   "userCanonical": "https://www.mcpstamp.com/",
+   "referringUrls": [
+    "https://www.mcpstamp.com/servers/no-tax-on-overtime/",
+    "http://mcpstamp.com/",
+    "https://www.mcpstamp.com/can-claude/read-zip-files/"
+   ],
+   "crawledAs": "MOBILE"
+  },
+  "https://www.mcpstamp.com/free-servers/": {
+   "verdict": "PASS",
+   "coverageState": "Submitted and indexed",
+   "robotsTxtState": "ALLOWED",
+   "indexingState": "INDEXING_ALLOWED",
+   "lastCrawlTime": "2026-11-02T03:40:09Z",
+   "pageFetchState": "SUCCESSFUL",
+   "googleCanonical": "https://www.mcpstamp.com/free-servers/",
+   "userCanonical": "https://www.mcpstamp.com/free-servers/",
+   "sitemap": [
+    "https://www.mcpstamp.com/sitemap.xml"
+   ],
+   "referringUrls": [
+    "https://www.mcpstamp.com/check/?url=https%3A%2F%2Fbuild.chipp.ai%2Falchemist-api%2Fapi%2Fmcp",
+    "https://www.mcpstamp.com/sitemap.xml"
+   ],
+   "crawledAs": "MOBILE"
+  },
+  "https://www.mcpstamp.com/free-servers/lake-level-mcp/": {
+   "verdict": "PASS",
+   "coverageState": "Submitted and indexed",
+   "robotsTxtState": "ALLOWED",
+   "indexingState": "INDEXING_ALLOWED",
+   "lastCrawlTime": "2026-11-02T03:48:25Z",
+   "pageFetchState": "SUCCESSFUL",
+   "googleCanonical": "https://www.mcpstamp.com/free-servers/lake-level-mcp/",
+   "userCanonical": "https://www.mcpstamp.com/free-servers/lake-level-mcp/",
+   "sitemap": [
+    "https://www.mcpstamp.com/sitemap.xml"
+   ],
+   "referringUrls": [
+    "https://www.mcpstamp.com/sitemap.xml"
+   ],
+   "crawledAs": "MOBILE"
+  },
+  "https://www.mcpstamp.com/free-servers/gold-price-per-gram-mcp/": {
+   "verdict": "PASS",
+   "coverageState": "Submitted and indexed",
+   "robotsTxtState": "ALLOWED",
+   "indexingState": "INDEXING_ALLOWED",
+   "lastCrawlTime": "2026-11-02T04:00:30Z",
+   "pageFetchState": "SUCCESSFUL",
+   "googleCanonical": "https://www.mcpstamp.com/free-servers/gold-price-per-gram-mcp/",
+   "userCanonical": "https://www.mcpstamp.com/free-servers/gold-price-per-gram-mcp/",
+   "referringUrls": [
+    "https://www.mcpstamp.com/sitemap.xml"
+   ],
+   "crawledAs": "MOBILE"
+  },
+  "https://www.mcpstamp.com/can-claude/read-zip-files/": {
+   "verdict": "PASS",
+   "coverageState": "Submitted and indexed",
+   "robotsTxtState": "ALLOWED",
+   "indexingState": "INDEXING_ALLOWED",
+   "lastCrawlTime": "2026-10-30T15:42:40Z",
+   "pageFetchState": "SUCCESSFUL",
+   "googleCanonical": "https://www.mcpstamp.com/can-claude/read-zip-files/",
+   "userCanonical": "https://www.mcpstamp.com/can-claude/read-zip-files/",
+   "referringUrls": [
+    "https://www.mcpstamp.com/use-cases/",
+    "https://www.mcpstamp.com/sitemap.xml"
+   ],
+   "crawledAs": "MOBILE"
+  },
+  "https://www.mcpstamp.com/developers/": {
+   "verdict": "PASS",
+   "coverageState": "Submitted and indexed",
+   "robotsTxtState": "ALLOWED",
+   "indexingState": "INDEXING_ALLOWED",
+   "lastCrawlTime": "2026-11-02T02:23:14Z",
+   "pageFetchState": "SUCCESSFUL",
+   "googleCanonical": "https://www.mcpstamp.com/developers/",
+   "userCanonical": "https://www.mcpstamp.com/developers/",
+   "sitemap": [
+    "https://www.mcpstamp.com/sitemap.xml"
+   ],
+   "referringUrls": [
+    "http://mcpstamp.com/",
+    "https://www.mcpstamp.com/use-cases/create-word-document-in-claude/",
+    "https://www.mcpstamp.com/can-claude/read-zip-files/"
+   ],
+   "crawledAs": "MOBILE"
+  },
+  "https://www.mcpstamp.com/servers/": {
+   "verdict": "PASS",
+   "coverageState": "Submitted and indexed",
+   "robotsTxtState": "ALLOWED",
+   "indexingState": "INDEXING_ALLOWED",
+   "lastCrawlTime": "2026-11-01T07:24:33Z",
+   "pageFetchState": "SUCCESSFUL",
+   "googleCanonical": "https://www.mcpstamp.com/servers/",
+   "userCanonical": "https://www.mcpstamp.com/servers/",
+   "sitemap": [
+    "https://www.mcpstamp.com/sitemap.xml"
+   ],
+   "referringUrls": [
+    "https://www.mcpstamp.com/",
+    "https://www.mcpstamp.com/can-claude/read-zip-files/"
+   ],
+   "crawledAs": "MOBILE"
+  },
+  "https://www.mcpstamp.com/use-cases/chase-overdue-invoices/": {
+   "verdict": "PASS",
+   "coverageState": "Submitted and indexed",
+   "robotsTxtState": "ALLOWED",
+   "indexingState": "INDEXING_ALLOWED",
+   "lastCrawlTime": "2026-10-30T15:59:52Z",
+   "pageFetchState": "SUCCESSFUL",
+   "googleCanonical": "https://www.mcpstamp.com/use-cases/chase-overdue-invoices/",
+   "userCanonical": "https://www.mcpstamp.com/use-cases/chase-overdue-invoices/",
+   "sitemap": [
+    "https://www.mcpstamp.com/sitemap.xml"
+   ],
+   "referringUrls": [
+    "https://www.mcpstamp.com/sitemap.xml"
+   ],
+   "crawledAs": "MOBILE"
+  },
+  "https://www.mcpstamp.com/use-cases/create-invoice-in-claude/": {
+   "verdict": "PASS",
+   "coverageState": "Submitted and indexed",
+   "robotsTxtState": "ALLOWED",
+   "indexingState": "INDEXING_ALLOWED",
+   "lastCrawlTime": "2026-10-30T16:07:31Z",
+   "pageFetchState": "SUCCESSFUL",
+   "googleCanonical": "https://www.mcpstamp.com/use-cases/create-invoice-in-claude/",
+   "userCanonical": "https://www.mcpstamp.com/use-cases/create-invoice-in-claude/",
+   "referringUrls": [
+    "https://www.mcpstamp.com/use-cases/edit-excel-files-in-claude/",
+    "https://www.mcpstamp.com/sitemap.xml"
+   ],
+   "crawledAs": "MOBILE"
+  },
+  "https://www.mcpstamp.com/pricing/": {
+   "verdict": "PASS",
+   "coverageState": "Submitted and indexed",
+   "robotsTxtState": "ALLOWED",
+   "indexingState": "INDEXING_ALLOWED",
+   "lastCrawlTime": "2026-11-01T06:10:35Z",
+   "pageFetchState": "SUCCESSFUL",
+   "googleCanonical": "https://www.mcpstamp.com/pricing/",
+   "userCanonical": "https://www.mcpstamp.com/pricing/",
+   "referringUrls": [
+    "https://www.mcpstamp.com/servers/us-federal-holidays-business-days/",
+    "http://mcpstamp.com/",
+    "https://www.mcpstamp.com/can-claude/read-zip-files/"
+   ],
+   "crawledAs": "MOBILE"
+  },
+  "https://mcpstamp.com/": {
+   "verdict": "NEUTRAL",
+   "coverageState": "URL is unknown to Google",
+   "robotsTxtState": "ROBOTS_TXT_STATE_UNSPECIFIED",
+   "indexingState": "INDEXING_STATE_UNSPECIFIED",
+   "pageFetchState": "PAGE_FETCH_STATE_UNSPECIFIED"
+  },
+  "https://ingredientcalculator.com/": {
+   "error": 403,
+   "body": "{\n  \"error\": {\n    \"code\": 403,\n    \"message\": \"You do not own this site, or the inspected URL is not part of this property.\",\n    \"status\": \"PERMISSION_DENIED\"\n  }\n}\n"
+  }
+ },
+ "sa_query": [
+  {
+   "keys": [
+    "ai agent for 3 way match"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 99
+  },
+  {
+   "keys": [
+    "can claude open zip files"
+   ],
+   "clicks": 0,
+   "impressions": 10,
+   "ctr": 0,
+   "position": 8.5
+  },
+  {
+   "keys": [
+    "can claude read zips"
+   ],
+   "clicks": 0,
+   "impressions": 6,
+   "ctr": 0,
+   "position": 8.666666666666668
+  },
+  {
+   "keys": [
+    "can claude unzip files"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 8
+  },
+  {
+   "keys": [
+    "chase overdue invoices automatically"
+   ],
+   "clicks": 0,
+   "impressions": 13,
+   "ctr": 0,
+   "position": 92.6923076923077
+  },
+  {
+   "keys": [
+    "claude desktop submit receipt"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 39
+  },
+  {
+   "keys": [
+    "composio mcp"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 96
+  },
+  {
+   "keys": [
+    "composio pricing"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 86
+  },
+  {
+   "keys": [
+    "continuous invoices"
+   ],
+   "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 37.5
+  },
+  {
+   "keys": [
+    "cursor expense report"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 27
+  },
+  {
+   "keys": [
+    "cursor expense tracker"
+   ],
+   "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 55.5
+  },
+  {
+   "keys": [
+    "cursor mcp expense"
+   ],
+   "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 41
+  },
+  {
+   "keys": [
+    "domestic per diem"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 47
+  },
+  {
+   "keys": [
+    "ecb calculator"
+   ],
+   "clicks": 0,
+   "impressions": 3,
+   "ctr": 0,
+   "position": 38
+  },
+  {
+   "keys": [
+    "epc qr code"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 89
+  },
+  {
+   "keys": [
+    "government per diem rates"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 68
+  },
+  {
+   "keys": [
+    "invoiced to chatgpt"
+   ],
+   "clicks": 0,
+   "impressions": 4,
+   "ctr": 0,
+   "position": 69.75
+  },
+  {
+   "keys": [
+    "invoiced to claude"
+   ],
+   "clicks": 0,
+   "impressions": 3,
+   "ctr": 0,
+   "position": 74
+  },
+  {
+   "keys": [
+    "loancalculatormcp.com"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 40
+  },
+  {
+   "keys": [
+    "mcp handshake"
+   ],
+   "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 39.5
+  },
+  {
+   "keys": [
+    "mcp json"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 50
+  },
+  {
+   "keys": [
+    "mcp model context protocol tools marketplace"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 45
+  },
+  {
+   "keys": [
+    "mcp server bookkeeping"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 98
+  },
+  {
+   "keys": [
+    "mcp server for freelancers"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 97
+  },
+  {
+   "keys": [
+    "mcp server for receipts"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 29
+  },
+  {
+   "keys": [
+    "mcp server for taxes"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 100
+  },
+  {
+   "keys": [
+    "mcp server receipts"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 88
+  },
+  {
+   "keys": [
+    "mcp server tax"
+   ],
+   "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 60
+  },
+  {
+   "keys": [
+    "mcpb file"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 99
+  },
+  {
+   "keys": [
+    "mcpb files"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 30
+  },
+  {
+   "keys": [
+    "model context protocol expense tracker"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 68
+  },
+  {
+   "keys": [
+    "payroll services norway nok market entry norway claude idea"
+   ],
+   "clicks": 0,
+   "impressions": 4,
+   "ctr": 0,
+   "position": 27
+  },
+  {
+   "keys": [
+    "per diem rates for business travel"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 96
+  },
+  {
+   "keys": [
+    "per diem tracker"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 65
+  }
+ ],
+ "sa_page": [
+  {
+   "keys": [
+    "https://www.mcpstamp.com/can-chatgpt/create-an-invoice/"
+   ],
+   "clicks": 0,
+   "impressions": 4,
+   "ctr": 0,
+   "position": 69.75
+  },
+  {
+   "keys": [
+    "https://www.mcpstamp.com/can-claude/create-word-documents/"
+   ],
+   "clicks": 0,
+   "impressions": 3,
+   "ctr": 0,
+   "position": 43
+  },
+  {
+   "keys": [
+    "https://www.mcpstamp.com/can-claude/make-a-pdf/"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 10
+  },
+  {
+   "keys": [
+    "https://www.mcpstamp.com/can-claude/read-zip-files/"
+   ],
+   "clicks": 0,
+   "impressions": 52,
+   "ctr": 0,
+   "position": 7.3076923076923075
+  },
+  {
+   "keys": [
+    "https://www.mcpstamp.com/categories/documents/"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 9
+  },
+  {
+   "keys": [
+    "https://www.mcpstamp.com/compare/"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 96
+  },
+  {
+   "keys": [
+    "https://www.mcpstamp.com/compare/composio/"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 86
+  },
+  {
+   "keys": [
+    "https://www.mcpstamp.com/connect/claude-desktop/"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 11
+  },
+  {
+   "keys": [
+    "https://www.mcpstamp.com/connect/cursor/"
+   ],
+   "clicks": 0,
+   "impressions": 3,
+   "ctr": 0,
+   "position": 78
+  },
+  {
+   "keys": [
+    "https://www.mcpstamp.com/developers/"
+   ],
+   "clicks": 0,
+   "impressions": 18,
+   "ctr": 0,
+   "position": 42.611111111111114
+  },
+  {
+   "keys": [
+    "https://www.mcpstamp.com/developers/mcp-inspector/"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 10
+  },
+  {
+   "keys": [
+    "https://www.mcpstamp.com/for/bookkeeping/"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 98
+  },
+  {
+   "keys": [
+    "https://www.mcpstamp.com/for/ops-hr/"
+   ],
+   "clicks": 0,
+   "impressions": 14,
+   "ctr": 0,
+   "position": 42.642857142857146
+  },
+  {
+   "keys": [
+    "https://www.mcpstamp.com/for/small-business/"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 6
+  },
+  {
+   "keys": [
+    "https://www.mcpstamp.com/pricing/"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 154
+  },
+  {
+   "keys": [
+    "https://www.mcpstamp.com/servers/billing-docs/"
+   ],
+   "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 6
+  },
+  {
+   "keys": [
+    "https://www.mcpstamp.com/servers/dunning-letters/"
+   ],
+   "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 7.5
+  },
+  {
+   "keys": [
+    "https://www.mcpstamp.com/servers/expense-tracker/"
+   ],
+   "clicks": 0,
+   "impressions": 6,
+   "ctr": 0,
+   "position": 48
+  },
+  {
+   "keys": [
+    "https://www.mcpstamp.com/servers/goods-receipt/"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 36
+  },
+  {
+   "keys": [
+    "https://www.mcpstamp.com/servers/job-card/"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 27
+  },
+  {
+   "keys": [
+    "https://www.mcpstamp.com/servers/loan-calculator/"
+   ],
+   "clicks": 0,
+   "impressions": 5,
+   "ctr": 0,
+   "position": 13.6
+  },
+  {
+   "keys": [
+    "https://www.mcpstamp.com/servers/minimum-wage/"
+   ],
+   "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 8.5
+  },
+  {
+   "keys": [
+    "https://www.mcpstamp.com/servers/no-tax-on-overtime/"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 97
+  },
+  {
+   "keys": [
+    "https://www.mcpstamp.com/servers/packing-list/"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 6
+  },
+  {
+   "keys": [
+    "https://www.mcpstamp.com/servers/paycheck-calculator/"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 6
+  },
+  {
+   "keys": [
+    "https://www.mcpstamp.com/servers/purchase-requisition/"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 8
+  },
+  {
+   "keys": [
+    "https://www.mcpstamp.com/servers/quotes/"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 10
+  },
+  {
+   "keys": [
+    "https://www.mcpstamp.com/servers/receipts/"
+   ],
+   "clicks": 0,
+   "impressions": 4,
+   "ctr": 0,
+   "position": 41.5
+  },
+  {
+   "keys": [
+    "https://www.mcpstamp.com/servers/resume/"
+   ],
+   "clicks": 0,
+   "impressions": 3,
+   "ctr": 0,
+   "position": 24.666666666666668
+  },
+  {
+   "keys": [
+    "https://www.mcpstamp.com/servers/stripe-billing/"
+   ],
+   "clicks": 0,
+   "impressions": 3,
+   "ctr": 0,
+   "position": 8.666666666666668
+  },
+  {
+   "keys": [
+    "https://www.mcpstamp.com/servers/supplier-list/"
+   ],
+   "clicks": 0,
+   "impressions": 9,
+   "ctr": 0,
+   "position": 7.777777777777778
+  },
+  {
+   "keys": [
+    "https://www.mcpstamp.com/servers/supplier-statement-check/"
+   ],
+   "clicks": 0,
+   "impressions": 6,
+   "ctr": 0,
+   "position": 7.5
+  },
+  {
+   "keys": [
+    "https://www.mcpstamp.com/servers/tax-calc/"
+   ],
+   "clicks": 0,
+   "impressions": 3,
+   "ctr": 0,
+   "position": 73.33333333333333
+  },
+  {
+   "keys": [
+    "https://www.mcpstamp.com/servers/three-way-match/"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 2
+  },
+  {
+   "keys": [
+    "https://www.mcpstamp.com/servers/timezone/"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 11
+  },
+  {
+   "keys": [
+    "https://www.mcpstamp.com/use-cases/"
+   ],
+   "clicks": 0,
+   "impressions": 7,
+   "ctr": 0,
+   "position": 9.857142857142858
+  },
+  {
+   "keys": [
+    "https://www.mcpstamp.com/use-cases/bill-of-sale/"
+   ],
+   "clicks": 0,
+   "impressions": 3,
+   "ctr": 0,
+   "position": 4.666666666666666
+  },
+  {
+   "keys": [
+    "https://www.mcpstamp.com/use-cases/chase-overdue-invoices/"
+   ],
+   "clicks": 0,
+   "impressions": 14,
+   "ctr": 0,
+   "position": 86.28571428571429
+  },
+  {
+   "keys": [
+    "https://www.mcpstamp.com/use-cases/convert-currency-ecb-rates/"
+   ],
+   "clicks": 0,
+   "impressions": 3,
+   "ctr": 0,
+   "position": 38
+  },
+  {
+   "keys": [
+    "https://www.mcpstamp.com/use-cases/create-invoice-in-claude/"
+   ],
+   "clicks": 0,
+   "impressions": 3,
+   "ctr": 0,
+   "position": 74
+  },
+  {
+   "keys": [
+    "https://www.mcpstamp.com/use-cases/create-word-document-in-claude/"
+   ],
+   "clicks": 0,
+   "impressions": 3,
+   "ctr": 0,
+   "position": 15.333333333333334
+  },
+  {
+   "keys": [
+    "https://www.mcpstamp.com/use-cases/edit-excel-files-in-claude/"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 16
+  },
+  {
+   "keys": [
+    "https://www.mcpstamp.com/use-cases/freelance-service-agreement/"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 97
+  },
+  {
+   "keys": [
+    "https://www.mcpstamp.com/use-cases/per-diem-travel-allowance/"
+   ],
+   "clicks": 0,
+   "impressions": 8,
+   "ctr": 0,
+   "position": 38.625
+  },
+  {
+   "keys": [
+    "https://www.mcpstamp.com/use-cases/recurring-monthly-invoices/"
+   ],
+   "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 37.5
+  },
+  {
+   "keys": [
+    "https://www.mcpstamp.com/use-cases/resize-and-compress-images/"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 9
+  },
+  {
+   "keys": [
+    "https://www.mcpstamp.com/use-cases/sepa-payment-qr-code/"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 89
+  },
+  {
+   "keys": [
+    "https://www.mcpstamp.com/use-cases/three-way-match-invoices/"
+   ],
+   "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 53
+  }
+ ],
+ "sa_query_page": [
+  {
+   "keys": [
+    "ai agent for 3 way match",
+    "https://www.mcpstamp.com/use-cases/three-way-match-invoices/"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 99
+  },
+  {
+   "keys": [
+    "can claude open zip files",
+    "https://www.mcpstamp.com/can-claude/read-zip-files/"
+   ],
+   "clicks": 0,
+   "impressions": 10,
+   "ctr": 0,
+   "position": 8.5
+  },
+  {
+   "keys": [
+    "can claude read zips",
+    "https://www.mcpstamp.com/can-claude/read-zip-files/"
+   ],
+   "clicks": 0,
+   "impressions": 6,
+   "ctr": 0,
+   "position": 8.666666666666668
+  },
+  {
+   "keys": [
+    "can claude unzip files",
+    "https://www.mcpstamp.com/can-claude/read-zip-files/"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 8
+  },
+  {
+   "keys": [
+    "chase overdue invoices automatically",
+    "https://www.mcpstamp.com/use-cases/chase-overdue-invoices/"
+   ],
+   "clicks": 0,
+   "impressions": 13,
+   "ctr": 0,
+   "position": 92.6923076923077
+  },
+  {
+   "keys": [
+    "claude desktop submit receipt",
+    "https://www.mcpstamp.com/servers/receipts/"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 39
+  },
+  {
+   "keys": [
+    "composio mcp",
+    "https://www.mcpstamp.com/compare/"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 96
+  },
+  {
+   "keys": [
+    "composio pricing",
+    "https://www.mcpstamp.com/compare/composio/"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 86
+  },
+  {
+   "keys": [
+    "continuous invoices",
+    "https://www.mcpstamp.com/use-cases/recurring-monthly-invoices/"
+   ],
+   "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 37.5
+  },
+  {
+   "keys": [
+    "cursor expense report",
+    "https://www.mcpstamp.com/servers/expense-tracker/"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 27
+  },
+  {
+   "keys": [
+    "cursor expense tracker",
+    "https://www.mcpstamp.com/servers/expense-tracker/"
+   ],
+   "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 55.5
+  },
+  {
+   "keys": [
+    "cursor mcp expense",
+    "https://www.mcpstamp.com/connect/cursor/"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 93
+  },
+  {
+   "keys": [
+    "cursor mcp expense",
+    "https://www.mcpstamp.com/servers/expense-tracker/"
+   ],
+   "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 41
+  },
+  {
+   "keys": [
+    "domestic per diem",
+    "https://www.mcpstamp.com/use-cases/per-diem-travel-allowance/"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 47
+  },
+  {
+   "keys": [
+    "ecb calculator",
+    "https://www.mcpstamp.com/use-cases/convert-currency-ecb-rates/"
+   ],
+   "clicks": 0,
+   "impressions": 3,
+   "ctr": 0,
+   "position": 38
+  },
+  {
+   "keys": [
+    "epc qr code",
+    "https://www.mcpstamp.com/use-cases/sepa-payment-qr-code/"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 89
+  },
+  {
+   "keys": [
+    "government per diem rates",
+    "https://www.mcpstamp.com/use-cases/per-diem-travel-allowance/"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 68
+  },
+  {
+   "keys": [
+    "invoiced to chatgpt",
+    "https://www.mcpstamp.com/can-chatgpt/create-an-invoice/"
+   ],
+   "clicks": 0,
+   "impressions": 4,
+   "ctr": 0,
+   "position": 69.75
+  },
+  {
+   "keys": [
+    "invoiced to claude",
+    "https://www.mcpstamp.com/use-cases/create-invoice-in-claude/"
+   ],
+   "clicks": 0,
+   "impressions": 3,
+   "ctr": 0,
+   "position": 74
+  },
+  {
+   "keys": [
+    "loancalculatormcp.com",
+    "https://www.mcpstamp.com/servers/loan-calculator/"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 40
+  },
+  {
+   "keys": [
+    "mcp handshake",
+    "https://www.mcpstamp.com/developers/"
+   ],
+   "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 39.5
+  },
+  {
+   "keys": [
+    "mcp json",
+    "https://www.mcpstamp.com/developers/"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 50
+  },
+  {
+   "keys": [
+    "mcp model context protocol tools marketplace",
+    "https://www.mcpstamp.com/developers/"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 45
+  },
+  {
+   "keys": [
+    "mcp server bookkeeping",
+    "https://www.mcpstamp.com/for/bookkeeping/"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 98
+  },
+  {
+   "keys": [
+    "mcp server for freelancers",
+    "https://www.mcpstamp.com/use-cases/freelance-service-agreement/"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 97
+  },
+  {
+   "keys": [
+    "mcp server for receipts",
+    "https://www.mcpstamp.com/servers/goods-receipt/"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 36
+  },
+  {
+   "keys": [
+    "mcp server for receipts",
+    "https://www.mcpstamp.com/servers/receipts/"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 29
+  },
+  {
+   "keys": [
+    "mcp server for taxes",
+    "https://www.mcpstamp.com/servers/tax-calc/"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 100
+  },
+  {
+   "keys": [
+    "mcp server receipts",
+    "https://www.mcpstamp.com/servers/receipts/"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 88
+  },
+  {
+   "keys": [
+    "mcp server tax",
+    "https://www.mcpstamp.com/servers/no-tax-on-overtime/"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 97
+  },
+  {
+   "keys": [
+    "mcp server tax",
+    "https://www.mcpstamp.com/servers/tax-calc/"
+   ],
+   "clicks": 0,
+   "impressions": 2,
+   "ctr": 0,
+   "position": 60
+  },
+  {
+   "keys": [
+    "mcpb file",
+    "https://www.mcpstamp.com/developers/"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 99
+  },
+  {
+   "keys": [
+    "mcpb files",
+    "https://www.mcpstamp.com/developers/"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 30
+  },
+  {
+   "keys": [
+    "model context protocol expense tracker",
+    "https://www.mcpstamp.com/servers/expense-tracker/"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 68
+  },
+  {
+   "keys": [
+    "payroll services norway nok market entry norway claude idea",
+    "https://www.mcpstamp.com/for/ops-hr/"
+   ],
+   "clicks": 0,
+   "impressions": 4,
+   "ctr": 0,
+   "position": 27
+  },
+  {
+   "keys": [
+    "per diem rates for business travel",
+    "https://www.mcpstamp.com/use-cases/per-diem-travel-allowance/"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 96
+  },
+  {
+   "keys": [
+    "per diem tracker",
+    "https://www.mcpstamp.com/use-cases/per-diem-travel-allowance/"
+   ],
+   "clicks": 0,
+   "impressions": 1,
+   "ctr": 0,
+   "position": 65
+  }
+ ],
+ "sa_date": [
+  {
+   "keys": [
+    "2026-10-29"
+   ],
+   "clicks": 0,
+   "impressions": 0,
+   "ctr": 0,
+   "position": 0
+  },
+  {
+   "keys": [
+    "2026-10-30"
+   ],
+   "clicks": 0,
+   "impressions": 6,
+   "ctr": 0,
+   "position": 49.333333333333336
+  },
+  {
+   "keys": [
+    "2026-10-31"
+   ],
+   "clicks": 0,
+   "impressions": 49,
+   "ctr": 0,
+   "position": 34.69387755102041
+  },
+  {
+   "keys": [
+    "2026-11-01"
+   ],
+   "clicks": 0,
+   "impressions": 72,
+   "ctr": 0,
+   "position": 24
+  },
+  {
+   "keys": [
+    "2026-11-02"
+   ],
+   "clicks": 0,
+   "impressions": 73,
+   "ctr": 0,
+   "position": 33.52054794520548
+  }
+ ],
+ "sitemaps": {
+  "sitemap": [
+   {
+    "path": "https://www.mcpstamp.com/sitemap.xml",
+    "lastSubmitted": "2026-11-02T03:23:23.484Z",
+    "isPending": false,
+    "isSitemapsIndex": false,
+    "type": "sitemap",
+    "lastDownloaded": "2026-11-02T03:23:24.407Z",
+    "warnings": "0",
+    "errors": "0",
+    "contents": [
+     {
+      "type": "web",
+      "submitted": "161",
+      "indexed": "0"
+     }
+    ]
+   }
+  ]
+ }
+}

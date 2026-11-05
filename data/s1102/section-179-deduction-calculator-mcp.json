@@ -1,0 +1,518 @@
+{
+  "repo": "section-179-deduction-calculator-mcp",
+  "repo_url": "https://github.com/theluckystrike/section-179-deduction-calculator-mcp",
+  "hosted_url": "https://section-179-deduction-calculator-mcp.lipmichal.workers.dev/mcp",
+  "worker_version_id": "ce1b0808-4348-4788-b029-0579ce01dc36",
+  "rollback": "npx wrangler delete --name section-179-deduction-calculator-mcp (brand-new worker, versions list shows 1 version)",
+  "registry_name": "io.github.theluckystrike/section-179-deduction-calculator-mcp",
+  "registry_visible": true,
+  "registry_check": "curl -s 'https://registry.modelcontextprotocol.io/v0/servers?search=section-179' -> io.github.theluckystrike/section-179-deduction-calculator-mcp 1.0.0",
+  "tools": [
+    "calculate_section_179",
+    "calculate_bonus_depreciation",
+    "get_vehicle_depreciation_limits",
+    "calculate_asset_loan_payment"
+  ],
+  "fixtures": 20,
+  "tests_passed": "20/20 (node --test test/*.test.mjs)",
+  "live_calls_ok": {
+    "calculate_section_179": true,
+    "calculate_bonus_depreciation": true,
+    "get_vehicle_depreciation_limits": true,
+    "calculate_asset_loan_payment": true
+  },
+  "live_check": "node data/s1102/build-tax/smoke.mjs http calls-*.json against the URL grepped from README.md, no token; each result checked for !isError, structuredContent.source, as_of and more containing utm_source=mcp; GET / 200",
+  "npx_github_ok": true,
+  "npx_check": "from an empty mktemp dir: npx -y github:theluckystrike/section-179-deduction-calculator-mcp answered initialize, tools/list (4) and 4/4 tools/call",
+  "stdio_local_ok": "initialize + tools/list + 4/4 tools/call OK (node dist/stdio.js)",
+  "npm_ready": true,
+  "npm_published": false,
+  "pushes": 1,
+  "repo_public": true,
+  "topics": 14,
+  "sources": [
+    "https://www.irs.gov/pub/irs-drop/rp-25-32.pdf (sec. 4.24: 2026 179 limit $2,560,000, threshold $4,090,000, SUV $32,000; fetched 2026-11-02)",
+    "https://www.irs.gov/pub/irs-pdf/i4562.pdf (2025 Form 4562 instructions: $2,500,000 / $4,000,000 / SUV $31,300, bonus rules; fetched 2026-11-02)",
+    "https://www.irs.gov/pub/irs-pdf/p946.pdf (Pub. 946 2025: SUV definition and exceptions, Jane Ash phase-out example, business income limit; fetched 2026-11-02)",
+    "https://www.irs.gov/pub/irs-drop/n-26-11.pdf (Notice 2026-11: OBBBA 168(k) 100% after Jan 19 2025, binding contract rule, TCJA phase-down; fetched 2026-11-02)",
+    "https://www.irs.gov/pub/irs-drop/rp-25-16.pdf (2025 280F auto limits; fetched 2026-11-02)",
+    "https://www.irs.gov/pub/irs-drop/rp-26-15.pdf (2026 280F auto limits: $20,300 / $12,300 first year; fetched 2026-11-02)",
+    "https://www.irs.gov/irb and https://www.irs.gov/pub/irs-drop/rp-26-NN.pdf probes (2027 check, 2026-11-02)"
+  ],
+  "money_site": "https://assetloancalculator.com",
+  "open_issues": [
+    "Bonus rate for property acquired before 2025-01-20 but placed in service in 2026 (20%) or 2027 (0%, long production 20%) is derived from Notice 2026-11 sec. 2.01's description of the TCJA 20-point annual phase-down; the 2025 Form 4562 instructions and Pub. 946 only describe 2025. The result carries a note telling the user to confirm.",
+    "Not built from the scout list: compare_buy_vs_lease_tax_effect (folded into calculate_asset_loan_payment after-tax cost). Qualified production property (168(n), Notice 2026-16) not covered.",
+    "Money site check: assetloancalculator.com section-179 page quotes Rev. Proc. 2025-32 sec. 4.24 ($2,560,000 / $4,090,000), matching the server.",
+    "npm: not published (orchestrator batches npm with owner 2FA). package.json is npm-ready: name = repo name (npm view returns E404, control no-tax-on-overtime-mcp resolves), bin dist/stdio.js with shebang, files [dist, README.md, LICENSE, DATA_SOURCES.md], mcpName, keywords include mcp, mcp-server, model-context-protocol, claude. `npm pack --dry-run` lists 9 files including dist/stdio.js. After npm publish, README install lines can switch from github: to the npm name.",
+    "2027: no 2027 inflation Rev. Proc. on 2026-11-02 (rp-26-35..50 all 404 with control rp-25-32 200; IRB 2026-41..44 list Rev. Proc. 2026-14/20/25/29/31 only; Sept and current-month IRS news lists have no 2027 inflation release). Tools return a clear not-published message for 2027; add the year to core.ts tables when it appears (expected Oct-Nov).",
+    "Glama listing not submitted (glama.json is in the repo)."
+  ],
+  "minutes": 10,
+  "live_raw_responses": {
+    "call_calculate_asset_loan_payment.json": {
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Financing $100,000 at 6% APR for 60 months: $1,933.28 a month, $15,996.81 total interest, $5,519.05 interest in the first 12 months. With a $120,000 first-year deduction at a 30% rate, year-1 tax saving is $37,655.71, so year-1 net cash is $5,543.65. After-tax total cost over the loan: $95,197.77.\n\nThis is an estimate, not tax advice. Check Form 4562, its instructions and Pub. 946, or ask a tax professional before you file."
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"asset_type\": \"equipment\",\n  \"price\": 120000,\n  \"down_payment\": 20000,\n  \"amount_financed\": 100000,\n  \"apr_percent\": 6,\n  \"term_months\": 60,\n  \"monthly_payment\": 1933.28,\n  \"total_of_payments\": 115996.81,\n  \"total_interest\": 15996.81,\n  \"total_cost_with_down_payment\": 135996.81,\n  \"first_12_months\": {\n    \"payments\": 23199.36,\n    \"interest\": 5519.05,\n    \"principal\": 17680.32\n  },\n  \"after_tax\": {\n    \"marginal_tax_rate\": 0.3,\n    \"business_use_percent\": 100,\n    \"first_year_deduction\": 120000,\n    \"first_year_interest_deduction\": 5519.05,\n    \"first_year_tax_saving\": 37655.71,\n    \"first_year_net_cash\": 5543.65,\n    \"lifetime_tax_saving\": 40799.04,\n    \"after_tax_total_cost\": 95197.77,\n    \"note\": \"Assumes the business share of the price is fully deducted over time (first_year_deduction in year 1, the rest later) and the business share of interest is deductible, all at one flat marginal rate. Recapture on sale and state conformity are ignored.\"\n  },\n  \"summary\": \"Financing $100,000 at 6% APR for 60 months: $1,933.28 a month, $15,996.81 total interest, $5,519.05 interest in the first 12 months. With a $120,000 first-year deduction at a 30% rate, year-1 tax saving is $37,655.71, so year-1 net cash is $5,543.65. After-tax total cost over the loan: $95,197.77.\",\n  \"as_of\": \"2026-11-02\",\n  \"source\": \"https://www.irs.gov/pub/irs-pdf/p946.pdf ; https://www.irs.gov/pub/irs-drop/rp-25-32.pdf\",\n  \"more\": \"https://assetloancalculator.com/equipment-loan-calculator/?utm_source=mcp&utm_medium=section-179-deduction-calculator-mcp\",\n  \"disclaimer\": \"This is an estimate, not tax advice. Check Form 4562, its instructions and Pub. 946, or ask a tax professional before you file.\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "asset_type": "equipment",
+          "price": 120000,
+          "down_payment": 20000,
+          "amount_financed": 100000,
+          "apr_percent": 6,
+          "term_months": 60,
+          "monthly_payment": 1933.28,
+          "total_of_payments": 115996.81,
+          "total_interest": 15996.81,
+          "total_cost_with_down_payment": 135996.81,
+          "first_12_months": {
+            "payments": 23199.36,
+            "interest": 5519.05,
+            "principal": 17680.32
+          },
+          "after_tax": {
+            "marginal_tax_rate": 0.3,
+            "business_use_percent": 100,
+            "first_year_deduction": 120000,
+            "first_year_interest_deduction": 5519.05,
+            "first_year_tax_saving": 37655.71,
+            "first_year_net_cash": 5543.65,
+            "lifetime_tax_saving": 40799.04,
+            "after_tax_total_cost": 95197.77,
+            "note": "Assumes the business share of the price is fully deducted over time (first_year_deduction in year 1, the rest later) and the business share of interest is deductible, all at one flat marginal rate. Recapture on sale and state conformity are ignored."
+          },
+          "summary": "Financing $100,000 at 6% APR for 60 months: $1,933.28 a month, $15,996.81 total interest, $5,519.05 interest in the first 12 months. With a $120,000 first-year deduction at a 30% rate, year-1 tax saving is $37,655.71, so year-1 net cash is $5,543.65. After-tax total cost over the loan: $95,197.77.",
+          "as_of": "2026-11-02",
+          "source": "https://www.irs.gov/pub/irs-pdf/p946.pdf ; https://www.irs.gov/pub/irs-drop/rp-25-32.pdf",
+          "more": "https://assetloancalculator.com/equipment-loan-calculator/?utm_source=mcp&utm_medium=section-179-deduction-calculator-mcp",
+          "disclaimer": "This is an estimate, not tax advice. Check Form 4562, its instructions and Pub. 946, or ask a tax professional before you file."
+        }
+      },
+      "jsonrpc": "2.0",
+      "id": 13
+    },
+    "call_calculate_bonus_depreciation.json": {
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Acquired 2025-03-01, placed in service 2026-04-15: bonus rate 100% (OBBBA 168(k): 100% for property acquired after January 19, 2025 (permanent)). On $150,000 of basis after Section 179 the special depreciation allowance is $150,000, leaving $0 for regular MACRS. First-year Section 179 plus bonus: $250,000.\n\nThis is an estimate, not tax advice. Check Form 4562, its instructions and Pub. 946, or ask a tax professional before you file."
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"acquired_date\": \"2025-03-01\",\n  \"placed_in_service_date\": \"2026-04-15\",\n  \"long_production_or_aircraft\": false,\n  \"regime\": \"OBBBA 168(k): 100% for property acquired after January 19, 2025 (permanent)\",\n  \"bonus_rate\": 1,\n  \"depreciable_basis\": 250000,\n  \"section_179_deduction\": 100000,\n  \"basis_after_section_179\": 150000,\n  \"special_depreciation_allowance\": 150000,\n  \"remaining_basis_for_macrs\": 0,\n  \"first_year_section_179_plus_bonus\": 250000,\n  \"notes\": [\n    \"Acquisition date is the date of a written binding contract, not delivery. Property under a binding contract signed before January 20, 2025 is treated as acquired before that date (Notice 2026-11 sec. 2.02 and 3.03).\",\n    \"Qualified property: MACRS property with a recovery period of 20 years or less, off-the-shelf software, water utility property and qualified productions. Used property can qualify.\",\n    \"Listed property (most vehicles) needs more than 50% business use.\"\n  ],\n  \"summary\": \"Acquired 2025-03-01, placed in service 2026-04-15: bonus rate 100% (OBBBA 168(k): 100% for property acquired after January 19, 2025 (permanent)). On $150,000 of basis after Section 179 the special depreciation allowance is $150,000, leaving $0 for regular MACRS. First-year Section 179 plus bonus: $250,000.\",\n  \"as_of\": \"2026-11-02\",\n  \"source\": \"https://www.irs.gov/pub/irs-drop/n-26-11.pdf ; https://www.irs.gov/pub/irs-pdf/i4562.pdf ; https://www.irs.gov/pub/irs-pdf/p946.pdf\",\n  \"more\": \"https://assetloancalculator.com/section-179-deduction-calculator/?utm_source=mcp&utm_medium=section-179-deduction-calculator-mcp\",\n  \"disclaimer\": \"This is an estimate, not tax advice. Check Form 4562, its instructions and Pub. 946, or ask a tax professional before you file.\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "acquired_date": "2025-03-01",
+          "placed_in_service_date": "2026-04-15",
+          "long_production_or_aircraft": false,
+          "regime": "OBBBA 168(k): 100% for property acquired after January 19, 2025 (permanent)",
+          "bonus_rate": 1,
+          "depreciable_basis": 250000,
+          "section_179_deduction": 100000,
+          "basis_after_section_179": 150000,
+          "special_depreciation_allowance": 150000,
+          "remaining_basis_for_macrs": 0,
+          "first_year_section_179_plus_bonus": 250000,
+          "notes": [
+            "Acquisition date is the date of a written binding contract, not delivery. Property under a binding contract signed before January 20, 2025 is treated as acquired before that date (Notice 2026-11 sec. 2.02 and 3.03).",
+            "Qualified property: MACRS property with a recovery period of 20 years or less, off-the-shelf software, water utility property and qualified productions. Used property can qualify.",
+            "Listed property (most vehicles) needs more than 50% business use."
+          ],
+          "summary": "Acquired 2025-03-01, placed in service 2026-04-15: bonus rate 100% (OBBBA 168(k): 100% for property acquired after January 19, 2025 (permanent)). On $150,000 of basis after Section 179 the special depreciation allowance is $150,000, leaving $0 for regular MACRS. First-year Section 179 plus bonus: $250,000.",
+          "as_of": "2026-11-02",
+          "source": "https://www.irs.gov/pub/irs-drop/n-26-11.pdf ; https://www.irs.gov/pub/irs-pdf/i4562.pdf ; https://www.irs.gov/pub/irs-pdf/p946.pdf",
+          "more": "https://assetloancalculator.com/section-179-deduction-calculator/?utm_source=mcp&utm_medium=section-179-deduction-calculator-mcp",
+          "disclaimer": "This is an estimate, not tax advice. Check Form 4562, its instructions and Pub. 946, or ask a tax professional before you file."
+        }
+      },
+      "jsonrpc": "2.0",
+      "id": 11
+    },
+    "call_calculate_section_179.json": {
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "2026 Section 179 limit $2,560,000. Property cost $4,190,000 is $100,000 over the $4,090,000 threshold, so the limit drops to $2,460,000. Elected $2,460,000. Deduction this year $2,460,000.\n\nThis is an estimate, not tax advice. Check Form 4562, its instructions and Pub. 946, or ask a tax professional before you file."
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"tax_year\": 2026,\n  \"maximum_deduction\": 2560000,\n  \"phase_out_threshold\": 4090000,\n  \"total_section_179_property_cost\": 4190000,\n  \"reduction\": 100000,\n  \"dollar_limit_after_phase_out\": 2460000,\n  \"fully_phased_out_at\": 6650000,\n  \"elected_cost\": 2460000,\n  \"tentative_deduction\": 2460000,\n  \"business_income_limit\": 3000000,\n  \"deduction\": 2460000,\n  \"carryover_to_next_year\": 0,\n  \"remaining_basis_for_bonus_and_macrs\": 1730000,\n  \"form_4562_lines\": {\n    \"line1\": 2560000,\n    \"line2\": 4190000,\n    \"line3\": 4090000,\n    \"line4\": 100000,\n    \"line5\": 2460000,\n    \"line9_tentative\": 2460000,\n    \"line11_business_income_limit\": 3000000,\n    \"line12\": 2460000,\n    \"line13_carryover\": 0\n  },\n  \"notes\": [\n    \"The reduction is dollar for dollar: every dollar of section 179 property placed in service above the threshold cuts the limit by one dollar.\",\n    \"Married filing jointly counts as one taxpayer. Married filing separately splits the limit 50/50 unless both elect otherwise.\",\n    \"The business income limit is taxable income from the active conduct of any trade or business, including wages. A disallowed amount carries forward.\",\n    \"A heavy SUV (over 6,000 and up to 14,000 lb GVWR) is capped separately; use get_vehicle_depreciation_limits.\",\n    \"Listed property (most vehicles) qualifies only if business use is more than 50%.\"\n  ],\n  \"summary\": \"2026 Section 179 limit $2,560,000. Property cost $4,190,000 is $100,000 over the $4,090,000 threshold, so the limit drops to $2,460,000. Elected $2,460,000. Deduction this year $2,460,000.\",\n  \"as_of\": \"2026-11-02\",\n  \"source\": \"https://www.irs.gov/pub/irs-drop/rp-25-32.pdf\",\n  \"more\": \"https://assetloancalculator.com/section-179-deduction-calculator/?utm_source=mcp&utm_medium=section-179-deduction-calculator-mcp\",\n  \"disclaimer\": \"This is an estimate, not tax advice. Check Form 4562, its instructions and Pub. 946, or ask a tax professional before you file.\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "tax_year": 2026,
+          "maximum_deduction": 2560000,
+          "phase_out_threshold": 4090000,
+          "total_section_179_property_cost": 4190000,
+          "reduction": 100000,
+          "dollar_limit_after_phase_out": 2460000,
+          "fully_phased_out_at": 6650000,
+          "elected_cost": 2460000,
+          "tentative_deduction": 2460000,
+          "business_income_limit": 3000000,
+          "deduction": 2460000,
+          "carryover_to_next_year": 0,
+          "remaining_basis_for_bonus_and_macrs": 1730000,
+          "form_4562_lines": {
+            "line1": 2560000,
+            "line2": 4190000,
+            "line3": 4090000,
+            "line4": 100000,
+            "line5": 2460000,
+            "line9_tentative": 2460000,
+            "line11_business_income_limit": 3000000,
+            "line12": 2460000,
+            "line13_carryover": 0
+          },
+          "notes": [
+            "The reduction is dollar for dollar: every dollar of section 179 property placed in service above the threshold cuts the limit by one dollar.",
+            "Married filing jointly counts as one taxpayer. Married filing separately splits the limit 50/50 unless both elect otherwise.",
+            "The business income limit is taxable income from the active conduct of any trade or business, including wages. A disallowed amount carries forward.",
+            "A heavy SUV (over 6,000 and up to 14,000 lb GVWR) is capped separately; use get_vehicle_depreciation_limits.",
+            "Listed property (most vehicles) qualifies only if business use is more than 50%."
+          ],
+          "summary": "2026 Section 179 limit $2,560,000. Property cost $4,190,000 is $100,000 over the $4,090,000 threshold, so the limit drops to $2,460,000. Elected $2,460,000. Deduction this year $2,460,000.",
+          "as_of": "2026-11-02",
+          "source": "https://www.irs.gov/pub/irs-drop/rp-25-32.pdf",
+          "more": "https://assetloancalculator.com/section-179-deduction-calculator/?utm_source=mcp&utm_medium=section-179-deduction-calculator-mcp",
+          "disclaimer": "This is an estimate, not tax advice. Check Form 4562, its instructions and Pub. 946, or ask a tax professional before you file."
+        }
+      },
+      "jsonrpc": "2.0",
+      "id": 10
+    },
+    "call_get_vehicle_depreciation_limits.json": {
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "6500 lb GVWR in 2026: heavy suv section 179 cap. Section 179 on a sport utility vehicle rated over 6,000 and up to 14,000 lb GVWR is capped at $32,000 for 2026. The 280F passenger automobile caps do not apply, so 100% bonus depreciation can take the rest of the business basis. Maximum first-year deduction on a $80,000 vehicle at 90% business use: $72,000.\n\nThis is an estimate, not tax advice. Check Form 4562, its instructions and Pub. 946, or ask a tax professional before you file."
+          },
+          {
+            "type": "text",
+            "text": "{\n  \"tax_year\": 2026,\n  \"gvwr_lbs\": 6500,\n  \"category\": \"heavy_suv_section_179_cap\",\n  \"business_use_percent\": 90,\n  \"qualifies_for_179_and_bonus\": true,\n  \"bonus_eligible\": true,\n  \"section_179_cap\": 32000,\n  \"passenger_auto_limits_by_year\": null,\n  \"cost\": 80000,\n  \"first_year_maximum_deduction\": 72000,\n  \"rules\": [\n    \"Section 179 on a sport utility vehicle rated over 6,000 and up to 14,000 lb GVWR is capped at $32,000 for 2026. The 280F passenger automobile caps do not apply, so 100% bonus depreciation can take the rest of the business basis.\",\n    \"The SUV cap does not apply to a vehicle that seats more than nine behind the driver, has an open or enclosed cargo area of at least 6 feet not readily reached from the passenger area, or is a cargo van with no seating behind the driver and no body section more than 30 inches ahead of the windshield. Set exempt_from_suv_cap for those.\"\n  ],\n  \"summary\": \"6500 lb GVWR in 2026: heavy suv section 179 cap. Section 179 on a sport utility vehicle rated over 6,000 and up to 14,000 lb GVWR is capped at $32,000 for 2026. The 280F passenger automobile caps do not apply, so 100% bonus depreciation can take the rest of the business basis. Maximum first-year deduction on a $80,000 vehicle at 90% business use: $72,000.\",\n  \"as_of\": \"2026-11-02\",\n  \"source\": \"https://www.irs.gov/pub/irs-drop/rp-26-15.pdf ; https://www.irs.gov/pub/irs-drop/rp-25-32.pdf\",\n  \"more\": \"https://assetloancalculator.com/commercial-vehicle-loan-calculator/?utm_source=mcp&utm_medium=section-179-deduction-calculator-mcp\",\n  \"disclaimer\": \"This is an estimate, not tax advice. Check Form 4562, its instructions and Pub. 946, or ask a tax professional before you file.\"\n}"
+          }
+        ],
+        "structuredContent": {
+          "tax_year": 2026,
+          "gvwr_lbs": 6500,
+          "category": "heavy_suv_section_179_cap",
+          "business_use_percent": 90,
+          "qualifies_for_179_and_bonus": true,
+          "bonus_eligible": true,
+          "section_179_cap": 32000,
+          "passenger_auto_limits_by_year": null,
+          "cost": 80000,
+          "first_year_maximum_deduction": 72000,
+          "rules": [
+            "Section 179 on a sport utility vehicle rated over 6,000 and up to 14,000 lb GVWR is capped at $32,000 for 2026. The 280F passenger automobile caps do not apply, so 100% bonus depreciation can take the rest of the business basis.",
+            "The SUV cap does not apply to a vehicle that seats more than nine behind the driver, has an open or enclosed cargo area of at least 6 feet not readily reached from the passenger area, or is a cargo van with no seating behind the driver and no body section more than 30 inches ahead of the windshield. Set exempt_from_suv_cap for those."
+          ],
+          "summary": "6500 lb GVWR in 2026: heavy suv section 179 cap. Section 179 on a sport utility vehicle rated over 6,000 and up to 14,000 lb GVWR is capped at $32,000 for 2026. The 280F passenger automobile caps do not apply, so 100% bonus depreciation can take the rest of the business basis. Maximum first-year deduction on a $80,000 vehicle at 90% business use: $72,000.",
+          "as_of": "2026-11-02",
+          "source": "https://www.irs.gov/pub/irs-drop/rp-26-15.pdf ; https://www.irs.gov/pub/irs-drop/rp-25-32.pdf",
+          "more": "https://assetloancalculator.com/commercial-vehicle-loan-calculator/?utm_source=mcp&utm_medium=section-179-deduction-calculator-mcp",
+          "disclaimer": "This is an estimate, not tax advice. Check Form 4562, its instructions and Pub. 946, or ask a tax professional before you file."
+        }
+      },
+      "jsonrpc": "2.0",
+      "id": 12
+    },
+    "initialize.json": {
+      "result": {
+        "protocolVersion": "2025-06-18",
+        "capabilities": {
+          "tools": {
+            "listChanged": true
+          }
+        },
+        "serverInfo": {
+          "name": "section-179-deduction-calculator-mcp",
+          "version": "1.0.0"
+        }
+      },
+      "jsonrpc": "2.0",
+      "id": 1
+    },
+    "tools_list.json": {
+      "result": {
+        "tools": [
+          {
+            "name": "calculate_section_179",
+            "title": "Section 179 deduction (2025-2026)",
+            "description": "Calculates the Section 179 expense deduction as Form 4562 Part I does, with the limits raised by the One Big Beautiful Bill Act: $2,500,000 for 2025 with a dollar-for-dollar phase-out above $4,000,000 of section 179 property (2025 Form 4562 instructions, Pub. 946), and $2,560,000 / $4,090,000 for 2026 (Rev. Proc. 2025-32 section 4.24). Applies the business income limit and reports the carryover. 2027 limits are not published yet (checked 2026-11-02) and the tool says so.",
+            "inputSchema": {
+              "type": "object",
+              "properties": {
+                "tax_year": {
+                  "type": "integer",
+                  "minimum": 2025,
+                  "maximum": 2027,
+                  "description": "Tax year the property is placed in service: 2025 or 2026."
+                },
+                "total_section_179_property_cost": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100000000000,
+                  "description": "Total cost of all section 179 property placed in service in the year (Form 4562 line 2)."
+                },
+                "elected_cost": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100000000000,
+                  "description": "Amount you elect to expense. Defaults to the most allowed."
+                },
+                "business_taxable_income": {
+                  "type": "number",
+                  "minimum": -100000000000,
+                  "maximum": 100000000000,
+                  "description": "Taxable income from the active conduct of your trades or businesses, including wages (Form 4562 line 11). Leave out to skip the income limit."
+                }
+              },
+              "required": [
+                "tax_year",
+                "total_section_179_property_cost"
+              ],
+              "additionalProperties": false,
+              "$schema": "http://json-schema.org/draft-07/schema#"
+            },
+            "annotations": {
+              "readOnlyHint": true,
+              "destructiveHint": false,
+              "idempotentHint": true,
+              "openWorldHint": false,
+              "title": "Section 179 deduction (2025-2026)"
+            },
+            "execution": {
+              "taskSupport": "forbidden"
+            }
+          },
+          {
+            "name": "calculate_bonus_depreciation",
+            "title": "Bonus depreciation rate and amount (168(k))",
+            "description": "Finds the special (bonus) depreciation rate under IRC 168(k) from the acquisition and placed-in-service dates and applies it after any Section 179 deduction. The One Big Beautiful Bill Act made it 100% permanently for property acquired after January 19, 2025 (written binding contract date), with an election to take 40% (60% for long production property and certain aircraft) in the first tax year ending after that date. Property acquired before January 20, 2025 keeps the TCJA phase-down: 40% if placed in service in 2025 (60% long production). Rules from IRS Notice 2026-11, the 2025 Form 4562 instructions and Pub. 946.",
+            "inputSchema": {
+              "type": "object",
+              "properties": {
+                "acquired_date": {
+                  "type": "string",
+                  "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+                  "description": "Acquisition date, YYYY-MM-DD. Use the date a written binding contract was signed if earlier than delivery."
+                },
+                "placed_in_service_date": {
+                  "type": "string",
+                  "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+                  "description": "Date the property was placed in service, YYYY-MM-DD."
+                },
+                "depreciable_basis": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100000000000,
+                  "description": "Depreciable basis (business share of cost) in USD."
+                },
+                "section_179_deduction": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100000000000,
+                  "description": "Section 179 amount already taken on this property; bonus applies to what is left."
+                },
+                "long_production_or_aircraft": {
+                  "type": "boolean",
+                  "description": "True for long production period property or certain noncommercial aircraft."
+                },
+                "elect_reduced_rate": {
+                  "type": "boolean",
+                  "description": "True to elect 40% (60%) instead of 100% for property acquired after Jan 19, 2025 and placed in service in the first tax year ending after that date."
+                },
+                "elect_out": {
+                  "type": "boolean",
+                  "description": "True if you elect out of bonus depreciation for this class of property."
+                }
+              },
+              "required": [
+                "acquired_date",
+                "placed_in_service_date",
+                "depreciable_basis"
+              ],
+              "additionalProperties": false,
+              "$schema": "http://json-schema.org/draft-07/schema#"
+            },
+            "annotations": {
+              "readOnlyHint": true,
+              "destructiveHint": false,
+              "idempotentHint": true,
+              "openWorldHint": false,
+              "title": "Bonus depreciation rate and amount (168(k))"
+            },
+            "execution": {
+              "taskSupport": "forbidden"
+            }
+          },
+          {
+            "name": "get_vehicle_depreciation_limits",
+            "title": "Vehicle limits: heavy SUV cap and luxury auto caps",
+            "description": "Returns the first-year write-off limits for a business vehicle by gross vehicle weight rating: passenger automobiles of 6,000 lb or less are held to the IRC 280F caps ($20,300 first year with bonus, $12,300 without, for 2026 per Rev. Proc. 2026-15; $20,200 / $12,200 for 2025 per Rev. Proc. 2025-16), heavy SUVs over 6,000 and up to 14,000 lb have a Section 179 cap of $31,300 (2025) or $32,000 (2026) with bonus depreciation for the rest, and vehicles over 14,000 lb or exempt designs have no vehicle cap. Applies the more-than-50% business use rule and scales by business use.",
+            "inputSchema": {
+              "type": "object",
+              "properties": {
+                "tax_year": {
+                  "type": "integer",
+                  "minimum": 2025,
+                  "maximum": 2027,
+                  "description": "Year placed in service: 2025 or 2026."
+                },
+                "gvwr_lbs": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 200000,
+                  "description": "Gross vehicle weight rating in pounds (driver door sticker)."
+                },
+                "cost": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100000000000,
+                  "description": "Vehicle cost in USD."
+                },
+                "business_use_percent": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100,
+                  "description": "Business use share, 0-100. Default 100."
+                },
+                "bonus_eligible": {
+                  "type": "boolean",
+                  "description": "False if bonus depreciation is not taken (elected out). Default true."
+                },
+                "exempt_from_suv_cap": {
+                  "type": "boolean",
+                  "description": "True for a 6,001-14,000 lb vehicle that seats more than nine behind the driver, has a cargo bed of at least 6 feet, or is an enclosed cargo van."
+                }
+              },
+              "required": [
+                "tax_year",
+                "gvwr_lbs"
+              ],
+              "additionalProperties": false,
+              "$schema": "http://json-schema.org/draft-07/schema#"
+            },
+            "annotations": {
+              "readOnlyHint": true,
+              "destructiveHint": false,
+              "idempotentHint": true,
+              "openWorldHint": false,
+              "title": "Vehicle limits: heavy SUV cap and luxury auto caps"
+            },
+            "execution": {
+              "taskSupport": "forbidden"
+            }
+          },
+          {
+            "name": "calculate_asset_loan_payment",
+            "title": "Asset loan payment and after-tax cost",
+            "description": "Calculates the exact monthly payment, total interest and first-year interest for an equipment, truck, tractor, RV, land, manufactured home, ATV, pontoon or other asset loan, and, for business assets, the after-tax cost: first-year tax saving from the Section 179 or bonus deduction plus deductible interest at your marginal rate, first-year net cash, and lifetime after-tax cost. Pair it with calculate_section_179 for the deduction amount.",
+            "inputSchema": {
+              "type": "object",
+              "properties": {
+                "price": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100000000000,
+                  "description": "Purchase price in USD."
+                },
+                "down_payment": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100000000000,
+                  "description": "Down payment in USD. Default 0."
+                },
+                "apr_percent": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 60,
+                  "description": "Annual percentage rate, e.g. 7.5."
+                },
+                "term_months": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 480,
+                  "description": "Loan term in months."
+                },
+                "asset_type": {
+                  "type": "string",
+                  "enum": [
+                    "equipment",
+                    "tractor",
+                    "semi_truck",
+                    "commercial_truck",
+                    "commercial_vehicle",
+                    "farm",
+                    "aircraft",
+                    "trailer",
+                    "rv",
+                    "motorcycle",
+                    "land",
+                    "manufactured_home",
+                    "atv",
+                    "utv",
+                    "pontoon",
+                    "other"
+                  ],
+                  "description": "Type of asset, used to link the matching calculator page."
+                },
+                "business_use_percent": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100,
+                  "description": "Business use share 0-100. Give this or marginal_tax_rate to get the after-tax cost."
+                },
+                "marginal_tax_rate": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 0.6,
+                  "description": "Combined marginal tax rate as a decimal, e.g. 0.30."
+                },
+                "first_year_deduction": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100000000000,
+                  "description": "Section 179 plus bonus deduction taken in year 1. Defaults to the full business share of the price."
+                }
+              },
+              "required": [
+                "price",
+                "apr_percent",
+                "term_months"
+              ],
+              "additionalProperties": false,
+              "$schema": "http://json-schema.org/draft-07/schema#"
+            },
+            "annotations": {
+              "readOnlyHint": true,
+              "destructiveHint": false,
+              "idempotentHint": true,
+              "openWorldHint": false,
+              "title": "Asset loan payment and after-tax cost"
+            },
+            "execution": {
+              "taskSupport": "forbidden"
+            }
+          }
+        ]
+      },
+      "jsonrpc": "2.0",
+      "id": 2
+    }
+  },
+  "minutes_note": "lane wall clock 09:15-09:45 local (first IRS fetch 09:18 by file mtime), split approximately"
+}

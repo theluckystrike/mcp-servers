@@ -1,0 +1,34 @@
+From cc16643703f08ea76e5da22b817046b7c3935fda Mon Sep 17 00:00:00 2001
+From: theluckystrike <51033404+theluckystrike@users.noreply.github.com>
+Date: Mon, 2 Nov 2026 10:32:33 +0700
+Subject: [PATCH] Homepage: add Use this data in Claude or ChatGPT section
+ [skip ci]
+
+---
+ src/pages/index.astro | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+diff --git a/src/pages/index.astro b/src/pages/index.astro
+index fe4c45c..6cf8a00 100644
+--- a/src/pages/index.astro
++++ b/src/pages/index.astro
+@@ -116,6 +116,16 @@ const STANDALONE: Standalone[] = [
+     </div>
+   </section>
+ 
++  <section id="use-in-ai" style="padding:40px 0 8px">
++    <h2>Use this data in Claude or ChatGPT</h2>
++    <p style="color:var(--mut);max-width:68ch">The asset loan math on this site is also available as a free MCP server. An AI assistant can use it to work out the exact payment and total interest on an equipment, truck, RV or land loan, and for a business asset the Section 179 deduction, bonus depreciation and vehicle write-off limits, using the 2025 and 2026 IRS figures rather than what it remembers from training. There is no account or API key.</p>
++    <p style="margin:0 0 6px;font-size:15px"><strong>Claude.ai or ChatGPT.</strong> Add a custom connector with this URL.</p>
++    <pre style="margin:0 0 12px;padding:12px 14px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-sm);font-family:var(--font-num);font-size:12.5px;overflow-x:auto;white-space:pre;color:var(--ink);"><code>https://section-179-deduction-calculator-mcp.lipmichal.workers.dev/mcp</code></pre>
++    <p style="margin:0 0 6px;font-size:15px"><strong>Claude Code.</strong></p>
++    <pre style="margin:0 0 12px;padding:12px 14px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-sm);font-family:var(--font-num);font-size:12.5px;overflow-x:auto;white-space:pre;color:var(--ink);"><code>claude mcp add --transport http section-179-deduction https://section-179-deduction-calculator-mcp.lipmichal.workers.dev/mcp</code></pre>
++    <p style="font-size:14px;color:var(--mut)"><a href="https://www.mcpstamp.com/free-servers/section-179-deduction-calculator-mcp/">Setup steps</a> &middot; <a href="https://github.com/theluckystrike/section-179-deduction-calculator-mcp">Source on GitHub</a></p>
++  </section>
++
+   <script is:inline>
+     (() => {
+       const inp = document.getElementById('assetFilter');
+-- 
+2.50.1 (Apple Git-155)
+

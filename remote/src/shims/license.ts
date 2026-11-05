@@ -5,7 +5,7 @@
  * writes are last-write-wins per tenant.
  */
 import { z } from "zod";
-import { ctx } from "./ctx.js";
+import { ctx, STORE } from "./ctx.js";
 import { existsSync, mkdirSync, readFileSync, renameSync, unlinkSync, writeFileSync } from "./fs.js";
 import { paymentDescriptor } from "../payment.js";
 
@@ -261,6 +261,7 @@ export function createLicenseGate(opts: { product: string }): LicenseGate {
       });
     },
     upgradeText: (feature: string, toolName?: string) => {
+      if (ctx().clean) return `"${feature}" is not included in the free tier. Pro removes this limit.`;
       const src = `${product}.${slugifySrc(toolName ?? feature)}`;
       const url = buyUrl(product, src);
       return `"${feature}" is a Pro feature. Pro is a one-time $${PRICE_SINGLE_USD} for this server, lifetime. ` +
@@ -281,6 +282,8 @@ export function createLicenseGate(opts: { product: string }): LicenseGate {
       // answer, so the answer is a resource and a prompt as well as a tool. Registered here
       // rather than in servers/*/src so no tool description changes - descriptions are a
       // build input for remote/build-vendor.mjs and resources are not.
+      // Clean mode (/v1) registers none of the four: they exist to sell, and that path must not.
+      if (STORE.getStore()?.clean) return;
       if (typeof server.registerResource === "function") {
         server.registerResource("pricing", `pricing://${product}`, {
           title: "Pricing and upgrade",

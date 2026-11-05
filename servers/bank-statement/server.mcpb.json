@@ -1,14 +1,15 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/bank-statement-csv-categorize-reconcile-ledger",
-  "description": "Import a bank CSV, categorise it, summarise it per currency and reconcile it against your expenses.",
+  "title": "McpStamp Bank Statements",
+  "description": "Import bank CSV exports, categorise transactions, total them by category or month, match expenses.",
   "version": "0.22.6",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
     "subfolder": "servers/bank-statement"
   },
-  "websiteUrl": "https://mcp.zovo.one/s/bank-statement",
+  "websiteUrl": "https://www.mcpstamp.com/servers/bank-statement/",
   "packages": [
     {
       "registryType": "mcpb",
@@ -31,15 +32,7 @@
   "remotes": [
     {
       "type": "streamable-http",
-      "url": "https://mcp.zovo.one/mcp/bank-statement",
-      "headers": [
-        {
-          "name": "Authorization",
-          "description": "Bearer <Pro license key or anonymous token from GET https://mcp.zovo.one/mcp/token>",
-          "isRequired": true,
-          "isSecret": true
-        }
-      ]
+      "url": "https://mcp.zovo.one/mcp/bank-statement"
     }
   ]
 }

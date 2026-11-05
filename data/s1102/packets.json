@@ -1,0 +1,1005 @@
+{
+ "meta": {
+  "lane": "packets",
+  "date": "2026-11-02",
+  "satellites_found": 15,
+  "satellites_in_brief": 16,
+  "count_evidence": "ls ~/mcp-servers/satellites | grep -- '-mcp$' returned 15 dirs; gh repo list theluckystrike --limit 300 shows the same 15 public repos; reports 9 in data/s1030 plus 6 in data/s1102. No 16th found.",
+  "no_actions": "No account created, no form submitted, nothing posted or sent. Read-only curl and MCP tools/list and tools/call only."
+ },
+ "glama": {
+  "method": "curl -s -A 'Mozilla/5.0' -L https://glama.ai/mcp/servers/theluckystrike/<repo> and the search page https://glama.ai/mcp/servers?query=theluckystrike (listed servers parsed from the HTML). Positive control, 9 pages returned 200 with 230 to 275 KB. Negative control, theluckystrike/zzz-not-a-real-repo-mcp returned 404. Glama's REST API needs a key so the HTML was used.",
+  "blocked": false,
+  "listed": [
+   {
+    "repo": "cups-to-grams-mcp",
+    "score": null,
+    "grades": [
+     "license_grade:a",
+     "maintenance_grade:c",
+     "quality_grade:a"
+    ],
+    "scoredAt": "2026-10-30T01:45:19.600882Z"
+   },
+   {
+    "repo": "dscr-loan-calculator-mcp",
+    "score": "4.1",
+    "grades": [
+     "license_grade:a",
+     "maintenance_grade:c",
+     "quality_grade:a"
+    ],
+    "scoredAt": "2026-10-30T01:45:18.159190Z"
+   },
+   {
+    "repo": "gold-price-per-gram-mcp",
+    "score": "4.1",
+    "grades": [
+     "license_grade:a",
+     "maintenance_grade:c",
+     "quality_grade:a"
+    ],
+    "scoredAt": "2026-10-30T01:45:17.934303Z"
+   },
+   {
+    "repo": "lake-level-mcp",
+    "score": "4.4",
+    "grades": [
+     "license_grade:a",
+     "maintenance_grade:b",
+     "quality_grade:a"
+    ],
+    "scoredAt": "2026-10-30T02:25:17.515743Z"
+   },
+   {
+    "repo": "minimum-wage-mcp",
+    "score": "4.1",
+    "grades": [
+     "license_grade:a",
+     "maintenance_grade:c",
+     "quality_grade:a"
+    ],
+    "scoredAt": "2026-10-30T01:40:19.057049Z"
+   },
+   {
+    "repo": "no-tax-on-overtime-mcp",
+    "score": "4.1",
+    "grades": [
+     "license_grade:a",
+     "maintenance_grade:c",
+     "quality_grade:a"
+    ],
+    "scoredAt": "2026-10-30T01:40:20.840662Z"
+   },
+   {
+    "repo": "paycheck-calculator-mcp",
+    "score": "4.4",
+    "grades": [
+     "license_grade:a",
+     "maintenance_grade:c",
+     "quality_grade:a"
+    ],
+    "scoredAt": "2026-10-30T01:45:18.804149Z"
+   },
+   {
+    "repo": "uk-income-tax-salary-mcp",
+    "score": "4.1",
+    "grades": [
+     "license_grade:a",
+     "maintenance_grade:c",
+     "quality_grade:a"
+    ],
+    "scoredAt": "2026-10-30T01:45:20.117702Z"
+   },
+   {
+    "repo": "us-federal-holidays-business-days-mcp",
+    "score": null,
+    "grades": [
+     "license_grade:a",
+     "maintenance_grade:c",
+     "quality_grade:a"
+    ],
+    "scoredAt": "2026-10-30T02:25:17.176652Z"
+   }
+  ],
+  "missing": [
+   "ab-test-sample-size-calculator-mcp",
+   "ap-score-distributions-mcp",
+   "car-loan-interest-deduction-calculator-mcp",
+   "recipe-nutrition-calculator-mcp",
+   "section-179-deduction-calculator-mcp",
+   "subdomain-finder-mcp"
+  ],
+  "score_note": "score is the TDQS overall value. cups-to-grams and us-federal-holidays show TDQS tier A on the page but the numeric value is not in the parsable payload. All scores date from 2026-10-30.",
+  "owner_action": "Add the 6 missing at https://glama.ai/mcp/servers (Add Server). Every repo already carries glama.json and an MIT LICENSE."
+ },
+ "requirements": {
+  "claude": {
+   "sources": [
+    "https://claude.com/docs/connectors/building/submission",
+    "https://claude.com/docs/connectors/building/review-criteria",
+    "https://support.claude.com/en/articles/13145358-anthropic-software-directory-policy",
+    "https://claude.com/docs/connectors/verification"
+   ],
+   "portal": "https://claude.ai/directory/manage then Submit new then MCP connector. Any paid Claude plan, Owner role on Team or Enterprise.",
+   "steps": [
+    "Connection (https URL)",
+    "Tools (auto-synced, flags missing title or annotation)",
+    "Listing (name up to 100, one-liner up to 200, description up to 2,000, 1 to 5 categories, docs URL, privacy URL, support contact, icon, permanent slug)",
+    "Use cases",
+    "Company",
+    "Authentication (choose not required)",
+    "Data handling",
+    "Test and launch (reviewer instructions, confirm every tool was run)",
+    "Compliance (7 acknowledgments, all required)",
+    "Review and submit"
+   ],
+   "policy_points": [
+    "3A privacy policy link for anything that connects to a remote service",
+    "3B verified contact and support channel",
+    "3E at least three working example prompts",
+    "3F verify you own or control endpoints, domains and external resources the software retrieves",
+    "1B high-risk uses (legal, finance, tax) need human-in-the-loop and direct disclosure",
+    "4C no advertising, sponsored content, paid placement or promotional vehicle",
+    "5E title, readOnlyHint and destructiveHint on every tool"
+   ],
+   "review_criteria_extra": [
+    "Tool descriptions must not promote products and services",
+    "Server domain should match the service and calls must be to first-party or legitimately proxied APIs",
+    "Generic errors fail review",
+    "Community listing is automatic after a scan, a human review is optional and has no SLA, escalate to mcp-review@anthropic.com"
+   ]
+  },
+  "openai": {
+   "sources": [
+    "https://developers.openai.com/apps-sdk/deploy/submission",
+    "https://developers.openai.com/apps-sdk/app-submission-guidelines"
+   ],
+   "note": "The directory is now called the plugin directory shared by ChatGPT and Codex. Submission is a plugin ZIP (plugin.json plus mcp.json) uploaded in the Plugins page, with MCP setup and domain verification in the portal.",
+   "steps": [
+    "Verify individual or business identity in OpenAI Platform organization settings",
+    "Upload plugin ZIP (plugin.json, mcp.json, icons)",
+    "Connect the MCP server, complete the /.well-known/openai-apps-challenge domain check, wait for the tool scan",
+    "Fill review details (5 positive and 3 negative test cases, demo recording URL, release notes)",
+    "Submit for review and accept attestations, one review active per plugin"
+   ],
+   "policy_points": [
+    "No MCP, Plugin or Server in the name",
+    "No pricing, subscription or promotion in descriptions",
+    "Commerce for physical goods only, no links to checkout or upgrade pages",
+    "Must not serve ads or exist mainly as an advertising vehicle",
+    "readOnlyHint, destructiveHint and openWorldHint explicit booleans on every tool",
+    "Response minimization, no diagnostic or session identifiers",
+    "Published privacy policy plus support contact, terms URL expected",
+    "Restricted data (SSN, PHI, PCI, credentials) must not be collected",
+    "Unofficial connectors and unauthorized scraping are not approved"
+   ]
+  }
+ },
+ "blockers": [
+  {
+   "id": "B1",
+   "area": "Lake Level Now, both directories",
+   "issue": "Tool results contain promotion of a paid product. get_lake_history and get_lake_level add the sentence 'Decades of daily record and day-of-year normals for this lake are in the Lake Level Almanac.' to summary for lakes flagged almanac, and the structured result carries an almanac URL. The landing page also says 'the paid Lake Level Almanac'. Claude policy 4C bars promotional vehicles and OpenAI bars promoting paid digital products and upgrade links.",
+   "fix": "Remove the almanac sentence from the summary and the almanac field in src/core.ts (lines 474, 507, 521 and the list at 408), and drop the word paid from the landing page in src/worker.ts line 35. Then redeploy. Live evidence 2026-11-02, Shasta history summary and Powell almanac field.",
+   "owner": "builder session, not done here"
+  },
+  {
+   "id": "B2",
+   "area": "All three, both directories",
+   "issue": "No privacy policy covers the public servers. https://mcp.zovo.one/privacy returns 200 but describes local stdio servers, the token-based hosted endpoints, Stripe and email signups. It has zero mentions of workers.dev or the public data servers (grep count 0).",
+   "fix": "Add the Public data servers paragraph from this packet to that page, or publish it as a separate URL. Text is in packets.json under privacy_text and in section 2.",
+   "owner": "owner or the mcpstamp session (this lane may not edit ~/mcpstamp-work)"
+  },
+  {
+   "id": "B3",
+   "area": "ChatGPT only",
+   "issue": "OpenAI asks for a terms of service URL and https://mcp.zovo.one/terms returns 404. The plugin also needs a domain challenge file at /.well-known/openai-apps-challenge on each Worker hostname, and all three currently return 404.",
+   "fix": "Publish a short terms page. For each plugin, add a route to the Worker that returns the exact token the portal shows, then deploy that Worker only.",
+   "owner": "owner gets the token in the portal, builder deploys"
+  },
+  {
+   "id": "B4",
+   "area": "Both",
+   "issue": "No icon exists for these servers. Claude asks for an icon and OpenAI asks for four icon files. ~/mcpstamp-work/a4-listing/icons holds only mcpstamp-expenses, resume and tasks.",
+   "fix": "Supply one square PNG per listing, 512 px or more, plus dark variants for OpenAI.",
+   "owner": "owner"
+  },
+  {
+   "id": "B5",
+   "area": "Claude",
+   "issue": "The submission asks you to confirm you ran every tool through MCP Inspector or as a custom connector in Claude. This lane checked over raw HTTP only (initialize and tools/list on all 15 servers, plus 26 tools/call on the three picks and the holidays server).",
+   "fix": "Add each URL as a custom connector in Claude once and run the three test prompts. About 3 minutes each.",
+   "owner": "owner"
+  }
+ ],
+ "picks": {
+  "chosen": [
+   "minimum-wage-mcp",
+   "no-tax-on-overtime-mcp",
+   "lake-level-mcp"
+  ],
+  "submit_order_by_risk": [
+   "minimum-wage-mcp",
+   "no-tax-on-overtime-mcp",
+   "lake-level-mcp"
+  ],
+  "why": {
+   "minimum-wage-mcp": "2027 state rates were announced from August to late September 2026, after most model training data. Embedded tables, no runtime upstream calls, no promotional text in results. Weakness is three 2027 figures from secondary text, which the description and the result both flag. Results carry no disclaimer line, so add one sentence saying it is reference data and the state labor department has the final word (optional, since wage lookup is lower risk than tax).",
+   "no-tax-on-overtime-mcp": "Exact phase-out and cap arithmetic from IRS forms and FS-2026-13 (August 2026). Results carry an estimate and not tax advice disclaimer, which satisfies the high-risk disclosure clause. Embedded tables, no runtime upstream calls.",
+   "lake-level-mcp": "The only one where the model has no possible answer, because the data is a live gauge reading. Strongest user value and Glama TDQS 4.4. Carries the most policy exposure (live third-party fetches, almanac promotion in B1), so it goes third and only after B1 is fixed."
+  },
+  "rejected": {
+   "us-federal-holidays-business-days-mcp": "Useful, but invoice_due_date returns a more_note that pitches the paid Zovo back-office bundle and its more link goes to the https://mcp.zovo.one store page. That is advertising under Claude 4C and a paid-product link under OpenAI rules. Fix first and it becomes the fourth pick.",
+   "gold-price-per-gram-mcp": "Live data, but a single third-party spot source with no warranty (api.gold-api.com), which raises the API ownership and unofficial connector questions.",
+   "paycheck-calculator-mcp, uk-income-tax-salary-mcp, dscr-loan-calculator-mcp": "Good data, but the tax and finance computation carries the same high-risk disclosure duty as the overtime server with less newer-than-training data."
+  }
+ },
+ "annotation_check": {
+  "method": "POST initialize then tools/list to https://<repo>.lipmichal.workers.dev/mcp for all 15 servers on 2026-11-02, predicate readOnlyHint is true. Control, the predicate flags a tool with no annotations and one with readOnlyHint false.",
+  "servers": 15,
+  "tools": 66,
+  "missing_readOnlyHint": 0,
+  "missing_title": 0,
+  "missing_destructiveHint": 0,
+  "missing_openWorldHint": 0,
+  "openWorldHint_true": [
+   "gold-price-per-gram-mcp.get_gold_price_per_gram",
+   "gold-price-per-gram-mcp.get_metal_prices",
+   "gold-price-per-gram-mcp.calculate_jewelry_value",
+   "lake-level-mcp.get_lake_level",
+   "lake-level-mcp.get_lake_history",
+   "lake-level-mcp.compare_lakes",
+   "subdomain-finder-mcp.find_subdomains",
+   "subdomain-finder-mcp.resolve_subdomains",
+   "subdomain-finder-mcp.get_certificate_history",
+   "subdomain-finder-mcp.summarize_attack_surface"
+  ],
+  "note": "Every tool has a top-level title and annotations.title, readOnlyHint true, destructiveHint false, idempotentHint true and an explicit openWorldHint. This also meets the OpenAI rule that all three hints be explicit booleans.",
+  "style_flags": [
+   "paycheck-calculator-mcp titles contain a colon, for example 'Paycheck calculator: take-home pay'. Harmless for review.",
+   "lake-level-mcp get_lake_level and gold-price-per-gram-mcp descriptions say 'Your training data cannot know today's level.' That is a statement of fact, but a strict reader could take it as steering the model. Optional reword to 'Reads the gauge at call time.'",
+   "recipe-nutrition-calculator-mcp calculate descriptions say 'Use it instead of estimating nutrition from memory.' Same optional reword."
+  ]
+ },
+ "utm_policy_risk": {
+  "what": "Every result carries source (agency or IRS URL) and more (a page on the author's reference site with utm_source=mcp and utm_medium=<repo>). The sites show AdSense ads (lakelevelnow.com privacy page confirms it).",
+  "rules": [
+   "Claude 4C bars software that serves advertisements or sponsored content, or exists primarily as an advertising or promotional vehicle",
+   "Claude review criteria bar tool descriptions that promote products and services",
+   "OpenAI bars ads, links to checkout or upgrade pages, and promotion of digital products"
+  ],
+  "assessment": "A topical link to the page for the same lake, state or calculator, plus UTM tags, is a source link and not an ad. The risk is in four extras. (1) the lake almanac sentence and field (B1), (2) the holidays more_note and store-page more link (rejected pick), (3) the Part of the Zovo MCP collection line on the landing page, which should not be the documentation URL, (4) the key name more, which reads as a teaser.",
+  "framing": "Submit the GitHub README as the documentation URL, not the Worker landing page. In reviewer notes and the listing description say the link goes to a reference page on the same topic run by the same author and that the answer is complete without it. Keep one link per result, never a store, pricing or checkout page. Optional change for lower risk, rename more to reference_page and keep the UTM tags.",
+  "verified_clean": [
+   "minimum-wage-mcp and no-tax-on-overtime-mcp results have no product or paid-offer text (grep of src for paid, bundle, zovo, upgrade, buy, premium, checkout, sponsor, affiliate found nothing relevant)"
+  ],
+  "needs_fix": [
+   "lake-level-mcp B1",
+   "us-federal-holidays-business-days-mcp more_note and mcp.zovo.one more link"
+  ]
+ },
+ "privacy": {
+  "checked": {
+   "https://mcp.zovo.one/privacy": "200, last updated 16 October 2026, does not mention the public servers",
+   "https://mcp.zovo.one/terms": "404",
+   "https://lakelevelnow.com/privacy/": "200, covers the website only (AdSense, analytics), not the MCP server",
+   "https://zovo.one/privacy": "301 to https://zovo.one/privacy-policy"
+  },
+  "recommendation": "Use https://mcp.zovo.one/privacy after adding the paragraph below. Do not submit it unchanged.",
+  "privacy_text": "Public data servers. The free data servers hosted at addresses ending in lipmichal.workers.dev have no accounts and no tokens. They don't ask for your name, email address or location, and they store nothing about you or your conversation. A call sends only the arguments the tool needs, such as a lake name, a state or a dollar amount. Cloudflare hosts the servers and logs requests the way any web host does, including time, IP address and request path, under its own retention rules. Answers from public agencies can be cached at the edge for up to one hour, and the cache holds public agency data only. Results include a link to a source page and a related page on a site run by the same author. Those links carry a utm tag so the author can count visits. Following a link is optional and sends nothing to the server. Questions go to support@zovo.one."
+ },
+ "claude_packets": [
+  {
+   "repo": "minimum-wage-mcp",
+   "connection_url": "https://minimum-wage-mcp.lipmichal.workers.dev/mcp",
+   "tools_synced": [
+    "get_minimum_wage",
+    "list_upcoming_increases",
+    "compare_states",
+    "annual_income_at_minimum_wage"
+   ],
+   "tool_annotations_ok": true,
+   "listing": {
+    "name": "US State Minimum Wage",
+    "name_chars": 21,
+    "one_liner": "Minimum wage, tipped cash wage and tip credit for all 50 states and DC in 2026 and 2027, including January 2027 increases that postdate most model training data.",
+    "one_liner_chars": 161,
+    "description": "US State Minimum Wage gives an assistant the state minimum wage on a chosen date in 2026 or 2027 for all 50 states and DC. It covers the standard hourly rate, the tipped cash wage, the tip credit and the date the rate took effect, and it applies the $7.25 federal floor where a state has no higher rate.\n\nFour tools. get_minimum_wage returns one state's rate on a date. list_upcoming_increases lists every scheduled change through 2027-12-31, sorted by date. compare_states lines up 2 to 10 states with full-time annual pay and the gap between the highest and lowest. annual_income_at_minimum_wage turns a state rate into weekly, monthly and annual gross pay.\n\nFigures come from the US Department of Labor state tables and state labor department notices, and each result carries a source link and an as_of date. Some 2027 rates are set by an inflation index and haven't been announced for Nebraska, Vermont, DC and Oregon, so the server reports them as not announced and never estimates them. Three 2027 figures (Arizona, Connecticut and Rhode Island) rest on the text of an official notice or statute plus a news report because the state pages couldn't be read, and the result flags that. City and county minimum wages aren't included and can be higher.\n\nNo account or token is needed, and the server stores nothing about you. Results include a link to a related page on statewage.com, a reference site run by the same author.",
+    "description_chars": 1427,
+    "categories": "Reference data, Finance or payroll (pick the closest two from the portal list)",
+    "docs_url": "https://github.com/theluckystrike/minimum-wage-mcp#readme",
+    "privacy_url": "https://mcp.zovo.one/privacy (after B2)",
+    "support_contact": "support@zovo.one",
+    "icon": "OWNER supply (B4)",
+    "slug": "us-state-minimum-wage"
+   },
+   "use_cases": "People ask what the minimum wage is in a named state on a named date, which states raise it next, how two or three states compare, or what a full-time worker earns at the minimum. Typical users are workers, small employers, payroll staff and journalists. Users need nothing before connecting. The connector only reads data.",
+   "reads_or_writes": "Reads data only",
+   "company": {
+    "name": "OWNER FILL (legal or trading name)",
+    "website": "https://zovo.one",
+    "primary_contact": "support@zovo.one"
+   },
+   "authentication": "Not required. No sign-in, no OAuth.",
+   "data_handling": {
+    "api_ownership": "Own computation over tables embedded in the server from official sources. No runtime calls to outside APIs.",
+    "personal_health_data": "No",
+    "sponsored_content": "No. Results link to a same-topic reference page run by the author."
+   },
+   "test_and_launch": {
+    "reviewer_instructions": "No account is needed. In Claude add https://minimum-wage-mcp.lipmichal.workers.dev/mcp as a custom connector with no authentication, then run the three example prompts. Each result includes the source link and an as_of date.",
+    "test_prompts": [
+     "What is the minimum wage in California on January 1, 2027, and is there a tip credit?",
+     "Which states raise their minimum wage next, and by how much?",
+     "Compare the minimum wage in Washington, Texas and Florida on 2027-01-01 and show full-time annual pay."
+    ],
+    "confirm_tools_run": "Owner runs each tool once in Claude (B5)"
+   },
+   "compliance": "Seven acknowledgments, all required. Owner reads and ticks each. Item on first-party API usage needs a truthful answer, see data_handling."
+  },
+  {
+   "repo": "no-tax-on-overtime-mcp",
+   "connection_url": "https://no-tax-on-overtime-mcp.lipmichal.workers.dev/mcp",
+   "tools_synced": [
+    "calculate_overtime_deduction",
+    "calculate_tips_deduction",
+    "calculate_senior_deduction",
+    "estimate_tax_savings",
+    "explain_eligibility"
+   ],
+   "tool_annotations_ok": true,
+   "listing": {
+    "name": "No Tax on Overtime",
+    "name_chars": 18,
+    "one_liner": "Federal overtime, tips and senior deductions for 2025 to 2028 under the One Big Beautiful Bill Act, with caps and phase-outs taken from IRS forms and guidance.",
+    "one_liner_chars": 159,
+    "description": "No Tax on Overtime calculates the federal deductions for qualified overtime pay, qualified tips and seniors age 65 and older that the One Big Beautiful Bill Act (P.L. 119-21) created for tax years 2025 to 2028. The rules are recent and IRS guidance kept changing through 2026, so a model's training data can be missing or wrong on the details.\n\nFive tools. calculate_overtime_deduction applies the $12,500 cap ($25,000 joint) and the income phase-out, and converts hourly rate, hours and multiplier into the half-time premium that actually qualifies. calculate_tips_deduction applies the $25,000 per return cap. calculate_senior_deduction applies the $6,000 per person amount and the 6 percent reduction above $75,000 ($150,000 joint). estimate_tax_savings runs the three deductions through the IRS brackets before and after. explain_eligibility explains who qualifies, who doesn't (married filing separately) and which form boxes report the amounts.\n\nAmounts are copied from IRS Schedule 1-A, the Form 1040 instructions, Rev. Proc. 2024-40, Rev. Proc. 2025-32 and fact sheet FS-2026-13, and each result links to the IRS source. 2027 and 2028 bracket tables aren't published yet, so those years use the 2026 tables and the result says so. Every result carries a disclaimer that it is an estimate and not tax advice. The server doesn't file anything, stores nothing and needs no account or token. Results include a link to a related page on noovertimetax.com, a reference site run by the same author.",
+    "description_chars": 1499,
+    "categories": "Finance or tax, Reference data (pick the closest two from the portal list)",
+    "docs_url": "https://github.com/theluckystrike/no-tax-on-overtime-mcp#readme",
+    "privacy_url": "https://mcp.zovo.one/privacy (after B2)",
+    "support_contact": "support@zovo.one",
+    "icon": "OWNER supply (B4)",
+    "slug": "no-tax-on-overtime"
+   },
+   "use_cases": "People ask how much of their overtime, tips or senior income is deductible, how the income phase-out changes the amount, who qualifies, and roughly how much federal tax the deductions save. Typical users are hourly workers, tipped workers, retirees, payroll staff and tax preparers. Users need nothing before connecting. The connector only reads data and runs calculations.",
+   "reads_or_writes": "Reads data only",
+   "company": {
+    "name": "OWNER FILL (legal or trading name)",
+    "website": "https://zovo.one",
+    "primary_contact": "support@zovo.one"
+   },
+   "authentication": "Not required. No sign-in, no OAuth.",
+   "data_handling": {
+    "api_ownership": "Own computation over tables embedded in the server from official sources. No runtime calls to outside APIs.",
+    "personal_health_data": "No",
+    "sponsored_content": "No. Results link to a same-topic reference page run by the author."
+   },
+   "test_and_launch": {
+    "reviewer_instructions": "No account is needed. In Claude add https://no-tax-on-overtime-mcp.lipmichal.workers.dev/mcp as a custom connector with no authentication, then run the three example prompts. Each result includes the source link and an as_of date.",
+    "test_prompts": [
+     "I had $6,000 of qualified overtime premium, my MAGI was $90,000 and I file single. What is my 2025 overtime deduction?",
+     "My spouse and I are both over 65, file jointly and have $160,000 MAGI. What is our 2025 senior deduction?",
+     "Single filer, 2026, taxable income $55,000 before the new deductions, MAGI $70,000, $30 an hour with 200 overtime hours. How much federal tax do I save?"
+    ],
+    "confirm_tools_run": "Owner runs each tool once in Claude (B5)"
+   },
+   "compliance": "Seven acknowledgments, all required. Owner reads and ticks each. Item on first-party API usage needs a truthful answer, see data_handling."
+  },
+  {
+   "repo": "lake-level-mcp",
+   "connection_url": "https://lake-level-mcp.lipmichal.workers.dev/mcp",
+   "tools_synced": [
+    "search_lakes",
+    "get_lake_level",
+    "get_lake_history",
+    "compare_lakes"
+   ],
+   "tool_annotations_ok": true,
+   "listing": {
+    "name": "Lake Level Now",
+    "name_chars": 14,
+    "one_liner": "Current level, recent change and distance below full pool for 44 US lakes and reservoirs, read live from USGS, Reclamation, USACE, CDEC and TWDB gauges.",
+    "one_liner_chars": 152,
+    "description": "Lake Level Now answers questions about the water level of 44 US lakes and reservoirs, including Lake Mead, Lake Powell, Lake Travis, Shasta, Oroville and Lake Lanier. It reads the government gauge at the moment you ask, so the answer is a current reading and not something remembered from training data.\n\nFour tools. search_lakes finds a lake by name, river or state. get_lake_level returns the current elevation in feet, the 24 hour, 7 day and 30 day change, the distance below full pool and, where the agency publishes storage, the percent full. get_lake_history returns a daily or weekly series for up to 365 days with the low, high and mean. compare_lakes ranks 2 to 10 lakes by how far each sits below full pool.\n\nEvery result names the gauge agency, the measurement time and a link to the agency data. Reservoir agencies sometimes publish with a delay, and the result states how old each reading is. Lakes outside the 44 aren't covered, and the server says so instead of guessing. It doesn't forecast, and a reading is not a safety or navigation advisory.\n\nNo account, token or sign-in is needed, and the server stores nothing about you. Results include a link to the matching page on lakelevelnow.com, a reference site run by the same author.",
+    "description_chars": 1249,
+    "categories": "Reference data, Weather or environment (pick the closest two from the portal list)",
+    "docs_url": "https://github.com/theluckystrike/lake-level-mcp#readme",
+    "privacy_url": "https://mcp.zovo.one/privacy (after B2)",
+    "support_contact": "support@zovo.one",
+    "icon": "OWNER supply (B4)",
+    "slug": "lake-level-now"
+   },
+   "use_cases": "People ask for the current level of a named lake, how much it moved this week, how far below full pool it sits, or how two lakes compare. Typical users are boaters, anglers, water managers, journalists and anyone following drought news. Users need nothing before connecting. The connector only reads data.",
+   "reads_or_writes": "Reads data only",
+   "company": {
+    "name": "OWNER FILL (legal or trading name)",
+    "website": "https://zovo.one",
+    "primary_contact": "support@zovo.one"
+   },
+   "authentication": "Not required. No sign-in, no OAuth.",
+   "data_handling": {
+    "api_ownership": "Third-party public data. Live reads from US government gauge APIs (USGS, USACE, CDEC, Reclamation, TWDB). Expect a reviewer question on policy 3F.",
+    "personal_health_data": "No",
+    "sponsored_content": "No. Results link to a same-topic reference page run by the author."
+   },
+   "test_and_launch": {
+    "reviewer_instructions": "No account is needed. In Claude add https://lake-level-mcp.lipmichal.workers.dev/mcp as a custom connector with no authentication, then run the three example prompts. Each result includes the source link and an as_of date.",
+    "test_prompts": [
+     "What is the water level of Lake Mead right now and how far below full pool is it?",
+     "Compare Lake Powell and Lake Mead today and tell me which is closer to full.",
+     "How has Lake Shasta changed over the last 30 days?"
+    ],
+    "confirm_tools_run": "Owner runs each tool once in Claude (B5)"
+   },
+   "compliance": "Seven acknowledgments, all required. Owner reads and ticks each. Item on first-party API usage needs a truthful answer, see data_handling."
+  }
+ ],
+ "chatgpt_packets": [
+  {
+   "repo": "minimum-wage-mcp",
+   "display_name": "US State Minimum Wage",
+   "mcp_url": "https://minimum-wage-mcp.lipmichal.workers.dev/mcp",
+   "plugin_json": {
+    "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+    "name": "us-state-minimum-wage",
+    "version": "1.0.0",
+    "description": "Minimum wage, tipped cash wage and tip credit for all 50 states and DC in 2026 and 2027, including January 2027 increases that postdate most model training data.",
+    "author": {
+     "name": "OWNER FILL (verified developer name)",
+     "email": "support@zovo.one",
+     "url": "https://zovo.one"
+    },
+    "homepage": "https://statewage.com",
+    "repository": "https://github.com/theluckystrike/minimum-wage-mcp",
+    "license": "MIT",
+    "keywords": [
+     "minimum wage",
+     "tipped wage",
+     "payroll",
+     "state minimum wage 2027"
+    ],
+    "extensions": {
+     "com.openai": {
+      "interface": {
+       "displayName": "US State Minimum Wage",
+       "shortDescription": "Minimum wage, tipped cash wage and tip credit for all 50 states and DC in 2026 and 2027, including",
+       "longDescription": "US State Minimum Wage gives an assistant the state minimum wage on a chosen date in 2026 or 2027 for all 50 states and DC. It covers the standard hourly rate, the tipped cash wage, the tip credit and the date the rate took effect, and it applies the $7.25 federal floor where a state has no higher rate.\n\nFour tools. get_minimum_wage returns one state's rate on a date. list_upcoming_increases lists every scheduled change through 2027-12-31, sorted by date. compare_states lines up 2 to 10 states with full-time annual pay and the gap between the highest and lowest. annual_income_at_minimum_wage turns a state rate into weekly, monthly and annual gross pay.\n\nFigures come from the US Department of Labor state tables and state labor department notices, and each result carries a source link and an as_of date. Some 2027 rates are set by an inflation index and haven't been announced for Nebraska, Vermont, DC and Oregon, so the server reports them as not announced and never estimates them. Three 2027 figures (Arizona, Connecticut and Rhode Island) rest on the text of an official notice or statute plus a news report because the state pages couldn't be read, and the result flags that. City and county minimum wages aren't included and can be higher.\n\nNo account or token is needed, and the server stores nothing about you. Results include a link to a related page on statewage.com, a reference site run by the same author.",
+       "developerName": "OWNER FILL",
+       "category": "Productivity",
+       "capabilities": [
+        "Read"
+       ],
+       "websiteURL": "https://statewage.com",
+       "supportURL": "https://zovo.one",
+       "privacyPolicyURL": "https://mcp.zovo.one/privacy (after B2)",
+       "termsOfServiceURL": "OWNER FILL (after B3)",
+       "defaultPrompt": [
+        "What is the minimum wage in California on January 1, 2027, and is there a tip credit?",
+        "Which states raise their minimum wage next, and by how much?",
+        "Compare the minimum wage in Washington, Texas and Florida on 2027-01-01 and show full-time annual pay."
+       ],
+       "brandColor": "OWNER FILL",
+       "composerIcon": "./assets/icon.png",
+       "logo": "./assets/logo.png"
+      },
+      "review": {
+       "test_cases": {
+        "positive": [
+         {
+          "description": "Rate on a future date",
+          "prompt": "What is the minimum wage in California on January 1, 2027, and is there a tip credit?",
+          "tools_triggered": "get_minimum_wage",
+          "expected_behavior": "Returns $17.40 an hour in force since 2027-01-01 and states that no tip credit is allowed. Links the California Department of Finance notice as the source."
+         },
+         {
+          "description": "Upcoming increases",
+          "prompt": "Which states raise their minimum wage next, and by how much?",
+          "tools_triggered": "list_upcoming_increases",
+          "expected_behavior": "Returns 19 scheduled changes through 2027-12-31, 15 with a published rate and 4 (NE, VT, DC, OR) marked not announced. The next published change is Arizona to $15.65 on 2027-01-01. Run on the 2026-11-02 test date."
+         },
+         {
+          "description": "Compare three states",
+          "prompt": "Compare the minimum wage in Washington, Texas and Florida on 2027-01-01 and show full-time annual pay.",
+          "tools_triggered": "compare_states",
+          "expected_behavior": "Washington highest at $17.73, Texas lowest at $7.25, a gap of $10.48 an hour or $21,798.40 a year full time."
+         },
+         {
+          "description": "Annual income at minimum wage",
+          "prompt": "How much does a full-time worker in Colorado earn in a year at the 2027 minimum wage?",
+          "tools_triggered": "annual_income_at_minimum_wage",
+          "expected_behavior": "Uses $15.71 an hour. Returns $32,676.80 a year, about $2,723.07 a month and $628.40 a week, before tax. Cites the Colorado Department of Labor press release."
+         },
+         {
+          "description": "Tipped wage",
+          "prompt": "What is the tipped cash wage in Texas?",
+          "tools_triggered": "get_minimum_wage",
+          "expected_behavior": "Returns a $7.25 minimum, a tipped cash wage of $2.13 and a tip credit of $5.12, sourced to the US DOL state table."
+         }
+        ],
+        "negative": [
+         {
+          "description": "City rate out of scope",
+          "prompt": "What is the minimum wage in Seattle?",
+          "expected_behavior": "The tools cover states only and the server errors on a city name. The assistant should say city and county rates aren't covered, and may offer the Washington state rate with that caveat. It should not invent a Seattle figure."
+         },
+         {
+          "description": "Non-US jurisdiction",
+          "prompt": "What is the minimum wage in Ontario, Canada?",
+          "expected_behavior": "The server only covers US states and DC and returns an unknown state error. The assistant should say it can't answer from this plugin and should not guess."
+         },
+         {
+          "description": "Legal filing request",
+          "prompt": "My employer in Texas paid me $6 an hour. File a wage claim for me.",
+          "expected_behavior": "The plugin reads reference data and can't file or advise on claims. The assistant may state the Texas rate and suggest contacting the Department of Labor, and should not claim to have filed anything."
+         }
+        ]
+       },
+       "demo_recording_url": "OWNER FILL after recording",
+       "commerce": false,
+       "commerce_description": "This plugin does not sell products or process payments."
+      },
+      "publication": {
+       "countries": [
+        "US"
+       ],
+       "release_notes": "Initial release."
+      }
+     }
+    }
+   },
+   "mcp_json": {
+    "$schema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
+    "mcpServers": {
+     "us-state-minimum-wage": {
+      "type": "streamable-http",
+      "url": "https://minimum-wage-mcp.lipmichal.workers.dev/mcp"
+     }
+    }
+   },
+   "domain_check": "Portal shows a token. Serve it as plain text at https://minimum-wage-mcp.lipmichal.workers.dev/.well-known/openai-apps-challenge (currently 404).",
+   "positive_cases": [
+    {
+     "description": "Rate on a future date",
+     "prompt": "What is the minimum wage in California on January 1, 2027, and is there a tip credit?",
+     "tools_triggered": "get_minimum_wage",
+     "expected_behavior": "Returns $17.40 an hour in force since 2027-01-01 and states that no tip credit is allowed. Links the California Department of Finance notice as the source."
+    },
+    {
+     "description": "Upcoming increases",
+     "prompt": "Which states raise their minimum wage next, and by how much?",
+     "tools_triggered": "list_upcoming_increases",
+     "expected_behavior": "Returns 19 scheduled changes through 2027-12-31, 15 with a published rate and 4 (NE, VT, DC, OR) marked not announced. The next published change is Arizona to $15.65 on 2027-01-01. Run on the 2026-11-02 test date."
+    },
+    {
+     "description": "Compare three states",
+     "prompt": "Compare the minimum wage in Washington, Texas and Florida on 2027-01-01 and show full-time annual pay.",
+     "tools_triggered": "compare_states",
+     "expected_behavior": "Washington highest at $17.73, Texas lowest at $7.25, a gap of $10.48 an hour or $21,798.40 a year full time."
+    },
+    {
+     "description": "Annual income at minimum wage",
+     "prompt": "How much does a full-time worker in Colorado earn in a year at the 2027 minimum wage?",
+     "tools_triggered": "annual_income_at_minimum_wage",
+     "expected_behavior": "Uses $15.71 an hour. Returns $32,676.80 a year, about $2,723.07 a month and $628.40 a week, before tax. Cites the Colorado Department of Labor press release."
+    },
+    {
+     "description": "Tipped wage",
+     "prompt": "What is the tipped cash wage in Texas?",
+     "tools_triggered": "get_minimum_wage",
+     "expected_behavior": "Returns a $7.25 minimum, a tipped cash wage of $2.13 and a tip credit of $5.12, sourced to the US DOL state table."
+    }
+   ],
+   "negative_cases": [
+    {
+     "description": "City rate out of scope",
+     "prompt": "What is the minimum wage in Seattle?",
+     "expected_behavior": "The tools cover states only and the server errors on a city name. The assistant should say city and county rates aren't covered, and may offer the Washington state rate with that caveat. It should not invent a Seattle figure."
+    },
+    {
+     "description": "Non-US jurisdiction",
+     "prompt": "What is the minimum wage in Ontario, Canada?",
+     "expected_behavior": "The server only covers US states and DC and returns an unknown state error. The assistant should say it can't answer from this plugin and should not guess."
+    },
+    {
+     "description": "Legal filing request",
+     "prompt": "My employer in Texas paid me $6 an hour. File a wage claim for me.",
+     "expected_behavior": "The plugin reads reference data and can't file or advise on claims. The assistant may state the Texas rate and suggest contacting the Department of Labor, and should not claim to have filed anything."
+    }
+   ],
+   "positive_values_verified": "Expected values were taken from live tools/call runs against https://minimum-wage-mcp.lipmichal.workers.dev/mcp on 2026-11-02.",
+   "countries": [
+    "US"
+   ],
+   "commerce": false
+  },
+  {
+   "repo": "no-tax-on-overtime-mcp",
+   "display_name": "No Tax on Overtime",
+   "mcp_url": "https://no-tax-on-overtime-mcp.lipmichal.workers.dev/mcp",
+   "plugin_json": {
+    "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+    "name": "no-tax-on-overtime",
+    "version": "1.0.0",
+    "description": "Federal overtime, tips and senior deductions for 2025 to 2028 under the One Big Beautiful Bill Act, with caps and phase-outs taken from IRS forms and guidance.",
+    "author": {
+     "name": "OWNER FILL (verified developer name)",
+     "email": "support@zovo.one",
+     "url": "https://zovo.one"
+    },
+    "homepage": "https://noovertimetax.com",
+    "repository": "https://github.com/theluckystrike/no-tax-on-overtime-mcp",
+    "license": "MIT",
+    "keywords": [
+     "overtime",
+     "tips",
+     "senior deduction",
+     "One Big Beautiful Bill Act",
+     "tax"
+    ],
+    "extensions": {
+     "com.openai": {
+      "interface": {
+       "displayName": "No Tax on Overtime",
+       "shortDescription": "Federal overtime, tips and senior deductions for 2025 to 2028 under the One Big Beautiful Bill Act,",
+       "longDescription": "No Tax on Overtime calculates the federal deductions for qualified overtime pay, qualified tips and seniors age 65 and older that the One Big Beautiful Bill Act (P.L. 119-21) created for tax years 2025 to 2028. The rules are recent and IRS guidance kept changing through 2026, so a model's training data can be missing or wrong on the details.\n\nFive tools. calculate_overtime_deduction applies the $12,500 cap ($25,000 joint) and the income phase-out, and converts hourly rate, hours and multiplier into the half-time premium that actually qualifies. calculate_tips_deduction applies the $25,000 per return cap. calculate_senior_deduction applies the $6,000 per person amount and the 6 percent reduction above $75,000 ($150,000 joint). estimate_tax_savings runs the three deductions through the IRS brackets before and after. explain_eligibility explains who qualifies, who doesn't (married filing separately) and which form boxes report the amounts.\n\nAmounts are copied from IRS Schedule 1-A, the Form 1040 instructions, Rev. Proc. 2024-40, Rev. Proc. 2025-32 and fact sheet FS-2026-13, and each result links to the IRS source. 2027 and 2028 bracket tables aren't published yet, so those years use the 2026 tables and the result says so. Every result carries a disclaimer that it is an estimate and not tax advice. The server doesn't file anything, stores nothing and needs no account or token. Results include a link to a related page on noovertimetax.com, a reference site run by the same author.",
+       "developerName": "OWNER FILL",
+       "category": "Productivity",
+       "capabilities": [
+        "Read"
+       ],
+       "websiteURL": "https://noovertimetax.com",
+       "supportURL": "https://zovo.one",
+       "privacyPolicyURL": "https://mcp.zovo.one/privacy (after B2)",
+       "termsOfServiceURL": "OWNER FILL (after B3)",
+       "defaultPrompt": [
+        "I had $6,000 of qualified overtime premium, my MAGI was $90,000 and I file single. What is my 2025 overtime deduction?",
+        "My spouse and I are both over 65, file jointly and have $160,000 MAGI. What is our 2025 senior deduction?",
+        "Single filer, 2026, taxable income $55,000 before the new deductions, MAGI $70,000, $30 an hour with 200 overtime hours. How much federal tax do I save?"
+       ],
+       "brandColor": "OWNER FILL",
+       "composerIcon": "./assets/icon.png",
+       "logo": "./assets/logo.png"
+      },
+      "review": {
+       "test_cases": {
+        "positive": [
+         {
+          "description": "Overtime under the threshold",
+          "prompt": "I had $6,000 of qualified overtime premium, my MAGI was $90,000 and I file single. What is my 2025 overtime deduction?",
+          "tools_triggered": "calculate_overtime_deduction",
+          "expected_behavior": "Deduction is $6,000. No phase-out because MAGI is under $150,000. Includes the estimate disclaimer and IRS Schedule 1-A source link."
+         },
+         {
+          "description": "Overtime with phase-out",
+          "prompt": "Same overtime but my MAGI was $160,000. What is the 2025 deduction?",
+          "tools_triggered": "calculate_overtime_deduction",
+          "expected_behavior": "Phase-out removes $1,000 ($100 per full $1,000 over $150,000). Deduction is $5,000."
+         },
+         {
+          "description": "Tips deduction",
+          "prompt": "I earned $9,000 in tips, MAGI $80,000, single, tax year 2025. What can I deduct?",
+          "tools_triggered": "calculate_tips_deduction",
+          "expected_behavior": "Deduction is $9,000. No phase-out and under the $25,000 cap."
+         },
+         {
+          "description": "Senior deduction, joint",
+          "prompt": "We file jointly, both over 65, MAGI $160,000, tax year 2025. What is our senior deduction?",
+          "tools_triggered": "calculate_senior_deduction",
+          "expected_behavior": "Two qualifying people, each $6,000 reduced by $600 to $5,400. Deduction is $10,800."
+         },
+         {
+          "description": "Eligibility rules",
+          "prompt": "Who can claim the no tax on tips deduction, and does married filing separately qualify?",
+          "tools_triggered": "explain_eligibility",
+          "expected_behavior": "Explains that married filing separately cannot claim any of the deductions, each person needs an SSN valid for employment, and from 2026 overtime must be reported on Form W-2 box 12 code TT (tips code TP). Links the IRS sources."
+         }
+        ],
+        "negative": [
+         {
+          "description": "Filing request",
+          "prompt": "File my Schedule 1-A and submit my tax return.",
+          "expected_behavior": "The plugin only calculates estimates and can't file anything. The assistant should say so and point to the IRS instructions or a tax preparer."
+         },
+         {
+          "description": "Other country",
+          "prompt": "What is the income tax on a 50,000 pound salary in the UK?",
+          "expected_behavior": "This plugin covers US federal deductions only. The assistant should say it is out of scope and should not call these tools."
+         },
+         {
+          "description": "Restricted identifier",
+          "prompt": "Check if I qualify. My SSN is 123-45-6789.",
+          "expected_behavior": "The tools never ask for an SSN. The assistant should not pass the number to the plugin and should explain that only filing status, MAGI and amounts are needed."
+         }
+        ]
+       },
+       "demo_recording_url": "OWNER FILL after recording",
+       "commerce": false,
+       "commerce_description": "This plugin does not sell products or process payments."
+      },
+      "publication": {
+       "countries": [
+        "US"
+       ],
+       "release_notes": "Initial release."
+      }
+     }
+    }
+   },
+   "mcp_json": {
+    "$schema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
+    "mcpServers": {
+     "no-tax-on-overtime": {
+      "type": "streamable-http",
+      "url": "https://no-tax-on-overtime-mcp.lipmichal.workers.dev/mcp"
+     }
+    }
+   },
+   "domain_check": "Portal shows a token. Serve it as plain text at https://no-tax-on-overtime-mcp.lipmichal.workers.dev/.well-known/openai-apps-challenge (currently 404).",
+   "positive_cases": [
+    {
+     "description": "Overtime under the threshold",
+     "prompt": "I had $6,000 of qualified overtime premium, my MAGI was $90,000 and I file single. What is my 2025 overtime deduction?",
+     "tools_triggered": "calculate_overtime_deduction",
+     "expected_behavior": "Deduction is $6,000. No phase-out because MAGI is under $150,000. Includes the estimate disclaimer and IRS Schedule 1-A source link."
+    },
+    {
+     "description": "Overtime with phase-out",
+     "prompt": "Same overtime but my MAGI was $160,000. What is the 2025 deduction?",
+     "tools_triggered": "calculate_overtime_deduction",
+     "expected_behavior": "Phase-out removes $1,000 ($100 per full $1,000 over $150,000). Deduction is $5,000."
+    },
+    {
+     "description": "Tips deduction",
+     "prompt": "I earned $9,000 in tips, MAGI $80,000, single, tax year 2025. What can I deduct?",
+     "tools_triggered": "calculate_tips_deduction",
+     "expected_behavior": "Deduction is $9,000. No phase-out and under the $25,000 cap."
+    },
+    {
+     "description": "Senior deduction, joint",
+     "prompt": "We file jointly, both over 65, MAGI $160,000, tax year 2025. What is our senior deduction?",
+     "tools_triggered": "calculate_senior_deduction",
+     "expected_behavior": "Two qualifying people, each $6,000 reduced by $600 to $5,400. Deduction is $10,800."
+    },
+    {
+     "description": "Eligibility rules",
+     "prompt": "Who can claim the no tax on tips deduction, and does married filing separately qualify?",
+     "tools_triggered": "explain_eligibility",
+     "expected_behavior": "Explains that married filing separately cannot claim any of the deductions, each person needs an SSN valid for employment, and from 2026 overtime must be reported on Form W-2 box 12 code TT (tips code TP). Links the IRS sources."
+    }
+   ],
+   "negative_cases": [
+    {
+     "description": "Filing request",
+     "prompt": "File my Schedule 1-A and submit my tax return.",
+     "expected_behavior": "The plugin only calculates estimates and can't file anything. The assistant should say so and point to the IRS instructions or a tax preparer."
+    },
+    {
+     "description": "Other country",
+     "prompt": "What is the income tax on a 50,000 pound salary in the UK?",
+     "expected_behavior": "This plugin covers US federal deductions only. The assistant should say it is out of scope and should not call these tools."
+    },
+    {
+     "description": "Restricted identifier",
+     "prompt": "Check if I qualify. My SSN is 123-45-6789.",
+     "expected_behavior": "The tools never ask for an SSN. The assistant should not pass the number to the plugin and should explain that only filing status, MAGI and amounts are needed."
+    }
+   ],
+   "positive_values_verified": "Expected values were taken from live tools/call runs against https://no-tax-on-overtime-mcp.lipmichal.workers.dev/mcp on 2026-11-02.",
+   "countries": [
+    "US"
+   ],
+   "commerce": false
+  },
+  {
+   "repo": "lake-level-mcp",
+   "display_name": "Lake Level Now",
+   "mcp_url": "https://lake-level-mcp.lipmichal.workers.dev/mcp",
+   "plugin_json": {
+    "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+    "name": "lake-level-now",
+    "version": "1.0.0",
+    "description": "Current level, recent change and distance below full pool for 44 US lakes and reservoirs, read live from USGS, Reclamation, USACE, CDEC and TWDB gauges.",
+    "author": {
+     "name": "OWNER FILL (verified developer name)",
+     "email": "support@zovo.one",
+     "url": "https://zovo.one"
+    },
+    "homepage": "https://lakelevelnow.com",
+    "repository": "https://github.com/theluckystrike/lake-level-mcp",
+    "license": "MIT",
+    "keywords": [
+     "lake level",
+     "reservoir",
+     "water level",
+     "drought",
+     "USGS"
+    ],
+    "extensions": {
+     "com.openai": {
+      "interface": {
+       "displayName": "Lake Level Now",
+       "shortDescription": "Current level, recent change and distance below full pool for 44 US lakes and reservoirs, read live",
+       "longDescription": "Lake Level Now answers questions about the water level of 44 US lakes and reservoirs, including Lake Mead, Lake Powell, Lake Travis, Shasta, Oroville and Lake Lanier. It reads the government gauge at the moment you ask, so the answer is a current reading and not something remembered from training data.\n\nFour tools. search_lakes finds a lake by name, river or state. get_lake_level returns the current elevation in feet, the 24 hour, 7 day and 30 day change, the distance below full pool and, where the agency publishes storage, the percent full. get_lake_history returns a daily or weekly series for up to 365 days with the low, high and mean. compare_lakes ranks 2 to 10 lakes by how far each sits below full pool.\n\nEvery result names the gauge agency, the measurement time and a link to the agency data. Reservoir agencies sometimes publish with a delay, and the result states how old each reading is. Lakes outside the 44 aren't covered, and the server says so instead of guessing. It doesn't forecast, and a reading is not a safety or navigation advisory.\n\nNo account, token or sign-in is needed, and the server stores nothing about you. Results include a link to the matching page on lakelevelnow.com, a reference site run by the same author.",
+       "developerName": "OWNER FILL",
+       "category": "Productivity",
+       "capabilities": [
+        "Read"
+       ],
+       "websiteURL": "https://lakelevelnow.com",
+       "supportURL": "https://zovo.one",
+       "privacyPolicyURL": "https://mcp.zovo.one/privacy (after B2)",
+       "termsOfServiceURL": "OWNER FILL (after B3)",
+       "defaultPrompt": [
+        "What is the water level of Lake Mead right now and how far below full pool is it?",
+        "Compare Lake Powell and Lake Mead today and tell me which is closer to full.",
+        "How has Lake Shasta changed over the last 30 days?"
+       ],
+       "brandColor": "OWNER FILL",
+       "composerIcon": "./assets/icon.png",
+       "logo": "./assets/logo.png"
+      },
+      "review": {
+       "test_cases": {
+        "positive": [
+         {
+          "description": "Current level",
+          "prompt": "What is the water level of Lake Mead right now and how far below full pool is it?",
+          "tools_triggered": "get_lake_level",
+          "expected_behavior": "Returns the current elevation, 24 hour, 7 day and 30 day change, feet below the 1,229 ft full pool and percent full, with a Reclamation source link. On 2026-11-02 the reading was 1,038.85 ft, 190.15 ft below full pool, 23.8 percent full. Live values move."
+         },
+         {
+          "description": "Find lakes by state",
+          "prompt": "Which Texas lakes can you look up?",
+          "tools_triggered": "search_lakes",
+          "expected_behavior": "Returns 15 Texas lakes including Lake Travis, Canyon Lake and Amistad Reservoir with slugs, full pool and the gauge agency."
+         },
+         {
+          "description": "Compare two lakes",
+          "prompt": "Compare Lake Powell and Lake Mead today and tell me which is closer to full.",
+          "tools_triggered": "compare_lakes",
+          "expected_behavior": "Ranks both by distance below full pool. On 2026-11-02 Lake Mead was 190.15 ft below and Lake Powell 168.20 ft below, so Powell was closer. Live values move."
+         },
+         {
+          "description": "History",
+          "prompt": "How has Lake Shasta changed over the last 30 days?",
+          "tools_triggered": "get_lake_history",
+          "expected_behavior": "Returns a daily series with first, last, low, high and mean. On 2026-11-02 it covered 2026-10-03 to 2026-10-31, from 980.73 ft to 972.52 ft, a change of -8.21 ft, sourced to CDEC."
+         },
+         {
+          "description": "Near full pool",
+          "prompt": "Is Lake Travis close to full?",
+          "tools_triggered": "get_lake_level",
+          "expected_behavior": "Returns the USGS reading and the distance below the 681 ft full pool. On 2026-11-02 it was 677.18 ft, 3.82 ft below full pool. Live values move."
+         }
+        ],
+        "negative": [
+         {
+          "description": "Lake not covered",
+          "prompt": "What is the water level of Loch Ness?",
+          "expected_behavior": "The server returns an error saying no covered lake matches. The assistant should say the lake isn't covered, may point to search_lakes for the 44 covered lakes, and should not invent a level."
+         },
+         {
+          "description": "Forecast request",
+          "prompt": "Predict the level of Lake Mead next July.",
+          "expected_behavior": "There is no forecasting tool. The assistant should say the plugin reports current and past gauge readings only, and may offer the recent history instead."
+         },
+         {
+          "description": "Booking request",
+          "prompt": "Book me a boat ramp slot at Lake Travis for Saturday.",
+          "expected_behavior": "The plugin reads gauge data and can't book anything. The assistant should say so and should not call the tools to fake a booking."
+         }
+        ]
+       },
+       "demo_recording_url": "OWNER FILL after recording",
+       "commerce": false,
+       "commerce_description": "This plugin does not sell products or process payments."
+      },
+      "publication": {
+       "countries": [
+        "US"
+       ],
+       "release_notes": "Initial release."
+      }
+     }
+    }
+   },
+   "mcp_json": {
+    "$schema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
+    "mcpServers": {
+     "lake-level-now": {
+      "type": "streamable-http",
+      "url": "https://lake-level-mcp.lipmichal.workers.dev/mcp"
+     }
+    }
+   },
+   "domain_check": "Portal shows a token. Serve it as plain text at https://lake-level-mcp.lipmichal.workers.dev/.well-known/openai-apps-challenge (currently 404).",
+   "positive_cases": [
+    {
+     "description": "Current level",
+     "prompt": "What is the water level of Lake Mead right now and how far below full pool is it?",
+     "tools_triggered": "get_lake_level",
+     "expected_behavior": "Returns the current elevation, 24 hour, 7 day and 30 day change, feet below the 1,229 ft full pool and percent full, with a Reclamation source link. On 2026-11-02 the reading was 1,038.85 ft, 190.15 ft below full pool, 23.8 percent full. Live values move."
+    },
+    {
+     "description": "Find lakes by state",
+     "prompt": "Which Texas lakes can you look up?",
+     "tools_triggered": "search_lakes",
+     "expected_behavior": "Returns 15 Texas lakes including Lake Travis, Canyon Lake and Amistad Reservoir with slugs, full pool and the gauge agency."
+    },
+    {
+     "description": "Compare two lakes",
+     "prompt": "Compare Lake Powell and Lake Mead today and tell me which is closer to full.",
+     "tools_triggered": "compare_lakes",
+     "expected_behavior": "Ranks both by distance below full pool. On 2026-11-02 Lake Mead was 190.15 ft below and Lake Powell 168.20 ft below, so Powell was closer. Live values move."
+    },
+    {
+     "description": "History",
+     "prompt": "How has Lake Shasta changed over the last 30 days?",
+     "tools_triggered": "get_lake_history",
+     "expected_behavior": "Returns a daily series with first, last, low, high and mean. On 2026-11-02 it covered 2026-10-03 to 2026-10-31, from 980.73 ft to 972.52 ft, a change of -8.21 ft, sourced to CDEC."
+    },
+    {
+     "description": "Near full pool",
+     "prompt": "Is Lake Travis close to full?",
+     "tools_triggered": "get_lake_level",
+     "expected_behavior": "Returns the USGS reading and the distance below the 681 ft full pool. On 2026-11-02 it was 677.18 ft, 3.82 ft below full pool. Live values move."
+    }
+   ],
+   "negative_cases": [
+    {
+     "description": "Lake not covered",
+     "prompt": "What is the water level of Loch Ness?",
+     "expected_behavior": "The server returns an error saying no covered lake matches. The assistant should say the lake isn't covered, may point to search_lakes for the 44 covered lakes, and should not invent a level."
+    },
+    {
+     "description": "Forecast request",
+     "prompt": "Predict the level of Lake Mead next July.",
+     "expected_behavior": "There is no forecasting tool. The assistant should say the plugin reports current and past gauge readings only, and may offer the recent history instead."
+    },
+    {
+     "description": "Booking request",
+     "prompt": "Book me a boat ramp slot at Lake Travis for Saturday.",
+     "expected_behavior": "The plugin reads gauge data and can't book anything. The assistant should say so and should not call the tools to fake a booking."
+    }
+   ],
+   "positive_values_verified": "Expected values were taken from live tools/call runs against https://lake-level-mcp.lipmichal.workers.dev/mcp on 2026-11-02.",
+   "countries": [
+    "US"
+   ],
+   "commerce": false
+  }
+ ],
+ "show_hn": {
+  "title": "Show HN: Free MCP servers for lake levels, 2027 wages and new tax rules",
+  "title_chars": 71,
+  "alt_title": "Show HN: 15 free hosted MCP servers for data LLMs lack, no signup",
+  "alt_title_chars": 65,
+  "url": "https://github.com/theluckystrike/lake-level-mcp",
+  "prefix_note": "The Show HN prefix with its colon is the required HN token, so it is kept as is.",
+  "first_comment": "Assistants get one kind of question wrong again and again, and it isn't a reasoning problem. The model just doesn't have the number. Where Lake Mead sits today, what Colorado's minimum wage is on January 1, 2027, how the income phase-out works for the new overtime deduction.\n\nSo I wrote small servers that hold those numbers. I have 15 of them now, each one a separate repo with 4 or 5 read-only tools. They run on Cloudflare Workers, need no key and no sign-in, and you can paste the URL into a Claude or ChatGPT connector or run the repo with npx. The lake one is https://lake-level-mcp.lipmichal.workers.dev/mcp and the other 14 are listed at the bottom of its README.\n\nThe data comes from two places. The lake server reads USGS, Reclamation, Army Corps, California CDEC and Texas Water Development Board gauges at call time. The wage and tax servers ship tables I copied from DOL, state labor departments and IRS documents, with each source URL and fetch date in DATA_SOURCES.md, and tests built from the official worked examples.\n\nLimits I know about. Three 2027 minimum wage figures (Arizona, Connecticut and Rhode Island) come from the text of the official notice plus a news report because those state sites blocked me, and the result says so. Nebraska, Vermont, DC and Oregon haven't announced 2027 rates, so the server answers not announced instead of guessing. Reclamation publishes with a lag, so Lake Mead can be a day or two old. City minimum wages aren't covered.\n\nEvery result also links to a related page on a site I run, with a utm tag so I can see if anyone clicks. The answer doesn't depend on the link, and those sites show ads. I'd like to hear whether you think a link like that belongs in a tool result at all.\n\nMIT licensed. I'm around today to fix anything, and wrong numbers are the bug reports I most want.",
+  "guideline_risks": [
+   "HN says non-trivial and personally built, not quickly generated one-offs. A batch of 15 servers can read that way. Lead with the three data stories, and say plainly how the work was done if asked.",
+   "Show HN needs something people can try. The hosted URL works with no signup, and a reader can curl tools/list.",
+   "The README footer lists only 8 other servers. Regenerate it with ~/mcp-servers/satellites/render_index.py so it shows all 14 before posting.",
+   "Never ask anyone to upvote."
+  ],
+  "owner_check": "Before posting, the owner confirms the sentence about being around today, and decides whether to add a plain line on how much a coding agent wrote."
+ },
+ "glama_pitch": {
+  "to": "frank@glama.ai",
+  "subject": "Pitch for the MCP newsletter on what directory reviewers see in a tool result",
+  "body": "Hi Frank,\n\nI'd like to write a practical piece for the MCP newsletter on what Anthropic's and OpenAI's directory reviewers actually check in a tool result, and the mistakes I found in my own servers while preparing submissions.\n\nI run 15 free, keyless, hosted MCP servers for data a model can't know (lake levels, 2027 state minimum wages, 2025 to 2028 tax deductions). Reading the two directory policies against my own tool output turned up things I'd shipped without noticing. A summary sentence that pointed readers to a paid almanac. A note field that pitched a paid bundle. A link field named more that read like a teaser. Each one is a small fix, and each is the kind of thing that gets a submission rejected.\n\nThe piece would be about 900 words with the checklist, real before and after tool output, and the policy clauses linked. It would mention my servers only where they serve as examples. Nine of them already have Glama listings, and the scores I could read run from 4.1 to 4.4 on its tool quality scale, and I'd happily use those as the worked case.\n\nWould that suit a Friday issue? I can send an outline first if you prefer.\n\nThanks,\nMichael\nhttps://github.com/theluckystrike",
+  "source": "https://glama.ai/newsletter says contributors write the piece, Glama edits it, and mentioning your product is fine if it delivers value. Send from the owner's normal mailbox, not Resend."
+ },
+ "owner_minutes": {
+  "glama_add_6": 12,
+  "claude_directory_3_connectors": 55,
+  "chatgpt_plugins_3": 90,
+  "show_hn_post": 15,
+  "glama_email": 3,
+  "icons_and_company_details": 15,
+  "note": "Estimates. Claude is about 15 minutes per connector plus 10 for the first-time portal tour. ChatGPT includes 15 for identity verification if not yet done, about 15 per plugin for upload and checks, and a 3 minute recording each."
+ }
+}
