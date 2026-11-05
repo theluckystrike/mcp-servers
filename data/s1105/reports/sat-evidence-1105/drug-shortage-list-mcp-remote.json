@@ -1,0 +1,440 @@
+{
+ "url": "https://drug-shortage-list-mcp.lipmichal.workers.dev/mcp",
+ "at": "2026-11-05T12:39:15.241270+00:00",
+ "commands": [
+  "POST initialize to https://drug-shortage-list-mcp.lipmichal.workers.dev/mcp",
+  "python3 /Users/mike/mcp-servers/data/s1103/stamp/mcpcall.py drug-shortage-list-mcp list",
+  "python3 /Users/mike/mcp-servers/data/s1103/stamp/mcpcall.py drug-shortage-list-mcp call search_drug_shortages '{\"drug\":\"Adderall\"}'"
+ ],
+ "initialize": {
+  "http_status": 200,
+  "mcp_session_id": null,
+  "body": {
+   "result": {
+    "protocolVersion": "2025-03-26",
+    "capabilities": {
+     "tools": {
+      "listChanged": true
+     }
+    },
+    "serverInfo": {
+     "name": "drug-shortage-list-mcp",
+     "version": "1.0.0",
+     "websiteUrl": "https://www.mcpstamp.com"
+    },
+    "instructions": "Live US drug shortage status read at call time from the FDA Drug Shortages database through openFDA (api.fda.gov/drug/shortages.json), which FDA updates daily. Shortages start and end every week; never answer whether a drug is in shortage from memory. Use search_drug_shortages with a generic or brand name."
+   },
+   "jsonrpc": "2.0",
+   "id": 1
+  }
+ },
+ "tools_list": {
+  "result": {
+   "tools": [
+    {
+     "name": "search_drug_shortages",
+     "title": "Search drug shortages",
+     "description": "Is a drug in shortage now? Searches the FDA Drug Shortages database (via openFDA, updated daily) by generic name, brand name or active ingredient, for example \"amoxicillin\", \"Adderall\", \"semaglutide\", \"lidocaine\". Returns listings grouped by product with counts by status (Current, To Be Discontinued, Resolved) and availability (Available, Limited, Unavailable), shortage reasons, companies, presentations and dates. Your training data cannot know today's shortage list.",
+     "inputSchema": {
+      "type": "object",
+      "properties": {
+       "drug": {
+        "type": "string",
+        "minLength": 2,
+        "maxLength": 80,
+        "description": "Generic name, brand name or active ingredient, for example \"amphetamine\", \"Adderall\", \"cefazolin\"."
+       },
+       "status": {
+        "type": "string",
+        "enum": [
+         "current",
+         "to_be_discontinued",
+         "resolved",
+         "all"
+        ],
+        "description": "current, to_be_discontinued, resolved or all. Default all."
+       },
+       "max_presentations": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 100,
+        "description": "Package listings to show per product, 1 to 100. Default 10."
+       }
+      },
+      "required": [
+       "drug"
+      ],
+      "additionalProperties": false,
+      "$schema": "http://json-schema.org/draft-07/schema#"
+     },
+     "annotations": {
+      "title": "Search drug shortages",
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
+     },
+     "execution": {
+      "taskSupport": "forbidden"
+     }
+    },
+    {
+     "name": "get_drug_shortage_by_ndc",
+     "title": "Get drug shortage by NDC",
+     "description": "FDA shortage status for one National Drug Code, either a package NDC (0641-6059-01) or a product NDC (0641-6059), in the dashed form printed on the label. Returns the exact listing and related packages of the same product.",
+     "inputSchema": {
+      "type": "object",
+      "properties": {
+       "ndc": {
+        "type": "string",
+        "minLength": 8,
+        "maxLength": 14,
+        "description": "Dashed NDC, for example \"0641-6059-01\" or \"0641-6059\"."
+       }
+      },
+      "required": [
+       "ndc"
+      ],
+      "additionalProperties": false,
+      "$schema": "http://json-schema.org/draft-07/schema#"
+     },
+     "annotations": {
+      "title": "Drug shortage by NDC",
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
+     },
+     "execution": {
+      "taskSupport": "forbidden"
+     }
+    },
+    {
+     "name": "list_recent_drug_shortages",
+     "title": "List recent drug shortages",
+     "description": "The FDA drug shortage list, most recently updated listings first. Defaults to status Current. Filter by therapeutic category, for example Anesthesia, Oncology, Pediatric, Psychiatry, Cardiovascular, Infectious Disease.",
+     "inputSchema": {
+      "type": "object",
+      "properties": {
+       "status": {
+        "type": "string",
+        "enum": [
+         "current",
+         "to_be_discontinued",
+         "resolved",
+         "all"
+        ],
+        "description": "current, to_be_discontinued, resolved or all. Default current."
+       },
+       "therapeutic_category": {
+        "type": "string",
+        "minLength": 2,
+        "maxLength": 60,
+        "description": "FDA therapeutic category, for example \"Oncology\"."
+       },
+       "limit": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 100,
+        "description": "Listings to return, 1 to 100. Default 25."
+       }
+      },
+      "additionalProperties": false,
+      "$schema": "http://json-schema.org/draft-07/schema#"
+     },
+     "annotations": {
+      "title": "Recent drug shortages",
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
+     },
+     "execution": {
+      "taskSupport": "forbidden"
+     }
+    },
+    {
+     "name": "count_drug_shortages",
+     "title": "Count drug shortages",
+     "description": "How many FDA drug shortage listings there are now, grouped by status, therapeutic_category, shortage_reason or drug (distinct products). Defaults to Current listings by therapeutic category.",
+     "inputSchema": {
+      "type": "object",
+      "properties": {
+       "by": {
+        "type": "string",
+        "enum": [
+         "status",
+         "therapeutic_category",
+         "shortage_reason",
+         "drug"
+        ],
+        "description": "Grouping. Default therapeutic_category."
+       },
+       "status": {
+        "type": "string",
+        "enum": [
+         "current",
+         "to_be_discontinued",
+         "resolved",
+         "all"
+        ],
+        "description": "Status to count within, ignored when by is status. Default current."
+       }
+      },
+      "additionalProperties": false,
+      "$schema": "http://json-schema.org/draft-07/schema#"
+     },
+     "annotations": {
+      "title": "Count drug shortages",
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
+     },
+     "execution": {
+      "taskSupport": "forbidden"
+     }
+    }
+   ]
+  },
+  "jsonrpc": "2.0",
+  "id": 2
+ },
+ "tools_call": {
+  "result": {
+   "content": [
+    {
+     "type": "text",
+     "text": "FDA lists 73 shortage listings matching \"Adderall\" across 1 product, 73 with status Current. Amphetamine Aspartate Monohydrate, Amphetamine Sulfate, Dextroamphetamine Saccharate, Dextroamphetamine Sulfate Tablet: 73 Current; availability 10 Limited Availability, 44 Available, 19 Unavailable; reason Shortage of an active ingredient, Other, Demand increase for the drug; last updated 2026-11-03.\n\n{\n  \"summary\": \"FDA lists 73 shortage listings matching \\\"Adderall\\\" across 1 product, 73 with status Current. Amphetamine Aspartate Monohydrate, Amphetamine Sulfate, Dextroamphetamine Saccharate, Dextroamphetamine Sulfate Tablet: 73 Current; availability 10 Limited Availability, 44 Available, 19 Unavailable; reason Shortage of an active ingredient, Other, Demand increase for the drug; last updated 2026-11-03.\",\n  \"query\": \"Adderall\",\n  \"widened_to_generic\": [\n    \"Amphetamine Aspartate Monohydrate, Amphetamine Sulfate, Dextroamphetamine Saccharate, Dextroamphetamine Sulfate Tablet\"\n  ],\n  \"status_filter\": \"all\",\n  \"total_listings\": 73,\n  \"listings_returned\": 73,\n  \"current_listings\": 73,\n  \"in_shortage_now\": true,\n  \"products\": [\n    {\n      \"generic_name\": \"Amphetamine Aspartate Monohydrate, Amphetamine Sulfate, Dextroamphetamine Saccharate, Dextroamphetamine Sulfate Tablet\",\n      \"brand_names\": [\n        \"ADDERALL\",\n        \"DEXTROAMPHETAMINE SACCHARATE AND AMPHETAMINE ASPARTATE AND DEXTROAMPHETAMINE SULFATE AND AMPHETAMINE SULFATE\",\n        \"DEXTROAMPHETAMINE SACCHARATE, AMPHETAMINE ASPARTATE MONOHYDRATE, DEXTROAMPHETAMINE SULFATE AND AMPHETAMINE SULFATE\",\n        \"DEXTROAMPHETAMINE SACCHARATE, AMPHETAMINE ASPARTATE, DEXTROAMPHETAMINE SULFATE AND AMPHETAMINE SULFATE\"\n      ],\n      \"therapeutic_category\": [\n        \"Psychiatry\"\n      ],\n      \"listings\": 73,\n      \"by_status\": {\n        \"Current\": 73\n      },\n      \"by_availability\": {\n        \"Limited Availability\": 10,\n        \"Available\": 44,\n        \"Unavailable\": 19\n      },\n      \"shortage_reasons\": [\n        \"Shortage of an active ingredient\",\n        \"Other\",\n        \"Demand increase for the drug\"\n      ],\n      \"companies\": [\n        \"Alvogen\",\n        \"Aurobindo Pharma USA\",\n        \"Elite Laboratories, Inc.\",\n        \"Epic Pharma, LLC\",\n        \"Granules Pharmaceuticals Inc.\",\n        \"Lannett Company, Inc.\",\n        \"Oryza Pharmaceuticals Inc.\",\n        \"Sandoz Inc.\",\n        \"SpecGx LLC\",\n        \"Sunrise Pharmaceutical, Inc.\",\n        \"Teva Pharmaceuticals USA, Inc.\"\n      ],\n      \"first_posted\": \"2022-10-12\",\n      \"last_updated\": \"2026-11-03\",\n      \"presentations\": [\n        {\n          \"presentation\": \"Amphetamine Aspartate Monohydrate, Amphetamine Sulfate, Dextroamphetamine Saccharate, Dextroamphetamine Sulfate, Tablet, 5 mg; 5 mg; 5 mg; 5 mg (NDC 42806-344-01)\",\n          \"package_ndc\": \"42806-344-01\",\n          \"company\": \"Epic Pharma, LLC\",\n          \"status\": \"Current\",\n          \"availability\": \"Limited Availability\",\n          \"availability_text\": \"Limited Availability\",\n          \"shortage_reason\": \"Shortage of an active ingredient\",\n          \"related_info\": \"Estimated recovery: TBD\",\n          \"discontinued_date\": null,\n          \"resolved_note\": null,\n          \"initial_posting_date\": \"2022-10-12\",\n          \"update_date\": \"2026-11-03\",\n          \"update_type\": \"Reverified\",\n          \"contact\": \"(718) 276-8600 ext. 3\"\n        },\n        {\n          \"presentation\": \"Amphetamine Aspartate Monohydrate, Amphetamine Sulfate, Dextroamphetamine Saccharate, Dextroamphetamine Sulfate, Tablet, 2.5 mg; 2.5 mg; 2.5 mg; 2.5 mg (NDC 42806-341-01)\",\n          \"package_ndc\": \"42806-341-01\",\n          \"company\": \"Epic Pharma, LLC\",\n          \"status\": \"Current\",\n          \"availability\": \"Limited Availability\",\n          \"availability_text\": \"Limited Availability\",\n          \"shortage_reason\": \"Shortage of an active ingredient\",\n          \"related_info\": \"Estimated recovery: TBD\",\n          \"discontinued_date\": null,\n          \"resolved_note\": null,\n          \"initial_posting_date\": \"2022-10-12\",\n          \"update_date\": \"2026-11-03\",\n          \"update_type\": \"Reverified\",\n          \"contact\": \"(718) 276-8600 ext. 3\"\n        },\n        {\n          \"presentation\": \"Amphetamine Aspartate Monohydrate, Amphetamine Sulfate, Dextroamphetamine Saccharate, Dextroamphetamine Sulfate, Tablet, 2.5 mg; 2.5 mg; 2.5 mg; 2.5 mg (NDC 64850-502-01)\",\n          \"package_ndc\": \"64850-502-01\",\n          \"company\": \"Elite Laboratories, Inc.\",\n          \"status\": \"Current\",\n          \"availability\": \"Available\",\n          \"availability_text\": \"Available\",\n          \"shortage_reason\": null,\n          \"related_info\": null,\n          \"discontinued_date\": null,\n          \"resolved_note\": null,\n          \"initial_posting_date\": \"2022-10-12\",\n          \"update_date\": \"2026-11-03\",\n          \"update_type\": \"Reverified\",\n          \"contact\": \"888-852-6657\"\n        },\n        {\n          \"presentation\": \"Amphetamine Aspartate Monohydrate, Amphetamine Sulfate, Dextroamphetamine Saccharate, Dextroamphetamine Sulfate, Tablet, 7.5 mg; 7.5 mg; 7.5 mg; 7.5 mg (NDC 64850-506-01)\",\n          \"package_ndc\": \"64850-506-01\",\n          \"company\": \"Elite Laboratories, Inc.\",\n          \"status\": \"Current\",\n          \"availability\": \"Available\",\n          \"availability_text\": \"Available\",\n          \"shortage_reason\": null,\n          \"related_info\": null,\n          \"discontinued_date\": null,\n          \"resolved_note\": null,\n          \"initial_posting_date\": \"2023-08-15\",\n          \"update_date\": \"2026-11-03\",\n          \"update_type\": \"Reverified\",\n          \"contact\": \"888-852-6657\"\n        },\n        {\n          \"presentation\": \"Amphetamine Aspartate Monohydrate, Amphetamine Sulfate, Dextroamphetamine Saccharate, Dextroamphetamine Sulfate, Tablet, 7.5 mg; 7.5 mg; 7.5 mg; 7.5 mg (NDC 42806-345-01)\",\n          \"package_ndc\": \"42806-345-01\",\n          \"company\": \"Epic Pharma, LLC\",\n          \"status\": \"Current\",\n          \"availability\": \"Limited Availability\",\n          \"availability_text\": \"Limited Availability\",\n          \"shortage_reason\": \"Shortage of an active ingredient\",\n          \"related_info\": \"Estimated recovery: TBD\",\n          \"discontinued_date\": null,\n          \"resolved_note\": null,\n          \"initial_posting_date\": \"2022-10-12\",\n          \"update_date\": \"2026-11-03\",\n          \"update_type\": \"Reverified\",\n          \"contact\": \"(718) 276-8600 ext. 3\"\n        },\n        {\n          \"presentation\": \"Amphetamine Aspartate Monohydrate, Amphetamine Sulfate, Dextroamphetamine Saccharate, Dextroamphetamine Sulfate, Tablet, 3.75 mg; 3.75 mg; 3.75 mg; 3.75 mg (NDC 64850-504-01)\",\n          \"package_ndc\": \"64850-504-01\",\n          \"company\": \"Elite Laboratories, Inc.\",\n          \"status\": \"Current\",\n          \"availability\": \"Available\",\n          \"availability_text\": \"Available\",\n          \"shortage_reason\": null,\n          \"related_info\": null,\n          \"discontinued_date\": null,\n          \"resolved_note\": null,\n          \"initial_posting_date\": \"2022-10-12\",\n          \"update_date\": \"2026-11-03\",\n          \"update_type\": \"Reverified\",\n          \"contact\": \"888-852-6657\"\n        },\n        {\n          \"presentation\": \"Amphetamine Aspartate Monohydrate, Amphetamine Sulfate, Dextroamphetamine Saccharate, Dextroamphetamine Sulfate, Tablet, 3.75 mg; 3.75 mg; 3.75 mg; 3.75 mg (NDC 42806-343-01)\",\n          \"package_ndc\": \"42806-343-01\",\n          \"company\": \"Epic Pharma, LLC\",\n          \"status\": \"Current\",\n          \"availability\": \"Limited Availability\",\n          \"availability_text\": \"Limited Availability\",\n          \"shortage_reason\": \"Shortage of an active ingredient\",\n          \"related_info\": \"Estimated recovery: TBD\",\n          \"discontinued_date\": null,\n          \"resolved_note\": null,\n          \"initial_posting_date\": \"2022-10-12\",\n          \"update_date\": \"2026-11-03\",\n          \"update_type\": \"Reverified\",\n          \"contact\": \"(718) 276-8600 ext. 3\"\n        },\n        {\n          \"presentation\": \"Amphetamine Aspartate Monohydrate, Amphetamine Sulfate, Dextroamphetamine Saccharate, Dextroamphetamine Sulfate, Tablet, 1.25 mg; 1.25 mg; 1.25 mg; 1.25 mg (NDC 42806-339-01)\",\n          \"package_ndc\": \"42806-339-01\",\n          \"company\": \"Epic Pharma, LLC\",\n          \"status\": \"Current\",\n          \"availability\": \"Limited Availability\",\n          \"availability_text\": \"Limited Availability\",\n          \"shortage_reason\": \"Shortage of an active ingredient\",\n          \"related_info\": \"Estimated recovery: TBD\",\n          \"discontinued_date\": null,\n          \"resolved_note\": null,\n          \"initial_posting_date\": \"2022-10-12\",\n          \"update_date\": \"2026-11-03\",\n          \"update_type\": \"Reverified\",\n          \"contact\": \"(718) 276-8600 ext. 3\"\n        },\n        {\n          \"presentation\": \"Amphetamine Aspartate Monohydrate, Amphetamine Sulfate, Dextroamphetamine Saccharate, Dextroamphetamine Sulfate, Tablet, 5 mg; 5 mg; 5 mg; 5 mg (NDC 64850-505-01)\",\n          \"package_ndc\": \"64850-505-01\",\n          \"company\": \"Elite Laboratories, Inc.\",\n          \"status\": \"Current\",\n          \"availability\": \"Available\",\n          \"availability_text\": \"Available\",\n          \"shortage_reason\": null,\n          \"related_info\": null,\n          \"discontinued_date\": null,\n          \"resolved_note\": null,\n          \"initial_posting_date\": \"2022-10-12\",\n          \"update_date\": \"2026-11-03\",\n          \"update_type\": \"Reverified\",\n          \"contact\": \"888-852-6657\"\n        },\n        {\n          \"presentation\": \"Amphetamine Aspartate Monohydrate, Amphetamine Sulfate, Dextroamphetamine Saccharate, Dextroamphetamine Sulfate, Tablet, 1.25 mg; 1.25 mg; 1.25 mg; 1.25 mg (NDC 64850-500-01)\",\n          \"package_ndc\": \"64850-500-01\",\n          \"company\": \"Elite Laboratories, Inc.\",\n          \"status\": \"Current\",\n          \"availability\": \"Available\",\n          \"availability_text\": \"Available\",\n          \"shortage_reason\": null,\n          \"related_info\": null,\n          \"discontinued_date\": null,\n          \"resolved_note\": null,\n          \"initial_posting_date\": \"2022-10-12\",\n          \"update_date\": \"2026-11-03\",\n          \"update_type\": \"Reverified\",\n          \"contact\": \"888-852-6657\"\n        }\n      ],\n      \"presentations_omitted\": 63\n    }\n  ],\n  \"note\": \"Each listing is one package (NDC) from one company. FDA status Current means an active shortage; To Be Discontinued means the maker is stopping the product; Resolved means the shortage ended.\",\n  \"disclaimer\": \"openFDA data are not validated for clinical use. Confirm with a pharmacist or the FDA Drug Shortages database before acting.\",\n  \"as_of\": \"2026-11-05T12:39:13.484Z\",\n  \"source\": \"https://api.fda.gov/drug/shortages.json?search=(generic_name:%22Adderall%22+openfda.brand_name:%22Adderall%22+openfda.generic_name:%22Adderall%22+openfda.substance_name:%22Adderall%22)&limit=100\",\n  \"widened_source\": \"https://api.fda.gov/drug/shortages.json?search=(generic_name.exact%3A%22Amphetamine%20Aspartate%20Monohydrate%2C%20Amphetamine%20Sulfate%2C%20Dextroamphetamine%20Saccharate%2C%20Dextroamphetamine%20Sulfate%20Tablet%22)&limit=100\",\n  \"fda_page\": \"https://dps.fda.gov/drugshortages\",\n  \"more\": \"https://www.mcpstamp.com/servers/?utm_source=mcp&utm_medium=drug-shortage-list-mcp\"\n}"
+    }
+   ],
+   "structuredContent": {
+    "summary": "FDA lists 73 shortage listings matching \"Adderall\" across 1 product, 73 with status Current. Amphetamine Aspartate Monohydrate, Amphetamine Sulfate, Dextroamphetamine Saccharate, Dextroamphetamine Sulfate Tablet: 73 Current; availability 10 Limited Availability, 44 Available, 19 Unavailable; reason Shortage of an active ingredient, Other, Demand increase for the drug; last updated 2026-11-03.",
+    "query": "Adderall",
+    "widened_to_generic": [
+     "Amphetamine Aspartate Monohydrate, Amphetamine Sulfate, Dextroamphetamine Saccharate, Dextroamphetamine Sulfate Tablet"
+    ],
+    "status_filter": "all",
+    "total_listings": 73,
+    "listings_returned": 73,
+    "current_listings": 73,
+    "in_shortage_now": true,
+    "products": [
+     {
+      "generic_name": "Amphetamine Aspartate Monohydrate, Amphetamine Sulfate, Dextroamphetamine Saccharate, Dextroamphetamine Sulfate Tablet",
+      "brand_names": [
+       "ADDERALL",
+       "DEXTROAMPHETAMINE SACCHARATE AND AMPHETAMINE ASPARTATE AND DEXTROAMPHETAMINE SULFATE AND AMPHETAMINE SULFATE",
+       "DEXTROAMPHETAMINE SACCHARATE, AMPHETAMINE ASPARTATE MONOHYDRATE, DEXTROAMPHETAMINE SULFATE AND AMPHETAMINE SULFATE",
+       "DEXTROAMPHETAMINE SACCHARATE, AMPHETAMINE ASPARTATE, DEXTROAMPHETAMINE SULFATE AND AMPHETAMINE SULFATE"
+      ],
+      "therapeutic_category": [
+       "Psychiatry"
+      ],
+      "listings": 73,
+      "by_status": {
+       "Current": 73
+      },
+      "by_availability": {
+       "Limited Availability": 10,
+       "Available": 44,
+       "Unavailable": 19
+      },
+      "shortage_reasons": [
+       "Shortage of an active ingredient",
+       "Other",
+       "Demand increase for the drug"
+      ],
+      "companies": [
+       "Alvogen",
+       "Aurobindo Pharma USA",
+       "Elite Laboratories, Inc.",
+       "Epic Pharma, LLC",
+       "Granules Pharmaceuticals Inc.",
+       "Lannett Company, Inc.",
+       "Oryza Pharmaceuticals Inc.",
+       "Sandoz Inc.",
+       "SpecGx LLC",
+       "Sunrise Pharmaceutical, Inc.",
+       "Teva Pharmaceuticals USA, Inc."
+      ],
+      "first_posted": "2022-10-12",
+      "last_updated": "2026-11-03",
+      "presentations": [
+       {
+        "presentation": "Amphetamine Aspartate Monohydrate, Amphetamine Sulfate, Dextroamphetamine Saccharate, Dextroamphetamine Sulfate, Tablet, 5 mg; 5 mg; 5 mg; 5 mg (NDC 42806-344-01)",
+        "package_ndc": "42806-344-01",
+        "company": "Epic Pharma, LLC",
+        "status": "Current",
+        "availability": "Limited Availability",
+        "availability_text": "Limited Availability",
+        "shortage_reason": "Shortage of an active ingredient",
+        "related_info": "Estimated recovery: TBD",
+        "discontinued_date": null,
+        "resolved_note": null,
+        "initial_posting_date": "2022-10-12",
+        "update_date": "2026-11-03",
+        "update_type": "Reverified",
+        "contact": "(718) 276-8600 ext. 3"
+       },
+       {
+        "presentation": "Amphetamine Aspartate Monohydrate, Amphetamine Sulfate, Dextroamphetamine Saccharate, Dextroamphetamine Sulfate, Tablet, 2.5 mg; 2.5 mg; 2.5 mg; 2.5 mg (NDC 42806-341-01)",
+        "package_ndc": "42806-341-01",
+        "company": "Epic Pharma, LLC",
+        "status": "Current",
+        "availability": "Limited Availability",
+        "availability_text": "Limited Availability",
+        "shortage_reason": "Shortage of an active ingredient",
+        "related_info": "Estimated recovery: TBD",
+        "discontinued_date": null,
+        "resolved_note": null,
+        "initial_posting_date": "2022-10-12",
+        "update_date": "2026-11-03",
+        "update_type": "Reverified",
+        "contact": "(718) 276-8600 ext. 3"
+       },
+       {
+        "presentation": "Amphetamine Aspartate Monohydrate, Amphetamine Sulfate, Dextroamphetamine Saccharate, Dextroamphetamine Sulfate, Tablet, 2.5 mg; 2.5 mg; 2.5 mg; 2.5 mg (NDC 64850-502-01)",
+        "package_ndc": "64850-502-01",
+        "company": "Elite Laboratories, Inc.",
+        "status": "Current",
+        "availability": "Available",
+        "availability_text": "Available",
+        "shortage_reason": null,
+        "related_info": null,
+        "discontinued_date": null,
+        "resolved_note": null,
+        "initial_posting_date": "2022-10-12",
+        "update_date": "2026-11-03",
+        "update_type": "Reverified",
+        "contact": "888-852-6657"
+       },
+       {
+        "presentation": "Amphetamine Aspartate Monohydrate, Amphetamine Sulfate, Dextroamphetamine Saccharate, Dextroamphetamine Sulfate, Tablet, 7.5 mg; 7.5 mg; 7.5 mg; 7.5 mg (NDC 64850-506-01)",
+        "package_ndc": "64850-506-01",
+        "company": "Elite Laboratories, Inc.",
+        "status": "Current",
+        "availability": "Available",
+        "availability_text": "Available",
+        "shortage_reason": null,
+        "related_info": null,
+        "discontinued_date": null,
+        "resolved_note": null,
+        "initial_posting_date": "2023-08-15",
+        "update_date": "2026-11-03",
+        "update_type": "Reverified",
+        "contact": "888-852-6657"
+       },
+       {
+        "presentation": "Amphetamine Aspartate Monohydrate, Amphetamine Sulfate, Dextroamphetamine Saccharate, Dextroamphetamine Sulfate, Tablet, 7.5 mg; 7.5 mg; 7.5 mg; 7.5 mg (NDC 42806-345-01)",
+        "package_ndc": "42806-345-01",
+        "company": "Epic Pharma, LLC",
+        "status": "Current",
+        "availability": "Limited Availability",
+        "availability_text": "Limited Availability",
+        "shortage_reason": "Shortage of an active ingredient",
+        "related_info": "Estimated recovery: TBD",
+        "discontinued_date": null,
+        "resolved_note": null,
+        "initial_posting_date": "2022-10-12",
+        "update_date": "2026-11-03",
+        "update_type": "Reverified",
+        "contact": "(718) 276-8600 ext. 3"
+       },
+       {
+        "presentation": "Amphetamine Aspartate Monohydrate, Amphetamine Sulfate, Dextroamphetamine Saccharate, Dextroamphetamine Sulfate, Tablet, 3.75 mg; 3.75 mg; 3.75 mg; 3.75 mg (NDC 64850-504-01)",
+        "package_ndc": "64850-504-01",
+        "company": "Elite Laboratories, Inc.",
+        "status": "Current",
+        "availability": "Available",
+        "availability_text": "Available",
+        "shortage_reason": null,
+        "related_info": null,
+        "discontinued_date": null,
+        "resolved_note": null,
+        "initial_posting_date": "2022-10-12",
+        "update_date": "2026-11-03",
+        "update_type": "Reverified",
+        "contact": "888-852-6657"
+       },
+       {
+        "presentation": "Amphetamine Aspartate Monohydrate, Amphetamine Sulfate, Dextroamphetamine Saccharate, Dextroamphetamine Sulfate, Tablet, 3.75 mg; 3.75 mg; 3.75 mg; 3.75 mg (NDC 42806-343-01)",
+        "package_ndc": "42806-343-01",
+        "company": "Epic Pharma, LLC",
+        "status": "Current",
+        "availability": "Limited Availability",
+        "availability_text": "Limited Availability",
+        "shortage_reason": "Shortage of an active ingredient",
+        "related_info": "Estimated recovery: TBD",
+        "discontinued_date": null,
+        "resolved_note": null,
+        "initial_posting_date": "2022-10-12",
+        "update_date": "2026-11-03",
+        "update_type": "Reverified",
+        "contact": "(718) 276-8600 ext. 3"
+       },
+       {
+        "presentation": "Amphetamine Aspartate Monohydrate, Amphetamine Sulfate, Dextroamphetamine Saccharate, Dextroamphetamine Sulfate, Tablet, 1.25 mg; 1.25 mg; 1.25 mg; 1.25 mg (NDC 42806-339-01)",
+        "package_ndc": "42806-339-01",
+        "company": "Epic Pharma, LLC",
+        "status": "Current",
+        "availability": "Limited Availability",
+        "availability_text": "Limited Availability",
+        "shortage_reason": "Shortage of an active ingredient",
+        "related_info": "Estimated recovery: TBD",
+        "discontinued_date": null,
+        "resolved_note": null,
+        "initial_posting_date": "2022-10-12",
+        "update_date": "2026-11-03",
+        "update_type": "Reverified",
+        "contact": "(718) 276-8600 ext. 3"
+       },
+       {
+        "presentation": "Amphetamine Aspartate Monohydrate, Amphetamine Sulfate, Dextroamphetamine Saccharate, Dextroamphetamine Sulfate, Tablet, 5 mg; 5 mg; 5 mg; 5 mg (NDC 64850-505-01)",
+        "package_ndc": "64850-505-01",
+        "company": "Elite Laboratories, Inc.",
+        "status": "Current",
+        "availability": "Available",
+        "availability_text": "Available",
+        "shortage_reason": null,
+        "related_info": null,
+        "discontinued_date": null,
+        "resolved_note": null,
+        "initial_posting_date": "2022-10-12",
+        "update_date": "2026-11-03",
+        "update_type": "Reverified",
+        "contact": "888-852-6657"
+       },
+       {
+        "presentation": "Amphetamine Aspartate Monohydrate, Amphetamine Sulfate, Dextroamphetamine Saccharate, Dextroamphetamine Sulfate, Tablet, 1.25 mg; 1.25 mg; 1.25 mg; 1.25 mg (NDC 64850-500-01)",
+        "package_ndc": "64850-500-01",
+        "company": "Elite Laboratories, Inc.",
+        "status": "Current",
+        "availability": "Available",
+        "availability_text": "Available",
+        "shortage_reason": null,
+        "related_info": null,
+        "discontinued_date": null,
+        "resolved_note": null,
+        "initial_posting_date": "2022-10-12",
+        "update_date": "2026-11-03",
+        "update_type": "Reverified",
+        "contact": "888-852-6657"
+       }
+      ],
+      "presentations_omitted": 63
+     }
+    ],
+    "note": "Each listing is one package (NDC) from one company. FDA status Current means an active shortage; To Be Discontinued means the maker is stopping the product; Resolved means the shortage ended.",
+    "disclaimer": "openFDA data are not validated for clinical use. Confirm with a pharmacist or the FDA Drug Shortages database before acting.",
+    "as_of": "2026-11-05T12:39:13.484Z",
+    "source": "https://api.fda.gov/drug/shortages.json?search=(generic_name:%22Adderall%22+openfda.brand_name:%22Adderall%22+openfda.generic_name:%22Adderall%22+openfda.substance_name:%22Adderall%22)&limit=100",
+    "widened_source": "https://api.fda.gov/drug/shortages.json?search=(generic_name.exact%3A%22Amphetamine%20Aspartate%20Monohydrate%2C%20Amphetamine%20Sulfate%2C%20Dextroamphetamine%20Saccharate%2C%20Dextroamphetamine%20Sulfate%20Tablet%22)&limit=100",
+    "fda_page": "https://dps.fda.gov/drugshortages",
+    "more": "https://www.mcpstamp.com/servers/?utm_source=mcp&utm_medium=drug-shortage-list-mcp"
+   }
+  },
+  "jsonrpc": "2.0",
+  "id": 2
+ }
+}

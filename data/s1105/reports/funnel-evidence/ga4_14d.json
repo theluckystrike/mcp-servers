@@ -1,0 +1,867 @@
+{
+ "bcpages": {
+  "dimensionHeaders": [
+   {
+    "name": "pagePath"
+   },
+   {
+    "name": "eventName"
+   }
+  ],
+  "metricHeaders": [
+   {
+    "name": "eventCount",
+    "type": "TYPE_INTEGER"
+   }
+  ],
+  "rows": [
+   {
+    "dimensionValues": [
+     {
+      "value": "/services/"
+     },
+     {
+      "value": "begin_checkout"
+     }
+    ],
+    "metricValues": [
+     {
+      "value": "3"
+     }
+    ]
+   },
+   {
+    "dimensionValues": [
+     {
+      "value": "/for/freelancers/"
+     },
+     {
+      "value": "begin_checkout"
+     }
+    ],
+    "metricValues": [
+     {
+      "value": "1"
+     }
+    ]
+   },
+   {
+    "dimensionValues": [
+     {
+      "value": "/use-cases/merge-pdf-in-claude/"
+     },
+     {
+      "value": "begin_checkout"
+     }
+    ],
+    "metricValues": [
+     {
+      "value": "1"
+     }
+    ]
+   },
+   {
+    "dimensionValues": [
+     {
+      "value": "/use-cases/track-billable-time-in-claude/"
+     },
+     {
+      "value": "begin_checkout"
+     }
+    ],
+    "metricValues": [
+     {
+      "value": "1"
+     }
+    ]
+   }
+  ],
+  "rowCount": 4,
+  "metadata": {
+   "currencyCode": "USD",
+   "timeZone": "Europe/Warsaw"
+  },
+  "kind": "analyticsData#runReport"
+ },
+ "beginco": {
+  "dimensionHeaders": [
+   {
+    "name": "date"
+   },
+   {
+    "name": "eventName"
+   }
+  ],
+  "metricHeaders": [
+   {
+    "name": "eventCount",
+    "type": "TYPE_INTEGER"
+   }
+  ],
+  "rows": [
+   {
+    "dimensionValues": [
+     {
+      "value": "20261030"
+     },
+     {
+      "value": "begin_checkout"
+     }
+    ],
+    "metricValues": [
+     {
+      "value": "1"
+     }
+    ]
+   },
+   {
+    "dimensionValues": [
+     {
+      "value": "20261031"
+     },
+     {
+      "value": "begin_checkout"
+     }
+    ],
+    "metricValues": [
+     {
+      "value": "1"
+     }
+    ]
+   },
+   {
+    "dimensionValues": [
+     {
+      "value": "20261102"
+     },
+     {
+      "value": "begin_checkout"
+     }
+    ],
+    "metricValues": [
+     {
+      "value": "4"
+     }
+    ]
+   }
+  ],
+  "rowCount": 3,
+  "metadata": {
+   "currencyCode": "USD",
+   "timeZone": "Europe/Warsaw"
+  },
+  "kind": "analyticsData#runReport"
+ },
+ "daily": {
+  "dimensionHeaders": [
+   {
+    "name": "date"
+   }
+  ],
+  "metricHeaders": [
+   {
+    "name": "sessions",
+    "type": "TYPE_INTEGER"
+   },
+   {
+    "name": "totalUsers",
+    "type": "TYPE_INTEGER"
+   },
+   {
+    "name": "keyEvents",
+    "type": "TYPE_FLOAT"
+   },
+   {
+    "name": "ecommercePurchases",
+    "type": "TYPE_INTEGER"
+   }
+  ],
+  "rows": [
+   {
+    "dimensionValues": [
+     {
+      "value": "20261030"
+     }
+    ],
+    "metricValues": [
+     {
+      "value": "158"
+     },
+     {
+      "value": "157"
+     },
+     {
+      "value": "0"
+     },
+     {
+      "value": "0"
+     }
+    ]
+   },
+   {
+    "dimensionValues": [
+     {
+      "value": "20261031"
+     }
+    ],
+    "metricValues": [
+     {
+      "value": "20"
+     },
+     {
+      "value": "17"
+     },
+     {
+      "value": "0"
+     },
+     {
+      "value": "0"
+     }
+    ]
+   },
+   {
+    "dimensionValues": [
+     {
+      "value": "20261101"
+     }
+    ],
+    "metricValues": [
+     {
+      "value": "15"
+     },
+     {
+      "value": "15"
+     },
+     {
+      "value": "0"
+     },
+     {
+      "value": "0"
+     }
+    ]
+   },
+   {
+    "dimensionValues": [
+     {
+      "value": "20261102"
+     }
+    ],
+    "metricValues": [
+     {
+      "value": "22"
+     },
+     {
+      "value": "20"
+     },
+     {
+      "value": "5"
+     },
+     {
+      "value": "0"
+     }
+    ]
+   },
+   {
+    "dimensionValues": [
+     {
+      "value": "20261103"
+     }
+    ],
+    "metricValues": [
+     {
+      "value": "11"
+     },
+     {
+      "value": "10"
+     },
+     {
+      "value": "1"
+     },
+     {
+      "value": "0"
+     }
+    ]
+   },
+   {
+    "dimensionValues": [
+     {
+      "value": "20261104"
+     }
+    ],
+    "metricValues": [
+     {
+      "value": "1"
+     },
+     {
+      "value": "1"
+     },
+     {
+      "value": "0"
+     },
+     {
+      "value": "0"
+     }
+    ]
+   },
+   {
+    "dimensionValues": [
+     {
+      "value": "20261105"
+     }
+    ],
+    "metricValues": [
+     {
+      "value": "1"
+     },
+     {
+      "value": "1"
+     },
+     {
+      "value": "0"
+     },
+     {
+      "value": "0"
+     }
+    ]
+   }
+  ],
+  "rowCount": 7,
+  "metadata": {
+   "currencyCode": "USD",
+   "timeZone": "Europe/Warsaw"
+  },
+  "kind": "analyticsData#runReport"
+ },
+ "events": {
+  "dimensionHeaders": [
+   {
+    "name": "eventName"
+   }
+  ],
+  "metricHeaders": [
+   {
+    "name": "eventCount",
+    "type": "TYPE_INTEGER"
+   },
+   {
+    "name": "totalUsers",
+    "type": "TYPE_INTEGER"
+   }
+  ],
+  "rows": [
+   {
+    "dimensionValues": [
+     {
+      "value": "page_view"
+     }
+    ],
+    "metricValues": [
+     {
+      "value": "249"
+     },
+     {
+      "value": "214"
+     }
+    ]
+   },
+   {
+    "dimensionValues": [
+     {
+      "value": "session_start"
+     }
+    ],
+    "metricValues": [
+     {
+      "value": "226"
+     },
+     {
+      "value": "212"
+     }
+    ]
+   },
+   {
+    "dimensionValues": [
+     {
+      "value": "first_visit"
+     }
+    ],
+    "metricValues": [
+     {
+      "value": "213"
+     },
+     {
+      "value": "212"
+     }
+    ]
+   },
+   {
+    "dimensionValues": [
+     {
+      "value": "user_engagement"
+     }
+    ],
+    "metricValues": [
+     {
+      "value": "165"
+     },
+     {
+      "value": "128"
+     }
+    ]
+   },
+   {
+    "dimensionValues": [
+     {
+      "value": "begin_checkout"
+     }
+    ],
+    "metricValues": [
+     {
+      "value": "6"
+     },
+     {
+      "value": "1"
+     }
+    ]
+   },
+   {
+    "dimensionValues": [
+     {
+      "value": "mcpstamp_check_result"
+     }
+    ],
+    "metricValues": [
+     {
+      "value": "3"
+     },
+     {
+      "value": "1"
+     }
+    ]
+   },
+   {
+    "dimensionValues": [
+     {
+      "value": "mcpstamp_check_run"
+     }
+    ],
+    "metricValues": [
+     {
+      "value": "3"
+     },
+     {
+      "value": "1"
+     }
+    ]
+   },
+   {
+    "dimensionValues": [
+     {
+      "value": "mcpstamp_cta_click"
+     }
+    ],
+    "metricValues": [
+     {
+      "value": "3"
+     },
+     {
+      "value": "1"
+     }
+    ]
+   }
+  ],
+  "rowCount": 8,
+  "metadata": {
+   "currencyCode": "USD",
+   "timeZone": "Europe/Warsaw"
+  },
+  "kind": "analyticsData#runReport"
+ },
+ "landing": {
+  "dimensionHeaders": [
+   {
+    "name": "landingPagePlusQueryString"
+   }
+  ],
+  "metricHeaders": [
+   {
+    "name": "sessions",
+    "type": "TYPE_INTEGER"
+   },
+   {
+    "name": "keyEvents",
+    "type": "TYPE_FLOAT"
+   }
+  ],
+  "rows": [
+   {
+    "dimensionValues": [
+     {
+      "value": "/"
+     }
+    ],
+    "metricValues": [
+     {
+      "value": "129"
+     },
+     {
+      "value": "6"
+     }
+    ]
+   },
+   {
+    "dimensionValues": [
+     {
+      "value": "/use-cases/"
+     }
+    ],
+    "metricValues": [
+     {
+      "value": "13"
+     },
+     {
+      "value": "0"
+     }
+    ]
+   },
+   {
+    "dimensionValues": [
+     {
+      "value": "/pricing/"
+     }
+    ],
+    "metricValues": [
+     {
+      "value": "12"
+     },
+     {
+      "value": "0"
+     }
+    ]
+   },
+   {
+    "dimensionValues": [
+     {
+      "value": "/check/"
+     }
+    ],
+    "metricValues": [
+     {
+      "value": "9"
+     },
+     {
+      "value": "0"
+     }
+    ]
+   },
+   {
+    "dimensionValues": [
+     {
+      "value": "/servers/invoice/"
+     }
+    ],
+    "metricValues": [
+     {
+      "value": "9"
+     },
+     {
+      "value": "0"
+     }
+    ]
+   },
+   {
+    "dimensionValues": [
+     {
+      "value": "/services/"
+     }
+    ],
+    "metricValues": [
+     {
+      "value": "6"
+     },
+     {
+      "value": "0"
+     }
+    ]
+   },
+   {
+    "dimensionValues": [
+     {
+      "value": "/connect/claude-desktop/"
+     }
+    ],
+    "metricValues": [
+     {
+      "value": "5"
+     },
+     {
+      "value": "0"
+     }
+    ]
+   },
+   {
+    "dimensionValues": [
+     {
+      "value": "/about/"
+     }
+    ],
+    "metricValues": [
+     {
+      "value": "4"
+     },
+     {
+      "value": "0"
+     }
+    ]
+   },
+   {
+    "dimensionValues": [
+     {
+      "value": "/developers/"
+     }
+    ],
+    "metricValues": [
+     {
+      "value": "4"
+     },
+     {
+      "value": "0"
+     }
+    ]
+   },
+   {
+    "dimensionValues": [
+     {
+      "value": "/servers/"
+     }
+    ],
+    "metricValues": [
+     {
+      "value": "4"
+     },
+     {
+      "value": "0"
+     }
+    ]
+   },
+   {
+    "dimensionValues": [
+     {
+      "value": "(not set)"
+     }
+    ],
+    "metricValues": [
+     {
+      "value": "3"
+     },
+     {
+      "value": "0"
+     }
+    ]
+   },
+   {
+    "dimensionValues": [
+     {
+      "value": "/connect/"
+     }
+    ],
+    "metricValues": [
+     {
+      "value": "3"
+     },
+     {
+      "value": "0"
+     }
+    ]
+   },
+   {
+    "dimensionValues": [
+     {
+      "value": "/no-such-page/"
+     }
+    ],
+    "metricValues": [
+     {
+      "value": "3"
+     },
+     {
+      "value": "0"
+     }
+    ]
+   },
+   {
+    "dimensionValues": [
+     {
+      "value": "/servers/pdf/"
+     }
+    ],
+    "metricValues": [
+     {
+      "value": "3"
+     },
+     {
+      "value": "0"
+     }
+    ]
+   },
+   {
+    "dimensionValues": [
+     {
+      "value": "/servers/spreadsheet/"
+     }
+    ],
+    "metricValues": [
+     {
+      "value": "3"
+     },
+     {
+      "value": "0"
+     }
+    ]
+   }
+  ],
+  "rowCount": 32,
+  "metadata": {
+   "currencyCode": "USD",
+   "timeZone": "Europe/Warsaw"
+  },
+  "kind": "analyticsData#runReport"
+ },
+ "source": {
+  "dimensionHeaders": [
+   {
+    "name": "sessionDefaultChannelGroup"
+   },
+   {
+    "name": "sessionSource"
+   }
+  ],
+  "metricHeaders": [
+   {
+    "name": "sessions",
+    "type": "TYPE_INTEGER"
+   },
+   {
+    "name": "totalUsers",
+    "type": "TYPE_INTEGER"
+   },
+   {
+    "name": "engagedSessions",
+    "type": "TYPE_INTEGER"
+   }
+  ],
+  "rows": [
+   {
+    "dimensionValues": [
+     {
+      "value": "Direct"
+     },
+     {
+      "value": "(direct)"
+     }
+    ],
+    "metricValues": [
+     {
+      "value": "217"
+     },
+     {
+      "value": "204"
+     },
+     {
+      "value": "9"
+     }
+    ]
+   },
+   {
+    "dimensionValues": [
+     {
+      "value": "Organic Search"
+     },
+     {
+      "value": "bing"
+     }
+    ],
+    "metricValues": [
+     {
+      "value": "6"
+     },
+     {
+      "value": "6"
+     },
+     {
+      "value": "0"
+     }
+    ]
+   },
+   {
+    "dimensionValues": [
+     {
+      "value": "Unassigned"
+     },
+     {
+      "value": "(not set)"
+     }
+    ],
+    "metricValues": [
+     {
+      "value": "3"
+     },
+     {
+      "value": "3"
+     },
+     {
+      "value": "0"
+     }
+    ]
+   },
+   {
+    "dimensionValues": [
+     {
+      "value": "Organic Search"
+     },
+     {
+      "value": "google"
+     }
+    ],
+    "metricValues": [
+     {
+      "value": "1"
+     },
+     {
+      "value": "1"
+     },
+     {
+      "value": "1"
+     }
+    ]
+   },
+   {
+    "dimensionValues": [
+     {
+      "value": "Organic Social"
+     },
+     {
+      "value": "m.facebook.com"
+     }
+    ],
+    "metricValues": [
+     {
+      "value": "1"
+     },
+     {
+      "value": "1"
+     },
+     {
+      "value": "0"
+     }
+    ]
+   }
+  ],
+  "rowCount": 5,
+  "metadata": {
+   "currencyCode": "USD",
+   "timeZone": "Europe/Warsaw"
+  },
+  "kind": "analyticsData#runReport"
+ }
+}

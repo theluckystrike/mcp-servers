@@ -1,0 +1,16 @@
+S1105 funnel audit, 2026-11-05 ~12:10-12:30Z. Exact commands (secrets never printed).
+Q1
+  cd ~/mcp-servers/billing && npx wrangler deployments list   (last entry 2bcaa00c-d6ef-403e-879a-f1e389af10a4, created 2026-11-02T07:09:42Z)
+  cd ~/mcp-servers/billing && npx wrangler versions list      (no version after 2bcaa00c)
+  gh pr view 116 --repo theluckystrike/mcp-servers --json mergedAt,mergeCommit   (2026-11-03T08:19:36Z, 7462ff6a)
+  curl -sS -I -H 'x-mcp-probe: 1' -A mcp-audit-s1105/1 'https://mcp.zovo.one/buy/invoice。'          -> HTTP/2 404, x-mcp-buy: unknown-product, no Location
+  curl -sS -I -H 'x-mcp-probe: 1' -A mcp-audit-s1105/1 'https://mcp.zovo.one/buy/invoice%E3%80%82'   -> HTTP/2 404, x-mcp-buy: unknown-product, no Location
+  curl -sS -I ... 'https://mcp.zovo.one/buy/invoice%E3'  -> 500 (decodeURIComponent still throws)
+  curl -sS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" https://api.cloudflare.com/client/v4/accounts/<acct>/workers/scripts/mcp-billing/content/v2
+     -> etag aa593a6d..., 2,681,980 B; grep -o salvageBuyPath = 0 (merged source: 3), buy.salvaged = 0 (merged: 1)
+Q2   scripts/crawl_pages.py (195 sitemap pages, 1 req/s) then scripts/probe_links.py (HEAD -L x457 unique hrefs, then one GET per distinct id). Results: link_probe.tsv
+Q3   scripts/telemetry_pull.py 2026-10-27T12:00:00 2026-11-05T13:00:00 (Workers Logs telemetry API, mcp-billing, needle zovo.one/buy/, 6 h windows, abr_level 1); scripts/analyze_tele.py; telemetry_daily.txt
+     curl -s -H 'x-mcp-probe: 1' https://mcp.zovo.one/stats/clicks  and /stats/funnel  (saved as stats_*.json)
+Q4   scripts/ga4_report.py, scripts/ga4_full.py (Analytics Data API v1beta runReport, property 561638567, service account zovo-gsc-cleanup, scope analytics.readonly). Results: ga4_14d.json
+Q5   stripe config --list (empty); ~/.config/stripe/config.toml has no live_mode_api_key or test_mode_api_key; stripe get /v1/checkout/sessions --live -d limit=1
+     -> "your live mode API key needs to be re-configured. Run `stripe login` to re-authenticate"

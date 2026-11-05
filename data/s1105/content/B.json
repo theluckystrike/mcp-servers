@@ -1,0 +1,750 @@
+{
+ "pages": [
+  {
+   "path": "/can-chatgpt/open-zip-files/",
+   "title": "Can ChatGPT open zip files? Sometimes, here is how | {brand}",
+   "h1": "Can ChatGPT open zip files?",
+   "meta_description": "ChatGPT can often unpack an uploaded zip with its code tool. The Zip server lists entries, reads one file without unpacking and refuses unsafe paths.",
+   "primary_keyword": "can chatgpt open zip files",
+   "intent": "informational",
+   "priority": 0.7,
+   "servers": [
+    "zip"
+   ],
+   "us_volume": null,
+   "page_type": "answer"
+  },
+  {
+   "path": "/can-chatgpt/zip-files/",
+   "title": "Can ChatGPT zip files? Yes, with a download link | {brand}",
+   "h1": "Can ChatGPT zip files?",
+   "meta_description": "ChatGPT's code tool can zip files you upload. The Zip server packs files with glob patterns, adds to archives and keeps a history.",
+   "primary_keyword": "can chatgpt zip files",
+   "intent": "informational",
+   "priority": 0.7,
+   "servers": [
+    "zip"
+   ],
+   "us_volume": null,
+   "page_type": "answer"
+  },
+  {
+   "path": "/can-chatgpt/create-xlsx-files/",
+   "title": "Can ChatGPT create xlsx files? Yes, two ways | {brand}",
+   "h1": "Can ChatGPT create xlsx files?",
+   "meta_description": "ChatGPT can create an .xlsx with its code tool. The Spreadsheet server writes .xlsx and .csv files as tool calls, adds columns and converts formats.",
+   "primary_keyword": "can chatgpt create xlsx files",
+   "intent": "informational",
+   "priority": 0.7,
+   "servers": [
+    "spreadsheet"
+   ],
+   "us_volume": null,
+   "page_type": "answer"
+  },
+  {
+   "path": "/can-chatgpt/create-qr-codes/",
+   "title": "Can ChatGPT create QR codes? Yes, scannable ones | {brand}",
+   "h1": "Can ChatGPT create QR codes?",
+   "meta_description": "ChatGPT's image tool draws fake QR codes. Its code tool can sometimes make real ones. The Barcode server makes scannable QR, WiFi, contact and payment codes.",
+   "primary_keyword": "can chatgpt create qr codes",
+   "intent": "informational",
+   "priority": 0.7,
+   "servers": [
+    "barcode"
+   ],
+   "us_volume": null,
+   "page_type": "answer"
+  },
+  {
+   "path": "/can-chatgpt/edit-pdfs/",
+   "title": "Can ChatGPT edit PDFs? Pages yes, text no | {brand}",
+   "h1": "Can ChatGPT edit PDFs?",
+   "meta_description": "ChatGPT can rework an uploaded PDF with its code tool. The PDF server merges, splits, rotates, reorders and stamps PDFs as new files.",
+   "primary_keyword": "can chatgpt edit pdfs",
+   "intent": "informational",
+   "priority": 0.7,
+   "servers": [
+    "pdf"
+   ],
+   "us_volume": null,
+   "page_type": "answer"
+  },
+  {
+   "path": "/can-chatgpt/open-pdfs/",
+   "title": "Can ChatGPT open PDFs? Yes, and what it misses | {brand}",
+   "h1": "Can ChatGPT open PDFs?",
+   "meta_description": "ChatGPT can open a PDF you upload and answer questions about it.",
+   "primary_keyword": "can chatgpt open pdfs",
+   "intent": "informational",
+   "priority": 0.7,
+   "servers": [
+    "pdf"
+   ],
+   "us_volume": null,
+   "page_type": "answer"
+  },
+  {
+   "path": "/can-chatgpt/format-a-word-document/",
+   "title": "Can ChatGPT format a Word document? Yes, as .docx | {brand}",
+   "h1": "Can ChatGPT format a Word document?",
+   "meta_description": "ChatGPT can write a .docx with its code tool. The DOCX server turns markdown into real Word headings and tables and fills your own template.",
+   "primary_keyword": "can chatgpt format a word document",
+   "intent": "informational",
+   "priority": 0.7,
+   "servers": [
+    "docx"
+   ],
+   "us_volume": null,
+   "page_type": "answer"
+  },
+  {
+   "path": "/can-chatgpt/make-a-resume/",
+   "title": "Can ChatGPT make a resume? Yes, as a Word file | {brand}",
+   "h1": "Can ChatGPT make a resume?",
+   "meta_description": "ChatGPT can write a resume and make a file. The Resume server keeps one profile and builds the .docx, a cover letter and form-ready text from it.",
+   "primary_keyword": "can chatgpt make a resume",
+   "intent": "informational",
+   "priority": 0.7,
+   "servers": [
+    "resume"
+   ],
+   "us_volume": null,
+   "page_type": "answer"
+  },
+  {
+   "path": "/can-chatgpt/update-my-resume/",
+   "title": "Can ChatGPT update my resume? Yes, from your .docx | {brand}",
+   "h1": "Can ChatGPT update my resume?",
+   "meta_description": "ChatGPT can rewrite an uploaded resume. The Resume server reads your .docx, checks it against a posting without changing facts and writes the updated file.",
+   "primary_keyword": "can chatgpt update my resume",
+   "intent": "informational",
+   "priority": 0.7,
+   "servers": [
+    "resume"
+   ],
+   "us_volume": null,
+   "page_type": "answer"
+  },
+  {
+   "path": "/can-chatgpt/keep-track-of-time/",
+   "title": "Can ChatGPT keep track of time? Not alone | {brand}",
+   "h1": "Can ChatGPT keep track of time?",
+   "meta_description": "ChatGPT has no timer or timesheet of its own. The Time Tracker server starts and stops timers, logs hours and reports billable totals.",
+   "primary_keyword": "can chatgpt keep track of time",
+   "intent": "informational",
+   "priority": 0.7,
+   "servers": [
+    "time-tracker"
+   ],
+   "us_volume": null,
+   "page_type": "answer"
+  },
+  {
+   "path": "/can-chatgpt/know-the-time/",
+   "title": "Can ChatGPT know the time? Not reliably | {brand}",
+   "h1": "Can ChatGPT know the time?",
+   "meta_description": "ChatGPT has no clock for your city, so its stated time can be wrong. The Timezone server returns the real current time in any place.",
+   "primary_keyword": "can chatgpt know the time",
+   "intent": "informational",
+   "priority": 0.7,
+   "servers": [
+    "timezone"
+   ],
+   "us_volume": null,
+   "page_type": "answer"
+  },
+  {
+   "path": "/can-chatgpt/do-my-taxes/",
+   "title": "Can ChatGPT do my taxes? No, but it can estimate | {brand}",
+   "h1": "Can ChatGPT do my taxes?",
+   "meta_description": "No. ChatGPT can't file taxes. The Tax Calculator server gives a US federal estimate for a single filer.",
+   "primary_keyword": "can chatgpt do my taxes",
+   "intent": "informational",
+   "priority": 0.7,
+   "servers": [
+    "tax-calc"
+   ],
+   "us_volume": null,
+   "page_type": "answer"
+  },
+  {
+   "path": "/can-chatgpt/help-with-finances/",
+   "title": "Can ChatGPT help with finances? With your data, yes | {brand}",
+   "h1": "Can ChatGPT help with finances?",
+   "meta_description": "ChatGPT explains money topics but keeps no ledger. Expense Tracker records spending and Bank Statement reads your bank CSV and finds recurring charges.",
+   "primary_keyword": "can chatgpt help with finances",
+   "intent": "informational",
+   "priority": 0.7,
+   "servers": [
+    "expense-tracker",
+    "bank-statement"
+   ],
+   "us_volume": null,
+   "page_type": "answer"
+  },
+  {
+   "path": "/can-chatgpt/integrate-with-outlook/",
+   "title": "Can ChatGPT integrate with Outlook? Yes, partly | {brand}",
+   "h1": "Can ChatGPT integrate with Outlook?",
+   "meta_description": "ChatGPT has read-only Outlook apps, some needing admin approval.",
+   "primary_keyword": "can chatgpt integrate with outlook",
+   "intent": "informational",
+   "priority": 0.7,
+   "servers": [
+    "calendar"
+   ],
+   "us_volume": null,
+   "page_type": "answer"
+  },
+  {
+   "path": "/can-chatgpt/edit-photos/",
+   "title": "Can ChatGPT edit photos? Yes, but not exactly | {brand}",
+   "h1": "Can ChatGPT edit photos?",
+   "meta_description": "ChatGPT edits photos by redrawing them. The Image server makes exact edits on the real pixels, resize, crop, compress, convert and strip metadata.",
+   "primary_keyword": "can chatgpt edit photos",
+   "intent": "informational",
+   "priority": 0.7,
+   "servers": [
+    "image"
+   ],
+   "us_volume": null,
+   "page_type": "answer"
+  },
+  {
+   "path": "/can-cursor/read-excel-files/",
+   "title": "Can Cursor read Excel files? With one server, yes | {brand}",
+   "h1": "Can Cursor read Excel files?",
+   "meta_description": "Cursor can't read .xlsx with its file reader. Its agent can write a parsing script.",
+   "primary_keyword": "can cursor read excel files",
+   "intent": "informational",
+   "priority": 0.7,
+   "servers": [
+    "spreadsheet"
+   ],
+   "us_volume": null,
+   "page_type": "answer"
+  },
+  {
+   "path": "/can-cursor/edit-word-documents/",
+   "title": "Can Cursor edit Word documents? With one server | {brand}",
+   "h1": "Can Cursor edit Word documents?",
+   "meta_description": "Cursor can't edit a .docx as text. The DOCX server reads Word files, fills templates and writes new .docx files from markdown inside Cursor.",
+   "primary_keyword": "can cursor edit word document",
+   "intent": "informational",
+   "priority": 0.7,
+   "servers": [
+    "docx"
+   ],
+   "us_volume": null,
+   "page_type": "answer"
+  },
+  {
+   "path": "/can-cursor/read-pdf/",
+   "title": "Can Cursor read PDF files? With one server | {brand}",
+   "h1": "Can Cursor read PDF files?",
+   "meta_description": "Cursor's file reader is made for text. The PDF server reads page counts and text from standard PDFs and writes new files from page ranges inside Cursor.",
+   "primary_keyword": "can cursor read pdf",
+   "intent": "informational",
+   "priority": 0.7,
+   "servers": [
+    "pdf"
+   ],
+   "us_volume": null,
+   "page_type": "answer"
+  }
+ ],
+ "jobs": {
+  "/can-chatgpt/open-zip-files/": {
+   "intro": "Sometimes. ChatGPT can unpack an uploaded zip with its code tool. A Zip server lets you look inside first and pull out one file at a time.",
+   "without_tool": "With its code tool, ChatGPT can often unpack a zip you upload and read the files inside its sandbox. It doesn't warn you about traversal paths or a suspicious compression ratio, and the files stay in that one chat.",
+   "with_tool": "The Zip server lists every entry with sizes and ratios, reads one text file without unpacking the rest, and unpacks safely with traversal, absolute-path and symlink entries refused. The hosted server can't see files on your computer. It takes a file from a public link or a small upload (up to 1 MB), and new files come back as one-hour download links. To try it in ChatGPT on the web, where your plan or workspace allows custom MCP servers, get a free token at mcp.zovo.one/mcp/connect and add mcp.zovo.one/mcp/zip/t/<token> as a server with No authentication. We haven't tested this in ChatGPT yet.",
+   "example": {
+    "persona": "Accountant receiving client files",
+    "prompt": "List what's inside client-records-q3.zip, then show me notes.txt from it without unpacking the rest.",
+    "steps": [
+     {
+      "tool": "zip_list",
+      "does": "Lists every entry with size and compression ratio"
+     },
+     {
+      "tool": "zip_extract_text",
+      "does": "Reads notes.txt straight from the archive"
+     }
+    ],
+    "result": "A list of the archive's files and sizes, and the text of notes.txt, with nothing else unpacked."
+   },
+   "pitfalls": [
+    "Unpacking an unknown zip before you look at the list.",
+    "Ignoring a huge compression ratio, a sign of a zip bomb.",
+    "Assuming every ChatGPT plan can add a custom MCP server. Check your plan first."
+   ],
+   "answer": "ChatGPT can often unpack an uploaded zip with its code tool. The Zip server lists entries, reads one file without unpacking and refuses unsafe paths. It runs hosted or locally in Claude and Cursor."
+  },
+  "/can-chatgpt/zip-files/": {
+   "intro": "Yes, for files it already has. ChatGPT's code tool can pack files you upload into a .zip. A Zip server does the same with patterns and keeps a history of what it made.",
+   "without_tool": "With its code tool, ChatGPT can put files you upload into a .zip and give you a download. It can't reach folders on your computer, and it keeps no record of past archives.",
+   "with_tool": "The Zip server packs files or a whole folder into a new .zip with glob patterns, adds files to an existing archive and lists the archives it made. Locally it reads your folders. The hosted server can't see files on your computer. It takes a file from a public link or a small upload, and the archive comes back as a one-hour download link. To try it in ChatGPT on the web, where your plan or workspace allows custom MCP servers, get a free token at mcp.zovo.one/mcp/connect and add mcp.zovo.one/mcp/zip/t/<token> as a server with No authentication. We haven't tested this in ChatGPT yet.",
+   "example": {
+    "persona": "Designer sending final files",
+    "prompt": "Pack every .png and .pdf in the client-final folder into handoff.zip, then list what went in.",
+    "steps": [
+     {
+      "tool": "zip_create",
+      "does": "Packs the matching files into handoff.zip"
+     },
+     {
+      "tool": "zip_list",
+      "does": "Lists the entries with their sizes"
+     }
+    ],
+    "result": "handoff.zip with only the PNG and PDF files, and a list to check before you send it."
+   },
+   "pitfalls": [
+    "Zipping a folder with hidden system files in it.",
+    "Sending an archive without checking the list first.",
+    "Expecting a hosted server to read a folder on your own disk."
+   ],
+   "answer": "ChatGPT's code tool can zip files you upload. The Zip server packs files with glob patterns, adds to archives and keeps a history. Locally in Claude or Cursor it reads your folders directly."
+  },
+  "/can-chatgpt/create-xlsx-files/": {
+   "intro": "Yes. ChatGPT's code tool can write an .xlsx in its sandbox. A Spreadsheet server does it as a repeatable tool call and can query the file afterwards.",
+   "without_tool": "With its code tool, ChatGPT can build an .xlsx and give you a download link. Without it you get a table or CSV text to paste, and pasted tables often land in one column.",
+   "with_tool": "The Spreadsheet server writes rows to .xlsx, .csv, .tsv or .json, adds computed columns to a new file, converts formats and summarizes a column. On the hosted endpoint each file comes back as a download and stays available by name for the next call. To try it in ChatGPT on the web, where your plan or workspace allows custom MCP servers, get a free token at mcp.zovo.one/mcp/connect and add mcp.zovo.one/mcp/spreadsheet/t/<token> as a server with No authentication. We haven't tested this in ChatGPT yet.",
+   "example": {
+    "persona": "Volunteer treasurer of a sports club",
+    "prompt": "Make members-2026.xlsx with columns name, membership type, paid date and amount, from the list I paste below.",
+    "steps": [
+     {
+      "tool": "sheet_write",
+      "does": "Writes the rows to members-2026.xlsx"
+     },
+     {
+      "tool": "sheet_stats",
+      "does": "Summarizes the amount column"
+     }
+    ],
+    "result": "A real .xlsx file with the member list, and a count and total of what has been paid."
+   },
+   "pitfalls": [
+    "Numbers saved as text, so totals don't work.",
+    "Expecting formulas to survive a CSV export.",
+    "Pasting a chat table into Excel and getting one column."
+   ],
+   "answer": "ChatGPT can create an .xlsx with its code tool. The Spreadsheet server writes .xlsx and .csv files as tool calls, adds columns and converts formats. It runs hosted or locally in Claude and Cursor."
+  },
+  "/can-chatgpt/create-qr-codes/": {
+   "intro": "Often, with its code tool, if the right library is there. A Barcode server makes QR codes as a direct tool call, including WiFi, contact and payment codes.",
+   "without_tool": "ChatGPT's image generator draws pictures that look like QR codes but don't scan. With its code tool it can sometimes make a real one, depending on the libraries in its sandbox.",
+   "with_tool": "The Barcode server turns text or a URL into a QR code as SVG, and also makes WiFi join codes, vCard contact codes and EPC payment codes a euro banking app can scan. The free tier gives 20 codes a month. PNG output is Pro. To try it in ChatGPT on the web, where your plan or workspace allows custom MCP servers, get a free token at mcp.zovo.one/mcp/connect and add mcp.zovo.one/mcp/barcode/t/<token> as a server with No authentication. We haven't tested this in ChatGPT yet.",
+   "example": {
+    "persona": "Cafe owner",
+    "prompt": "Make a QR code that joins my guest WiFi, network CafeNova-Guest, password on the receipt, WPA.",
+    "steps": [
+     {
+      "tool": "qr_wifi",
+      "does": "Builds the WiFi join payload and draws the QR code"
+     }
+    ],
+    "result": "A QR code customers scan to join the guest WiFi without typing the password."
+   },
+   "pitfalls": [
+    "Printing an AI-drawn image that only looks like a QR code.",
+    "Testing the code on one phone only.",
+    "Printing it too small to scan from a table."
+   ],
+   "answer": "ChatGPT's image tool draws fake QR codes. Its code tool can sometimes make real ones. The Barcode server makes scannable QR, WiFi, contact and payment codes. It runs hosted or locally in Claude and Cursor."
+  },
+  "/can-chatgpt/edit-pdfs/": {
+   "intro": "Partly. ChatGPT can rework a PDF you upload with its code tool. A PDF server handles page work like merge, split, rotate and stamp. Neither rewrites the original text in place.",
+   "without_tool": "With its code tool, ChatGPT can often merge, split or rotate an uploaded PDF and give you a new file. Changing the words inside a PDF usually means rebuilding the document, and the layout can shift.",
+   "with_tool": "The PDF server merges, splits, pulls out pages, reorders, rotates, stamps a word such as PAID, and adds your business name to every footer. It doesn't edit the existing text and doesn't fill forms. The hosted server can't see files on your computer. It takes a file from a public link or a small upload (up to 2 MB), and each new PDF comes back as a download link. To try it in ChatGPT on the web, where your plan or workspace allows custom MCP servers, get a free token at mcp.zovo.one/mcp/connect and add mcp.zovo.one/mcp/pdf/t/<token> as a server with No authentication. We haven't tested this in ChatGPT yet.",
+   "example": {
+    "persona": "Freelance bookkeeper",
+    "prompt": "Take pages 1 to 3 of contract.pdf, rotate page 2 the right way up, and stamp DRAFT across them.",
+    "steps": [
+     {
+      "tool": "pdf_pages",
+      "does": "Pulls pages 1 to 3 into a new PDF"
+     },
+     {
+      "tool": "pdf_rotate",
+      "does": "Turns page 2 by 180 degrees"
+     },
+     {
+      "tool": "pdf_stamp",
+      "does": "Draws DRAFT across the pages"
+     }
+    ],
+    "result": "A new three-page PDF stamped DRAFT, with the original file unchanged."
+   },
+   "pitfalls": [
+    "Expecting a tool to rewrite a sentence inside a PDF.",
+    "Editing a signed PDF instead of writing a new copy.",
+    "Uploading client PDFs to free online editors."
+   ],
+   "answer": "ChatGPT can rework an uploaded PDF with its code tool. The PDF server merges, splits, rotates, reorders and stamps PDFs as new files. It doesn't edit text or fill forms."
+  },
+  "/can-chatgpt/open-pdfs/": {
+   "intro": "Yes. You can upload a PDF to ChatGPT and ask about it. A PDF server helps when you need page counts, exact page ranges or a new file out of it.",
+   "without_tool": "ChatGPT reads a PDF you upload and can answer questions about it. Scanned pages need it to read the image. Splitting or counting pages across many files needs its code tool.",
+   "with_tool": "The PDF server reports page count, paper size and metadata, extracts text from standard-font PDFs (no OCR for scans), counts pages across many files and writes new PDFs from page ranges. The hosted server can't see files on your computer. It takes a file from a public link or a small upload (up to 2 MB). To try it in ChatGPT on the web, where your plan or workspace allows custom MCP servers, get a free token at mcp.zovo.one/mcp/connect and add mcp.zovo.one/mcp/pdf/t/<token> as a server with No authentication. We haven't tested this in ChatGPT yet.",
+   "example": {
+    "persona": "Paralegal checking a bundle",
+    "prompt": "How many pages are in exhibit-a.pdf and what paper size is it? Then pull pages 4 to 6 into a new file.",
+    "steps": [
+     {
+      "tool": "pdf_info",
+      "does": "Reports page count, page sizes and metadata"
+     },
+     {
+      "tool": "pdf_pages",
+      "does": "Writes pages 4 to 6 to a new PDF"
+     }
+    ],
+    "result": "The page count and paper size, and a new PDF with only pages 4 to 6."
+   },
+   "pitfalls": [
+    "Expecting text out of a scanned PDF without OCR.",
+    "Trusting a summary without checking the page it came from.",
+    "Uploading a confidential PDF without checking your data settings."
+   ],
+   "answer": "ChatGPT can open a PDF you upload and answer questions about it. The PDF server adds page counts, text extraction from standard PDFs and new files from page ranges."
+  },
+  "/can-chatgpt/format-a-word-document/": {
+   "intro": "Yes, as a new file. ChatGPT's code tool can write a formatted .docx. A DOCX server turns markdown into real Word headings and fills your own template.",
+   "without_tool": "Without its code tool, ChatGPT gives you text to paste, and Word headings and tables get lost on the way. With the code tool it can write a .docx, but it doesn't know your house template.",
+   "with_tool": "The DOCX server turns markdown into a .docx with real headings, lists and tables, writes a .docx from sections, fills {{placeholders}} in your own template and reads an existing .docx. The hosted server can't see files on your computer. It takes a file from a public link or a small upload (up to 2 MB). To try it in ChatGPT on the web, where your plan or workspace allows custom MCP servers, get a free token at mcp.zovo.one/mcp/connect and add mcp.zovo.one/mcp/docx/t/<token> as a server with No authentication. We haven't tested this in ChatGPT yet.",
+   "example": {
+    "persona": "Office manager",
+    "prompt": "Turn this markdown policy into staff-handbook.docx with proper headings and the leave table kept as a table.",
+    "steps": [
+     {
+      "tool": "doc_from_markdown",
+      "does": "Converts headings, lists and the table into Word formatting"
+     }
+    ],
+    "result": "staff-handbook.docx with real Word headings and a real table, ready for the company template."
+   },
+   "pitfalls": [
+    "Pasting chat text into Word and fixing every heading by hand.",
+    "Placeholders that differ by one character, so they aren't filled.",
+    "Starting from blank when the company has a letterhead template."
+   ],
+   "answer": "ChatGPT can write a .docx with its code tool. The DOCX server turns markdown into real Word headings and tables and fills your own template. It runs hosted or locally in Claude and Cursor."
+  },
+  "/can-chatgpt/make-a-resume/": {
+   "intro": "Yes. ChatGPT writes resume text well. A Resume server keeps one profile and builds the .docx, the cover letter and the plain text for job forms from it.",
+   "without_tool": "ChatGPT drafts resume wording and can make a file with its code tool. Each new chat starts over unless you paste your details again, and the layout changes from file to file.",
+   "with_tool": "The Resume server stores one profile, writes it to a Word .docx, writes a one-page cover letter, gives you markdown to paste into an applicant tracking form and checks a job posting for missing keywords. To try it in ChatGPT on the web, where your plan or workspace allows custom MCP servers, get a free token at mcp.zovo.one/mcp/connect and add mcp.zovo.one/mcp/resume/t/<token> as a server with No authentication. We haven't tested this in ChatGPT yet.",
+   "example": {
+    "persona": "Nurse changing hospitals",
+    "prompt": "Save my profile from the details below, then make my resume as a Word file.",
+    "steps": [
+     {
+      "tool": "profile_set",
+      "does": "Stores contact details, summary, experience and skills"
+     },
+     {
+      "tool": "resume_create",
+      "does": "Writes the profile to a .docx"
+     }
+    ],
+    "result": "A resume .docx built from one stored profile, ready to reuse for the next application."
+   },
+   "pitfalls": [
+    "Adding skills you don't have to match a posting.",
+    "Sending the same resume to every job.",
+    "Keeping five versions with different phone numbers."
+   ],
+   "answer": "ChatGPT can write a resume and make a file. The Resume server keeps one profile and builds the .docx, a cover letter and form-ready text from it. It runs hosted or locally in Claude and Cursor."
+  },
+  "/can-chatgpt/update-my-resume/": {
+   "intro": "Yes. Upload it and ChatGPT will suggest edits. A Resume server reads your existing .docx into a profile and checks it against a posting without inventing facts.",
+   "without_tool": "ChatGPT reads an uploaded resume and rewrites it. It can drift and add claims you never made, and the result is text or a new file in a different layout.",
+   "with_tool": "The Resume server reads an existing .docx resume into a profile, compares it with a job posting and lists matched and missing keywords without changing anything, then writes a new .docx from the profile. To try it in ChatGPT on the web, where your plan or workspace allows custom MCP servers, get a free token at mcp.zovo.one/mcp/connect and add mcp.zovo.one/mcp/resume/t/<token> as a server with No authentication. We haven't tested this in ChatGPT yet.",
+   "example": {
+    "persona": "Marketing coordinator",
+    "prompt": "Read my-resume.docx, then compare it with the job posting I paste below.",
+    "steps": [
+     {
+      "tool": "resume_read",
+      "does": "Reads the .docx into the profile shape"
+     },
+     {
+      "tool": "tailor_to_job",
+      "does": "Lists matched and missing keywords and a coverage figure"
+     }
+    ],
+    "result": "Your resume as a profile, and a list of the keywords the posting wants that your resume doesn't mention yet."
+   },
+   "pitfalls": [
+    "Accepting rewrites that claim things you never did.",
+    "Keyword stuffing that reads badly to a person.",
+    "Uploading an old .doc file, which the reader refuses."
+   ],
+   "answer": "ChatGPT can rewrite an uploaded resume. The Resume server reads your .docx, checks it against a posting without changing facts and writes the updated file. It runs hosted or locally in Claude and Cursor."
+  },
+  "/can-chatgpt/keep-track-of-time/": {
+   "intro": "Not on its own. ChatGPT has no running stopwatch and no timesheet. A Time Tracker server adds a timer, logged hours and billable totals.",
+   "without_tool": "ChatGPT can't run a timer between messages or keep a timesheet across chats. If you ask how long you worked, it guesses from what you tell it.",
+   "with_tool": "The Time Tracker server starts and stops a timer per project, logs entries you add later, reports hours and billable money for a period and exports a CSV for your client or bookkeeper. To try it in ChatGPT on the web, where your plan or workspace allows custom MCP servers, get a free token at mcp.zovo.one/mcp/connect and add mcp.zovo.one/mcp/time-tracker/t/<token> as a server with No authentication. We haven't tested this in ChatGPT yet.",
+   "example": {
+    "persona": "Freelance translator",
+    "prompt": "Start a timer for the Larsen manual. Later, stop it and show this week's hours by project.",
+    "steps": [
+     {
+      "tool": "timer_start",
+      "does": "Starts the stopwatch for the Larsen project"
+     },
+     {
+      "tool": "timer_stop",
+      "does": "Stops it and logs the entry"
+     },
+     {
+      "tool": "report",
+      "does": "Totals hours and billable money for the week"
+     }
+    ],
+    "result": "A logged entry for the Larsen job and a weekly total of hours by project."
+   },
+   "pitfalls": [
+    "Leaving a timer running overnight.",
+    "Logging hours from memory at the end of the month.",
+    "Forgetting to set an hourly rate, so totals show no money."
+   ],
+   "answer": "ChatGPT has no timer or timesheet of its own. The Time Tracker server starts and stops timers, logs hours and reports billable totals. It runs hosted or locally in Claude and Cursor."
+  },
+  "/can-chatgpt/know-the-time/": {
+   "intro": "Not reliably. ChatGPT may know today's date but has no clock it can read for your city. A Timezone server answers with the real current time anywhere.",
+   "without_tool": "ChatGPT has no clock for your location. It may get the date right and can search the web, but a time it states from memory can be wrong, and daylight saving changes trip it up.",
+   "with_tool": "The Timezone server gives the current time in one or more places, converts a time between zones with day changes marked, lists daylight saving changes and finds meeting slots inside everyone's working hours. To try it in ChatGPT on the web, where your plan or workspace allows custom MCP servers, get a free token at mcp.zovo.one/mcp/connect and add mcp.zovo.one/mcp/timezone/t/<token> as a server with No authentication. We haven't tested this in ChatGPT yet.",
+   "example": {
+    "persona": "Remote team lead",
+    "prompt": "What time is it now in Denver, Lisbon and Manila?",
+    "steps": [
+     {
+      "tool": "now",
+      "does": "Returns the local date, time and offset for each city"
+     }
+    ],
+    "result": "The current time in all three cities under one UTC instant."
+   },
+   "pitfalls": [
+    "Trusting a time ChatGPT states without a clock behind it.",
+    "Forgetting that daylight saving starts on different dates in Europe and the US.",
+    "Writing EST in winter and summer alike."
+   ],
+   "answer": "ChatGPT has no clock for your city, so its stated time can be wrong. The Timezone server returns the real current time in any place. It runs hosted or locally in Claude and Cursor."
+  },
+  "/can-chatgpt/do-my-taxes/": {
+   "intro": "No. ChatGPT can't file a return. It can explain rules and do math. The Tax Calculator server gives a quick US federal estimate for a single filer, and nothing more.",
+   "without_tool": "ChatGPT can explain tax terms and walk through a calculation, but it can't file for you and can get bracket numbers wrong. Treat any figure it gives as a draft to check.",
+   "with_tool": "The Tax Calculator server has one tool. It takes gross income, subtracts the $15,750 standard deduction, which is the 2025 tax-year figure, applies the single-filer federal brackets and returns taxable income, federal tax, effective rate and after-tax income. No state tax, credits or other filing status. It runs locally in Claude Desktop or Cursor and isn't hosted, so it doesn't work in ChatGPT.",
+   "example": {
+    "persona": "Single filer comparing a job offer",
+    "prompt": "Estimate federal income tax on 95,000 gross, single filer.",
+    "steps": [
+     {
+      "tool": "us_federal_tax",
+      "does": "Applies the standard deduction and the brackets"
+     }
+    ],
+    "result": "Taxable income, estimated federal tax, effective rate and after-tax income for 95,000."
+   },
+   "pitfalls": [
+    "Filing from a chat answer.",
+    "Forgetting state and payroll taxes.",
+    "Using a single-filer estimate when you file jointly."
+   ],
+   "answer": "No. ChatGPT can't file taxes. The Tax Calculator server gives a US federal estimate for a single filer. It runs locally in Claude Desktop or Cursor, not ChatGPT. Use tax software or a preparer to file."
+  },
+  "/can-chatgpt/help-with-finances/": {
+   "intro": "Yes, with limits. ChatGPT explains money topics well but keeps no ledger. Two servers add a record of what you spent and a reading of your bank CSV.",
+   "without_tool": "ChatGPT can explain budgeting and analyze a statement you upload in one chat. It keeps no running record of expenses, and it can misread a bank CSV's amount format.",
+   "with_tool": "Expense Tracker records each expense with its category and VAT split and gives totals by category, project or month. Bank Statement imports a bank CSV, groups spending by category and finds charges that come back every month. To try it in ChatGPT on the web, where your plan or workspace allows custom MCP servers, get a free token at mcp.zovo.one/mcp/connect and add mcp.zovo.one/mcp/expense-tracker/t/<token> as a server with No authentication. We haven't tested this in ChatGPT yet.",
+   "example": {
+    "persona": "Household planner",
+    "prompt": "Add 62.40 at Lidl as groceries today, then show this month's spending by category.",
+    "steps": [
+     {
+      "tool": "expense_add",
+      "does": "Records the expense with its category"
+     },
+     {
+      "tool": "expense_summary",
+      "does": "Totals the month by category"
+     }
+    ],
+    "result": "The expense saved and this month's totals per category."
+   },
+   "pitfalls": [
+    "Pasting a full bank statement with account numbers into a chat.",
+    "Mixing currencies in one total.",
+    "Treating chat answers as investment advice."
+   ],
+   "answer": "ChatGPT explains money topics but keeps no ledger. Expense Tracker records spending and Bank Statement reads your bank CSV and finds recurring charges. Both run hosted or locally in Claude and Cursor."
+  },
+  "/can-chatgpt/integrate-with-outlook/": {
+   "intro": "Partly. OpenAI offers Outlook Email and Outlook Calendar apps for ChatGPT, and the calendar app is read-only. A Calendar server works from an .ics export instead, with no account link.",
+   "without_tool": "OpenAI's Outlook Calendar app lets ChatGPT read events and availability, and some actions need your Microsoft admin to approve them. It can't change events.",
+   "with_tool": "The Calendar server doesn't connect to Outlook. It reads an .ics file you export from Outlook (File, Save Calendar), finds double bookings across calendars, shows free gaps and writes chosen events to a new .ics you can import back into Outlook. To try it in ChatGPT on the web, where your plan or workspace allows custom MCP servers, get a free token at mcp.zovo.one/mcp/connect and add mcp.zovo.one/mcp/calendar/t/<token> as a server with No authentication. We haven't tested this in ChatGPT yet.",
+   "example": {
+    "persona": "Consultant with two calendars",
+    "prompt": "Import my Outlook export and my personal calendar, then show every double booking next week.",
+    "steps": [
+     {
+      "tool": "ics_import",
+      "does": "Reads each .ics and keeps it under a name"
+     },
+     {
+      "tool": "conflicts",
+      "does": "Lists every pair of overlapping events"
+     }
+    ],
+    "result": "Every clash between work and personal events next week, with the minutes they overlap."
+   },
+   "pitfalls": [
+    "Expecting an .ics export to stay in sync after you export it.",
+    "Exporting only one calendar and missing clashes.",
+    "Assuming your workspace allows the Outlook app without admin approval."
+   ],
+   "answer": "ChatGPT has read-only Outlook apps, some needing admin approval. The Calendar server works from an Outlook .ics export, finds clashes and writes .ics files to import. It never connects to Outlook itself."
+  },
+  "/can-chatgpt/edit-photos/": {
+   "intro": "Yes, by redrawing them. ChatGPT's image tool changes a photo by generating a new one. For exact edits like resize, crop and compress, an Image server keeps the real pixels.",
+   "without_tool": "ChatGPT's image tool makes a new picture from your photo, so faces and small details can change. Its code tool can resize or crop an upload, one chat at a time.",
+   "with_tool": "The Image server resizes, crops, compresses, converts format, makes thumbnails, adds a text watermark and strips metadata, always writing a new copy. Free sources go up to 4 MP. The hosted server can't see files on your computer. It takes a file from a public link or a small upload (up to 2 MB). To try it in ChatGPT on the web, where your plan or workspace allows custom MCP servers, get a free token at mcp.zovo.one/mcp/connect and add mcp.zovo.one/mcp/image/t/<token> as a server with No authentication. We haven't tested this in ChatGPT yet.",
+   "example": {
+    "persona": "Online seller",
+    "prompt": "Resize product.jpg to 1200 pixels wide, then compress it for the web.",
+    "steps": [
+     {
+      "tool": "image_resize",
+      "does": "Writes a 1200 px wide copy, keeping the aspect ratio"
+     },
+     {
+      "tool": "image_compress",
+      "does": "Re-encodes it smaller and reports the bytes saved"
+     }
+    ],
+    "result": "A web-sized product photo with the same pixels, just smaller, and the original untouched."
+   },
+   "pitfalls": [
+    "Using an AI redraw when the product must look exactly the same.",
+    "Posting photos with GPS data still inside.",
+    "Upscaling a small photo and expecting real new detail."
+   ],
+   "answer": "ChatGPT edits photos by redrawing them. The Image server makes exact edits on the real pixels, resize, crop, compress, convert and strip metadata. It runs hosted or locally in Claude and Cursor."
+  },
+  "/can-cursor/read-excel-files/": {
+   "intro": "Not directly. Cursor reads text files, and .xlsx is a binary format. Its agent can write a script to parse one, or a Spreadsheet server reads it in one call.",
+   "without_tool": "Cursor's file reader can't parse an .xlsx. The agent can write and run a Python or Node script in the terminal, which depends on the libraries you have installed.",
+   "with_tool": "The Spreadsheet server reads .xlsx and .csv by path, shows sheets and columns, filters rows, searches every cell and summarizes columns. It runs over stdio in Cursor and writes changes to a new file.",
+   "example": {
+    "persona": "Developer importing client data",
+    "prompt": "Show the sheets and columns in data/customers.xlsx, then list rows where country is DE.",
+    "steps": [
+     {
+      "tool": "sheet_info",
+      "does": "Lists sheets, columns and row counts"
+     },
+     {
+      "tool": "sheet_query",
+      "does": "Filters rows where country is DE"
+     }
+    ],
+    "result": "The workbook layout and the matching rows, without writing a parsing script."
+   },
+   "pitfalls": [
+    "Committing a one-off parsing script to the repo.",
+    "Reading only the first sheet of a workbook.",
+    "Dates coming back as serial numbers."
+   ],
+   "answer": "Cursor can't read .xlsx with its file reader. Its agent can write a parsing script. The Spreadsheet server reads, filters and summarizes Excel files by path in one call."
+  },
+  "/can-cursor/edit-word-documents/": {
+   "intro": "Not directly. A .docx is a zipped XML package, and Cursor edits text files. A DOCX server reads the document and writes a new one for you.",
+   "without_tool": "Cursor can't open a .docx in its editor as text. The agent can unzip and patch the XML with a script, which breaks formatting easily.",
+   "with_tool": "The DOCX server reads the text and heading outline of a .docx, fills {{placeholders}} in a template, writes a .docx from markdown and converts a .docx to HTML. It runs over stdio in Cursor and writes a new file each time.",
+   "example": {
+    "persona": "Developer updating release notes",
+    "prompt": "Fill release-template.docx with version 2.4.0 and today's date, and save it as release-2.4.0.docx.",
+    "steps": [
+     {
+      "tool": "doc_fill_template",
+      "does": "Replaces each placeholder and reports any it couldn't fill"
+     }
+    ],
+    "result": "release-2.4.0.docx in the original layout, with every placeholder filled."
+   },
+   "pitfalls": [
+    "Editing document.xml by hand and corrupting the file.",
+    "Placeholders split across two text runs by Word.",
+    "Overwriting the template instead of writing a new file."
+   ],
+   "answer": "Cursor can't edit a .docx as text. The DOCX server reads Word files, fills templates and writes new .docx files from markdown inside Cursor."
+  },
+  "/can-cursor/read-pdf/": {
+   "intro": "Not reliably on its own. Cursor's file reader is made for text and code. A PDF server gives it page counts, text and new files from page ranges.",
+   "without_tool": "Cursor's agent can try a terminal command or script to pull text out of a PDF, which depends on what you have installed. Its editor doesn't read PDF text.",
+   "with_tool": "The PDF server reports page count, sizes and metadata, extracts text from standard-font PDFs (no OCR for scans), and merges, splits and reorders pages into new files. It runs over stdio in Cursor.",
+   "example": {
+    "persona": "Developer reading a vendor spec",
+    "prompt": "Read the text of docs/api-spec.pdf and tell me how many pages it has.",
+    "steps": [
+     {
+      "tool": "pdf_info",
+      "does": "Reports page count and sizes"
+     },
+     {
+      "tool": "pdf_text",
+      "does": "Extracts the text from the standard-font pages"
+     }
+    ],
+    "result": "The page count and the spec text in the chat, ready to use while you code."
+   },
+   "pitfalls": [
+    "Expecting text from a scanned PDF without OCR.",
+    "Pasting a long PDF into chat by hand.",
+    "Committing large PDFs to the repo to read them."
+   ],
+   "answer": "Cursor's file reader is made for text. The PDF server reads page counts and text from standard PDFs and writes new files from page ranges inside Cursor."
+  }
+ },
+ "chatgpt_facts": {
+  "claim": "As of Nov 2026, ChatGPT can add a custom MCP server only by URL, on the web, through developer mode, and only where the plan or workspace allows it. Supported transports are SSE and streaming HTTP. Auth options are OAuth or No authentication, with no custom header, so our path-token URL mcp.zovo.one/mcp/<id>/t/<token> is the form that fits. A local or private server needs OpenAI's Secure MCP Tunnel or an HTTPS tunnel; plain local stdio is not supported. Tools without readOnlyHint are treated as write actions and need confirmation. Plan list is inconsistent across sources (OpenAI dev docs listed Pro, Plus, Business, Enterprise, Edu; help center says full write support is beta on Business, Enterprise, Edu), so pages say 'where your plan or workspace allows' and 'we haven't tested this in ChatGPT'. ChatGPT also has OpenAI-built Outlook Email and Outlook Calendar apps; calendar data is read-only and some actions need Microsoft admin approval.",
+  "sources": [
+   "https://developers.openai.com/api/docs/guides/custom-mcp-server.md",
+   "https://developers.openai.com/apps-sdk/deploy/connect-chatgpt",
+   "https://developers.openai.com/api/docs/guides/developer-mode",
+   "https://help.openai.com/en/articles/12584461-developer-mode-and-mcp-apps-in-chatgpt",
+   "https://help.openai.com/en/articles/12512241-outlook-email-and-calendar-connectors-for-chatgpt"
+  ],
+  "notes": [
+   "developer-mode and help 12584461 pages were seen only as search snippets (404/403 on fetch); custom-mcp-server.md and connect-chatgpt were fetched directly.",
+   "tax-calc defect: tool says 2026 brackets but BRACKETS and STD_DEDUCTION=15750 are the 2025 tax-year figures; README also promises a marginal bracket the output lacks.",
+   "/can-cursor/ pages need a route file site/src/pages/can-cursor/[slug].astro (copy of can-chatgpt/[slug].astro with the prefix changed)."
+  ],
+  "source_phrases": {
+   "/can-chatgpt/open-zip-files/": "can chatgpt open zip files",
+   "/can-chatgpt/zip-files/": "can chatgpt zip files",
+   "/can-chatgpt/create-xlsx-files/": "can chatgpt create xlsx files",
+   "/can-chatgpt/create-qr-codes/": "can chatgpt create qr codes",
+   "/can-chatgpt/edit-pdfs/": "can chatgpt edit pdfs",
+   "/can-chatgpt/open-pdfs/": "can chatgpt open pdfs",
+   "/can-chatgpt/format-a-word-document/": "can chatgpt format a word document",
+   "/can-chatgpt/make-a-resume/": "can chatgpt make a resume",
+   "/can-chatgpt/update-my-resume/": "can chatgpt update my resume",
+   "/can-chatgpt/keep-track-of-time/": "can chatgpt keep track of time",
+   "/can-chatgpt/know-the-time/": "can chatgpt know the time",
+   "/can-chatgpt/do-my-taxes/": "can chatgpt do my taxes",
+   "/can-chatgpt/help-with-finances/": "can chatgpt help with finances",
+   "/can-chatgpt/integrate-with-outlook/": "can chatgpt integrate with outlook",
+   "/can-chatgpt/edit-photos/": "can chatgpt edit photos",
+   "/can-cursor/read-excel-files/": "can cursor read excel files",
+   "/can-cursor/edit-word-documents/": "can cursor edit word document",
+   "/can-cursor/read-pdf/": "can cursor read pdf"
+  }
+ }
+}

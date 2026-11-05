@@ -1,0 +1,101 @@
+{
+ "id": "2026-11-05",
+ "title": "Session 2026-11-05, answer engine doubled, 3 new satellites live, two truth gates, deploy pipeline fixed",
+ "verdict": "MCP revenue is still $0. Stripe cannot be read (the CLI holds no keys) and no real card has ever been through checkout. Google impressions on mcpstamp.com rose to 143 a day (6 on 10-30), and question pages are the only kind ranking on page one, so this session put about 40 more honest answer pages live. There are 18 new can-Claude pages with real server calls, 3 live-data pages, 15 can-ChatGPT pages and 3 can-Cursor pages. They came from 1,491 real Google autocomplete questions. Two independent truth gates found 29 false claims in the drafts, mostly 'Claude cannot', when code execution is on by default. All were fixed before deploy, as was the same error on 10 older pages. The zip page title now answers the query directly. Three new free live-data satellites went live: UV index, FDA drug shortages, census tract. Each has a Worker, public repo, registry entry and site page, for 30 in total. Community PR #96 was merged and #97 got a review. Two awesome-list PRs were opened. Two traps were fixed. The local site tree was 22 commits stale and would have reverted production (publish.sh now refuses), and the CI artifact lacked site/lib, which failed the first production deploy.",
+ "kpis": [
+  {
+   "label": "mcpstamp.com Google impressions per day",
+   "value": "6 to 143",
+   "note": "10-30..11-04, GSC searchAnalytics. 492 impressions and 2 clicks over 10-01..11-05. data/s1105/gsc_mcpstamp.json"
+  },
+  {
+   "label": "Answer pages live",
+   "value": "about 70",
+   "note": "34 before. 39 added and 1 duplicate dropped. Sitemap now 237 URLs. 102 URLs sent to IndexNow (200)."
+  },
+  {
+   "label": "Free data satellites live",
+   "value": "30",
+   "note": "27 plus UV index, drug shortage list, census tract. Each answered a real remote tools/call. Registry 1.0.0 active."
+  },
+  {
+   "label": "MCP paid orders, all time",
+   "value": "0",
+   "note": "Stripe CLI has no keys. GA4 14 d: 226 sessions, 6 begin_checkout from 1 user, 0 purchases."
+  },
+  {
+   "label": "Buy links working",
+   "value": "454 of 454",
+   "note": "Sitemap crawl of every /buy/ href. PR #116 (glued punctuation) merged but not live, needs stripe login for the billing deploy."
+  },
+  {
+   "label": "Truth gate",
+   "value": "58 to 71 to fixed",
+   "note": "29 BLOCK and 34 FIX rows across two gates, all applied. Site scan: 0 em dashes, 0 token leaks."
+  }
+ ],
+ "owner": [
+  "stripe login, then one real $19 test buy (15 min)",
+  "npm login or an automation token for @theluckystrike (5 min)",
+  "Submit at mcpservers.org/submit and mcp.so/submit (15 min, browser sign-in)",
+  "Outreach: 10 to 15 personal emails from your own address to MCP newsletter editors, drafted by agents"
+ ],
+ "files": [
+  "intel/S1105-strategy.md",
+  "data/s1105/reports/"
+ ],
+ "shipped": [
+  {
+   "url": "https://www.mcpstamp.com/can-claude/",
+   "title": "18 can-Claude answer pages with real server calls",
+   "detail": "From real autocomplete questions (edit PDFs, read Excel, QR codes, track time, recurring invoices and more). Each shows a live tools/call result from 2026-11-05."
+  },
+  {
+   "url": "https://www.mcpstamp.com/can-chatgpt/do-my-taxes/",
+   "title": "15 can-ChatGPT and 3 can-Cursor pages",
+   "detail": "ChatGPT facts checked against OpenAI docs. Remote MCP by URL only, so the pages name only hosted tools. New /can-cursor/ route."
+  },
+  {
+   "url": "https://www.mcpstamp.com/free-servers/uv-index-today-mcp/",
+   "title": "3 new free satellites live (30 total)",
+   "detail": "UV index (EPA), FDA drug shortage list (openFDA), address to census tract (Census Geocoder). Worker, public repo, registry 1.0.0 and live answer page each."
+  },
+  {
+   "url": "https://www.mcpstamp.com/can-claude/read-zip-files/",
+   "title": "Zip page title answers the query",
+   "detail": "165 impressions at position 8 with 1 click. The title now says yes and how. Re-measure CTR on 11-12."
+  },
+  {
+   "url": "https://github.com/theluckystrike/mcp-servers/pull/96",
+   "title": "Community PRs handled",
+   "detail": "#96 tax-calc merged after a 24-income check, #95 merged, #97 changes requested with exact cases. Awesome-list PRs opened on soxoj #145 and punkpeye devtools #437."
+  },
+  {
+   "url": "https://www.mcpstamp.com/",
+   "title": "Deploy pipeline traps fixed",
+   "detail": "publish.sh refuses a stale repo (it would have reverted 22 commits). The CI artifact now ships site/lib, so Pages Functions build."
+  }
+ ],
+ "next": [
+  {
+   "title": "Owner runs stripe login and one real $19 test buy",
+   "detail": "Unblocks the billing deploy with PR #116 and #119 and makes revenue measurable. 15 minutes.",
+   "colour": "red"
+  },
+  {
+   "title": "Measure the new answer pages in GSC on 11-12 and 11-19",
+   "detail": "Keep topic families that get impressions, stop families with none after 14 days.",
+   "colour": "amber"
+  },
+  {
+   "title": "Next answer wave, 20 to 40 gated pages",
+   "detail": "Same pipeline. Autocomplete questions, live call, two gates.",
+   "colour": "green"
+  },
+  {
+   "title": "Fix tax-calc year label",
+   "detail": "The brackets are 2025 tax-year values labelled 2026. Update to the 2026 IRS figures and republish once npm works.",
+   "colour": "amber"
+  }
+ ]
+}

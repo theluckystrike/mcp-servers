@@ -1,0 +1,263 @@
+{
+ "url": "https://address-to-census-tract-mcp.lipmichal.workers.dev/mcp",
+ "at": "2026-11-05T12:40:34.220789+00:00",
+ "commands": [
+  "POST initialize to https://address-to-census-tract-mcp.lipmichal.workers.dev/mcp",
+  "python3 /Users/mike/mcp-servers/data/s1103/stamp/mcpcall.py address-to-census-tract-mcp list",
+  "python3 /Users/mike/mcp-servers/data/s1103/stamp/mcpcall.py address-to-census-tract-mcp call get_census_tract_for_address '{\"address\":\"1 Dr Carlton B Goodlett Pl, San Francisco, CA 94102\"}'"
+ ],
+ "initialize": {
+  "http_status": 200,
+  "mcp_session_id": null,
+  "body": {
+   "result": {
+    "protocolVersion": "2025-03-26",
+    "capabilities": {
+     "tools": {
+      "listChanged": true
+     }
+    },
+    "serverInfo": {
+     "name": "address-to-census-tract-mcp",
+     "version": "1.0.0",
+     "websiteUrl": "https://www.mcpstamp.com"
+    },
+    "instructions": "Exact census geographies for a US address or point, read at call time from the US Census Bureau Geocoder (geocoding.geo.census.gov). A model cannot know which census tract an address falls in; tract boundaries follow streets and change with each census. Use get_census_tract_for_address for a street address."
+   },
+   "jsonrpc": "2.0",
+   "id": 1
+  }
+ },
+ "tools_list": {
+  "result": {
+   "tools": [
+    {
+     "name": "get_census_tract_for_address",
+     "title": "Get census tract for an address",
+     "description": "Look up the census tract for a US street address with the official US Census Bureau Geocoder. Returns the matched address, latitude and longitude, the 11-digit tract GEOID and tract number, block group and block GEOIDs, state and county FIPS, incorporated place, county subdivision, congressional district, state senate and house districts, urban area and combined statistical area. Use it for CRA, LIHTC, opportunity zone, grant eligibility and demographic lookups that start from an address.",
+     "inputSchema": {
+      "type": "object",
+      "properties": {
+       "address": {
+        "type": "string",
+        "minLength": 5,
+        "maxLength": 200,
+        "description": "One-line US address with house number, street, city and state or ZIP, for example \"1600 Pennsylvania Ave NW, Washington, DC 20500\"."
+       },
+       "vintage": {
+        "type": "string",
+        "enum": [
+         "current",
+         "census2020",
+         "census2010",
+         "acs2017",
+         "acs2018",
+         "acs2019",
+         "acs2021",
+         "acs2022",
+         "acs2023",
+         "acs2024",
+         "acs2025",
+         "acs2026"
+        ],
+        "description": "Census vintage. current (default) uses today's geographies; census2020 uses the 2020 Census geographies; acs2017 to acs2026 match an ACS release."
+       }
+      },
+      "required": [
+       "address"
+      ],
+      "additionalProperties": false,
+      "$schema": "http://json-schema.org/draft-07/schema#"
+     },
+     "annotations": {
+      "title": "Census tract for address",
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
+     },
+     "execution": {
+      "taskSupport": "forbidden"
+     }
+    },
+    {
+     "name": "get_census_tract_for_coordinates",
+     "title": "Get census tract for coordinates",
+     "description": "Census tract, block group, block, county, place and congressional and state legislative districts for a latitude and longitude, from the US Census Bureau Geocoder.",
+     "inputSchema": {
+      "type": "object",
+      "properties": {
+       "latitude": {
+        "type": "number",
+        "minimum": -90,
+        "maximum": 90,
+        "description": "Latitude, for example 41.8827."
+       },
+       "longitude": {
+        "type": "number",
+        "minimum": -180,
+        "maximum": 180,
+        "description": "Longitude, for example -87.6237."
+       },
+       "vintage": {
+        "type": "string",
+        "enum": [
+         "current",
+         "census2020",
+         "census2010",
+         "acs2017",
+         "acs2018",
+         "acs2019",
+         "acs2021",
+         "acs2022",
+         "acs2023",
+         "acs2024",
+         "acs2025",
+         "acs2026"
+        ],
+        "description": "Census vintage. current (default) uses today's geographies; census2020 uses the 2020 Census geographies; acs2017 to acs2026 match an ACS release."
+       }
+      },
+      "required": [
+       "latitude",
+       "longitude"
+      ],
+      "additionalProperties": false,
+      "$schema": "http://json-schema.org/draft-07/schema#"
+     },
+     "annotations": {
+      "title": "Census tract for coordinates",
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
+     },
+     "execution": {
+      "taskSupport": "forbidden"
+     }
+    },
+    {
+     "name": "explain_census_geoid",
+     "title": "Explain a census GEOID",
+     "description": "Split a census GEOID (2 digits state, 5 county, 11 tract, 12 block group, 15 block, or with a 1400000US style prefix) into state and county FIPS, tract code, the tract number as Census displays it (012405 is 124.05), block group and block. No network call.",
+     "inputSchema": {
+      "type": "object",
+      "properties": {
+       "geoid": {
+        "type": "string",
+        "minLength": 2,
+        "maxLength": 24,
+        "description": "GEOID, for example \"06075012405\" or \"1400000US06075012405\"."
+       }
+      },
+      "required": [
+       "geoid"
+      ],
+      "additionalProperties": false,
+      "$schema": "http://json-schema.org/draft-07/schema#"
+     },
+     "annotations": {
+      "title": "Explain GEOID",
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+     },
+     "execution": {
+      "taskSupport": "forbidden"
+     }
+    }
+   ]
+  },
+  "jsonrpc": "2.0",
+  "id": 2
+ },
+ "tools_call": {
+  "result": {
+   "content": [
+    {
+     "type": "text",
+     "text": "1 DR CARLTON P GOODLETT PL, SAN FRANCISCO, CA, 94102 is in Census Tract 124.05 (GEOID 06075012405), block group 3 (060750124053), San Francisco County, California. Congressional District 11 (120th Congressional Districts). Census vintage Current_Current.\n\n{\n  \"summary\": \"1 DR CARLTON P GOODLETT PL, SAN FRANCISCO, CA, 94102 is in Census Tract 124.05 (GEOID 06075012405), block group 3 (060750124053), San Francisco County, California. Congressional District 11 (120th Congressional Districts). Census vintage Current_Current.\",\n  \"input_address\": \"1 Dr Carlton B Goodlett Pl, San Francisco, CA 94102\",\n  \"matched_address\": \"1 DR CARLTON P GOODLETT PL, SAN FRANCISCO, CA, 94102\",\n  \"other_matches\": [],\n  \"latitude\": 37.778536095745,\n  \"longitude\": -122.41831039539,\n  \"state\": {\n    \"name\": \"California\",\n    \"fips\": \"06\",\n    \"abbr\": \"CA\"\n  },\n  \"county\": {\n    \"name\": \"San Francisco County\",\n    \"fips\": \"075\",\n    \"geoid\": \"06075\"\n  },\n  \"tract\": {\n    \"geoid\": \"06075012405\",\n    \"name\": \"Census Tract 124.05\",\n    \"number\": \"124.05\",\n    \"code\": \"012405\",\n    \"layer\": \"Census Tracts\"\n  },\n  \"block_group\": {\n    \"geoid\": \"060750124053\",\n    \"code\": \"3\"\n  },\n  \"block\": {\n    \"geoid\": \"060750124053007\",\n    \"number\": \"3007\",\n    \"layer\": \"2020 Census Blocks\"\n  },\n  \"place\": {\n    \"name\": \"San Francisco city\",\n    \"geoid\": \"0667000\",\n    \"layer\": \"Incorporated Places\"\n  },\n  \"county_subdivision\": {\n    \"name\": \"Downtown-Northeast Neighborhoods-Treasure Island CCD\",\n    \"geoid\": \"0607590734\",\n    \"layer\": \"County Subdivisions\"\n  },\n  \"congressional_district\": {\n    \"name\": \"Congressional District 11\",\n    \"geoid\": \"0611\",\n    \"layer\": \"120th Congressional Districts\"\n  },\n  \"state_senate_district\": {\n    \"name\": \"State Senate District 11\",\n    \"geoid\": \"06011\",\n    \"layer\": \"2026 State Legislative Districts - Upper\"\n  },\n  \"state_house_district\": {\n    \"name\": \"Assembly District 17\",\n    \"geoid\": \"06017\",\n    \"layer\": \"2026 State Legislative Districts - Lower\"\n  },\n  \"urban_area\": {\n    \"name\": \"San Francisco--Oakland, CA Urban Area\",\n    \"geoid\": \"78904\",\n    \"layer\": \"Urban Areas\"\n  },\n  \"combined_statistical_area\": {\n    \"name\": \"San Jose-San Francisco-Oakland, CA CSA\",\n    \"geoid\": \"488\",\n    \"layer\": \"Combined Statistical Areas\"\n  },\n  \"vintage\": \"Current_Current\",\n  \"benchmark\": \"Public_AR_Current\",\n  \"census_profile\": \"https://data.census.gov/profile?g=1400000US06075012405\",\n  \"note\": \"The match uses Census address ranges and places the address on its side of the street. Rural routes, PO boxes and new streets may not match.\",\n  \"as_of\": \"2026-11-05T12:40:27.746Z\",\n  \"source\": \"https://geocoding.geo.census.gov/geocoder/geographies/onelineaddress?address=1%20Dr%20Carlton%20B%20Goodlett%20Pl%2C%20San%20Francisco%2C%20CA%2094102&benchmark=Public_AR_Current&vintage=Current_Current&format=json\",\n  \"more\": \"https://www.mcpstamp.com/servers/?utm_source=mcp&utm_medium=address-to-census-tract-mcp\"\n}"
+    }
+   ],
+   "structuredContent": {
+    "summary": "1 DR CARLTON P GOODLETT PL, SAN FRANCISCO, CA, 94102 is in Census Tract 124.05 (GEOID 06075012405), block group 3 (060750124053), San Francisco County, California. Congressional District 11 (120th Congressional Districts). Census vintage Current_Current.",
+    "input_address": "1 Dr Carlton B Goodlett Pl, San Francisco, CA 94102",
+    "matched_address": "1 DR CARLTON P GOODLETT PL, SAN FRANCISCO, CA, 94102",
+    "other_matches": [],
+    "latitude": 37.778536095745,
+    "longitude": -122.41831039539,
+    "state": {
+     "name": "California",
+     "fips": "06",
+     "abbr": "CA"
+    },
+    "county": {
+     "name": "San Francisco County",
+     "fips": "075",
+     "geoid": "06075"
+    },
+    "tract": {
+     "geoid": "06075012405",
+     "name": "Census Tract 124.05",
+     "number": "124.05",
+     "code": "012405",
+     "layer": "Census Tracts"
+    },
+    "block_group": {
+     "geoid": "060750124053",
+     "code": "3"
+    },
+    "block": {
+     "geoid": "060750124053007",
+     "number": "3007",
+     "layer": "2020 Census Blocks"
+    },
+    "place": {
+     "name": "San Francisco city",
+     "geoid": "0667000",
+     "layer": "Incorporated Places"
+    },
+    "county_subdivision": {
+     "name": "Downtown-Northeast Neighborhoods-Treasure Island CCD",
+     "geoid": "0607590734",
+     "layer": "County Subdivisions"
+    },
+    "congressional_district": {
+     "name": "Congressional District 11",
+     "geoid": "0611",
+     "layer": "120th Congressional Districts"
+    },
+    "state_senate_district": {
+     "name": "State Senate District 11",
+     "geoid": "06011",
+     "layer": "2026 State Legislative Districts - Upper"
+    },
+    "state_house_district": {
+     "name": "Assembly District 17",
+     "geoid": "06017",
+     "layer": "2026 State Legislative Districts - Lower"
+    },
+    "urban_area": {
+     "name": "San Francisco--Oakland, CA Urban Area",
+     "geoid": "78904",
+     "layer": "Urban Areas"
+    },
+    "combined_statistical_area": {
+     "name": "San Jose-San Francisco-Oakland, CA CSA",
+     "geoid": "488",
+     "layer": "Combined Statistical Areas"
+    },
+    "vintage": "Current_Current",
+    "benchmark": "Public_AR_Current",
+    "census_profile": "https://data.census.gov/profile?g=1400000US06075012405",
+    "note": "The match uses Census address ranges and places the address on its side of the street. Rural routes, PO boxes and new streets may not match.",
+    "as_of": "2026-11-05T12:40:27.746Z",
+    "source": "https://geocoding.geo.census.gov/geocoder/geographies/onelineaddress?address=1%20Dr%20Carlton%20B%20Goodlett%20Pl%2C%20San%20Francisco%2C%20CA%2094102&benchmark=Public_AR_Current&vintage=Current_Current&format=json",
+    "more": "https://www.mcpstamp.com/servers/?utm_source=mcp&utm_medium=address-to-census-tract-mcp"
+   }
+  },
+  "jsonrpc": "2.0",
+  "id": 2
+ }
+}

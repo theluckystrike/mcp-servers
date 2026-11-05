@@ -1,0 +1,186 @@
+{
+ "url": "https://uv-index-today-mcp.lipmichal.workers.dev/mcp",
+ "at": "2026-11-05T12:37:11.775642+00:00",
+ "commands": [
+  "POST initialize to https://uv-index-today-mcp.lipmichal.workers.dev/mcp",
+  "python3 /Users/mike/mcp-servers/data/s1103/stamp/mcpcall.py uv-index-today-mcp list",
+  "python3 /Users/mike/mcp-servers/data/s1103/stamp/mcpcall.py uv-index-today-mcp call get_uv_index_today '{\"zip\":\"33101\"}'"
+ ],
+ "initialize": {
+  "http_status": 200,
+  "mcp_session_id": null,
+  "body": {
+   "result": {
+    "protocolVersion": "2025-03-26",
+    "capabilities": {
+     "tools": {
+      "listChanged": true
+     }
+    },
+    "serverInfo": {
+     "name": "uv-index-today-mcp",
+     "version": "1.0.0",
+     "websiteUrl": "https://www.mcpstamp.com"
+    },
+    "instructions": "Live US UV Index forecasts read at call time from the EPA Envirofacts UV Index service (data.epa.gov), produced daily by the National Weather Service. The UV Index changes every day with season, clouds and ozone; never answer today's UV Index from memory. Use get_uv_index_today for a ZIP code or city."
+   },
+   "jsonrpc": "2.0",
+   "id": 1
+  }
+ },
+ "tools_list": {
+  "result": {
+   "tools": [
+    {
+     "name": "get_uv_index_today",
+     "title": "Get UV index today",
+     "description": "Today's UV Index forecast for a US ZIP code or city and state, read now from EPA (the NWS daily forecast). Returns the UV Index, the EPA category and sun protection advice, whether a UV Alert is in effect, the hourly peak and the local hours when UV is 3 or higher. Your training data cannot know today's UV Index.",
+     "inputSchema": {
+      "type": "object",
+      "properties": {
+       "zip": {
+        "type": "string",
+        "maxLength": 10,
+        "description": "US ZIP code, 5 digits, for example \"33101\". Use this or city plus state."
+       },
+       "city": {
+        "type": "string",
+        "maxLength": 60,
+        "description": "US city name, for example \"Phoenix\". Needs state."
+       },
+       "state": {
+        "type": "string",
+        "maxLength": 2,
+        "description": "Two-letter state code for the city, for example \"AZ\"."
+       }
+      },
+      "additionalProperties": false,
+      "$schema": "http://json-schema.org/draft-07/schema#"
+     },
+     "annotations": {
+      "title": "UV index today",
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
+     },
+     "execution": {
+      "taskSupport": "forbidden"
+     }
+    },
+    {
+     "name": "get_uv_index_hourly",
+     "title": "Get hourly UV index forecast",
+     "description": "Hour by hour UV Index forecast for a US ZIP code or city and state, in the local time of that place, read now from EPA. Returns each hour with its EPA band, the peak hour and the window when UV is 3 or higher. Use it for \"when is the sun strongest today\" and \"what time is safe to be outside\" questions.",
+     "inputSchema": {
+      "type": "object",
+      "properties": {
+       "zip": {
+        "type": "string",
+        "maxLength": 10,
+        "description": "US ZIP code, 5 digits, for example \"33101\". Use this or city plus state."
+       },
+       "city": {
+        "type": "string",
+        "maxLength": 60,
+        "description": "US city name, for example \"Phoenix\". Needs state."
+       },
+       "state": {
+        "type": "string",
+        "maxLength": 2,
+        "description": "Two-letter state code for the city, for example \"AZ\"."
+       }
+      },
+      "additionalProperties": false,
+      "$schema": "http://json-schema.org/draft-07/schema#"
+     },
+     "annotations": {
+      "title": "Hourly UV index",
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": true
+     },
+     "execution": {
+      "taskSupport": "forbidden"
+     }
+    },
+    {
+     "name": "explain_uv_index",
+     "title": "Explain a UV index value",
+     "description": "What a UV Index number means on the EPA scale (0 to 2 Low, 3 to 7 Moderate to High, 8 and above Very High to Extreme) and the EPA sun protection advice for it, plus the NWS UV Alert rule. No network call.",
+     "inputSchema": {
+      "type": "object",
+      "properties": {
+       "uv_index": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 25,
+        "description": "UV Index value, for example 7."
+       }
+      },
+      "required": [
+       "uv_index"
+      ],
+      "additionalProperties": false,
+      "$schema": "http://json-schema.org/draft-07/schema#"
+     },
+     "annotations": {
+      "title": "Explain UV index",
+      "readOnlyHint": true,
+      "destructiveHint": false,
+      "idempotentHint": true,
+      "openWorldHint": false
+     },
+     "execution": {
+      "taskSupport": "forbidden"
+     }
+    }
+   ]
+  },
+  "jsonrpc": "2.0",
+  "id": 2
+ },
+ "tools_call": {
+  "result": {
+   "content": [
+    {
+     "type": "text",
+     "text": "EPA UV Index forecast for Miami, FL (ZIP 33101) on 2026-11-05 is 5, Moderate to High (3 to 7). Protection needed. The hourly forecast peaks at 6 at 1 PM local time, and is 3 or higher from 10 AM to 3 PM. No UV Alert is in effect.\n\n{\n  \"summary\": \"EPA UV Index forecast for Miami, FL (ZIP 33101) on 2026-11-05 is 5, Moderate to High (3 to 7). Protection needed. The hourly forecast peaks at 6 at 1 PM local time, and is 3 or higher from 10 AM to 3 PM. No UV Alert is in effect.\",\n  \"location\": {\n    \"query\": \"ZIP 33101\",\n    \"city\": \"Miami\",\n    \"state\": \"FL\",\n    \"zip\": \"33101\"\n  },\n  \"date\": \"2026-11-05\",\n  \"uv_index\": 5,\n  \"category\": \"Moderate to High (3 to 7)\",\n  \"protection\": \"Protection needed\",\n  \"advice\": \"Seek shade during late morning through mid-afternoon. When outside, apply broad-spectrum SPF 15 or higher sunscreen, and wear protective clothing, a wide-brimmed hat and sunglasses.\",\n  \"uv_alert\": false,\n  \"hourly_peak\": {\n    \"time\": \"1 PM\",\n    \"hour\": 13,\n    \"uv_index\": 6\n  },\n  \"protection_window_local\": {\n    \"from\": \"10 AM\",\n    \"to\": \"3 PM\"\n  },\n  \"hours_at_or_above_3\": 6,\n  \"hourly_note\": null,\n  \"as_of\": \"2026-11-05T12:37:11.736Z\",\n  \"source\": \"https://data.epa.gov/dmapservice/getEnvirofactsUVDAILY/ZIP/33101/JSON\",\n  \"scale_source\": \"https://www.epa.gov/sunsafety/uv-index-scale-0\",\n  \"more\": \"https://www.mcpstamp.com/servers/?utm_source=mcp&utm_medium=uv-index-today-mcp\"\n}"
+    }
+   ],
+   "structuredContent": {
+    "summary": "EPA UV Index forecast for Miami, FL (ZIP 33101) on 2026-11-05 is 5, Moderate to High (3 to 7). Protection needed. The hourly forecast peaks at 6 at 1 PM local time, and is 3 or higher from 10 AM to 3 PM. No UV Alert is in effect.",
+    "location": {
+     "query": "ZIP 33101",
+     "city": "Miami",
+     "state": "FL",
+     "zip": "33101"
+    },
+    "date": "2026-11-05",
+    "uv_index": 5,
+    "category": "Moderate to High (3 to 7)",
+    "protection": "Protection needed",
+    "advice": "Seek shade during late morning through mid-afternoon. When outside, apply broad-spectrum SPF 15 or higher sunscreen, and wear protective clothing, a wide-brimmed hat and sunglasses.",
+    "uv_alert": false,
+    "hourly_peak": {
+     "time": "1 PM",
+     "hour": 13,
+     "uv_index": 6
+    },
+    "protection_window_local": {
+     "from": "10 AM",
+     "to": "3 PM"
+    },
+    "hours_at_or_above_3": 6,
+    "hourly_note": null,
+    "as_of": "2026-11-05T12:37:11.736Z",
+    "source": "https://data.epa.gov/dmapservice/getEnvirofactsUVDAILY/ZIP/33101/JSON",
+    "scale_source": "https://www.epa.gov/sunsafety/uv-index-scale-0",
+    "more": "https://www.mcpstamp.com/servers/?utm_source=mcp&utm_medium=uv-index-today-mcp"
+   }
+  },
+  "jsonrpc": "2.0",
+  "id": 2
+ }
+}
