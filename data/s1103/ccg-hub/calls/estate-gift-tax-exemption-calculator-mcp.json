@@ -1,0 +1,43 @@
+{
+ "result": {
+  "content": [
+   {
+    "type": "text",
+    "text": "2026 federal estate tax: $2,000,000. Taxable estate $20,000,000 plus $0 of lifetime taxable gifts is $20,000,000, which is $5,000,000 over the $15,000,000 exclusion, taxed at 40%. A surviving spouse keeps any unused exclusion only if the executor files Form 706 and elects portability.\n\nFederal estate and gift tax only. State estate and inheritance taxes are not included. General information, not legal or tax advice; Forms 706 and 709 and their instructions decide the official amounts."
+   },
+   {
+    "type": "text",
+    "text": "{\n  \"year\": 2026,\n  \"gross_estate\": 20000000,\n  \"deductions\": 0,\n  \"taxable_estate\": 20000000,\n  \"adjusted_taxable_gifts\": 0,\n  \"tax_base\": 20000000,\n  \"tentative_tax\": 7945800,\n  \"gift_tax_payable\": 0,\n  \"basic_exclusion_amount\": 15000000,\n  \"dsue\": 0,\n  \"applicable_exclusion_amount\": 15000000,\n  \"applicable_credit_amount\": 5945800,\n  \"estate_tax\": 2000000,\n  \"amount_over_exclusion\": 5000000,\n  \"unused_exclusion\": 0,\n  \"marginal_rate\": 0.4,\n  \"effective_rate_on_gross_estate\": 0.1,\n  \"filing_required\": true,\n  \"portability_note\": \"If there is a surviving spouse, the unused exclusion (DSUE) passes to them only if the executor files a timely Form 706 and elects portability, even when no return is otherwise required (sec. 2010(c)(5)(A)).\",\n  \"method\": \"Form 706 Part 2 order: taxable estate = gross estate - deductions; add adjusted taxable gifts (post-1976); tentative tax under sec. 2001(c); subtract gift tax payable on those gifts (at date-of-death rates, sec. 2001(b)(2)); subtract the applicable credit (tentative tax on basic exclusion + DSUE). Other credits (foreign death taxes, prior transfers) are not applied.\",\n  \"source\": \"https://www.law.cornell.edu/uscode/text/26/2001\",\n  \"summary\": \"2026 federal estate tax: $2,000,000. Taxable estate $20,000,000 plus $0 of lifetime taxable gifts is $20,000,000, which is $5,000,000 over the $15,000,000 exclusion, taxed at 40%. A surviving spouse keeps any unused exclusion only if the executor files Form 706 and elects portability.\",\n  \"as_of\": \"2026-11-02\",\n  \"more\": \"https://taxbreakcalc.com/charitable-deduction-calculator/?utm_source=mcp&utm_medium=estate-gift-tax-exemption-calculator-mcp\",\n  \"disclaimer\": \"Federal estate and gift tax only. State estate and inheritance taxes are not included. General information, not legal or tax advice; Forms 706 and 709 and their instructions decide the official amounts.\"\n}"
+   }
+  ],
+  "structuredContent": {
+   "year": 2026,
+   "gross_estate": 20000000,
+   "deductions": 0,
+   "taxable_estate": 20000000,
+   "adjusted_taxable_gifts": 0,
+   "tax_base": 20000000,
+   "tentative_tax": 7945800,
+   "gift_tax_payable": 0,
+   "basic_exclusion_amount": 15000000,
+   "dsue": 0,
+   "applicable_exclusion_amount": 15000000,
+   "applicable_credit_amount": 5945800,
+   "estate_tax": 2000000,
+   "amount_over_exclusion": 5000000,
+   "unused_exclusion": 0,
+   "marginal_rate": 0.4,
+   "effective_rate_on_gross_estate": 0.1,
+   "filing_required": true,
+   "portability_note": "If there is a surviving spouse, the unused exclusion (DSUE) passes to them only if the executor files a timely Form 706 and elects portability, even when no return is otherwise required (sec. 2010(c)(5)(A)).",
+   "method": "Form 706 Part 2 order: taxable estate = gross estate - deductions; add adjusted taxable gifts (post-1976); tentative tax under sec. 2001(c); subtract gift tax payable on those gifts (at date-of-death rates, sec. 2001(b)(2)); subtract the applicable credit (tentative tax on basic exclusion + DSUE). Other credits (foreign death taxes, prior transfers) are not applied.",
+   "source": "https://www.law.cornell.edu/uscode/text/26/2001",
+   "summary": "2026 federal estate tax: $2,000,000. Taxable estate $20,000,000 plus $0 of lifetime taxable gifts is $20,000,000, which is $5,000,000 over the $15,000,000 exclusion, taxed at 40%. A surviving spouse keeps any unused exclusion only if the executor files Form 706 and elects portability.",
+   "as_of": "2026-11-02",
+   "more": "https://taxbreakcalc.com/charitable-deduction-calculator/?utm_source=mcp&utm_medium=estate-gift-tax-exemption-calculator-mcp",
+   "disclaimer": "Federal estate and gift tax only. State estate and inheritance taxes are not included. General information, not legal or tax advice; Forms 706 and 709 and their instructions decide the official amounts."
+  }
+ },
+ "jsonrpc": "2.0",
+ "id": 2
+}

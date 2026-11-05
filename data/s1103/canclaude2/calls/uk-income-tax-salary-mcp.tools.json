@@ -1,0 +1,380 @@
+{
+ "result": {
+  "tools": [
+   {
+    "name": "calculate_uk_take_home",
+    "title": "UK take-home pay",
+    "description": "Calculates UK take-home pay for an employee in tax year 2025/26 or 2026/27 from HMRC's published rates: income tax by band (England, Wales and NI, or the six Scottish bands incl. the 2026/27 Scottish starter and basic bands), employee Class 1 National Insurance (8% / 2%), student loan repayments (Plan 1, 2, 4, 5 and Postgraduate, with 2026/27 thresholds), and pension by salary sacrifice or relief at source. Applies the Personal Allowance taper above \u00a3100,000 (\u00a31 per \u00a32, the 60% trap) and reads tax codes such as 1257L, S1257L, K475, BR and D0. Returns net pay a year, a month and a week. Figures copied from gov.uk and HMRC in Oct 2026.",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "gross_salary": {
+       "type": "number",
+       "minimum": 0,
+       "maximum": 100000000,
+       "description": "Annual gross salary in pounds (GBP), before any deductions."
+      },
+      "tax_year": {
+       "type": "string",
+       "enum": [
+        "2025/26",
+        "2026/27"
+       ],
+       "description": "UK tax year, 6 April to 5 April. 2025/26 or 2026/27 (default 2026/27)."
+      },
+      "region": {
+       "type": "string",
+       "enum": [
+        "england",
+        "wales",
+        "northern_ireland",
+        "england_wales_ni",
+        "scotland"
+       ],
+       "description": "Where you live for tax. england, wales, northern_ireland (same bands) or scotland (six Scottish bands). Default england, or taken from an S or C tax code."
+      },
+      "tax_code": {
+       "type": "string",
+       "maxLength": 16,
+       "description": "PAYE tax code, default 1257L. Supports nnnnL/M/N/T, S and C prefixes, K codes, BR, D0, D1, SBR, SD0-SD3, 0T, NT and W1/M1/X suffixes."
+      },
+      "pension_method": {
+       "type": "string",
+       "enum": [
+        "none",
+        "relief_at_source",
+        "salary_sacrifice"
+       ],
+       "description": "relief_at_source (you pay 80%, provider adds 20%, higher-rate relief claimed back) or salary_sacrifice (cuts pay before tax, NI and student loan). Default salary_sacrifice if a pension is given."
+      },
+      "pension_percent": {
+       "type": "number",
+       "minimum": 0,
+       "maximum": 100,
+       "description": "Employee pension contribution as a percent of gross salary, e.g. 5. For relief at source this is the gross (grossed-up) contribution."
+      },
+      "pension_amount": {
+       "type": "number",
+       "minimum": 0,
+       "maximum": 100000000,
+       "description": "Employee pension contribution in pounds a year (gross). Use this OR pension_percent."
+      },
+      "student_loan_plans": {
+       "type": "array",
+       "items": {
+        "type": "string",
+        "enum": [
+         "plan_1",
+         "plan_2",
+         "plan_4",
+         "plan_5",
+         "postgraduate"
+        ]
+       },
+       "maxItems": 5,
+       "description": "Student loan plans you repay: plan_1, plan_2, plan_4 (Scotland), plan_5, postgraduate. Several are allowed, as gov.uk describes."
+      },
+      "ni_category": {
+       "type": "string",
+       "enum": [
+        "A",
+        "B",
+        "C",
+        "H",
+        "J",
+        "M",
+        "V",
+        "Z"
+       ],
+       "description": "National Insurance category letter, default A. C = over State Pension age (no employee NI)."
+      }
+     },
+     "required": [
+      "gross_salary"
+     ],
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false,
+     "title": "UK take-home pay"
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "get_uk_tax_bands",
+    "title": "UK income tax bands and thresholds",
+    "description": "Returns the official UK income tax bands for 2025/26 or 2026/27, for England, Wales and Northern Ireland or for Scotland (starter 19%, basic 20%, intermediate 21%, higher 42%, advanced 45%, top 48%), both as taxable-income bands from HMRC's employer tables and as gross-salary bands with the standard \u00a312,570 allowance. Also returns the \u00a3100,000 allowance taper, Class 1 NI thresholds and employee rates by category letter, and student loan thresholds for each plan. A figure that is not published is marked unannounced, never guessed. Copied from gov.uk and HMRC in Oct 2026.",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "tax_year": {
+       "type": "string",
+       "enum": [
+        "2025/26",
+        "2026/27"
+       ],
+       "description": "UK tax year: 2025/26 or 2026/27."
+      },
+      "region": {
+       "type": "string",
+       "enum": [
+        "england",
+        "wales",
+        "northern_ireland",
+        "england_wales_ni",
+        "scotland"
+       ],
+       "description": "england, wales, northern_ireland, england_wales_ni or scotland."
+      }
+     },
+     "required": [
+      "tax_year",
+      "region"
+     ],
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false,
+     "title": "UK income tax bands and thresholds"
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "compare_salaries",
+    "title": "Compare UK salaries after tax",
+    "description": "Compares 1 to 5 UK gross salaries after income tax, National Insurance, student loan and pension for 2025/26 or 2026/27, with the same region, tax code and options for each. Shows net pay a year, month and week, effective and marginal rates, and how much of each pay rise you keep compared with the first salary. Shows when a rise lands in the \u00a3100,000 to \u00a3125,140 Personal Allowance taper (60% in England, 69.5% in Scotland in 2026/27 with NI). Uses HMRC 2025/26 and 2026/27 rates fetched in Oct 2026.",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "salaries": {
+       "type": "array",
+       "items": {
+        "type": "number",
+        "minimum": 0,
+        "maximum": 100000000,
+        "description": "Annual gross salary in pounds (GBP), before any deductions."
+       },
+       "minItems": 1,
+       "maxItems": 5,
+       "description": "1 to 5 annual gross salaries in pounds. The first is the baseline."
+      },
+      "tax_year": {
+       "type": "string",
+       "enum": [
+        "2025/26",
+        "2026/27"
+       ],
+       "description": "UK tax year, 6 April to 5 April. 2025/26 or 2026/27 (default 2026/27)."
+      },
+      "region": {
+       "type": "string",
+       "enum": [
+        "england",
+        "wales",
+        "northern_ireland",
+        "england_wales_ni",
+        "scotland"
+       ],
+       "description": "Where you live for tax. england, wales, northern_ireland (same bands) or scotland (six Scottish bands). Default england, or taken from an S or C tax code."
+      },
+      "tax_code": {
+       "type": "string",
+       "maxLength": 16,
+       "description": "PAYE tax code, default 1257L. Supports nnnnL/M/N/T, S and C prefixes, K codes, BR, D0, D1, SBR, SD0-SD3, 0T, NT and W1/M1/X suffixes."
+      },
+      "pension_method": {
+       "type": "string",
+       "enum": [
+        "none",
+        "relief_at_source",
+        "salary_sacrifice"
+       ],
+       "description": "relief_at_source (you pay 80%, provider adds 20%, higher-rate relief claimed back) or salary_sacrifice (cuts pay before tax, NI and student loan). Default salary_sacrifice if a pension is given."
+      },
+      "pension_percent": {
+       "type": "number",
+       "minimum": 0,
+       "maximum": 100,
+       "description": "Employee pension contribution as a percent of gross salary, e.g. 5. For relief at source this is the gross (grossed-up) contribution."
+      },
+      "pension_amount": {
+       "type": "number",
+       "minimum": 0,
+       "maximum": 100000000,
+       "description": "Employee pension contribution in pounds a year (gross). Use this OR pension_percent."
+      },
+      "student_loan_plans": {
+       "type": "array",
+       "items": {
+        "type": "string",
+        "enum": [
+         "plan_1",
+         "plan_2",
+         "plan_4",
+         "plan_5",
+         "postgraduate"
+        ]
+       },
+       "maxItems": 5,
+       "description": "Student loan plans you repay: plan_1, plan_2, plan_4 (Scotland), plan_5, postgraduate. Several are allowed, as gov.uk describes."
+      },
+      "ni_category": {
+       "type": "string",
+       "enum": [
+        "A",
+        "B",
+        "C",
+        "H",
+        "J",
+        "M",
+        "V",
+        "Z"
+       ],
+       "description": "National Insurance category letter, default A. C = over State Pension age (no employee NI)."
+      }
+     },
+     "required": [
+      "salaries"
+     ],
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false,
+     "title": "Compare UK salaries after tax"
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "marginal_rate_at_income",
+    "title": "UK marginal tax rate at a salary",
+    "description": "Returns the true UK marginal rate on the next pounds of salary in 2025/26 or 2026/27: income tax band rate, employee NI and student loan together, plus the Personal Allowance taper between \u00a3100,000 and \u00a3125,140 that makes it 60% plus NI in England, Wales and NI and 67.5% plus NI in Scotland's advanced band. Handles salary sacrifice, relief at source, Scottish bands and tax codes. Measured as the change in deductions over the next `step` pounds (default \u00a3100). Rates from gov.uk and HMRC, fetched Oct 2026.",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "gross_salary": {
+       "type": "number",
+       "minimum": 0,
+       "maximum": 100000000,
+       "description": "Annual gross salary in pounds (GBP), before any deductions."
+      },
+      "tax_year": {
+       "type": "string",
+       "enum": [
+        "2025/26",
+        "2026/27"
+       ],
+       "description": "UK tax year, 6 April to 5 April. 2025/26 or 2026/27 (default 2026/27)."
+      },
+      "region": {
+       "type": "string",
+       "enum": [
+        "england",
+        "wales",
+        "northern_ireland",
+        "england_wales_ni",
+        "scotland"
+       ],
+       "description": "Where you live for tax. england, wales, northern_ireland (same bands) or scotland (six Scottish bands). Default england, or taken from an S or C tax code."
+      },
+      "tax_code": {
+       "type": "string",
+       "maxLength": 16,
+       "description": "PAYE tax code, default 1257L. Supports nnnnL/M/N/T, S and C prefixes, K codes, BR, D0, D1, SBR, SD0-SD3, 0T, NT and W1/M1/X suffixes."
+      },
+      "pension_method": {
+       "type": "string",
+       "enum": [
+        "none",
+        "relief_at_source",
+        "salary_sacrifice"
+       ],
+       "description": "relief_at_source (you pay 80%, provider adds 20%, higher-rate relief claimed back) or salary_sacrifice (cuts pay before tax, NI and student loan). Default salary_sacrifice if a pension is given."
+      },
+      "pension_percent": {
+       "type": "number",
+       "minimum": 0,
+       "maximum": 100,
+       "description": "Employee pension contribution as a percent of gross salary, e.g. 5. For relief at source this is the gross (grossed-up) contribution."
+      },
+      "pension_amount": {
+       "type": "number",
+       "minimum": 0,
+       "maximum": 100000000,
+       "description": "Employee pension contribution in pounds a year (gross). Use this OR pension_percent."
+      },
+      "student_loan_plans": {
+       "type": "array",
+       "items": {
+        "type": "string",
+        "enum": [
+         "plan_1",
+         "plan_2",
+         "plan_4",
+         "plan_5",
+         "postgraduate"
+        ]
+       },
+       "maxItems": 5,
+       "description": "Student loan plans you repay: plan_1, plan_2, plan_4 (Scotland), plan_5, postgraduate. Several are allowed, as gov.uk describes."
+      },
+      "ni_category": {
+       "type": "string",
+       "enum": [
+        "A",
+        "B",
+        "C",
+        "H",
+        "J",
+        "M",
+        "V",
+        "Z"
+       ],
+       "description": "National Insurance category letter, default A. C = over State Pension age (no employee NI)."
+      },
+      "step": {
+       "type": "number",
+       "minimum": 1,
+       "maximum": 10000,
+       "description": "Size of the pay rise to measure over, in pounds (default 100)."
+      }
+     },
+     "required": [
+      "gross_salary"
+     ],
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false,
+     "title": "UK marginal tax rate at a salary"
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   }
+  ]
+ },
+ "jsonrpc": "2.0",
+ "id": 2
+}

@@ -1,0 +1,17 @@
+HTTP/2 303 
+date: Tue, 03 Nov 2026 07:34:49 GMT
+content-length: 0
+location: https://checkout.stripe.com/g/pay/cs_live_a1tHa0uj4kTjOSAqbYf9bu3KAAAggW6QGvOmw3VcMblhDJ1GT3E1bO4thE#fid1d2BpamRhQ2prcSc%2FJ0xrcWB3JyknZ2p3YWB3VnF8aWAnPyd3anBrYScpJ2JzJz82KSdiaSc%2FNSknZHVsTmB8Jz8ndW5aaWxzYFowNEhoUFVyT05GZGhwZ0BoNDdKMjw3cmxvMEhLVGIzUU5NfWNmVGRUXFB0MTROcFZUdE5%2FY2ZtfT1PTDd3dnNmUlBQQDMybDxvRnBPQk1Ja1dvX2k1YU5CaDU1MGxIYnxAZEonKSdjd2poVmB3c2B3Jz9xd3BgKSdnZGZuYndqcGthRmppancnPycmY2NjY2NjJyknaWR8anBxUXx1YCc%2FJ3Zsa2JpYFpscWBoJyknYGtkZ2lgVWlkZmBtamlhYHd2Jz9xd3BgeCUl
+cache-control: no-store
+x-mcp-probe-amount: 1900
+x-mcp-probe-currency: usd
+x-mcp-probe-item: MCP Invoice Pro
+x-mcp-probe-livemode: true
+x-mcp-probe-price: price_1UBDU8JKCamubEm1Ybcp5IUs
+strict-transport-security: max-age=15552000; includeSubDomains; preload
+x-content-type-options: nosniff
+report-to: {"group":"cf-nel","max_age":604800,"endpoints":[{"url":"https://a.nel.cloudflare.com/report/v4?s=IhYZxRFnPGKhIdtmKk6ps8HC8j0mMl3GYpwqMyei%2FKcv0niETmEvynx81E%2FxXc9BORRlSzWD51jVCizVsrwT0mqJj43xT%2BCtGJJ36bYqs84ROfp3b3KH5JEXqc4p9Q%3D%3D"}]}
+nel: {"report_to":"cf-nel","success_fraction":0.0,"max_age":604800}
+server: cloudflare
+cf-ray: a549b2d9d9dc5020-WAW
+

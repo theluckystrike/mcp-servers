@@ -1,0 +1,484 @@
+{
+ "generated": "2026-11-02",
+ "caveat": "Each chart is the conversion College Board printed for that one practice exam (exam format of that year). Cut points differ from year to year and are not published for live exams. Use only as an estimate for that practice exam format; check the current exam format before applying it.",
+ "worksheets": [
+  {
+   "exam": "AP Calculus AB",
+   "source_url": "https://secure-media.collegeboard.org/digitalServices/pdf/ap/ap-calculus-ab-practice-exam-2012.pdf",
+   "document": "2012 AP Calculus AB Practice Exam, Scoring Worksheet and AP Score Conversion Chart",
+   "exam_year_format": 2012,
+   "fetched": "2026-11-02",
+   "section_1_multiple_choice": {
+    "max_raw": 45,
+    "multiplier": 1.2
+   },
+   "section_2_free_response": [
+    {
+     "question": 1,
+     "max_raw": 9,
+     "multiplier": 1.0
+    },
+    {
+     "question": 2,
+     "max_raw": 9,
+     "multiplier": 1.0
+    },
+    {
+     "question": 3,
+     "max_raw": 9,
+     "multiplier": 1.0
+    },
+    {
+     "question": 4,
+     "max_raw": 9,
+     "multiplier": 1.0
+    },
+    {
+     "question": 5,
+     "max_raw": 9,
+     "multiplier": 1.0
+    },
+    {
+     "question": 6,
+     "max_raw": 9,
+     "multiplier": 1.0
+    }
+   ],
+   "composite_rule": "weighted Section I + weighted Section II (do not round parts), round composite to nearest whole number",
+   "composite_max_computed": 108.0,
+   "conversion_chart": [
+    {
+     "ap_score": 5,
+     "composite_min": 67,
+     "composite_max": 108
+    },
+    {
+     "ap_score": 4,
+     "composite_min": 54,
+     "composite_max": 66
+    },
+    {
+     "ap_score": 3,
+     "composite_min": 41,
+     "composite_max": 53
+    },
+    {
+     "ap_score": 2,
+     "composite_min": 33,
+     "composite_max": 40
+    },
+    {
+     "ap_score": 1,
+     "composite_min": 0,
+     "composite_max": 32
+    }
+   ],
+   "notes": []
+  },
+  {
+   "exam": "AP Biology",
+   "source_url": "https://secure-media.collegeboard.org/digitalServices/pdf/ap/ap-biology-practice-exam-2013.pdf",
+   "document": "2013 AP Biology Practice Exam, Scoring Worksheet and AP Score Conversion Chart",
+   "exam_year_format": 2013,
+   "fetched": "2026-11-02",
+   "section_1_multiple_choice": {
+    "max_raw": 58,
+    "multiplier": 1.0344
+   },
+   "section_2_free_response": [
+    {
+     "question": 1,
+     "max_raw": 10,
+     "multiplier": 1.5
+    },
+    {
+     "question": 2,
+     "max_raw": 10,
+     "multiplier": 1.5
+    },
+    {
+     "question": 3,
+     "max_raw": 4,
+     "multiplier": 1.4285
+    },
+    {
+     "question": 4,
+     "max_raw": 4,
+     "multiplier": 1.4285
+    },
+    {
+     "question": 5,
+     "max_raw": 4,
+     "multiplier": 1.4285
+    },
+    {
+     "question": 6,
+     "max_raw": 3,
+     "multiplier": 1.4285
+    },
+    {
+     "question": 7,
+     "max_raw": 3,
+     "multiplier": 1.4285
+    },
+    {
+     "question": 8,
+     "max_raw": 3,
+     "multiplier": 1.4285
+    }
+   ],
+   "composite_rule": "weighted Section I + weighted Section II (do not round parts), round composite to nearest whole number",
+   "composite_max_computed": 119.99,
+   "conversion_chart": [
+    {
+     "ap_score": 5,
+     "composite_min": 93,
+     "composite_max": 120
+    },
+    {
+     "ap_score": 4,
+     "composite_min": 75,
+     "composite_max": 92
+    },
+    {
+     "ap_score": 3,
+     "composite_min": 54,
+     "composite_max": 74
+    },
+    {
+     "ap_score": 2,
+     "composite_min": 30,
+     "composite_max": 53
+    },
+    {
+     "ap_score": 1,
+     "composite_min": 0,
+     "composite_max": 29
+    }
+   ],
+   "notes": []
+  },
+  {
+   "exam": "AP Statistics",
+   "source_url": "https://secure-media.collegeboard.org/digitalServices/pdf/ap/ap-statistics-practice-exam-2012.pdf",
+   "document": "2012 AP Statistics Practice Exam, Scoring Worksheet and AP Score Conversion Chart",
+   "exam_year_format": 2012,
+   "fetched": "2026-11-02",
+   "section_1_multiple_choice": {
+    "max_raw": 39,
+    "multiplier": 1.282
+   },
+   "section_2_free_response": [
+    {
+     "question": 1,
+     "max_raw": 4,
+     "multiplier": 1.875
+    },
+    {
+     "question": 2,
+     "max_raw": 4,
+     "multiplier": 1.875
+    },
+    {
+     "question": 3,
+     "max_raw": 4,
+     "multiplier": 1.875
+    },
+    {
+     "question": 4,
+     "max_raw": 4,
+     "multiplier": 1.875
+    },
+    {
+     "question": 5,
+     "max_raw": 4,
+     "multiplier": 1.875
+    },
+    {
+     "question": 6,
+     "max_raw": 4,
+     "multiplier": 3.125
+    }
+   ],
+   "composite_rule": "weighted Section I + weighted Section II (do not round parts), round composite to nearest whole number",
+   "composite_max_computed": 100.0,
+   "conversion_chart": [
+    {
+     "ap_score": 5,
+     "composite_min": 70,
+     "composite_max": 100
+    },
+    {
+     "ap_score": 4,
+     "composite_min": 57,
+     "composite_max": 69
+    },
+    {
+     "ap_score": 3,
+     "composite_min": 44,
+     "composite_max": 56
+    },
+    {
+     "ap_score": 2,
+     "composite_min": 33,
+     "composite_max": 43
+    },
+    {
+     "ap_score": 1,
+     "composite_min": 0,
+     "composite_max": 32
+    }
+   ],
+   "notes": [
+    "Worksheet footnote: although 40 multiple-choice items were administered, item 14 was not used in scoring (out of 39)."
+   ]
+  },
+  {
+   "exam": "AP World History",
+   "source_url": "https://secure-media.collegeboard.org/digitalServices/pdf/ap/ap-world-history-practice-exam-2013.pdf",
+   "document": "2013 AP World History Practice Exam, Scoring Worksheet and AP Score Conversion Chart",
+   "exam_year_format": 2013,
+   "fetched": "2026-11-02",
+   "section_1_multiple_choice": {
+    "max_raw": 70,
+    "multiplier": 0.8571
+   },
+   "section_2_free_response": [
+    {
+     "question": 1,
+     "max_raw": 9,
+     "multiplier": 2.2222
+    },
+    {
+     "question": 2,
+     "max_raw": 9,
+     "multiplier": 2.2222
+    },
+    {
+     "question": 3,
+     "max_raw": 9,
+     "multiplier": 2.2222
+    }
+   ],
+   "composite_rule": "weighted Section I + weighted Section II (do not round parts), round composite to nearest whole number",
+   "composite_max_computed": 120.0,
+   "conversion_chart": [
+    {
+     "ap_score": 5,
+     "composite_min": 78,
+     "composite_max": 120
+    },
+    {
+     "ap_score": 4,
+     "composite_min": 64,
+     "composite_max": 77
+    },
+    {
+     "ap_score": 3,
+     "composite_min": 48,
+     "composite_max": 63
+    },
+    {
+     "ap_score": 2,
+     "composite_min": 32,
+     "composite_max": 47
+    },
+    {
+     "ap_score": 1,
+     "composite_min": 0,
+     "composite_max": 31
+    }
+   ],
+   "notes": [
+    "2013 exam was titled AP World History (before the \"Modern\" course)."
+   ]
+  },
+  {
+   "exam": "AP Psychology",
+   "source_url": "https://secure-media.collegeboard.org/digitalServices/pdf/ap/ap-psychology-practice-exam-2012.pdf",
+   "document": "2012 AP Psychology Practice Exam, Scoring Worksheet and AP Score Conversion Chart",
+   "exam_year_format": 2012,
+   "fetched": "2026-11-02",
+   "section_1_multiple_choice": {
+    "max_raw": 100,
+    "multiplier": 1.0
+   },
+   "section_2_free_response": [
+    {
+     "question": 1,
+     "max_raw": 7,
+     "multiplier": 3.5714
+    },
+    {
+     "question": 2,
+     "max_raw": 7,
+     "multiplier": 3.5714
+    }
+   ],
+   "composite_rule": "weighted Section I + weighted Section II (do not round parts), round composite to nearest whole number",
+   "composite_max_computed": 150.0,
+   "conversion_chart": [
+    {
+     "ap_score": 5,
+     "composite_min": 112,
+     "composite_max": 150
+    },
+    {
+     "ap_score": 4,
+     "composite_min": 94,
+     "composite_max": 111
+    },
+    {
+     "ap_score": 3,
+     "composite_min": 79,
+     "composite_max": 93
+    },
+    {
+     "ap_score": 2,
+     "composite_min": 65,
+     "composite_max": 78
+    },
+    {
+     "ap_score": 1,
+     "composite_min": 0,
+     "composite_max": 64
+    }
+   ],
+   "notes": []
+  },
+  {
+   "exam": "AP Macroeconomics",
+   "source_url": "https://secure-media.collegeboard.org/digitalServices/pdf/ap/ap-macroeconomics-practice-exam-2012.pdf",
+   "document": "2012 AP Macroeconomics Practice Exam, Scoring Worksheet and AP Score Conversion Chart",
+   "exam_year_format": 2012,
+   "fetched": "2026-11-02",
+   "section_1_multiple_choice": {
+    "max_raw": 60,
+    "multiplier": 1.0
+   },
+   "section_2_free_response": [
+    {
+     "question": 1,
+     "max_raw": 12,
+     "multiplier": 1.25
+    },
+    {
+     "question": 2,
+     "max_raw": 5,
+     "multiplier": 1.5
+    },
+    {
+     "question": 3,
+     "max_raw": 6,
+     "multiplier": 1.25
+    }
+   ],
+   "composite_rule": "weighted Section I + weighted Section II (do not round parts), round composite to nearest whole number",
+   "composite_max_computed": 90.0,
+   "conversion_chart": [
+    {
+     "ap_score": 5,
+     "composite_min": 71,
+     "composite_max": 90
+    },
+    {
+     "ap_score": 4,
+     "composite_min": 59,
+     "composite_max": 70
+    },
+    {
+     "ap_score": 3,
+     "composite_min": 51,
+     "composite_max": 58
+    },
+    {
+     "ap_score": 2,
+     "composite_min": 41,
+     "composite_max": 50
+    },
+    {
+     "ap_score": 1,
+     "composite_min": 0,
+     "composite_max": 40
+    }
+   ],
+   "notes": []
+  },
+  {
+   "exam": "AP Microeconomics",
+   "source_url": "https://secure-media.collegeboard.org/digitalServices/pdf/ap/ap-microeconomics-practice-exam-2012.pdf",
+   "document": "2012 AP Microeconomics Practice Exam, Scoring Worksheet and AP Score Conversion Chart",
+   "exam_year_format": 2012,
+   "fetched": "2026-11-02",
+   "section_1_multiple_choice": {
+    "max_raw": 60,
+    "multiplier": 1.0
+   },
+   "section_2_free_response": [
+    {
+     "question": 1,
+     "max_raw": 10,
+     "multiplier": 1.5
+    },
+    {
+     "question": 2,
+     "max_raw": 6,
+     "multiplier": 1.25
+    },
+    {
+     "question": 3,
+     "max_raw": 5,
+     "multiplier": 1.5
+    }
+   ],
+   "composite_rule": "weighted Section I + weighted Section II (do not round parts), round composite to nearest whole number",
+   "composite_max_computed": 90.0,
+   "conversion_chart": [
+    {
+     "ap_score": 5,
+     "composite_min": 71,
+     "composite_max": 90
+    },
+    {
+     "ap_score": 4,
+     "composite_min": 56,
+     "composite_max": 70
+    },
+    {
+     "ap_score": 3,
+     "composite_min": 46,
+     "composite_max": 55
+    },
+    {
+     "ap_score": 2,
+     "composite_min": 35,
+     "composite_max": 45
+    },
+    {
+     "ap_score": 1,
+     "composite_min": 0,
+     "composite_max": 34
+    }
+   ],
+   "notes": []
+  }
+ ],
+ "found_but_not_composite_charts": [
+  {
+   "url": "https://secure-media.collegeboard.org/apc/french-lang-2008-scoring-worksheet.pdf",
+   "what": "replacement Table 4.4 for 2008 French Language released exam: multiple-choice score ranges vs percent receiving each AP score; composite cuts only in printed book"
+  },
+  {
+   "url": "https://secure-media.collegeboard.org/apc/english-language-released-exam-2007-scoring-worksheet.pdf",
+   "what": "same type, 2007 English Language"
+  },
+  {
+   "url": "https://secure-media.collegeboard.org/apc/env-sci-scoring-worksheet-1998.pdf",
+   "what": "same type, 1998 Environmental Science"
+  },
+  {
+   "url": "https://secure-media.collegeboard.org/apc/human-geo-2006-scoring-worksheet.pdf",
+   "what": "same type, 2006 Human Geography"
+  }
+ ]
+}

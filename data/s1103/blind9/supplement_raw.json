@@ -1,0 +1,415 @@
+{
+  "questions": [
+    {
+      "n": 1,
+      "q": "Is there an MCP server that gives the current silver price per gram?",
+      "queries": [
+        "Is there an MCP server that gives the current silver price per gram?",
+        "MCP server silver spot price USD per gram live metals price tool"
+      ],
+      "results": [
+        {"rank": 1, "title": "mcp server", "url": "https://github.com/dbshah12/mcp-server"},
+        {"rank": 2, "title": "ZahabPrice — Live Gold & Silver Prices", "url": "https://glama.ai/mcp/connectors/com.zahabprice/gold-prices"},
+        {"rank": 3, "title": "# Precious Metal Price MCP Tool", "url": "https://unpkg.com/precious-metal-mcp@1.0.2/README.md"},
+        {"rank": 4, "title": "india prices mcp", "url": "https://www.pkgstats.com/pkg:@myaurum-app/india-prices-mcp"},
+        {"rank": 5, "title": "app.unpkg.com", "url": "https://app.unpkg.com/precious-metal-mcp@1.0.2/files/README.md"},
+        {"rank": 6, "title": "pkg:precious metal mcp", "url": "https://www.pkgstats.com/pkg:precious-metal-mcp"},
+        {"rank": 7, "title": "glama.ai", "url": "https://glama.ai/mcp/servers/@isdaniel/mcp-metal-price/tree"},
+        {"rank": 8, "title": "mcp metal price", "url": "https://pypi.org/project/mcp-metal-price/"},
+        {"rank": 9, "title": "mcp metal price", "url": "https://glama.ai/mcp/servers/isdaniel/mcp-metal-price"},
+        {"rank": 10, "title": "glama.ai", "url": "https://glama.ai/mcp/servers/@isdaniel/mcp-metal-price/blob/a42b77709c3370fb3c4922930c70d276c23fc77e/README.md"},
+        {"rank": 11, "title": "bhavuk1409 silver mcx mcp server", "url": "https://lobehub.com/vi-VN/mcp/bhavuk1409-silver-mcx-mcp-server"},
+        {"rank": 12, "title": "bhavuk1409 silver mcx mcp server", "url": "https://lobehub.com/mcp/bhavuk1409-silver-mcx-mcp-server"},
+        {"rank": 13, "title": "troy stack", "url": "https://glama.ai/mcp/connectors/ai.troystack.api/troy-stack"},
+        {"rank": 14, "title": "documentation.metals-api.com", "url": "https://documentation.metals-api.com/mcp"},
+        {"rank": 15, "title": "metals-api.com", "url": "https://metals-api.com/mcp"},
+        {"rank": 16, "title": "Metal Price MCP Server", "url": "https://glama.ai/mcp/servers/@isdaniel/mcp-metal-price/inspect"},
+        {"rank": 17, "title": "Silver Price MCP Server", "url": "https://www.remoteopenclaw.com/mcp/bhavuk1409/silver-mcx-mcp-server"},
+        {"rank": 18, "title": "silver price per gram", "url": "https://metalcharts.org/silver-price-per-gram"},
+        {"rank": 19, "title": "silver price per gram", "url": "https://us2.metalcharts.org/silver-price-per-gram"}
+      ],
+      "answer": "Yes. The MetalCharts remote MCP server (https://api.metalcharts.org/mcp) has a get_spot_prices tool that can quote silver (XAG) per gram in a chosen currency, and a convert tool that accepts grams. The free plan works with the server, but it needs a MetalCharts sign-in or a free API key. ZahabPrice is a second option: its get_silver_price tool returns live silver per gram (purity selectable) for 37 countries in local currencies.",
+      "recommended_servers": [
+        {"name": "MetalCharts MCP (get_spot_prices, XAG per gram, any currency; free plan needs sign-in or key)", "url": "https://metalcharts.org/metals-api/mcp"},
+        {"name": "ZahabPrice MCP (get_silver_price, per gram, 37 countries, remote https://www.zahabprice.com/mcp)", "url": "https://glama.ai/mcp/connectors/com.zahabprice/gold-prices"}
+      ],
+      "confident": true,
+      "caveats": [
+        "Both pages are the vendors' own descriptions. I did not call either server or check the prices it returns against another source.",
+        "ZahabPrice's page did not say whether auth is required or whether USD is offered. It is built around local-currency prices.",
+        "The MyAurum India Prices MCP (get_silver_price, per gram and per kg) appeared in the first search, but its package page returned HTTP 503. I did not verify it and did not recommend it.",
+        "The other first-search hits are per-ounce, daily or India-MCX-focused (isdaniel/mcp-metal-price, precious-metal-mcp, bhavuk1409 silver-mcx, dbshah12). If you use one, divide a per-ounce price by 31.1035 for grams."
+      ]
+    },
+    {
+      "n": 2,
+      "q": "How can Claude calculate my 2026 mileage deduction?",
+      "queries": [
+        "How can Claude calculate my 2026 mileage deduction?",
+        "IRS 2026 standard mileage rate 76 cents July 1 Announcement 2026-11 irs.gov",
+        "IRS standard mileage rate MCP server business mileage deduction calculator MCP"
+      ],
+      "results": [
+        {"rank": 1, "title": "IRS Increases 2026 Standard Mileage Rates", "url": "https://www.ifebp.org/detail-pages/news/2026/07/14/irs-increases-2026-standard-mileage-rates"},
+        {"rank": 2, "title": "IRS Mileage Rate 2026", "url": "https://www.driversnote.com.au/blog/irs-mileage-rate-2026"},
+        {"rank": 3, "title": "IRS Releases Mileage Rates for 2026", "url": "https://www.paylocity.com/resources/tax-compliance/alerts/irs-releases-mileage-rates-for-2026/"},
+        {"rank": 4, "title": "IRS Increases 2026 Standard Mileage Rates", "url": "https://www.ifebp.org/detail-pages/news/2025/12/30/irs-increases-2026-standard-mileage-rates"},
+        {"rank": 5, "title": "IR-2025-128: IRS sets 2026 business standard mileage rate at 72.5 cents per mile, up 2.5 cents", "url": "https://content.govdelivery.com/accounts/USIRS/bulletins/401f390"},
+        {"rank": 6, "title": "IRS increases 2026 business mileage rate by 2.5 cents", "url": "https://wtop.com/news/2025/12/irs-increases-2026-business-mileage-rate-by-2-5-cents"},
+        {"rank": 7, "title": "irs raises standard mileage rates for remainder of 2026", "url": "https://www.journalofaccountancy.com/news/2026/jul/irs-raises-standard-mileage-rates-for-remainder-of-2026/"},
+        {"rank": 8, "title": "IRS News Release: IRS Increases Standard Mileage Rates for 2026", "url": "https://news.bloombergtax.com/daily-tax-report/irs-news-release-irs-increases-business-standard-mileage-rates-for-2026"},
+        {"rank": 9, "title": "IRS increases 2026 business mileage rate by 2.5 cents", "url": "https://finance.yahoo.com/news/irs-increases-2026-business-mileage-173927688.html"},
+        {"rank": 10, "title": "IRS Mileage Rate: Current Rate, History & How to Calculate", "url": "https://www.everlance.com/business-mileage-hub/irs-mileage-rate."},
+        {"rank": 11, "title": "UPDATED: IR-2025-128: IRS sets 2026 business standard mileage rate at 72.5 cents per mile, up 2.5 cents", "url": "https://content.govdelivery.com/accounts/USIRS/bulletins/401fe16"},
+        {"rank": 12, "title": "irs mileage rates 2026", "url": "https://timeero.com/post/irs-mileage-rates-2026"},
+        {"rank": 13, "title": "IRS Increases 2026 Standard Mileage Rate", "url": "https://news.bgov.com/payroll/irs-increases-2026-standard-mileage-rate"},
+        {"rank": 14, "title": "The IRS Updates Standard Mileage Reimbursement Rates For 2026", "url": "https://www.md-cpas.com/newsroom/insights/standard-mileage-rates-for-2026"},
+        {"rank": 15, "title": "IRS Boosts Mileage Rate, Makes Other Updates for 2026", "url": "https://www.resourcefulfinancepro.com/news/irs-releases-standard-mileage-rate"},
+        {"rank": 16, "title": "IRS increases 2026 business mileage rate by 2.5 cents", "url": "https://rapidcitypost.com/?p=66122"},
+        {"rank": 17, "title": "2026 IRS Business Mileage Rate Explained | What Is the 2026 Mileage Rate?", "url": "https://www.triplog.net/uk/blog/current-irs-standard-mileage-rate"}
+      ],
+      "answer": "No MCP server is needed and I found none for this. Claude can do the arithmetic once it has your dated mileage log and the IRS rate table: 2026 is a split year. Business miles are 72.5 cents from Jan 1 to Jun 30 and 76 cents from Jul 1 to Dec 31. Medical is 20.5 then 23.5 cents, and charitable stays at 14 cents. Multiply miles driven in each period by that period's rate and add the two.",
+      "recommended_servers": [
+        {"name": "(non-MCP) IRS Standard Mileage Rates page, used as the rate table with Claude doing the split-year arithmetic", "url": "https://www.irs.gov/tax-professionals/standard-mileage-rates"},
+        {"name": "(non-MCP, secondary confirmation of the July 1 change) Journal of Accountancy", "url": "https://www.journalofaccountancy.com/news/2026/jul/irs-raises-standard-mileage-rates-for-remainder-of-2026/"}
+      ],
+      "confident": true,
+      "caveats": [
+        "Confident about the rates only: the IRS page and Journal of Accountancy agree. The first-search hits are mostly blogs and many still show only the 72.5 cent figure from December 2025.",
+        "The IRS page labels the July 1 change with IR-2026-29. Journal of Accountancy calls it Announcement 2026-11, modifying Notice 2026-10.",
+        "I did not research whether you can claim the deduction (self-employed vs W-2 employee, standard rate vs actual expenses). Check that before relying on the number.",
+        "No MCP server for mileage calculation turned up in a dedicated search."
+      ]
+    },
+    {
+      "n": 3,
+      "q": "Is there an MCP server that looks up the current IRS per diem rates for a city?",
+      "queries": [
+        "Is there an MCP server that looks up the current IRS per diem rates for a city?",
+        "gsa-perdiem-mcp github 1102tools GSA per diem MCP server tools"
+      ],
+      "results": [
+        {"rank": 1, "title": "pypi.org", "url": "https://pypi.org/project/gsa-perdiem-mcp/0.1.1/"},
+        {"rank": 2, "title": "pypi.org", "url": "https://pypi.org/project/gsa-perdiem-mcp/0.1.0/"},
+        {"rank": 3, "title": "gsa perdiem rates", "url": "https://glama.ai/mcp/servers/cliwant/mcp-sam-gov/tools/gsa_perdiem_rates"},
+        {"rank": 4, "title": "GSA Per Diem MCP", "url": "https://mcp.so/servers/gsa-perdiem-mcp"},
+        {"rank": 5, "title": "GSA Per Diem MCP by 1102tools", "url": "https://mcpservers.org/servers/github-com-1102tools-dev-federal-contracting-mcps-tree-main-servers-gsa-perdiem-mcp"},
+        {"rank": 6, "title": "GSA Per Diem MCP", "url": "https://mcp.so/ja/servers/gsa-perdiem-mcp"},
+        {"rank": 7, "title": "housing  gsa per diem", "url": "https://glama.ai/mcp/servers/codeislaw101/katzilla/tools/housing__gsa-per-diem"},
+        {"rank": 8, "title": "gsa perdiem mcp", "url": "https://pypi.org/project/gsa-perdiem-mcp"},
+        {"rank": 9, "title": "GSA Per Diem MCP", "url": "https://mcp.so/zh/servers/gsa-perdiem-mcp"},
+        {"rank": 10, "title": "Per Diem MCP", "url": "https://mcpservers.org/servers/theluckystrike/mcp-per-diem"},
+        {"rank": 11, "title": "4,000+ servers built on vurb.ts", "url": "https://vinkius.com/client/cursor/connect/gsa-per-diem-rates-mcp"},
+        {"rank": 12, "title": "4,000+ servers built on vurb.ts", "url": "https://vinkius.com/client/ai-sdk/connect/gsa-per-diem-rates-mcp"},
+        {"rank": 13, "title": "4,500+ servers built on MCP Fusion", "url": "https://vinkius.com/apps/gsa-per-diem-rates-mcp/claude-desktop"},
+        {"rank": 14, "title": "4,000+ servers built on vurb.ts", "url": "https://vinkius.com/client/windsurf/connect/gsa-per-diem-rates-mcp"},
+        {"rank": 15, "title": "4,000+ servers built on vurb.ts", "url": "https://vinkius.com/client/openai-agents-sdk/connect/gsa-per-diem-rates-mcp"},
+        {"rank": 16, "title": "4,000+ servers built on vurb.ts", "url": "https://vinkius.com/client/cline/connect/gsa-per-diem-rates-mcp"},
+        {"rank": 17, "title": "4,000+ servers built on vurb.ts", "url": "https://vinkius.com/client/claude-desktop/connect/gsa-per-diem-rates-mcp"},
+        {"rank": 18, "title": "4,000+ servers built on vurb.ts", "url": "https://vinkius.com/client/pydantic-ai/connect/gsa-per-diem-rates-mcp"},
+        {"rank": 19, "title": "4,000+ servers built on vurb.ts", "url": "https://vinkius.com/client/claude-code/connect/gsa-per-diem-rates-mcp"}
+      ],
+      "answer": "Yes, with one wording fix: the source of per diem rates for travel inside the continental US is GSA, and IRS Publication 463 sends you to the GSA per diem site. The best-documented server is gsa-perdiem-mcp from 1102tools. It has 7 tools, including lookup_city_perdiem (city and state, optional county), lookup_zip_perdiem and estimate_travel_cost. Run it with uvx. Bundled data from FY2021 needs no key for most lookups, and a free api.data.gov key (PERDIEM_API_KEY) covers the rest.",
+      "recommended_servers": [
+        {"name": "gsa-perdiem-mcp by 1102tools (GSA Per Diem API, 7 tools, CONUS)", "url": "https://github.com/1102tools/federal-contracting-mcps/tree/main/servers/gsa-perdiem-mcp"}
+      ],
+      "confident": true,
+      "caveats": [
+        "The server's page never mentions the IRS. Its data is GSA's published per diem rates. IRS Pub 463 (opened) says current rates are on the GSA website, but I did not confirm that IRS-specific rate sets, such as the high-low method rates, match what the server returns.",
+        "The server's page says CONUS only. It was unclear whether Alaska, Hawaii, territories or foreign rates are returned.",
+        "The PyPI page could not be fetched, so the tool list and install command come from the GitHub folder page. I did not run the server.",
+        "Other hits: the Glama mcp-sam-gov gsa_perdiem_rates tool, the Vinkius hosted server (pricing terms not checked), and theluckystrike/mcp-per-diem (rate tables from tax authorities, US coverage unconfirmed)."
+      ]
+    },
+    {
+      "n": 4,
+      "q": "What MCP server can tell Claude the current water level of a river?",
+      "queries": [
+        "What MCP server can tell Claude the current water level of a river?",
+        "usgs-mcp github USGS Water Services MCP server gage height streamflow install",
+        "river-watershed-mcp OR \"USGS Water Monitoring\" MCP server real-time water levels gage height Claude Desktop"
+      ],
+      "results": [
+        {"rank": 1, "title": "get water level", "url": "https://glama.ai/mcp/servers/vikramgorla/mcp-swiss/tools/get_water_level"},
+        {"rank": 2, "title": "You're Invited:Meet the Socket Team at BlackHat and DEF CON in Las Vegas, Aug 4-6.RSVP", "url": "https://socket.dev/npm/package/mcp-server-environment-agency"},
+        {"rank": 3, "title": "🌊 Potomac River Water Data", "url": "https://water-services-mcp-site.pages.dev"},
+        {"rank": 4, "title": "# Environment Agency Flood Monitoring MCP Server", "url": "https://glama.ai/mcp/servers/@dwain-barnes/mcp-server-environment-agency/tree/c15d9dde52a977090892dd4ce8bbd034a7837ef7"},
+        {"rank": 5, "title": "mcp server environment agency", "url": "https://glama.ai/mcp/servers/dwain-barnes/mcp-server-environment-agency"},
+        {"rank": 6, "title": "dwain barnes mcp server environment agency", "url": "https://lobehub.com/bg/mcp/dwain-barnes-mcp-server-environment-agency"},
+        {"rank": 7, "title": "dwain barnes mcp server environment agency", "url": "https://lobehub.com/zh-TW/mcp/dwain-barnes-mcp-server-environment-agency"},
+        {"rank": 8, "title": "# USGS Water MCP", "url": "https://glama.ai/mcp/servers/@pgiffy/usgs-water-mcp/tree/a003e64a8f0f0e4ac0f6e706e4732254b78f4777"},
+        {"rank": 9, "title": "mdalprato mcp fiumi romagna", "url": "https://lobehub.com/mcp/mdalprato-mcp_fiumi_romagna"},
+        {"rank": 10, "title": "# Aareguru MCP Server", "url": "https://glama.ai/mcp/servers/@schlpbch/aareguru-mcp/tree/87dc632e3228e66d10d3b946ddc75a5b6de3db6b"},
+        {"rank": 11, "title": "flood forecast", "url": "https://glama.ai/mcp/servers/cmer81/open-meteo-mcp/tools/flood_forecast"},
+        {"rank": 12, "title": "# Aare.guru MCP Server", "url": "https://glama.ai/mcp/servers/@baking-bread/aareguru-mcp/tree/d201bce94d46a01a036d10e084f948350c6690c1"},
+        {"rank": 13, "title": "MCP server providing access to USGS Water Services for streamflow, flood stages, and peak events", "url": "https://pypi.org/project/usgs-mcp"},
+        {"rank": 14, "title": "glama.ai", "url": "https://glama.ai/mcp/servers/b2d4bar789"},
+        {"rank": 15, "title": "aareguru mcp", "url": "https://glama.ai/mcp/servers/@schlpbch/aareguru-mcp"},
+        {"rank": 16, "title": "Real-time water levels and flow rates from USGS stream gauges", "url": "https://www.getdrio.com/mcp/com-olyport-water"},
+        {"rank": 17, "title": "2,500+ MCP servers ready to use", "url": "https://vinkius.com/apps/open-meteo-flood-rivers-mcp/with/cline"}
+      ],
+      "answer": "For US rivers, use cyanheads/usgs-water-mcp-server. Its water_get_readings tool returns the latest USGS gauge readings (about 15-minute data, gage height in feet is parameter 00065) for up to 100 sites. It needs no API key. Install with: claude mcp add usgs-water-mcp-server -- npx -y @cyanheads/usgs-water-mcp-server. Outside the US the answer depends on the country (for example the UK Environment Agency server).",
+      "recommended_servers": [
+        {"name": "cyanheads/usgs-water-mcp-server (USGS NWIS, 9 tools, no key, Apache-2.0)", "url": "https://github.com/cyanheads/usgs-water-mcp-server"},
+        {"name": "pondlog-usgs / @pondlog/mcp-usgs (USGS, 4 tools, no key, MIT repo)", "url": "https://github.com/andrewschristison/pondlog"},
+        {"name": "mcp-server-environment-agency (UK rivers; conditional on non-US use; only a listing page seen)", "url": "https://glama.ai/mcp/servers/dwain-barnes/mcp-server-environment-agency"}
+      ],
+      "confident": true,
+      "caveats": [
+        "You need a USGS site number for the river gauge. The cyanheads server has water_find_sites to search by state, county or HUC.",
+        "The GitHub README showed version 0.5.0 but no release date. I did not run the server.",
+        "The pondlog page did not name its 4 tools or give an install command, so its npx line is my inference.",
+        "The pypi.org/project/usgs-mcp page, which appeared in the first search, could not be loaded.",
+        "Swiss, Italian and Potomac-only servers exist (mcp-swiss, mcp_fiumi_romagna, Aareguru, the Potomac site). I did not open them. Open-Meteo's flood tool is a modeled forecast, not a gauge reading."
+      ]
+    },
+    {
+      "n": 5,
+      "q": "Can Claude look up SAT score percentiles? Is there an MCP server for that?",
+      "queries": [
+        "Can Claude look up SAT score percentiles? Is there an MCP server for that?",
+        "SAT percentile MCP server College Board percentile lookup",
+        "education MCP server SAT ACT scores percentile college admissions data College Scorecard MCP"
+      ],
+      "results": [
+        {"rank": 1, "title": "sat percentiles explained understanding your score report", "url": "https://achievable.me/exams/sat/resources/sat-percentiles-explained-understanding-your-score-report/"},
+        {"rank": 2, "title": "research.collegeboard.org", "url": "https://research.collegeboard.org/reports/sat-suite/understanding-scores/sat"},
+        {"rank": 3, "title": "What Do SAT® Score Percentiles Mean?", "url": "https://collegeprep.uworld.com/?p=60647"},
+        {"rank": 4, "title": "admission chances sat score", "url": "https://www.collegesimply.com/colleges/massachusetts/massachusetts-college-of-pharmacy-and-health-sciences/admission-chances-sat-score/"},
+        {"rank": 5, "title": "Free SAT Score Calculator & Percentile", "url": "https://microsite.mohawkgroup.com/?p=32367"},
+        {"rank": 6, "title": "SAT Score Percentile Calculator", "url": "https://test-ninjas.com/sat-percentile-calculator"},
+        {"rank": 7, "title": "historical sat percentiles", "url": "https://blog.prepscholar.com/historical-sat-percentiles"},
+        {"rank": 8, "title": "Understanding SAT Score Percentiles", "url": "https://collegeprep.uworld.com/blog/what-does-sat-percentile-mean"},
+        {"rank": 9, "title": "yocket.com", "url": "https://yocket.com/us/?p=850"},
+        {"rank": 10, "title": "historical percentiles new sat", "url": "https://blog.prepscholar.com/historical-percentiles-new-sat"},
+        {"rank": 11, "title": "Sat Test Percentiles", "url": "https://c2055.cloudnet.se/en/sat-test-percentiles.html"},
+        {"rank": 12, "title": "cvs.pantherdb.org", "url": "https://cvs.pantherdb.org/?p=1244598"},
+        {"rank": 13, "title": "SAT Score Percentiles: What Your Score Means", "url": "https://www.questforsuccess.in/sat-score-percentiles/"},
+        {"rank": 14, "title": "SAT Percentiles: An Ultimate Guide", "url": "https://www.apguru.com/blog/quick-guide-to-sat-percentile"},
+        {"rank": 15, "title": "sat score percentiles explained 2026", "url": "https://testprepaff-ftzx3emt.manus.space/blog/sat-score-percentiles-explained-2026"},
+        {"rank": 16, "title": "Understanding SAT® Percentile Ranks", "url": "https://www.oneprep.co/blog/understanding-sat-percentile-ranks"},
+        {"rank": 17, "title": "SAT Sample Report After March2016", "url": "https://web-mit-edu.ezproxyberklee.flo.org/wtp/SAT Sample Report After March2016.pdf"}
+      ],
+      "answer": "I found no MCP server that looks up an individual SAT score's percentile, so this is a null result for a named server. The authoritative source is the College Board's Understanding Scores page, which publishes percentile tables for total scores (400-1600) and section scores, both nationally representative and user-group. Claude can read that page with web fetch, or you can paste the table into the chat.",
+      "recommended_servers": [
+        {"name": "(non-MCP fallback, not a server) College Board SAT Understanding Scores percentile tables", "url": "https://research.collegeboard.org/reports/sat-suite/understanding-scores/sat"}
+      ],
+      "confident": false,
+      "caveats": [
+        "No MCP server for SAT percentiles was found in three searches. This is a null result for a named server.",
+        "The College Board page did not state which year its percentiles are for and has no download option. The tables appear only on the page.",
+        "Some MCP servers wrap College Scorecard data (school-level SAT/ACT 25th-75th percentile ranges of enrolled students). I did not open them. That is not the same as the percentile rank of one person's score.",
+        "Third-party calculators (test-ninjas.com, calcbee and others) appeared in the results. At least one uses a concordance method rather than the published tables, so I would not treat them as official."
+      ]
+    },
+    {
+      "n": 6,
+      "q": "Is there an MCP server that knows the current 401(k) contribution limits?",
+      "queries": [
+        "Is there an MCP server that knows the current 401(k) contribution limits?",
+        "MCP server IRS retirement plan limits 401k IRA contribution limits 2026 tax constants",
+        "MCP server retirement contribution limits 401(k) IRA limits lookup tool \"MCP\" tax year limits catch-up",
+        "IRS announces 2027 401(k) contribution limit cost-of-living adjustments"
+      ],
+      "results": [
+        {"rank": 1, "title": "MPC COMPUTERS, LLC – 401K PLAN", "url": "https://www.myplaniq.com/invest/plancontribution/mpc-computers-llc-401k-plan"},
+        {"rank": 2, "title": "MPC ENTERPRISES, INC. EMPLOYEE 401(K) SAVINGS PLAN", "url": "https://www.myplaniq.com/invest/plancontribution/mpc-enterprises-inc-employee-401k-savings-plan/"},
+        {"rank": 3, "title": "MCPHS UNIVERSITY PENSION PLAN", "url": "https://www.myplaniq.com/invest/plancontribution/mcphs-university-pension-plan"},
+        {"rank": 4, "title": "us 401k calculator", "url": "https://calcnook.pages.dev/us-401k-calculator/"},
+        {"rank": 5, "title": "MCP SERVICES, INC. 401(K) PROFIT SHARING PLAN", "url": "https://www.myplaniq.com/invest/planinfo/mcp-services-inc-401k-profit-sharing-plan/"},
+        {"rank": 6, "title": "MCPHERSON, BREYFOGLE, DAVELINE & GOODRICH, PC PROFIT SHARING PLAN", "url": "https://www.myplaniq.com/invest/plancontribution/mcpherson-breyfogle-daveline-goodrich-pc-profit-sharing-plan-2"},
+        {"rank": 7, "title": "MPC HOSPITALITY MANAGEMENT RETIREMENT PLAN Contribution & Employer Match", "url": "https://www.myplaniq.com/invest/plancontribution-match/mpc-hospitality-management-retirement-plan"},
+        {"rank": 8, "title": "What is the current 401(k) contribution limit?", "url": "https://www.betterment.com/help/work/plan-management/401k-contribution-limits"},
+        {"rank": 9, "title": "What is the current 401(k) contribution limit?", "url": "https://www.betterment.com/help/work/401k-contribution-limits"},
+        {"rank": 10, "title": "- Introduction", "url": "https://britannica.com/money/2025-contribution-limits-401k-ira"},
+        {"rank": 11, "title": "401k contribution limits 2023 2024 maximum limits and how they work sarkariresult", "url": "https://kb.connectmevoice.com/401k-contribution-limits-2023-2024-maximum-limits-and-how-they-work-sarkariresult.html"},
+        {"rank": 12, "title": "Back to search", "url": "https://policyrisk.com/wiki/401k-contribution-limits"},
+        {"rank": 13, "title": "401k contribution limits", "url": "https://www.newyorklife.com/articles/401k-contribution-limits"},
+        {"rank": 14, "title": "Britannica Money", "url": "https://www.britannica.com/money/retirement-account-contribution-limits"},
+        {"rank": 15, "title": "401k contribution limits", "url": "https://www.sharebuilder401k.com/blog/401k-contribution-limits"},
+        {"rank": 16, "title": "401k Company Contribution Limits - Publisher Collective", "url": "https://srand.publisher-collective.com/news/401k-company-contribution-limits"},
+        {"rank": 17, "title": "MLCP RESTAURANTS, INC. PROFIT SHARING PLAN & TRUST Contribution & Employer Match", "url": "https://www.myplaniq.com/invest/plancontribution-match/mlcp-restaurants-inc-profit-sharing-plan-trust/"},
+        {"rank": 18, "title": "MCM 401(K) PLAN", "url": "https://www.myplaniq.com/invest/plancontribution/mcm-401k-plan"},
+        {"rank": 19, "title": "Contribution limits for employer-sponsored retirement plans", "url": "https://www.cpg.prd.capitalgroup.com/individual/planning/retirement-planning/plan-contribution-limits.html"}
+      ],
+      "answer": "Only one candidate turned up: calcnook-mcp (uvx calcnook-mcp), a 17-tool calculator server whose calculate_us_retirement_account tool covers 401(k) contribution analysis. Its sister web calculator says it uses confirmed 2026 limits ($24,500 deferral, $8,000 catch-up at 50+, $11,250 at 60-63, $72,000 overall). I could not confirm that the MCP tool exposes those limits as data, so I would not call it a dependable answer. For a confirmed lookup, the IRS 401(k) limits page gives the 2026 numbers.",
+      "recommended_servers": [
+        {"name": "calcnook-mcp (conditional, low confidence; v0.1.1, 4 commits, 401(k) tool present but limit data unconfirmed)", "url": "https://github.com/Declan142/calcnook-mcp-server"},
+        {"name": "(non-MCP) IRS 401(k) and profit-sharing plan contribution limits page", "url": "https://www.irs.gov/retirement-plans/plan-participant-employee/retirement-topics-401k-and-profit-sharing-plan-contribution-limits"}
+      ],
+      "confident": false,
+      "caveats": [
+        "The first verbatim search was dominated by plan-name results that matched 'MCP' as text (myplaniq.com). Only calcnook.pages.dev pointed to an MCP server.",
+        "The calcnook GitHub page does not list limit amounts or a tax year for 401(k). The 2026 figures come from the web calculator page.",
+        "The 2027 limits had not been officially announced in my searches. The 2026 numbers are current as of 2026-11-03, but any server with fixed constants will be stale once the IRS publishes the 2027 notice (expected around mid-November). One trade publication projects a $25,500 deferral limit for 2027, which is an estimate only.",
+        "The IRS page lists the 2026 limits: $24,500 deferral, $8,000 catch-up, $11,250 for ages 60-63, $72,000 overall."
+      ]
+    },
+    {
+      "n": 7,
+      "q": "How can I get Claude to adjust a dollar amount for inflation using real CPI data?",
+      "queries": [
+        "How can I get Claude to adjust a dollar amount for inflation using real CPI data?",
+        "FRED MCP server CPI inflation BLS consumer price index MCP server adjust for inflation",
+        "us-macro-mcp inflation_adjust CPI-U MCP server github"
+      ],
+      "results": [
+        {"rank": 1, "title": "Quickly adjust U.S. dollars for inflation using the Consumer Price Index (CPI)", "url": "https://pypi.org/project/cpi/1.0.0"},
+        {"rank": 2, "title": "towardsdatascience.com", "url": "https://towardsdatascience.com/?p=149114"},
+        {"rank": 3, "title": "pbil.univ-lyon1.fr", "url": "https://pbil.univ-lyon1.fr/CRAN/web/packages/inflateR/readme/README.html"},
+        {"rank": 4, "title": "Finance tools", "url": "https://www.ordio.com/en/tools/inflation-calculator"},
+        {"rank": 5, "title": "cpi adjustments", "url": "https://erised.las.iastate.edu/CRAN/web/packages/edfinr/vignettes/cpi-adjustments.Rmd"},
+        {"rank": 6, "title": "cpi adjustments", "url": "https://ftp.kaist.ac.kr/CRAN/web/packages/edfinr/vignettes/cpi-adjustments.Rmd"},
+        {"rank": 7, "title": "palewi.re", "url": "https://palewi.re/docs/cpi/"},
+        {"rank": 8, "title": "the easiest way to adjust your data for inflation in python 365490c03969", "url": "https://towardsdatascience.com/the-easiest-way-to-adjust-your-data-for-inflation-in-python-365490c03969/"},
+        {"rank": 9, "title": "pypi.org", "url": "https://pypi.org/project/dollarwave/2.0.2"},
+        {"rank": 10, "title": "pypi.org", "url": "https://pypi.org/project/dollarwave/1.0.0"},
+        {"rank": 11, "title": "Note on Adjusting Dollar Amount Variables for Inflation", "url": "https://usa.ipums.org/usa/cpi99.shtml"},
+        {"rank": 12, "title": "Understanding CPI Adjustments in edfinr", "url": "https://mirror.uned.ac.cr/cran/web/packages/edfinr/vignettes/cpi-adjustments.html"},
+        {"rank": 13, "title": "palewi.re", "url": "https://palewi.re/docs/cpi/_sources/index.md.txt"},
+        {"rank": 14, "title": "adjusting for inflation calculator", "url": "https://api.copychief.com/?p=44050"}
+      ],
+      "answer": "Connect econstats-mcp: it has an inflation_adjust tool that converts dollar amounts between dates using CPI-U, plus FRED and BLS data tools. It needs a free FRED API key and Bun (FRED_API_KEY=your-key bunx econstats-mcp). As a more official-data option, cyanheads' BLS MCP server fetches CPI series straight from BLS. It has no adjustment tool, so Claude applies real = nominal x CPI_new / CPI_old to the values it returns.",
+      "recommended_servers": [
+        {"name": "econstats-mcp (inflation_adjust, CPI-U; FRED key required; MIT)", "url": "https://github.com/joshfwaldman1/econstats-mcp"},
+        {"name": "cyanheads BLS MCP server (bls_get_series / bls_get_latest for CPI; BLS key optional; Apache-2.0; hosted at https://bls-labor.caseyjhand.com/mcp)", "url": "https://github.com/cyanheads/bls-mcp-server"}
+      ],
+      "confident": true,
+      "caveats": [
+        "The first verbatim search returned only Python and R libraries (cpi, inflateR, edfinr, dollarwave) and calculators, with no MCP server. The two recommendations came from follow-up searches.",
+        "The econstats-mcp README does not give inflation_adjust's parameters or the exact CPI series. The repo has 9 commits and I did not run it. Test it on a case you can check, for example against the BLS inflation calculator.",
+        "The cyanheads BLS server has no dedicated inflation tool. Without a BLS key it is limited to 25 requests a day (500 with a free key).",
+        "The us-macro-mcp package (58 FRED indicators) was not shown to include inflation_adjust, so I did not recommend it."
+      ]
+    },
+    {
+      "n": 8,
+      "q": "Is there an MCP server that counts business days between two dates, excluding US federal holidays?",
+      "queries": [
+        "Is there an MCP server that counts business days between two dates, excluding US federal holidays?",
+        "MCP server US federal holidays business days count OPM federal holiday calendar"
+      ],
+      "results": [
+        {"rank": 1, "title": "glama.ai", "url": "https://glama.ai/mcp/servers/b5nscj0t25"},
+        {"rank": 2, "title": "count business days", "url": "https://glama.ai/mcp/servers/KyaniteLabs/Epoch/tools/count_business_days"},
+        {"rank": 3, "title": "glama.ai", "url": "https://glama.ai/mcp/servers/fbdo/business-day-mcp/schema"},
+        {"rank": 4, "title": "glama.ai", "url": "https://glama.ai/mcp/servers/qinisolabs/bizdays"},
+        {"rank": 5, "title": "SummitFlow MCP", "url": "https://glama.ai/mcp/servers/ps1sjw2jc9"},
+        {"rank": 6, "title": "count business days", "url": "https://glama.ai/mcp/servers/qinisolabs/bizdays/tools/count_business_days"},
+        {"rank": 7, "title": "glama.ai", "url": "https://glama.ai/mcp/servers/ni28zs3s61"},
+        {"rank": 8, "title": "business days calculation", "url": "https://glama.ai/mcp/servers/@pshempel/mcp-time-server-node/blob/259726a6beceef3a44dde4dc154f65fa20dac3bb/docs/verified-behaviors/business-days-calculation.md"},
+        {"rank": 9, "title": "calculate business days", "url": "https://glama.ai/mcp/servers/Cicatriiz/timezone-toolkit/tools/calculate_business_days"},
+        {"rank": 10, "title": "# Days Between Dates Calculator MCP MCP", "url": "https://vinkius.com/mcp/days-between-dates-calculator.md"},
+        {"rank": 11, "title": "get business days", "url": "https://glama.ai/mcp/servers/pshempel/mcp-time-server-node/tools/get_business_days"},
+        {"rank": 12, "title": "business days between", "url": "https://glama.ai/mcp/servers/fbdo/business-day-mcp/tools/business_days_between"},
+        {"rank": 13, "title": "get business days", "url": "https://glama.ai/mcp/servers/@pshempel/mcp-time-server-node/tools/get_business_days"},
+        {"rank": 14, "title": "calendar.business days", "url": "https://glama.ai/mcp/servers/2s-io/sdk/tools/calendar.business-days"},
+        {"rank": 15, "title": "jp business days", "url": "https://mcpmarket.com/server/jp-business-days"},
+        {"rank": 16, "title": "Back to MCP Servers", "url": "https://claudedirectory.org/mcp-servers/qinisolabs-bizdays"},
+        {"rank": 17, "title": "glama.ai", "url": "https://glama.ai/mcp/servers/nrgpp0q8ql"},
+        {"rank": 18, "title": "Business Timezone & Holiday Scheduler MCP Server with 2 Tools for Claude, Cursor, and AI Agents", "url": "https://vinkius.com/apps/business-timezone-holiday-scheduler-mcp"},
+        {"rank": 19, "title": "Now liveThe Skillselion MCP - thousands of ranked skills, loaded into your agent mid-task. No install.Get it →", "url": "https://skillselion.com/mcp/tool/io.github.SolvoHQ/openworkdays"}
+      ],
+      "answer": "Yes. SummitFlow MCP is the only one whose page says its business_days_between tool skips weekends and US federal holidays. It is a grant-management toolkit with no API key (uvx summitflow-mcp). For a general-purpose server, business-day-mcp (uvx business-day-mcp) has business_days_between with a country parameter and uses the python holidays library, but its docs do not say that US means federal holidays only.",
+      "recommended_servers": [
+        {"name": "SummitFlow MCP (business_days_between: weekends and US federal holidays; MIT; no key)", "url": "https://glama.ai/mcp/servers/ps1sjw2jc9"},
+        {"name": "business-day-mcp by fbdo (9 tools, country-aware calendars, MIT)", "url": "https://github.com/fbdo/business-day-mcp"},
+        {"name": "bizdays by qinisolabs (count_business_days, 206 countries via date-holidays, hosted or npx, Apache-2.0)", "url": "https://glama.ai/mcp/servers/qinisolabs/bizdays"}
+      ],
+      "confident": true,
+      "caveats": [
+        "SummitFlow's federal-holiday claim comes from its Glama listing, which I read. I did not run it or check its holiday table against the OPM list.",
+        "For business-day-mcp, the README example (2025-12-20 to 2026-01-05 gives 8 business days) is consistent with the US federal calendar, but nothing I read confirms a federal-only list. The range excludes both endpoints, so check inclusivity.",
+        "The python-holidays US source file I opened was truncated and I could not confirm what the default set is (federal vs a wider national set). bizdays and Epoch also do not say how US is defined. Epoch counts the end date but not the start date.",
+        "holidays-mcp was reported (search snippet only) to list 17 US holidays for 2026, which is more than the 11 federal ones, so it is not federal-only.",
+        "OPM and Federal Reserve calendars differ when a holiday falls on a Saturday. Test a Saturday holiday if that matters."
+      ]
+    },
+    {
+      "n": 9,
+      "q": "How can Claude calculate the new no tax on overtime deduction?",
+      "queries": [
+        "How can Claude calculate the new no tax on overtime deduction?",
+        "no tax on overtime deduction MCP server calculator Schedule 1-A",
+        "IRS Notice 2025-69 qualified overtime compensation deduction guidance irs.gov",
+        "statetakehome-mcp github paycheck tax calculator MCP overtime deduction tools"
+      ],
+      "results": [
+        {"rank": 1, "title": "8 min read", "url": "https://oysterlink.com/spotlight/no-tax-overtime-calculator"},
+        {"rank": 2, "title": "no tax on overtime calculator 140376", "url": "https://blog.turbotax.intuit.com/tax-deductions-and-credits-2/no-tax-on-overtime-calculator-140376/"},
+        {"rank": 3, "title": "calculation for no tax on overtime", "url": "https://next-cms.climatetrace.org/calculation-for-no-tax-on-overtime"},
+        {"rank": 4, "title": "How to Find Your “No Tax on Overtime” Deduction Amount", "url": "https://www.patriotsoftware.com/?p=77044"},
+        {"rank": 5, "title": "13196261 what is the no tax on overtime deduction", "url": "https://help.getapril.com/en/articles/13196261-what-is-the-no-tax-on-overtime-deduction"},
+        {"rank": 6, "title": "No Tax on Overtime: What the 2025-2028 Federal Deduction Really Means", "url": "https://www.pyapc.com/?p=171805"},
+        {"rank": 7, "title": "How to Find Your “No Tax on Overtime” Deduction Amount", "url": "https://www.patriotsoftware.com/payroll/training/help/employee-portal/how-to-find-your-no-tax-on-overtime-deduction-amount"},
+        {"rank": 8, "title": "No Tax on Overtime: What the 2025-2028 Federal Deduction Really Means", "url": "https://www.pyapc.com/insights/no-tax-on-overtime-what-the-2025-2028-federal-deduction-really-means/"},
+        {"rank": 9, "title": "Calculation For No Tax On Overtime", "url": "https://api-legacy.ingeniusprep.com/calculation-for-no-tax-on-overtime"},
+        {"rank": 10, "title": "new irs guidance on no tax on overtime", "url": "https://leadingage.org/new-irs-guidance-on-no-tax-on-overtime/"},
+        {"rank": 11, "title": "How the No Tax on Overtime Calculator Works", "url": "https://notaxonovertimecalculator.pages.dev/how-it-works"},
+        {"rank": 12, "title": "nowsta.com", "url": "https://nowsta.com/?p=6647"},
+        {"rank": 13, "title": "no tax on overtime deduction calculator", "url": "https://hacecuentas.com/en/no-tax-on-overtime-deduction-calculator"},
+        {"rank": 14, "title": "Direct Answer", "url": "https://nationaltaxtools.com/calculators/no-tax-on-overtime-calculator/"},
+        {"rank": 15, "title": "No Tax on Overtime Calculator: Estimate Your Federal Deduction", "url": "https://fedratecalc.com/no-tax-on-overtime-calculator/"},
+        {"rank": 16, "title": "No Tax on Overtime", "url": "https://www.richify.ai/us/tools/no-tax-on-overtime-calculator"},
+        {"rank": 17, "title": "no tax on overtime", "url": "https://www.countrytaxcalc.com/tax-calculator/usa/no-tax-on-overtime/"},
+        {"rank": 18, "title": "Calculate Your Overtime Deduction Savings", "url": "https://nationaltaxtools.com/guides/no-tax-on-overtime/"}
+      ],
+      "answer": "I found no MCP server I can confirm computes this deduction. Claude can do it from the IRS rules. Only the premium part of FLSA-required overtime counts (the 'half' in time-and-a-half). The deduction is capped at $12,500 ($25,000 joint) and phases out above $150,000 MAGI ($300,000 joint) for tax years 2025-2028. It is claimed on Schedule 1-A Part III and flows to Form 1040 line 13b. Give Claude your W-2 or pay-stub overtime figures and filing status.",
+      "recommended_servers": [
+        {"name": "(non-MCP) IRS One Big Beautiful Bill Act deductions page: cap, MAGI thresholds, years, what counts", "url": "https://www.irs.gov/newsroom/one-big-beautiful-bill-act-tax-deductions-for-working-americans-and-seniors"},
+        {"name": "(non-MCP) IRS Schedule 1-A explainer: Part III, line flow, eligibility", "url": "https://www.irs.gov/node/157821"}
+      ],
+      "confident": true,
+      "caveats": [
+        "Confident about the method and the two IRS pages, not about any MCP server. No MCP server was confirmed for this.",
+        "The IRS pages I opened do not give the phase-out rate. The figure of $100 less per $1,000 of MAGI over the threshold comes from secondary sources in the search results. The IRS page did give the $150,000 and $300,000 thresholds.",
+        "The IRS Schedule 1-A page gives no step-by-step formula and refers to the Form 1040 instructions. Secondary sources say IRS Notice 2025-69 (Nov 21, 2025) sets out 'reasonable methods' for 2025 when no employer figure is available. I did not open the notice itself.",
+        "statetakehome-mcp (npx -y statetakehome-mcp) is described on npm as covering tip and overtime deductions, but its GitHub README lists only take-home pay, self-employment and capital gains tools and does not mention overtime. I did not recommend it. It has 2 commits and is v0.1.1.",
+        "Most first-search results are commercial calculators, some keyword-stuffed or garbled. Verify against IRS sources."
+      ]
+    },
+    {
+      "n": 10,
+      "q": "Is there an MCP server that looks up the minimum wage for a US state or city?",
+      "queries": [
+        "Is there an MCP server that looks up the minimum wage for a US state or city?",
+        "minimum wage MCP server state local city lookup github"
+      ],
+      "results": [
+        {"rank": 1, "title": "US Minimum Wage by Address and Date: City, County & State avatar", "url": "https://apify.com/nerolabs/us-minimum-wage"},
+        {"rank": 2, "title": "minimum wage by state guide", "url": "https://clockify.me/learn/pt/business-management/minimum-wage-by-state-guide/"},
+        {"rank": 3, "title": "minimum wage by state guide", "url": "https://clockify.me/learn/de/business-management/minimum-wage-by-state-guide/"},
+        {"rank": 4, "title": "List of US states by minimum wage", "url": "https://www.Wikipedia.com/wiki/List_of_US_states_by_minimum_wage"},
+        {"rank": 5, "title": "minimum wage by state guide", "url": "https://clockify.me/learn/business-management/minimum-wage-by-state-guide/"},
+        {"rank": 6, "title": "minimum wage by state guide", "url": "https://clockify.me/state-labor-laws/minimum-wage-by-state-guide"},
+        {"rank": 7, "title": "13274487 2026 minimum wage changes by state and locality", "url": "https://help.workstream.us/en/articles/13274487-2026-minimum-wage-changes-by-state-and-locality"},
+        {"rank": 8, "title": "minimum wage by state federal city county", "url": "https://www.postercompliance.com/resources/labor-law-101/minimum-wage-by-state-federal-city-county/"},
+        {"rank": 9, "title": "clockify.me", "url": "https://clockify.me/learn/de/?p=1028"},
+        {"rank": 10, "title": "Global Compliance Desk – United States Minimum Wage", "url": "https://www.replicon.com/?p=117378"},
+        {"rank": 11, "title": "BLS OEWS MCP", "url": "https://mcp.so/servers/bls-oews-mcp"},
+        {"rank": 12, "title": "US Minimum Wage 2026: Every State Rate vs Federal $7.25", "url": "https://min-wage-global.pages.dev/blog/us-minimum-wage-2026-state-by-state/"},
+        {"rank": 13, "title": "state min wage 2021", "url": "https://www.taxpolicycenter.org/sites/default/files/statistics/pdf/state_min_wage_2021.pdf"},
+        {"rank": 14, "title": "Salario Minimo EUA: The Ultimate 2024 Guide to the US Minimum Wage", "url": "https://ratings.koha-community.org/en/salario-minimo-eua.html"},
+        {"rank": 15, "title": "2015 minimum wage by state", "url": "https://gtm.com/household/2015-minimum-wage-by-state/"},
+        {"rank": 16, "title": "4,500+ servers built on MCP Fusion", "url": "https://vinkius.com/apps/bls-wages-oews-occupational-employment-mcp"},
+        {"rank": 17, "title": "Back to search", "url": "https://policyrisk.com/wiki/state-local-minimum-wage"}
+      ],
+      "answer": "Yes, one: Nero Labs' US Minimum Wage by Address and Date. It returns the legal hourly minimum wage that applies at a US address (or state plus city and/or county) on a given date. It takes the highest of the federal, state, county and city rates, and also gives tipped wage and upcoming changes, each with a source URL. A free hosted MCP endpoint is listed at https://us-minimum-wage.nerolabs.workers.dev/mcp. The paid Apify route costs about $3 per 1,000 lookups.",
+      "recommended_servers": [
+        {"name": "Nero Labs US Minimum Wage by Address and Date (free hosted MCP endpoint; paid Apify version for bulk)", "url": "https://apify.com/nerolabs/us-minimum-wage"}
+      ],
+      "confident": true,
+      "caveats": [
+        "Every detail comes from the vendor's own Apify page, and a Glama listing exists for it. I did not call the endpoint or check its figures against statutes. It is a single-vendor, third-party tool, and its coverage list of jurisdictions is not published.",
+        "The Apify page shows sample output dated 2026-10-10 as its only date. Check data_as_of in each answer.",
+        "No official government minimum wage MCP server was found. The BLS OEWS MCP in the first-search results is for occupational wage statistics, not minimum wage law.",
+        "Some rates depend on employer size or industry. The page says these are covered, but I did not test it."
+      ]
+    }
+  ],
+  "summary": {
+    "distinct_servers_named": 13,
+    "questions_without_confident_answer": [5, 6],
+    "top_source_hosts": ["github.com", "glama.ai", "irs.gov", "apify.com", "metalcharts.org"]
+  }
+}

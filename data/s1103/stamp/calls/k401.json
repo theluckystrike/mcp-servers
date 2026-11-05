@@ -1,0 +1,13 @@
+{
+ "result": {
+  "content": [
+   {
+    "type": "text",
+    "text": "The IRS has not announced the 2027 401(k), 403(b), 457, IRA, SIMPLE, 415(c), compensation or HCE limits. On 2026-11-02 the IRS news release list ran through IR-2026-129 (Oct. 29, 2026) with no cost-of-living notice for 2027 (the 2026 notice, IR-2025-111 / Notice 2025-67, came out in November 2025). This server does not guess or forecast. Use 2026 as the latest published year. HSA limits for 2027 are published: use plans [\"hsa_self\"] or [\"hsa_family\"] for 2027."
+   }
+  ],
+  "isError": true
+ },
+ "jsonrpc": "2.0",
+ "id": 2
+}

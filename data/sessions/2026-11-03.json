@@ -1,0 +1,161 @@
+{
+ "id": "2026-11-03",
+ "title": "Session 2026-11-03, buyer clicks found broken, 7 satellites, 32 question pages, AI-cited hub extended",
+ "verdict": "MCP revenue is still $0 and Stripe could not be read (live key needs stripe login). Worker logs show assistants answering in Japanese and Chinese writing our buy links into their answers, and 24 of 25 of those clicks died on a 404 because auto-linking glued punctuation onto the URL. That is the only buyer-intent stream ever measured, so the fix is PR #116, waiting to ship with the s1102m billing release. mcpstamp.com is indexed (the 0-indexed figure was the sitemap report's broken field), impressions rose 6 to 73 a day, and the one page-one page is a can-Claude question, so 12 more of those went live, each answered with a real call to a live server. Five new data satellites (CPI inflation, IRS mileage and per diem, silver price, river levels, SAT percentiles) took the free set to 25. Wave 2: a fresh blind test (R9, 10 of 18 named an estate server) showed assistants cite claudecodeguides.com/mcp/ pages and never found a satellite, so all 27 satellites now have pages there (PR #10, CI green, 27 of 27 live). Two more satellites feed the highest-traffic sites (recipetool, ingredientcalculator). A live RAP calculator bug (wrong cheapest plan, overstated PSLF rule) was fixed and republished. The buy-link fix is proven against the exact live billing source but needs stripe login to pass the deploy gate. Wave 3: a double opt-in update list now runs on mcpstamp.com through Resend (tested end to end, 0 subscribers yet), which is the consented outreach channel. mcp.zovo.one's 21 broken README links, 404 demo gifs and the misdescribed /recover link are fixed in PR #119; like #116 they ship with the next billing deploy, which needs stripe login.",
+ "kpis": [
+  {
+   "label": "Free data satellites live",
+   "value": "27",
+   "note": "20 plus 7 today, every tool answered a live tools/call with no token, all in the official registry. data/s1103/*-mcp.json."
+  },
+  {
+   "label": "MCP paid orders, all time",
+   "value": "0",
+   "note": "Stripe live key needs stripe login, so not re-read today. Last read 10-30."
+  },
+  {
+   "label": "Dead buy clicks traced to assistant answers, 7d",
+   "value": "24 of 25",
+   "note": "Real product links with glued CJK or markdown punctuation. PR #116 redirects them to the product. data/s1103/leak.md."
+  },
+  {
+   "label": "mcpstamp.com Google impressions per day",
+   "value": "6, 49, 72, 73",
+   "note": "10-30 to 11-02, 0 clicks. 10 of 10 inspected pages indexed. data/s1103/stamp.md, kpi.md."
+  },
+  {
+   "label": "npm downloads 10-30 to 11-01",
+   "value": "17,205",
+   "note": "Mirror-shaped, 40% on the placeholder version. Above the floor on 11-01: timezone 54, license 55, invoice 24, quotes 21 (median 7)."
+  },
+  {
+   "label": "GA4 sessions with utm_source=mcp, 28d",
+   "value": "7",
+   "note": "Unchanged, all 10-30 on ingredientcalculator.com, inside the launch-scan hour."
+  },
+  {
+   "label": "mcpstamp can-claude pages",
+   "value": "32",
+   "note": "28 new today across 4 deploys, last 5161b1dd. /free-servers/ shows 27. Sitemap 195 URLs."
+  },
+  {
+   "label": "Distribution submissions today",
+   "value": "3 PRs, 3 issues, 20 directory posts",
+   "note": "punkpeye/awesome-mcp-servers #18434, awesome-remote #3709, toolsdk #1246 (24 servers), Cline #3487-3489, 4 directories x 5 new. data/s1103/dist.md."
+  },
+  {
+   "label": "Blind assistant test R9",
+   "value": "10 of 18",
+   "note": "R8 was 9 of 18; different search backend, within noise. 12 estate citations, all claudecodeguides.com/mcp/. Satellite supplement 0 of 10. data/s1103/blind9.md."
+  }
+ ],
+ "shipped": [
+  {
+   "title": "cpi-inflation-calculator-mcp live, feeds statewage.com",
+   "url": "https://github.com/theluckystrike/cpi-inflation-calculator-mcp",
+   "detail": "5 tools, BLS CPI 1913 to Sep 2026, Social Security COLA check matches SSA 2023-2027. Live BLS refresh capped until a free key is added."
+  },
+  {
+   "title": "irs-mileage-rate-per-diem-mcp live, feeds taxbreakcalc.com",
+   "url": "https://github.com/theluckystrike/irs-mileage-rate-per-diem-mcp",
+   "detail": "5 tools. Splits 2026 trips across the July 1 rate change (72.5 to 76 cents, verified on irs.gov), GSA per diem by ZIP FY2026 and FY2027."
+  },
+  {
+   "title": "silver-price-per-gram-mcp live, feeds goldgramprice.com",
+   "url": "https://github.com/theluckystrike/silver-price-per-gram-mcp",
+   "detail": "4 tools, live spot and FX, junk silver melt value."
+  },
+  {
+   "title": "river-level-mcp live, feeds lakelevelnow.com",
+   "url": "https://github.com/theluckystrike/river-level-mcp",
+   "detail": "4 tools, live USGS gauges and NWS flood stages and forecasts."
+  },
+  {
+   "title": "sat-score-percentiles-mcp live, feeds examscorecalc.com",
+   "url": "https://github.com/theluckystrike/sat-score-percentiles-mcp",
+   "detail": "4 tools, College Board percentiles and class of 2026 state reports."
+  },
+  {
+   "title": "12 can-Claude question pages on mcpstamp.com",
+   "url": "https://www.mcpstamp.com/can-claude/",
+   "detail": "Honest answer first, then a real call to a live server. Plus title, canonical and robots fixes across 80 pages."
+  },
+  {
+   "title": "PR #116, recover buy links broken by glued punctuation",
+   "url": "https://github.com/theluckystrike/mcp-servers/pull/116",
+   "detail": "24 of 25 dead buy clicks would have reached a working product page. Not deployed, ships with the s1102m billing release."
+  },
+  {
+   "title": "Awesome list and marketplace submissions",
+   "url": "https://github.com/punkpeye/awesome-mcp-servers/pull/18434",
+   "detail": "Largest MCP list (97k stars), plus awesome-remote, toolsdk (24 servers), bhavyshekhaliya (24 rows), 3 Cline marketplace issues."
+  },
+  {
+   "title": "4 money sites link to their new server",
+   "url": "https://statewage.com/pay-raise-calculator/",
+   "detail": "statewage, taxbreakcalc, lakelevelnow, examscorecalc, verified live. goldgramprice skipped, no safe deploy path."
+  },
+  {
+   "title": "27 satellite pages on claudecodeguides.com/mcp/",
+   "url": "https://github.com/theluckystrike/claude-skills-guide/pull/10",
+   "detail": "The surface assistants cite. CI run 41608278866 green, 27 of 27 live and in the sitemap, IndexNow sent."
+  },
+  {
+   "title": "raw-to-cooked-weight-mcp and vegetable-yield-percentage-mcp",
+   "url": "https://github.com/theluckystrike/raw-to-cooked-weight-mcp",
+   "detail": "USDA cooking yields and SR28 trim waste, feeding recipetool.net and ingredientcalculator.com. Recipetool backlink live."
+  },
+  {
+   "title": "RAP calculator fix, v1.0.1",
+   "url": "https://github.com/theluckystrike/student-loan-repayment-assistance-plan-calculator-mcp",
+   "detail": "Lowest total now computed across all plans; PSLF line cites 20 U.S.C. 1087e(m)(1)(A). Worker 4f55cab7, registry 1.0.1, mcpstamp page updated."
+  },
+  {
+   "title": "16 more can-Claude pages",
+   "url": "https://www.mcpstamp.com/can-claude/",
+   "detail": "Every free satellite plus timezone and currency now has an honest answer page with a real call."
+  },
+  {
+   "title": "Owner outreach packet, 4 drafts",
+   "url": "https://github.com/theluckystrike/mcp-servers/blob/main/data/s1103/outreach.md",
+   "detail": "Only 4 targets publish a live submission route (Glama newsletter, MCP.Directory, Skila AI, Console). Send from your own address."
+  },
+  {
+   "title": "Opt-in update list on mcpstamp.com",
+   "url": "https://www.mcpstamp.com/free-servers/",
+   "detail": "Email only, confirm button, one-click unsubscribe, Resend audience mcpstamp-updates. Privacy page section 7 updated. Deployment 349c794b."
+  },
+  {
+   "title": "PR #119, product page links and demo images",
+   "url": "https://github.com/theluckystrike/mcp-servers/pull/119",
+   "detail": "21 README links and every demo gif on /s/<id> pages were 404. Fixed in the page build with 4 tests. Merged, waits for the billing deploy."
+  }
+ ],
+ "next": [
+  {
+   "title": "Owner, stripe login (5 min)",
+   "colour": "green",
+   "detail": "One login ships three merged billing changes at once from origin/main: the s1102m release, #116 buy-link salvage and #119 page links. cd billing && npm run deploy, rollback to 2bcaa00c."
+  },
+  {
+   "title": "Owner, npm login and publish 7 new servers (5 min)",
+   "colour": "green",
+   "detail": "npm whoami returns 401. Best is a granular automation token for the @theluckystrike scope so agents can publish."
+  },
+  {
+   "title": "Owner, Apify account and token (35 min)",
+   "colour": "green",
+   "detail": "The only marketplace that bills end users with measured MCP usage. 5 Actors ready, run apify/publish-all.sh."
+  },
+  {
+   "title": "Owner, free BLS API key (2 min)",
+   "colour": "amber",
+   "detail": "https://data.bls.gov/registrationEngine/ then wrangler secret put BLS_API_KEY --name cpi-inflation-calculator-mcp."
+  },
+  {
+   "title": "Recheck 11-06 to 11-10",
+   "colour": "amber",
+   "detail": "npm data for 11-02 on, mcpstamp clicks on the new question pages, PR and directory merges."
+  }
+ ]
+}

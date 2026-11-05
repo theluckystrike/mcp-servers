@@ -1,0 +1,42 @@
+{
+ "pages": 2,
+ "records_read": 200,
+ "oldest_read": "2026-09-29T14:46:29Z",
+ "newest_read": "2026-10-29T18:53:05Z",
+ "d7": {
+  "window_days": 7,
+  "account_sessions_all_hosts": 61,
+  "account_paid_all_hosts": 1,
+  "mcp_total_sessions": 5,
+  "mcp_tagged_probes": 2,
+  "mcp_untagged_sessions": 3,
+  "mcp_untagged_by_status": {
+   "expired": 3
+  },
+  "mcp_untagged_paid": 0
+ },
+ "d28": {
+  "window_days": 28,
+  "account_sessions_all_hosts": 176,
+  "account_paid_all_hosts": 17,
+  "mcp_total_sessions": 13,
+  "mcp_tagged_probes": 6,
+  "mcp_untagged_sessions": 7,
+  "mcp_untagged_by_status": {
+   "expired": 7
+  },
+  "mcp_untagged_paid": 0
+ },
+ "completed_history": {
+  "pages": 2,
+  "completed": 187,
+  "paid_account_positive_control": 187,
+  "paid_last_28d_account": 17,
+  "mcp_completed": 0,
+  "mcp_tagged": 0,
+  "mcp_untagged_completed": 0,
+  "mcp_untagged_paid": 0,
+  "mcp_untagged_paid_gross_minor": {},
+  "newest_paid_at": "2026-10-27T11:48:15Z"
+ }
+}

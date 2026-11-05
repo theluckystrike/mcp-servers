@@ -1,0 +1,51 @@
+{
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "$1,000.00 in 2000 annual average has the same buying power as $1,956.68 in September 2026 (CPI-U 172.2 to 336.94). Cumulative inflation 95.67%, about 2.59% a year over 26.21 years. Note: Live BLS API check failed (BLS API REQUEST_NOT_PROCESSED: Request could not be serviced, as the daily threshold for total number of requests allocated to the user with registration key  has been reached.). Using bundled BLS data through September 2026, fetched 2026-11-03. Newer months, if any, are not included.\n\nIndex values from the U.S. Bureau of Labor Statistics. General information, not financial advice."
+      },
+      {
+        "type": "text",
+        "text": "{\n  \"amount\": 1000,\n  \"adjusted_amount\": 1956.68,\n  \"from\": {\n    \"period\": \"2000 annual average\",\n    \"cpi\": 172.2,\n    \"basis\": \"annual_average\"\n  },\n  \"to\": {\n    \"period\": \"September 2026\",\n    \"cpi\": 336.94,\n    \"basis\": \"monthly\"\n  },\n  \"cumulative_inflation_percent\": 95.67,\n  \"average_annual_inflation_percent\": 2.59,\n  \"years\": 26.21,\n  \"purchasing_power_of_amount_then\": 511.07,\n  \"series\": \"cpi_u\",\n  \"series_id\": \"CUUR0000SA0\",\n  \"series_name\": \"CPI-U, all items, U.S. city average, not seasonally adjusted (1982-84=100)\",\n  \"formula\": \"amount x (CPI September 2026 / CPI 2000 annual average) = 1000 x (336.94 / 172.2)\",\n  \"notes\": [],\n  \"summary\": \"$1,000.00 in 2000 annual average has the same buying power as $1,956.68 in September 2026 (CPI-U 172.2 to 336.94). Cumulative inflation 95.67%, about 2.59% a year over 26.21 years.\",\n  \"data_status\": {\n    \"live\": false,\n    \"latest_month\": \"September 2026\",\n    \"bundled_through\": \"September 2026\",\n    \"bundled_fetched\": \"2026-11-03\",\n    \"note\": \"Live BLS API check failed (BLS API REQUEST_NOT_PROCESSED: Request could not be serviced, as the daily threshold for total number of requests allocated to the user with registration key  has been reached.). Using bundled BLS data through September 2026, fetched 2026-11-03. Newer months, if any, are not included.\"\n  },\n  \"as_of\": \"2026-11-03\",\n  \"source\": \"https://data.bls.gov/timeseries/CUUR0000SA0 (BLS Public Data API https://api.bls.gov/publicAPI/v1/timeseries/data/)\",\n  \"more\": \"https://statewage.com/pay-raise-calculator/?utm_source=mcp&utm_medium=cpi-inflation-calculator-mcp\",\n  \"disclaimer\": \"Index values from the U.S. Bureau of Labor Statistics. General information, not financial advice.\"\n}"
+      }
+    ],
+    "structuredContent": {
+      "amount": 1000,
+      "adjusted_amount": 1956.68,
+      "from": {
+        "period": "2000 annual average",
+        "cpi": 172.2,
+        "basis": "annual_average"
+      },
+      "to": {
+        "period": "September 2026",
+        "cpi": 336.94,
+        "basis": "monthly"
+      },
+      "cumulative_inflation_percent": 95.67,
+      "average_annual_inflation_percent": 2.59,
+      "years": 26.21,
+      "purchasing_power_of_amount_then": 511.07,
+      "series": "cpi_u",
+      "series_id": "CUUR0000SA0",
+      "series_name": "CPI-U, all items, U.S. city average, not seasonally adjusted (1982-84=100)",
+      "formula": "amount x (CPI September 2026 / CPI 2000 annual average) = 1000 x (336.94 / 172.2)",
+      "notes": [],
+      "summary": "$1,000.00 in 2000 annual average has the same buying power as $1,956.68 in September 2026 (CPI-U 172.2 to 336.94). Cumulative inflation 95.67%, about 2.59% a year over 26.21 years.",
+      "data_status": {
+        "live": false,
+        "latest_month": "September 2026",
+        "bundled_through": "September 2026",
+        "bundled_fetched": "2026-11-03",
+        "note": "Live BLS API check failed (BLS API REQUEST_NOT_PROCESSED: Request could not be serviced, as the daily threshold for total number of requests allocated to the user with registration key  has been reached.). Using bundled BLS data through September 2026, fetched 2026-11-03. Newer months, if any, are not included."
+      },
+      "as_of": "2026-11-03",
+      "source": "https://data.bls.gov/timeseries/CUUR0000SA0 (BLS Public Data API https://api.bls.gov/publicAPI/v1/timeseries/data/)",
+      "more": "https://statewage.com/pay-raise-calculator/?utm_source=mcp&utm_medium=cpi-inflation-calculator-mcp",
+      "disclaimer": "Index values from the U.S. Bureau of Labor Statistics. General information, not financial advice."
+    }
+  },
+  "jsonrpc": "2.0",
+  "id": 10
+}

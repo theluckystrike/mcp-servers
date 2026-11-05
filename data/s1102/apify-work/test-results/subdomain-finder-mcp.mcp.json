@@ -1,0 +1,33 @@
+{
+  "initialize": {
+    "status": 200,
+    "server": {
+      "name": "subdomain-finder-mcp",
+      "version": "1.0.0",
+      "websiteUrl": "https://bugbountyreality.com"
+    },
+    "protocolVersion": "2025-06-18",
+    "hasTools": true,
+    "session": false
+  },
+  "initialized": 202,
+  "toolsList": {
+    "status": 200,
+    "tools": [
+      "find_subdomains",
+      "resolve_subdomains",
+      "get_certificate_history",
+      "summarize_attack_surface"
+    ]
+  },
+  "toolsCall": {
+    "status": 200,
+    "tool": "find_subdomains",
+    "isError": false,
+    "textHead": "3 unique hostnames under example.com in 17 certificates from certspotter. 1 wildcard entry (*.example.com), so some hosts will never appear in CT. Newest: emudhra-lab.example.com (2026-10-20), www.example.com (2025-11-21), example.com (2025-11-20). certspotter lists unexpired certificates only. Use ",
+    "hasStructured": true
+  },
+  "parallel5": true,
+  "getStatus": 405,
+  "pass": true
+}

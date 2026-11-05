@@ -1,0 +1,125 @@
+{
+ "ab-test-sample-size-calculator-mcp": null,
+ "ap-score-distributions-mcp": null,
+ "car-loan-interest-deduction-calculator-mcp": null,
+ "cups-to-grams-mcp": {
+  "score": null,
+  "tier": "scoredAt",
+  "grades": [
+   "license_grade:a",
+   "maintenance_grade:c",
+   "quality_grade:a"
+  ],
+  "scoredAt": "2026-10-30T01:45:19.600882Z",
+  "author": [
+   "claimed"
+  ]
+ },
+ "dscr-loan-calculator-mcp": {
+  "score": "4.1",
+  "tier": "scoredAt",
+  "grades": [
+   "license_grade:a",
+   "maintenance_grade:c",
+   "quality_grade:a"
+  ],
+  "scoredAt": "2026-10-30T01:45:18.159190Z",
+  "author": [
+   "official"
+  ]
+ },
+ "gold-price-per-gram-mcp": {
+  "score": "4.1",
+  "tier": "scoredAt",
+  "grades": [
+   "license_grade:a",
+   "maintenance_grade:c",
+   "quality_grade:a"
+  ],
+  "scoredAt": "2026-10-30T01:45:17.934303Z",
+  "author": [
+   "official"
+  ]
+ },
+ "lake-level-mcp": {
+  "score": "4.4",
+  "tier": "scoredAt",
+  "grades": [
+   "license_grade:a",
+   "maintenance_grade:b",
+   "quality_grade:a"
+  ],
+  "scoredAt": "2026-10-30T02:25:17.515743Z",
+  "author": [
+   "claimed"
+  ]
+ },
+ "minimum-wage-mcp": {
+  "score": "4.1",
+  "tier": "scoredAt",
+  "grades": [
+   "license_grade:a",
+   "maintenance_grade:c",
+   "quality_grade:a"
+  ],
+  "scoredAt": "2026-10-30T01:40:19.057049Z",
+  "author": [
+   "claimed"
+  ]
+ },
+ "no-tax-on-overtime-mcp": {
+  "score": "4.1",
+  "tier": "scoredAt",
+  "grades": [
+   "license_grade:a",
+   "maintenance_grade:c",
+   "quality_grade:a"
+  ],
+  "scoredAt": "2026-10-30T01:40:20.840662Z",
+  "author": [
+   "claimed"
+  ]
+ },
+ "paycheck-calculator-mcp": {
+  "score": "4.4",
+  "tier": "scoredAt",
+  "grades": [
+   "license_grade:a",
+   "maintenance_grade:c",
+   "quality_grade:a"
+  ],
+  "scoredAt": "2026-10-30T01:45:18.804149Z",
+  "author": [
+   "claimed"
+  ]
+ },
+ "recipe-nutrition-calculator-mcp": null,
+ "section-179-deduction-calculator-mcp": null,
+ "subdomain-finder-mcp": null,
+ "uk-income-tax-salary-mcp": {
+  "score": "4.1",
+  "tier": "scoredAt",
+  "grades": [
+   "license_grade:a",
+   "maintenance_grade:c",
+   "quality_grade:a"
+  ],
+  "scoredAt": "2026-10-30T01:45:20.117702Z",
+  "author": [
+   "claimed"
+  ]
+ },
+ "us-federal-holidays-business-days-mcp": {
+  "score": null,
+  "tier": "scoredAt",
+  "grades": [
+   "license_grade:a",
+   "maintenance_grade:c",
+   "quality_grade:a"
+  ],
+  "scoredAt": "2026-10-30T02:25:17.176652Z",
+  "author": [
+   "claimed"
+  ]
+ }
+}

@@ -484,7 +484,7 @@ server.registerTool("cover_letter_create", { annotations: { readOnlyHint: false,
 
 /* ----------------------------------------------------------------- tailor */
 
-server.registerTool("tailor_to_job", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
+server.registerTool("tailor_to_job", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "Gap analysis against a posting",
   description: "READ-ONLY gap analysis against a posting: writes nothing, changes nothing. Returns matched keywords, missing ones, a coverage figure and orderings of facts you already stated. Act on it with resume_create.",
   inputSchema: {

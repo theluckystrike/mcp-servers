@@ -1,0 +1,55 @@
+{
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "4-day trip to District of Columbia, DC (2026-09-29 to 2026-10-02): lodging up to $837.00 for 3 nights, M&IE $296.00 ($92 a full day, $69 first and last day, less $26.00 for provided meals). Maximum per diem $1,133.00.\n\nRates from IRS and GSA publications. General information, not tax advice."
+      },
+      {
+        "type": "text",
+        "text": "{\n  \"destination\": \"District of Columbia\",\n  \"state\": \"DC\",\n  \"county\": \"District of Columbia County, DC\",\n  \"standard_rate\": false,\n  \"start_date\": \"2026-09-29\",\n  \"end_date\": \"2026-10-02\",\n  \"travel_days\": 4,\n  \"nights\": 3,\n  \"lodging_max_total\": 837,\n  \"lodging_by_night\": [\n    {\n      \"night_of\": \"2026-09-29\",\n      \"lodging\": 275\n    },\n    {\n      \"night_of\": \"2026-09-30\",\n      \"lodging\": 275\n    },\n    {\n      \"night_of\": \"2026-10-01\",\n      \"lodging\": 287\n    }\n  ],\n  \"mie_per_full_day\": 92,\n  \"mie_first_last_day\": 69,\n  \"meals_provided_deduction\": 26,\n  \"mie_total\": 296,\n  \"total_max_per_diem\": 1133,\n  \"notes\": [\n    \"GSA federal travel rules: first and last day of travel at 75% of M&IE; deduct provided meals at the GSA breakdown amounts.\",\n    \"Under Rev. Proc. 2019-48 an employer allowance up to these rates is treated as substantiated (time, place and business purpose still need records). Self-employed people may use the M&IE rate but must substantiate actual lodging cost.\"\n  ],\n  \"summary\": \"4-day trip to District of Columbia, DC (2026-09-29 to 2026-10-02): lodging up to $837.00 for 3 nights, M&IE $296.00 ($92 a full day, $69 first and last day, less $26.00 for provided meals). Maximum per diem $1,133.00.\",\n  \"as_of\": \"2026-11-03\",\n  \"source\": \"https://www.gsa.gov/travel/per-diem-rates/per-diem-files ; https://www.gsa.gov/travel/per-diem-rates/mie-breakdowns\",\n  \"more\": \"https://taxbreakcalc.com/self-employed-set-aside-calculator/?utm_source=mcp&utm_medium=irs-mileage-rate-per-diem-mcp\",\n  \"disclaimer\": \"Rates from IRS and GSA publications. General information, not tax advice.\"\n}"
+      }
+    ],
+    "structuredContent": {
+      "destination": "District of Columbia",
+      "state": "DC",
+      "county": "District of Columbia County, DC",
+      "standard_rate": false,
+      "start_date": "2026-09-29",
+      "end_date": "2026-10-02",
+      "travel_days": 4,
+      "nights": 3,
+      "lodging_max_total": 837,
+      "lodging_by_night": [
+        {
+          "night_of": "2026-09-29",
+          "lodging": 275
+        },
+        {
+          "night_of": "2026-09-30",
+          "lodging": 275
+        },
+        {
+          "night_of": "2026-10-01",
+          "lodging": 287
+        }
+      ],
+      "mie_per_full_day": 92,
+      "mie_first_last_day": 69,
+      "meals_provided_deduction": 26,
+      "mie_total": 296,
+      "total_max_per_diem": 1133,
+      "notes": [
+        "GSA federal travel rules: first and last day of travel at 75% of M&IE; deduct provided meals at the GSA breakdown amounts.",
+        "Under Rev. Proc. 2019-48 an employer allowance up to these rates is treated as substantiated (time, place and business purpose still need records). Self-employed people may use the M&IE rate but must substantiate actual lodging cost."
+      ],
+      "summary": "4-day trip to District of Columbia, DC (2026-09-29 to 2026-10-02): lodging up to $837.00 for 3 nights, M&IE $296.00 ($92 a full day, $69 first and last day, less $26.00 for provided meals). Maximum per diem $1,133.00.",
+      "as_of": "2026-11-03",
+      "source": "https://www.gsa.gov/travel/per-diem-rates/per-diem-files ; https://www.gsa.gov/travel/per-diem-rates/mie-breakdowns",
+      "more": "https://taxbreakcalc.com/self-employed-set-aside-calculator/?utm_source=mcp&utm_medium=irs-mileage-rate-per-diem-mcp",
+      "disclaimer": "Rates from IRS and GSA publications. General information, not tax advice."
+    }
+  },
+  "jsonrpc": "2.0",
+  "id": 13
+}

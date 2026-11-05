@@ -1,0 +1,50 @@
+{
+ "repo": "subdomain-finder-mcp",
+ "repo_url": "https://github.com/theluckystrike/subdomain-finder-mcp",
+ "hosted_url": "https://subdomain-finder-mcp.lipmichal.workers.dev/mcp",
+ "worker_version_id": "a6b35eb7-d553-4c22-a323-ab8713253e01",
+ "rollback": "npx wrangler delete --name subdomain-finder-mcp",
+ "registry_name": "io.github.theluckystrike/subdomain-finder-mcp",
+ "registry_visible": true,
+ "tools": [
+  "find_subdomains",
+  "resolve_subdomains",
+  "get_certificate_history",
+  "summarize_attack_surface"
+ ],
+ "fixtures": 16,
+ "tests_passed": true,
+ "live_calls_ok": {
+  "resolve_subdomains": true,
+  "get_certificate_history": true,
+  "find_subdomains": true,
+  "summarize_attack_surface": true
+ },
+ "npx_github_ok": true,
+ "sources": [
+  "https://api.certspotter.com/v1/issuances (keyless, primary)",
+  "https://sslmate.com/help/reference/ct_search_api_v1",
+  "https://crt.sh/?q=%25.<domain>&output=json (fallback, expired history)",
+  "https://cloudflare-dns.com/dns-query (DoH JSON)",
+  "https://github.com/EdOverflow/can-i-take-over-xyz (service list reference)"
+ ],
+ "money_site": "https://bugbountyreality.com",
+ "more_pages": [
+  "/tools/subdomain-finder-real/",
+  "/tools/certificate-transparency-lookup/",
+  "/tools/subdomain-takeover-checker/",
+  "/tools/dns-lookup-tool/",
+  "/tools/subdomain-enumeration-checklist-manual-recon-guide"
+ ],
+ "npm_ready": true,
+ "npm_name_available": "npm view subdomain-finder-mcp -> E404 on 2026-11-02 (not published; orchestrator batches npm)",
+ "pushes": 2,
+ "open_issues": [
+  "certspotter keyless limit observed x-ratelimit-limit: 10 per IP; the Worker shares one Cloudflare egress pool, edge cache 1 h on 2xx mitigates; heavy use will hit crt.sh fallback.",
+  "crt.sh returned 502/404 for some %.domain queries and different rows minutes apart (replica lag) on 2026-11-02; handled with one retry then fallback/error.",
+  "Dangling-CNAME fixture is hand-built (no real dangling record used); live classification of NXDOMAIN/live/CNAME verified on real answers.",
+  "README install lines use npx github: form until the orchestrator publishes to npm; switch to npx -y subdomain-finder-mcp after.",
+  "Second push added scripts/xcheck_ct.py (the Python cross-check named in DATA_SOURCES.md)."
+ ],
+ "minutes": 17
+}

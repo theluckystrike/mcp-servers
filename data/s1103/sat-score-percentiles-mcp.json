@@ -1,0 +1,60 @@
+{
+ "repo": "sat-score-percentiles-mcp",
+ "repo_url": "https://github.com/theluckystrike/sat-score-percentiles-mcp",
+ "hosted_url": "https://sat-score-percentiles-mcp.lipmichal.workers.dev/mcp",
+ "worker_version_id": "6aacd64a-d269-4da4-b6a0-22d760c3b899",
+ "rollback": "npx wrangler delete --name sat-score-percentiles-mcp (brand-new worker, one version)",
+ "registry_name": "io.github.theluckystrike/sat-score-percentiles-mcp",
+ "registry_visible": true,
+ "registry_check": "curl -s \"https://registry.modelcontextprotocol.io/v0/servers?search=sat-score-percentiles-mcp\" -> 1.0.0",
+ "tools": [
+  "get_sat_percentile",
+  "get_score_for_sat_percentile",
+  "get_sat_scores_by_state",
+  "rank_states_by_sat"
+ ],
+ "data": {
+  "percentiles": "121 total rows (400-1600) and 61 section rows (200-800), both reference groups",
+  "class_of_2026": "national (1,954,833 takers, mean 1045) + 50 states + DC + PR + USVI = 53 reports, each with takers, participation, means, benchmarks, 25/50/75th"
+ },
+ "fixtures": 13,
+ "tests_passed": "13/13 (node --test; expected values copied from the College Board page rows and pdftotext lines, plus completeness and sort checks)",
+ "local_stdio_ok": true,
+ "live_calls_ok": {
+  "get_sat_percentile": true,
+  "get_score_for_sat_percentile": true,
+  "get_sat_scores_by_state": true,
+  "rank_states_by_sat": true
+ },
+ "live_check": "curl POST initialize + tools/list + one tools/call per tool to hosted_url, no token (data/s1103/build-gen/bin/live.sh); GET / 200",
+ "live_raw_responses": "/Users/mike/mcp-servers/satellites/sat-score-percentiles-mcp/.live/ (git-excluded)",
+ "npx_github_ok": true,
+ "pushes": 1,
+ "github": {
+  "visibility": "public",
+  "topics": 13
+ },
+ "npm_ready": true,
+ "npm_ready_detail": "npm view sat-score-percentiles-mcp -> E404 (positive control cups-to-grams-mcp -> 1.0.0); package.json has bin, files, mcpName, keywords; npm pack --dry-run 8 files, 19.4 kB. Not published: npm publish needs the owner's per-publish 2FA web approval (OWNER UNLOCK).",
+ "competitor_field": "gh search repos \"sat score mcp\" 0, \"sat percentile mcp\" 0, \"sat score percentile mcp\" 0, \"act score mcp\" 0 on 2026-11-03",
+ "sources": [
+  "https://research.collegeboard.org/reports/sat-suite/understanding-scores/sat (fetched 2026-11-03)",
+  "https://reports.collegeboard.org/sat-suite-program-results (index of 2026 SAT Suite Annual Reports)",
+  "https://reports.collegeboard.org/media/pdf/2026-total-group-sat-suite-of-assessments-annual-report-ada.pdf",
+  "https://reports.collegeboard.org/media/pdf/2026-<state>-sat-suite-of-assessments-annual-report*.pdf (53 files, sha256 in repo DATA_SOURCES.md)"
+ ],
+ "money_site": "https://examscorecalc.com",
+ "more_pages": [
+  "/sat/",
+  "/digital-sat-score-calculator/"
+ ],
+ "more_links_200": "2/2 with UTM returned 200",
+ "open_issues": [
+  "examscorecalc.com has only 1 GSC click/28d (kpi.md); it was the money site with the closest pages. Lower expected traffic than the other two.",
+  "Static data (no live fetch): the \"newer than training\" value is the class of 2026 report published fall 2026. Needs a rebuild when the class of 2027 report appears (scripts/build_data.py).",
+  "Percentile page prints no year; README says so.",
+  "Ohio supplement was missing from the report index and fetched from the same path pattern (200, parsed with the same checks).",
+  "Snowpack (NRCS AWDB, wcc.sc.egov.usda.gov) was the preferred third idea for lakelevelnow.com but the host timed out on TCP connect from this machine; not built."
+ ],
+ "minutes": 28
+}

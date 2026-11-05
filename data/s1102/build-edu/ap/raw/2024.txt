@@ -1,0 +1,153 @@
+                                                                                     STUDENT SCORE DISTRIBUTIONS*
+                                                                                                       AP Exams - May 2024
+
+     Exam Score            African American Studies             Drawing - Art & Design**                   2-D Art and Design**                     3-D Art and Design**                           Art History                     Biology
+
+                              N              %At                   N                   %At                  N                   %At                  N                  %At                   N                  %At        N                %At
+           5                1,526            14.2                3,460                 15.1               5,361                 11.2                573                  6.2                3,809                13.9    43,719              16.8
+           4                3,240            30.2                7,117                 31.1              13,794                 28.8               2,232                24.3                5,895                21.5    60,178              23.1
+           3                3,028            28.2                8,600                 37.6              20,519                 42.8               3,801                41.4                7,455                27.2    73,735              28.4
+           2                2,000            18.6                3,080                 13.5               6,710                 14.0               2,146                23.4                6,792                24.8    56,358              21.7
+           1                 947              8.8                 625                   2.7               1,518                  3.2                428                  4.7                3,411                12.5    26,072              10.0
+ Number of Students        10,741                               22,882                                   47,902                                    9,180                                   27,362                        260,062
+    3 or higher/%           7,794            72.6               19,177                 83.8              39,674                 82.8               6,606                72.0               17,159                62.7    177,632             68.3
+     Mean Score             3.22                                 3.42                                     3.31                                     3.04                                     3.00                          3.15
+ Standard Deviation         1.17                                 0.99                                     0.95                                     0.95                                     1.23                          1.22
+
+                                                                                                                                                                                               Chinese Language             Chinese Language
+     Exam Score                   Calculus AB                           Calculus BC                        Calculus AB Subscore                            Chemistry
+                                                                                                                                                                                                 (Total Group)            (Standard Group)***
+
+                              N              %At                   N                   %At                  N                   %At                  N                  %At                   N                  %At        N                %At
+           5               59,569            21.4               70,723                 47.7              74,262                 50.1              26,986                17.9                9,546                53.3      918               20.2
+           4               77,458            27.8               31,217                 21.1              43,966                 29.7              41,462                27.4                3,466                19.4      784               17.3
+           3               42,533            15.3               17,880                 12.1              12,508                  8.4              45,808                30.3                2,838                15.9     1,376              30.3
+           2               63,178            22.7               20,668                 13.9              13,598                  9.2              25,490                16.9                 885                  4.9      603               13.3
+           1               35,919            12.9                7,703                  5.2               3,857                  2.6              11,375                 7.5                1,170                 6.5      862               19.0
+ Number of Students        278,657                              148,191                                  148,191                                  151,121                                  17,905                         4,543
+    3 or higher/%          179,560           64.4               119,820                80.9              130,736                88.2              114,256               75.6               15,850                88.5     3,078              67.8
+     Mean Score             3.22                                 3.92                                     4.16                                     3.31                                     4.08                          3.06
+ Standard Deviation         1.35                                 1.27                                     1.08                                     1.17                                     1.21                          1.37
+
+     Exam Score              Computer Science A               Computer Science Principles                   Economics - Macro                         Economics - Micro                   English Language & Comp       English Literature & Comp
+
+                               N             %At               N              %At               N               %At              N             %At                N                                              %At        N                %At
+            5                25,137          25.6           19,105           10.9            33,218            20.7           23,816           22.9            58,358                                             9.8    53,268              13.7
+            4                21,038          21.4           34,979           20.0            33,198            20.7           24,763           23.9           127,676                                            21.4    104,672             26.9
+            3                19,754          20.1           58,034           33.1            38,269            23.8           21,569           20.8           140,253                                            23.5    123,961             31.8
+            2                10,613          10.8           35,542           20.3            33,433            20.8           19,936           19.2           171,865                                            28.8    64,223              16.5
+            1                21,594          22.0           27,601           15.7            22,623            14.1           13,725           13.2            98,945                                            16.6    43,148              11.1
+ Number of Students          98,136                        175,261                          160,741                           103,809                         597,097                                                    389,272
+     3 or higher/%           65,929          67.2          112,118           64.0           104,685            65.1           70,148           67.6           326,287                                            54.6    281,901             72.4
+      Mean Score              3.18                            2.90                            3.13                              3.24                            2.79                                                      3.16
+  Standard Deviation          1.48                            1.21                            1.34                              1.35                            1.23                                                      1.18
+This table reflects 5,744,259 AP Exams taken by 3,079,134 students from 23,722 secondary schools.
+** In 2020, the AP Studio Art Program was renamed AP Art and Design. The course names are Drawing, 2-D Art and Design, and 3-D Art and Design.
+*** Standard students generally receive most of their foreign language training in U.S. schools. They did not indicate on their answer sheet that they regularly speak
+or hear the foreign language of the exam, or that they have lived for one month or more in a country where the language is spoken.
+
+
+                                                    Copyright - © 2024 College Board. College Board, Advanced Placement, AP, AP Central, and the acorn logo are registered trademarks of College Board.
+                                                                                    STUDENT SCORE DISTRIBUTIONS*
+                                                                                          AP Exams - May 2024 (continued)
+                                                                                                             French Language                          French Language                          German Language           German Language
+     Exam Score             Environmental Science                  European History
+                                                                                                               (Total Group)                        (Standard Group)***                          (Total Group)         (Standard Group)***
+
+                              N              %At                   N                  %At                   N                  %At                    N                  %At                   N            %At         N             %At
+           5                21,774            9.2               10,924                13.1                2,769                14.5                 1,278                 9.2                1,091          26.1       334            12.1
+           4                65,057           27.5               27,696                33.3               4,757                 24.9                3,195                 23.0                 851           20.3       549            19.9
+           3                41,232           17.4               20,988                25.2               6,290                 32.9                5,022                 36.1                 981           23.4       808            29.3
+           2                61,009           25.8               17,245                20.7               4,145                 21.7                3,529                 25.4                 840           20.1       721            26.1
+           1                47,507           20.1                6,413                 7.7                1,150                 6.0                  884                  6.4                 422           10.1       349            12.6
+ Number of Students        236,579                              83,266                                   19,111                                    13,908                                    4,185                    2,761
+    3 or higher/%          128,063           54.1               59,608                71.6               13,816                72.3                 9,495                68.3                2,923          69.8      1,691           61.2
+     Mean Score              2.80                                3.23                                      3.20                                      3.03                                     3.32                     2.93
+ Standard Deviation          1.29                                1.15                                      1.12                                      1.05                                     1.32                     1.20
+                            Government & Politics -                                                                                                    Italian Language                         Italian Language
+     Exam Score                                             Government & Politics - U.S.                   Human Geography
+                                Comparative                                                                                                              (Total Group)                       (Standard Group)***
+
+                               N             %At                  N                   %At                  N                   %At                   N                   %At                   N            %At
+           5                 4,081           16.0               85,018                24.3               46,891                17.9                 508                  22.6                 199           12.8
+           4                 6,319           24.8               87,571                25.0               53,776                20.5                 511                  22.8                 369           23.7
+           3                 8,156           32.1               83,071                23.7               46,552                17.8                 606                  27.0                 496           31.8
+           2                 3,849           15.1               63,251                18.1               37,556                14.3                 392                  17.5                 327           21.0
+           1                 3,031           11.9               31,346                 8.9               77,478                29.5                 229                  10.2                 167           10.7
+ Number of Students         25,436                             350,257                                  262,253                                    2,246                                     1,558
+    3 or higher/%           18,556           73.0              255,660                73.0              147,219                56.1                1,625                 72.4                1,064          68.3
+     Mean Score               3.18                               3.38                                     2.83                                     3.30                                      3.07
+ Standard Deviation           1.22                               1.27                                     1.49                                     1.27                                      1.18
+                              Japanese Language                   Japanese Language                                                                                                                                   Music Theory Nonaural
+     Exam Score                                                                                                     Latin                               Music - Theory                  Music Theory Aural Subscore
+                                 (Total Group)                   (Standard Group)***                                                                                                                                        Subscore
+
+                                N             %At                N             %At                N              %At               N             %At                N                                       %At          N            %At
+            5                 1,533           49.1              222           16.8              508             11.9             3,625           19.0             3,675                                     19.3      3,736           19.6
+            4                  318            10.2              146           11.0              709             16.6             3,336           17.5             3,236                                     17.0      3,303           17.3
+            3                  527            16.9              345           26.1             1,194            28.0             4,503           23.6             4,708                                     24.7      4,365           22.9
+            2                  225             7.2              179           13.5              980             23.0             4,821           25.3             4,636                                     24.3       4,943          26.0
+            1                  522            16.7              432           32.6              873             20.5             2,760           14.5             2,790                                     14.6      2,698           14.2
+ Number of Students           3,125                            1,324                           4,264                            19,045                           19,045                                               19,045
+     3 or higher/%            2,378           76.1              713           53.9             2,411            56.5            11,464           60.2            11,619                                     61.0      11,404          59.9
+      Mean Score               3.68                             2.66                            2.77                              3.01                             3.02                                                3.02
+  Standard Deviation           1.53                             1.45                            1.28                              1.33                             1.33                                                1.34
+This table reflects 5,744,259 AP Exams taken by 3,079,134 students from 23,722 secondary schools.
+** In 2020, the AP Studio Art Program was renamed AP Art and Design. The course names are Drawing, 2-D Art and Design, and 3-D Art and Design.
+*** Standard students generally receive most of their foreign language training in U.S. schools. They did not indicate on their answer sheet that they regularly speak
+or hear the foreign language of the exam, or that they have lived for one month or more in a country where the language is spoken.
+
+
+                                                    Copyright - © 2024 College Board. College Board, Advanced Placement, AP, AP Central, and the acorn logo are registered trademarks of College Board.
+                                                                             STUDENT SCORE DISTRIBUTIONS*
+                                                                                   AP Exams - May 2024 (continued)
+                                                                                             Physics C - Electricity &
+     Exam Score           Physics 1: Alegebra-Based          Physics 2: Alegbra-Based                                         Physics C - Mechanics                   Precalculus                  Psychology
+                                                                                                   Magnetism
+
+                              N                %At              N                %At            N              %At              N              %At              N               %At           N                  %At
+           5               16,725              10.2           4,359              19.1         9,856            35.2          17,464            28.5          47,767             25.9       61,321                19.2
+           4               29,405              17.9           4,105              18.0         6,044            21.6          16,444            26.8          44,036             23.9       73,921                23.1
+           3               31,652              19.2           7,613              33.4         4,127            14.8          12,822            20.9          47,678             25.9       62,384                19.5
+           2               42,981              26.1           5,214              22.9         4,856            17.4           8,098            13.2          26,836             14.6       37,826                11.8
+           1               43,718              26.6           1,513               6.6         3,084            11.0           6,424            10.5          18,077              9.8       84,712                26.5
+ Number of Students        164,481                           22,804                          27,967                          61,252                          184,394                       320,164
+    3 or higher/%          77,782              47.3          16,077              70.5        20,027            71.6          46,730            76.3          139,481            75.6       197,626               61.7
+     Mean Score             2.59                              3.20                            3.53                            3.50                            3.42                          2.97
+ Standard Deviation         1.32                              1.18                            1.40                            1.31                            1.28                          1.47
+
+                                                                                                Spanish Language                 Spanish Language
+     Exam Score                     Research                           Seminar                                                                              Spanish Literature & Culture            Statistics
+                                                                                                  (Total Group)                (Standard Group)***
+
+                              N                %At              N                %At           N               %At              N              %At               N              %At           N                  %At
+          5                 4,464              12.6           8,919               9.4       37,662             21.2           7,882            16.2            2,691            10.2       44,310                17.5
+          4                 9,208              26.0          18,694              19.8       55,833             31.4          14,350            29.5            6,272            23.7       55,156                21.8
+          3                16,863              47.5          53,294              56.5       54,003             30.4          16,357            33.7            8,764            33.1       56,891                22.5
+          2                 4,071              11.5           9,748              10.3       24,900             14.0           8,150            16.8            5,702            21.6       40,240                15.9
+          1                  863                2.4           3,739               4.0        5,421              3.0           1,837             3.8            3,013            11.4       56,317                22.3
+ Number of Students        35,469                            94,394                         177,819                          48,576                           26,442                       252,914
+   3 or higher/%           30,535              86.1          80,907              85.7       147,498            82.9          38,589            79.4           17,727            67.0       156,357               61.8
+    Mean Score              3.35                              3.20                           3.54                             3.38                             3.00                         2.96
+ Standard Deviation          0.92                             0.89                            1.07                             1.06                            1.15                         1.40
+
+     Exam Score              United States History           World History: Modern
+
+                              N        %At                      N                %At
+          5                62,610                     12.8   45,160              11.9
+          4                162,967                    33.3   122,365             32.3
+          3                127,117                    26.0   74,283              19.6
+          2                94,957                     19.4   104,072             27.4
+          1                41,037                      8.4   33,505               8.8
+ Number of Students        488,688                           379,385
+   3 or higher/%           352,694                    72.2   241,808             63.7
+    Mean Score              3.23                              3.11
+  Standard Deviation          1.15                            1.19
+This table reflects 5,744,259 AP Exams taken by 3,079,134 students from 23,722 secondary schools.
+** In 2020, the AP Studio Art Program was renamed AP Art and Design. The course names are Drawing, 2-D Art and Design, and 3-D Art and Design.
+*** Standard students generally receive most of their foreign language training in U.S. schools. They did not indicate on their answer sheet that they regularly speak
+or hear the foreign language of the exam, or that they have lived for one month or more in a country where the language is spoken.
+
+
+                         Copyright - © 2024 College Board. College Board, Advanced Placement, AP, AP Central, and the acorn logo are registered trademarks of College Board.
+

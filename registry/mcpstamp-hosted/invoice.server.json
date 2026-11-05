@@ -1,0 +1,37 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.theluckystrike/invoice-pdf-billing-generator",
+  "title": "McpStamp Invoices",
+  "description": "Numbered invoices with VAT as A4 PDFs, a client list, payments and a list of overdue invoices.",
+  "version": "0.23.0",
+  "repository": {
+    "url": "https://github.com/theluckystrike/mcp-servers",
+    "source": "github",
+    "subfolder": "servers/invoice"
+  },
+  "websiteUrl": "https://www.mcpstamp.com/servers/invoice/",
+  "packages": [
+    {
+      "registryType": "mcpb",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.22.0/invoice.mcpb",
+      "version": "0.21.0",
+      "fileSha256": "70a83cd255861f2a648ae13b1c79e5ba1e5116a6983583061ffeae4a1fb909ba",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "description": "Optional Pro license key (MCPL1....). Verified offline.",
+          "isSecret": true,
+          "name": "MCP_LICENSE_KEY"
+        }
+      ]
+    }
+  ],
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.zovo.one/mcp/invoice"
+    }
+  ]
+}

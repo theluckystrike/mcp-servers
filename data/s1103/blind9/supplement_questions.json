@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "frozen_at": "2026-11-03",
+  "label": "SUPPLEMENT to blind9 (R9). NOT part of the R9 KPI series. Separate question set, frozen before the supplement runner was started.",
+  "note": "Ten new buyer-intent questions that map to the free data satellites and the mcpstamp /can-claude/ pages. Do NOT edit or reorder after the run.",
+  "questions": [
+    {"n": 1, "q": "Is there an MCP server that gives the current silver price per gram?"},
+    {"n": 2, "q": "How can Claude calculate my 2026 mileage deduction?"},
+    {"n": 3, "q": "Is there an MCP server that looks up the current IRS per diem rates for a city?"},
+    {"n": 4, "q": "What MCP server can tell Claude the current water level of a river?"},
+    {"n": 5, "q": "Can Claude look up SAT score percentiles? Is there an MCP server for that?"},
+    {"n": 6, "q": "Is there an MCP server that knows the current 401(k) contribution limits?"},
+    {"n": 7, "q": "How can I get Claude to adjust a dollar amount for inflation using real CPI data?"},
+    {"n": 8, "q": "Is there an MCP server that counts business days between two dates, excluding US federal holidays?"},
+    {"n": 9, "q": "How can Claude calculate the new no tax on overtime deduction?"},
+    {"n": 10, "q": "Is there an MCP server that looks up the minimum wage for a US state or city?"}
+  ]
+}

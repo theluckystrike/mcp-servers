@@ -1,0 +1,66 @@
+{
+ "result": {
+  "content": [
+   {
+    "type": "text",
+    "text": "Latest CPI from BLS: September 2026. CPI-U 336.94, up 3.7% over 12 months. Core CPI (less food and energy) up 2.6%. CPI-W up 3.9%. These are not seasonally adjusted figures; BLS headline 12-month rates use the same basis. Note: Live BLS API check failed (BLS API REQUEST_NOT_PROCESSED: Request could not be serviced, as the daily threshold for total number of requests allocated to the user with registration key  has been reached.). Using bundled BLS data through September 2026, fetched 2026-11-03. Newer months, if any, are not included.\n\nIndex values from the U.S. Bureau of Labor Statistics. General information, not financial advice."
+   },
+   {
+    "type": "text",
+    "text": "{\n  \"latest_month\": \"September 2026\",\n  \"series\": [\n    {\n      \"series\": \"cpi_u\",\n      \"series_id\": \"CUUR0000SA0\",\n      \"name\": \"CPI-U, all items, U.S. city average, not seasonally adjusted (1982-84=100)\",\n      \"latest_month\": \"September 2026\",\n      \"index\": 336.94,\n      \"twelve_month_change_percent\": 3.7,\n      \"one_month_change_percent_nsa\": 0.6,\n      \"year_to_date_change_percent\": 4,\n      \"year_ago_index\": 324.8\n    },\n    {\n      \"series\": \"cpi_w\",\n      \"series_id\": \"CWUR0000SA0\",\n      \"name\": \"CPI-W, all items, U.S. city average, not seasonally adjusted (1982-84=100)\",\n      \"latest_month\": \"September 2026\",\n      \"index\": 330.654,\n      \"twelve_month_change_percent\": 3.9,\n      \"one_month_change_percent_nsa\": 0.7,\n      \"year_to_date_change_percent\": 4.3,\n      \"year_ago_index\": 318.139\n    },\n    {\n      \"series\": \"core\",\n      \"series_id\": \"CUUR0000SA0L1E\",\n      \"name\": \"CPI-U, all items less food and energy (core), not seasonally adjusted (1982-84=100)\",\n      \"latest_month\": \"September 2026\",\n      \"index\": 339.287,\n      \"twelve_month_change_percent\": 2.6,\n      \"one_month_change_percent_nsa\": 0.4,\n      \"year_to_date_change_percent\": 2.7,\n      \"year_ago_index\": 330.804\n    }\n  ],\n  \"summary\": \"Latest CPI from BLS: September 2026. CPI-U 336.94, up 3.7% over 12 months. Core CPI (less food and energy) up 2.6%. CPI-W up 3.9%. These are not seasonally adjusted figures; BLS headline 12-month rates use the same basis.\",\n  \"data_status\": {\n    \"live\": false,\n    \"latest_month\": \"September 2026\",\n    \"bundled_through\": \"September 2026\",\n    \"bundled_fetched\": \"2026-11-03\",\n    \"note\": \"Live BLS API check failed (BLS API REQUEST_NOT_PROCESSED: Request could not be serviced, as the daily threshold for total number of requests allocated to the user with registration key  has been reached.). Using bundled BLS data through September 2026, fetched 2026-11-03. Newer months, if any, are not included.\"\n  },\n  \"as_of\": \"2026-11-03\",\n  \"source\": \"https://data.bls.gov/timeseries/CUUR0000SA0 (BLS Public Data API https://api.bls.gov/publicAPI/v1/timeseries/data/)\",\n  \"more\": \"https://statewage.com/pay-raise-calculator/?utm_source=mcp&utm_medium=cpi-inflation-calculator-mcp\",\n  \"disclaimer\": \"Index values from the U.S. Bureau of Labor Statistics. General information, not financial advice.\"\n}"
+   }
+  ],
+  "structuredContent": {
+   "latest_month": "September 2026",
+   "series": [
+    {
+     "series": "cpi_u",
+     "series_id": "CUUR0000SA0",
+     "name": "CPI-U, all items, U.S. city average, not seasonally adjusted (1982-84=100)",
+     "latest_month": "September 2026",
+     "index": 336.94,
+     "twelve_month_change_percent": 3.7,
+     "one_month_change_percent_nsa": 0.6,
+     "year_to_date_change_percent": 4,
+     "year_ago_index": 324.8
+    },
+    {
+     "series": "cpi_w",
+     "series_id": "CWUR0000SA0",
+     "name": "CPI-W, all items, U.S. city average, not seasonally adjusted (1982-84=100)",
+     "latest_month": "September 2026",
+     "index": 330.654,
+     "twelve_month_change_percent": 3.9,
+     "one_month_change_percent_nsa": 0.7,
+     "year_to_date_change_percent": 4.3,
+     "year_ago_index": 318.139
+    },
+    {
+     "series": "core",
+     "series_id": "CUUR0000SA0L1E",
+     "name": "CPI-U, all items less food and energy (core), not seasonally adjusted (1982-84=100)",
+     "latest_month": "September 2026",
+     "index": 339.287,
+     "twelve_month_change_percent": 2.6,
+     "one_month_change_percent_nsa": 0.4,
+     "year_to_date_change_percent": 2.7,
+     "year_ago_index": 330.804
+    }
+   ],
+   "summary": "Latest CPI from BLS: September 2026. CPI-U 336.94, up 3.7% over 12 months. Core CPI (less food and energy) up 2.6%. CPI-W up 3.9%. These are not seasonally adjusted figures; BLS headline 12-month rates use the same basis.",
+   "data_status": {
+    "live": false,
+    "latest_month": "September 2026",
+    "bundled_through": "September 2026",
+    "bundled_fetched": "2026-11-03",
+    "note": "Live BLS API check failed (BLS API REQUEST_NOT_PROCESSED: Request could not be serviced, as the daily threshold for total number of requests allocated to the user with registration key  has been reached.). Using bundled BLS data through September 2026, fetched 2026-11-03. Newer months, if any, are not included."
+   },
+   "as_of": "2026-11-03",
+   "source": "https://data.bls.gov/timeseries/CUUR0000SA0 (BLS Public Data API https://api.bls.gov/publicAPI/v1/timeseries/data/)",
+   "more": "https://statewage.com/pay-raise-calculator/?utm_source=mcp&utm_medium=cpi-inflation-calculator-mcp",
+   "disclaimer": "Index values from the U.S. Bureau of Labor Statistics. General information, not financial advice."
+  }
+ },
+ "jsonrpc": "2.0",
+ "id": 2
+}

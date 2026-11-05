@@ -1,14 +1,15 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/contract-clause-library-proposal-template-docx",
-  "description": "A personal library of reusable contract and proposal clauses, assembled into a real Word .docx.",
+  "title": "McpStamp Contract Clauses",
+  "description": "Save reusable contract clauses, search them, and assemble a contract as .docx or markdown.",
   "version": "0.22.6",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
     "subfolder": "servers/clauses"
   },
-  "websiteUrl": "https://mcp.zovo.one/s/clauses",
+  "websiteUrl": "https://www.mcpstamp.com/servers/clauses/",
   "packages": [
     {
       "registryType": "mcpb",

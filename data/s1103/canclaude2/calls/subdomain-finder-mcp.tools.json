@@ -1,0 +1,218 @@
+{
+ "result": {
+  "tools": [
+   {
+    "name": "find_subdomains",
+    "title": "Find subdomains (certificate transparency)",
+    "description": "Passive subdomain enumeration for a domain from live certificate transparency logs: certspotter (unexpired certificates) with crt.sh as fallback or for expired history. Returns deduplicated hostnames with first seen and last seen issuance dates, certificate count, issuers and whether a wildcard certificate covers the name, plus the list of wildcard entries. Set resolve=true to also check the first 40 names with DNS over HTTPS and mark live hosts. Passive lookup of public certificate transparency logs; nothing is sent to the target. Use it on assets you own or are authorised to test.",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "domain": {
+       "type": "string",
+       "minLength": 3,
+       "maxLength": 253,
+       "description": "Registered domain, for example \"example.com\". A URL is accepted and reduced to its host."
+      },
+      "source": {
+       "type": "string",
+       "enum": [
+        "auto",
+        "certspotter",
+        "crtsh"
+       ],
+       "default": "auto",
+       "description": "auto = certspotter first (fast, unexpired certificates), crt.sh if it fails or throttles. crtsh = crt.sh only (includes expired with include_expired)."
+      },
+      "include_expired": {
+       "type": "boolean",
+       "default": false,
+       "description": "Also include names from expired certificates (uses crt.sh). Finds retired hosts; slower."
+      },
+      "limit": {
+       "type": "integer",
+       "minimum": 1,
+       "maximum": 1000,
+       "default": 200,
+       "description": "Max hostnames returned (1-1000). Totals are always reported."
+      },
+      "resolve": {
+       "type": "boolean",
+       "default": false,
+       "description": "Also resolve up to 40 of the returned names over DNS (newest first)."
+      },
+      "max_pages": {
+       "type": "integer",
+       "minimum": 1,
+       "maximum": 5,
+       "default": 3,
+       "description": "certspotter pages to read (1-5). Each page is one request against its keyless rate limit."
+      }
+     },
+     "required": [
+      "domain"
+     ],
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "title": "Find subdomains",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": true
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "resolve_subdomains",
+    "title": "Resolve subdomains (DNS over HTTPS)",
+    "description": "Resolve up to 40 hostnames now through Cloudflare DNS over HTTPS (A, AAAA and the CNAME chain). Each host is marked live, nxdomain, no_records or dangling_cname (a CNAME whose target does not exist, a subdomain takeover lead), and CNAME targets on cloud platforms (S3, Azure, Heroku, GitHub Pages, Netlify, Vercel and others) are named. Also probes a random label per parent domain to detect wildcard DNS. DNS lookups only; no connection is made to the hosts.",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "hosts": {
+       "type": "array",
+       "items": {
+        "type": "string",
+        "minLength": 3,
+        "maxLength": 253
+       },
+       "minItems": 1,
+       "maxItems": 40,
+       "description": "Hostnames, for example [\"www.example.com\", \"api.example.com\"]. Max 40."
+      },
+      "check_wildcard": {
+       "type": "boolean",
+       "default": true,
+       "description": "Probe one random label under each parent domain (max 3) to detect wildcard DNS."
+      }
+     },
+     "required": [
+      "hosts"
+     ],
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "title": "Resolve subdomains",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": true
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "get_certificate_history",
+    "title": "Get certificate history for a host",
+    "description": "Certificates logged in certificate transparency for one hostname (or a whole domain with include_subdomains): issuer organisation and DN, not_before and not_after dates, every SAN on the certificate, revocation status and SHA-256 where certspotter has them. Summarises first and last issuance and the issuers used, which shows CA changes and renewal cadence. Default source certspotter (unexpired); include_expired uses crt.sh for the full history.",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "host": {
+       "type": "string",
+       "minLength": 3,
+       "maxLength": 253,
+       "description": "Hostname, for example \"api.example.com\" or \"example.com\"."
+      },
+      "include_subdomains": {
+       "type": "boolean",
+       "default": false,
+       "description": "Also include certificates for names under the host."
+      },
+      "source": {
+       "type": "string",
+       "enum": [
+        "auto",
+        "certspotter",
+        "crtsh"
+       ],
+       "default": "auto",
+       "description": "auto = certspotter first (fast, unexpired certificates), crt.sh if it fails or throttles. crtsh = crt.sh only (includes expired with include_expired)."
+      },
+      "include_expired": {
+       "type": "boolean",
+       "default": false,
+       "description": "Also include names from expired certificates (uses crt.sh). Finds retired hosts; slower."
+      },
+      "limit": {
+       "type": "integer",
+       "minimum": 1,
+       "maximum": 100,
+       "default": 25,
+       "description": "Max certificates returned, newest first (1-100)."
+      }
+     },
+     "required": [
+      "host"
+     ],
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "title": "Certificate history",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": true
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "summarize_attack_surface",
+    "title": "Summarize attack surface from CT",
+    "description": "Reads a domain's subdomains from live certificate transparency and groups them for recon triage: development and test, staging, admin and internal tools, APIs, authentication, mail, remote access (VPN), storage and CDN, legacy and backup. Each group has a count, examples and why it matters. Also returns naming clusters (for example *.eu.example.com), certificate issuers in use, wildcard entries and the 10 newest names. Passive only.",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "domain": {
+       "type": "string",
+       "minLength": 3,
+       "maxLength": 253,
+       "description": "Registered domain, for example \"example.com\". A URL is accepted and reduced to its host."
+      },
+      "source": {
+       "type": "string",
+       "enum": [
+        "auto",
+        "certspotter",
+        "crtsh"
+       ],
+       "default": "auto",
+       "description": "auto = certspotter first (fast, unexpired certificates), crt.sh if it fails or throttles. crtsh = crt.sh only (includes expired with include_expired)."
+      },
+      "include_expired": {
+       "type": "boolean",
+       "default": false,
+       "description": "Also include names from expired certificates (uses crt.sh). Finds retired hosts; slower."
+      }
+     },
+     "required": [
+      "domain"
+     ],
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "title": "Attack surface summary",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": true
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   }
+  ]
+ },
+ "jsonrpc": "2.0",
+ "id": 2
+}

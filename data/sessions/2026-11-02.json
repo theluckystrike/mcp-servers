@@ -1,0 +1,201 @@
+{
+ "id": "2026-11-02",
+ "title": "Session 2026-11-02, six more data satellites, money-site links, paid rail staged",
+ "verdict": "Every channel still shows zero verified human usage and $0 MCP revenue, so this session did not add another back-office server. It shipped eleven more free servers that know what a model cannot (2026 IRS limits, live certificate data, exact statistics, USDA nutrition, AP score tables, 2027 Social Security and retirement limits, the new student loan plan, the 2026 ACA subsidy cliff), each feeding a money site that already earns. It also linked ten money sites back to their servers, cross-linked all 20 repos, opened three domain-list PRs and staged a real paid rail (Apify pay-per-event) that needs only the owner's token.",
+ "kpis": [
+  {
+   "label": "Free data satellites live",
+   "value": "20",
+   "note": "9 from 10-30 plus 11 today. Every tool answered a real tools/call on the printed hosted URL with no token; all in the official registry. data/s1102/*-mcp.json."
+  },
+  {
+   "label": "mcpstamp.com free server pages",
+   "value": "22 live",
+   "note": "Index, 20 server pages and the privacy page, all 200. Deployment 9ba7c5b3. In the sitemap, pinged to IndexNow."
+  },
+  {
+   "label": "MCP paid orders, all time",
+   "value": "0",
+   "note": "Last readable Stripe snapshot 10-30. Today the stored key returns 401, so Stripe was not re-read (data/s1102/kpi.md)."
+  },
+  {
+   "label": "Google clicks, mcp.zovo.one + mcpstamp.com, 28d",
+   "value": "0",
+   "note": "37 and 6 impressions in the finalized window. Search Console API, data/s1102/kpi.json."
+  },
+  {
+   "label": "GA4 sessions with utm_source=mcp",
+   "value": "7",
+   "note": "All on ingredientcalculator.com on 10-30, 0 engaged. Likely a launch check, not people. 30 GA4 properties read."
+  },
+  {
+   "label": "Satellite Worker requests, 7d",
+   "value": "3.5k-4.2k each",
+   "note": "Flat 25-90 an hour, all success. That shape is crawlers and monitors, not users. Cloudflare GraphQL."
+  },
+  {
+   "label": "npm downloads",
+   "value": "not readable",
+   "note": "The npm API window ends 10-29, before the 10-30 publish. Re-read on 11-04. npm login expired today (401)."
+  },
+  {
+   "label": "Money sites linking to their server",
+   "value": "10 of 13",
+   "note": "lakelevelnow, noovertimetax, statewage, taxbreakcalc, assetloancalculator, bugbountyreality, abwex, examscorecalc, recipetool and goldgramprice, verified live with curl. 3 held because the live site was built from a tree not on main (dscrradar, ukmoneycalc, ingredientcalculator); snippets in data/s1102/crosslink.md."
+  },
+  {
+   "label": "Domain-list PRs opened",
+   "value": "3",
+   "note": "awesome-hacker-search-engines 389 (11k stars), awesome-data-analysis 113, awesome-ai-for-economists 34. 27 other candidates declined for rules or fit."
+  },
+  {
+   "label": "AI visibility baseline",
+   "value": "26 of 30",
+   "note": "GitHub rank 1 on 26 of 30 queries, 45 of 45 directory checks (registry, Glama, mcpstamp). But a web search for a buyer question surfaced us in only 1 of 15. Being listed is not being found. data/s1102/visibility.md."
+  },
+  {
+   "label": "Directory submissions today",
+   "value": "44",
+   "note": "mcprepository, mcp.directory, mcpmarket, mcpservers.org for the 11 new servers. Curated list PRs: Sagargupta16 273 and 274 merged, 275 open; bhavyshekhaliya 103 open with 19 rows; 3 domain-list PRs open."
+  },
+  {
+   "label": "Hosted servers answering at session end",
+   "value": "20 / 20",
+   "note": "78 tools. tools/list on every printed URL at 11:49, data/s1102/final-health.json."
+  }
+ ],
+ "shipped": [
+  {
+   "title": "ab-test-sample-size-calculator-mcp live, feeds https://abwex.com",
+   "url": "https://github.com/theluckystrike/ab-test-sample-size-calculator-mcp",
+   "detail": "5 tools, hosted at https://ab-test-sample-size-calculator-mcp.lipmichal.workers.dev/mcp with no token, official registry listed, every tool checked with a real tools/call. Sources in the repo's DATA_SOURCES.md."
+  },
+  {
+   "title": "ap-score-distributions-mcp live, feeds https://examscorecalc.com",
+   "url": "https://github.com/theluckystrike/ap-score-distributions-mcp",
+   "detail": "5 tools, hosted at https://ap-score-distributions-mcp.lipmichal.workers.dev/mcp with no token, official registry listed, every tool checked with a real tools/call. Sources in the repo's DATA_SOURCES.md."
+  },
+  {
+   "title": "car-loan-interest-deduction-calculator-mcp live, feeds https://taxbreakcalc.com",
+   "url": "https://github.com/theluckystrike/car-loan-interest-deduction-calculator-mcp",
+   "detail": "4 tools, hosted at https://car-loan-interest-deduction-calculator-mcp.lipmichal.workers.dev/mcp with no token, official registry listed, every tool checked with a real tools/call. Sources in the repo's DATA_SOURCES.md."
+  },
+  {
+   "title": "recipe-nutrition-calculator-mcp live, feeds https://recipetool.net",
+   "url": "https://github.com/theluckystrike/recipe-nutrition-calculator-mcp",
+   "detail": "4 tools, hosted at https://recipe-nutrition-calculator-mcp.lipmichal.workers.dev/mcp with no token, official registry listed, every tool checked with a real tools/call. Sources in the repo's DATA_SOURCES.md."
+  },
+  {
+   "title": "section-179-deduction-calculator-mcp live, feeds https://assetloancalculator.com",
+   "url": "https://github.com/theluckystrike/section-179-deduction-calculator-mcp",
+   "detail": "4 tools, hosted at https://section-179-deduction-calculator-mcp.lipmichal.workers.dev/mcp with no token, official registry listed, every tool checked with a real tools/call. Sources in the repo's DATA_SOURCES.md."
+  },
+  {
+   "title": "subdomain-finder-mcp live, feeds https://bugbountyreality.com",
+   "url": "https://github.com/theluckystrike/subdomain-finder-mcp",
+   "detail": "4 tools, hosted at https://subdomain-finder-mcp.lipmichal.workers.dev/mcp with no token, official registry listed, every tool checked with a real tools/call. Sources in the repo's DATA_SOURCES.md."
+  },
+  {
+   "title": "retirement-contribution-limits-2027-mcp live, feeds https://statewage.com",
+   "url": "https://github.com/theluckystrike/retirement-contribution-limits-2027-mcp",
+   "detail": "4 tools. 2027 Social Security COLA 3.6%, wage base $192,300, 2027 HSA limits, the age 60-63 catch-up and the 2027 Roth catch-up rule, from IRS and SSA notices. 21 fixtures. 2027 401(k) limits not out yet and the tool says so."
+  },
+  {
+   "title": "student-loan-repayment-assistance-plan-calculator-mcp live",
+   "url": "https://github.com/theluckystrike/student-loan-repayment-assistance-plan-calculator-mcp",
+   "detail": "4 tools. The Repayment Assistance Plan from P.L. 119-21 (1 to 10% of AGI, $10 minimum, $50 per dependent, interest waiver, $50 principal match, 360 payments), the new PLUS limits and SAVE transition dates, copied from the enrolled law text. 21 fixtures. Spot check AGI $50,000 gives $166.67 a month, matching the statute. Links to mcpstamp.com because no owner site covers student loans."
+  },
+  {
+   "title": "aca-premium-tax-credit-calculator-mcp live, feeds https://taxbreakcalc.com",
+   "url": "https://github.com/theluckystrike/aca-premium-tax-credit-calculator-mcp",
+   "detail": "4 tools. The enhanced credits ended after 2025 (checked against the IRS Q&A and every public law through P.L. 119-136), so the 400% poverty-line cliff applies in 2026. Rev. Proc. 2025-25 table, HHS poverty lines 2024-2026, repayment caps repealed from 2026. 19 fixtures. Spot check 2025 coverage, 1 person, $15,060, correct."
+  },
+  {
+   "title": "estate-gift-tax-exemption-calculator-mcp and uk-statutory-sick-pay-maternity-pay-calculator-mcp live",
+   "url": "https://github.com/theluckystrike/estate-gift-tax-exemption-calculator-mcp",
+   "detail": "Wave 4. Estate: the $15M 2026 exemption from P.L. 119-21, gift exclusion $19,000, 40% rate table, portability; spot check gives a $5,945,800 credit, correct. UK: SSP from day one at the lower of \u00a3123.25 or 80% of earnings from 6 April 2026 (SI 2026/373), SMP \u00a3194.32, NLW \u00a312.71 and the April 2027 \u00a313.21. 16 and 20 fixtures. Feed taxbreakcalc.com and ukmoneycalc.com."
+  },
+  {
+   "title": "mcpstamp.com lists all 15 free servers",
+   "url": "https://www.mcpstamp.com/free-servers/",
+   "detail": "New /free-servers/ index, 15 server pages with live tool tables, a privacy page for the free servers, nav and footer links, sitemap and llms.txt. Deployment 06903a19, rollback to e8e929bc. Diffed against live first, the legal pages unchanged. IndexNow 200, sitemap submitted to Search Console 204. Source commit 6d0997c."
+  },
+  {
+   "title": "Ten money sites link to their servers",
+   "url": "https://statewage.com/",
+   "detail": "A Use this data in Claude or ChatGPT section on lakelevelnow.com (Pages commit 34cfaf0), noovertimetax.com (Worker 880085b5, rollback b0417928) and statewage.com (Worker cd5ec395, rollback 22ef382d). Verified on the live pages. Then taxbreakcalc.com (Pages 22f7e59b, prev ca6cf6ac), assetloancalculator.com (ca8d186b, prev 11a25317), bugbountyreality.com (ebb28fb0, prev b3a8ac65), abwex.com (commit 7ffc94e) and examscorecalc.com (commit b279b7d). Each section links the hosted URL, the GitHub repo and the mcpstamp.com setup page. recipetool.net followed at 11:15 (Pages 9f5ab57f, prev cf53c05f, commit 3d35f96) once the other session had been idle 50 minutes and live matched its last commit byte for byte. goldgramprice.com followed at 11:47 (commit f362fca on the refresh checkout, shipped by its own launchd refresh after a clean test build; ads and FAQ intact)."
+  },
+  {
+   "title": "All 15 satellite READMEs cross-link the other 14",
+   "url": "https://github.com/theluckystrike/lake-level-mcp",
+   "detail": "satellites/render_index.py write now reads data/s1030 and data/s1102 reports. One push per public repo."
+  },
+  {
+   "title": "Three domain-list PRs",
+   "url": "https://github.com/edoardottt/awesome-hacker-search-engines/pull/389",
+   "detail": "awesome-hacker-search-engines 389, awesome-data-analysis 113, awesome-ai-for-economists 34. Lists read by people in each field, not MCP lists. 27 candidates declined, data/s1102/niche-lists.md."
+  },
+  {
+   "title": "Apify pay-per-event Actors staged",
+   "url": "https://console.apify.com/sign-up",
+   "detail": "Five Actors in apify/ pass apify validate-schema and a real MCP initialize, tools/list and tools/call under apify run. Charging is per successful call, $0.01 to $0.03. Push waits for the owner token (apify/PUBLISH.md)."
+  },
+  {
+   "title": "Directory packets and launch drafts",
+   "url": "https://claude.ai/directory/manage",
+   "detail": "Claude and ChatGPT directory packets for minimum-wage, no-tax-on-overtime and lake-level, Show HN draft and Glama newsletter pitch. All text passed textgate after a failing control. data/s1102/packets.md."
+  },
+  {
+   "title": "Update posted to Zovo",
+   "url": "https://t.me/zovoone/34",
+   "detail": "Channel t.me/zovoone/34 and Zovo Chat What's new t.me/zovo_chat/2/450, by @ZovoChatBot after getChat and admin checks. Text passed textgate after a failing control. data/s1102/tg/."
+  },
+  {
+   "title": "Directory submissions and two list PRs",
+   "url": "https://github.com/Sagargupta16/awesome-mcp-servers/pull/273",
+   "detail": "24 submissions for the 6 morning servers plus 4 for the retirement server, all accepted or queued. Batched PRs on the two lists that merged lake-level after 10-30. mcpmarket retry for gold-price accepted."
+  },
+  {
+   "title": "Follow-up post to Zovo",
+   "url": "https://t.me/zovoone/36",
+   "detail": "t.me/zovoone/36 and t.me/zovo_chat/2/453 for the retirement and student loan servers, after the same admin checks and textgate control."
+  },
+  {
+   "title": "Estate README lists all 18 free servers",
+   "url": "https://github.com/theluckystrike/mcp-servers#free-live-data-servers-no-token",
+   "detail": "The mcp-servers repo is the estate's most visited human page (136 views, 50 uniques in 14 days). A Free live-data servers table with every hosted URL now sits above the install demos (PR 102), generated by satellites/render_index.py between data-servers markers."
+  }
+ ],
+ "next": [
+  {
+   "title": "Owner, Apify token (35 min)",
+   "colour": "green",
+   "detail": "Sign up, verify payouts, export APIFY_TOKEN, run apify/publish-all.sh. The only rail found that both bills users and has measured usage."
+  },
+  {
+   "title": "Owner, npm publish of the 6 new servers (3 min)",
+   "colour": "green",
+   "detail": "scripts/npm-go.sh --satellites-only, one web login and one 2FA approval."
+  },
+  {
+   "title": "Glama picked up all 15 by itself",
+   "colour": "grey",
+   "detail": "The visibility check found all 15 Glama pages live (fake-repo control 404), so no owner step is needed. The retirement server should appear the same way."
+  },
+  {
+   "title": "Owner, Claude connectors directory (55 min)",
+   "colour": "amber",
+   "detail": "Packet ready for minimum-wage, no-tax-on-overtime, lake-level. Privacy page for the free servers is at mcpstamp.com/free-servers/privacy/."
+  },
+  {
+   "title": "Re-read npm downloads and GA4 utm_source=mcp on 11-04",
+   "colour": "grey",
+   "detail": "The npm API has no data after 10-29 today. That is the first real read on the 10-30 publish."
+  },
+  {
+   "title": "Finish the 3 held money-site links",
+   "colour": "grey",
+   "detail": "dscrradar, ukmoneycalc and ingredientcalculator. Each live site was built from a tree that is not on main, so the owner or that site session should name the source first. Snippets in data/s1102/crosslink.md."
+  }
+ ]
+}

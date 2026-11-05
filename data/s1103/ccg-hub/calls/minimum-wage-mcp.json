@@ -1,0 +1,35 @@
+{
+ "result": {
+  "content": [
+   {
+    "type": "text",
+    "text": "California's minimum wage on 2026-11-03 is $16.90 an hour, in force since 2026-01-01. No tip credit is allowed: tipped workers get the full $16.90 in cash. State-level rates only. City and county minimum wages (for example Seattle, Denver, Chicago, San Francisco) are out of scope and can be higher.\n\n{\n  \"state\": \"California\",\n  \"code\": \"CA\",\n  \"date\": \"2026-11-03\",\n  \"effective_date\": \"2026-01-01\",\n  \"tip_rule\": \"no tip credit; tipped employees get full state minimum wage (DOL tipped table lists California under 'full state minimum wage before tips')\",\n  \"regional_rates\": null,\n  \"has_state_minimum_wage_law\": true,\n  \"coverage_note\": \"dir.ca.gov refused connections (ECONNREFUSED) so DIR pages were not readable; used Dept of Finance letter dated July 31, 2026 plus gov.ca.gov release of 2026-07-31 ('California\u2019s statewide minimum wage will increase to $17.40 an hour on January 1, 2027'). Single rate for all employers (no size tier). Sector rates (fast food $20, health care tiers) and city/county rates are separate and out of scope. Indexing: lesser of 3.5% or US CPI-W, Jan 1. Matches DOL ($16.90).\",\n  \"locality_note\": \"State-level rates only. City and county minimum wages (for example Seattle, Denver, Chicago, San Francisco) are out of scope and can be higher.\",\n  \"as_of\": \"2026-10-30\",\n  \"source\": \"https://dof.ca.gov/media/docs/whats-new/Minimum-Wage-Increase-Notification-Governor-and-Legislative-Letter.pdf\",\n  \"more\": \"https://statewage.com/states/california/?utm_source=mcp&utm_medium=minimum-wage-mcp\",\n  \"status\": \"in_force\",\n  \"standard_rate\": 16.9,\n  \"state_rate\": 16.9,\n  \"federal_floor_applies\": false,\n  \"tipped_cash_wage\": 16.9,\n  \"tip_credit\": 0,\n  \"last_announced_rate\": 16.9,\n  \"last_announced_effective\": \"2026-01-01\",\n  \"summary\": \"California's minimum wage on 2026-11-03 is $16.90 an hour, in force since 2026-01-01. No tip credit is allowed: tipped workers get the full $16.90 in cash. State-level rates only. City and county minimum wages (for example Seattle, Denver, Chicago, San Francisco) are out of scope and can be higher.\"\n}"
+   }
+  ],
+  "structuredContent": {
+   "state": "California",
+   "code": "CA",
+   "date": "2026-11-03",
+   "effective_date": "2026-01-01",
+   "tip_rule": "no tip credit; tipped employees get full state minimum wage (DOL tipped table lists California under 'full state minimum wage before tips')",
+   "regional_rates": null,
+   "has_state_minimum_wage_law": true,
+   "coverage_note": "dir.ca.gov refused connections (ECONNREFUSED) so DIR pages were not readable; used Dept of Finance letter dated July 31, 2026 plus gov.ca.gov release of 2026-07-31 ('California\u2019s statewide minimum wage will increase to $17.40 an hour on January 1, 2027'). Single rate for all employers (no size tier). Sector rates (fast food $20, health care tiers) and city/county rates are separate and out of scope. Indexing: lesser of 3.5% or US CPI-W, Jan 1. Matches DOL ($16.90).",
+   "locality_note": "State-level rates only. City and county minimum wages (for example Seattle, Denver, Chicago, San Francisco) are out of scope and can be higher.",
+   "as_of": "2026-10-30",
+   "source": "https://dof.ca.gov/media/docs/whats-new/Minimum-Wage-Increase-Notification-Governor-and-Legislative-Letter.pdf",
+   "more": "https://statewage.com/states/california/?utm_source=mcp&utm_medium=minimum-wage-mcp",
+   "status": "in_force",
+   "standard_rate": 16.9,
+   "state_rate": 16.9,
+   "federal_floor_applies": false,
+   "tipped_cash_wage": 16.9,
+   "tip_credit": 0,
+   "last_announced_rate": 16.9,
+   "last_announced_effective": "2026-01-01",
+   "summary": "California's minimum wage on 2026-11-03 is $16.90 an hour, in force since 2026-01-01. No tip credit is allowed: tipped workers get the full $16.90 in cash. State-level rates only. City and county minimum wages (for example Seattle, Denver, Chicago, San Francisco) are out of scope and can be higher."
+  }
+ },
+ "jsonrpc": "2.0",
+ "id": 2
+}

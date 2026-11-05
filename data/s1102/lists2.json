@@ -1,0 +1,32 @@
+{
+ "lane": "lists2",
+ "date": "2026-11-02",
+ "prs": [
+  {"repo": "Sagargupta16/awesome-mcp-servers", "url": "https://github.com/Sagargupta16/awesome-mcp-servers/pull/273", "branch": "theluckystrike/awesome-mcp-servers-7:add-theluckystrike-satellites", "rows": 15, "state_at_write": "OPEN, CI checks pending (opened 2026-11-02); author already starred the repo (gh api user/starred -> 204); python scripts/validate.py passed locally, 449 entries no duplicates",
+   "format": "| [Name](repo URL) | Description <=80 chars, no period | TypeScript | (copied from merged PR #255)",
+   "sections": {"Finance": ["car-loan-interest-deduction-calculator-mcp","dscr-loan-calculator-mcp","gold-price-per-gram-mcp","minimum-wage-mcp","no-tax-on-overtime-mcp","paycheck-calculator-mcp","retirement-contribution-limits-2027-mcp","section-179-deduction-calculator-mcp","uk-income-tax-salary-mcp"], "Search & Knowledge": ["ap-score-distributions-mcp","cups-to-grams-mcp","recipe-nutrition-calculator-mcp"], "Productivity": ["us-federal-holidays-business-days-mcp"], "Marketing & Analytics": ["ab-test-sample-size-calculator-mcp"], "Security": ["subdomain-finder-mcp"]}},
+  {"repo": "bhavyshekhaliya/awesome-public-mcp-servers", "url": "https://github.com/bhavyshekhaliya/awesome-public-mcp-servers/pull/103", "branch": "theluckystrike/awesome-public-mcp-servers:add-theluckystrike-satellites", "rows": 15, "state_at_write": "OPEN, mergeStateStatus CLEAN, no CI on this repo",
+   "format": "| Name | [Official source repository](repo URL) (hosted `URL`, Streamable HTTP) | capabilities | None (read-only, no account or key) | tags | (copied from merged PR #100)",
+   "sections": {"Finance and Commerce": ["car-loan-interest-deduction-calculator-mcp","dscr-loan-calculator-mcp","gold-price-per-gram-mcp","minimum-wage-mcp","no-tax-on-overtime-mcp","paycheck-calculator-mcp","retirement-contribution-limits-2027-mcp","section-179-deduction-calculator-mcp","uk-income-tax-salary-mcp"], "Home and Lifestyle": ["cups-to-grams-mcp","recipe-nutrition-calculator-mcp"], "Work and Productivity": ["us-federal-holidays-business-days-mcp"], "Search and Research": ["ap-score-distributions-mcp"], "Monitoring and Security": ["subdomain-finder-mcp"], "Science and Computation": ["ab-test-sample-size-calculator-mcp"]}}
+ ],
+ "scope_notes": [
+  "Repos added: 6 new + 8 older (cups-to-grams, dscr, gold, minimum-wage, no-tax-on-overtime, paycheck, uk-income-tax, us-federal-holidays; the 9th s1030 file is lake-level, already listed) + retirement-contribution-limits-2027-mcp (added per orchestrator message) = 15.",
+  "Pre-check: grep theluckystrike in both READMEs showed only lake-level-mcp (plus older Zovo rows in list A); gh search prs --author theluckystrike --repo <list> --state open returned [] for both lists before opening.",
+  "B rows list the hosted URL only, no npx install: npm view returned an error for the 6 new satellites and retirement (not published); cups-to-grams alone is on npm (1.0.0) but was kept consistent with hosted-only."
+ ],
+ "verification": [
+  "gh api repos/theluckystrike/<repo> for all 15: license MIT, not archived, pushed 2026-11-02",
+  "package.json for all 15: name matches repo, version 1.0.0, license MIT",
+  "curl POST initialize to https://<repo>.lipmichal.workers.dev/mcp for all 14 checked pre-retirement and retirement: HTTP 200 each"
+ ],
+ "mcpmarket_gold_retry": {
+  "script": "/Users/mike/mcp-servers/data/s1102/dirsub/scripts/post_mm.py (POST https://mcpmarket.com/api/submit-url {url, type server, tier free, email support@zovo.one})",
+  "attempts": 1,
+  "result": "HTTP 200 success true, free queue 4-6 weeks, submission_id 1220494, tier free, checkout_url null",
+  "at_utc": "2026-11-02T04:06:17Z",
+  "log": "/Users/mike/mcp-servers/data/s1102/lists2-mcpmarket-gold.jsonl",
+  "note": "The earlier s1102/dirsub run (04:00-04:02Z) covered the 6 new repos only; gold had no entry there, so this was the only retry."
+ },
+ "open": ["Both PRs await maintainer or CI; PR 273 checks were pending at write time (Validate format, Check links, Check submitted entries)", "B PR adds 15 rows in one PR; maintainer may ask to split (CONTRIBUTING says keep PRs focused)"],
+ "owner_unlocks": []
+}

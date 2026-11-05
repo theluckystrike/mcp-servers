@@ -1,0 +1,52 @@
+{
+ "result": {
+  "content": [
+   {
+    "type": "text",
+    "text": "2027 limits: HSA $4,500 self-only / $9,000 family plus $1,000 at 55+; Social Security wage base $192,300. The IRS has not announced the 2027 401(k), 403(b), 457, IRA, SIMPLE, 415(c), compensation or HCE limits. On 2026-11-02 the IRS news release list ran through IR-2026-129 (Oct. 29, 2026) with no cost-of-living notice for 2027 (the 2026 notice, IR-2025-111 / Notice 2025-67, came out in November 2025). This server does not guess or forecast. Use 2026 as the latest published year.\n\nThis is general information, not tax or financial advice. Your plan document may allow less (for example no age 60-63 catch-up). Check with your plan administrator or a tax professional."
+   },
+   {
+    "type": "text",
+    "text": "{\n  \"year\": 2027,\n  \"account\": \"all\",\n  \"plan_limits_published\": false,\n  \"401k_403b_tsp\": null,\n  \"governmental_457b\": null,\n  \"simple\": null,\n  \"ira\": null,\n  \"total_annual_additions_415c\": null,\n  \"compensation_and_hce\": null,\n  \"roth_catch_up_rule\": {\n    \"rule\": \"If your FICA wages (Form W-2 box 3) from the employer sponsoring the plan were over the threshold in the prior year, your age-50+ (and age 60-63) catch-up contributions to a 401(k), 403(b) or governmental 457(b) must be Roth. SIMPLE IRAs and SEPs are exempt.\",\n    \"statute\": \"IRC 414(v)(7), added by SECURE 2.0 Act section 603\",\n    \"required_this_year\": true,\n    \"wage_threshold\": null,\n    \"wage_year\": 2026,\n    \"status\": \"Final regulations generally apply to taxable years beginning after Dec. 31, 2026, so 2027 is the first year under the final rules. The threshold for 2027 contributions (indexed, applied to 2026 wages) will be in the IRS 2027 cost-of-living notice, which was not published on 2026-11-02. The 2026 figure was $150,000 of 2025 wages.\"\n  },\n  \"hsa\": {\n    \"self_only\": 4500,\n    \"family\": 9000,\n    \"catch_up_55_plus\": 1000,\n    \"hdhp_min_deductible_self\": 1750,\n    \"hdhp_min_deductible_family\": 3500,\n    \"hdhp_oop_max_self\": 8700,\n    \"hdhp_oop_max_family\": 17400,\n    \"source\": \"https://www.irs.gov/pub/irs-drop/rp-26-24.pdf\"\n  },\n  \"social_security_wage_base\": 192300,\n  \"not_published\": \"The IRS has not announced the 2027 401(k), 403(b), 457, IRA, SIMPLE, 415(c), compensation or HCE limits. On 2026-11-02 the IRS news release list ran through IR-2026-129 (Oct. 29, 2026) with no cost-of-living notice for 2027 (the 2026 notice, IR-2025-111 / Notice 2025-67, came out in November 2025). This server does not guess or forecast. Use 2026 as the latest published year.\",\n  \"summary\": \"2027 limits: HSA $4,500 self-only / $9,000 family plus $1,000 at 55+; Social Security wage base $192,300. The IRS has not announced the 2027 401(k), 403(b), 457, IRA, SIMPLE, 415(c), compensation or HCE limits. On 2026-11-02 the IRS news release list ran through IR-2026-129 (Oct. 29, 2026) with no cost-of-living notice for 2027 (the 2026 notice, IR-2025-111 / Notice 2025-67, came out in November 2025). This server does not guess or forecast. Use 2026 as the latest published year.\",\n  \"as_of\": \"2026-11-02\",\n  \"source\": \"https://www.irs.gov/newsroom/news-releases-for-current-month (checked 2026-11-02: no 2027 notice yet)\",\n  \"more\": \"https://statewage.com/401k-paycheck-calculator/?utm_source=mcp&utm_medium=retirement-contribution-limits-2027-mcp\",\n  \"disclaimer\": \"This is general information, not tax or financial advice. Your plan document may allow less (for example no age 60-63 catch-up). Check with your plan administrator or a tax professional.\"\n}"
+   }
+  ],
+  "structuredContent": {
+   "year": 2027,
+   "account": "all",
+   "plan_limits_published": false,
+   "401k_403b_tsp": null,
+   "governmental_457b": null,
+   "simple": null,
+   "ira": null,
+   "total_annual_additions_415c": null,
+   "compensation_and_hce": null,
+   "roth_catch_up_rule": {
+    "rule": "If your FICA wages (Form W-2 box 3) from the employer sponsoring the plan were over the threshold in the prior year, your age-50+ (and age 60-63) catch-up contributions to a 401(k), 403(b) or governmental 457(b) must be Roth. SIMPLE IRAs and SEPs are exempt.",
+    "statute": "IRC 414(v)(7), added by SECURE 2.0 Act section 603",
+    "required_this_year": true,
+    "wage_threshold": null,
+    "wage_year": 2026,
+    "status": "Final regulations generally apply to taxable years beginning after Dec. 31, 2026, so 2027 is the first year under the final rules. The threshold for 2027 contributions (indexed, applied to 2026 wages) will be in the IRS 2027 cost-of-living notice, which was not published on 2026-11-02. The 2026 figure was $150,000 of 2025 wages."
+   },
+   "hsa": {
+    "self_only": 4500,
+    "family": 9000,
+    "catch_up_55_plus": 1000,
+    "hdhp_min_deductible_self": 1750,
+    "hdhp_min_deductible_family": 3500,
+    "hdhp_oop_max_self": 8700,
+    "hdhp_oop_max_family": 17400,
+    "source": "https://www.irs.gov/pub/irs-drop/rp-26-24.pdf"
+   },
+   "social_security_wage_base": 192300,
+   "not_published": "The IRS has not announced the 2027 401(k), 403(b), 457, IRA, SIMPLE, 415(c), compensation or HCE limits. On 2026-11-02 the IRS news release list ran through IR-2026-129 (Oct. 29, 2026) with no cost-of-living notice for 2027 (the 2026 notice, IR-2025-111 / Notice 2025-67, came out in November 2025). This server does not guess or forecast. Use 2026 as the latest published year.",
+   "summary": "2027 limits: HSA $4,500 self-only / $9,000 family plus $1,000 at 55+; Social Security wage base $192,300. The IRS has not announced the 2027 401(k), 403(b), 457, IRA, SIMPLE, 415(c), compensation or HCE limits. On 2026-11-02 the IRS news release list ran through IR-2026-129 (Oct. 29, 2026) with no cost-of-living notice for 2027 (the 2026 notice, IR-2025-111 / Notice 2025-67, came out in November 2025). This server does not guess or forecast. Use 2026 as the latest published year.",
+   "as_of": "2026-11-02",
+   "source": "https://www.irs.gov/newsroom/news-releases-for-current-month (checked 2026-11-02: no 2027 notice yet)",
+   "more": "https://statewage.com/401k-paycheck-calculator/?utm_source=mcp&utm_medium=retirement-contribution-limits-2027-mcp",
+   "disclaimer": "This is general information, not tax or financial advice. Your plan document may allow less (for example no age 60-63 catch-up). Check with your plan administrator or a tax professional."
+  }
+ },
+ "jsonrpc": "2.0",
+ "id": 2
+}

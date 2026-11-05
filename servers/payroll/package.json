@@ -1,11 +1,14 @@
 {
-  "name": "mcp-payroll",
+  "name": "@theluckystrike/mcp-payroll",
   "version": "0.22.6",
   "description": "MCP server: payroll",
   "type": "module",
   "main": "src/index.js",
   "bin": {
     "mcp-payroll": "src/index.js"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.mjs"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.4",

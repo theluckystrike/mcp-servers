@@ -1,0 +1,34 @@
+From 3d35f963ed7c2952dfd9a7e8fe284416be419697 Mon Sep 17 00:00:00 2001
+From: theluckystrike <51033404+theluckystrike@users.noreply.github.com>
+Date: Mon, 2 Nov 2026 10:41:47 +0700
+Subject: [PATCH] Homepage: add Use this data in Claude or ChatGPT section
+ [skip ci]
+
+---
+ recipe-dist/index.html | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+diff --git a/recipe-dist/index.html b/recipe-dist/index.html
+index 7099090..ed7ab85 100644
+--- a/recipe-dist/index.html
++++ b/recipe-dist/index.html
+@@ -277,6 +277,16 @@ input::placeholder{color:var(--text-3)}
+   </div>
+ </section>
+ 
++<section class="section prose" id="use-in-ai">
++  <h2>Use this data in Claude or ChatGPT</h2>
++  <p>The nutrition math on this site is also available as a free MCP server. An AI assistant can use it to look up USDA FoodData Central values for an ingredient, total the calories and macros of a recipe from plain ingredient lines, scale a recipe by servings, and round a label the way the FDA rules require. It uses the same USDA data as the calculator. There is no account or API key.</p>
++  <p style="margin-bottom:6px"><strong>Claude.ai or ChatGPT.</strong> Add a custom connector with this URL.</p>
++  <pre style="margin:0 0 12px;padding:11px 13px;background:var(--surface);border:1px solid var(--border-strong);border-radius:var(--radius-sm);font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;overflow-x:auto;white-space:pre;color:var(--text);"><code>https://recipe-nutrition-calculator-mcp.lipmichal.workers.dev/mcp</code></pre>
++  <p style="margin-bottom:6px"><strong>Claude Code.</strong></p>
++  <pre style="margin:0 0 12px;padding:11px 13px;background:var(--surface);border:1px solid var(--border-strong);border-radius:var(--radius-sm);font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;overflow-x:auto;white-space:pre;color:var(--text);"><code>claude mcp add --transport http recipe-nutrition-calculator https://recipe-nutrition-calculator-mcp.lipmichal.workers.dev/mcp</code></pre>
++  <p><a href="https://www.mcpstamp.com/free-servers/recipe-nutrition-calculator-mcp/">Setup steps</a> &middot; <a href="https://github.com/theluckystrike/recipe-nutrition-calculator-mcp">Source on GitHub</a></p>
++</section>
++
+ <div class="ad-slot" data-ad-client="ca-pub-2241192243363112" data-ad-pos="end" hidden><span class="ad-label">Advertisements</span></div>
+ <section class="section">
+   <h2 style="font-family:var(--serif);font-size:1.7rem;letter-spacing:-.018em;font-weight:600;margin-bottom:6px">More free kitchen calculators</h2>
+-- 
+2.50.1 (Apple Git-155)
+

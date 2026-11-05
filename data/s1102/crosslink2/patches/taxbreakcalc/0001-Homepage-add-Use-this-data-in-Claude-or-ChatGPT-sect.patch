@@ -1,0 +1,37 @@
+From ce89f6eddb6c8e6d236ab183630a91942843b67b Mon Sep 17 00:00:00 2001
+From: theluckystrike <51033404+theluckystrike@users.noreply.github.com>
+Date: Mon, 2 Nov 2026 10:31:48 +0700
+Subject: [PATCH] Homepage: add Use this data in Claude or ChatGPT section
+ [skip ci]
+
+---
+ src/pages/index.astro | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
+
+diff --git a/src/pages/index.astro b/src/pages/index.astro
+index 60934a8..5aebcd4 100644
+--- a/src/pages/index.astro
++++ b/src/pages/index.astro
+@@ -101,6 +101,19 @@ const jsonLd = [
+     </div>
+   </section>
+ 
++  <!-- USE IN AI ASSISTANTS -->
++  <section id="use-in-ai" class="section flush">
++    <div class="container measure">
++      <h2>Use this data in Claude or ChatGPT</h2>
++      <p class="lead" style="max-width:640px">The car loan interest deduction and the other 2026 break calculators on this site are also available as a free MCP server. An AI assistant can use it to work out the deduction for a loan, income and filing status, and to check the SALT deduction, the tax brackets and standard deduction, and the child tax credit, using the IRS figures for 2025 and 2026 rather than what it remembers from training. There is no account or API key.</p>
++      <p style="margin:0 0 6px;font-size:15px"><strong>Claude.ai or ChatGPT.</strong> Add a custom connector with this URL.</p>
++      <pre style="margin:0 0 12px;padding:12px 14px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-sm);font-family:var(--font-mono);font-size:0.8125rem;overflow-x:auto;white-space:pre;color:var(--ink);"><code>https://car-loan-interest-deduction-calculator-mcp.lipmichal.workers.dev/mcp</code></pre>
++      <p style="margin:0 0 6px;font-size:15px"><strong>Claude Code.</strong></p>
++      <pre style="margin:0 0 12px;padding:12px 14px;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-sm);font-family:var(--font-mono);font-size:0.8125rem;overflow-x:auto;white-space:pre;color:var(--ink);"><code>claude mcp add --transport http car-loan-interest-deduction https://car-loan-interest-deduction-calculator-mcp.lipmichal.workers.dev/mcp</code></pre>
++      <p style="font-size:14px"><a href="https://www.mcpstamp.com/free-servers/car-loan-interest-deduction-calculator-mcp/">Setup steps</a> &middot; <a href="https://github.com/theluckystrike/car-loan-interest-deduction-calculator-mcp">Source on GitHub</a></p>
++    </div>
++  </section>
++
+   <!-- ABOUT / FAQ -->
+   <section class="section flush">
+     <div class="container">
+-- 
+2.50.1 (Apple Git-155)
+

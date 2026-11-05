@@ -1,0 +1,65 @@
+{
+  "status": "complete",
+  "pages": [
+    {
+      "slug": "generate-invoice-pdf-claude",
+      "title": "Generate an invoice as a PDF from Claude",
+      "target_query": "how do I generate an invoice as a PDF from Claude",
+      "word_count": 465
+    },
+    {
+      "slug": "edit-excel-file-claude",
+      "title": "Can Claude edit my Excel file?",
+      "target_query": "can Claude edit my Excel file",
+      "word_count": 441
+    },
+    {
+      "slug": "mcp-server-time-tracking",
+      "title": "MCP server for time tracking",
+      "target_query": "MCP server for time tracking",
+      "word_count": 461
+    },
+    {
+      "slug": "convert-bank-statement-to-csv",
+      "title": "Convert a bank statement PDF to CSV with an AI assistant",
+      "target_query": "convert bank statement PDF to CSV with ChatGPT or Claude",
+      "word_count": 427
+    },
+    {
+      "slug": "create-purchase-order-chatgpt",
+      "title": "Create a purchase order from ChatGPT or Claude",
+      "target_query": "how to create a purchase order with ChatGPT",
+      "word_count": 409
+    },
+    {
+      "slug": "mcp-server-expense-tracking",
+      "title": "MCP server for expense tracking",
+      "target_query": "MCP server for expense tracking",
+      "word_count": 439
+    },
+    {
+      "slug": "generate-quote-pdf-cursor",
+      "title": "Generate a customer quote as a PDF from Cursor or Claude",
+      "target_query": "generate a quote PDF with Cursor or Claude",
+      "word_count": 437
+    },
+    {
+      "slug": "fill-word-template-ai",
+      "title": "Fill a Word document template from Claude or ChatGPT",
+      "target_query": "can Claude fill in a Word template for me",
+      "word_count": 420
+    },
+    {
+      "slug": "mcp-server-currency-conversion",
+      "title": "Convert currencies inside Claude, Cursor or ChatGPT",
+      "target_query": "how to convert currencies in ChatGPT with live rates",
+      "word_count": 443
+    },
+    {
+      "slug": "track-mileage-ai-assistant",
+      "title": "Log mileage and reimbursements with an AI assistant",
+      "target_query": "how do I track mileage with Claude",
+      "word_count": 431
+    }
+  ]
+}

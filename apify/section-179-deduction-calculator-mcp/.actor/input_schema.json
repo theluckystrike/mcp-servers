@@ -1,0 +1,8 @@
+{
+    "title": "Section 179 Deduction Calculator MCP Server: input",
+    "description": "This Actor is an MCP server and takes no input. Connect an MCP client to its Standby URL (path /mcp) with the header Authorization: Bearer <your Apify API token>. A normal run only performs a self-check and is free.",
+    "type": "object",
+    "schemaVersion": 1,
+    "properties": {},
+    "required": []
+}

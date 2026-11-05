@@ -1,0 +1,1080 @@
+{
+"2027": [
+{
+"state": "Alabama",
+"city": "Gulf Shores",
+"location": "Baldwin",
+"high_cost_portion": "June 1 \u2013 July 31"
+},
+{
+"state": "Arizona",
+"city": "Phoenix/Scottsdale",
+"location": "Maricopa",
+"high_cost_portion": "February 1 \u2013 March 31"
+},
+{
+"state": "Arizona",
+"city": "Sedona",
+"location": "City limits of Sedona",
+"high_cost_portion": "October 1 \u2013 December 31 and March 1 \u2013 September 30"
+},
+{
+"state": "Arizona",
+"city": "Tucson",
+"location": "Pima",
+"high_cost_portion": "January 1 \u2013 March 31"
+},
+{
+"state": "California",
+"city": "Los Angeles",
+"location": "Los Angeles, Orange, and Ventura, and Edwards AFB, less the city of Santa Monica",
+"high_cost_portion": "October 1 \u2013 September 30"
+},
+{
+"state": "California",
+"city": "Mammoth Lakes",
+"location": "Mono",
+"high_cost_portion": "December 1 \u2013 March 31"
+},
+{
+"state": "California",
+"city": "Monterey",
+"location": "Monterey",
+"high_cost_portion": "October 1 \u2013 September 30"
+},
+{
+"state": "California",
+"city": "Napa",
+"location": "Napa",
+"high_cost_portion": "October 1 \u2013 September 30"
+},
+{
+"state": "California",
+"city": "Palm Springs",
+"location": "Riverside",
+"high_cost_portion": "October 1 \u2013 April 30"
+},
+{
+"state": "California",
+"city": "San Diego",
+"location": "San Diego",
+"high_cost_portion": "October 1 \u2013 September 30"
+},
+{
+"state": "California",
+"city": "San Francisco",
+"location": "San Francisco",
+"high_cost_portion": "October 1 \u2013 September 30"
+},
+{
+"state": "California",
+"city": "San Luis Obispo",
+"location": "San Luis Obispo",
+"high_cost_portion": "June 1 \u2013 July 31"
+},
+{
+"state": "California",
+"city": "San Mateo/Foster City/Belmont",
+"location": "San Mateo",
+"high_cost_portion": "October 1 \u2013 September 30"
+},
+{
+"state": "California",
+"city": "Santa Barbara",
+"location": "Santa Barbara",
+"high_cost_portion": "October 1 \u2013 September 30"
+},
+{
+"state": "California",
+"city": "Santa Monica",
+"location": "City limits of Santa Monica",
+"high_cost_portion": "October 1 \u2013 September 30"
+},
+{
+"state": "California",
+"city": "South Lake Tahoe",
+"location": "El Dorado",
+"high_cost_portion": "October 1 \u2013 March 31 and June 1 \u2013 September 30"
+},
+{
+"state": "California",
+"city": "Sunnyvale/Palo Alto/San Jose",
+"location": "Santa Clara",
+"high_cost_portion": "October 1 \u2013 September 30"
+},
+{
+"state": "California",
+"city": "Yosemite National Park",
+"location": "Mariposa",
+"high_cost_portion": "December 1 \u2013 April 30"
+},
+{
+"state": "Colorado",
+"city": "Aspen",
+"location": "Pitkin",
+"high_cost_portion": "December 1 \u2013 September 30"
+},
+{
+"state": "Colorado",
+"city": "Denver/Aurora",
+"location": "Denver, Adams, Arapahoe, and Jefferson",
+"high_cost_portion": "October 1 \u2013 October 31 and April 1 \u2013 September 30"
+},
+{
+"state": "Colorado",
+"city": "Silverthorne/Breckenridge",
+"location": "Summit",
+"high_cost_portion": "December 1 \u2013 March 31"
+},
+{
+"state": "Colorado",
+"city": "Steamboat Springs",
+"location": "Routt",
+"high_cost_portion": "December 1 \u2013 March 31 and June 1 \u2013 September 30"
+},
+{
+"state": "Colorado",
+"city": "Telluride",
+"location": "San Miguel",
+"high_cost_portion": "December 1 \u2013 March 31"
+},
+{
+"state": "Colorado",
+"city": "Vail",
+"location": "Eagle",
+"high_cost_portion": "October 1 \u2013 September 30"
+},
+{
+"state": "Delaware",
+"city": "Lewes",
+"location": "Sussex",
+"high_cost_portion": "June 1 \u2013 August 31"
+},
+{
+"state": "District of Columbia",
+"city": "Washington, D.C. (also the cities of Alexandria, Falls Church, and Fairfax, and the counties of Arlington and Fairfax, in Virginia; and the counties of Montgomery and Prince George\u2019s in Maryland) (See also Maryland and Virginia)",
+"location": "",
+"high_cost_portion": "October 1 \u2013 September 30"
+},
+{
+"state": "Florida",
+"city": "Boca Raton/Delray Beach/Jupiter",
+"location": "Palm Beach and Hendry",
+"high_cost_portion": "January 1 \u2013 April 30"
+},
+{
+"state": "Florida",
+"city": "Bradenton",
+"location": "Manatee",
+"high_cost_portion": "February 1 \u2013 March 31"
+},
+{
+"state": "Florida",
+"city": "Cocoa Beach",
+"location": "Brevard",
+"high_cost_portion": "February 1 \u2013 March 31"
+},
+{
+"state": "Florida",
+"city": "Fort Lauderdale",
+"location": "Broward",
+"high_cost_portion": "January 1 \u2013 April 30"
+},
+{
+"state": "Florida",
+"city": "Fort Myers",
+"location": "Lee",
+"high_cost_portion": "January 1 \u2013 April 30"
+},
+{
+"state": "Florida",
+"city": "Fort Walton Beach/DeFuniak Springs",
+"location": "Okaloosa and Walton",
+"high_cost_portion": "June 1 \u2013 July 31"
+},
+{
+"state": "Florida",
+"city": "Gulf Breeze",
+"location": "Santa Rosa",
+"high_cost_portion": "June 1 \u2013 July 31"
+},
+{
+"state": "Florida",
+"city": "Key West",
+"location": "Monroe",
+"high_cost_portion": "October 1 \u2013 September 30"
+},
+{
+"state": "Florida",
+"city": "Miami",
+"location": "Miami-Dade",
+"high_cost_portion": "December 1 \u2013 May 31"
+},
+{
+"state": "Florida",
+"city": "Naples",
+"location": "Collier",
+"high_cost_portion": "December 1 \u2013 April 30"
+},
+{
+"state": "Florida",
+"city": "Sarasota",
+"location": "Sarasota",
+"high_cost_portion": "February 1 \u2013 April 30"
+},
+{
+"state": "Florida",
+"city": "Sebring",
+"location": "Highlands",
+"high_cost_portion": "February 1 \u2013 March 31"
+},
+{
+"state": "Florida",
+"city": "Stuart",
+"location": "Martin",
+"high_cost_portion": "February 1 \u2013 March 31"
+},
+{
+"state": "Florida",
+"city": "Tampa/St. Petersburg",
+"location": "Pinellas and Hillsborough",
+"high_cost_portion": "February 1 \u2013 April 30"
+},
+{
+"state": "Florida",
+"city": "Vero Beach",
+"location": "Indian River",
+"high_cost_portion": "December 1 \u2013 April 30"
+},
+{
+"state": "Georgia",
+"city": "Atlanta",
+"location": "Fulton and DeKalb",
+"high_cost_portion": "January 1 \u2013 March 31"
+},
+{
+"state": "Georgia",
+"city": "Jekyll Island/Brunswick",
+"location": "Glynn",
+"high_cost_portion": "March 1 \u2013 July 31"
+},
+{
+"state": "Idaho",
+"city": "Boise",
+"location": "Ada",
+"high_cost_portion": "October 1 \u2013 October 31 and June 1 \u2013 September 30"
+},
+{
+"state": "Idaho",
+"city": "Coeur d\u2019Alene",
+"location": "Kootenai",
+"high_cost_portion": "June 1 \u2013 August 31"
+},
+{
+"state": "Idaho",
+"city": "Sun Valley/Ketchum",
+"location": "Blaine and Elmore",
+"high_cost_portion": "December 1 \u2013 March 31 and June 1 \u2013 September 30"
+},
+{
+"state": "Illinois",
+"city": "Chicago",
+"location": "Cook and Lake",
+"high_cost_portion": "October 1 \u2013 November 30 and April 1 \u2013 September 30"
+},
+{
+"state": "Maine",
+"city": "Bar Harbor/Rockport",
+"location": "Hancock and Knox",
+"high_cost_portion": "October 1 \u2013 October 31 and May 1 \u2013 September 30"
+},
+{
+"state": "Maine",
+"city": "Kennebunk/Kittery/Sanford",
+"location": "York",
+"high_cost_portion": "July 1 \u2013 August 31"
+},
+{
+"state": "Maine",
+"city": "Portland",
+"location": "Cumberland and Sagadahoc",
+"high_cost_portion": "October 1 \u2013 October 31 and June 1 \u2013 September 30"
+},
+{
+"state": "Maryland",
+"city": "Ocean City",
+"location": "Worcester",
+"high_cost_portion": "June 1 \u2013 August 31"
+},
+{
+"state": "Maryland",
+"city": "Washington, D.C. Metropolitan Area",
+"location": "Montgomery and Prince George\u2019s",
+"high_cost_portion": "October 1 \u2013 September 30"
+},
+{
+"state": "Massachusetts",
+"city": "Boston/Cambridge",
+"location": "Suffolk and city of Cambridge",
+"high_cost_portion": "October 1 \u2013 September 30"
+},
+{
+"state": "Massachusetts",
+"city": "Falmouth",
+"location": "City limits of Falmouth",
+"high_cost_portion": "June 1 \u2013 August 31"
+},
+{
+"state": "Massachusetts",
+"city": "Hyannis",
+"location": "Barnstable less the city of Falmouth",
+"high_cost_portion": "July 1 \u2013 August 31"
+},
+{
+"state": "Massachusetts",
+"city": "Martha\u2019s Vineyard",
+"location": "Dukes",
+"high_cost_portion": "October 1 \u2013 September 30"
+},
+{
+"state": "Massachusetts",
+"city": "Nantucket",
+"location": "Nantucket",
+"high_cost_portion": "June 1 \u2013 September 30"
+},
+{
+"state": "Michigan",
+"city": "Mackinac Island",
+"location": "Mackinac",
+"high_cost_portion": "July 1 \u2013 August 31"
+},
+{
+"state": "Michigan",
+"city": "Petoskey",
+"location": "Emmet",
+"high_cost_portion": "June 1 \u2013 August 31"
+},
+{
+"state": "Michigan",
+"city": "Traverse City",
+"location": "Grand Traverse",
+"high_cost_portion": "July 1 \u2013 August 31"
+},
+{
+"state": "Minnesota",
+"city": "Duluth",
+"location": "St. Louis",
+"high_cost_portion": "October 1 \u2013 October 31 and June 1 \u2013 September 30"
+},
+{
+"state": "Montana",
+"city": "Big Sky/West Yellowstone/Gardiner",
+"location": "Gallatin and Park",
+"high_cost_portion": "June 1 \u2013 September 30"
+},
+{
+"state": "Montana",
+"city": "Kalispell/Whitefish",
+"location": "Flathead",
+"high_cost_portion": "July 1 \u2013 September 30"
+},
+{
+"state": "New Jersey",
+"city": "Toms River",
+"location": "Ocean",
+"high_cost_portion": "June 1 \u2013 August 31"
+},
+{
+"state": "New Mexico",
+"city": "Albuquerque",
+"location": "Bernalillo",
+"high_cost_portion": "October 1 \u2013 March 31"
+},
+{
+"state": "New York",
+"city": "Glens Falls",
+"location": "Warren",
+"high_cost_portion": "July 1 \u2013 August 31"
+},
+{
+"state": "New York",
+"city": "Lake Placid",
+"location": "Essex",
+"high_cost_portion": "July 1 \u2013 August 31"
+},
+{
+"state": "New York",
+"city": "New York City",
+"location": "Bronx, Kings, New York, Queens, and Richmond",
+"high_cost_portion": "October 1 \u2013 September 30"
+},
+{
+"state": "New York",
+"city": "Saratoga Springs/Schenectady",
+"location": "Saratoga and Schenectady",
+"high_cost_portion": "July 1 \u2013 August 31"
+},
+{
+"state": "North Carolina",
+"city": "Kill Devil Hills",
+"location": "Dare",
+"high_cost_portion": "June 1 \u2013 August 31"
+},
+{
+"state": "Oregon",
+"city": "Bend",
+"location": "Deschutes",
+"high_cost_portion": "June 1 \u2013 August 31"
+},
+{
+"state": "Oregon",
+"city": "Eugene/Florence",
+"location": "Lane",
+"high_cost_portion": "June 1 \u2013 July 31"
+},
+{
+"state": "Oregon",
+"city": "Seaside",
+"location": "Clatsop",
+"high_cost_portion": "July 1 \u2013 August 31"
+},
+{
+"state": "Pennsylvania",
+"city": "Hershey",
+"location": "Hershey",
+"high_cost_portion": "June 1 \u2013 August 31"
+},
+{
+"state": "Pennsylvania",
+"city": "Philadelphia",
+"location": "Philadelphia",
+"high_cost_portion": "October 1 \u2013 November 30 and September 1 \u2013 September 30"
+},
+{
+"state": "Rhode Island",
+"city": "Jamestown/Middletown/Newport",
+"location": "Newport",
+"high_cost_portion": "October 1 \u2013 October 31 and June 1 \u2013 September 30"
+},
+{
+"state": "South Carolina",
+"city": "Charleston",
+"location": "Charleston, Berkeley, and Dorchester",
+"high_cost_portion": "October 1 \u2013 September 30"
+},
+{
+"state": "South Carolina",
+"city": "Hilton Head",
+"location": "Beaufort",
+"high_cost_portion": "April 1 \u2013 August 31"
+},
+{
+"state": "Tennessee",
+"city": "Nashville",
+"location": "Davidson",
+"high_cost_portion": "October 1 \u2013 September 30"
+},
+{
+"state": "Utah",
+"city": "Moab",
+"location": "Grand",
+"high_cost_portion": "October 1 \u2013 October 31, March 1 \u2013 June 30, and September 1 \u2013 September 30"
+},
+{
+"state": "Utah",
+"city": "Park City",
+"location": "Summit",
+"high_cost_portion": "October 1 \u2013 September 30"
+},
+{
+"state": "Vermont",
+"city": "Burlington",
+"location": "Chittenden",
+"high_cost_portion": "October 1 \u2013 October 31 and May 1 \u2013 September 30"
+},
+{
+"state": "Vermont",
+"city": "Manchester",
+"location": "Bennington",
+"high_cost_portion": "October 1 \u2013 October 31 and July 1 \u2013 September 30"
+},
+{
+"state": "Vermont",
+"city": "Montpelier",
+"location": "Washington",
+"high_cost_portion": "October 1 \u2013 October 31 and June 1 \u2013 September 30"
+},
+{
+"state": "Virginia",
+"city": "Virginia Beach",
+"location": "City of Virginia Beach",
+"high_cost_portion": "June 1 \u2013 August 31"
+},
+{
+"state": "Virginia",
+"city": "Wallops Island",
+"location": "Accomack",
+"high_cost_portion": "July 1 \u2013 August 31"
+},
+{
+"state": "Virginia",
+"city": "Washington, D.C. Metropolitan Area",
+"location": "Cities of Alexandria, Falls Church, and Fairfax; counties of Arlington and Fairfax",
+"high_cost_portion": "October 1 \u2013 September 30"
+},
+{
+"state": "Washington",
+"city": "Port Angeles/Port Townsend",
+"location": "Clallam and Jefferson",
+"high_cost_portion": "June 1 \u2013 September 30"
+},
+{
+"state": "Washington",
+"city": "Seattle",
+"location": "King",
+"high_cost_portion": "October 1 \u2013 September 30"
+},
+{
+"state": "Wyoming",
+"city": "Cody",
+"location": "Park",
+"high_cost_portion": "June 1 \u2013 September 30"
+},
+{
+"state": "Wyoming",
+"city": "Jackson/Pinedale",
+"location": "Teton and Sublette",
+"high_cost_portion": "October 1 \u2013 September 30"
+}
+],
+"2026": [
+{
+"state": "Alabama",
+"city": "Gulf Shores",
+"location": "Baldwin",
+"high_cost_portion": "June 1 \u2013 July 31"
+},
+{
+"state": "Arizona",
+"city": "Phoenix/Scottsdale",
+"location": "Maricopa",
+"high_cost_portion": "February 1 \u2013 March 31"
+},
+{
+"state": "Arizona",
+"city": "Sedona",
+"location": "City limits of Sedona",
+"high_cost_portion": "October 1 \u2013 December 31 and March 1 \u2013 September 30"
+},
+{
+"state": "California",
+"city": "Los Angeles",
+"location": "Los Angeles, Orange, and Ventura, and Edwards AFB, less the city of Santa Monica",
+"high_cost_portion": "October 1 \u2013 September 30"
+},
+{
+"state": "California",
+"city": "Mammoth Lakes",
+"location": "Mono",
+"high_cost_portion": "December 1 \u2013 March 31"
+},
+{
+"state": "California",
+"city": "Monterey",
+"location": "Monterey",
+"high_cost_portion": "October 1 \u2013 September 30"
+},
+{
+"state": "California",
+"city": "Napa",
+"location": "Napa",
+"high_cost_portion": "October 1 \u2013 November 30 and February 1 \u2013 September 30"
+},
+{
+"state": "California",
+"city": "Palm Springs",
+"location": "Riverside",
+"high_cost_portion": "October 1 \u2013 April 30"
+},
+{
+"state": "California",
+"city": "San Diego",
+"location": "San Diego",
+"high_cost_portion": "October 1 \u2013 September 30"
+},
+{
+"state": "California",
+"city": "San Francisco",
+"location": "San Francisco",
+"high_cost_portion": "October 1 \u2013 September 30"
+},
+{
+"state": "California",
+"city": "San Luis Obispo",
+"location": "San Luis Obispo",
+"high_cost_portion": "June 1 \u2013 July 31"
+},
+{
+"state": "California",
+"city": "Santa Barbara",
+"location": "Santa Barbara",
+"high_cost_portion": "October 1 \u2013 September 30"
+},
+{
+"state": "California",
+"city": "Santa Monica",
+"location": "City limits of Santa Monica",
+"high_cost_portion": "October 1 \u2013 September 30"
+},
+{
+"state": "California",
+"city": "South Lake Tahoe",
+"location": "El Dorado",
+"high_cost_portion": "December 1 \u2013 March 31"
+},
+{
+"state": "California",
+"city": "Sunnyvale/Palo Alto/San Jose",
+"location": "Santa Clara",
+"high_cost_portion": "October 1 \u2013 September 30"
+},
+{
+"state": "California",
+"city": "Yosemite National Park",
+"location": "Mariposa",
+"high_cost_portion": "January 1 \u2013 April 30"
+},
+{
+"state": "Colorado",
+"city": "Aspen",
+"location": "Pitkin",
+"high_cost_portion": "October 1 \u2013 September 30"
+},
+{
+"state": "Colorado",
+"city": "Denver/Aurora",
+"location": "Denver, Adams, Arapahoe, and Jefferson",
+"high_cost_portion": "October 1 \u2013 October 31 and April 1 \u2013 September 30"
+},
+{
+"state": "Colorado",
+"city": "Silverthorne/Breckenridge",
+"location": "Summit",
+"high_cost_portion": "December 1 \u2013 March 31"
+},
+{
+"state": "Colorado",
+"city": "Steamboat Springs",
+"location": "Routt",
+"high_cost_portion": "December 1 \u2013 March 31"
+},
+{
+"state": "Colorado",
+"city": "Telluride",
+"location": "San Miguel",
+"high_cost_portion": "October 1 \u2013 September 30"
+},
+{
+"state": "Colorado",
+"city": "Vail",
+"location": "Eagle",
+"high_cost_portion": "October 1 \u2013 September 30"
+},
+{
+"state": "Delaware",
+"city": "Lewes",
+"location": "Sussex",
+"high_cost_portion": "June 1 \u2013 August 31"
+},
+{
+"state": "District of Columbia",
+"city": "Washington, D.C. (also the cities of Alexandria, Falls Church, and Fairfax, and the counties of Arlington and Fairfax, in Virginia; and the counties of Montgomery and Prince George\u2019s in Maryland) (See also Maryland and Virginia)",
+"location": "",
+"high_cost_portion": "October 1 \u2013 September 30"
+},
+{
+"state": "Florida",
+"city": "Boca Raton/Delray Beach/Jupiter",
+"location": "Palm Beach and Hendry",
+"high_cost_portion": "January 1 \u2013 April 30"
+},
+{
+"state": "Florida",
+"city": "Bradenton",
+"location": "Manatee",
+"high_cost_portion": "February 1 \u2013 March 31"
+},
+{
+"state": "Florida",
+"city": "Cocoa Beach",
+"location": "Brevard",
+"high_cost_portion": "February 1 \u2013 March 31"
+},
+{
+"state": "Florida",
+"city": "Fort Lauderdale",
+"location": "Broward",
+"high_cost_portion": "January 1 \u2013 April 30"
+},
+{
+"state": "Florida",
+"city": "Fort Myers",
+"location": "Lee",
+"high_cost_portion": "January 1 \u2013 March 31"
+},
+{
+"state": "Florida",
+"city": "Fort Walton Beach/DeFuniak Springs",
+"location": "Okaloosa and Walton",
+"high_cost_portion": "June 1 \u2013 July 31"
+},
+{
+"state": "Florida",
+"city": "Gulf Breeze",
+"location": "Santa Rosa",
+"high_cost_portion": "June 1 \u2013 July 31"
+},
+{
+"state": "Florida",
+"city": "Key West",
+"location": "Monroe",
+"high_cost_portion": "October 1 \u2013 September 30"
+},
+{
+"state": "Florida",
+"city": "Miami",
+"location": "Miami-Dade",
+"high_cost_portion": "December 1 \u2013 May 31"
+},
+{
+"state": "Florida",
+"city": "Naples",
+"location": "Collier",
+"high_cost_portion": "December 1 \u2013 April 30"
+},
+{
+"state": "Florida",
+"city": "Panama City",
+"location": "Bay",
+"high_cost_portion": "June 1 \u2013 July 31"
+},
+{
+"state": "Florida",
+"city": "Sarasota",
+"location": "Sarasota",
+"high_cost_portion": "February 1 \u2013 April 30"
+},
+{
+"state": "Florida",
+"city": "Sebring",
+"location": "Highlands",
+"high_cost_portion": "February 1 \u2013 March 31"
+},
+{
+"state": "Florida",
+"city": "Stuart",
+"location": "Martin",
+"high_cost_portion": "February 1 \u2013 March 31"
+},
+{
+"state": "Florida",
+"city": "Tampa/St. Petersburg",
+"location": "Pinellas and Hillsborough",
+"high_cost_portion": "February 1 \u2013 April 30"
+},
+{
+"state": "Florida",
+"city": "Vero Beach",
+"location": "Indian River",
+"high_cost_portion": "December 1 \u2013 April 30"
+},
+{
+"state": "Georgia",
+"city": "Atlanta",
+"location": "Fulton and DeKalb",
+"high_cost_portion": "January 1 \u2013 March 31"
+},
+{
+"state": "Georgia",
+"city": "Jekyll Island/Brunswick",
+"location": "Glynn",
+"high_cost_portion": "March 1 \u2013 July 31"
+},
+{
+"state": "Idaho",
+"city": "Boise",
+"location": "Ada",
+"high_cost_portion": "October 1 \u2013 October 31 and June 1 \u2013 September 30"
+},
+{
+"state": "Idaho",
+"city": "Coeur d\u2019Alene",
+"location": "Kootenai",
+"high_cost_portion": "June 1 \u2013 August 31"
+},
+{
+"state": "Idaho",
+"city": "Sun Valley/Ketchum",
+"location": "Blaine and Elmore",
+"high_cost_portion": "December 31 \u2013 March 31 and June 1 \u2013 September 30"
+},
+{
+"state": "Illinois",
+"city": "Chicago",
+"location": "Cook and Lake",
+"high_cost_portion": "October 1 \u2013 November 30 and April 1 \u2013 September 30"
+},
+{
+"state": "Maine",
+"city": "Bar Harbor/Rockport",
+"location": "Hancock and Knox",
+"high_cost_portion": "October 1 \u2013 October 31 and May 1 \u2013 September 30"
+},
+{
+"state": "Maine",
+"city": "Kennebunk/Kittery/Sanford",
+"location": "York",
+"high_cost_portion": "July 1 \u2013 August 31"
+},
+{
+"state": "Maine",
+"city": "Portland",
+"location": "Cumberland and Sagadahoc",
+"high_cost_portion": "October 1 \u2013 October 31 and June 1 \u2013 September 30"
+},
+{
+"state": "Maryland",
+"city": "Ocean City",
+"location": "Worcester",
+"high_cost_portion": "June 1 \u2013 August 31"
+},
+{
+"state": "Maryland",
+"city": "Washington, D.C. Metropolitan Area",
+"location": "Montgomery and Prince George\u2019s",
+"high_cost_portion": "October 1 \u2013 September 30"
+},
+{
+"state": "Massachusetts",
+"city": "Boston/Cambridge",
+"location": "Suffolk and city of Cambridge",
+"high_cost_portion": "October 1 \u2013 September 30"
+},
+{
+"state": "Massachusetts",
+"city": "Falmouth",
+"location": "City limits of Falmouth",
+"high_cost_portion": "July 1 \u2013 August 31"
+},
+{
+"state": "Massachusetts",
+"city": "Hyannis",
+"location": "Barnstable less the city of Falmouth",
+"high_cost_portion": "July 1 \u2013 August 31"
+},
+{
+"state": "Massachusetts",
+"city": "Martha\u2019s Vineyard",
+"location": "Dukes",
+"high_cost_portion": "October 1 \u2013 September 30"
+},
+{
+"state": "Massachusetts",
+"city": "Nantucket",
+"location": "Nantucket",
+"high_cost_portion": "June 1 \u2013 September 30"
+},
+{
+"state": "Michigan",
+"city": "Mackinac Island",
+"location": "Mackinac",
+"high_cost_portion": "July 1 \u2013 August 31"
+},
+{
+"state": "Michigan",
+"city": "Petoskey",
+"location": "Emmet",
+"high_cost_portion": "June 1 \u2013 August 31"
+},
+{
+"state": "Michigan",
+"city": "Traverse City",
+"location": "Grand Traverse",
+"high_cost_portion": "July 1 \u2013 August 31"
+},
+{
+"state": "Minnesota",
+"city": "Duluth",
+"location": "St. Louis",
+"high_cost_portion": "October 1 \u2013 October 31 and June 1 \u2013 September 30"
+},
+{
+"state": "Montana",
+"city": "Big Sky/West Yellowstone/Gardiner",
+"location": "Gallatin and Park",
+"high_cost_portion": "June 1 \u2013 September 30"
+},
+{
+"state": "Montana",
+"city": "Kalispell/Whitefish",
+"location": "Flathead",
+"high_cost_portion": "July 1 \u2013 September 30"
+},
+{
+"state": "New Jersey",
+"city": "Toms River",
+"location": "Ocean",
+"high_cost_portion": "July 1 \u2013 August 31"
+},
+{
+"state": "New York",
+"city": "Glens Falls",
+"location": "Warren",
+"high_cost_portion": "July 1 \u2013 August 31"
+},
+{
+"state": "New York",
+"city": "Lake Placid",
+"location": "Essex",
+"high_cost_portion": "July 1 \u2013 August 31"
+},
+{
+"state": "New York",
+"city": "New York City",
+"location": "Bronx, Kings, New York, Queens, and Richmond",
+"high_cost_portion": "October 1 \u2013 December 31 and March 1 \u2013 September 30"
+},
+{
+"state": "New York",
+"city": "Saratoga Springs/Schenectady",
+"location": "Saratoga and Schenectady",
+"high_cost_portion": "July 1 \u2013 August 31"
+},
+{
+"state": "North Carolina",
+"city": "Kill Devil Hills",
+"location": "Dare",
+"high_cost_portion": "June 1 \u2013 August 31"
+},
+{
+"state": "Oregon",
+"city": "Bend",
+"location": "Deschutes",
+"high_cost_portion": "June 1 \u2013 August 31"
+},
+{
+"state": "Oregon",
+"city": "Eugene/Florence",
+"location": "Lane",
+"high_cost_portion": "June 1 \u2013 July 31"
+},
+{
+"state": "Oregon",
+"city": "Seaside",
+"location": "Clatsop",
+"high_cost_portion": "July 1 \u2013 August 31"
+},
+{
+"state": "Pennsylvania",
+"city": "Hershey",
+"location": "Hershey",
+"high_cost_portion": "June 1 \u2013 August 31"
+},
+{
+"state": "Pennsylvania",
+"city": "Philadelphia",
+"location": "Philadelphia",
+"high_cost_portion": "October 1 \u2013 November 30 and April 1 \u2013 September 30"
+},
+{
+"state": "Rhode Island",
+"city": "Jamestown/Middletown/Newport",
+"location": "Newport",
+"high_cost_portion": "October 1 \u2013 October 31 and June 1 \u2013 September 30"
+},
+{
+"state": "South Carolina",
+"city": "Charleston",
+"location": "Charleston, Berkeley, and Dorchester",
+"high_cost_portion": "October 1 \u2013 September 30"
+},
+{
+"state": "South Carolina",
+"city": "Hilton Head",
+"location": "Beaufort",
+"high_cost_portion": "March 1 \u2013 August 31"
+},
+{
+"state": "Tennessee",
+"city": "Nashville",
+"location": "Davidson",
+"high_cost_portion": "October 1 \u2013 September 30"
+},
+{
+"state": "Utah",
+"city": "Moab",
+"location": "Grand",
+"high_cost_portion": "October 1 \u2013 October 31, March 1 \u2013 June 30, and September 1 \u2013 September 30"
+},
+{
+"state": "Utah",
+"city": "Park City",
+"location": "Summit",
+"high_cost_portion": "October 1 \u2013 September 30"
+},
+{
+"state": "Vermont",
+"city": "Burlington",
+"location": "Chittenden",
+"high_cost_portion": "October 1 \u2013 October 31 and May 1 \u2013 September 30"
+},
+{
+"state": "Vermont",
+"city": "Manchester",
+"location": "Bennington",
+"high_cost_portion": "October 1 \u2013 October 31 and August 1 \u2013 September 30"
+},
+{
+"state": "Vermont",
+"city": "Montpelier",
+"location": "Washington",
+"high_cost_portion": "October 1 \u2013 October 31 and August 1 \u2013 September 30"
+},
+{
+"state": "Virginia",
+"city": "Virginia Beach",
+"location": "City of Virginia Beach",
+"high_cost_portion": "June 1 \u2013 August 31"
+},
+{
+"state": "Virginia",
+"city": "Wallops Island",
+"location": "Accomack",
+"high_cost_portion": "July 1 \u2013 August 31"
+},
+{
+"state": "Virginia",
+"city": "Washington, D.C. Metropolitan Area",
+"location": "Cities of Alexandria, Falls Church, and Fairfax; counties of Arlington and Fairfax",
+"high_cost_portion": "October 1 \u2013 September 30"
+},
+{
+"state": "Washington",
+"city": "Port Angeles/Port Townsend",
+"location": "Clallam and Jefferson",
+"high_cost_portion": "July 1 \u2013 August 31"
+},
+{
+"state": "Washington",
+"city": "Seattle",
+"location": "King",
+"high_cost_portion": "October 1 \u2013 September 30"
+},
+{
+"state": "Wyoming",
+"city": "Jackson/Pinedale",
+"location": "Teton and Sublette",
+"high_cost_portion": "October 1 \u2013 September 30"
+}
+]
+}

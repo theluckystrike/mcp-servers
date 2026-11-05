@@ -1,0 +1,857 @@
+{
+ "properties": [
+  [
+   "properties/521066195",
+   "zovo.one"
+  ],
+  [
+   "properties/539256904",
+   "belikenative.com (archive until 2026-09-05)"
+  ],
+  [
+   "properties/552914491",
+   "belikenative.com"
+  ],
+  [
+   "properties/555961920",
+   "ml0x.com"
+  ],
+  [
+   "properties/555964379",
+   "ingredientcalculator.com"
+  ],
+  [
+   "properties/555967369",
+   "kickllm.com"
+  ],
+  [
+   "properties/555968398",
+   "recipetool.net"
+  ],
+  [
+   "properties/555976683",
+   "lakelevelnow.com"
+  ],
+  [
+   "properties/555980388",
+   "toolsthatrank.com"
+  ],
+  [
+   "properties/555981246",
+   "handsofflinks.com"
+  ],
+  [
+   "properties/555981536",
+   "seeninaianswers.com"
+  ],
+  [
+   "properties/555982609",
+   "assetloancalculator.com"
+  ],
+  [
+   "properties/555988331",
+   "claudflow.com"
+  ],
+  [
+   "properties/556001643",
+   "aiwebsitepipeline.com"
+  ],
+  [
+   "properties/556027513",
+   "goldgramprice.com"
+  ],
+  [
+   "properties/556048204",
+   "earlythunder.com"
+  ],
+  [
+   "properties/556091787",
+   "worthmyclaim.com"
+  ],
+  [
+   "properties/556092989",
+   "deepvalueradar.com"
+  ],
+  [
+   "properties/556101555",
+   "statewage.com"
+  ],
+  [
+   "properties/556120227",
+   "examscorecalc.com"
+  ],
+  [
+   "properties/556137338",
+   "heytensor.com"
+  ],
+  [
+   "properties/558248192",
+   "notemods.com"
+  ],
+  [
+   "properties/558358320",
+   "ToolRoutine"
+  ],
+  [
+   "properties/558914876",
+   "Barframe"
+  ],
+  [
+   "properties/559047514",
+   "englishlearner.org"
+  ],
+  [
+   "properties/560467464",
+   "Axdale"
+  ],
+  [
+   "properties/561154408",
+   "addthisbot.com"
+  ],
+  [
+   "properties/561638567",
+   "mcpstamp.com"
+  ],
+  [
+   "properties/556028183",
+   "makeroll.com"
+  ],
+  [
+   "properties/556530754",
+   "Zovo extensions (portfolio)"
+  ]
+ ],
+ "reports": {
+  "properties/521066195": {
+   "name": "zovo.one",
+   "sessions_28d": 212,
+   "top_sources": [
+    [
+     "(direct)",
+     96
+    ],
+    [
+     "checkout.stripe.com",
+     29
+    ],
+    [
+     "chromewebstore.google.com",
+     27
+    ],
+    [
+     "google",
+     8
+    ],
+    [
+     "webmail.porkbun.com",
+     8
+    ]
+   ],
+   "mcp_rows": [],
+   "mcp_sessions_28d": 0
+  },
+  "properties/539256904": {
+   "name": "belikenative.com (archive until 2026-09-05)",
+   "sessions_28d": 10,
+   "top_sources": [
+    [
+     "google",
+     6
+    ],
+    [
+     "(data not available)",
+     2
+    ],
+    [
+     "(direct)",
+     1
+    ],
+    [
+     "(not set)",
+     1
+    ]
+   ],
+   "mcp_rows": [],
+   "mcp_sessions_28d": 0
+  },
+  "properties/552914491": {
+   "name": "belikenative.com",
+   "sessions_28d": 3785,
+   "top_sources": [
+    [
+     "(direct)",
+     2655
+    ],
+    [
+     "google",
+     730
+    ],
+    [
+     "bing",
+     187
+    ],
+    [
+     "duckduckgo",
+     35
+    ],
+    [
+     "(not set)",
+     22
+    ]
+   ],
+   "mcp_rows": [],
+   "mcp_sessions_28d": 0
+  },
+  "properties/555961920": {
+   "name": "ml0x.com",
+   "sessions_28d": 820,
+   "top_sources": [
+    [
+     "(direct)",
+     301
+    ],
+    [
+     "gpt0x",
+     131
+    ],
+    [
+     "epochpilot",
+     87
+    ],
+    [
+     "heytensor",
+     77
+    ],
+    [
+     "bing",
+     46
+    ]
+   ],
+   "mcp_rows": [],
+   "mcp_sessions_28d": 0
+  },
+  "properties/555964379": {
+   "name": "ingredientcalculator.com",
+   "sessions_28d": 1271,
+   "top_sources": [
+    [
+     "google",
+     591
+    ],
+    [
+     "(direct)",
+     416
+    ],
+    [
+     "bing",
+     105
+    ],
+    [
+     "duckduckgo",
+     52
+    ],
+    [
+     "facebook.com",
+     25
+    ]
+   ],
+   "mcp_rows": [
+    [
+     [
+      "mcp",
+      "cups-to-grams-mcp",
+      "(not set)"
+     ],
+     [
+      "7",
+      "7"
+     ]
+    ]
+   ],
+   "mcp_sessions_28d": 7
+  },
+  "properties/555967369": {
+   "name": "kickllm.com",
+   "sessions_28d": 839,
+   "top_sources": [
+    [
+     "(direct)",
+     781
+    ],
+    [
+     "bing",
+     29
+    ],
+    [
+     "chatgpt.com",
+     7
+    ],
+    [
+     "cn.bing.com",
+     5
+    ],
+    [
+     "ga4check",
+     5
+    ]
+   ],
+   "mcp_rows": [],
+   "mcp_sessions_28d": 0
+  },
+  "properties/555968398": {
+   "name": "recipetool.net",
+   "sessions_28d": 867,
+   "top_sources": [
+    [
+     "google",
+     416
+    ],
+    [
+     "(direct)",
+     261
+    ],
+    [
+     "bing",
+     70
+    ],
+    [
+     "chatgpt.com",
+     28
+    ],
+    [
+     "nutrition-result",
+     23
+    ]
+   ],
+   "mcp_rows": [],
+   "mcp_sessions_28d": 0
+  },
+  "properties/555976683": {
+   "name": "lakelevelnow.com",
+   "sessions_28d": 2591,
+   "top_sources": [
+    [
+     "bing",
+     666
+    ],
+    [
+     "(direct)",
+     614
+    ],
+    [
+     "yahoo",
+     433
+    ],
+    [
+     "google",
+     392
+    ],
+    [
+     "duckduckgo",
+     390
+    ]
+   ],
+   "mcp_rows": [],
+   "mcp_sessions_28d": 0
+  },
+  "properties/555980388": {
+   "name": "toolsthatrank.com",
+   "sessions_28d": 94,
+   "top_sources": [
+    [
+     "(direct)",
+     61
+    ],
+    [
+     "bing",
+     10
+    ],
+    [
+     "ga4check",
+     7
+    ],
+    [
+     "aiwebsitepipeline",
+     5
+    ],
+    [
+     "handsofflinks",
+     3
+    ]
+   ],
+   "mcp_rows": [],
+   "mcp_sessions_28d": 0
+  },
+  "properties/555981246": {
+   "name": "handsofflinks.com",
+   "sessions_28d": 109,
+   "top_sources": [
+    [
+     "(direct)",
+     100
+    ],
+    [
+     "ga4check",
+     6
+    ],
+    [
+     "chatgpt.com",
+     2
+    ],
+    [
+     "claudflow",
+     1
+    ]
+   ],
+   "mcp_rows": [],
+   "mcp_sessions_28d": 0
+  },
+  "properties/555981536": {
+   "name": "seeninaianswers.com",
+   "sessions_28d": 59,
+   "top_sources": [
+    [
+     "(direct)",
+     48
+    ],
+    [
+     "ga4check",
+     6
+    ],
+    [
+     "bing",
+     4
+    ],
+    [
+     "github.com",
+     1
+    ]
+   ],
+   "mcp_rows": [],
+   "mcp_sessions_28d": 0
+  },
+  "properties/555982609": {
+   "name": "assetloancalculator.com",
+   "sessions_28d": 21,
+   "top_sources": [
+    [
+     "(direct)",
+     11
+    ],
+    [
+     "google",
+     10
+    ]
+   ],
+   "mcp_rows": [],
+   "mcp_sessions_28d": 0
+  },
+  "properties/555988331": {
+   "name": "claudflow.com",
+   "sessions_28d": 17,
+   "top_sources": [
+    [
+     "google",
+     12
+    ],
+    [
+     "(direct)",
+     3
+    ],
+    [
+     "114.114.114.114:9421",
+     1
+    ],
+    [
+     "chatgpt.com",
+     1
+    ]
+   ],
+   "mcp_rows": [],
+   "mcp_sessions_28d": 0
+  },
+  "properties/556001643": {
+   "name": "aiwebsitepipeline.com",
+   "sessions_28d": 59,
+   "top_sources": [
+    [
+     "(direct)",
+     43
+    ],
+    [
+     "ga4check",
+     8
+    ],
+    [
+     "whatsnew",
+     3
+    ],
+    [
+     "bing",
+     2
+    ],
+    [
+     "claudhq",
+     1
+    ]
+   ],
+   "mcp_rows": [],
+   "mcp_sessions_28d": 0
+  },
+  "properties/556027513": {
+   "name": "goldgramprice.com",
+   "sessions_28d": 723,
+   "top_sources": [
+    [
+     "(direct)",
+     367
+    ],
+    [
+     "google",
+     304
+    ],
+    [
+     "chatgpt.com",
+     16
+    ],
+    [
+     "bing",
+     10
+    ],
+    [
+     "ga4check",
+     10
+    ]
+   ],
+   "mcp_rows": [],
+   "mcp_sessions_28d": 0
+  },
+  "properties/556048204": {
+   "name": "earlythunder.com",
+   "sessions_28d": 17,
+   "top_sources": [
+    [
+     "chatgpt.com",
+     8
+    ],
+    [
+     "(direct)",
+     3
+    ],
+    [
+     "copilot.com",
+     2
+    ],
+    [
+     "techbullion.com",
+     2
+    ],
+    [
+     "duckduckgo",
+     1
+    ]
+   ],
+   "mcp_rows": [],
+   "mcp_sessions_28d": 0
+  },
+  "properties/556091787": {
+   "name": "worthmyclaim.com",
+   "sessions_28d": 6,
+   "top_sources": [
+    [
+     "(direct)",
+     2
+    ],
+    [
+     "bing",
+     2
+    ],
+    [
+     "chatgpt.com",
+     1
+    ],
+    [
+     "yahoo",
+     1
+    ]
+   ],
+   "mcp_rows": [],
+   "mcp_sessions_28d": 0
+  },
+  "properties/556092989": {
+   "name": "deepvalueradar.com",
+   "sessions_28d": 9,
+   "top_sources": [
+    [
+     "(direct)",
+     7
+    ],
+    [
+     "chatgpt.com",
+     2
+    ]
+   ],
+   "mcp_rows": [],
+   "mcp_sessions_28d": 0
+  },
+  "properties/556101555": {
+   "name": "statewage.com",
+   "sessions_28d": 7,
+   "top_sources": [
+    [
+     "google",
+     6
+    ],
+    [
+     "yahoo",
+     1
+    ]
+   ],
+   "mcp_rows": [],
+   "mcp_sessions_28d": 0
+  },
+  "properties/556120227": {
+   "name": "examscorecalc.com",
+   "sessions_28d": 2,
+   "top_sources": [
+    [
+     "chatgpt.com",
+     2
+    ]
+   ],
+   "mcp_rows": [],
+   "mcp_sessions_28d": 0
+  },
+  "properties/556137338": {
+   "name": "heytensor.com",
+   "sessions_28d": 3,
+   "top_sources": [
+    [
+     "(direct)",
+     1
+    ],
+    [
+     "chatgpt.com",
+     1
+    ],
+    [
+     "duckduckgo",
+     1
+    ]
+   ],
+   "mcp_rows": [],
+   "mcp_sessions_28d": 0
+  },
+  "properties/558248192": {
+   "name": "notemods.com",
+   "sessions_28d": 353,
+   "top_sources": [
+    [
+     "(direct)",
+     329
+    ],
+    [
+     "google",
+     14
+    ],
+    [
+     "gemini.google.com",
+     3
+    ],
+    [
+     "m.facebook.com",
+     2
+    ],
+    [
+     "(not set)",
+     1
+    ]
+   ],
+   "mcp_rows": [],
+   "mcp_sessions_28d": 0
+  },
+  "properties/558358320": {
+   "name": "ToolRoutine",
+   "sessions_28d": 34,
+   "top_sources": [
+    [
+     "(direct)",
+     29
+    ],
+    [
+     "invoice-maker.zovo.one",
+     2
+    ],
+    [
+     "(not set)",
+     1
+    ],
+    [
+     "baby-names.zovo.one",
+     1
+    ],
+    [
+     "domain-lookup.zovo.one",
+     1
+    ]
+   ],
+   "mcp_rows": [],
+   "mcp_sessions_28d": 0
+  },
+  "properties/558914876": {
+   "name": "Barframe",
+   "sessions_28d": 28,
+   "top_sources": [
+    [
+     "(direct)",
+     26
+    ],
+    [
+     "t.co",
+     1
+    ],
+    [
+     "whatsnew",
+     1
+    ]
+   ],
+   "mcp_rows": [],
+   "mcp_sessions_28d": 0
+  },
+  "properties/559047514": {
+   "name": "englishlearner.org",
+   "sessions_28d": 1177,
+   "top_sources": [
+    [
+     "(direct)",
+     417
+    ],
+    [
+     "chatgpt.com",
+     244
+    ],
+    [
+     "cn.bing.com",
+     168
+    ],
+    [
+     "google",
+     118
+    ],
+    [
+     "baidu",
+     110
+    ]
+   ],
+   "mcp_rows": [],
+   "mcp_sessions_28d": 0
+  },
+  "properties/560467464": {
+   "name": "Axdale",
+   "sessions_28d": 183,
+   "top_sources": [
+    [
+     "(direct)",
+     175
+    ],
+    [
+     "github.com",
+     6
+    ],
+    [
+     "addthisbot.com",
+     1
+    ],
+    [
+     "t.co",
+     1
+    ]
+   ],
+   "mcp_rows": [],
+   "mcp_sessions_28d": 0
+  },
+  "properties/561154408": {
+   "name": "addthisbot.com",
+   "sessions_28d": 20,
+   "top_sources": [
+    [
+     "(direct)",
+     17
+    ],
+    [
+     "google",
+     2
+    ],
+    [
+     "(not set)",
+     1
+    ]
+   ],
+   "mcp_rows": [],
+   "mcp_sessions_28d": 0
+  },
+  "properties/561638567": {
+   "name": "mcpstamp.com",
+   "sessions_28d": 220,
+   "top_sources": [
+    [
+     "(direct)",
+     211
+    ],
+    [
+     "bing",
+     6
+    ],
+    [
+     "(not set)",
+     1
+    ],
+    [
+     "google",
+     1
+    ],
+    [
+     "m.facebook.com",
+     1
+    ]
+   ],
+   "mcp_rows": [],
+   "mcp_sessions_28d": 0
+  },
+  "properties/556028183": {
+   "name": "makeroll.com",
+   "sessions_28d": 295,
+   "top_sources": [
+    [
+     "(direct)",
+     192
+    ],
+    [
+     "chatgpt.com",
+     30
+    ],
+    [
+     "google",
+     30
+    ],
+    [
+     "ig",
+     13
+    ],
+    [
+     "ga4check",
+     8
+    ]
+   ],
+   "mcp_rows": [],
+   "mcp_sessions_28d": 0
+  },
+  "properties/556530754": {
+   "name": "Zovo extensions (portfolio)",
+   "sessions_28d": 0,
+   "top_sources": [],
+   "mcp_rows": [],
+   "mcp_sessions_28d": 0
+  }
+ }
+}

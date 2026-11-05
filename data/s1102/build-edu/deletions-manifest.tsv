@@ -1,0 +1,9 @@
+2026-11-02T02:28:24Z	38M+1.7M	/Users/mike/mcp-servers/data/s1102/build-edu/ap/raw/{ws,*.pdf,*.xlsx,rpr*.html} (AP raw downloads, hashes in ap/sources.md)
+2026-11-02T02:43:32Z	 87M	/Users/mike/mcp-servers/data/s1102/build-edu/recipe/raw	lsof +D showed 0 open files
+2026-11-02T02:43:32Z	  0B	/Users/mike/mcp-servers/data/s1102/build-edu/npx-recipe	lsof +D showed 0 open files
+2026-11-02T02:43:32Z	  0B	/Users/mike/mcp-servers/data/s1102/build-edu/npx-ap	lsof +D showed 0 open files
+2026-11-02T02:43:32Z	184K	/Users/mike/mcp-servers/data/s1102/build-edu/recipe/dl.html	lsof +D showed 0 open files
+2026-11-02T02:43:32Z	220K	/Users/mike/mcp-servers/data/s1102/build-edu/recipe/ecfr_101_9.html	lsof +D showed 0 open files
+2026-11-02T02:43:32Z	 52K	/Users/mike/mcp-servers/data/s1102/build-edu/recipe/rt.html	lsof +D showed 0 open files
+2026-11-02T02:43:32Z	4.0K	/Users/mike/mcp-servers/data/s1102/build-edu/esc-sitemap.xml	lsof +D showed 0 open files
+2026-11-02T02:43:32Z	8.0K	/Users/mike/mcp-servers/data/s1102/build-edu/recipe/rt-sitemap.xml	lsof +D showed 0 open files

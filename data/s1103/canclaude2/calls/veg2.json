@@ -1,0 +1,42 @@
+{
+ "result": {
+  "content": [
+   {
+    "type": "text",
+    "text": "For 3 x cup, chopped (160 g each, USDA) of onions, raw you need 480 g edible, so buy about 533 g (1.18 lb) as purchased at the USDA edible yield of 90%, or about 4.4 x medium (2-1/2\" dia) (round up to 5).\n\n{\n  \"summary\": \"For 3 x cup, chopped (160 g each, USDA) of onions, raw you need 480 g edible, so buy about 533 g (1.18 lb) as purchased at the USDA edible yield of 90%, or about 4.4 x medium (2-1/2\\\" dia) (round up to 5).\",\n  \"food\": \"Onions, raw\",\n  \"usda_ndb_number\": \"11282\",\n  \"needed\": \"3 x cup, chopped (160 g each, USDA)\",\n  \"edible_needed\": {\n    \"grams\": 480,\n    \"ounces\": 16.93,\n    \"pounds\": 1.058,\n    \"kilograms\": 0.48\n  },\n  \"buy_as_purchased\": {\n    \"grams\": 533.3,\n    \"ounces\": 18.81,\n    \"pounds\": 1.176,\n    \"kilograms\": 0.533\n  },\n  \"whole_items\": {\n    \"measure\": \"1 medium (2-1/2\\\" dia)\",\n    \"edible_grams_each\": 110,\n    \"count\": 4.36,\n    \"buy\": 5\n  },\n  \"edible_yield_percent\": 90,\n  \"refuse_is\": \"Stem ends, sprouts and defects\",\n  \"source\": \"https://www.ars.usda.gov/ARSUserFiles/80400535/DATA/SR/sr28/dnload/sr28asc.zip\",\n  \"source_doc\": \"https://www.ars.usda.gov/ARSUserFiles/80400535/DATA/SR/sr28/sr28_doc.pdf\",\n  \"as_of\": \"2015-09 (USDA National Nutrient Database for Standard Reference, Release 28; file checked 2026-11-03)\",\n  \"more\": \"https://ingredientcalculator.com/vegetable-yield-percentage-calculator?utm_source=mcp&utm_medium=vegetable-yield-percentage-mcp\"\n}"
+   }
+  ],
+  "structuredContent": {
+   "summary": "For 3 x cup, chopped (160 g each, USDA) of onions, raw you need 480 g edible, so buy about 533 g (1.18 lb) as purchased at the USDA edible yield of 90%, or about 4.4 x medium (2-1/2\" dia) (round up to 5).",
+   "food": "Onions, raw",
+   "usda_ndb_number": "11282",
+   "needed": "3 x cup, chopped (160 g each, USDA)",
+   "edible_needed": {
+    "grams": 480,
+    "ounces": 16.93,
+    "pounds": 1.058,
+    "kilograms": 0.48
+   },
+   "buy_as_purchased": {
+    "grams": 533.3,
+    "ounces": 18.81,
+    "pounds": 1.176,
+    "kilograms": 0.533
+   },
+   "whole_items": {
+    "measure": "1 medium (2-1/2\" dia)",
+    "edible_grams_each": 110,
+    "count": 4.36,
+    "buy": 5
+   },
+   "edible_yield_percent": 90,
+   "refuse_is": "Stem ends, sprouts and defects",
+   "source": "https://www.ars.usda.gov/ARSUserFiles/80400535/DATA/SR/sr28/dnload/sr28asc.zip",
+   "source_doc": "https://www.ars.usda.gov/ARSUserFiles/80400535/DATA/SR/sr28/sr28_doc.pdf",
+   "as_of": "2015-09 (USDA National Nutrient Database for Standard Reference, Release 28; file checked 2026-11-03)",
+   "more": "https://ingredientcalculator.com/vegetable-yield-percentage-calculator?utm_source=mcp&utm_medium=vegetable-yield-percentage-mcp"
+  }
+ },
+ "jsonrpc": "2.0",
+ "id": 2
+}

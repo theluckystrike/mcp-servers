@@ -1,0 +1,42 @@
+{
+  "actor": "A/B Test Sample Size Calculator MCP Server",
+  "mcpEndpoint": null,
+  "howToConnect": "Point an MCP client at the endpoint with header Authorization: Bearer <your Apify API token>.",
+  "toolCount": 5,
+  "tools": [
+    {
+      "name": "calculate_sample_size",
+      "description": "Exact sample size per variant for an A/B test on a conversion rate (two independent proportions): baseline rate, minimum detectable effect (relative or absolute), alpha, power, one or two-sided, several variants with optional Bonferroni, and unequal allocation. Uses the pooled/unpooled normal formula (same as R power.prop.test) and also reports the figure Evan Miller's calculator gives, so the two can be reconciled."
+    },
+    {
+      "name": "estimate_test_duration",
+      "description": "How many days an A/B test must run: from a known sample size per variant, or from baseline rate and MDE (computed as in calculate_sample_size), plus daily visitors and the share of traffic in the test. Returns exact days and the recommended whole weeks (to cover weekday effects)."
+    },
+    {
+      "name": "test_ab_significance",
+      "description": "Is an A/B test result statistically significant? From visitors and conversions per group: two-proportion z-test (pooled), one or two-sided p-value, Wald confidence interval for the difference, relative lift, Pearson chi-square with and without Yates correction (R prop.test), Fisher exact p for the same 2x2 table, and a sample ratio mismatch (SRM) check against the planned split."
+    },
+    {
+      "name": "fisher_exact_test",
+      "description": "Exact p-value for a contingency table of counts. 2x2: Fisher exact test (two-sided, greater or less, as R fisher.test). Larger r x c tables (for example 3 variants x converted/not, or 4 x 4 survey tables): Fisher-Freeman-Halton exact test by a network algorithm. Also returns Pearson chi-square and how many cells have expected counts below 5, so you can see when the chi-square approximation is unsafe."
+    },
+    {
+      "name": "check_peeking_risk",
+      "description": "What peeking does to an A/B test: the real false positive rate if you check a fixed-horizon test K times and stop at the first p < alpha (for example about 14% at 5 looks with alpha 0.05), and the Pocock and O'Brien-Fleming group sequential boundaries (z and nominal p per look) that keep the overall rate at alpha, for up to 10 equally spaced looks."
+    }
+  ],
+  "sampleCall": {
+    "tool": "calculate_sample_size",
+    "arguments": {
+      "baseline_rate": 0.05,
+      "mde": 0.1
+    },
+    "isError": false,
+    "result": [
+      {
+        "type": "text",
+        "text": "To detect a change from 5.00% to 5.50% (10.0% relative MDE) with 80% power at alpha 0.05 two-sided, you need 31,234 users in control and in each variant: 62,468 in total across 2 arms. Evan Miller's calculator gives 30,244 per arm for the same inputs (it uses the baseline variance in both terms and always two-sided alpha).\n\n{\n  \"inputs\": {\n    \"baseline_rate\": 0.05,\n    \"mde\": 0.1,\n    \"mde_type\": \"relative\",\n    \"alpha\": 0.05,\n    \"power\": 0.8,\n    \"sided\": \"two\",\n    \"variants\": 2,\n    \"bonferroni\": false,\n    \"allocation_ratio\": 1\n  },\n  \"control_rate\": 0.05,\n  \"variant_rate\": 0.055,\n  \"absolute_effect\": 0.005,\n  \"relative_effect\": 0.1,\n  \"alpha_per_comparison\": 0.05,\n  \"per_group_raw\": 31233.4379,\n  \"sample_size_control\": 31234,\n  \"sample_size_per_variant\": 31234,\n  \"total_sample_size\": 62468,\n  \"method\": \"Two-proportion z-test, pooled variance under H0 and unpooled under H1, no continuity correction (Fleiss 2003; same as R power.prop.test for equal groups). Rounded up.\",\n  \"evan_miller_equivalent\": 30244,\n  \"more\": \"https://abwex.com/tools/sample-size-calculator.html?utm_source=mcp&utm_medium=ab-test-sample-size-calculator-mcp\",\n  \"summary\": \"To detect a change from 5.00% to 5.50% (10.0% relative MDE) with 80% power at alpha 0.05 two-sided, you need 31,234 users in control and in each variant: 62,468 in total across 2 arms. Evan Miller's calculator gives 30,244 per arm for the same inputs (it uses the baseline variance in both terms and always two-sided alpha).\",\n  \"as_of\": \"2026-11-02\",\n  \"source\": \"https://github.com/theluckystrike/ab-test-sample-size-calculator-mcp/blob/main/DATA_SOURCES.md\"\n}"
+      }
+    ]
+  }
+}

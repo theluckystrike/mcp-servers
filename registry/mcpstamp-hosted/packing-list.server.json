@@ -1,0 +1,37 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.theluckystrike/carton-consignment-waybill-pack-list",
+  "title": "McpStamp Packing Lists",
+  "description": "Packing lists for shipments: cartons, weights, shortfalls against the order, packing slips.",
+  "version": "0.23.0",
+  "repository": {
+    "url": "https://github.com/theluckystrike/mcp-servers",
+    "source": "github",
+    "subfolder": "servers/packing-list"
+  },
+  "websiteUrl": "https://www.mcpstamp.com/servers/packing-list/",
+  "packages": [
+    {
+      "registryType": "mcpb",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.22.0/packing-list.mcpb",
+      "version": "0.21.0",
+      "fileSha256": "ec427bda8a149feb2ce93a2d6bf6e4a8e66509979b7a93dda148cc1773e80238",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "description": "Optional Pro license key (MCPL1....). Verified offline.",
+          "isSecret": true,
+          "name": "MCP_LICENSE_KEY"
+        }
+      ]
+    }
+  ],
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.zovo.one/mcp/packing-list"
+    }
+  ]
+}

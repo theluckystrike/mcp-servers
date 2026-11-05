@@ -1,0 +1,333 @@
+{
+ "result": {
+  "tools": [
+   {
+    "name": "calculate_sample_size",
+    "title": "A/B test sample size calculator",
+    "description": "Exact sample size per variant for an A/B test on a conversion rate (two independent proportions): baseline rate, minimum detectable effect (relative or absolute), alpha, power, one or two-sided, several variants with optional Bonferroni, and unequal allocation. Uses the pooled/unpooled normal formula (same as R power.prop.test) and also reports the figure Evan Miller's calculator gives, so the two can be reconciled.",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "baseline_rate": {
+       "type": "number",
+       "exclusiveMinimum": 0,
+       "exclusiveMaximum": 1,
+       "description": "Control conversion rate as a proportion, for example 0.042 for 4.2%."
+      },
+      "mde": {
+       "type": "number",
+       "exclusiveMinimum": 0,
+       "description": "Minimum detectable effect. Relative by default (0.10 = a 10% lift); set mde_type \"absolute\" for percentage points as a proportion (0.01 = 1 point)."
+      },
+      "mde_type": {
+       "type": "string",
+       "enum": [
+        "relative",
+        "absolute"
+       ],
+       "default": "relative",
+       "description": "relative (default) or absolute."
+      },
+      "alpha": {
+       "type": "number",
+       "exclusiveMinimum": 0,
+       "exclusiveMaximum": 0.5,
+       "default": 0.05,
+       "description": "Significance level, default 0.05."
+      },
+      "power": {
+       "type": "number",
+       "exclusiveMinimum": 0.5,
+       "exclusiveMaximum": 1,
+       "default": 0.8,
+       "description": "Statistical power, default 0.80."
+      },
+      "sided": {
+       "type": "string",
+       "enum": [
+        "two",
+        "one"
+       ],
+       "default": "two",
+       "description": "two-sided (default) or one-sided test."
+      },
+      "variants": {
+       "type": "integer",
+       "minimum": 2,
+       "maximum": 20,
+       "default": 2,
+       "description": "Number of arms including control. 2 = A/B, 3 = A/B/C."
+      },
+      "bonferroni": {
+       "type": "boolean",
+       "default": false,
+       "description": "Split alpha across the variant-vs-control comparisons (Bonferroni)."
+      },
+      "allocation_ratio": {
+       "type": "number",
+       "exclusiveMinimum": 0,
+       "maximum": 10,
+       "default": 1,
+       "description": "Users in each variant per user in control. 1 = even split."
+      }
+     },
+     "required": [
+      "baseline_rate",
+      "mde"
+     ],
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "title": "Sample size",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "estimate_test_duration",
+    "title": "A/B test duration estimator",
+    "description": "How many days an A/B test must run: from a known sample size per variant, or from baseline rate and MDE (computed as in calculate_sample_size), plus daily visitors and the share of traffic in the test. Returns exact days and the recommended whole weeks (to cover weekday effects).",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "daily_visitors": {
+       "type": "number",
+       "exclusiveMinimum": 0,
+       "description": "Eligible visitors per day across the whole site or page."
+      },
+      "traffic_share": {
+       "type": "number",
+       "exclusiveMinimum": 0,
+       "maximum": 1,
+       "default": 1,
+       "description": "Fraction of those visitors entered into the test, default 1."
+      },
+      "sample_size_per_variant": {
+       "type": "integer",
+       "exclusiveMinimum": 0,
+       "description": "Known users per arm. If omitted, give baseline_rate and mde."
+      },
+      "baseline_rate": {
+       "type": "number",
+       "exclusiveMinimum": 0,
+       "exclusiveMaximum": 1,
+       "description": "Control conversion rate, for computing the sample size."
+      },
+      "mde": {
+       "type": "number",
+       "exclusiveMinimum": 0,
+       "description": "Minimum detectable effect (relative by default)."
+      },
+      "mde_type": {
+       "type": "string",
+       "enum": [
+        "relative",
+        "absolute"
+       ],
+       "default": "relative"
+      },
+      "alpha": {
+       "type": "number",
+       "exclusiveMinimum": 0,
+       "exclusiveMaximum": 0.5,
+       "default": 0.05,
+       "description": "Significance level, default 0.05."
+      },
+      "power": {
+       "type": "number",
+       "exclusiveMinimum": 0.5,
+       "exclusiveMaximum": 1,
+       "default": 0.8
+      },
+      "variants": {
+       "type": "integer",
+       "minimum": 2,
+       "maximum": 20,
+       "default": 2,
+       "description": "Number of arms including control."
+      }
+     },
+     "required": [
+      "daily_visitors"
+     ],
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "title": "Test duration",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "test_ab_significance",
+    "title": "A/B test significance calculator",
+    "description": "Is an A/B test result statistically significant? From visitors and conversions per group: two-proportion z-test (pooled), one or two-sided p-value, Wald confidence interval for the difference, relative lift, Pearson chi-square with and without Yates correction (R prop.test), Fisher exact p for the same 2x2 table, and a sample ratio mismatch (SRM) check against the planned split.",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "control_visitors": {
+       "type": "integer",
+       "exclusiveMinimum": 0
+      },
+      "control_conversions": {
+       "type": "integer",
+       "minimum": 0
+      },
+      "variant_visitors": {
+       "type": "integer",
+       "exclusiveMinimum": 0
+      },
+      "variant_conversions": {
+       "type": "integer",
+       "minimum": 0
+      },
+      "alpha": {
+       "type": "number",
+       "exclusiveMinimum": 0,
+       "exclusiveMaximum": 0.5,
+       "default": 0.05,
+       "description": "Significance level, default 0.05."
+      },
+      "alternative": {
+       "type": "string",
+       "enum": [
+        "two-sided",
+        "greater",
+        "less"
+       ],
+       "default": "two-sided",
+       "description": "greater = variant converts better than control."
+      },
+      "expected_split": {
+       "type": "number",
+       "exclusiveMinimum": 0,
+       "exclusiveMaximum": 1,
+       "default": 0.5,
+       "description": "Planned share of traffic in control, for the SRM check. Default 0.5."
+      }
+     },
+     "required": [
+      "control_visitors",
+      "control_conversions",
+      "variant_visitors",
+      "variant_conversions"
+     ],
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "title": "Significance test",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "fisher_exact_test",
+    "title": "Fisher exact and Fisher-Freeman-Halton test",
+    "description": "Exact p-value for a contingency table of counts. 2x2: Fisher exact test (two-sided, greater or less, as R fisher.test). Larger r x c tables (for example 3 variants x converted/not, or 4 x 4 survey tables): Fisher-Freeman-Halton exact test by a network algorithm. Also returns Pearson chi-square and how many cells have expected counts below 5, so you can see when the chi-square approximation is unsafe.",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "table": {
+       "type": "array",
+       "items": {
+        "type": "array",
+        "items": {
+         "type": "integer",
+         "minimum": 0
+        },
+        "minItems": 2,
+        "maxItems": 12
+       },
+       "minItems": 2,
+       "maxItems": 12,
+       "description": "Rows of counts, for example [[12, 488], [25, 475]] (rows = groups, columns = outcomes)."
+      },
+      "alternative": {
+       "type": "string",
+       "enum": [
+        "two-sided",
+        "greater",
+        "less"
+       ],
+       "default": "two-sided",
+       "description": "One-sided options apply to 2x2 only; greater = odds ratio above 1."
+      }
+     },
+     "required": [
+      "table"
+     ],
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "title": "Exact test",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "check_peeking_risk",
+    "title": "A/B test peeking and sequential testing risk",
+    "description": "What peeking does to an A/B test: the real false positive rate if you check a fixed-horizon test K times and stop at the first p < alpha (for example about 14% at 5 looks with alpha 0.05), and the Pocock and O'Brien-Fleming group sequential boundaries (z and nominal p per look) that keep the overall rate at alpha, for up to 10 equally spaced looks.",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "looks": {
+       "type": "integer",
+       "minimum": 1,
+       "maximum": 50,
+       "description": "How many times the result is checked, including the final look. Equally spaced."
+      },
+      "alpha": {
+       "type": "number",
+       "exclusiveMinimum": 0,
+       "exclusiveMaximum": 0.5,
+       "default": 0.05,
+       "description": "Significance level, default 0.05."
+      }
+     },
+     "required": [
+      "looks"
+     ],
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "title": "Peeking risk",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   }
+  ]
+ },
+ "jsonrpc": "2.0",
+ "id": 2
+}

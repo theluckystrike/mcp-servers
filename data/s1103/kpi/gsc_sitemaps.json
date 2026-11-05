@@ -1,0 +1,246 @@
+{
+ "sc-domain:mcpstamp.com": {
+  "sitemap": [
+   {
+    "path": "https://www.mcpstamp.com/sitemap.xml",
+    "lastSubmitted": "2026-11-03T07:34:02.729Z",
+    "isPending": false,
+    "isSitemapsIndex": false,
+    "type": "sitemap",
+    "lastDownloaded": "2026-11-03T07:34:03.670Z",
+    "warnings": "0",
+    "errors": "0",
+    "contents": [
+     {
+      "type": "web",
+      "submitted": "159",
+      "indexed": "0"
+     }
+    ]
+   }
+  ]
+ },
+ "sc-domain:zovo.one": {
+  "sitemap": [
+   {
+    "path": "https://zovo.one/sitemap-09-blog.xml",
+    "lastSubmitted": "2026-11-01T23:35:02.197Z",
+    "isPending": false,
+    "isSitemapsIndex": false,
+    "type": "sitemap",
+    "lastDownloaded": "2026-11-01T23:35:03.109Z",
+    "warnings": "0",
+    "errors": "0",
+    "contents": [
+     {
+      "type": "web",
+      "submitted": "45",
+      "indexed": "0"
+     }
+    ]
+   },
+   {
+    "path": "https://zovo.one/sitemap-12-other.xml",
+    "lastSubmitted": "2026-11-01T23:35:00.859Z",
+    "isPending": false,
+    "isSitemapsIndex": false,
+    "type": "sitemap",
+    "lastDownloaded": "2026-11-01T23:35:01.265Z",
+    "warnings": "0",
+    "errors": "0",
+    "contents": [
+     {
+      "type": "web",
+      "submitted": "64",
+      "indexed": "0"
+     }
+    ]
+   },
+   {
+    "path": "https://zovo.one/sitemap-01-main.xml",
+    "lastSubmitted": "2026-11-01T23:35:00.410Z",
+    "isPending": false,
+    "isSitemapsIndex": false,
+    "type": "sitemap",
+    "lastDownloaded": "2026-11-01T23:35:01.937Z",
+    "warnings": "0",
+    "errors": "0",
+    "contents": [
+     {
+      "type": "web",
+      "submitted": "436",
+      "indexed": "0"
+     }
+    ]
+   },
+   {
+    "path": "https://zovo.one/sitemap-06-compare.xml",
+    "lastSubmitted": "2026-11-01T11:45:01.512Z",
+    "isPending": false,
+    "isSitemapsIndex": false,
+    "type": "sitemap",
+    "lastDownloaded": "2026-11-01T11:45:03.776Z",
+    "warnings": "0",
+    "errors": "0",
+    "contents": [
+     {
+      "type": "web",
+      "submitted": "109",
+      "indexed": "0"
+     }
+    ]
+   },
+   {
+    "path": "https://zovo.one/sitemap-02-best.xml",
+    "lastSubmitted": "2026-11-01T11:45:00.534Z",
+    "isPending": false,
+    "isSitemapsIndex": false,
+    "type": "sitemap",
+    "lastDownloaded": "2026-11-01T11:45:02.728Z",
+    "warnings": "0",
+    "errors": "0",
+    "contents": [
+     {
+      "type": "web",
+      "submitted": "98",
+      "indexed": "0"
+     }
+    ]
+   },
+   {
+    "path": "https://zovo.one/sitemap-05-alternatives.xml",
+    "lastSubmitted": "2026-11-01T11:40:02.204Z",
+    "isPending": false,
+    "isSitemapsIndex": false,
+    "type": "sitemap",
+    "lastDownloaded": "2026-11-01T11:40:03.078Z",
+    "warnings": "0",
+    "errors": "0",
+    "contents": [
+     {
+      "type": "web",
+      "submitted": "2",
+      "indexed": "0"
+     }
+    ]
+   },
+   {
+    "path": "https://mcp.zovo.one/sitemap.xml",
+    "lastSubmitted": "2026-10-26T06:46:13.778Z",
+    "isPending": false,
+    "isSitemapsIndex": false,
+    "type": "sitemap",
+    "lastDownloaded": "2026-11-01T09:03:33.382Z",
+    "warnings": "0",
+    "errors": "0",
+    "contents": [
+     {
+      "type": "web",
+      "submitted": "299",
+      "indexed": "0"
+     }
+    ]
+   },
+   {
+    "path": "https://tg.zovo.one/fleet-sitemap.xml",
+    "lastSubmitted": "2026-10-25T04:02:51.365Z",
+    "isPending": false,
+    "isSitemapsIndex": false,
+    "type": "sitemap",
+    "lastDownloaded": "2026-11-03T04:54:13.107Z",
+    "warnings": "0",
+    "errors": "0",
+    "contents": [
+     {
+      "type": "web",
+      "submitted": "33",
+      "indexed": "0"
+     }
+    ]
+   },
+   {
+    "path": "https://tg.zovo.one/sitemap.xml",
+    "lastSubmitted": "2026-10-25T04:02:50.464Z",
+    "isPending": false,
+    "isSitemapsIndex": true,
+    "lastDownloaded": "2026-11-01T18:12:23.523Z",
+    "warnings": "0",
+    "errors": "0",
+    "contents": [
+     {
+      "type": "web",
+      "submitted": "881",
+      "indexed": "0"
+     }
+    ]
+   },
+   {
+    "path": "https://tg.zovo.one/sitemap-all.xml",
+    "lastSubmitted": "2026-10-24T08:16:13.991Z",
+    "isPending": false,
+    "isSitemapsIndex": false,
+    "type": "sitemap",
+    "lastDownloaded": "2026-11-03T03:34:03.961Z",
+    "warnings": "0",
+    "errors": "0",
+    "contents": [
+     {
+      "type": "web",
+      "submitted": "758",
+      "indexed": "0"
+     }
+    ]
+   },
+   {
+    "path": "https://tg.zovo.one/sitemap-priority.xml",
+    "lastSubmitted": "2026-10-24T08:16:11.452Z",
+    "isPending": false,
+    "isSitemapsIndex": false,
+    "type": "sitemap",
+    "lastDownloaded": "2026-11-01T15:43:49.995Z",
+    "warnings": "0",
+    "errors": "0",
+    "contents": [
+     {
+      "type": "web",
+      "submitted": "90",
+      "indexed": "0"
+     }
+    ]
+   },
+   {
+    "path": "https://anon.zovo.one/sitemap.xml",
+    "lastSubmitted": "2026-10-14T01:48:13.892Z",
+    "isPending": false,
+    "isSitemapsIndex": false,
+    "type": "sitemap",
+    "lastDownloaded": "2026-10-26T01:40:04.617Z",
+    "warnings": "0",
+    "errors": "0",
+    "contents": [
+     {
+      "type": "web",
+      "submitted": "6",
+      "indexed": "0"
+     }
+    ]
+   },
+   {
+    "path": "https://zovo.one/sitemap.xml",
+    "lastSubmitted": "2026-09-12T15:23:19.608Z",
+    "isPending": false,
+    "isSitemapsIndex": true,
+    "lastDownloaded": "2026-10-23T22:47:11.250Z",
+    "warnings": "0",
+    "errors": "0",
+    "contents": [
+     {
+      "type": "web",
+      "submitted": "754",
+      "indexed": "0"
+     }
+    ]
+   }
+  ]
+ }
+}

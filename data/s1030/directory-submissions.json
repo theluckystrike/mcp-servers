@@ -1,0 +1,503 @@
+{
+ "generated_at_utc": "2026-10-30T02:26:00Z",
+ "servers": 9,
+ "directory_summary": [
+  {
+   "directory": "mcp.directory",
+   "route_url": "https://mcp.directory/submit",
+   "submitted": 9,
+   "already_listed": 0,
+   "human_gated": 0,
+   "failed": 0,
+   "note": "No account. Publisher page /publishers/theluckystrike was 404 before submitting. Each POST /api/submit-server returned 200 {ok:true}. Review and publish within 24 hours per the page. One first attempt (cups-to-grams-mcp) crashed before filling the form, sent no POST, and was rerun once."
+  },
+  {
+   "directory": "pulsemcp.com",
+   "route_url": "https://www.pulsemcp.com/submit",
+   "submitted": 0,
+   "already_listed": 0,
+   "human_gated": 0,
+   "failed": 9,
+   "note": "Submissions paused since 2026-09-03 (page text). Not listed: search for theluckystrike shows 0 servers. PulseMCP says it picks up the Official MCP Registry automatically when it reopens; all 9 are in the registry."
+  },
+  {
+   "directory": "mcpservers.org",
+   "route_url": "https://mcpservers.org/submit",
+   "submitted": 9,
+   "already_listed": 0,
+   "human_gated": 0,
+   "failed": 0,
+   "note": "Free plan ($0, review within 2 weeks), no account, no CAPTCHA seen. Search found no existing listing. Sent name, category, short description, GitHub URL, registry name, remote URL with auth none, contact support@zovo.one. Each got 'Submission Successful!'."
+  },
+  {
+   "directory": "mcpmarket.com",
+   "route_url": "https://mcpmarket.com/submit",
+   "submitted": 8,
+   "already_listed": 0,
+   "human_gated": 0,
+   "failed": 1,
+   "note": "Free Queue ($0, 4-6 weeks), no account needed now. Each accepted POST /api/submit-url returned success with tier free and checkout_url null. gold-price-per-gram-mcp got HTTP 429 twice; retry later."
+  },
+  {
+   "directory": "mcprepository.com",
+   "route_url": "https://mcprepository.com/submit",
+   "submitted": 9,
+   "already_listed": 0,
+   "human_gated": 0,
+   "failed": 0,
+   "note": "One-field GitHub URL form, no account. Repo pages returned 404 before submitting. Each POST /api/index returned status queued, valid true, duplicate false; listing URLs are https://mcprepository.com/theluckystrike/<name>."
+  },
+  {
+   "directory": "allmcps.com",
+   "route_url": "https://allmcps.com/submit",
+   "submitted": 0,
+   "already_listed": 0,
+   "human_gated": 9,
+   "failed": 0,
+   "note": "Form has a Cloudflare Turnstile CAPTCHA. Not attempted."
+  },
+  {
+   "directory": "other candidates screened, not used",
+   "route_url": "",
+   "submitted": 0,
+   "already_listed": 0,
+   "human_gated": 0,
+   "failed": 0,
+   "note": "aiagentslist.com/submit is paid only ($29/$49). mcpserverfinder.com does not resolve. fastmcp.me/submit redirects to mcp.directory/submit. cursormcp.com is a parked domain. mcpworld.com, mcpstore.co, mcpmarket.cn and aimcp.info need a login. mcp.so is paid only. No PRs, issues or emails."
+  }
+ ],
+ "submissions": [
+  {
+   "directory": "mcp.directory",
+   "server": "lake-level-mcp",
+   "route_url": "https://mcp.directory/submit",
+   "status": "submitted",
+   "proof": "POST /api/submit-server 200 {\"ok\":true,\"message\":\"Server submitted for review!\"}; page: Server Submitted! We'll review your server and publish it within 24 hours.",
+   "at_utc": "2026-10-30T02:07:23Z"
+  },
+  {
+   "directory": "mcp.directory",
+   "server": "no-tax-on-overtime-mcp",
+   "route_url": "https://mcp.directory/submit",
+   "status": "submitted",
+   "proof": "POST /api/submit-server 200 {\"ok\":true,\"message\":\"Server submitted for review!\"}; page: Server Submitted! We'll review your server and publish it within 24 hours.",
+   "at_utc": "2026-10-30T02:08:03Z"
+  },
+  {
+   "directory": "mcp.directory",
+   "server": "minimum-wage-mcp",
+   "route_url": "https://mcp.directory/submit",
+   "status": "submitted",
+   "proof": "POST /api/submit-server 200 {\"ok\":true,\"message\":\"Server submitted for review!\"}; page: Server Submitted! We'll review your server and publish it within 24 hours.",
+   "at_utc": "2026-10-30T02:08:44Z"
+  },
+  {
+   "directory": "mcp.directory",
+   "server": "paycheck-calculator-mcp",
+   "route_url": "https://mcp.directory/submit",
+   "status": "submitted",
+   "proof": "POST /api/submit-server 200 {\"ok\":true,\"message\":\"Server submitted for review!\"}; page: Server Submitted! We'll review your server and publish it within 24 hours.",
+   "at_utc": "2026-10-30T02:09:22Z"
+  },
+  {
+   "directory": "mcp.directory",
+   "server": "uk-income-tax-salary-mcp",
+   "route_url": "https://mcp.directory/submit",
+   "status": "submitted",
+   "proof": "POST /api/submit-server 200 {\"ok\":true,\"message\":\"Server submitted for review!\"}; page: Server Submitted! We'll review your server and publish it within 24 hours.",
+   "at_utc": "2026-10-30T02:10:01Z"
+  },
+  {
+   "directory": "mcp.directory",
+   "server": "gold-price-per-gram-mcp",
+   "route_url": "https://mcp.directory/submit",
+   "status": "submitted",
+   "proof": "POST /api/submit-server 200 {\"ok\":true,\"message\":\"Server submitted for review!\"}; page: Server Submitted! We'll review your server and publish it within 24 hours.",
+   "at_utc": "2026-10-30T02:10:39Z"
+  },
+  {
+   "directory": "mcp.directory",
+   "server": "dscr-loan-calculator-mcp",
+   "route_url": "https://mcp.directory/submit",
+   "status": "submitted",
+   "proof": "POST /api/submit-server 200 {\"ok\":true,\"message\":\"Server submitted for review!\"}; page: Server Submitted! We'll review your server and publish it within 24 hours.",
+   "at_utc": "2026-10-30T02:11:17Z"
+  },
+  {
+   "directory": "mcp.directory",
+   "server": "us-federal-holidays-business-days-mcp",
+   "route_url": "https://mcp.directory/submit",
+   "status": "submitted",
+   "proof": "POST /api/submit-server 200 {\"ok\":true,\"message\":\"Server submitted for review!\"}; page: Server Submitted! We'll review your server and publish it within 24 hours.",
+   "at_utc": "2026-10-30T02:12:27Z"
+  },
+  {
+   "directory": "mcp.directory",
+   "server": "cups-to-grams-mcp",
+   "route_url": "https://mcp.directory/submit",
+   "status": "submitted",
+   "proof": "POST /api/submit-server 200 {\"ok\":true,\"message\":\"Server submitted for review!\"}; page: Server Submitted! We'll review your server and publish it within 24 hours.",
+   "at_utc": "2026-10-30T02:13:19Z"
+  },
+  {
+   "directory": "pulsemcp.com",
+   "server": "no-tax-on-overtime-mcp",
+   "route_url": "https://www.pulsemcp.com/submit",
+   "status": "failed",
+   "proof": "Route closed: /submit says 'submissions and changes are temporarily paused' (last updated 2026-09-03); search for theluckystrike shows 0 servers. Not submitted.",
+   "at_utc": "2026-10-30T02:06:30Z"
+  },
+  {
+   "directory": "pulsemcp.com",
+   "server": "minimum-wage-mcp",
+   "route_url": "https://www.pulsemcp.com/submit",
+   "status": "failed",
+   "proof": "Route closed: /submit says 'submissions and changes are temporarily paused' (last updated 2026-09-03); search for theluckystrike shows 0 servers. Not submitted.",
+   "at_utc": "2026-10-30T02:06:30Z"
+  },
+  {
+   "directory": "pulsemcp.com",
+   "server": "paycheck-calculator-mcp",
+   "route_url": "https://www.pulsemcp.com/submit",
+   "status": "failed",
+   "proof": "Route closed: /submit says 'submissions and changes are temporarily paused' (last updated 2026-09-03); search for theluckystrike shows 0 servers. Not submitted.",
+   "at_utc": "2026-10-30T02:06:30Z"
+  },
+  {
+   "directory": "pulsemcp.com",
+   "server": "uk-income-tax-salary-mcp",
+   "route_url": "https://www.pulsemcp.com/submit",
+   "status": "failed",
+   "proof": "Route closed: /submit says 'submissions and changes are temporarily paused' (last updated 2026-09-03); search for theluckystrike shows 0 servers. Not submitted.",
+   "at_utc": "2026-10-30T02:06:30Z"
+  },
+  {
+   "directory": "pulsemcp.com",
+   "server": "gold-price-per-gram-mcp",
+   "route_url": "https://www.pulsemcp.com/submit",
+   "status": "failed",
+   "proof": "Route closed: /submit says 'submissions and changes are temporarily paused' (last updated 2026-09-03); search for theluckystrike shows 0 servers. Not submitted.",
+   "at_utc": "2026-10-30T02:06:30Z"
+  },
+  {
+   "directory": "pulsemcp.com",
+   "server": "lake-level-mcp",
+   "route_url": "https://www.pulsemcp.com/submit",
+   "status": "failed",
+   "proof": "Route closed: /submit says 'submissions and changes are temporarily paused' (last updated 2026-09-03); search for theluckystrike shows 0 servers. Not submitted.",
+   "at_utc": "2026-10-30T02:06:30Z"
+  },
+  {
+   "directory": "pulsemcp.com",
+   "server": "dscr-loan-calculator-mcp",
+   "route_url": "https://www.pulsemcp.com/submit",
+   "status": "failed",
+   "proof": "Route closed: /submit says 'submissions and changes are temporarily paused' (last updated 2026-09-03); search for theluckystrike shows 0 servers. Not submitted.",
+   "at_utc": "2026-10-30T02:06:30Z"
+  },
+  {
+   "directory": "pulsemcp.com",
+   "server": "cups-to-grams-mcp",
+   "route_url": "https://www.pulsemcp.com/submit",
+   "status": "failed",
+   "proof": "Route closed: /submit says 'submissions and changes are temporarily paused' (last updated 2026-09-03); search for theluckystrike shows 0 servers. Not submitted.",
+   "at_utc": "2026-10-30T02:06:30Z"
+  },
+  {
+   "directory": "pulsemcp.com",
+   "server": "us-federal-holidays-business-days-mcp",
+   "route_url": "https://www.pulsemcp.com/submit",
+   "status": "failed",
+   "proof": "Route closed: /submit says 'submissions and changes are temporarily paused' (last updated 2026-09-03); search for theluckystrike shows 0 servers. Not submitted.",
+   "at_utc": "2026-10-30T02:06:30Z"
+  },
+  {
+   "directory": "mcpservers.org",
+   "server": "lake-level-mcp",
+   "route_url": "https://mcpservers.org/submit",
+   "status": "submitted",
+   "proof": "POST _serverFn 200 returned a submission record (plan=free, remoteAuthScheme=none); page: Submission Successful! Your MCP server \"Lake Level MCP\" has been submitted successfully. Review within 2 weeks.",
+   "at_utc": "2026-10-30T02:12:38Z"
+  },
+  {
+   "directory": "mcpservers.org",
+   "server": "no-tax-on-overtime-mcp",
+   "route_url": "https://mcpservers.org/submit",
+   "status": "submitted",
+   "proof": "POST _serverFn 200 returned a submission record (plan=free, remoteAuthScheme=none); page: Submission Successful! Your MCP server \"No Tax on Overtime MCP\" has been submitted successfully. Review within 2 weeks.",
+   "at_utc": "2026-10-30T02:13:30Z"
+  },
+  {
+   "directory": "mcpservers.org",
+   "server": "minimum-wage-mcp",
+   "route_url": "https://mcpservers.org/submit",
+   "status": "submitted",
+   "proof": "POST _serverFn 200 returned a submission record (plan=free, remoteAuthScheme=none); page: Submission Successful! Your MCP server \"Minimum Wage MCP\" has been submitted successfully. Review within 2 weeks.",
+   "at_utc": "2026-10-30T02:14:14Z"
+  },
+  {
+   "directory": "mcpservers.org",
+   "server": "paycheck-calculator-mcp",
+   "route_url": "https://mcpservers.org/submit",
+   "status": "submitted",
+   "proof": "POST _serverFn 200 returned a submission record (plan=free, remoteAuthScheme=none); page: Submission Successful! Your MCP server \"Paycheck Calculator MCP\" has been submitted successfully. Review within 2 weeks.",
+   "at_utc": "2026-10-30T02:15:00Z"
+  },
+  {
+   "directory": "mcpservers.org",
+   "server": "uk-income-tax-salary-mcp",
+   "route_url": "https://mcpservers.org/submit",
+   "status": "submitted",
+   "proof": "POST _serverFn 200 returned a submission record (plan=free, remoteAuthScheme=none); page: Submission Successful! Your MCP server \"UK Income Tax Salary MCP\" has been submitted successfully. Review within 2 weeks.",
+   "at_utc": "2026-10-30T02:15:44Z"
+  },
+  {
+   "directory": "mcpservers.org",
+   "server": "gold-price-per-gram-mcp",
+   "route_url": "https://mcpservers.org/submit",
+   "status": "submitted",
+   "proof": "POST _serverFn 200 returned a submission record (plan=free, remoteAuthScheme=none); page: Submission Successful! Your MCP server \"Gold Price Per Gram MCP\" has been submitted successfully. Review within 2 weeks.",
+   "at_utc": "2026-10-30T02:16:29Z"
+  },
+  {
+   "directory": "mcpservers.org",
+   "server": "dscr-loan-calculator-mcp",
+   "route_url": "https://mcpservers.org/submit",
+   "status": "submitted",
+   "proof": "POST _serverFn 200 returned a submission record (plan=free, remoteAuthScheme=none); page: Submission Successful! Your MCP server \"DSCR Loan Calculator MCP\" has been submitted successfully. Review within 2 weeks.",
+   "at_utc": "2026-10-30T02:17:14Z"
+  },
+  {
+   "directory": "mcpservers.org",
+   "server": "cups-to-grams-mcp",
+   "route_url": "https://mcpservers.org/submit",
+   "status": "submitted",
+   "proof": "POST _serverFn 200 returned a submission record (plan=free, remoteAuthScheme=none); page: Submission Successful! Your MCP server \"Cups to Grams MCP\" has been submitted successfully. Review within 2 weeks.",
+   "at_utc": "2026-10-30T02:17:59Z"
+  },
+  {
+   "directory": "mcpservers.org",
+   "server": "us-federal-holidays-business-days-mcp",
+   "route_url": "https://mcpservers.org/submit",
+   "status": "submitted",
+   "proof": "POST _serverFn 200 returned a submission record (plan=free, remoteAuthScheme=none); page: Submission Successful! Your MCP server \"US Federal Holidays and Business Days MCP\" has been submitted successfully. Review within 2 weeks.",
+   "at_utc": "2026-10-30T02:18:43Z"
+  },
+  {
+   "directory": "mcpmarket.com",
+   "server": "lake-level-mcp",
+   "route_url": "https://mcpmarket.com/submit (Free Queue, $0)",
+   "status": "submitted",
+   "proof": "POST /api/submit-url 200 {\"success\":true,\"message\":\"Submitted! You're in the free queue \u2014 current wait is ~4\u20136 weeks. We'll email you when it's live.\",\"submission_id\":1214353,\"tier\":\"free\",\"checkout_url\":null}",
+   "at_utc": "2026-10-30T02:15:07Z"
+  },
+  {
+   "directory": "mcpmarket.com",
+   "server": "no-tax-on-overtime-mcp",
+   "route_url": "https://mcpmarket.com/submit (Free Queue, $0)",
+   "status": "submitted",
+   "proof": "POST /api/submit-url 200 {\"success\":true,\"message\":\"Submitted! You're in the free queue \u2014 current wait is ~4\u20136 weeks. We'll email you when it's live.\",\"submission_id\":1214354,\"tier\":\"free\",\"checkout_url\":null}",
+   "at_utc": "2026-10-30T02:16:00Z"
+  },
+  {
+   "directory": "mcpmarket.com",
+   "server": "minimum-wage-mcp",
+   "route_url": "https://mcpmarket.com/submit (Free Queue, $0)",
+   "status": "submitted",
+   "proof": "POST /api/submit-url 200 {\"success\":true,\"message\":\"Submitted! You're in the free queue \u2014 current wait is ~4\u20136 weeks. We'll email you when it's live.\",\"submission_id\":1214355,\"tier\":\"free\",\"checkout_url\":null}",
+   "at_utc": "2026-10-30T02:16:47Z"
+  },
+  {
+   "directory": "mcpmarket.com",
+   "server": "paycheck-calculator-mcp",
+   "route_url": "https://mcpmarket.com/submit (Free Queue, $0)",
+   "status": "submitted",
+   "proof": "POST /api/submit-url 200 {\"success\":true,\"message\":\"Submitted! You're in the free queue \u2014 current wait is ~4\u20136 weeks. We'll email you when it's live.\",\"submission_id\":1214356,\"tier\":\"free\",\"checkout_url\":null}",
+   "at_utc": "2026-10-30T02:17:34Z"
+  },
+  {
+   "directory": "mcpmarket.com",
+   "server": "uk-income-tax-salary-mcp",
+   "route_url": "https://mcpmarket.com/submit (Free Queue, $0)",
+   "status": "submitted",
+   "proof": "POST /api/submit-url 200 {\"success\":true,\"message\":\"Submitted! You're in the free queue \u2014 current wait is ~4\u20136 weeks. We'll email you when it's live.\",\"submission_id\":1214357,\"tier\":\"free\",\"checkout_url\":null}",
+   "at_utc": "2026-10-30T02:18:31Z"
+  },
+  {
+   "directory": "mcpmarket.com",
+   "server": "gold-price-per-gram-mcp",
+   "route_url": "https://mcpmarket.com/submit (Free Queue, $0)",
+   "status": "failed",
+   "proof": "Not accepted: POST /api/submit-url returned HTTP 429 {\"error\":\"Too many submissions. Please try again later.\"} at 02:19:31Z and again on one retry at 02:24:25Z (120 s pause). Other 8 servers were accepted in the same window. Retry once after the per-IP limit resets.",
+   "at_utc": "2026-10-30T02:24:25Z"
+  },
+  {
+   "directory": "mcpmarket.com",
+   "server": "dscr-loan-calculator-mcp",
+   "route_url": "https://mcpmarket.com/submit (Free Queue, $0)",
+   "status": "submitted",
+   "proof": "POST /api/submit-url 200 {\"success\":true,\"message\":\"Submitted! You're in the free queue \u2014 current wait is ~4\u20136 weeks. We'll email you when it's live.\",\"submission_id\":1214358,\"tier\":\"free\",\"checkout_url\":null}",
+   "at_utc": "2026-10-30T02:20:17Z"
+  },
+  {
+   "directory": "mcpmarket.com",
+   "server": "cups-to-grams-mcp",
+   "route_url": "https://mcpmarket.com/submit (Free Queue, $0)",
+   "status": "submitted",
+   "proof": "POST /api/submit-url 200 {\"success\":true,\"message\":\"Submitted! You're in the free queue \u2014 current wait is ~4\u20136 weeks. We'll email you when it's live.\",\"submission_id\":1214359,\"tier\":\"free\",\"checkout_url\":null}",
+   "at_utc": "2026-10-30T02:21:03Z"
+  },
+  {
+   "directory": "mcpmarket.com",
+   "server": "us-federal-holidays-business-days-mcp",
+   "route_url": "https://mcpmarket.com/submit (Free Queue, $0)",
+   "status": "submitted",
+   "proof": "POST /api/submit-url 200 {\"success\":true,\"message\":\"Submitted! You're in the free queue \u2014 current wait is ~4\u20136 weeks. We'll email you when it's live.\",\"submission_id\":1214360,\"tier\":\"free\",\"checkout_url\":null}",
+   "at_utc": "2026-10-30T02:21:49Z"
+  },
+  {
+   "directory": "mcprepository.com",
+   "server": "lake-level-mcp",
+   "route_url": "https://mcprepository.com/submit",
+   "status": "submitted",
+   "proof": "POST /api/index 200 {\"status\":\"queued\",\"valid\":true,\"duplicate\":false,\"url\":\"https://mcprepository.com/theluckystrike/lake-level-mcp\",\"repo_url\":\"https://github.com/theluckystrike/lake-level-mcp\",\"message\":\"Your submission has been received and is being processed.\"}",
+   "at_utc": "2026-10-30T02:19:41Z"
+  },
+  {
+   "directory": "mcprepository.com",
+   "server": "no-tax-on-overtime-mcp",
+   "route_url": "https://mcprepository.com/submit",
+   "status": "submitted",
+   "proof": "POST /api/index 200 {\"status\":\"queued\",\"valid\":true,\"duplicate\":false,\"url\":\"https://mcprepository.com/theluckystrike/no-tax-on-overtime-mcp\",\"repo_url\":\"https://github.com/theluckystrike/no-tax-on-overtime-mcp\",\"message\":\"Your submission has been received and is being processed.\"}",
+   "at_utc": "2026-10-30T02:20:23Z"
+  },
+  {
+   "directory": "mcprepository.com",
+   "server": "minimum-wage-mcp",
+   "route_url": "https://mcprepository.com/submit",
+   "status": "submitted",
+   "proof": "POST /api/index 200 {\"status\":\"queued\",\"valid\":true,\"duplicate\":false,\"url\":\"https://mcprepository.com/theluckystrike/minimum-wage-mcp\",\"repo_url\":\"https://github.com/theluckystrike/minimum-wage-mcp\",\"message\":\"Your submission has been received and is being processed.\"}",
+   "at_utc": "2026-10-30T02:21:00Z"
+  },
+  {
+   "directory": "mcprepository.com",
+   "server": "paycheck-calculator-mcp",
+   "route_url": "https://mcprepository.com/submit",
+   "status": "submitted",
+   "proof": "POST /api/index 200 {\"status\":\"queued\",\"valid\":true,\"duplicate\":false,\"url\":\"https://mcprepository.com/theluckystrike/paycheck-calculator-mcp\",\"repo_url\":\"https://github.com/theluckystrike/paycheck-calculator-mcp\",\"message\":\"Your submission has been received and is being processed.\"}",
+   "at_utc": "2026-10-30T02:21:37Z"
+  },
+  {
+   "directory": "mcprepository.com",
+   "server": "uk-income-tax-salary-mcp",
+   "route_url": "https://mcprepository.com/submit",
+   "status": "submitted",
+   "proof": "POST /api/index 200 {\"status\":\"queued\",\"valid\":true,\"duplicate\":false,\"url\":\"https://mcprepository.com/theluckystrike/uk-income-tax-salary-mcp\",\"repo_url\":\"https://github.com/theluckystrike/uk-income-tax-salary-mcp\",\"message\":\"Your submission has been received and is being processed.\"}",
+   "at_utc": "2026-10-30T02:22:15Z"
+  },
+  {
+   "directory": "mcprepository.com",
+   "server": "gold-price-per-gram-mcp",
+   "route_url": "https://mcprepository.com/submit",
+   "status": "submitted",
+   "proof": "POST /api/index 200 {\"status\":\"queued\",\"valid\":true,\"duplicate\":false,\"url\":\"https://mcprepository.com/theluckystrike/gold-price-per-gram-mcp\",\"repo_url\":\"https://github.com/theluckystrike/gold-price-per-gram-mcp\",\"message\":\"Your submission has been received and is being processed.\"}",
+   "at_utc": "2026-10-30T02:22:52Z"
+  },
+  {
+   "directory": "mcprepository.com",
+   "server": "dscr-loan-calculator-mcp",
+   "route_url": "https://mcprepository.com/submit",
+   "status": "submitted",
+   "proof": "POST /api/index 200 {\"status\":\"queued\",\"valid\":true,\"duplicate\":false,\"url\":\"https://mcprepository.com/theluckystrike/dscr-loan-calculator-mcp\",\"repo_url\":\"https://github.com/theluckystrike/dscr-loan-calculator-mcp\",\"message\":\"Your submission has been received and is being processed.\"}",
+   "at_utc": "2026-10-30T02:23:29Z"
+  },
+  {
+   "directory": "mcprepository.com",
+   "server": "cups-to-grams-mcp",
+   "route_url": "https://mcprepository.com/submit",
+   "status": "submitted",
+   "proof": "POST /api/index 200 {\"status\":\"queued\",\"valid\":true,\"duplicate\":false,\"url\":\"https://mcprepository.com/theluckystrike/cups-to-grams-mcp\",\"repo_url\":\"https://github.com/theluckystrike/cups-to-grams-mcp\",\"message\":\"Your submission has been received and is being processed.\"}",
+   "at_utc": "2026-10-30T02:24:08Z"
+  },
+  {
+   "directory": "mcprepository.com",
+   "server": "us-federal-holidays-business-days-mcp",
+   "route_url": "https://mcprepository.com/submit",
+   "status": "submitted",
+   "proof": "POST /api/index 200 {\"status\":\"queued\",\"valid\":true,\"duplicate\":false,\"url\":\"https://mcprepository.com/theluckystrike/us-federal-holidays-business-days-mcp\",\"repo_url\":\"https://github.com/theluckystrike/us-federal-holidays-business-days-mcp\",\"message\":\"Your submission has been received and is being processed.\"}",
+   "at_utc": "2026-10-30T02:24:45Z"
+  },
+  {
+   "directory": "allmcps.com",
+   "server": "no-tax-on-overtime-mcp",
+   "route_url": "https://allmcps.com/submit",
+   "status": "human_gated",
+   "proof": "Submit form carries a Cloudflare Turnstile CAPTCHA (div#cf-turnstile before the submit button); not attempted.",
+   "at_utc": "2026-10-30T02:22:00Z"
+  },
+  {
+   "directory": "allmcps.com",
+   "server": "minimum-wage-mcp",
+   "route_url": "https://allmcps.com/submit",
+   "status": "human_gated",
+   "proof": "Submit form carries a Cloudflare Turnstile CAPTCHA (div#cf-turnstile before the submit button); not attempted.",
+   "at_utc": "2026-10-30T02:22:00Z"
+  },
+  {
+   "directory": "allmcps.com",
+   "server": "paycheck-calculator-mcp",
+   "route_url": "https://allmcps.com/submit",
+   "status": "human_gated",
+   "proof": "Submit form carries a Cloudflare Turnstile CAPTCHA (div#cf-turnstile before the submit button); not attempted.",
+   "at_utc": "2026-10-30T02:22:00Z"
+  },
+  {
+   "directory": "allmcps.com",
+   "server": "uk-income-tax-salary-mcp",
+   "route_url": "https://allmcps.com/submit",
+   "status": "human_gated",
+   "proof": "Submit form carries a Cloudflare Turnstile CAPTCHA (div#cf-turnstile before the submit button); not attempted.",
+   "at_utc": "2026-10-30T02:22:00Z"
+  },
+  {
+   "directory": "allmcps.com",
+   "server": "gold-price-per-gram-mcp",
+   "route_url": "https://allmcps.com/submit",
+   "status": "human_gated",
+   "proof": "Submit form carries a Cloudflare Turnstile CAPTCHA (div#cf-turnstile before the submit button); not attempted.",
+   "at_utc": "2026-10-30T02:22:00Z"
+  },
+  {
+   "directory": "allmcps.com",
+   "server": "lake-level-mcp",
+   "route_url": "https://allmcps.com/submit",
+   "status": "human_gated",
+   "proof": "Submit form carries a Cloudflare Turnstile CAPTCHA (div#cf-turnstile before the submit button); not attempted.",
+   "at_utc": "2026-10-30T02:22:00Z"
+  },
+  {
+   "directory": "allmcps.com",
+   "server": "dscr-loan-calculator-mcp",
+   "route_url": "https://allmcps.com/submit",
+   "status": "human_gated",
+   "proof": "Submit form carries a Cloudflare Turnstile CAPTCHA (div#cf-turnstile before the submit button); not attempted.",
+   "at_utc": "2026-10-30T02:22:00Z"
+  },
+  {
+   "directory": "allmcps.com",
+   "server": "cups-to-grams-mcp",
+   "route_url": "https://allmcps.com/submit",
+   "status": "human_gated",
+   "proof": "Submit form carries a Cloudflare Turnstile CAPTCHA (div#cf-turnstile before the submit button); not attempted.",
+   "at_utc": "2026-10-30T02:22:00Z"
+  },
+  {
+   "directory": "allmcps.com",
+   "server": "us-federal-holidays-business-days-mcp",
+   "route_url": "https://allmcps.com/submit",
+   "status": "human_gated",
+   "proof": "Submit form carries a Cloudflare Turnstile CAPTCHA (div#cf-turnstile before the submit button); not attempted.",
+   "at_utc": "2026-10-30T02:22:00Z"
+  }
+ ]
+}

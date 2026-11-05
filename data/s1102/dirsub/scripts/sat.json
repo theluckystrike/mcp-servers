@@ -1,0 +1,8 @@
+[
+{"repo":"car-loan-interest-deduction-calculator-mcp","name":"Car Loan Interest Deduction Calculator MCP","desc":"Car loan interest deduction, SALT cap, child tax credit and 2026 tax brackets for US filers","cat":"finance"},
+{"repo":"section-179-deduction-calculator-mcp","name":"Section 179 Deduction Calculator MCP","desc":"Section 179 deduction, 100% bonus depreciation, heavy SUV limits and equipment loan cost","cat":"finance"},
+{"repo":"subdomain-finder-mcp","name":"Subdomain Finder MCP","desc":"Passive subdomain enumeration from certificate transparency logs and DNS","cat":"development"},
+{"repo":"ab-test-sample-size-calculator-mcp","name":"A/B Test Sample Size Calculator MCP","desc":"A/B test sample size, duration, z-test, chi-square and Fisher exact tests with peeking checks","cat":"marketing"},
+{"repo":"recipe-nutrition-calculator-mcp","name":"Recipe Nutrition Calculator MCP","desc":"Recipe calories and macros per serving from USDA FoodData Central with FDA label rounding","cat":"other"},
+{"repo":"ap-score-distributions-mcp","name":"AP Score Distributions MCP","desc":"Official College Board AP score distributions, percentiles and pass rates for 2024 to 2026","cat":"other"}
+]

@@ -1,0 +1,4485 @@
+{
+  "schema": 1,
+  "started_at": "2026-10-27T03:03:49.945Z",
+  "scope": "Read-only revenue diagnosis: Stripe Checkout, Search Console, GitHub, hosted aggregate counters and URL Inspection. No Checkout creation, payment, tool calls, emails or external writes.",
+  "stripe_28d": {
+    "status": "OK",
+    "fetched_at": "2026-10-27T03:03:58.121Z",
+    "window": {
+      "start": "2026-09-29T03:03:49.946Z",
+      "end": "2026-10-27T03:03:49.946Z"
+    },
+    "method": "stripe checkout sessions list --live --limit 100; paginate until exhausted or oldest record predates window",
+    "pages": 2,
+    "records_read": 200,
+    "oldest_record_at": "2026-09-19T15:07:39.000Z",
+    "entire_window_covered": true,
+    "days": 28,
+    "nonzero_account_read_control": true,
+    "mcp_total_sessions": 10,
+    "mcp_tagged_probes": 6,
+    "mcp_untagged_sessions": 4,
+    "mcp_untagged_paid_sessions": 0,
+    "mcp_untagged_paid_checkout_gross_minor_by_currency": {},
+    "limitations": [
+      "Untagged does not establish a person.",
+      "Explicit probe=1 Sessions excluded from commercial totals; probe counts are measured, not hardcoded."
+    ]
+  },
+  "stripe_7d": {
+    "status": "OK",
+    "fetched_at": "2026-10-27T03:03:54.269Z",
+    "window": {
+      "start": "2026-10-20T03:03:49.948Z",
+      "end": "2026-10-27T03:03:49.948Z"
+    },
+    "method": "stripe checkout sessions list --live --limit 100; paginate until exhausted or oldest record predates window",
+    "pages": 1,
+    "records_read": 100,
+    "oldest_record_at": "2026-10-06T11:26:59.000Z",
+    "entire_window_covered": true,
+    "days": 7,
+    "nonzero_account_read_control": true,
+    "mcp_total_sessions": 2,
+    "mcp_tagged_probes": 2,
+    "mcp_untagged_sessions": 0,
+    "mcp_untagged_paid_sessions": 0,
+    "mcp_untagged_paid_checkout_gross_minor_by_currency": {},
+    "limitations": [
+      "Untagged does not establish a person.",
+      "Explicit probe=1 Sessions excluded from commercial totals; probe counts are measured, not hardcoded."
+    ]
+  },
+  "stripe_completed": {
+    "status": "OK",
+    "fetched_at": "2026-10-27T03:03:59.374Z",
+    "method": "stripe get /v1/checkout/sessions --live -d status=complete -d limit=100 -d expand[]=data.line_items; exhaust cursor pagination and assert complete line-item coverage",
+    "pages": 2,
+    "complete_history_of_completed_sessions": true,
+    "all_line_items_covered": true,
+    "counts": {
+      "account_completed": 186,
+      "account_paid": 186,
+      "mcp_completed": 0,
+      "mcp_tagged_probes": 0,
+      "mcp_untagged_paid": 0,
+      "paid_known_mcp_price": 0,
+      "paid_known_mcp_metadata_product": 0,
+      "paid_other_host_with_known_mcp_price": 0
+    },
+    "mcp_untagged_paid_checkout_gross_minor_by_currency": {},
+    "paid_account_positive_control": true,
+    "oldest_account_completed_at": "2024-10-09T14:18:09.000Z",
+    "newest_account_completed_at": "2026-10-20T04:32:01.000Z",
+    "historical_two_sale_claim": {
+      "source": "intel/R7_MONETIZATION.md",
+      "claimed_gross_usd": 38,
+      "checks": [
+        {
+          "found": true,
+          "created_at": "2026-09-26T07:10:29.000Z",
+          "success_host": "zovo.one",
+          "cancel_host": "zovo.one",
+          "mode": "subscription",
+          "paid": true,
+          "amount_total_minor": 499,
+          "currency": "usd",
+          "exact_mcp_host": false,
+          "known_mcp_price": false,
+          "known_mcp_metadata_product": false,
+          "mcp_named_line_item": false
+        },
+        {
+          "found": true,
+          "created_at": "2026-09-24T15:03:05.000Z",
+          "success_host": "zovo.one",
+          "cancel_host": "zovo.one",
+          "mode": "subscription",
+          "paid": true,
+          "amount_total_minor": 499,
+          "currency": "usd",
+          "exact_mcp_host": false,
+          "known_mcp_price": false,
+          "known_mcp_metadata_product": false,
+          "mcp_named_line_item": false
+        }
+      ]
+    },
+    "limitations": [
+      "Completed Checkout history and current known MCP price catalog, not all payment channels or net profit.",
+      "Metadata and line items independently cross-check host attribution. Older retired price IDs outside the current catalog remain a limit.",
+      "Two historical records are summarized without customer identity, session IDs or unrelated account amounts."
+    ]
+  },
+  "github": {
+    "status": "OK",
+    "fetched_at": "2026-10-27T03:03:51.147Z",
+    "method": "gh api repos/theluckystrike/mcp-servers/traffic/{views,clones,popular/referrers}; repository GET",
+    "window": {
+      "start": "2026-10-12",
+      "end": "2026-10-25"
+    },
+    "views": 87,
+    "unique_visitors": 44,
+    "views_daily": [
+      {
+        "date": "2026-10-12",
+        "count": 1,
+        "uniques": 1
+      },
+      {
+        "date": "2026-10-13",
+        "count": 3,
+        "uniques": 2
+      },
+      {
+        "date": "2026-10-14",
+        "count": 4,
+        "uniques": 3
+      },
+      {
+        "date": "2026-10-15",
+        "count": 11,
+        "uniques": 7
+      },
+      {
+        "date": "2026-10-16",
+        "count": 8,
+        "uniques": 4
+      },
+      {
+        "date": "2026-10-17",
+        "count": 2,
+        "uniques": 1
+      },
+      {
+        "date": "2026-10-18",
+        "count": 6,
+        "uniques": 4
+      },
+      {
+        "date": "2026-10-19",
+        "count": 4,
+        "uniques": 2
+      },
+      {
+        "date": "2026-10-20",
+        "count": 15,
+        "uniques": 15
+      },
+      {
+        "date": "2026-10-21",
+        "count": 6,
+        "uniques": 6
+      },
+      {
+        "date": "2026-10-22",
+        "count": 3,
+        "uniques": 1
+      },
+      {
+        "date": "2026-10-23",
+        "count": 6,
+        "uniques": 5
+      },
+      {
+        "date": "2026-10-24",
+        "count": 14,
+        "uniques": 4
+      },
+      {
+        "date": "2026-10-25",
+        "count": 4,
+        "uniques": 2
+      }
+    ],
+    "clones": 3034,
+    "clone_unique_clients": 360,
+    "clones_daily": [
+      {
+        "date": "2026-10-12",
+        "count": 91,
+        "uniques": 34
+      },
+      {
+        "date": "2026-10-13",
+        "count": 41,
+        "uniques": 17
+      },
+      {
+        "date": "2026-10-14",
+        "count": 1134,
+        "uniques": 77
+      },
+      {
+        "date": "2026-10-15",
+        "count": 225,
+        "uniques": 79
+      },
+      {
+        "date": "2026-10-16",
+        "count": 377,
+        "uniques": 102
+      },
+      {
+        "date": "2026-10-17",
+        "count": 313,
+        "uniques": 100
+      },
+      {
+        "date": "2026-10-18",
+        "count": 168,
+        "uniques": 13
+      },
+      {
+        "date": "2026-10-19",
+        "count": 83,
+        "uniques": 10
+      },
+      {
+        "date": "2026-10-20",
+        "count": 146,
+        "uniques": 8
+      },
+      {
+        "date": "2026-10-21",
+        "count": 29,
+        "uniques": 8
+      },
+      {
+        "date": "2026-10-22",
+        "count": 37,
+        "uniques": 13
+      },
+      {
+        "date": "2026-10-23",
+        "count": 33,
+        "uniques": 8
+      },
+      {
+        "date": "2026-10-24",
+        "count": 28,
+        "uniques": 7
+      },
+      {
+        "date": "2026-10-25",
+        "count": 329,
+        "uniques": 16
+      }
+    ],
+    "referrers": [
+      {
+        "referrer": "Google",
+        "count": 2,
+        "uniques": 1
+      },
+      {
+        "referrer": "github.com",
+        "count": 1,
+        "uniques": 1
+      },
+      {
+        "referrer": "registry.modelcontextprotocol.io",
+        "count": 1,
+        "uniques": 1
+      }
+    ],
+    "stars": 2,
+    "forks": 0,
+    "nonzero_read_control": true,
+    "limitations": [
+      "Platform-reported clients, not proven people, installs or successful jobs.",
+      "Rolling dataset can lag; daily unique clients are not additive."
+    ]
+  },
+  "search_console": {
+    "status": "OK",
+    "inspections": [],
+    "fetched_at": "2026-10-27T03:03:54.041Z",
+    "method": "Read-only service-account OAuth; GSC searchAnalytics/query, finalized page rows, contains-host prefilter then URL.hostname exact check; row cap checked",
+    "window": {
+      "start": "2026-09-27",
+      "end": "2026-10-24"
+    },
+    "data_state": "final",
+    "mcp": {
+      "host": "mcp.zovo.one",
+      "rows_returned": 6,
+      "exact_host_page_rows": 6,
+      "clicks": 0,
+      "impressions": 37,
+      "pages": [
+        {
+          "page": "https://mcp.zovo.one/",
+          "clicks": 0,
+          "impressions": 25,
+          "position": 3.84
+        },
+        {
+          "page": "https://mcp.zovo.one/mcp/connect",
+          "clicks": 0,
+          "impressions": 7,
+          "position": 1.4285714285714286
+        },
+        {
+          "page": "https://mcp.zovo.one/mcp/price-tracker",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 1
+        },
+        {
+          "page": "https://mcp.zovo.one/mcp/time-tracker",
+          "clicks": 0,
+          "impressions": 2,
+          "position": 1.5
+        },
+        {
+          "page": "https://mcp.zovo.one/mcp/token",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 1
+        },
+        {
+          "page": "https://mcp.zovo.one/mcp/zip",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 1
+        }
+      ]
+    },
+    "positive_control": {
+      "host": "zovo.one",
+      "rows_returned": 288,
+      "exact_host_page_rows": 288,
+      "clicks": 47,
+      "impressions": 4743,
+      "pages": [
+        {
+          "page": "https://zovo.one/",
+          "clicks": 44,
+          "impressions": 1427,
+          "position": 3.315346881569727
+        },
+        {
+          "page": "https://zovo.one/free-tools/ai-detector",
+          "clicks": 1,
+          "impressions": 1,
+          "position": 3
+        },
+        {
+          "page": "https://zovo.one/free-tools/calendar-generator",
+          "clicks": 1,
+          "impressions": 1,
+          "position": 1
+        },
+        {
+          "page": "https://zovo.one/free-tools/ssh-key-generator",
+          "clicks": 1,
+          "impressions": 3,
+          "position": 10
+        },
+        {
+          "page": "https://zovo.one/about",
+          "clicks": 0,
+          "impressions": 50,
+          "position": 4.04
+        },
+        {
+          "page": "https://zovo.one/about/michael-lip",
+          "clicks": 0,
+          "impressions": 12,
+          "position": 2.083333333333333
+        },
+        {
+          "page": "https://zovo.one/alternatives/grammarly",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 3
+        },
+        {
+          "page": "https://zovo.one/alternatives/the-great-suspender",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 67
+        },
+        {
+          "page": "https://zovo.one/answers",
+          "clicks": 0,
+          "impressions": 7,
+          "position": 15.142857142857142
+        },
+        {
+          "page": "https://zovo.one/articles",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 20
+        },
+        {
+          "page": "https://zovo.one/best-for",
+          "clicks": 0,
+          "impressions": 3,
+          "position": 5.666666666666667
+        },
+        {
+          "page": "https://zovo.one/best/best-free-ad-blockers-chrome-extensions",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 86
+        },
+        {
+          "page": "https://zovo.one/best/best-free-bookmark-managers-chrome-extensions",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 43
+        },
+        {
+          "page": "https://zovo.one/best/best-free-qr-code-generators-chrome-extensions",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 7
+        },
+        {
+          "page": "https://zovo.one/best/best-free-translation-tools-chrome-extensions",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 55
+        },
+        {
+          "page": "https://zovo.one/best/best-free-web-scraper-chrome-extensions",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 22
+        },
+        {
+          "page": "https://zovo.one/best/best-free-youtube-extensions",
+          "clicks": 0,
+          "impressions": 3,
+          "position": 46
+        },
+        {
+          "page": "https://zovo.one/best/best-note-taking-extensions",
+          "clicks": 0,
+          "impressions": 3,
+          "position": 39.666666666666664
+        },
+        {
+          "page": "https://zovo.one/best/best-pomodoro-timers-chrome-extensions",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 39
+        },
+        {
+          "page": "https://zovo.one/best/best-privacy-extensions-for-edge",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 59
+        },
+        {
+          "page": "https://zovo.one/best/best-privacy-focused-ad-blockers-chrome-extensions",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 6
+        },
+        {
+          "page": "https://zovo.one/best/best-screenshot-extensions",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 9
+        },
+        {
+          "page": "https://zovo.one/blog",
+          "clicks": 0,
+          "impressions": 6,
+          "position": 7.5
+        },
+        {
+          "page": "https://zovo.one/blog/chrome-dark-mode-complete-guide.html",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 10
+        },
+        {
+          "page": "https://zovo.one/blog/chrome-extensions-not-working-fix.html",
+          "clicks": 0,
+          "impressions": 12,
+          "position": 3.8333333333333335
+        },
+        {
+          "page": "https://zovo.one/commons",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 9
+        },
+        {
+          "page": "https://zovo.one/community",
+          "clicks": 0,
+          "impressions": 5,
+          "position": 9
+        },
+        {
+          "page": "https://zovo.one/compare",
+          "clicks": 0,
+          "impressions": 9,
+          "position": 3.2222222222222223
+        },
+        {
+          "page": "https://zovo.one/compare/cookie-manager-vs-editthiscookie",
+          "clicks": 0,
+          "impressions": 2,
+          "position": 3.5
+        },
+        {
+          "page": "https://zovo.one/compare/dark-mode-vs-dark-reader",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 1
+        },
+        {
+          "page": "https://zovo.one/compare/json-formatter-vs-json-viewer-pro",
+          "clicks": 0,
+          "impressions": 3,
+          "position": 25.333333333333332
+        },
+        {
+          "page": "https://zovo.one/compare/json-formatter-vs-jsonview",
+          "clicks": 0,
+          "impressions": 2,
+          "position": 5.5
+        },
+        {
+          "page": "https://zovo.one/compare/privacy-tools",
+          "clicks": 0,
+          "impressions": 3,
+          "position": 4.666666666666666
+        },
+        {
+          "page": "https://zovo.one/compare/tab-suspender-vs-onetab",
+          "clicks": 0,
+          "impressions": 2,
+          "position": 3
+        },
+        {
+          "page": "https://zovo.one/does-it-track",
+          "clicks": 0,
+          "impressions": 13,
+          "position": 5.384615384615385
+        },
+        {
+          "page": "https://zovo.one/expert/case-study-chrome-memory-reduction",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 18
+        },
+        {
+          "page": "https://zovo.one/expert/case-study-va-client-retention",
+          "clicks": 0,
+          "impressions": 2,
+          "position": 7.5
+        },
+        {
+          "page": "https://zovo.one/expert/chrome-extension-awards-2026",
+          "clicks": 0,
+          "impressions": 4,
+          "position": 4
+        },
+        {
+          "page": "https://zovo.one/expert/state-of-filipino-vas-2026",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 8
+        },
+        {
+          "page": "https://zovo.one/extensions",
+          "clicks": 0,
+          "impressions": 8,
+          "position": 11.375
+        },
+        {
+          "page": "https://zovo.one/free-tools",
+          "clicks": 0,
+          "impressions": 7,
+          "position": 7.857142857142857
+        },
+        {
+          "page": "https://zovo.one/free-tools/529-calculator",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 2
+        },
+        {
+          "page": "https://zovo.one/free-tools/acre-square-footage",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 5
+        },
+        {
+          "page": "https://zovo.one/free-tools/ai-website-builder",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 1
+        },
+        {
+          "page": "https://zovo.one/free-tools/aia-compensation-calculator",
+          "clicks": 0,
+          "impressions": 2,
+          "position": 6.5
+        },
+        {
+          "page": "https://zovo.one/free-tools/air-density-calculator",
+          "clicks": 0,
+          "impressions": 26,
+          "position": 81.92307692307692
+        },
+        {
+          "page": "https://zovo.one/free-tools/anagram-solver",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 1
+        },
+        {
+          "page": "https://zovo.one/free-tools/api-tester",
+          "clicks": 0,
+          "impressions": 5,
+          "position": 6.4
+        },
+        {
+          "page": "https://zovo.one/free-tools/articles/internet-speed-test-guide/",
+          "clicks": 0,
+          "impressions": 5,
+          "position": 59.2
+        },
+        {
+          "page": "https://zovo.one/free-tools/asa-citation-generator",
+          "clicks": 0,
+          "impressions": 27,
+          "position": 78.5925925925926
+        },
+        {
+          "page": "https://zovo.one/free-tools/ascii-banner-generator",
+          "clicks": 0,
+          "impressions": 3,
+          "position": 6.666666666666667
+        },
+        {
+          "page": "https://zovo.one/free-tools/aspect-ratio-calculator",
+          "clicks": 0,
+          "impressions": 9,
+          "position": 9.88888888888889
+        },
+        {
+          "page": "https://zovo.one/free-tools/audio-converter",
+          "clicks": 0,
+          "impressions": 10,
+          "position": 6.1
+        },
+        {
+          "page": "https://zovo.one/free-tools/baby-name-generator",
+          "clicks": 0,
+          "impressions": 5,
+          "position": 12.2
+        },
+        {
+          "page": "https://zovo.one/free-tools/baht-to-usd-converter",
+          "clicks": 0,
+          "impressions": 3,
+          "position": 2.666666666666667
+        },
+        {
+          "page": "https://zovo.one/free-tools/barcode-label-maker",
+          "clicks": 0,
+          "impressions": 30,
+          "position": 79.46666666666667
+        },
+        {
+          "page": "https://zovo.one/free-tools/bcrypt-generator",
+          "clicks": 0,
+          "impressions": 6,
+          "position": 11.5
+        },
+        {
+          "page": "https://zovo.one/free-tools/beam-deflection-calculator",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 6
+        },
+        {
+          "page": "https://zovo.one/free-tools/bench-press-estimator",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 2
+        },
+        {
+          "page": "https://zovo.one/free-tools/bernoulli-equation-calculator",
+          "clicks": 0,
+          "impressions": 2,
+          "position": 4
+        },
+        {
+          "page": "https://zovo.one/free-tools/binary-converter",
+          "clicks": 0,
+          "impressions": 4,
+          "position": 10
+        },
+        {
+          "page": "https://zovo.one/free-tools/binary-to-decimal-converter",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 6
+        },
+        {
+          "page": "https://zovo.one/free-tools/bmi-calculator",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 10
+        },
+        {
+          "page": "https://zovo.one/free-tools/boat-loan-calculator",
+          "clicks": 0,
+          "impressions": 2,
+          "position": 6
+        },
+        {
+          "page": "https://zovo.one/free-tools/body-fat-calculator",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 6
+        },
+        {
+          "page": "https://zovo.one/free-tools/browser-fingerprint-checker",
+          "clicks": 0,
+          "impressions": 5,
+          "position": 6.6
+        },
+        {
+          "page": "https://zovo.one/free-tools/budget-calculator",
+          "clicks": 0,
+          "impressions": 2,
+          "position": 43
+        },
+        {
+          "page": "https://zovo.one/free-tools/budget-planner",
+          "clicks": 0,
+          "impressions": 2,
+          "position": 6
+        },
+        {
+          "page": "https://zovo.one/free-tools/business-card-maker",
+          "clicks": 0,
+          "impressions": 3,
+          "position": 7.333333333333333
+        },
+        {
+          "page": "https://zovo.one/free-tools/business-loan-calculator",
+          "clicks": 0,
+          "impressions": 4,
+          "position": 5.75
+        },
+        {
+          "page": "https://zovo.one/free-tools/cagr-calculator",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 2
+        },
+        {
+          "page": "https://zovo.one/free-tools/cash-out-refinance-calculator",
+          "clicks": 0,
+          "impressions": 745,
+          "position": 11.476510067114093
+        },
+        {
+          "page": "https://zovo.one/free-tools/cd-calculator",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 5
+        },
+        {
+          "page": "https://zovo.one/free-tools/chf-to-usd-converter",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 6
+        },
+        {
+          "page": "https://zovo.one/free-tools/clock-out-time-calculator",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 11
+        },
+        {
+          "page": "https://zovo.one/free-tools/collage-maker",
+          "clicks": 0,
+          "impressions": 10,
+          "position": 30.1
+        },
+        {
+          "page": "https://zovo.one/free-tools/college-savings-calculator",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 1
+        },
+        {
+          "page": "https://zovo.one/free-tools/color-blindness-simulator",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 10
+        },
+        {
+          "page": "https://zovo.one/free-tools/color-picker",
+          "clicks": 0,
+          "impressions": 18,
+          "position": 16.27777777777778
+        },
+        {
+          "page": "https://zovo.one/free-tools/compound-interest-calculator",
+          "clicks": 0,
+          "impressions": 28,
+          "position": 14.464285714285714
+        },
+        {
+          "page": "https://zovo.one/free-tools/credit-card-consolidation-calculator",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 9
+        },
+        {
+          "page": "https://zovo.one/free-tools/crontab-guru",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 7
+        },
+        {
+          "page": "https://zovo.one/free-tools/cross-stitch-calculator",
+          "clicks": 0,
+          "impressions": 3,
+          "position": 7.333333333333333
+        },
+        {
+          "page": "https://zovo.one/free-tools/csp-header-generator",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 9
+        },
+        {
+          "page": "https://zovo.one/free-tools/css-clip-path-generator",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 3
+        },
+        {
+          "page": "https://zovo.one/free-tools/css-gradient-generator",
+          "clicks": 0,
+          "impressions": 5,
+          "position": 12.2
+        },
+        {
+          "page": "https://zovo.one/free-tools/currency-converter",
+          "clicks": 0,
+          "impressions": 23,
+          "position": 10.826086956521738
+        },
+        {
+          "page": "https://zovo.one/free-tools/data-matrix-generator",
+          "clicks": 0,
+          "impressions": 9,
+          "position": 19.333333333333332
+        },
+        {
+          "page": "https://zovo.one/free-tools/debt-consolidation-calculator",
+          "clicks": 0,
+          "impressions": 2,
+          "position": 11.5
+        },
+        {
+          "page": "https://zovo.one/free-tools/diff-checker",
+          "clicks": 0,
+          "impressions": 3,
+          "position": 8.333333333333332
+        },
+        {
+          "page": "https://zovo.one/free-tools/discord-timestamp",
+          "clicks": 0,
+          "impressions": 2,
+          "position": 1.5
+        },
+        {
+          "page": "https://zovo.one/free-tools/discount-calculator",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 9
+        },
+        {
+          "page": "https://zovo.one/free-tools/dividend-calculator",
+          "clicks": 0,
+          "impressions": 15,
+          "position": 9.133333333333333
+        },
+        {
+          "page": "https://zovo.one/free-tools/dns-propagation-checker",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 8
+        },
+        {
+          "page": "https://zovo.one/free-tools/dollar-to-zar-converter",
+          "clicks": 0,
+          "impressions": 18,
+          "position": 50.666666666666664
+        },
+        {
+          "page": "https://zovo.one/free-tools/ebook-reader",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 5
+        },
+        {
+          "page": "https://zovo.one/free-tools/electricity-cost-calculator",
+          "clicks": 0,
+          "impressions": 3,
+          "position": 8.333333333333332
+        },
+        {
+          "page": "https://zovo.one/free-tools/email-signature-generator",
+          "clicks": 0,
+          "impressions": 3,
+          "position": 7.666666666666667
+        },
+        {
+          "page": "https://zovo.one/free-tools/email-validator",
+          "clicks": 0,
+          "impressions": 4,
+          "position": 4
+        },
+        {
+          "page": "https://zovo.one/free-tools/enthalpy-calculator",
+          "clicks": 0,
+          "impressions": 2,
+          "position": 23.5
+        },
+        {
+          "page": "https://zovo.one/free-tools/fancy-text-generator",
+          "clicks": 0,
+          "impressions": 5,
+          "position": 4.8
+        },
+        {
+          "page": "https://zovo.one/free-tools/favicon-generator",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 1
+        },
+        {
+          "page": "https://zovo.one/free-tools/fedex-dimensional-weight-calculator",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 4
+        },
+        {
+          "page": "https://zovo.one/free-tools/flow-chart-maker",
+          "clicks": 0,
+          "impressions": 375,
+          "position": 26.021333333333335
+        },
+        {
+          "page": "https://zovo.one/free-tools/font-pair-generator",
+          "clicks": 0,
+          "impressions": 5,
+          "position": 25.6
+        },
+        {
+          "page": "https://zovo.one/free-tools/fraction-calculator",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 8
+        },
+        {
+          "page": "https://zovo.one/free-tools/freight-density-calculator",
+          "clicks": 0,
+          "impressions": 2,
+          "position": 6
+        },
+        {
+          "page": "https://zovo.one/free-tools/gear-tooth-calculator",
+          "clicks": 0,
+          "impressions": 2,
+          "position": 5
+        },
+        {
+          "page": "https://zovo.one/free-tools/gif-to-video",
+          "clicks": 0,
+          "impressions": 3,
+          "position": 8.333333333333332
+        },
+        {
+          "page": "https://zovo.one/free-tools/gitignore-generator",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 2
+        },
+        {
+          "page": "https://zovo.one/free-tools/google-keyword-planner-tool",
+          "clicks": 0,
+          "impressions": 2,
+          "position": 1
+        },
+        {
+          "page": "https://zovo.one/free-tools/gradient-generator",
+          "clicks": 0,
+          "impressions": 3,
+          "position": 64.33333333333334
+        },
+        {
+          "page": "https://zovo.one/free-tools/graphing-calculator",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 4
+        },
+        {
+          "page": "https://zovo.one/free-tools/graphing-inequalities-calculator",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 4
+        },
+        {
+          "page": "https://zovo.one/free-tools/graphing-scientific-calculator",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 4
+        },
+        {
+          "page": "https://zovo.one/free-tools/h1b-wage-level-calculator",
+          "clicks": 0,
+          "impressions": 5,
+          "position": 6
+        },
+        {
+          "page": "https://zovo.one/free-tools/habit-tracker",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 10
+        },
+        {
+          "page": "https://zovo.one/free-tools/hash-generator",
+          "clicks": 0,
+          "impressions": 7,
+          "position": 16.142857142857142
+        },
+        {
+          "page": "https://zovo.one/free-tools/hex-converter",
+          "clicks": 0,
+          "impressions": 5,
+          "position": 16.2
+        },
+        {
+          "page": "https://zovo.one/free-tools/html-entity-encoder",
+          "clicks": 0,
+          "impressions": 3,
+          "position": 2.666666666666667
+        },
+        {
+          "page": "https://zovo.one/free-tools/html-to-markdown",
+          "clicks": 0,
+          "impressions": 13,
+          "position": 9
+        },
+        {
+          "page": "https://zovo.one/free-tools/image-cropper",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 1
+        },
+        {
+          "page": "https://zovo.one/free-tools/image-metadata-viewer",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 6
+        },
+        {
+          "page": "https://zovo.one/free-tools/image-to-base64",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 2
+        },
+        {
+          "page": "https://zovo.one/free-tools/investment-calculator",
+          "clicks": 0,
+          "impressions": 84,
+          "position": 10.773809523809524
+        },
+        {
+          "page": "https://zovo.one/free-tools/invoice-generator",
+          "clicks": 0,
+          "impressions": 2,
+          "position": 2.5
+        },
+        {
+          "page": "https://zovo.one/free-tools/ip-address-calculator",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 36
+        },
+        {
+          "page": "https://zovo.one/free-tools/ip-lookup",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 9
+        },
+        {
+          "page": "https://zovo.one/free-tools/iv-drip-rate-calculator",
+          "clicks": 0,
+          "impressions": 49,
+          "position": 13.714285714285714
+        },
+        {
+          "page": "https://zovo.one/free-tools/json-to-xml-converter",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 10
+        },
+        {
+          "page": "https://zovo.one/free-tools/kentucky-paycheck-calculator",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 4
+        },
+        {
+          "page": "https://zovo.one/free-tools/kinetic-energy-calculator",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 2
+        },
+        {
+          "page": "https://zovo.one/free-tools/loan-calculator",
+          "clicks": 0,
+          "impressions": 39,
+          "position": 13.743589743589743
+        },
+        {
+          "page": "https://zovo.one/free-tools/logo-maker",
+          "clicks": 0,
+          "impressions": 4,
+          "position": 8.25
+        },
+        {
+          "page": "https://zovo.one/free-tools/madlib-generator",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 4
+        },
+        {
+          "page": "https://zovo.one/free-tools/marathon-pace-chart",
+          "clicks": 0,
+          "impressions": 3,
+          "position": 7.333333333333333
+        },
+        {
+          "page": "https://zovo.one/free-tools/markdown-editor",
+          "clicks": 0,
+          "impressions": 78,
+          "position": 17.833333333333332
+        },
+        {
+          "page": "https://zovo.one/free-tools/markdown-table-generator",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 5
+        },
+        {
+          "page": "https://zovo.one/free-tools/mile-to-kilometer-converter",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 5
+        },
+        {
+          "page": "https://zovo.one/free-tools/mla-citation-generator",
+          "clicks": 0,
+          "impressions": 2,
+          "position": 38.5
+        },
+        {
+          "page": "https://zovo.one/free-tools/mortgage-calculator",
+          "clicks": 0,
+          "impressions": 116,
+          "position": 13.39655172413793
+        },
+        {
+          "page": "https://zovo.one/free-tools/mp3-cutter",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 1
+        },
+        {
+          "page": "https://zovo.one/free-tools/naira-to-usd-converter",
+          "clicks": 0,
+          "impressions": 4,
+          "position": 8.25
+        },
+        {
+          "page": "https://zovo.one/free-tools/net-worth-calculator",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 8
+        },
+        {
+          "page": "https://zovo.one/free-tools/nevada-paycheck-calculator",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 4
+        },
+        {
+          "page": "https://zovo.one/free-tools/new-york-paycheck-calculator",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 3
+        },
+        {
+          "page": "https://zovo.one/free-tools/normal-distribution-table",
+          "clicks": 0,
+          "impressions": 6,
+          "position": 2.5
+        },
+        {
+          "page": "https://zovo.one/free-tools/overtime-tax-calculator",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 11
+        },
+        {
+          "page": "https://zovo.one/free-tools/paraphrase-tool",
+          "clicks": 0,
+          "impressions": 2,
+          "position": 4.5
+        },
+        {
+          "page": "https://zovo.one/free-tools/password-generator",
+          "clicks": 0,
+          "impressions": 2,
+          "position": 6
+        },
+        {
+          "page": "https://zovo.one/free-tools/pay-raise-calculator",
+          "clicks": 0,
+          "impressions": 2,
+          "position": 4
+        },
+        {
+          "page": "https://zovo.one/free-tools/payroll-tax-calculator",
+          "clicks": 0,
+          "impressions": 8,
+          "position": 26.5
+        },
+        {
+          "page": "https://zovo.one/free-tools/pdf-merger",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 8
+        },
+        {
+          "page": "https://zovo.one/free-tools/pennsylvania-salary-calculator",
+          "clicks": 0,
+          "impressions": 6,
+          "position": 15.5
+        },
+        {
+          "page": "https://zovo.one/free-tools/percentage-change-calculator",
+          "clicks": 0,
+          "impressions": 3,
+          "position": 26.666666666666668
+        },
+        {
+          "page": "https://zovo.one/free-tools/photo-editor",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 4
+        },
+        {
+          "page": "https://zovo.one/free-tools/photo-filter",
+          "clicks": 0,
+          "impressions": 126,
+          "position": 81.06349206349206
+        },
+        {
+          "page": "https://zovo.one/free-tools/pixel-art-editor",
+          "clicks": 0,
+          "impressions": 2,
+          "position": 18
+        },
+        {
+          "page": "https://zovo.one/free-tools/placeholder-image",
+          "clicks": 0,
+          "impressions": 11,
+          "position": 4.363636363636363
+        },
+        {
+          "page": "https://zovo.one/free-tools/pomodoro-timer",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 9
+        },
+        {
+          "page": "https://zovo.one/free-tools/power-factor-calculator",
+          "clicks": 0,
+          "impressions": 3,
+          "position": 9.333333333333334
+        },
+        {
+          "page": "https://zovo.one/free-tools/pressure-drop-calculator",
+          "clicks": 0,
+          "impressions": 8,
+          "position": 11.625
+        },
+        {
+          "page": "https://zovo.one/free-tools/profit-margin-calculator",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 12
+        },
+        {
+          "page": "https://zovo.one/free-tools/qr-reader",
+          "clicks": 0,
+          "impressions": 42,
+          "position": 48.73809523809524
+        },
+        {
+          "page": "https://zovo.one/free-tools/quadratic-equation-grapher",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 45
+        },
+        {
+          "page": "https://zovo.one/free-tools/random-number-generator",
+          "clicks": 0,
+          "impressions": 19,
+          "position": 8.473684210526315
+        },
+        {
+          "page": "https://zovo.one/free-tools/readme-generator",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 6
+        },
+        {
+          "page": "https://zovo.one/free-tools/recipe-converter",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 11
+        },
+        {
+          "page": "https://zovo.one/free-tools/resume-builder",
+          "clicks": 0,
+          "impressions": 38,
+          "position": 15.421052631578947
+        },
+        {
+          "page": "https://zovo.one/free-tools/rouble-to-usd-converter",
+          "clicks": 0,
+          "impressions": 2,
+          "position": 7
+        },
+        {
+          "page": "https://zovo.one/free-tools/rv-loan-calculator",
+          "clicks": 0,
+          "impressions": 14,
+          "position": 19.785714285714285
+        },
+        {
+          "page": "https://zovo.one/free-tools/salary-calculator-florida",
+          "clicks": 0,
+          "impressions": 19,
+          "position": 8.421052631578949
+        },
+        {
+          "page": "https://zovo.one/free-tools/salary-calculator-maryland",
+          "clicks": 0,
+          "impressions": 26,
+          "position": 7.6923076923076925
+        },
+        {
+          "page": "https://zovo.one/free-tools/salary-calculator-new-york",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 10
+        },
+        {
+          "page": "https://zovo.one/free-tools/salary-calculator-pennsylvania",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 2
+        },
+        {
+          "page": "https://zovo.one/free-tools/salary-calculator-virginia",
+          "clicks": 0,
+          "impressions": 24,
+          "position": 11.666666666666666
+        },
+        {
+          "page": "https://zovo.one/free-tools/sales-tax-calculator",
+          "clicks": 0,
+          "impressions": 9,
+          "position": 5.111111111111111
+        },
+        {
+          "page": "https://zovo.one/free-tools/savings-calculator",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 4
+        },
+        {
+          "page": "https://zovo.one/free-tools/sba-loan-calculator",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 11
+        },
+        {
+          "page": "https://zovo.one/free-tools/scientific-notation-calculator",
+          "clicks": 0,
+          "impressions": 7,
+          "position": 7.285714285714286
+        },
+        {
+          "page": "https://zovo.one/free-tools/screen-recorder",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 3
+        },
+        {
+          "page": "https://zovo.one/free-tools/sleep-calculator",
+          "clicks": 0,
+          "impressions": 4,
+          "position": 15.5
+        },
+        {
+          "page": "https://zovo.one/free-tools/solar-panel-calculator",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 9
+        },
+        {
+          "page": "https://zovo.one/free-tools/speed-distance-time-calculator",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 6
+        },
+        {
+          "page": "https://zovo.one/free-tools/sql-formatter",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 1
+        },
+        {
+          "page": "https://zovo.one/free-tools/sql-playground",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 1
+        },
+        {
+          "page": "https://zovo.one/free-tools/ssl-checker",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 8
+        },
+        {
+          "page": "https://zovo.one/free-tools/statistical-significance-calculator",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 3
+        },
+        {
+          "page": "https://zovo.one/free-tools/steps-to-calories-converter",
+          "clicks": 0,
+          "impressions": 13,
+          "position": 12.307692307692308
+        },
+        {
+          "page": "https://zovo.one/free-tools/svg-to-png-converter",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 21
+        },
+        {
+          "page": "https://zovo.one/free-tools/system-of-equations-solver",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 9
+        },
+        {
+          "page": "https://zovo.one/free-tools/tank-volume-calculator",
+          "clicks": 0,
+          "impressions": 3,
+          "position": 6.333333333333333
+        },
+        {
+          "page": "https://zovo.one/free-tools/td-exchange-rate-converter",
+          "clicks": 0,
+          "impressions": 6,
+          "position": 28.833333333333332
+        },
+        {
+          "page": "https://zovo.one/free-tools/temperature-converter",
+          "clicks": 0,
+          "impressions": 14,
+          "position": 8.214285714285715
+        },
+        {
+          "page": "https://zovo.one/free-tools/text-generator",
+          "clicks": 0,
+          "impressions": 3,
+          "position": 6
+        },
+        {
+          "page": "https://zovo.one/free-tools/text-repeater",
+          "clicks": 0,
+          "impressions": 2,
+          "position": 5.5
+        },
+        {
+          "page": "https://zovo.one/free-tools/text-to-handwriting",
+          "clicks": 0,
+          "impressions": 5,
+          "position": 6.2
+        },
+        {
+          "page": "https://zovo.one/free-tools/text-to-speech",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 26
+        },
+        {
+          "page": "https://zovo.one/free-tools/three-phase-power-calculator",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 9
+        },
+        {
+          "page": "https://zovo.one/free-tools/time-calculator",
+          "clicks": 0,
+          "impressions": 2,
+          "position": 5.5
+        },
+        {
+          "page": "https://zovo.one/free-tools/time-zone-meeting-planner",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 4
+        },
+        {
+          "page": "https://zovo.one/free-tools/timestamp-converter",
+          "clicks": 0,
+          "impressions": 8,
+          "position": 10.5
+        },
+        {
+          "page": "https://zovo.one/free-tools/timezone-converter",
+          "clicks": 0,
+          "impressions": 8,
+          "position": 6.625
+        },
+        {
+          "page": "https://zovo.one/free-tools/trademark-search",
+          "clicks": 0,
+          "impressions": 166,
+          "position": 79.3012048192771
+        },
+        {
+          "page": "https://zovo.one/free-tools/treadmill-calorie-calculator",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 1
+        },
+        {
+          "page": "https://zovo.one/free-tools/tuner",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 1
+        },
+        {
+          "page": "https://zovo.one/free-tools/typing-speed-test",
+          "clicks": 0,
+          "impressions": 4,
+          "position": 47.25
+        },
+        {
+          "page": "https://zovo.one/free-tools/typing-test",
+          "clicks": 0,
+          "impressions": 5,
+          "position": 66
+        },
+        {
+          "page": "https://zovo.one/free-tools/ups-shipping-calculator",
+          "clicks": 0,
+          "impressions": 5,
+          "position": 3
+        },
+        {
+          "page": "https://zovo.one/free-tools/url-shortener",
+          "clicks": 0,
+          "impressions": 5,
+          "position": 33.4
+        },
+        {
+          "page": "https://zovo.one/free-tools/usd-to-cedis-converter",
+          "clicks": 0,
+          "impressions": 65,
+          "position": 39.43076923076923
+        },
+        {
+          "page": "https://zovo.one/free-tools/usd-to-cny-converter",
+          "clicks": 0,
+          "impressions": 6,
+          "position": 13.5
+        },
+        {
+          "page": "https://zovo.one/free-tools/usd-to-php-converter",
+          "clicks": 0,
+          "impressions": 14,
+          "position": 13.214285714285714
+        },
+        {
+          "page": "https://zovo.one/free-tools/usd-to-pkr-converter",
+          "clicks": 0,
+          "impressions": 3,
+          "position": 7.666666666666667
+        },
+        {
+          "page": "https://zovo.one/free-tools/usps-postage-calculator",
+          "clicks": 0,
+          "impressions": 7,
+          "position": 6.714285714285714
+        },
+        {
+          "page": "https://zovo.one/free-tools/vcard-generator",
+          "clicks": 0,
+          "impressions": 4,
+          "position": 6.25
+        },
+        {
+          "page": "https://zovo.one/free-tools/video-to-gif",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 9
+        },
+        {
+          "page": "https://zovo.one/free-tools/video-trimmer",
+          "clicks": 0,
+          "impressions": 2,
+          "position": 7
+        },
+        {
+          "page": "https://zovo.one/free-tools/water-intake-calculator",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 4
+        },
+        {
+          "page": "https://zovo.one/free-tools/webhook-tester",
+          "clicks": 0,
+          "impressions": 4,
+          "position": 10.25
+        },
+        {
+          "page": "https://zovo.one/free-tools/western-union-fee-calculator",
+          "clicks": 0,
+          "impressions": 4,
+          "position": 6.25
+        },
+        {
+          "page": "https://zovo.one/free-tools/whois-lookup",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 7
+        },
+        {
+          "page": "https://zovo.one/free-tools/wireframe-tool",
+          "clicks": 0,
+          "impressions": 132,
+          "position": 26.87121212121212
+        },
+        {
+          "page": "https://zovo.one/free-tools/word-clock",
+          "clicks": 0,
+          "impressions": 2,
+          "position": 27.5
+        },
+        {
+          "page": "https://zovo.one/free-tools/word-counter",
+          "clicks": 0,
+          "impressions": 4,
+          "position": 7
+        },
+        {
+          "page": "https://zovo.one/free-tools/youtube-converter",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 5
+        },
+        {
+          "page": "https://zovo.one/free-tools/z-value-table",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 1
+        },
+        {
+          "page": "https://zovo.one/glossary",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 5
+        },
+        {
+          "page": "https://zovo.one/guides",
+          "clicks": 0,
+          "impressions": 7,
+          "position": 5.285714285714286
+        },
+        {
+          "page": "https://zovo.one/how-to-use",
+          "clicks": 0,
+          "impressions": 3,
+          "position": 5.666666666666667
+        },
+        {
+          "page": "https://zovo.one/industries",
+          "clicks": 0,
+          "impressions": 2,
+          "position": 34.5
+        },
+        {
+          "page": "https://zovo.one/legal",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 7
+        },
+        {
+          "page": "https://zovo.one/legal/accessibility",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 4
+        },
+        {
+          "page": "https://zovo.one/legal/billing",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 1
+        },
+        {
+          "page": "https://zovo.one/legal/contact",
+          "clicks": 0,
+          "impressions": 4,
+          "position": 2.75
+        },
+        {
+          "page": "https://zovo.one/legal/cookies",
+          "clicks": 0,
+          "impressions": 12,
+          "position": 4.916666666666666
+        },
+        {
+          "page": "https://zovo.one/legal/data-deletion",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 2
+        },
+        {
+          "page": "https://zovo.one/legal/disclaimer",
+          "clicks": 0,
+          "impressions": 3,
+          "position": 4
+        },
+        {
+          "page": "https://zovo.one/legal/dmca",
+          "clicks": 0,
+          "impressions": 3,
+          "position": 5
+        },
+        {
+          "page": "https://zovo.one/legal/membership",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 4
+        },
+        {
+          "page": "https://zovo.one/legal/permissions",
+          "clicks": 0,
+          "impressions": 7,
+          "position": 6.285714285714286
+        },
+        {
+          "page": "https://zovo.one/legal/pricing-faq",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 9
+        },
+        {
+          "page": "https://zovo.one/legal/privacy",
+          "clicks": 0,
+          "impressions": 9,
+          "position": 4.333333333333334
+        },
+        {
+          "page": "https://zovo.one/legal/refunds",
+          "clicks": 0,
+          "impressions": 6,
+          "position": 8.5
+        },
+        {
+          "page": "https://zovo.one/legal/security",
+          "clicks": 0,
+          "impressions": 6,
+          "position": 14.166666666666666
+        },
+        {
+          "page": "https://zovo.one/legal/terms",
+          "clicks": 0,
+          "impressions": 17,
+          "position": 6
+        },
+        {
+          "page": "https://zovo.one/name",
+          "clicks": 0,
+          "impressions": 21,
+          "position": 4.190476190476191
+        },
+        {
+          "page": "https://zovo.one/open-source",
+          "clicks": 0,
+          "impressions": 9,
+          "position": 6.444444444444445
+        },
+        {
+          "page": "https://zovo.one/partners",
+          "clicks": 0,
+          "impressions": 8,
+          "position": 4.25
+        },
+        {
+          "page": "https://zovo.one/permissions",
+          "clicks": 0,
+          "impressions": 3,
+          "position": 8.333333333333332
+        },
+        {
+          "page": "https://zovo.one/pricing",
+          "clicks": 0,
+          "impressions": 29,
+          "position": 2.413793103448276
+        },
+        {
+          "page": "https://zovo.one/privacy-policy",
+          "clicks": 0,
+          "impressions": 3,
+          "position": 3.6666666666666665
+        },
+        {
+          "page": "https://zovo.one/privacy/api-testing-pro",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 5
+        },
+        {
+          "page": "https://zovo.one/privacy/color-picker",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 7
+        },
+        {
+          "page": "https://zovo.one/privacy/form-filler-pro",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 10
+        },
+        {
+          "page": "https://zovo.one/research",
+          "clicks": 0,
+          "impressions": 11,
+          "position": 5.090909090909091
+        },
+        {
+          "page": "https://zovo.one/research/cws-localization",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 10
+        },
+        {
+          "page": "https://zovo.one/research/extension-economics",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 6
+        },
+        {
+          "page": "https://zovo.one/research/extension-lifespan",
+          "clicks": 0,
+          "impressions": 2,
+          "position": 7
+        },
+        {
+          "page": "https://zovo.one/research/final-build-report",
+          "clicks": 0,
+          "impressions": 4,
+          "position": 4.25
+        },
+        {
+          "page": "https://zovo.one/research/mac-agent-setup",
+          "clicks": 0,
+          "impressions": 2,
+          "position": 4
+        },
+        {
+          "page": "https://zovo.one/research/opportunity-index",
+          "clicks": 0,
+          "impressions": 3,
+          "position": 3
+        },
+        {
+          "page": "https://zovo.one/research/ram-benchmark",
+          "clicks": 0,
+          "impressions": 4,
+          "position": 4.5
+        },
+        {
+          "page": "https://zovo.one/research/tab-hoarding-2026",
+          "clicks": 0,
+          "impressions": 2,
+          "position": 4.5
+        },
+        {
+          "page": "https://zovo.one/research/tab-hoarding-index",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 77
+        },
+        {
+          "page": "https://zovo.one/roadmap",
+          "clicks": 0,
+          "impressions": 6,
+          "position": 5
+        },
+        {
+          "page": "https://zovo.one/services",
+          "clicks": 0,
+          "impressions": 23,
+          "position": 6
+        },
+        {
+          "page": "https://zovo.one/services/enterprise",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 3
+        },
+        {
+          "page": "https://zovo.one/services/extension-as-a-service",
+          "clicks": 0,
+          "impressions": 10,
+          "position": 4
+        },
+        {
+          "page": "https://zovo.one/support",
+          "clicks": 0,
+          "impressions": 12,
+          "position": 5.583333333333333
+        },
+        {
+          "page": "https://zovo.one/tab-suspender/ko",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 5
+        },
+        {
+          "page": "https://zovo.one/tasks",
+          "clicks": 0,
+          "impressions": 2,
+          "position": 4
+        },
+        {
+          "page": "https://zovo.one/tasks/generate-password-online",
+          "clicks": 0,
+          "impressions": 2,
+          "position": 4
+        },
+        {
+          "page": "https://zovo.one/tasks/suspend-chrome-tabs",
+          "clicks": 0,
+          "impressions": 11,
+          "position": 58.54545454545455
+        },
+        {
+          "page": "https://zovo.one/tools",
+          "clicks": 0,
+          "impressions": 12,
+          "position": 5.166666666666667
+        },
+        {
+          "page": "https://zovo.one/tools/tab-suspender-pro",
+          "clicks": 0,
+          "impressions": 3,
+          "position": 2.666666666666667
+        },
+        {
+          "page": "https://zovo.one/trends-2026",
+          "clicks": 0,
+          "impressions": 4,
+          "position": 1.75
+        },
+        {
+          "page": "https://zovo.one/use-cases",
+          "clicks": 0,
+          "impressions": 7,
+          "position": 7.714285714285714
+        },
+        {
+          "page": "https://zovo.one/use-cases/comparing-api-response-structures",
+          "clicks": 0,
+          "impressions": 12,
+          "position": 8.416666666666668
+        },
+        {
+          "page": "https://zovo.one/use-cases/encoding-images-for-html-emails",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 10
+        },
+        {
+          "page": "https://zovo.one/use-cases/privacy",
+          "clicks": 0,
+          "impressions": 2,
+          "position": 6
+        },
+        {
+          "page": "https://zovo.one/use-cases/productivity",
+          "clicks": 0,
+          "impressions": 2,
+          "position": 7
+        },
+        {
+          "page": "https://zovo.one/use-cases/recovering-accidentally-overwritten-text",
+          "clicks": 0,
+          "impressions": 11,
+          "position": 23
+        },
+        {
+          "page": "https://zovo.one/use-cases/web-development",
+          "clicks": 0,
+          "impressions": 3,
+          "position": 9
+        },
+        {
+          "page": "https://zovo.one/vision",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 3
+        },
+        {
+          "page": "https://zovo.one/weekly",
+          "clicks": 0,
+          "impressions": 2,
+          "position": 7
+        },
+        {
+          "page": "https://zovo.one/why",
+          "clicks": 0,
+          "impressions": 2,
+          "position": 13
+        },
+        {
+          "page": "https://zovo.one/zovo-labs",
+          "clicks": 0,
+          "impressions": 1,
+          "position": 5
+        }
+      ]
+    },
+    "inspection_method": "POST https://searchconsole.googleapis.com/v1/urlInspection/index:inspect with inspectionUrl and siteUrl; inspection only, no indexing request",
+    "query_row_limit": 25000,
+    "limitations": [
+      "28-date finalized window ending three UTC dates before collection; GSC reporting dates are Pacific time. Not live current-day traffic.",
+      "Search Console excludes some data; page totals are not indexed-page counts."
+    ]
+  },
+  "funnel": {
+    "status": "OK",
+    "fetched_at": "2026-10-27T03:03:52.090Z",
+    "method": "GET /stats/funnel; read-only, marked operator request",
+    "instrument": 2,
+    "generated_at": "2026-10-27T03:03:51.984Z",
+    "complete": true,
+    "window": {
+      "start": "2026-10-21T00:00:00.000Z",
+      "end": "2026-10-27T03:03:51.984Z",
+      "utc_dates": [
+        "2026-10-21",
+        "2026-10-22",
+        "2026-10-23",
+        "2026-10-24",
+        "2026-10-25",
+        "2026-10-26",
+        "2026-10-27"
+      ],
+      "today_partial": true
+    },
+    "interpretation": "Recorded hosted response/event counts pooled across servers. ordinary means unmarked, not human or customer. Source labels are unverified declarations. First success is per anonymous token/server/UTC day, not lifetime use. No local usage or conversion rate is measured.",
+    "coverage": "Starts only on deployment. Empty counters do not prove deployment, full-window coverage or zero historic use. Anonymous observations with missing/expired sidecars are unmeasured, except explicitly marked current probes.",
+    "limitations": "Durable transactions preserve admitted batches and daily deduplication. Deferred write failures or unresolved cohort metadata drop observations. complete concerns bounded counter retrieval only, not full traffic capture. Sidecars expire 31 days after mint; their missing/negative-cached lookups never become ordinary.",
+    "ordinary": {
+      "successful_business_call": 18,
+      "first_successful_anon_token_server_day": 6,
+      "upgrade_impression": 18,
+      "offer_view": 1644,
+      "checkout_handoff": 0
+    },
+    "probe": {
+      "successful_business_call": 0,
+      "first_successful_anon_token_server_day": 0,
+      "upgrade_impression": 0,
+      "offer_view": 3040,
+      "checkout_handoff": 4
+    },
+    "days": [
+      {
+        "day": "2026-10-21",
+        "complete": true,
+        "first_recorded_at": "2026-10-21T00:04:01.739Z"
+      },
+      {
+        "day": "2026-10-22",
+        "complete": true,
+        "first_recorded_at": "2026-10-22T00:01:01.005Z"
+      },
+      {
+        "day": "2026-10-23",
+        "complete": true,
+        "first_recorded_at": "2026-10-23T00:37:32.484Z"
+      },
+      {
+        "day": "2026-10-24",
+        "complete": true,
+        "first_recorded_at": "2026-10-24T00:01:38.731Z"
+      },
+      {
+        "day": "2026-10-25",
+        "complete": true,
+        "first_recorded_at": "2026-10-25T00:00:03.370Z"
+      },
+      {
+        "day": "2026-10-26",
+        "complete": true,
+        "first_recorded_at": "2026-10-26T00:08:04.779Z"
+      },
+      {
+        "day": "2026-10-27",
+        "complete": true,
+        "first_recorded_at": "2026-10-27T00:00:43.189Z"
+      }
+    ],
+    "rows": [
+      {
+        "day": "2026-10-21",
+        "cohort": "ordinary",
+        "source": "store.product",
+        "event": "offer_view",
+        "count": 56
+      },
+      {
+        "day": "2026-10-21",
+        "cohort": "ordinary",
+        "source": "unattributed",
+        "event": "offer_view",
+        "count": 32
+      },
+      {
+        "day": "2026-10-21",
+        "cohort": "ordinary",
+        "source": "guide",
+        "event": "offer_view",
+        "count": 18
+      },
+      {
+        "day": "2026-10-21",
+        "cohort": "ordinary",
+        "source": "store.setup",
+        "event": "offer_view",
+        "count": 70
+      },
+      {
+        "day": "2026-10-21",
+        "cohort": "ordinary",
+        "source": "unattributed",
+        "event": "successful_business_call",
+        "count": 1
+      },
+      {
+        "day": "2026-10-21",
+        "cohort": "ordinary",
+        "source": "unattributed",
+        "event": "first_successful_anon_token_server_day",
+        "count": 1
+      },
+      {
+        "day": "2026-10-21",
+        "cohort": "ordinary",
+        "source": "unattributed",
+        "event": "upgrade_impression",
+        "count": 1
+      },
+      {
+        "day": "2026-10-22",
+        "cohort": "ordinary",
+        "source": "store.product",
+        "event": "offer_view",
+        "count": 179
+      },
+      {
+        "day": "2026-10-22",
+        "cohort": "ordinary",
+        "source": "store.setup",
+        "event": "offer_view",
+        "count": 455
+      },
+      {
+        "day": "2026-10-22",
+        "cohort": "ordinary",
+        "source": "guide",
+        "event": "offer_view",
+        "count": 16
+      },
+      {
+        "day": "2026-10-22",
+        "cohort": "ordinary",
+        "source": "github",
+        "event": "offer_view",
+        "count": 1
+      },
+      {
+        "day": "2026-10-22",
+        "cohort": "ordinary",
+        "source": "unattributed",
+        "event": "offer_view",
+        "count": 15
+      },
+      {
+        "day": "2026-10-22",
+        "cohort": "ordinary",
+        "source": "unattributed",
+        "event": "successful_business_call",
+        "count": 2
+      },
+      {
+        "day": "2026-10-22",
+        "cohort": "ordinary",
+        "source": "unattributed",
+        "event": "first_successful_anon_token_server_day",
+        "count": 1
+      },
+      {
+        "day": "2026-10-22",
+        "cohort": "ordinary",
+        "source": "unattributed",
+        "event": "upgrade_impression",
+        "count": 2
+      },
+      {
+        "day": "2026-10-23",
+        "cohort": "ordinary",
+        "source": "store.setup",
+        "event": "offer_view",
+        "count": 68
+      },
+      {
+        "day": "2026-10-23",
+        "cohort": "ordinary",
+        "source": "store.product",
+        "event": "offer_view",
+        "count": 38
+      },
+      {
+        "day": "2026-10-23",
+        "cohort": "ordinary",
+        "source": "guide",
+        "event": "offer_view",
+        "count": 9
+      },
+      {
+        "day": "2026-10-23",
+        "cohort": "ordinary",
+        "source": "unattributed",
+        "event": "offer_view",
+        "count": 7
+      },
+      {
+        "day": "2026-10-24",
+        "cohort": "ordinary",
+        "source": "store.product",
+        "event": "offer_view",
+        "count": 58
+      },
+      {
+        "day": "2026-10-24",
+        "cohort": "ordinary",
+        "source": "unattributed",
+        "event": "offer_view",
+        "count": 11
+      },
+      {
+        "day": "2026-10-24",
+        "cohort": "ordinary",
+        "source": "store.setup",
+        "event": "offer_view",
+        "count": 97
+      },
+      {
+        "day": "2026-10-24",
+        "cohort": "ordinary",
+        "source": "guide",
+        "event": "offer_view",
+        "count": 22
+      },
+      {
+        "day": "2026-10-24",
+        "cohort": "ordinary",
+        "source": "unattributed",
+        "event": "successful_business_call",
+        "count": 12
+      },
+      {
+        "day": "2026-10-24",
+        "cohort": "ordinary",
+        "source": "unattributed",
+        "event": "first_successful_anon_token_server_day",
+        "count": 3
+      },
+      {
+        "day": "2026-10-24",
+        "cohort": "ordinary",
+        "source": "unattributed",
+        "event": "upgrade_impression",
+        "count": 12
+      },
+      {
+        "day": "2026-10-25",
+        "cohort": "ordinary",
+        "source": "store.setup",
+        "event": "offer_view",
+        "count": 66
+      },
+      {
+        "day": "2026-10-25",
+        "cohort": "ordinary",
+        "source": "store.product",
+        "event": "offer_view",
+        "count": 87
+      },
+      {
+        "day": "2026-10-25",
+        "cohort": "ordinary",
+        "source": "guide",
+        "event": "offer_view",
+        "count": 16
+      },
+      {
+        "day": "2026-10-25",
+        "cohort": "ordinary",
+        "source": "unattributed",
+        "event": "offer_view",
+        "count": 14
+      },
+      {
+        "day": "2026-10-26",
+        "cohort": "ordinary",
+        "source": "store.setup",
+        "event": "offer_view",
+        "count": 82
+      },
+      {
+        "day": "2026-10-26",
+        "cohort": "ordinary",
+        "source": "store.product",
+        "event": "offer_view",
+        "count": 118
+      },
+      {
+        "day": "2026-10-26",
+        "cohort": "ordinary",
+        "source": "guide",
+        "event": "offer_view",
+        "count": 37
+      },
+      {
+        "day": "2026-10-26",
+        "cohort": "ordinary",
+        "source": "unattributed",
+        "event": "successful_business_call",
+        "count": 3
+      },
+      {
+        "day": "2026-10-26",
+        "cohort": "ordinary",
+        "source": "unattributed",
+        "event": "first_successful_anon_token_server_day",
+        "count": 1
+      },
+      {
+        "day": "2026-10-26",
+        "cohort": "ordinary",
+        "source": "unattributed",
+        "event": "upgrade_impression",
+        "count": 3
+      },
+      {
+        "day": "2026-10-26",
+        "cohort": "ordinary",
+        "source": "unattributed",
+        "event": "offer_view",
+        "count": 12
+      },
+      {
+        "day": "2026-10-26",
+        "cohort": "probe",
+        "source": "unattributed",
+        "event": "offer_view",
+        "count": 2638
+      },
+      {
+        "day": "2026-10-26",
+        "cohort": "probe",
+        "source": "unattributed",
+        "event": "checkout_handoff",
+        "count": 4
+      },
+      {
+        "day": "2026-10-27",
+        "cohort": "probe",
+        "source": "unattributed",
+        "event": "offer_view",
+        "count": 402
+      },
+      {
+        "day": "2026-10-27",
+        "cohort": "ordinary",
+        "source": "unattributed",
+        "event": "offer_view",
+        "count": 35
+      },
+      {
+        "day": "2026-10-27",
+        "cohort": "ordinary",
+        "source": "store.product",
+        "event": "offer_view",
+        "count": 13
+      },
+      {
+        "day": "2026-10-27",
+        "cohort": "ordinary",
+        "source": "store.setup",
+        "event": "offer_view",
+        "count": 9
+      },
+      {
+        "day": "2026-10-27",
+        "cohort": "ordinary",
+        "source": "guide",
+        "event": "offer_view",
+        "count": 3
+      }
+    ]
+  },
+  "upgrade_clicks": {
+    "status": "OK",
+    "fetched_at": "2026-10-27T03:03:52.613Z",
+    "method": "GET /stats/clicks; read-only, marked operator request",
+    "generated_at": "2026-10-27T03:03:52.634Z",
+    "instrument": 3,
+    "counting_rule": "a click counts only when the request carries sec-fetch-mode: navigate AND sec-fetch-dest: document, its User-Agent names no crawler or HTTP library, it sends no x-mcp-probe header, it carries a Referer (any origin, real browsers always send one; scripts and the 2026-09-17 setup-page walker do not), and its ?src= is one a live page emits. Everything else is either not counted or bucketed under unattributed.*, which is excluded from total_clicks and clicks_7d.",
+    "by_src": {
+      "audit.noise.before": {
+        "total": 1,
+        "last7d": 0
+      },
+      "buy.unknown-product": {
+        "total": 8,
+        "last7d": 7
+      },
+      "s137.phuman": {
+        "total": 1,
+        "last7d": 0
+      },
+      "store.bundle": {
+        "total": 2,
+        "last7d": 0
+      },
+      "store.compare.bank-statement": {
+        "total": 2,
+        "last7d": 0
+      },
+      "store.compare.barcode": {
+        "total": 2,
+        "last7d": 0
+      },
+      "store.compare.calendar": {
+        "total": 3,
+        "last7d": 0
+      },
+      "store.compare.clauses": {
+        "total": 5,
+        "last7d": 0
+      },
+      "store.compare.currency": {
+        "total": 4,
+        "last7d": 0
+      },
+      "store.compare.docx": {
+        "total": 2,
+        "last7d": 0
+      },
+      "store.compare.expense-tracker": {
+        "total": 5,
+        "last7d": 0
+      },
+      "store.compare.image": {
+        "total": 1,
+        "last7d": 0
+      },
+      "store.compare.kanban": {
+        "total": 1,
+        "last7d": 0
+      },
+      "store.compare.pdf": {
+        "total": 2,
+        "last7d": 0
+      },
+      "store.compare.per-diem": {
+        "total": 3,
+        "last7d": 0
+      },
+      "store.compare.price-tracker": {
+        "total": 2,
+        "last7d": 0
+      },
+      "store.compare.quotes": {
+        "total": 4,
+        "last7d": 0
+      },
+      "store.compare.recurring": {
+        "total": 2,
+        "last7d": 0
+      },
+      "store.compare.resume": {
+        "total": 2,
+        "last7d": 0
+      },
+      "store.compare.spreadsheet": {
+        "total": 2,
+        "last7d": 0
+      },
+      "store.compare.time-tracker": {
+        "total": 3,
+        "last7d": 0
+      },
+      "store.compare.timezone": {
+        "total": 3,
+        "last7d": 0
+      },
+      "store.guide.bank-statement-csv-categorize-reconcile": {
+        "total": 4,
+        "last7d": 0
+      },
+      "store.guide.calendar-ics-free-busy-in-claude": {
+        "total": 2,
+        "last7d": 0
+      },
+      "store.guide.change-orders-and-contract-value-from-chat": {
+        "total": 1,
+        "last7d": 0
+      },
+      "store.guide.chase-unpaid-invoices-without-a-crm": {
+        "total": 4,
+        "last7d": 0
+      },
+      "store.guide.choosing-an-mcp-server-for-invoicing": {
+        "total": 3,
+        "last7d": 0
+      },
+      "store.guide.claude-mcp-add-command-reference": {
+        "total": 1,
+        "last7d": 0
+      },
+      "store.guide.client-deposits-and-retainers-from-chat": {
+        "total": 3,
+        "last7d": 0
+      },
+      "store.guide.client-statements-and-dunning-from-chat": {
+        "total": 2,
+        "last7d": 0
+      },
+      "store.guide.connect-mcp-servers-without-installing": {
+        "total": 1,
+        "last7d": 0
+      },
+      "store.guide.contract-clauses-library-assembly": {
+        "total": 3,
+        "last7d": 0
+      },
+      "store.guide.credit-notes-and-purchase-orders-from-chat": {
+        "total": 1,
+        "last7d": 0
+      },
+      "store.guide.csv-to-excel-and-back-in-claude": {
+        "total": 1,
+        "last7d": 0
+      },
+      "store.guide.currency-conversion-ecb-rates-in-claude": {
+        "total": 1,
+        "last7d": 0
+      },
+      "store.guide.cursor-mcp-json-setup": {
+        "total": 3,
+        "last7d": 0
+      },
+      "store.guide.delivery-schedule-and-work-order-documents-from-mcp": {
+        "total": 1,
+        "last7d": 0
+      },
+      "store.guide.do-you-need-an-mcp-server-or-just-a-prompt": {
+        "total": 3,
+        "last7d": 0
+      },
+      "store.guide.expense-tracking-in-claude": {
+        "total": 3,
+        "last7d": 0
+      },
+      "store.guide.fill-a-quote-or-estimate-template-from-chat": {
+        "total": 1,
+        "last7d": 0
+      },
+      "store.guide.fixed-assets-and-depreciation-from-chat": {
+        "total": 7,
+        "last7d": 0
+      },
+      "store.guide.free-mcp-servers-for-freelancers": {
+        "total": 1,
+        "last7d": 0
+      },
+      "store.guide.how-a-directory-scores-your-mcp-server": {
+        "total": 2,
+        "last7d": 0
+      },
+      "store.guide.how-crowded-is-an-mcp-server-name": {
+        "total": 2,
+        "last7d": 0
+      },
+      "store.guide.how-mcp-registry-search-works": {
+        "total": 3,
+        "last7d": 0
+      },
+      "store.guide.image-resize-compress-watermark-from-chat": {
+        "total": 1,
+        "last7d": 0
+      },
+      "store.guide.install-mcp-servers-without-npm": {
+        "total": 2,
+        "last7d": 0
+      },
+      "store.guide.kanban-board-in-claude-with-time-tracking": {
+        "total": 1,
+        "last7d": 0
+      },
+      "store.guide.licensing-a-paid-mcp-server": {
+        "total": 4,
+        "last7d": 0
+      },
+      "store.guide.loan-and-lease-schedules-from-chat": {
+        "total": 5,
+        "last7d": 0
+      },
+      "store.guide.mcp-client-config-file-locations": {
+        "total": 4,
+        "last7d": 0
+      },
+      "store.guide.mcp-config-scopes-and-precedence": {
+        "total": 2,
+        "last7d": 0
+      },
+      "store.guide.mcp-on-windows-paths-and-npx": {
+        "total": 2,
+        "last7d": 0
+      },
+      "store.guide.mcp-protocol-versions": {
+        "total": 3,
+        "last7d": 0
+      },
+      "store.guide.mcp-registry-rank-and-letter-case": {
+        "total": 1,
+        "last7d": 0
+      },
+      "store.guide.mcp-registry-remote-url-is-unique": {
+        "total": 4,
+        "last7d": 0
+      },
+      "store.guide.mcp-server-free-vs-pro": {
+        "total": 2,
+        "last7d": 0
+      },
+      "store.guide.mcp-server-json-fields-by-client": {
+        "total": 2,
+        "last7d": 0
+      },
+      "store.guide.mcp-server-logs-and-what-they-say": {
+        "total": 4,
+        "last7d": 0
+      },
+      "store.guide.mcp-server-not-showing-up-in-claude-desktop": {
+        "total": 2,
+        "last7d": 0
+      },
+      "store.guide.mcp-server-security-review": {
+        "total": 4,
+        "last7d": 0
+      },
+      "store.guide.mcp-servers-in-vs-code-copilot-agent-mode": {
+        "total": 1,
+        "last7d": 0
+      },
+      "store.guide.mcp-servers-in-windsurf-and-cline": {
+        "total": 1,
+        "last7d": 0
+      },
+      "store.guide.mcp-servers-that-work-offline": {
+        "total": 4,
+        "last7d": 0
+      },
+      "store.guide.mcp-stateful-tools-and-handles": {
+        "total": 1,
+        "last7d": 0
+      },
+      "store.guide.mcp-structured-tool-output": {
+        "total": 3,
+        "last7d": 0
+      },
+      "store.guide.mcp-tool-description-and-output-limits": {
+        "total": 1,
+        "last7d": 0
+      },
+      "store.guide.mcp-tool-errors-versus-protocol-errors": {
+        "total": 4,
+        "last7d": 0
+      },
+      "store.guide.meeting-slots-across-time-zones": {
+        "total": 1,
+        "last7d": 0
+      },
+      "store.guide.mileage-log-for-tax-from-chat": {
+        "total": 1,
+        "last7d": 0
+      },
+      "store.guide.month-end-close-with-mcp-servers": {
+        "total": 1,
+        "last7d": 0
+      },
+      "store.guide.naming-mcp-tools": {
+        "total": 3,
+        "last7d": 0
+      },
+      "store.guide.one-install-office-suite": {
+        "total": 4,
+        "last7d": 0
+      },
+      "store.guide.one-ledger-from-every-server": {
+        "total": 4,
+        "last7d": 0
+      },
+      "store.guide.pdf-merge-split-stamp-from-chat": {
+        "total": 3,
+        "last7d": 0
+      },
+      "store.guide.per-diem-and-travel-allowances-from-chat": {
+        "total": 6,
+        "last7d": 0
+      },
+      "store.guide.petty-cash-float-from-chat": {
+        "total": 8,
+        "last7d": 0
+      },
+      "store.guide.price-drop-alerts-with-claude": {
+        "total": 1,
+        "last7d": 0
+      },
+      "store.guide.price-lists-and-rate-cards-from-chat": {
+        "total": 3,
+        "last7d": 0
+      },
+      "store.guide.project-profitability-hours-versus-budget": {
+        "total": 1,
+        "last7d": 0
+      },
+      "store.guide.quote-to-cash-in-claude": {
+        "total": 1,
+        "last7d": 0
+      },
+      "store.guide.quotes-and-estimates-to-invoice-in-claude": {
+        "total": 2,
+        "last7d": 0
+      },
+      "store.guide.read-excel-in-cursor": {
+        "total": 1,
+        "last7d": 0
+      },
+      "store.guide.rebill-client-expenses-with-a-markup": {
+        "total": 3,
+        "last7d": 0
+      },
+      "store.guide.reconcile-a-bank-export-with-your-invoices": {
+        "total": 1,
+        "last7d": 0
+      },
+      "store.guide.recurring-invoices-on-a-schedule": {
+        "total": 1,
+        "last7d": 0
+      },
+      "store.guide.resume-and-cover-letter-from-chat": {
+        "total": 1,
+        "last7d": 0
+      },
+      "store.guide.search-console-url-inspection-coverage-is-unstable": {
+        "total": 1,
+        "last7d": 0
+      },
+      "store.guide.self-employed-tax-year-pack-from-chat": {
+        "total": 2,
+        "last7d": 0
+      },
+      "store.guide.send-a-month-of-paperwork-as-one-zip": {
+        "total": 1,
+        "last7d": 0
+      },
+      "store.guide.sepa-payment-qr-codes-on-invoices-from-chat": {
+        "total": 4,
+        "last7d": 0
+      },
+      "store.guide.server-json-field-reference": {
+        "total": 2,
+        "last7d": 0
+      },
+      "store.guide.shipping-an-mcp-server-bundle-or-hosted-url": {
+        "total": 1,
+        "last7d": 0
+      },
+      "store.guide.split-a-scanned-pdf-into-separate-documents": {
+        "total": 1,
+        "last7d": 0
+      },
+      "store.guide.stdio-or-streamable-http": {
+        "total": 1,
+        "last7d": 0
+      },
+      "store.guide.track-time-in-claude-code": {
+        "total": 1,
+        "last7d": 0
+      },
+      "store.guide.vat-and-reverse-charge-invoices-from-chat": {
+        "total": 1,
+        "last7d": 0
+      },
+      "store.guide.what-ai-crawlers-fetch-that-googlebot-does-not": {
+        "total": 1,
+        "last7d": 0
+      },
+      "store.guide.what-is-in-the-mcp-registry": {
+        "total": 2,
+        "last7d": 0
+      },
+      "store.guide.what-is-inside-an-mcpb-bundle": {
+        "total": 4,
+        "last7d": 0
+      },
+      "store.guide.where-is-claude-desktop-config-json": {
+        "total": 2,
+        "last7d": 0
+      },
+      "store.guide.why-an-mcp-server-does-not-appear": {
+        "total": 2,
+        "last7d": 0
+      },
+      "store.guide.word-documents-proposals-from-chat": {
+        "total": 4,
+        "last7d": 0
+      },
+      "store.guide.work-orders-and-job-cards-from-chat": {
+        "total": 2,
+        "last7d": 0
+      },
+      "store.guide.x-mcp-header-tool-parameters": {
+        "total": 4,
+        "last7d": 0
+      },
+      "store.guide.zip-archives-safely-from-chat": {
+        "total": 1,
+        "last7d": 0
+      },
+      "store.home.table.amortization": {
+        "total": 1,
+        "last7d": 0
+      },
+      "store.home.table.asset-register": {
+        "total": 1,
+        "last7d": 0
+      },
+      "store.home.table.bank-statement": {
+        "total": 1,
+        "last7d": 0
+      },
+      "store.home.table.bundle": {
+        "total": 1,
+        "last7d": 0
+      },
+      "store.home.table.calendar": {
+        "total": 1,
+        "last7d": 0
+      },
+      "store.home.table.cash-book": {
+        "total": 1,
+        "last7d": 0
+      },
+      "store.home.table.catalogue": {
+        "total": 1,
+        "last7d": 0
+      },
+      "store.home.table.change-order": {
+        "total": 1,
+        "last7d": 0
+      },
+      "store.home.table.currency": {
+        "total": 1,
+        "last7d": 0
+      },
+      "store.home.table.delivery-schedule": {
+        "total": 1,
+        "last7d": 0
+      },
+      "store.home.table.deposits": {
+        "total": 1,
+        "last7d": 0
+      },
+      "store.home.table.expense-tracker": {
+        "total": 1,
+        "last7d": 0
+      },
+      "store.home.table.image": {
+        "total": 1,
+        "last7d": 0
+      },
+      "store.home.table.kanban": {
+        "total": 1,
+        "last7d": 0
+      },
+      "store.home.table.petty-cash": {
+        "total": 1,
+        "last7d": 0
+      },
+      "store.home.table.resume": {
+        "total": 1,
+        "last7d": 0
+      },
+      "store.home.table.spreadsheet": {
+        "total": 1,
+        "last7d": 0
+      },
+      "store.home.table.time-tracker": {
+        "total": 1,
+        "last7d": 0
+      },
+      "store.home.table.timezone": {
+        "total": 1,
+        "last7d": 0
+      },
+      "store.home.table.work-order": {
+        "total": 1,
+        "last7d": 0
+      },
+      "store.home.table.x": {
+        "total": 1,
+        "last7d": 0
+      },
+      "store.s.amortization.bundle": {
+        "total": 2,
+        "last7d": 0
+      },
+      "store.s.amortization": {
+        "total": 2,
+        "last7d": 0
+      },
+      "store.s.asset-register.bundle": {
+        "total": 4,
+        "last7d": 0
+      },
+      "store.s.asset-register": {
+        "total": 4,
+        "last7d": 0
+      },
+      "store.s.bank-statement.bundle": {
+        "total": 3,
+        "last7d": 0
+      },
+      "store.s.bank-statement": {
+        "total": 3,
+        "last7d": 0
+      },
+      "store.s.barcode.bundle": {
+        "total": 4,
+        "last7d": 0
+      },
+      "store.s.barcode": {
+        "total": 5,
+        "last7d": 0
+      },
+      "store.s.billing-docs.bundle": {
+        "total": 5,
+        "last7d": 0
+      },
+      "store.s.billing-docs": {
+        "total": 4,
+        "last7d": 0
+      },
+      "store.s.calendar.bundle": {
+        "total": 3,
+        "last7d": 0
+      },
+      "store.s.calendar": {
+        "total": 4,
+        "last7d": 0
+      },
+      "store.s.cash-book.bundle": {
+        "total": 2,
+        "last7d": 0
+      },
+      "store.s.cash-book": {
+        "total": 2,
+        "last7d": 0
+      },
+      "store.s.catalogue.bundle": {
+        "total": 2,
+        "last7d": 0
+      },
+      "store.s.catalogue": {
+        "total": 2,
+        "last7d": 0
+      },
+      "store.s.change-order.bundle": {
+        "total": 1,
+        "last7d": 0
+      },
+      "store.s.change-order": {
+        "total": 5,
+        "last7d": 0
+      },
+      "store.s.checklist.bundle": {
+        "total": 3,
+        "last7d": 0
+      },
+      "store.s.checklist": {
+        "total": 4,
+        "last7d": 0
+      },
+      "store.s.clauses.bundle": {
+        "total": 4,
+        "last7d": 0
+      },
+      "store.s.clauses": {
+        "total": 6,
+        "last7d": 0
+      },
+      "store.s.currency.bundle": {
+        "total": 3,
+        "last7d": 0
+      },
+      "store.s.currency": {
+        "total": 4,
+        "last7d": 0
+      },
+      "store.s.delivery-schedule.bundle": {
+        "total": 2,
+        "last7d": 0
+      },
+      "store.s.delivery-schedule": {
+        "total": 5,
+        "last7d": 0
+      },
+      "store.s.deposits.bundle": {
+        "total": 3,
+        "last7d": 0
+      },
+      "store.s.deposits": {
+        "total": 4,
+        "last7d": 0
+      },
+      "store.s.docx.bundle": {
+        "total": 1,
+        "last7d": 0
+      },
+      "store.s.docx": {
+        "total": 2,
+        "last7d": 0
+      },
+      "store.s.expense-tracker.bundle": {
+        "total": 1,
+        "last7d": 0
+      },
+      "store.s.expense-tracker": {
+        "total": 1,
+        "last7d": 0
+      },
+      "store.s.image.bundle": {
+        "total": 3,
+        "last7d": 0
+      },
+      "store.s.image": {
+        "total": 4,
+        "last7d": 0
+      },
+      "store.s.invoice.bundle": {
+        "total": 1,
+        "last7d": 0
+      },
+      "store.s.invoice": {
+        "total": 3,
+        "last7d": 0
+      },
+      "store.s.kanban.bundle": {
+        "total": 3,
+        "last7d": 0
+      },
+      "store.s.kanban": {
+        "total": 4,
+        "last7d": 0
+      },
+      "store.s.office-suite": {
+        "total": 1,
+        "last7d": 0
+      },
+      "store.s.packing-list.bundle": {
+        "total": 4,
+        "last7d": 0
+      },
+      "store.s.packing-list": {
+        "total": 5,
+        "last7d": 0
+      },
+      "store.s.pdf.bundle": {
+        "total": 2,
+        "last7d": 0
+      },
+      "store.s.pdf": {
+        "total": 3,
+        "last7d": 0
+      },
+      "store.s.per-diem.bundle": {
+        "total": 3,
+        "last7d": 0
+      },
+      "store.s.per-diem": {
+        "total": 3,
+        "last7d": 0
+      },
+      "store.s.petty-cash.bundle": {
+        "total": 4,
+        "last7d": 0
+      },
+      "store.s.petty-cash": {
+        "total": 5,
+        "last7d": 0
+      },
+      "store.s.price-tracker.bundle": {
+        "total": 3,
+        "last7d": 0
+      },
+      "store.s.price-tracker": {
+        "total": 6,
+        "last7d": 0
+      },
+      "store.s.quotes.bundle": {
+        "total": 2,
+        "last7d": 0
+      },
+      "store.s.quotes": {
+        "total": 1,
+        "last7d": 0
+      },
+      "store.s.recurring.bundle": {
+        "total": 3,
+        "last7d": 0
+      },
+      "store.s.recurring": {
+        "total": 2,
+        "last7d": 0
+      },
+      "store.s.resume.bundle": {
+        "total": 3,
+        "last7d": 0
+      },
+      "store.s.resume": {
+        "total": 3,
+        "last7d": 0
+      },
+      "store.s.spreadsheet.bundle": {
+        "total": 4,
+        "last7d": 0
+      },
+      "store.s.spreadsheet": {
+        "total": 5,
+        "last7d": 0
+      },
+      "store.s.statement-of-account.bundle": {
+        "total": 1,
+        "last7d": 0
+      },
+      "store.s.statement-of-account": {
+        "total": 3,
+        "last7d": 0
+      },
+      "store.s.time-tracker.bundle": {
+        "total": 1,
+        "last7d": 0
+      },
+      "store.s.timezone.bundle": {
+        "total": 4,
+        "last7d": 0
+      },
+      "store.s.timezone": {
+        "total": 4,
+        "last7d": 0
+      },
+      "store.s.work-order.bundle": {
+        "total": 3,
+        "last7d": 0
+      },
+      "store.s.work-order": {
+        "total": 5,
+        "last7d": 0
+      },
+      "store.s.zip.bundle": {
+        "total": 2,
+        "last7d": 0
+      },
+      "store.s.zip": {
+        "total": 3,
+        "last7d": 0
+      },
+      "store.setup.claude-code": {
+        "total": 79,
+        "last7d": 0
+      },
+      "store.setup.claude-desktop": {
+        "total": 73,
+        "last7d": 0
+      },
+      "store.setup.claude-web": {
+        "total": 68,
+        "last7d": 0
+      },
+      "store.setup.cline": {
+        "total": 75,
+        "last7d": 0
+      },
+      "store.setup.cursor": {
+        "total": 68,
+        "last7d": 0
+      },
+      "store.setup.vscode": {
+        "total": 73,
+        "last7d": 0
+      },
+      "store.setup.windsurf": {
+        "total": 69,
+        "last7d": 0
+      },
+      "unattributed.amortization": {
+        "total": 6,
+        "last7d": 0
+      },
+      "unattributed.asset-register": {
+        "total": 4,
+        "last7d": 0
+      },
+      "unattributed.bank-statement": {
+        "total": 5,
+        "last7d": 0
+      },
+      "unattributed.barcode": {
+        "total": 4,
+        "last7d": 0
+      },
+      "unattributed.billing-docs": {
+        "total": 4,
+        "last7d": 0
+      },
+      "unattributed.bundle": {
+        "total": 7,
+        "last7d": 0
+      },
+      "unattributed.calendar": {
+        "total": 5,
+        "last7d": 0
+      },
+      "unattributed.cash-book": {
+        "total": 5,
+        "last7d": 0
+      },
+      "unattributed.catalogue": {
+        "total": 5,
+        "last7d": 0
+      },
+      "unattributed.change-order": {
+        "total": 6,
+        "last7d": 0
+      },
+      "unattributed.checklist": {
+        "total": 1,
+        "last7d": 0
+      },
+      "unattributed.clauses": {
+        "total": 4,
+        "last7d": 0
+      },
+      "unattributed.currency": {
+        "total": 3,
+        "last7d": 0
+      },
+      "unattributed.delivery-schedule": {
+        "total": 4,
+        "last7d": 0
+      },
+      "unattributed.deposits": {
+        "total": 3,
+        "last7d": 0
+      },
+      "unattributed.docx": {
+        "total": 5,
+        "last7d": 0
+      },
+      "unattributed.expense-tracker": {
+        "total": 5,
+        "last7d": 0
+      },
+      "unattributed.image": {
+        "total": 4,
+        "last7d": 0
+      },
+      "unattributed.invoice": {
+        "total": 20,
+        "last7d": 0
+      },
+      "unattributed.job-card": {
+        "total": 1,
+        "last7d": 0
+      },
+      "unattributed.kanban": {
+        "total": 3,
+        "last7d": 0
+      },
+      "unattributed.pdf": {
+        "total": 4,
+        "last7d": 0
+      },
+      "unattributed.per-diem": {
+        "total": 3,
+        "last7d": 0
+      },
+      "unattributed.petty-cash": {
+        "total": 5,
+        "last7d": 0
+      },
+      "unattributed.price-tracker": {
+        "total": 3,
+        "last7d": 0
+      },
+      "unattributed.quotes": {
+        "total": 3,
+        "last7d": 0
+      },
+      "unattributed.recurring": {
+        "total": 5,
+        "last7d": 0
+      },
+      "unattributed.resume": {
+        "total": 6,
+        "last7d": 0
+      },
+      "unattributed.spreadsheet": {
+        "total": 3,
+        "last7d": 0
+      },
+      "unattributed.statement-of-account": {
+        "total": 4,
+        "last7d": 0
+      },
+      "unattributed.time-tracker": {
+        "total": 14,
+        "last7d": 0
+      },
+      "unattributed.timezone": {
+        "total": 6,
+        "last7d": 0
+      },
+      "unattributed.work-order": {
+        "total": 5,
+        "last7d": 0
+      },
+      "unattributed.zip": {
+        "total": 3,
+        "last7d": 0
+      }
+    },
+    "total_clicks": 986,
+    "clicks_7d": 7,
+    "unattributed_total": 168,
+    "unattributed_7d": 0,
+    "legacy": {
+      "note": "instrument v1 (`click:` keys). Counted crawlers and this repo's own agents; never quote as demand. See docs/FUNNEL_R1.md.",
+      "by_src": {
+        "amortization.unknown": {
+          "total": 14,
+          "last7d": 0
+        },
+        "asset-register.unknown": {
+          "total": 16,
+          "last7d": 0
+        },
+        "audit": {
+          "total": 4,
+          "last7d": 0
+        },
+        "bank-statement.unknown": {
+          "total": 12,
+          "last7d": 0
+        },
+        "barcode.unknown": {
+          "total": 13,
+          "last7d": 0
+        },
+        "billing-docs.unknown": {
+          "total": 13,
+          "last7d": 0
+        },
+        "bundle.unknown": {
+          "total": 15,
+          "last7d": 0
+        },
+        "calendar.unknown": {
+          "total": 13,
+          "last7d": 0
+        },
+        "cash-book.unknown": {
+          "total": 14,
+          "last7d": 0
+        },
+        "catalogue.unknown": {
+          "total": 3,
+          "last7d": 0
+        },
+        "change-order.unknown": {
+          "total": 8,
+          "last7d": 0
+        },
+        "clauses.unknown": {
+          "total": 12,
+          "last7d": 0
+        },
+        "currency.unknown": {
+          "total": 10,
+          "last7d": 0
+        },
+        "delivery-schedule.unknown": {
+          "total": 4,
+          "last7d": 0
+        },
+        "deposits.unknown": {
+          "total": 13,
+          "last7d": 0
+        },
+        "diag.504.1": {
+          "total": 1,
+          "last7d": 0
+        },
+        "diag.504.2": {
+          "total": 1,
+          "last7d": 0
+        },
+        "diag.504.3": {
+          "total": 1,
+          "last7d": 0
+        },
+        "diag.504.4": {
+          "total": 1,
+          "last7d": 0
+        },
+        "diag.504.5": {
+          "total": 1,
+          "last7d": 0
+        },
+        "diag.504.6": {
+          "total": 1,
+          "last7d": 0
+        },
+        "diag.504.7": {
+          "total": 1,
+          "last7d": 0
+        },
+        "diag.504.8": {
+          "total": 1,
+          "last7d": 0
+        },
+        "diag.headless.1": {
+          "total": 1,
+          "last7d": 0
+        },
+        "diag.headless.2": {
+          "total": 1,
+          "last7d": 0
+        },
+        "diag.headless.check": {
+          "total": 1,
+          "last7d": 0
+        },
+        "diag.real": {
+          "total": 1,
+          "last7d": 0
+        },
+        "diag.secfetch": {
+          "total": 1,
+          "last7d": 0
+        },
+        "diag.trulynoua": {
+          "total": 1,
+          "last7d": 0
+        },
+        "docx.unknown": {
+          "total": 15,
+          "last7d": 0
+        },
+        "expense-tracker.unknown": {
+          "total": 6,
+          "last7d": 0
+        },
+        "image.unknown": {
+          "total": 12,
+          "last7d": 0
+        },
+        "invoice.unknown": {
+          "total": 12,
+          "last7d": 0
+        },
+        "kanban.unknown": {
+          "total": 6,
+          "last7d": 0
+        },
+        "pdf.unknown": {
+          "total": 11,
+          "last7d": 0
+        },
+        "per-diem.perdiem_report": {
+          "total": 1,
+          "last7d": 0
+        },
+        "per-diem.unknown": {
+          "total": 15,
+          "last7d": 0
+        },
+        "petty-cash.unknown": {
+          "total": 12,
+          "last7d": 0
+        },
+        "price-tracker.unknown": {
+          "total": 10,
+          "last7d": 0
+        },
+        "probe.a3.googlebot": {
+          "total": 1,
+          "last7d": 0
+        },
+        "probe.a3": {
+          "total": 1,
+          "last7d": 0
+        },
+        "probe.deadroute.loop29": {
+          "total": 2,
+          "last7d": 0
+        },
+        "probe.loop29.noua": {
+          "total": 1,
+          "last7d": 0
+        },
+        "probe.loop29": {
+          "total": 1,
+          "last7d": 0
+        },
+        "quotes.unknown": {
+          "total": 12,
+          "last7d": 0
+        },
+        "recurring.unknown": {
+          "total": 10,
+          "last7d": 0
+        },
+        "resume.unknown": {
+          "total": 13,
+          "last7d": 0
+        },
+        "spreadsheet.unknown": {
+          "total": 12,
+          "last7d": 0
+        },
+        "statement-of-account.unknown": {
+          "total": 12,
+          "last7d": 0
+        },
+        "store.bundle": {
+          "total": 2,
+          "last7d": 0
+        },
+        "store.compare.bank-statement": {
+          "total": 2,
+          "last7d": 0
+        },
+        "store.compare.barcode": {
+          "total": 1,
+          "last7d": 0
+        },
+        "store.compare.calendar": {
+          "total": 2,
+          "last7d": 0
+        },
+        "store.compare.clauses": {
+          "total": 1,
+          "last7d": 0
+        },
+        "store.compare.currency": {
+          "total": 3,
+          "last7d": 0
+        },
+        "store.compare.docx": {
+          "total": 1,
+          "last7d": 0
+        },
+        "store.compare.expense-tracker": {
+          "total": 4,
+          "last7d": 0
+        },
+        "store.compare.image": {
+          "total": 2,
+          "last7d": 0
+        },
+        "store.compare.invoice": {
+          "total": 3,
+          "last7d": 0
+        },
+        "store.compare.kanban": {
+          "total": 4,
+          "last7d": 0
+        },
+        "store.compare.pdf": {
+          "total": 2,
+          "last7d": 0
+        },
+        "store.compare.per-diem": {
+          "total": 3,
+          "last7d": 0
+        },
+        "store.compare.price-tracker": {
+          "total": 3,
+          "last7d": 0
+        },
+        "store.compare.quotes": {
+          "total": 1,
+          "last7d": 0
+        },
+        "store.compare.recurring": {
+          "total": 1,
+          "last7d": 0
+        },
+        "store.compare.resume": {
+          "total": 1,
+          "last7d": 0
+        },
+        "store.compare.spreadsheet": {
+          "total": 2,
+          "last7d": 0
+        },
+        "store.compare.time-tracker": {
+          "total": 3,
+          "last7d": 0
+        },
+        "store.compare.timezone": {
+          "total": 1,
+          "last7d": 0
+        },
+        "store.guide.answer-questions-about-a-spreadsheet-without-formulas": {
+          "total": 3,
+          "last7d": 0
+        },
+        "store.guide.bank-statement-csv-categorize-reconcile": {
+          "total": 5,
+          "last7d": 0
+        },
+        "store.guide.calendar-ics-free-busy-in-claude": {
+          "total": 4,
+          "last7d": 0
+        },
+        "store.guide.change-orders-and-contract-value-from-chat": {
+          "total": 4,
+          "last7d": 0
+        },
+        "store.guide.chase-unpaid-invoices-without-a-crm": {
+          "total": 4,
+          "last7d": 0
+        },
+        "store.guide.choosing-an-mcp-server-for-invoicing": {
+          "total": 2,
+          "last7d": 0
+        },
+        "store.guide.claude-mcp-add-command-reference": {
+          "total": 3,
+          "last7d": 0
+        },
+        "store.guide.client-deposits-and-retainers-from-chat": {
+          "total": 8,
+          "last7d": 0
+        },
+        "store.guide.client-statements-and-dunning-from-chat": {
+          "total": 9,
+          "last7d": 0
+        },
+        "store.guide.combine-receipts-into-one-pdf-for-your-accountant": {
+          "total": 5,
+          "last7d": 0
+        },
+        "store.guide.connect-mcp-servers-without-installing": {
+          "total": 5,
+          "last7d": 0
+        },
+        "store.guide.contract-clauses-library-assembly": {
+          "total": 7,
+          "last7d": 0
+        },
+        "store.guide.credit-notes-and-purchase-orders-from-chat": {
+          "total": 5,
+          "last7d": 0
+        },
+        "store.guide.csv-to-excel-and-back-in-claude": {
+          "total": 3,
+          "last7d": 0
+        },
+        "store.guide.currency-conversion-ecb-rates-in-claude": {
+          "total": 2,
+          "last7d": 0
+        },
+        "store.guide.cursor-mcp-json-setup": {
+          "total": 2,
+          "last7d": 0
+        },
+        "store.guide.do-you-need-an-mcp-server-or-just-a-prompt": {
+          "total": 3,
+          "last7d": 0
+        },
+        "store.guide.expense-tracking-in-claude": {
+          "total": 5,
+          "last7d": 0
+        },
+        "store.guide.fixed-assets-and-depreciation-from-chat": {
+          "total": 10,
+          "last7d": 0
+        },
+        "store.guide.free-mcp-servers-for-freelancers": {
+          "total": 5,
+          "last7d": 0
+        },
+        "store.guide.how-crowded-is-an-mcp-server-name": {
+          "total": 1,
+          "last7d": 0
+        },
+        "store.guide.how-mcp-registry-search-works": {
+          "total": 2,
+          "last7d": 0
+        },
+        "store.guide.image-resize-compress-watermark-from-chat": {
+          "total": 6,
+          "last7d": 0
+        },
+        "store.guide.install-mcp-servers-without-npm": {
+          "total": 2,
+          "last7d": 0
+        },
+        "store.guide.invoice-pdf-from-chat": {
+          "total": 6,
+          "last7d": 0
+        },
+        "store.guide.kanban-board-in-claude-with-time-tracking": {
+          "total": 5,
+          "last7d": 0
+        },
+        "store.guide.licensing-a-paid-mcp-server": {
+          "total": 4,
+          "last7d": 0
+        },
+        "store.guide.loan-and-lease-schedules-from-chat": {
+          "total": 8,
+          "last7d": 0
+        },
+        "store.guide.local-mcp-servers-versus-hosted-connectors": {
+          "total": 3,
+          "last7d": 0
+        },
+        "store.guide.mcp-client-config-file-locations": {
+          "total": 3,
+          "last7d": 0
+        },
+        "store.guide.mcp-config-scopes-and-precedence": {
+          "total": 3,
+          "last7d": 0
+        },
+        "store.guide.mcp-on-windows-paths-and-npx": {
+          "total": 3,
+          "last7d": 0
+        },
+        "store.guide.mcp-protocol-versions": {
+          "total": 2,
+          "last7d": 0
+        },
+        "store.guide.mcp-server-free-vs-pro": {
+          "total": 4,
+          "last7d": 0
+        },
+        "store.guide.mcp-server-json-fields-by-client": {
+          "total": 2,
+          "last7d": 0
+        },
+        "store.guide.mcp-server-logs-and-what-they-say": {
+          "total": 4,
+          "last7d": 0
+        },
+        "store.guide.mcp-server-not-showing-up-in-claude-desktop": {
+          "total": 2,
+          "last7d": 0
+        },
+        "store.guide.mcp-server-security-review": {
+          "total": 3,
+          "last7d": 0
+        },
+        "store.guide.mcp-servers-in-vs-code-copilot-agent-mode": {
+          "total": 5,
+          "last7d": 0
+        },
+        "store.guide.mcp-servers-in-windsurf-and-cline": {
+          "total": 3,
+          "last7d": 0
+        },
+        "store.guide.mcp-servers-that-work-offline": {
+          "total": 5,
+          "last7d": 0
+        },
+        "store.guide.mcp-tool-description-and-output-limits": {
+          "total": 4,
+          "last7d": 0
+        },
+        "store.guide.meeting-slots-across-time-zones": {
+          "total": 6,
+          "last7d": 0
+        },
+        "store.guide.mileage-log-for-tax-from-chat": {
+          "total": 5,
+          "last7d": 0
+        },
+        "store.guide.month-end-close-with-mcp-servers": {
+          "total": 3,
+          "last7d": 0
+        },
+        "store.guide.one-install-office-suite": {
+          "total": 3,
+          "last7d": 0
+        },
+        "store.guide.one-ledger-from-every-server": {
+          "total": 4,
+          "last7d": 0
+        },
+        "store.guide.pdf-merge-split-stamp-from-chat": {
+          "total": 6,
+          "last7d": 0
+        },
+        "store.guide.per-diem-and-travel-allowances-from-chat": {
+          "total": 12,
+          "last7d": 0
+        },
+        "store.guide.petty-cash-float-from-chat": {
+          "total": 7,
+          "last7d": 0
+        },
+        "store.guide.price-a-job-with-a-rate-card-and-a-change-order": {
+          "total": 3,
+          "last7d": 0
+        },
+        "store.guide.price-drop-alerts-with-claude": {
+          "total": 6,
+          "last7d": 0
+        },
+        "store.guide.price-lists-and-rate-cards-from-chat": {
+          "total": 5,
+          "last7d": 0
+        },
+        "store.guide.project-profitability-hours-versus-budget": {
+          "total": 4,
+          "last7d": 0
+        },
+        "store.guide.quote-to-cash-in-claude": {
+          "total": 3,
+          "last7d": 0
+        },
+        "store.guide.quotes-and-estimates-to-invoice-in-claude": {
+          "total": 3,
+          "last7d": 0
+        },
+        "store.guide.read-excel-in-cursor": {
+          "total": 5,
+          "last7d": 0
+        },
+        "store.guide.rebill-client-expenses-with-a-markup": {
+          "total": 3,
+          "last7d": 0
+        },
+        "store.guide.reconcile-a-bank-export-with-your-invoices": {
+          "total": 3,
+          "last7d": 0
+        },
+        "store.guide.recurring-invoices-on-a-schedule": {
+          "total": 6,
+          "last7d": 0
+        },
+        "store.guide.resume-and-cover-letter-from-chat": {
+          "total": 5,
+          "last7d": 0
+        },
+        "store.guide.self-employed-tax-year-pack-from-chat": {
+          "total": 5,
+          "last7d": 0
+        },
+        "store.guide.send-a-month-of-paperwork-as-one-zip": {
+          "total": 3,
+          "last7d": 0
+        },
+        "store.guide.sepa-payment-qr-codes-on-invoices-from-chat": {
+          "total": 4,
+          "last7d": 0
+        },
+        "store.guide.set-a-freelance-hourly-rate-from-your-own-numbers": {
+          "total": 4,
+          "last7d": 0
+        },
+        "store.guide.shipping-an-mcp-server-bundle-or-hosted-url": {
+          "total": 2,
+          "last7d": 0
+        },
+        "store.guide.split-a-scanned-pdf-into-separate-documents": {
+          "total": 5,
+          "last7d": 0
+        },
+        "store.guide.stdio-or-streamable-http": {
+          "total": 3,
+          "last7d": 0
+        },
+        "store.guide.track-time-in-claude-code": {
+          "total": 7,
+          "last7d": 0
+        },
+        "store.guide.vat-and-reverse-charge-invoices-from-chat": {
+          "total": 3,
+          "last7d": 0
+        },
+        "store.guide.what-is-in-the-mcp-registry": {
+          "total": 3,
+          "last7d": 0
+        },
+        "store.guide.what-is-inside-an-mcpb-bundle": {
+          "total": 4,
+          "last7d": 0
+        },
+        "store.guide.where-is-claude-desktop-config-json": {
+          "total": 5,
+          "last7d": 0
+        },
+        "store.guide.why-an-mcp-server-does-not-appear": {
+          "total": 4,
+          "last7d": 0
+        },
+        "store.guide.word-documents-proposals-from-chat": {
+          "total": 4,
+          "last7d": 0
+        },
+        "store.guide.work-orders-and-job-cards-from-chat": {
+          "total": 4,
+          "last7d": 0
+        },
+        "store.guide.zip-archives-safely-from-chat": {
+          "total": 6,
+          "last7d": 0
+        },
+        "store.home.table.amortization": {
+          "total": 6,
+          "last7d": 0
+        },
+        "store.home.table.asset-register": {
+          "total": 5,
+          "last7d": 0
+        },
+        "store.home.table.bank-statement": {
+          "total": 7,
+          "last7d": 0
+        },
+        "store.home.table.barcode": {
+          "total": 5,
+          "last7d": 0
+        },
+        "store.home.table.billing-docs": {
+          "total": 5,
+          "last7d": 0
+        },
+        "store.home.table.bundle": {
+          "total": 8,
+          "last7d": 0
+        },
+        "store.home.table.calendar": {
+          "total": 4,
+          "last7d": 0
+        },
+        "store.home.table.cash-book": {
+          "total": 5,
+          "last7d": 0
+        },
+        "store.home.table.catalogue": {
+          "total": 4,
+          "last7d": 0
+        },
+        "store.home.table.change-order": {
+          "total": 6,
+          "last7d": 0
+        },
+        "store.home.table.clauses": {
+          "total": 5,
+          "last7d": 0
+        },
+        "store.home.table.currency": {
+          "total": 5,
+          "last7d": 0
+        },
+        "store.home.table.delivery-schedule": {
+          "total": 5,
+          "last7d": 0
+        },
+        "store.home.table.deposits": {
+          "total": 6,
+          "last7d": 0
+        },
+        "store.home.table.docx": {
+          "total": 5,
+          "last7d": 0
+        },
+        "store.home.table.expense-tracker": {
+          "total": 6,
+          "last7d": 0
+        },
+        "store.home.table.image": {
+          "total": 4,
+          "last7d": 0
+        },
+        "store.home.table.invoice": {
+          "total": 5,
+          "last7d": 0
+        },
+        "store.home.table.kanban": {
+          "total": 8,
+          "last7d": 0
+        },
+        "store.home.table.pdf": {
+          "total": 6,
+          "last7d": 0
+        },
+        "store.home.table.per-diem": {
+          "total": 7,
+          "last7d": 0
+        },
+        "store.home.table.petty-cash": {
+          "total": 6,
+          "last7d": 0
+        },
+        "store.home.table.price-tracker": {
+          "total": 5,
+          "last7d": 0
+        },
+        "store.home.table.quotes": {
+          "total": 5,
+          "last7d": 0
+        },
+        "store.home.table.recurring": {
+          "total": 6,
+          "last7d": 0
+        },
+        "store.home.table.resume": {
+          "total": 5,
+          "last7d": 0
+        },
+        "store.home.table.spreadsheet": {
+          "total": 6,
+          "last7d": 0
+        },
+        "store.home.table.statement-of-account": {
+          "total": 7,
+          "last7d": 0
+        },
+        "store.home.table.time-tracker": {
+          "total": 6,
+          "last7d": 0
+        },
+        "store.home.table.timezone": {
+          "total": 4,
+          "last7d": 0
+        },
+        "store.home.table.work-order": {
+          "total": 5,
+          "last7d": 0
+        },
+        "store.home.table.zip": {
+          "total": 5,
+          "last7d": 0
+        },
+        "store.home": {
+          "total": 32,
+          "last7d": 0
+        },
+        "store.pending.catalogue": {
+          "total": 1,
+          "last7d": 0
+        },
+        "store.pending.change-order": {
+          "total": 1,
+          "last7d": 0
+        },
+        "store.pending.work-order": {
+          "total": 1,
+          "last7d": 0
+        },
+        "store.s.amortization.bundle": {
+          "total": 3,
+          "last7d": 0
+        },
+        "store.s.amortization": {
+          "total": 4,
+          "last7d": 0
+        },
+        "store.s.asset-register.bundle": {
+          "total": 2,
+          "last7d": 0
+        },
+        "store.s.asset-register": {
+          "total": 2,
+          "last7d": 0
+        },
+        "store.s.bank-statement.bundle": {
+          "total": 4,
+          "last7d": 0
+        },
+        "store.s.bank-statement": {
+          "total": 1,
+          "last7d": 0
+        },
+        "store.s.barcode.bundle": {
+          "total": 4,
+          "last7d": 0
+        },
+        "store.s.barcode": {
+          "total": 3,
+          "last7d": 0
+        },
+        "store.s.billing-docs.bundle": {
+          "total": 2,
+          "last7d": 0
+        },
+        "store.s.billing-docs": {
+          "total": 3,
+          "last7d": 0
+        },
+        "store.s.calendar.bundle": {
+          "total": 4,
+          "last7d": 0
+        },
+        "store.s.calendar": {
+          "total": 4,
+          "last7d": 0
+        },
+        "store.s.cash-book.bundle": {
+          "total": 3,
+          "last7d": 0
+        },
+        "store.s.cash-book": {
+          "total": 1,
+          "last7d": 0
+        },
+        "store.s.catalogue.bundle": {
+          "total": 3,
+          "last7d": 0
+        },
+        "store.s.catalogue": {
+          "total": 2,
+          "last7d": 0
+        },
+        "store.s.change-order.bundle": {
+          "total": 2,
+          "last7d": 0
+        },
+        "store.s.change-order": {
+          "total": 4,
+          "last7d": 0
+        },
+        "store.s.clauses.bundle": {
+          "total": 1,
+          "last7d": 0
+        },
+        "store.s.clauses": {
+          "total": 2,
+          "last7d": 0
+        },
+        "store.s.currency.bundle": {
+          "total": 1,
+          "last7d": 0
+        },
+        "store.s.currency": {
+          "total": 4,
+          "last7d": 0
+        },
+        "store.s.delivery-schedule.bundle": {
+          "total": 1,
+          "last7d": 0
+        },
+        "store.s.delivery-schedule": {
+          "total": 6,
+          "last7d": 0
+        },
+        "store.s.deposits.bundle": {
+          "total": 3,
+          "last7d": 0
+        },
+        "store.s.deposits": {
+          "total": 4,
+          "last7d": 0
+        },
+        "store.s.docx.bundle": {
+          "total": 2,
+          "last7d": 0
+        },
+        "store.s.docx": {
+          "total": 3,
+          "last7d": 0
+        },
+        "store.s.expense-tracker.bundle": {
+          "total": 6,
+          "last7d": 0
+        },
+        "store.s.expense-tracker": {
+          "total": 6,
+          "last7d": 0
+        },
+        "store.s.image.bundle": {
+          "total": 1,
+          "last7d": 0
+        },
+        "store.s.image": {
+          "total": 3,
+          "last7d": 0
+        },
+        "store.s.invoice.bundle": {
+          "total": 8,
+          "last7d": 0
+        },
+        "store.s.invoice": {
+          "total": 5,
+          "last7d": 0
+        },
+        "store.s.kanban.bundle": {
+          "total": 3,
+          "last7d": 0
+        },
+        "store.s.kanban": {
+          "total": 3,
+          "last7d": 0
+        },
+        "store.s.office-suite.bundle": {
+          "total": 3,
+          "last7d": 0
+        },
+        "store.s.office-suite": {
+          "total": 4,
+          "last7d": 0
+        },
+        "store.s.pdf.bundle": {
+          "total": 1,
+          "last7d": 0
+        },
+        "store.s.pdf": {
+          "total": 2,
+          "last7d": 0
+        },
+        "store.s.per-diem.bundle": {
+          "total": 1,
+          "last7d": 0
+        },
+        "store.s.per-diem": {
+          "total": 1,
+          "last7d": 0
+        },
+        "store.s.petty-cash.bundle": {
+          "total": 2,
+          "last7d": 0
+        },
+        "store.s.petty-cash": {
+          "total": 1,
+          "last7d": 0
+        },
+        "store.s.price-tracker.bundle": {
+          "total": 2,
+          "last7d": 0
+        },
+        "store.s.price-tracker": {
+          "total": 6,
+          "last7d": 0
+        },
+        "store.s.quotes.bundle": {
+          "total": 4,
+          "last7d": 0
+        },
+        "store.s.quotes": {
+          "total": 3,
+          "last7d": 0
+        },
+        "store.s.recurring.bundle": {
+          "total": 3,
+          "last7d": 0
+        },
+        "store.s.recurring": {
+          "total": 3,
+          "last7d": 0
+        },
+        "store.s.resume.bundle": {
+          "total": 3,
+          "last7d": 0
+        },
+        "store.s.resume": {
+          "total": 1,
+          "last7d": 0
+        },
+        "store.s.spreadsheet.bundle": {
+          "total": 2,
+          "last7d": 0
+        },
+        "store.s.spreadsheet": {
+          "total": 4,
+          "last7d": 0
+        },
+        "store.s.statement-of-account.bundle": {
+          "total": 1,
+          "last7d": 0
+        },
+        "store.s.statement-of-account": {
+          "total": 3,
+          "last7d": 0
+        },
+        "store.s.time-tracker.bundle": {
+          "total": 8,
+          "last7d": 0
+        },
+        "store.s.time-tracker": {
+          "total": 6,
+          "last7d": 0
+        },
+        "store.s.timezone.bundle": {
+          "total": 2,
+          "last7d": 0
+        },
+        "store.s.timezone": {
+          "total": 1,
+          "last7d": 0
+        },
+        "store.s.work-order.bundle": {
+          "total": 3,
+          "last7d": 0
+        },
+        "store.s.work-order": {
+          "total": 6,
+          "last7d": 0
+        },
+        "store.s.zip.bundle": {
+          "total": 3,
+          "last7d": 0
+        },
+        "store.s.zip": {
+          "total": 1,
+          "last7d": 0
+        },
+        "store.setup.claude-code": {
+          "total": 76,
+          "last7d": 0
+        },
+        "store.setup.claude-desktop": {
+          "total": 70,
+          "last7d": 0
+        },
+        "store.setup.claude-web": {
+          "total": 68,
+          "last7d": 0
+        },
+        "store.setup.cline": {
+          "total": 90,
+          "last7d": 0
+        },
+        "store.setup.cursor": {
+          "total": 68,
+          "last7d": 0
+        },
+        "store.setup.vscode": {
+          "total": 71,
+          "last7d": 0
+        },
+        "store.setup.windsurf": {
+          "total": 79,
+          "last7d": 0
+        },
+        "time-tracker.full_history.bundle": {
+          "total": 1,
+          "last7d": 0
+        },
+        "time-tracker.full_history": {
+          "total": 1,
+          "last7d": 0
+        },
+        "time-tracker.unknown": {
+          "total": 10,
+          "last7d": 0
+        },
+        "timezone.unknown": {
+          "total": 10,
+          "last7d": 0
+        },
+        "work-order.unknown": {
+          "total": 13,
+          "last7d": 0
+        },
+        "zip.unknown": {
+          "total": 11,
+          "last7d": 0
+        }
+      },
+      "total_clicks": 1690,
+      "clicks_7d": 0
+    }
+  },
+  "previous_evidence_sha256": {
+    "data/r37_kpi_baseline.json": "3cb3261837bd217270af57c60bb516530718324b4d103a38cbd6ed82c8fad7b1",
+    "data/r37_kpi_final.json": "1e07275c6e3b348ede4bd7ceca5e3e514e7329738cbc295649115c5c189e296c",
+    "data/r37_watch.json": "1719e1988f2055f4060cbe96f68a3713a465fc698db0cfbee96d6b74dad9f267",
+    "data/r37_google_index_after_final.json": "ec239bf1f9efc98f3719dabfae47d83e51bdace13c79aee44109fa88ba61198d",
+    "data/revenue_audit_2026-10-17.json": "ff482ccbbc186f0b418b04559746d8ca7a633a128ffc87c44da36095cdabc104",
+    "data/r37_google_index_after_revenue_review.json": "485a0f5de7cfdc195a81b7ba8623e8a63e5ccd6dd930eba9b377737abbca23f0"
+  },
+  "previous_evidence_unchanged": true,
+  "finished_at": "2026-10-27T03:03:59.376Z",
+  "status": "OK",
+  "privacy": "Only aggregate counts and public URLs are persisted. Credentials, full Stripe objects, customer identifiers and session IDs stay in memory."
+}

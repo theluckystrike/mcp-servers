@@ -1,0 +1,98 @@
+{
+ "result": {
+  "content": [
+   {
+    "type": "text",
+    "text": "Mississippi River at St. Louis, MO (USGS 07010000): gage height (river stage) 3.59 ft, discharge (streamflow) 126,000 ft3/s, measured 2026-11-03T07:30:00+00:00. NWS flood status: below flood stage, 26.41 ft below flood stage (30 ft). USGS real-time data are provisional and can be revised.\n\n{\n  \"site\": {\n    \"id\": \"USGS-07010000\",\n    \"site_number\": \"07010000\",\n    \"name\": \"Mississippi River at St. Louis, MO\",\n    \"state\": \"Missouri\",\n    \"county\": \"St. Louis City\",\n    \"latitude\": 38.629,\n    \"longitude\": -90.1797777777778,\n    \"drainage_area_sq_mi\": 697000,\n    \"gage_datum_ft\": 379.58,\n    \"vertical_datum\": \"NAVD88\",\n    \"time_zone\": \"CST\",\n    \"site_type\": \"Stream\"\n  },\n  \"readings\": [\n    {\n      \"parameter\": \"gage_height\",\n      \"parameter_code\": \"00065\",\n      \"label\": \"gage height (river stage)\",\n      \"value\": 3.59,\n      \"unit\": \"ft\",\n      \"time\": \"2026-11-03T07:30:00+00:00\",\n      \"approval\": \"Provisional\",\n      \"qualifier\": null,\n      \"age_hours\": 0.5,\n      \"stale\": false\n    },\n    {\n      \"parameter\": \"discharge\",\n      \"parameter_code\": \"00060\",\n      \"label\": \"discharge (streamflow)\",\n      \"value\": 126000,\n      \"unit\": \"ft3/s\",\n      \"time\": \"2026-11-03T07:30:00+00:00\",\n      \"approval\": \"Provisional\",\n      \"qualifier\": null,\n      \"age_hours\": 0.5,\n      \"stale\": false\n    }\n  ],\n  \"flood\": {\n    \"nws_gauge\": \"EADM7\",\n    \"nws_name\": \"Mississippi River at St. Louis\",\n    \"thresholds_ft\": {\n      \"action\": 28,\n      \"minor\": 30,\n      \"moderate\": 35,\n      \"major\": 40\n    },\n    \"current_category\": \"below flood stage\",\n    \"feet_below_flood_stage\": 26.41,\n    \"nws_observed\": {\n      \"primary\": 3.59,\n      \"primaryUnit\": \"ft\",\n      \"secondary\": 126,\n      \"secondaryUnit\": \"kcfs\",\n      \"floodCategory\": \"no_flooding\",\n      \"validTime\": \"2026-11-03T07:30:00Z\"\n    },\n    \"nws_forecast_next\": {\n      \"primary\": 11.1,\n      \"primaryUnit\": \"ft\",\n      \"secondary\": 205,\n      \"secondaryUnit\": \"kcfs\",\n      \"floodCategory\": \"no_flooding\",\n      \"validTime\": \"2026-11-09T12:00:00Z\"\n    },\n    \"record_crest\": {\n      \"stage\": 49.58,\n      \"flow\": 1070000,\n      \"date\": \"1993-08-01\"\n    },\n    \"page\": \"https://water.noaa.gov/gauges/eadm7\"\n  },\n  \"as_of\": \"2026-11-03T07:30:00+00:00\",\n  \"provisional\": true,\n  \"source\": \"https://waterdata.usgs.gov/monitoring-location/USGS-07010000/\",\n  \"sources\": {\n    \"usgs_latest\": \"https://api.waterdata.usgs.gov/ogcapi/v0/collections/latest-continuous/items?f=json&monitoring_location_id=USGS-07010000&parameter_code=00065%2C00060%2C00010&limit=500&properties=monitoring_location_id%2Cparameter_code%2Ctime%2Cvalue%2Cunit_of_measure%2Capproval_status%2Cqualifier\",\n    \"usgs_site\": \"https://api.waterdata.usgs.gov/ogcapi/v0/collections/monitoring-locations/items/USGS-07010000?f=json\",\n    \"nws\": \"https://api.water.noaa.gov/nwps/v1/gauges/EADM7\"\n  },\n  \"more\": \"https://lakelevelnow.com/?utm_source=mcp&utm_medium=river-level-mcp\",\n  \"summary\": \"Mississippi River at St. Louis, MO (USGS 07010000): gage height (river stage) 3.59 ft, discharge (streamflow) 126,000 ft3/s, measured 2026-11-03T07:30:00+00:00. NWS flood status: below flood stage, 26.41 ft below flood stage (30 ft). USGS real-time data are provisional and can be revised.\"\n}"
+   }
+  ],
+  "structuredContent": {
+   "site": {
+    "id": "USGS-07010000",
+    "site_number": "07010000",
+    "name": "Mississippi River at St. Louis, MO",
+    "state": "Missouri",
+    "county": "St. Louis City",
+    "latitude": 38.629,
+    "longitude": -90.1797777777778,
+    "drainage_area_sq_mi": 697000,
+    "gage_datum_ft": 379.58,
+    "vertical_datum": "NAVD88",
+    "time_zone": "CST",
+    "site_type": "Stream"
+   },
+   "readings": [
+    {
+     "parameter": "gage_height",
+     "parameter_code": "00065",
+     "label": "gage height (river stage)",
+     "value": 3.59,
+     "unit": "ft",
+     "time": "2026-11-03T07:30:00+00:00",
+     "approval": "Provisional",
+     "qualifier": null,
+     "age_hours": 0.5,
+     "stale": false
+    },
+    {
+     "parameter": "discharge",
+     "parameter_code": "00060",
+     "label": "discharge (streamflow)",
+     "value": 126000,
+     "unit": "ft3/s",
+     "time": "2026-11-03T07:30:00+00:00",
+     "approval": "Provisional",
+     "qualifier": null,
+     "age_hours": 0.5,
+     "stale": false
+    }
+   ],
+   "flood": {
+    "nws_gauge": "EADM7",
+    "nws_name": "Mississippi River at St. Louis",
+    "thresholds_ft": {
+     "action": 28,
+     "minor": 30,
+     "moderate": 35,
+     "major": 40
+    },
+    "current_category": "below flood stage",
+    "feet_below_flood_stage": 26.41,
+    "nws_observed": {
+     "primary": 3.59,
+     "primaryUnit": "ft",
+     "secondary": 126,
+     "secondaryUnit": "kcfs",
+     "floodCategory": "no_flooding",
+     "validTime": "2026-11-03T07:30:00Z"
+    },
+    "nws_forecast_next": {
+     "primary": 11.1,
+     "primaryUnit": "ft",
+     "secondary": 205,
+     "secondaryUnit": "kcfs",
+     "floodCategory": "no_flooding",
+     "validTime": "2026-11-09T12:00:00Z"
+    },
+    "record_crest": {
+     "stage": 49.58,
+     "flow": 1070000,
+     "date": "1993-08-01"
+    },
+    "page": "https://water.noaa.gov/gauges/eadm7"
+   },
+   "as_of": "2026-11-03T07:30:00+00:00",
+   "provisional": true,
+   "source": "https://waterdata.usgs.gov/monitoring-location/USGS-07010000/",
+   "sources": {
+    "usgs_latest": "https://api.waterdata.usgs.gov/ogcapi/v0/collections/latest-continuous/items?f=json&monitoring_location_id=USGS-07010000&parameter_code=00065%2C00060%2C00010&limit=500&properties=monitoring_location_id%2Cparameter_code%2Ctime%2Cvalue%2Cunit_of_measure%2Capproval_status%2Cqualifier",
+    "usgs_site": "https://api.waterdata.usgs.gov/ogcapi/v0/collections/monitoring-locations/items/USGS-07010000?f=json",
+    "nws": "https://api.water.noaa.gov/nwps/v1/gauges/EADM7"
+   },
+   "more": "https://lakelevelnow.com/?utm_source=mcp&utm_medium=river-level-mcp",
+   "summary": "Mississippi River at St. Louis, MO (USGS 07010000): gage height (river stage) 3.59 ft, discharge (streamflow) 126,000 ft3/s, measured 2026-11-03T07:30:00+00:00. NWS flood status: below flood stage, 26.41 ft below flood stage (30 ft). USGS real-time data are provisional and can be revised."
+  }
+ },
+ "jsonrpc": "2.0",
+ "id": 2
+}

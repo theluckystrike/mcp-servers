@@ -1,0 +1,7 @@
+{
+    "tool-call": {
+        "eventTitle": "Tool call",
+        "eventDescription": "One successful MCP tool call on Lake Level MCP Server: Live US Lake Levels. Listing tools and initializing are free.",
+        "eventPriceUsd": 0.01
+    }
+}

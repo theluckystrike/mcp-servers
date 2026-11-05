@@ -1,0 +1,20 @@
+{
+    "name": "section-179-deduction-calculator-mcp",
+    "version": "1.0.0",
+    "type": "module",
+    "private": true,
+    "description": "Section 179 deduction calculator for AI agents (MCP server). 2025 and 2026 IRS limits after the One Big Beautiful Bill Act, 100% bonus depreciation rules, heavy SUV and passenger auto caps, and equipment loan payment with after-tax cost. Sources cited from irs.gov.",
+    "engines": {
+        "node": ">=22"
+    },
+    "dependencies": {
+        "@modelcontextprotocol/sdk": "^1.30.0",
+        "apify": "^3.7.0",
+        "express": "^5.1.0",
+        "zod": "^3.25.76"
+    },
+    "scripts": {
+        "start": "node src/main.js"
+    },
+    "license": "MIT"
+}

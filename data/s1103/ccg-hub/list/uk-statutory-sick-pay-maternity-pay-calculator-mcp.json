@@ -1,0 +1,232 @@
+{
+ "result": {
+  "tools": [
+   {
+    "name": "calculate_statutory_sick_pay",
+    "title": "UK Statutory Sick Pay",
+    "description": "Works out UK Statutory Sick Pay (SSP) for a period of sickness. Knows the Employment Rights Act 2025 changes in force from 6 April 2026: SSP is paid from the first qualifying day (no 3 waiting days), the lower earnings limit is gone, and the weekly rate is the lower of \u00a3123.25 or 80% of average weekly earnings. For sickness starting 6 April 2025 to 5 April 2026 it applies the old rules (\u00a3118.75 flat, \u00a3125 lower earnings limit, 3 waiting days, 4-day period of incapacity) and flags the SI 2026/373 transitional rules. Uses HMRC's unrounded daily rates and 28-week cap. Rates fetched from gov.uk and legislation.gov.uk on 2026-11-02.",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "average_weekly_earnings": {
+       "type": "number",
+       "minimum": 0,
+       "maximum": 1000000,
+       "description": "Average weekly earnings in pounds, before tax, over the 8-week relevant period."
+      },
+      "qualifying_days": {
+       "type": "integer",
+       "minimum": 1,
+       "maximum": 7,
+       "description": "Qualifying days a week: the days the employee normally works, 1 to 7."
+      },
+      "days_off": {
+       "type": "integer",
+       "minimum": 0,
+       "maximum": 2000,
+       "description": "Number of qualifying days off sick in this period of incapacity."
+      },
+      "start_date": {
+       "type": "string",
+       "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+       "description": "First full day of sickness, yyyy-mm-dd. Picks the rules: before or from 6 April 2026."
+      },
+      "calendar_days_sick": {
+       "type": "integer",
+       "minimum": 1,
+       "maximum": 5000,
+       "description": "Optional. Consecutive calendar days of sickness incl. non-working days. Only used for the pre-6 April 2026 rule that a period must be 4+ days."
+      }
+     },
+     "required": [
+      "average_weekly_earnings",
+      "qualifying_days",
+      "days_off",
+      "start_date"
+     ],
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false,
+     "title": "UK Statutory Sick Pay"
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "calculate_statutory_maternity_pay",
+    "title": "UK Statutory Maternity Pay",
+    "description": "Works out UK Statutory Maternity Pay (SMP) week by week for 39 weeks: 90% of average weekly earnings for 6 weeks, then the lower of the flat rate or 90% for 33 weeks. Flat rate \u00a3187.18 from 6 April 2025 and \u00a3194.32 from 5 April 2026, switching for pay weeks that start after the April uprating. Finds the expected week of childbirth, the qualifying week (15th week before), the latest employment start date for 26 weeks' service and the lower earnings limit for that week (\u00a3125 in 2025/26, \u00a3129 in 2026/27). Same structure applies to Statutory Adoption Pay. Figures from gov.uk, fetched 2026-11-02.",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "average_weekly_earnings": {
+       "type": "number",
+       "minimum": 0,
+       "maximum": 1000000,
+       "description": "Average weekly earnings in pounds, before tax, over the 8-week relevant period."
+      },
+      "due_date": {
+       "type": "string",
+       "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+       "description": "Expected due date of the baby, yyyy-mm-dd."
+      },
+      "employment_start": {
+       "type": "string",
+       "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+       "description": "Date the employee started with this employer, yyyy-mm-dd."
+      },
+      "smp_start_date": {
+       "type": "string",
+       "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+       "description": "Optional. Date SMP starts, yyyy-mm-dd. Default is the due date."
+      }
+     },
+     "required": [
+      "average_weekly_earnings",
+      "due_date",
+      "employment_start"
+     ],
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false,
+     "title": "UK Statutory Maternity Pay"
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "get_minimum_wage_rates",
+    "title": "UK National Minimum Wage and National Living Wage",
+    "description": "Returns the UK National Living Wage and National Minimum Wage hourly rates in force on a date, by age band and apprentice rate, and the rate that applies to a given age. Holds April 2024, April 2025, April 2026 (\u00a312.71 for 21 and over, \u00a310.85 for 18 to 20, \u00a38 under 18 and apprentices) and the published April 2027 rates (\u00a313.21, \u00a311.27, \u00a38.31). Can also give weekly and annual pay at the rate for given hours. Rates fetched from gov.uk on 2026-11-02.",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "date": {
+       "type": "string",
+       "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+       "description": "Date to check, yyyy-mm-dd. Default today."
+      },
+      "age": {
+       "type": "integer",
+       "minimum": 0,
+       "maximum": 120,
+       "description": "Worker's age in whole years."
+      },
+      "apprentice": {
+       "type": "boolean",
+       "description": "True if the worker is an apprentice."
+      },
+      "apprentice_first_year": {
+       "type": "boolean",
+       "description": "For apprentices aged 19+: true if in the first year of the apprenticeship (apprentice rate), false if completed (age rate)."
+      },
+      "hours_per_week": {
+       "type": "number",
+       "minimum": 0,
+       "maximum": 168,
+       "description": "Optional hours a week, to show weekly and annual pay at the rate."
+      }
+     },
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false,
+     "title": "UK minimum wage rates"
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "check_eligibility",
+    "title": "Check UK statutory pay eligibility",
+    "description": "Checks the qualifying conditions for UK Statutory Sick Pay, Maternity, Paternity, Adoption or Shared Parental Pay and returns each condition as met, not met or not checkable, plus the weekly amounts. Knows that from 6 April 2026 SSP has no earnings threshold and no waiting days, and applies the 26 weeks' continuous employment test into the qualifying week (15th week before the due week, or the matching week for adoption) and the lower earnings limit (\u00a3125 in 2025/26, \u00a3129 in 2026/27). Data from gov.uk and legislation.gov.uk, fetched 2026-11-02.",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "payment_type": {
+       "type": "string",
+       "enum": [
+        "statutory_sick_pay",
+        "statutory_maternity_pay",
+        "statutory_paternity_pay",
+        "statutory_adoption_pay",
+        "statutory_shared_parental_pay"
+       ],
+       "description": "Which statutory payment to check."
+      },
+      "is_employee": {
+       "type": "boolean",
+       "description": "True if the person is an employee with an employment contract."
+      },
+      "average_weekly_earnings": {
+       "type": "number",
+       "minimum": 0,
+       "maximum": 1000000,
+       "description": "Average weekly earnings in pounds, before tax, over the 8-week relevant period."
+      },
+      "employment_start": {
+       "type": "string",
+       "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+       "description": "Date employment with this employer started, yyyy-mm-dd. Needed for family payments."
+      },
+      "due_date": {
+       "type": "string",
+       "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+       "description": "Expected due date of the baby, yyyy-mm-dd (maternity, paternity, shared parental)."
+      },
+      "matched_date": {
+       "type": "string",
+       "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+       "description": "Date matched with the child, yyyy-mm-dd (adoption)."
+      },
+      "sickness_start_date": {
+       "type": "string",
+       "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+       "description": "First day of sickness, yyyy-mm-dd (sick pay). Default today."
+      },
+      "has_done_work_under_contract": {
+       "type": "boolean",
+       "description": "Sick pay: has the employee done some work under the contract?"
+      }
+     },
+     "required": [
+      "payment_type",
+      "is_employee",
+      "average_weekly_earnings"
+     ],
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false,
+     "title": "Check UK statutory pay eligibility"
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   }
+  ]
+ },
+ "jsonrpc": "2.0",
+ "id": 2
+}

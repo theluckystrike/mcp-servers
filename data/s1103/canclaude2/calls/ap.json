@@ -1,0 +1,60 @@
+{
+ "result": {
+  "content": [
+   {
+    "type": "text",
+    "text": "AP Calculus AB, May 2026: 20% scored 5, 28% 4, 17% 3, 24% 2, 11% 1; 65% scored 3 or higher. 2026 figures are the whole-number percentages College Board posted on its 2026 AP Score Distributions page; College Board has not published 2026 student counts, means or standard deviations.\n\n{\n  \"summary\": \"AP Calculus AB, May 2026: 20% scored 5, 28% 4, 17% 3, 24% 2, 11% 1; 65% scored 3 or higher. 2026 figures are the whole-number percentages College Board posted on its 2026 AP Score Distributions page; College Board has not published 2026 student counts, means or standard deviations.\",\n  \"exam\": \"AP Calculus AB\",\n  \"year\": 2026,\n  \"kind\": \"exam\",\n  \"percents\": {\n    \"1\": 11,\n    \"2\": 24,\n    \"3\": 17,\n    \"4\": 28,\n    \"5\": 20\n  },\n  \"counts\": null,\n  \"total_students\": null,\n  \"three_plus\": {\n    \"count\": null,\n    \"percent\": 65\n  },\n  \"mean\": null,\n  \"sd\": null,\n  \"history\": [\n    {\n      \"year\": 2024,\n      \"percent_5\": 21.4,\n      \"percent_3_plus\": 64.4,\n      \"mean\": 3.22,\n      \"students\": 278657\n    },\n    {\n      \"year\": 2025,\n      \"percent_5\": 20.3,\n      \"percent_3_plus\": 64.2,\n      \"mean\": 3.21,\n      \"students\": 285891\n    },\n    {\n      \"year\": 2026,\n      \"percent_5\": 20,\n      \"percent_3_plus\": 65,\n      \"mean\": null,\n      \"students\": null\n    }\n  ],\n  \"as_of\": \"2026-11-02\",\n  \"source\": \"https://apstudents.collegeboard.org/about-ap-scores/score-distributions\",\n  \"source_title\": \"2026 AP Score Distributions \u2013 AP Students | College Board\",\n  \"more\": \"https://examscorecalc.com/ap/ap-calculus-ab/?utm_source=mcp&utm_medium=ap-score-distributions-mcp\"\n}"
+   }
+  ],
+  "structuredContent": {
+   "summary": "AP Calculus AB, May 2026: 20% scored 5, 28% 4, 17% 3, 24% 2, 11% 1; 65% scored 3 or higher. 2026 figures are the whole-number percentages College Board posted on its 2026 AP Score Distributions page; College Board has not published 2026 student counts, means or standard deviations.",
+   "exam": "AP Calculus AB",
+   "year": 2026,
+   "kind": "exam",
+   "percents": {
+    "1": 11,
+    "2": 24,
+    "3": 17,
+    "4": 28,
+    "5": 20
+   },
+   "counts": null,
+   "total_students": null,
+   "three_plus": {
+    "count": null,
+    "percent": 65
+   },
+   "mean": null,
+   "sd": null,
+   "history": [
+    {
+     "year": 2024,
+     "percent_5": 21.4,
+     "percent_3_plus": 64.4,
+     "mean": 3.22,
+     "students": 278657
+    },
+    {
+     "year": 2025,
+     "percent_5": 20.3,
+     "percent_3_plus": 64.2,
+     "mean": 3.21,
+     "students": 285891
+    },
+    {
+     "year": 2026,
+     "percent_5": 20,
+     "percent_3_plus": 65,
+     "mean": null,
+     "students": null
+    }
+   ],
+   "as_of": "2026-11-02",
+   "source": "https://apstudents.collegeboard.org/about-ap-scores/score-distributions",
+   "source_title": "2026 AP Score Distributions \u2013 AP Students | College Board",
+   "more": "https://examscorecalc.com/ap/ap-calculus-ab/?utm_source=mcp&utm_medium=ap-score-distributions-mcp"
+  }
+ },
+ "jsonrpc": "2.0",
+ "id": 2
+}

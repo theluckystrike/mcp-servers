@@ -1,14 +1,15 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/barcode-qr-code-sepa-payment-ean13",
-  "description": "QR codes and barcodes offline: WiFi, vCards, SEPA payment codes, Code 128, EAN-13, SVG or PNG.",
+  "title": "McpStamp QR Codes and Barcodes",
+  "description": "QR codes for URLs, WiFi, vCards and SEPA payments, plus Code 128 and EAN-13 barcodes.",
   "version": "0.22.6",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
     "subfolder": "servers/barcode"
   },
-  "websiteUrl": "https://mcp.zovo.one/s/barcode",
+  "websiteUrl": "https://www.mcpstamp.com/servers/barcode/",
   "packages": [
     {
       "registryType": "mcpb",
@@ -31,15 +32,7 @@
   "remotes": [
     {
       "type": "streamable-http",
-      "url": "https://mcp.zovo.one/mcp/barcode",
-      "headers": [
-        {
-          "name": "Authorization",
-          "description": "Bearer <Pro license key or anonymous token from GET https://mcp.zovo.one/mcp/token>",
-          "isRequired": true,
-          "isSecret": true
-        }
-      ]
+      "url": "https://mcp.zovo.one/mcp/barcode"
     }
   ]
 }

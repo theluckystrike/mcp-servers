@@ -1,0 +1,52 @@
+{
+ "repo": "ab-test-sample-size-calculator-mcp",
+ "repo_url": "https://github.com/theluckystrike/ab-test-sample-size-calculator-mcp",
+ "hosted_url": "https://ab-test-sample-size-calculator-mcp.lipmichal.workers.dev/mcp",
+ "worker_version_id": "38cd6868-1f75-475a-83dd-58f881a48241",
+ "rollback": "npx wrangler delete --name ab-test-sample-size-calculator-mcp",
+ "registry_name": "io.github.theluckystrike/ab-test-sample-size-calculator-mcp",
+ "registry_visible": true,
+ "tools": [
+  "calculate_sample_size",
+  "estimate_test_duration",
+  "test_ab_significance",
+  "fisher_exact_test",
+  "check_peeking_risk"
+ ],
+ "fixtures": 16,
+ "tests_passed": true,
+ "live_calls_ok": {
+  "check_peeking_risk": true,
+  "calculate_sample_size": true,
+  "estimate_test_duration": true,
+  "test_ab_significance": true,
+  "fisher_exact_test": true
+ },
+ "npx_github_ok": true,
+ "sources": [
+  "https://stat.ethz.ch/R-manual/R-devel/library/stats/html/power.prop.test.html (n = 76.7 example)",
+  "https://stat.ethz.ch/R-manual/R-devel/library/stats/html/fisher.test.html (TeaTasting 0.2429, Job 0.7827)",
+  "https://www.evanmiller.org/ab-testing/sample-size-fixed.js (num_subjects, default 1,030)",
+  "scipy 1.13.1 + statsmodels 0.14.6 via scripts/reference.py",
+  "Armitage-McPherson-Rowe 1969; Pocock 1977; O'Brien-Fleming 1979; Jennison-Turnbull 2000 tables 2.1/2.3 (matched by computation)"
+ ],
+ "money_site": "https://abwex.com",
+ "more_pages": [
+  "/tools/sample-size-calculator.html",
+  "/tools/experiment-duration-estimator/",
+  "/answers/is-my-ab-test-significant.html",
+  "/tools/fisher-freeman-halton-calculator/",
+  "/answers/fisher-exact-vs-chi-square.html",
+  "/tools/peeking-inflation-calculator"
+ ],
+ "npm_ready": true,
+ "npm_name_available": "npm view ab-test-sample-size-calculator-mcp -> E404 on 2026-11-02 (not published; orchestrator batches npm)",
+ "pushes": 2,
+ "open_issues": [
+  "First registry publish failed 422 (description > 100 chars); fixed in a second commit, published 1.0.0 OK.",
+  "Worker Fisher-Freeman-Halton work cap 4,000,000 (stdio 20,000,000). The R Job 4x4 example (3.24M steps) ran live in about 3 s, so this account's Workers CPU limit is above the free 10 ms; on a free plan larger tables would fail. Beyond the cap the tool returns chi-square plus a note, not an exact p.",
+  "Sample size covers proportions only (no continuous metrics); peeking boundaries two-sided, equally spaced, up to 10 looks.",
+  "README install lines use npx github: form until the orchestrator publishes to npm."
+ ],
+ "minutes": 15
+}

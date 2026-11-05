@@ -1,0 +1,582 @@
+                            Fall 2026
+
+
+
+
+SAT SCHOOL DAY
+
+Understanding
+Scores
+For Students and Families
+SAT Score Resources
+Congratulations to your student for taking the SAT at
+their school. Included is information about scores that
+may be helpful for students and their families.
+
+
+What’s Included                                                     Contact Us
+This document delves deeper into the meaning of your
+student’s scores, including what the assessment measures,           Customer Service Line
+how it is scored, and how students and their families can           866-630-9305 (+1 212-713-8000 international)
+use the data to monitor their progress. The document also
+provides a sample PDF score report walk-through so you              For Students and Parents
+can interpret your student’s score reports.                         sat.org/inquiry
+
+                                                                    For Educators
+Related Resources                                                   sateducator@collegeboard.org
+Visit sat.org/scores to find information about:                     InSchoolSupport@collegeboard.org
+ y Score release dates                                              k12reports@info.collegeboard.org
+ y Managing access to online scores
+ y Resources for online score reports
+ y Downloadable Understanding Scores for Students and
+                                                                    About College Board
+   Families documents                                               College Board reaches more than 7 million students a year,
+                                                                    helping them navigate the path from high school to college
+                                                                    and career. Our not-for-profit membership organization was
+                                                                    founded more than 120 years ago. We pioneered programs
+                                                                    like the SAT® and AP® to expand opportunities for students
+                                                                    and help them develop the skills they need. Our BigFuture®
+                                                                    program helps students plan for college, pay for college,
+                                                                    and explore careers. Learn more at cb.org.
+
+
+
+
+Fall 2026 SAT SCHOOL DAY   Understanding Scores For Students and Families                                                        2
+The SAT Suite of Assessments
+How the SAT Suite of                                                How the SAT Is Scored
+Assessments Works                                                   The SAT Suite uses a multistage adaptive test design
+                                                                    and item response theory (IRT) methodology to precisely
+The SAT® Suite of Assessments is an integrated system of            measure students’ knowledge and skills with fewer questions
+tests that includes the SAT (for students in grades 11 and 12),     in less time. Every test includes a standardized set of
+the PSAT/NMSQT® and the PSAT™ 10 (for grades 10 and 11),            question types and measures the same content domains, so
+and the PSAT™ 8/9 (for grades 8 and 9). The tests measure           all students have the same opportunity to demonstrate their
+the same skills and knowledge in grade-appropriate ways.            strengths. Your scores depend on several factors, including
+They work together to show college readiness over time              whether you answer questions right or wrong, the difficulty
+so educators, students, and parents can monitor student             level of the questions, and the probability that you might be
+progress. Their content reflects the kind of meaningful,            guessing. For most students, it’s better to guess than leave
+engaging, and challenging work that students find in middle         a question blank, especially if you can eliminate one or two
+school and high school courses taught today.                        wrong answers first. To learn more about how assessments
+                                                                    in the SAT Suite adapt to your performance, watch our
+                                                                    What Is Digital SAT Adaptive Testing? video.
+How the SAT Is Organized
+The SAT Suite uses multistage adaptive testing (MST). Relying
+on MST means we can fairly and accurately measure the same
+things with a shorter, more secure test while preserving test
+reliability. Both the Reading and Writing and the Math sections
+are divided into two equal-length and separately timed stages,
+each composed of a module of questions. The first module
+contains a mix of easy, medium, and hard questions. Based
+on how a student performs on the first module, the second
+module of questions will either be more difficult or less
+difficult. By adapting to a student’s performance level, the
+responsive test will provide students with a more efficient
+assessment of their academic strengths.
+
+
+
+
+Fall 2026 SAT SCHOOL DAY    Understanding Scores For Students and Families                                                          3
+SAT Scores
+TEST SCORING
+
+
+SAT Score Reported                         Details                                    Score Range
+Section Scores (2)                          y Reading and Writing (RW)                 y 200–800
+
+                                            y Math (M)                                 y 200–800
+
+Total Score                                Sum of the 2 section scores                400–1600
+
+
+
+
+Accessing Official                                                 Using SAT Scores to Predict
+Student Scores                                                     Scores on Other Assessments
+U.S. students who took the SAT and provided a mobile               The SAT Suite—from the PSAT 8/9 through the SAT—uses a
+phone number during testing can view their scores on the           common score scale for the total and section scores. The
+BigFuture® School app. For more information, see page 10           ranges reported for each assessment reflect grade-level
+in this document, or go to satsuite.org/k12bigfutureschool.        appropriateness within the common score scale. The total
+ NOTE: The BigFuture School app is available to U.S.               range for the SAT is 400–1600.
+ students age 13 and over.                                         This common score scale means that a student who took
+                                                                   the SAT and received a Math section score of 500 would be
+Your student’s school has access to a downloadable PDF             expected to also get a 500 on the PSAT/NMSQT, PSAT 10, or
+called Your Score Report for every SAT test taker. Students        PSAT 8/9 if they had taken any of those tests on that same
+can review this score report with educators at their school        day; a score of 500 represents the same level of academic
+and share it with their families.                                  achievement on all 4 assessments.
+As always, students age 13 and older may use a personal            This also means that student growth across the SAT Suite
+College Board student account to view additional insights          is easy to determine. If a student took the PSAT/NMSQT or
+online.                                                            PSAT 10 last year and received a 500 Math section score,
+                                                                   then took the SAT this year and earned a 550 Math section
+                                                                   score, that student has shown a growth of 50 points, which
+                                                                   likely resulted from hard work both in and out of school.
+
+
+
+
+Fall 2026 SAT SCHOOL DAY   Understanding Scores For Students and Families                                                       4
+Overview of the Score Report PDF
+In the official score report PDF, the student can view the three
+scores available from their SAT assessment—total score,             Knowledge and Skills
+Reading and Writing section score, and Math section score.          Students can view a graphic showing their performance on
+For each score, the official score report PDF also includes:        each of the eight content domains measured on the SAT.
+ y The range of possible scores: 400–1600 for total score,          There are four content domains in Reading and Writing and
+   and 200–800 for section scores.                                  four in Math.
+ y The All Tester Percentile of each score. For example,            In each content domain, students can view:
+   if a student’s score is in the 70th percentile, 70% of a          y The approximate number of questions in the content
+   comparison group achieved scores at or below that                    domain and what percentage of the section that
+   student’s score.                                                     represents (e.g., 12–14 questions would be about 26% of
+ y The total and section Average Score of all testers based             the Reading and Writing section).
+   on all SAT test takers across the last 3 years.                   y A visual indication of how the student performed in each
+All Tester Percentiles are based on the actual scores of the            content domain.
+past 3 cohorts of students who took the SAT in 12th grade           Students can use this section to identify content domains
+for tests completed anywhere in the world.                          they may want to focus on to practice and improve.
+
+
+Individual Score Ranges                                             Additional Support
+A student’s ability is better represented by score ranges than      The score report includes a Career Insights Snapshot, a list
+points. Score ranges are derived from the standard error of         of growing careers in a student’s state that connect to their
+measurement and show how much a student’s scores would              scores. These careers are examples, not recommendations,
+likely vary if they took a different administration of the test     and can inspire career exploration earlier in high school.
+under identical conditions.                                         The last section of the score report PDF focuses on next
+                                                                    steps the student can take after reviewing their scores.
+
+Score Sends Held                                                    Students can use the provided QR code or link to access
+                                                                    more information on tools and services related to these next
+If Score Sends Held appears at the top of the score report, it      steps, which include reviewing additional insights on their
+means that College Board was unable to confirm a complete           scores, Official SAT Prep on Khan Academy®, and college and
+set of responses was available when the test was scored.            career exploration.
+Incomplete responses could negatively affect scores, and we
+will not report them to colleges, universities, or scholarship
+programs unless you ask us to.
+
+
+
+
+Fall 2026 SAT SCHOOL DAY    Understanding Scores For Students and Families                                                          5
+Benchmarks
+What the Benchmarks Mean
+The College and Career Readiness Benchmarks for the SAT predict a 75% likelihood
+of achieving a C or higher in related first semester, credit-bearing college courses. The
+benchmarks are set at the section level, so there is a benchmark for Reading and Writing and
+a benchmark for Math. Students meeting or exceeding these benchmarks are considered on
+track to be college ready.
+
+COLLEGE AND CAREER READINESS BENCHMARKS
+
+
+Reading and Writing                             Math
+480                                             530
+
+Through the online K–12 score reporting portal, the SAT reports separate benchmarks
+for students in 11th grade and 12th grade to help teachers understand students’ level of
+readiness for college and career training programs. Equipped with this information, teachers
+can address challenge areas for their students while there is still time for improvement.
+Teachers can also accelerate the progress of students who meet or exceed the benchmarks.
+
+
+
+
+Fall 2026 SAT SCHOOL DAY   Understanding Scores For Students and Families                      6
+How to Use Scores
+How Students May                                                    How Students and Families
+Send Their Scores                                                   May Use Scores
+When students take the SAT, they have the opportunity to            Families can:
+choose up to four colleges, universities, or scholarship             y Help your student think of ways to develop each of the skills
+programs to receive their scores from that day’s test for               they have identified for focus and improvement. Official
+free. We share with their school and district the names                 SAT Prep on Khan Academy and free Official SAT Tutoring
+of the organizations they select for their four free score              at Schoolhouse.world can help supplement this work, and
+sends. Students may make their free selections within the               when your student is ready, they can take practice tests in
+Bluebook™ testing app during testing or within three days               Bluebook and review the results on My Practice to learn
+after testing. Students can also select additional institutions         more about what their practice scores mean. They can also
+to share their score with later online, but they’ll have to pay         build skills with the SAT Question of the Day, which provides
+for each score they send (unless they’re eligible for a fee             a gamified, interactive way to work on a Reading and Writing
+waiver). Scores will not be sent to the selected score send             or Math question each day.
+institutions if the score report says Score Sends Held in the
+                                                                     y Use the career examples to talk about career interests
+top right corner.
+                                                                        and options with your student.
+In certain college and university systems, once a student
+submits their score to one school, other schools within that         y Compare your student’s scores to the grade-level
+system will also have access to that score. Please note,                benchmarks together to understand what those
+however, that if they are applying to more than one school              scores mean.
+within a college or university system, it is still important for         ◆ If your student is meeting the benchmark for a section,
+them to send their SAT scores to each individual school.                     remind them to continue to take rigorous courses and
+If they are not sure whether the specific school they are                    work hard to stay on track for college success.
+applying to is part of such a system, they should contact the            ◆ If your student is not meeting the benchmark for a
+school’s admissions office.                                                  section, work with their teacher to connect them to
+When a student requests that we send their scores to                         classroom work that is focused on areas that need
+colleges or other organizations as directed by the student                   improvement.
+during school day testing, we send their scores along with          Benchmarks shouldn’t be used to assign academic tracks,
+demographic information sufficient for identity matching            to discourage students from pursuing college, or to keep
+to those colleges and organizations, who may then use it to         students from participating in challenging courses. Rather,
+support the student’s applications to those organizations.          the benchmarks are intended to help all students better
+The scores the student receives and the score reports               prepare for life after high school.
+received by colleges and their high school contain total and
+section scores. Additional score sends include their last six
+scores unless they choose otherwise, as explained further           How Schools May Use Scores
+in the SAT School Day Student Guide. Watch the A Guide to
+                                                                    Through our K–12 score reporting portal, educators can
+Score Choice video to find out more. College Board doesn’t
+                                                                    access the official downloadable score report PDF for
+use their reported scaled score by itself or in combination
+                                                                    printing and sharing with the student. Educators can also
+with any other information to predict their individual
+                                                                    see additional interpretive insights about the student’s
+future academic performance at specific postsecondary
+                                                                    results. The PDF, titled Your Score Report, (sample shown
+institutions. However, College Board does help individual
+                                                                    on page 8) clearly summarizes a student’s current
+colleges and universities use and interpret SAT scores.
+                                                                    achievement levels and encourages next steps to increase
+                                                                    college and career readiness. Teachers can review the
+                                                                    official score report PDFs with students to help them
+                                                                    understand what their scores mean. Reviewing their scores
+                                                                    can also help students see their strengths, which can
+                                                                    increase their confidence and help them identify content
+                                                                    domains where they can handle more advanced coursework.
+
+
+
+
+Fall 2026 SAT SCHOOL DAY    Understanding Scores For Students and Families                                                              7
+    The SAT Score Report
+    A Case Study: Sample SAT Score Report
+    Take a look at the sample score report below and on the next page. Use the corresponding
+    information to help you interpret your student’s SAT score report.
+
+1   What are Camila’s scores?
+    Camila’s Reading and Writing score is
+    620, and her Math score is 500, for a
+    total score of 1120.
+    Below her individual scores, she can see
+    a score range, which shows the range
+    of scores she might expect to get if she
+    took the SAT multiple times. Camila can
+    also see an average score of all testers       1                                              3
+    in any grade who have taken the SAT in
+    the last three years.
+                                                   2
+2   What are Camila’s
+    score percentiles?
+    Camila is in 11th grade, and the
+    percentiles compare her scores with
+    those of all SAT test takers from the last
+    three years, including all SAT Weekend
+    and SAT School Day administrations.
+    Camila scored as well as or better
+    in Reading and Writing than 60% of
+    all test takers worldwide. In Math,
+    she scored as well as or better than
+    70% of those test takers. Putting both
+    scores together, Camila scored as well
+    as or better than 75% of those test
+    takers on the SAT as a whole.
+
+3   What can Camila learn
+    from this Knowledge
+    and Skills section?
+    This section shows Camila a graphical
+    progress bar in each of the eight
+    content domains measured on the SAT.
+    The filled-in part of each progress bar
+    represents Camila’s level of mastery
+                                                                                               Score Report
+    in that content domain, not her actual
+    score. Under each content domain, Camila can also see what
+    percentage of the test and number of questions cover that
+    domain.
+    The Performance range below each filled section shows
+    Camila’s score band for that domain. For more information
+    about content domains, visit satsuite.collegeboard.org/
+    practice/content-domains.
+
+
+
+
+    Fall 2026 SAT SCHOOL DAY    Understanding Scores For Students and Families                                8
+4   What can Camila learn from
+    this career snapshot?
+    Since she is based in the U.S., Camila’s
+    score report includes a Career Insights
+    Snapshot—helpful information about
+    growing careers in her state that connect
+    to her scores. Whether Camila sees a
+    career she’s curious about or not, the
+    examples can spark her interest in
+    learning more about what careers are out
+    there and key information like median
+    yearly income, expected growth rate for
+    new job openings in her state over the
+    next five years, and the most common
+    education level for people in that career.
+    While these might be careers worth
+    watching in Camila’s state, she can
+    learn more about careers that reflect her
+    interests at satsuite.org/whatsnext.
+                                                   4
+    How can Camila learn
+    more about her scores?
+    If she’s under age 13, Camila can talk
+    to her school counselor to see her full
+    score report and learn how to prepare
+    for future assessments in the SAT Suite.
+    If Camila is age 13 or older, she can
+    also choose to visit sat.org/scores to
+    personally find out this information.
+
+    How can Camila measure
+    her progress?
+    As a student in 11th grade, Camila may
+    take the SAT again at her school or on
+    a weekend test date if she wants to
+    improve her score.
+                                                                                 Score Report
+    Camila can continue to take advantage
+    of practice resources by visiting sat.org/practice.
+
+
+
+
+    Fall 2026 SAT SCHOOL DAY    Understanding Scores For Students and Families                  9
+Doing More with Your Score:
+BigFuture School and Connections
+BigFuture School is a free mobile app for students age 13          If your student provided a mobile phone number when they
+and older who take the PSAT 8/9, PSAT 10, PSAT/NMSQT,              took the SAT, they can download the BigFuture School mobile
+or SAT School Day in the United States. It’s designed for          app, which will alert them via text notification when their
+students to use to get their test scores easily, explore           scores are available in the app.
+customized guidance on college and career planning, and            Students who choose not to download the BigFuture School
+learn about financial aid and scholarships.                        app or who don’t have a mobile phone can still access
+Students may also have the opportunity to opt in to                their scores and guidance for future planning. Schools will
+Connections™—a program that lets students discover                 continue to receive PDF score reports for all assessments
+nonprofit colleges, scholarship providers, and government          they administer, which can be shared with students.
+agencies offering educational programs that may be a good          And, as always, students can log in to their personal
+fit and are looking for students like them. Connections            College Board accounts at studentscores.collegeboard.org
+puts privacy first. No personal information is shared with         to get additional insights about their scores and explore
+institutions unless a student directly chooses to do so.           bigfuture.org.
+Please know that your school, district, or state may choose
+to not provide access to Connections for its students or
+students who test at their schools.
+
+
+
+
+                               Total and                                                          Percentile
+                               Section Scores                                                     Comparisons
+                               The first thing students will                                      Students will be able to see
+                               see in BigFuture School is                                         percentile comparisons
+                               their total score, which is a                                      that help them understand
+                               combination of their scores                                        the percentage of students
+                               on the Reading and Writing                                         scoring the same as or better
+                               and Math sections.                                                 than they did.
+                                                                                                  For example, 75th percentile
+                                                                                                  means that their score was
+                                                                                                  the same as or higher than
+                                                                                                  75% of other students.
+
+
+
+
+Fall 2026 SAT SCHOOL DAY   Understanding Scores For Students and Families                                                         10
+                               Performance                                  Customized
+                               Score Bands                                  College
+                               This information corresponds
+                               with the Knowledge and Skills
+                                                                            and Career
+                               section on the score report                  Messages
+                               PDF. It shows students their
+                                                                            While students are in the
+                               performance on each content
+                                                                            BigFuture School app, they
+                               domain measured on the test.
+                                                                            can explore messages about
+                               Students can use our Skills
+                                                                            financial aid, scholarships,
+                               Insight™ tool to see examples
+                                                                            and guidance to help them
+                               of the kinds of questions
+                                                                            plan for college and explore
+                               students in any score band,
+                                                                            careers.
+                               including their own, are able
+                               to answer correctly.
+
+
+
+
+                               Connections                                  Interactive
+                               Eligible students may
+                               also have the option to
+                                                                            College and
+                               discover nonprofit colleges,                 Career Tools
+                               scholarship providers, and
+                                                                            Students can personalize
+                               government agencies offering
+                                                                            their college and career
+                               education programs by
+                                                                            exploration by using
+                               opting in to a program called
+                                                                            interactive tools like Career
+                               Connections.
+                                                                            Search, College Quiz, Career
+                                                                            Explorer, and more.
+
+
+
+
+Fall 2026 SAT SCHOOL DAY   Understanding Scores For Students and Families                                   11
+Additional SAT Insights
+Students age 13 or older who already have a personal College Board student account can
+get additional insights into their performance on the SAT in the online student scores portal
+at studentscores.collegeboard.org.
+
+
+Putting Scores in Context
+Score Comparisons
+Students can gain additional insights into their scores by
+meeting with their school counselor to review their score
+report. They can also see more contextual comparisons
+of their scores in the student scores portal. Students can
+compare their total and section scores to the average scores
+of all testers across the last three years in their:
+ y School (as applicable)
+ y District (public schools, as applicable)
+ y State (U.S.-based and territories)
+ y All Testers (domestic and international)
+
+Percentiles
+The additional insights provided online include percentiles
+not provided in the downloadable score report PDF. The
+percentile ranks include:
+ y Country (all testers in the student’s country)
+ y State (all testers in the student’s state, available for
+   U.S. and U.S. territories only)
+ y All Testers (domestic and international)
+For the percentiles above, the student’s score is ranked
+among SAT testers in the last three years, including all
+SAT Weekend and SAT School Day administrations.
+
+
+
+
+                                                                                                Online score insights
+
+
+
+
+Section Benchmarks
+Other insights students can view in the online scores
+portal are the section-level readiness benchmarks. We will
+indicate if the student has met the section benchmark or not,
+providing links to resources to help them analyze what skills
+to focus on for improvement.
+Additionally, we show students their score ranges and
+provide a link to information about how a score range more
+accurately reflects their level of knowledge and skills than a
+single score.
+
+
+                                                                                                Online score insights
+
+
+
+Fall 2026 SAT SCHOOL DAY    Understanding Scores For Students and Families                                              12
+Tailored Practice
+After finishing a test, students can head straight from their
+score report to mypractice.collegeboard.org for tailored
+practice based on their test results. They can dive into
+general practice or choose to start practicing either Reading
+and Writing or Math. Every question set is built around the
+areas that their scores show they need to practice most—
+so practice time goes where it actually helps. Our practice
+hub also contains study activities and confidence-boosting
+exercises, as well as connections to other resources for
+continued practice and preparation.
+
+
+
+
+                                                                             Online score insights
+
+
+
+
+More About Knowledge
+and Skills
+Based on our Skills Insight™ tool, we provide students with a
+deeper dive into the knowledge and skills measured by the
+SAT. Students may view a breakdown of their knowledge and
+skills across four content domains in Reading and Writing
+and four content domains in Math.
+The online insights go further by helping students view their
+performance across seven defined performance score bands
+to get a sense of how they did in each domain.
+Students can click View skills and example questions in
+the next score band to access the Skills Insight tool and
+see skills and example questions that students in the next
+performance score band are typically able to demonstrate,
+as well as examples of the kinds of questions these students
+are likely able to answer correctly.
+Students can navigate to any other performance score band
+in the Skills Insight tool, including their current performance
+score band.
+
+
+
+
+                                                                             Online score insights
+
+
+
+
+Fall 2026 SAT SCHOOL DAY    Understanding Scores For Students and Families                           13
+                                                                   Career Exploration
+                                                                   To expand on the information in their downloadable score
+                                                                   report PDF, students can:
+                                                                    y View even more potential careers online at bigfuture.org.
+                                                                    y Explore careers tailored to their interests with Career Quiz.
+                                                                    y Find free resources to help them take the next steps
+                                                                       down their career path.
+
+
+
+
+Online score insights
+
+
+
+                                                                   Further Guidance
+                                                                   Students can view next steps with linked resources to do
+                                                                   more with their score, including:
+                                                                    y Sending their scores to colleges and scholarship programs.
+                                                                    y Exploring practice options to help prepare for future tests.
+                                                                    y Retaking the SAT if they’d like to test again.
+                                                                    y Connecting to colleges and scholarship programs.
+                                                                    y Discovering AP courses recommended based on their
+                                                                       latest score.
+
+
+
+
+Online score insights
+
+
+
+
+Fall 2026 SAT SCHOOL DAY   Understanding Scores For Students and Families                                                             14
+Next Steps for Students and Families
+Learn more about understanding and using scores: sat.org/scores
+View a video walk-through of the score report: satsuite.collegeboard.org/scores/online-score-reports-educators/
+understanding-scores
+Connect to scholarships: collegeboard.org/sat-suite-scholarships
+Plan for college and career using BigFuture School (bigfutureschool.org) or by visiting bigfuture.collegeboard.org.
+Practice for the SAT: sat.org/practice
+
+
+
+
+© 2026 College Board. College Board, BigFuture, SAT, and the acorn logo are registered trademarks of College Board. Bluebook,
+Connections, PSAT, and Skills Insight are trademarks owned by College Board. PSAT/NMSQT is a registered trademark of College Board
+and National Merit Scholarship Corporation. Visit College Board on the web: collegeboard.org.
+Khan Academy is a registered trademark in the United States and other jurisdictions.                                                 2627-SDY-163
+

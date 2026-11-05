@@ -1,0 +1,7 @@
+{
+    "tool-call": {
+        "eventTitle": "Tool call",
+        "eventDescription": "One successful MCP tool call on A/B Test Sample Size Calculator MCP Server. Listing tools and initializing are free.",
+        "eventPriceUsd": 0.02
+    }
+}

@@ -1,0 +1,12 @@
+# s1103 rapfix
+
+- Bug: compareRapVsStandard (src/core.ts) compared RAP only with Tiered Standard to pick "lower total paid"; the 10-year Standard was never in the comparison. tools.ts hard-coded "Only RAP counts toward PSLF".
+- Fix (commit 3ce598f, v1.0.1, 1 push): ranks every available plan by its computed monthly payment and total, reports ties (new fields lowest_monthly_payment_plans, lowest_total_paid_plans). The original input now says "Lowest total paid: 10-year Standard."
+- PSLF, from 20 U.S.C. 1087e(m)(1)(A) as amended by P.L. 119-21 sec. 82004. These payments count: (i) IBR, (ii) the 10-year Standard, (iii) other pre-2026 plans that pay at least the 10-year Standard amount, (iv) ICR until it is repealed, and (v) on-time RAP payments. The Tiered Standard (455(d)(7)) is not on that list, and StudentAid.gov SAVE FAQ Q10 (Oct 2026) says its payments do not count. The summary now says "RAP and the 10-year Standard plan count toward PSLF; Tiered Standard does not." When the 10-year Standard is not available, it says "RAP counts toward PSLF; Tiered Standard does not." The 10-year Standard note adds that 120 payments under it pay the loan off.
+- Not verified: the studentaid.gov PSLF pages render with JS, and curl got only an empty shell. So the claim that the 10-year Standard counts rests on the statute text.
+- Tests: 27/27. The 6 new tests are in test/compare-summary.test.mjs: the original input, a grid check that the minimum is right, the PSLF flags, the tool summary through an in-memory MCP client, the new-loan case and a tie under $25,000.
+- Deploy: worker student-loan-repayment-assistance-plan-calculator-mcp. Old version 0dec2ab3-3fac-4ac9-a43c-3da776109b85, new version 4f55cab7-557a-4ed5-b121-012293ebbaf7.
+  Rollback: `npx wrangler rollback 0dec2ab3-3fac-4ac9-a43c-3da776109b85 --name student-loan-repayment-assistance-plan-calculator-mcp --yes`
+- Live: a real tools/call with {38000, 6.5, 52000, 1} returned no error and the corrected sentences. Raw output in rapfix/live_after.json.
+- Registry: not published. The saved JWT has expired (401), and `mcp-publisher login github` needs a new device-flow login. server.json is already at 1.0.1, so after login only `mcp-publisher publish` is left. npm was skipped (blocked).
+- mcpstamp: the RAP /can-claude/ page cuts the answer to 3 sentences and adds a workaround note. The full output is now correct, so after re-running the call the orchestrator can remove sentences=3 and the note. The FAQ could also say that the 10-year Standard counts. This lane did not deploy mcpstamp.

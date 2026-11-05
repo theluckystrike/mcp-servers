@@ -1,0 +1,65 @@
+{
+ "repo": "cups-to-grams-mcp",
+ "repo_url": "https://github.com/theluckystrike/cups-to-grams-mcp",
+ "hosted_url": "https://cups-to-grams-mcp.lipmichal.workers.dev/mcp",
+ "worker_version_id": "a93bada1-94f4-4deb-b54a-30b5c07e5244",
+ "worker_version_history": [
+  "1a80d5c8-366d-4de2-aa97-8c79a66a28a0",
+  "a93bada1-94f4-4deb-b54a-30b5c07e5244"
+ ],
+ "rollback": "npx wrangler delete --name cups-to-grams-mcp (brand-new worker; to step back one version: npx wrangler rollback 1a80d5c8-366d-4de2-aa97-8c79a66a28a0 --name cups-to-grams-mcp)",
+ "registry_name": "io.github.theluckystrike/cups-to-grams-mcp",
+ "registry_visible": true,
+ "tools": [
+  "convert_ingredient",
+  "search_ingredients",
+  "scale_recipe",
+  "convert_oven_temperature"
+ ],
+ "ingredients": 271,
+ "ingredients_by_source": {
+  "usda_fdc": 59,
+  "king_arthur": 212
+ },
+ "fixtures": 27,
+ "tests_passed": "31/31 (node --test: 27 fixtures + 4 checks)",
+ "local_stdio_ok": true,
+ "live_calls_ok": {
+  "convert_ingredient": true,
+  "search_ingredients": true,
+  "scale_recipe": true,
+  "convert_oven_temperature": true
+ },
+ "live_raw_responses": "/Users/mike/mcp-servers/satellites/cups-to-grams-mcp/.live-raw/ (untracked)",
+ "npx_github_ok": true,
+ "pushes": 2,
+ "sources": [
+  "https://www.kingarthurbaking.com/learn/ingredient-weight-chart (fetched 2026-10-30)",
+  "https://fdc.nal.usda.gov/fdc-datasets/FoodData_Central_sr_legacy_food_csv_2018-04.zip (fetched 2026-10-30)",
+  "https://www.nist.gov/pml/special-publication-811/nist-guide-si-appendix-b-conversion-factors/nist-guide-si-appendix-b9 (fetched 2026-10-30)",
+  "https://www.legislation.gov.uk/ukpga/1985/72/schedule/1 (fetched 2026-10-30)",
+  "https://www.ecfr.gov/api/renderer/v1/content/enhanced/current/title-21?part=101&section=101.9 (fetched 2026-10-30)",
+  "https://en.wikipedia.org/wiki/Gas_mark (fetched 2026-10-30)",
+  "https://service.hoover.co.uk/advice-centre/the-oven-is-burning-the-food/151-use-lower-temperatures-when-cooking-with-fan-ovens/ (fetched 2026-10-30)",
+  "~/satellite-repos/ingredientcalculator/cups-to-grams.html (site table, read only)"
+ ],
+ "money_site": "https://ingredientcalculator.com",
+ "open_issues": [
+  "ingredientcalculator.com has no per-ingredient pages and no query-param deep links, so `more` links to the matching conversion page (/cups-to-grams, /cups-to-ounces, /ml-to-cups, /answers/cooking-measurement-converter, /tools/recipe-scaling-calculator, /tools/recipe-converter-metric, /recipe-converter). All 9 candidate paths returned 200 with UTM on 2026-10-30.",
+  "Site vs cited source over 5% (cited value used): bread-flour site 127 vs king_arthur 120.0 (5.8%), used 120.0; bread-flour site 127 vs usda_fdc 137.0 (7.3%), used 120.0; cake-flour site 114 vs usda_fdc 137.0 (16.8%), used 120.0; powdered-sugar site 120 vs king_arthur 113.0 (6.2%), used 120.0; milk-whole site 244 vs king_arthur 227.0 (7.5%), used 244.0; vegetable-oil site 218 vs king_arthur 198.0 (10.1%), used 218.0; olive-oil site 216 vs king_arthur 200.0 (8.0%), used 216.0; cornstarch site 128 vs king_arthur 112.0 (14.3%), used 128.0; white-rice site 185 vs king_arthur 198.0 (6.6%), used 185.0; rolled-oats site 90 vs usda_fdc 81.0 (11.1%), used 89.0; coconut-flour site 120 vs king_arthur 128.0 (6.2%), used 128.0; yogurt site 245 vs king_arthur 227.0 (7.9%), used 245.0; walnuts-chopped site 120 vs king_arthur 113.0 (6.2%), used 113.0; almonds-sliced site 92 vs king_arthur 86.0 (7.0%), used 92.0; baking-powder site 230 vs king_arthur 192.0 (19.8%), used 220.8",
+  "USDA vs King Arthur over 5% (23 rows; value used, other kept as alternate): milk-whole usda_fdc 244.0 vs king_arthur 227.0 (7.0%); buttermilk usda_fdc 245.0 vs king_arthur 227.0 (7.3%); yogurt usda_fdc 245.0 vs king_arthur 227.0 (7.3%); vegetable-oil usda_fdc 218.0 vs king_arthur 198.0 (9.2%); olive-oil usda_fdc 216.0 vs king_arthur 200.0 (7.4%); corn-syrup usda_fdc 341.0 vs king_arthur 312.0 (8.5%); powdered-sugar usda_fdc 120.0 vs king_arthur 113.0 (5.8%); bread-flour king_arthur 120.0 vs usda_fdc 137.0 (14.2%); cake-flour king_arthur 120.0 vs usda_fdc 137.0 (14.2%); cornstarch usda_fdc 128.0 vs king_arthur 112.0 (12.5%); white-rice usda_fdc 185.0 vs king_arthur 198.0 (7.0%); rolled-oats king_arthur 89.0 vs usda_fdc 81.0 (9.0%); baking-powder usda_fdc 220.8 vs king_arthur 192.0 (13.0%); baking-soda usda_fdc 220.8 vs king_arthur 288.0 (30.4%); ricotta usda_fdc 246.0 vs king_arthur 227.0 (7.7%); almonds-sliced usda_fdc 92.0 vs king_arthur 86.0 (6.5%); cornmeal-whole-grain king_arthur 138.0 vs usda_fdc 122.0 (11.6%); lemon-juice usda_fdc 244.0 vs king_arthur 224.0 (8.2%); vanilla-extract usda_fdc 208.0 vs king_arthur 224.0 (7.7%); shortening usda_fdc 205.0 vs king_arthur 184.0 (10.2%); lard usda_fdc 205.0 vs king_arthur 226.0 (10.2%); tomato-paste usda_fdc 262.0 vs king_arthur 232.0 (11.5%); coconut-milk usda_fdc 226.0 vs king_arthur 241.0 (6.6%)",
+  "King Arthur lists most liquids at 227 g per cup (8 oz weight per 8 fl oz). USDA portion weights are used for liquids, fats and dairy instead.",
+  "Site inconsistency to fix on ingredientcalculator.com: /tools/recipe-converter-metric uses a 240 mL cup and 125 g AP flour, 130 g bread flour, 240 g water; /cups-to-grams uses 120 g AP flour, 127 g bread flour, 237 g water. Bread flour 127 matches neither King Arthur (120) nor USDA (137).",
+  "USDA FDC food-details pages are a browser app that returns HTTP 404 to curl, so each USDA row cites the verified SR Legacy CSV download (200) plus fdc_id and fdc_page.",
+  "Gas mark table is from Wikipedia and the 20 C fan rule from Hoover UK service advice; no government source publishes either. Metric (250 mL), Australian tablespoon (20 mL) and Japanese cup (200 mL) are conventions not backed by a fetched source.",
+  "Rows dropped from the King Arthur chart: ranges (blueberries, rhubarb, zucchini, sourdough starters, egg white), count units (eggs, garlic head), and King Arthur branded blends."
+ ],
+ "minutes": 22,
+ "temp_cleanup": [
+  {
+   "path": "/Users/mike/cups-to-grams-mcp-work",
+   "size": "46M",
+   "contents": "USDA SR Legacy zip and CSVs, KA page, source pages, npx test dirs; lsof showed no open files"
+  }
+ ]
+}

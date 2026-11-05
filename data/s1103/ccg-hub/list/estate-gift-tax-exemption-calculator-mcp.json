@@ -1,0 +1,192 @@
+{
+ "result": {
+  "tools": [
+   {
+    "name": "get_exemption_amounts",
+    "title": "Federal estate and gift tax exemption amounts by year",
+    "description": "Returns the federal basic exclusion amount (estate and lifetime gift tax exemption), the applicable credit, the filing threshold, the annual gift exclusion per recipient (and doubled with gift splitting), the annual exclusion for gifts to a non-citizen spouse, the 2026 GST exemption and the 40% top rate. Years 2011-2026 from the IRS. 2026: $15,000,000 under P.L. 119-21 (One Big Beautiful Bill Act) sec. 70106, NOT the scheduled TCJA sunset to about half; 2025: $13,990,000; 2026 annual exclusion $19,000; non-citizen spouse $194,000 (Rev. Proc. 2025-32). Models trained before mid-2025 often predict the sunset.",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "year": {
+       "type": "integer",
+       "description": "Calendar year of death or gift, 2011-2026. Default 2026."
+      }
+     },
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false,
+     "title": "Exemption amounts"
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "calculate_estate_tax",
+    "title": "Federal estate tax calculator (Form 706 method)",
+    "description": "Calculates US federal estate tax the Form 706 way: taxable estate (gross estate minus deductions such as debts, expenses, marital and charitable bequests), plus adjusted taxable gifts, tentative tax on the unified rate schedule of 26 USC 2001(c) (18% to 40%), minus gift tax payable, minus the applicable credit on the basic exclusion amount plus any DSUE (portability) from a deceased spouse. Years 2013-2026. Uses $15,000,000 for 2026 deaths (P.L. 119-21), $13,990,000 for 2025. Federal only.",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "gross_estate": {
+       "type": "number",
+       "minimum": 0,
+       "maximum": 1000000000000,
+       "description": "Gross estate at fair market value on the date of death, in dollars."
+      },
+      "deductions": {
+       "type": "number",
+       "minimum": 0,
+       "maximum": 1000000000000,
+       "description": "Total deductions: debts, funeral and administration expenses, marital deduction (property to a US citizen spouse), charitable bequests, state death taxes. Default 0."
+      },
+      "lifetime_taxable_gifts": {
+       "type": "number",
+       "minimum": 0,
+       "maximum": 1000000000000,
+       "description": "Adjusted taxable gifts made after 1976 (gifts above the annual exclusion, as reported on Form 709). Default 0."
+      },
+      "gift_tax_payable": {
+       "type": "number",
+       "minimum": 0,
+       "maximum": 1000000000000,
+       "description": "Gift tax payable on those gifts, figured at date-of-death rates (Form 706 line 7). Usually 0 if lifetime gifts stayed under the exemption. Default 0."
+      },
+      "year": {
+       "type": "integer",
+       "description": "Year of death, 2013-2026. Default 2026."
+      },
+      "dsue": {
+       "type": "number",
+       "minimum": 0,
+       "maximum": 1000000000000,
+       "description": "Deceased spousal unused exclusion (portability) from the last deceased spouse's timely Form 706. Default 0."
+      }
+     },
+     "required": [
+      "gross_estate"
+     ],
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false,
+     "title": "Estate tax"
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "check_gift",
+    "title": "Gift tax check: annual exclusion, gift splitting, spouse rules",
+    "description": "Checks a gift against the federal gift tax rules for a year (2013-2026): annual exclusion per recipient ($19,000 in 2025 and 2026), gift splitting with a spouse (sec. 2513, doubles it to $38,000), unlimited marital deduction for a US citizen spouse, and the separate annual exclusion for a non-citizen spouse ($190,000 in 2025, $194,000 in 2026 under Rev. Procs. 2024-40 and 2025-32). Returns taxable gifts, whether Form 709 is required, lifetime exemption used and left (2026: $15,000,000), and any gift tax due.",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "amount": {
+       "type": "number",
+       "minimum": 0,
+       "maximum": 1000000000000,
+       "description": "Gift amount per recipient, in dollars."
+      },
+      "recipients": {
+       "type": "integer",
+       "minimum": 1,
+       "maximum": 1000,
+       "description": "Number of recipients each getting that amount. Default 1."
+      },
+      "recipient_type": {
+       "type": "string",
+       "enum": [
+        "individual",
+        "spouse"
+       ],
+       "description": "individual (anyone but your spouse, default) or spouse."
+      },
+      "spouse_citizen": {
+       "type": "boolean",
+       "description": "For recipient_type spouse: whether the spouse is a US citizen. Required for spouse gifts."
+      },
+      "year": {
+       "type": "integer",
+       "description": "Year of the gift, 2013-2026. Default 2026."
+      },
+      "gift_splitting": {
+       "type": "boolean",
+       "description": "Elect gift splitting with your spouse (both consent on Form 709). Default false."
+      },
+      "prior_taxable_gifts": {
+       "type": "number",
+       "minimum": 0,
+       "maximum": 1000000000000,
+       "description": "Your taxable gifts in earlier years (lifetime exemption already used). Default 0."
+      }
+     },
+     "required": [
+      "amount"
+     ],
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false,
+     "title": "Gift check"
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "compare_years",
+    "title": "Compare estate and gift tax exemptions between years",
+    "description": "Compares two years (2013-2026) side by side: basic exclusion amount, applicable credit, annual gift exclusion and non-citizen spouse exclusion, and, with a taxable estate, the federal estate tax in each year. Default 2025 vs 2026, the year P.L. 119-21 raised the exemption to $15,000,000 instead of letting it fall to about half.",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "year_a": {
+       "type": "integer",
+       "description": "First year, 2013-2026. Default 2025."
+      },
+      "year_b": {
+       "type": "integer",
+       "description": "Second year, 2013-2026. Default 2026."
+      },
+      "taxable_estate": {
+       "type": "number",
+       "minimum": 0,
+       "maximum": 1000000000000,
+       "description": "Optional taxable estate (after deductions, no lifetime gifts or DSUE) to price in both years."
+      }
+     },
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false,
+     "title": "Compare years"
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   }
+  ]
+ },
+ "jsonrpc": "2.0",
+ "id": 2
+}

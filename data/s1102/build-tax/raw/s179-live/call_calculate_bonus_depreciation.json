@@ -1,0 +1,39 @@
+{
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Acquired 2025-03-01, placed in service 2026-04-15: bonus rate 100% (OBBBA 168(k): 100% for property acquired after January 19, 2025 (permanent)). On $150,000 of basis after Section 179 the special depreciation allowance is $150,000, leaving $0 for regular MACRS. First-year Section 179 plus bonus: $250,000.\n\nThis is an estimate, not tax advice. Check Form 4562, its instructions and Pub. 946, or ask a tax professional before you file."
+      },
+      {
+        "type": "text",
+        "text": "{\n  \"acquired_date\": \"2025-03-01\",\n  \"placed_in_service_date\": \"2026-04-15\",\n  \"long_production_or_aircraft\": false,\n  \"regime\": \"OBBBA 168(k): 100% for property acquired after January 19, 2025 (permanent)\",\n  \"bonus_rate\": 1,\n  \"depreciable_basis\": 250000,\n  \"section_179_deduction\": 100000,\n  \"basis_after_section_179\": 150000,\n  \"special_depreciation_allowance\": 150000,\n  \"remaining_basis_for_macrs\": 0,\n  \"first_year_section_179_plus_bonus\": 250000,\n  \"notes\": [\n    \"Acquisition date is the date of a written binding contract, not delivery. Property under a binding contract signed before January 20, 2025 is treated as acquired before that date (Notice 2026-11 sec. 2.02 and 3.03).\",\n    \"Qualified property: MACRS property with a recovery period of 20 years or less, off-the-shelf software, water utility property and qualified productions. Used property can qualify.\",\n    \"Listed property (most vehicles) needs more than 50% business use.\"\n  ],\n  \"summary\": \"Acquired 2025-03-01, placed in service 2026-04-15: bonus rate 100% (OBBBA 168(k): 100% for property acquired after January 19, 2025 (permanent)). On $150,000 of basis after Section 179 the special depreciation allowance is $150,000, leaving $0 for regular MACRS. First-year Section 179 plus bonus: $250,000.\",\n  \"as_of\": \"2026-11-02\",\n  \"source\": \"https://www.irs.gov/pub/irs-drop/n-26-11.pdf ; https://www.irs.gov/pub/irs-pdf/i4562.pdf ; https://www.irs.gov/pub/irs-pdf/p946.pdf\",\n  \"more\": \"https://assetloancalculator.com/section-179-deduction-calculator/?utm_source=mcp&utm_medium=section-179-deduction-calculator-mcp\",\n  \"disclaimer\": \"This is an estimate, not tax advice. Check Form 4562, its instructions and Pub. 946, or ask a tax professional before you file.\"\n}"
+      }
+    ],
+    "structuredContent": {
+      "acquired_date": "2025-03-01",
+      "placed_in_service_date": "2026-04-15",
+      "long_production_or_aircraft": false,
+      "regime": "OBBBA 168(k): 100% for property acquired after January 19, 2025 (permanent)",
+      "bonus_rate": 1,
+      "depreciable_basis": 250000,
+      "section_179_deduction": 100000,
+      "basis_after_section_179": 150000,
+      "special_depreciation_allowance": 150000,
+      "remaining_basis_for_macrs": 0,
+      "first_year_section_179_plus_bonus": 250000,
+      "notes": [
+        "Acquisition date is the date of a written binding contract, not delivery. Property under a binding contract signed before January 20, 2025 is treated as acquired before that date (Notice 2026-11 sec. 2.02 and 3.03).",
+        "Qualified property: MACRS property with a recovery period of 20 years or less, off-the-shelf software, water utility property and qualified productions. Used property can qualify.",
+        "Listed property (most vehicles) needs more than 50% business use."
+      ],
+      "summary": "Acquired 2025-03-01, placed in service 2026-04-15: bonus rate 100% (OBBBA 168(k): 100% for property acquired after January 19, 2025 (permanent)). On $150,000 of basis after Section 179 the special depreciation allowance is $150,000, leaving $0 for regular MACRS. First-year Section 179 plus bonus: $250,000.",
+      "as_of": "2026-11-02",
+      "source": "https://www.irs.gov/pub/irs-drop/n-26-11.pdf ; https://www.irs.gov/pub/irs-pdf/i4562.pdf ; https://www.irs.gov/pub/irs-pdf/p946.pdf",
+      "more": "https://assetloancalculator.com/section-179-deduction-calculator/?utm_source=mcp&utm_medium=section-179-deduction-calculator-mcp",
+      "disclaimer": "This is an estimate, not tax advice. Check Form 4562, its instructions and Pub. 946, or ask a tax professional before you file."
+    }
+  },
+  "jsonrpc": "2.0",
+  "id": 11
+}

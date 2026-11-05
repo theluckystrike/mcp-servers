@@ -1,0 +1,63 @@
+{
+ "repo": "silver-price-per-gram-mcp",
+ "repo_url": "https://github.com/theluckystrike/silver-price-per-gram-mcp",
+ "hosted_url": "https://silver-price-per-gram-mcp.lipmichal.workers.dev/mcp",
+ "worker_version_id": "58eb1d69-ddae-47c8-817c-52c713234c37",
+ "rollback": "npx wrangler delete --name silver-price-per-gram-mcp (brand-new worker, one version)",
+ "registry_name": "io.github.theluckystrike/silver-price-per-gram-mcp",
+ "registry_visible": true,
+ "registry_check": "curl -s \"https://registry.modelcontextprotocol.io/v0/servers?search=silver-price-per-gram-mcp\" -> 1.0.0",
+ "tools": [
+  "get_silver_price_per_gram",
+  "calculate_silver_value",
+  "calculate_junk_silver_value",
+  "get_gold_silver_ratio"
+ ],
+ "fixtures": 20,
+ "tests_passed": "20/20 (node --test)",
+ "local_stdio_ok": true,
+ "live_calls_ok": {
+  "get_silver_price_per_gram": true,
+  "calculate_silver_value": true,
+  "calculate_junk_silver_value": true,
+  "get_gold_silver_ratio": true
+ },
+ "live_check": "curl POST initialize + tools/list + one tools/call per tool to hosted_url, no token (data/s1103/build-gen/bin/live.sh); GET / 200",
+ "live_raw_responses": "/Users/mike/mcp-servers/satellites/silver-price-per-gram-mcp/.live/ (git-excluded)",
+ "npx_github_ok": true,
+ "pushes": 1,
+ "github": {
+  "visibility": "public",
+  "topics": 13
+ },
+ "npm_ready": true,
+ "npm_ready_detail": "npm view silver-price-per-gram-mcp -> E404 (positive control cups-to-grams-mcp -> 1.0.0); package.json has bin, files, mcpName, keywords; npm pack --dry-run 9 files, 14.3 kB. Not published: npm publish needs the owner's per-publish 2FA web approval (OWNER UNLOCK).",
+ "competitor_field": "gh search repos \"silver price mcp\" 0, \"silver price per gram mcp\" 0, \"silver mcp\" 10 (all silverbullet/silverstripe, unrelated) on 2026-11-03",
+ "sources": [
+  "https://api.gold-api.com/price/XAG and /XAU (live, fetched 2026-11-03)",
+  "https://api.frankfurter.dev/v2/rates?base=USD (live)",
+  "https://www.ecfr.gov/current/title-16/chapter-I/subchapter-B/part-23/section-23.5 (sterling >= 925, coin silver >= 900; eCFR versioner API 2026-10-01)",
+  "https://www.legislation.gov.uk/ukpga/1973/43/schedule/2 (800, 925, 958.4, 999)",
+  "https://www.govinfo.gov/content/pkg/STATUTE-79/pdf/STATUTE-79-Pg254.pdf (Coinage Act of 1965: Kennedy half 11.5 g with 4.6 g silver; 900 fine coin silver)",
+  "https://www.law.cornell.edu/uscode/text/31/5112 (Silver Eagle 31.103 g, .999 fine, \"1 Oz. Fine Silver\")",
+  "https://en.wikipedia.org/wiki/{Roosevelt_dime,Washington_quarter,Franklin_half_dollar,Jefferson_nickel,Morgan_dollar,Peace_dollar} (pre-1965 coin weights, war nickel, silver dollar)",
+  "NIST Handbook 44 Appendix C (troy ounce, grain)"
+ ],
+ "money_site": "https://goldgramprice.com",
+ "more_pages": [
+  "/silver-price-per-gram/",
+  "/junk-silver-melt-value/",
+  "/learn/sterling-vs-fine-silver/",
+  "/learn/how-much-silver-is-in-an-american-silver-eagle/",
+  "/"
+ ],
+ "more_links_200": "5/5 with UTM returned 200",
+ "open_issues": [
+  "usmint.gov answered 403 to scripted requests and the Wayback copy 429, so pre-1965 dime/quarter/half weights, war nickel and Morgan/Peace dollar specs are cited from Wikipedia (secondary). Kennedy 40% and Silver Eagle come from statute text.",
+  "Overlaps partly with gold-price-per-gram-mcp get_metal_prices (silver spot); this repo targets the separate \"silver price\" query with fineness, coin and ratio tools.",
+  "Single keyless spot source (gold-api.com); upstream failure returns an UpstreamError that says not to quote from memory (tested).",
+  "The 0.715 ozt per $1 face figure for worn coin is a dealer convention (stated as such), not a sourced measurement.",
+  "GitHub search did not yet return the repo for \"silver price mcp\" 20 minutes after creation (indexing lag); re-check."
+ ],
+ "minutes": 25
+}

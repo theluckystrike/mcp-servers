@@ -1,0 +1,41 @@
+{
+ "result": {
+  "content": [
+   {
+    "type": "text",
+    "text": "There are 32 business days from 2026-12-01 to 2027-01-15 (start included, end included) on the federal calendar: 46 calendar days, 12 weekend days. Excluded weekday holidays: 2026-12-25 Christmas Day; 2027-01-01 New Year's Day."
+   },
+   {
+    "type": "text",
+    "text": "{\n  \"start_date\": \"2026-12-01\",\n  \"end_date\": \"2027-01-15\",\n  \"include_start\": true,\n  \"include_end\": true,\n  \"calendar\": \"federal\",\n  \"business_days\": 32,\n  \"calendar_days\": 46,\n  \"weekend_days\": 12,\n  \"holidays_on_weekdays\": [\n    {\n      \"date\": \"2026-12-25\",\n      \"reason\": \"Christmas Day\"\n    },\n    {\n      \"date\": \"2027-01-01\",\n      \"reason\": \"New Year's Day\"\n    }\n  ],\n  \"summary\": \"There are 32 business days from 2026-12-01 to 2027-01-15 (start included, end included) on the federal calendar: 46 calendar days, 12 weekend days. Excluded weekday holidays: 2026-12-25 Christmas Day; 2027-01-01 New Year's Day.\",\n  \"as_of\": \"2026-10-30\",\n  \"source\": \"https://www.opm.gov/policy-data-oversight/pay-leave/federal-holidays/\",\n  \"rules_source\": \"https://www.law.cornell.edu/uscode/text/5/6103\",\n  \"more\": \"https://mcp.zovo.one/?utm_source=mcp&utm_medium=us-federal-holidays-business-days-mcp\"\n}"
+   }
+  ],
+  "structuredContent": {
+   "start_date": "2026-12-01",
+   "end_date": "2027-01-15",
+   "include_start": true,
+   "include_end": true,
+   "calendar": "federal",
+   "business_days": 32,
+   "calendar_days": 46,
+   "weekend_days": 12,
+   "holidays_on_weekdays": [
+    {
+     "date": "2026-12-25",
+     "reason": "Christmas Day"
+    },
+    {
+     "date": "2027-01-01",
+     "reason": "New Year's Day"
+    }
+   ],
+   "summary": "There are 32 business days from 2026-12-01 to 2027-01-15 (start included, end included) on the federal calendar: 46 calendar days, 12 weekend days. Excluded weekday holidays: 2026-12-25 Christmas Day; 2027-01-01 New Year's Day.",
+   "as_of": "2026-10-30",
+   "source": "https://www.opm.gov/policy-data-oversight/pay-leave/federal-holidays/",
+   "rules_source": "https://www.law.cornell.edu/uscode/text/5/6103",
+   "more": "https://mcp.zovo.one/?utm_source=mcp&utm_medium=us-federal-holidays-business-days-mcp"
+  }
+ },
+ "jsonrpc": "2.0",
+ "id": 2
+}

@@ -1,0 +1,37 @@
+{
+    "title": "Section 179 Deduction Calculator MCP Server",
+    "description": "Section 179 deduction calculator for AI agents (MCP server). 2025 and 2026 IRS limits after the One Big Beautiful Bill Act, 100% bonus depreciation rules, heavy SUV and passenger auto caps, and equipment loan payment with after-tax cost. Sources cited from irs.gov.",
+    "seoTitle": "Section 179 Deduction Calculator 2026 MCP Server",
+    "seoDescription": "Section 179 deduction calculator for AI agents: 2026 limits, 100% bonus depreciation after OBBBA, heavy SUV caps and equipment loan cost. MCP server.",
+    "categories": [
+        "MCP_SERVERS",
+        "BUSINESS",
+        "AGENTS"
+    ],
+    "actorStandby": {
+        "isEnabled": true,
+        "idleTimeoutSecs": 300
+    },
+    "pricingInfos": [
+        {
+            "pricingModel": "PAY_PER_EVENT",
+            "pricingPerEvent": {
+                "actorChargeEvents": {
+                    "apify-actor-start": {
+                        "eventTitle": "Actor start",
+                        "eventDescription": "Apify synthetic event: covers the first 5 seconds of compute of each run. Charged by the platform, not by the Actor code.",
+                        "eventPriceUsd": 0.00005
+                    },
+                    "tool-call": {
+                        "eventTitle": "Tool call",
+                        "eventDescription": "One successful MCP tool call on Section 179 Deduction Calculator MCP Server. Listing tools and initializing are free.",
+                        "eventPriceUsd": 0.03,
+                        "isPrimaryEvent": true
+                    }
+                }
+            },
+            "minimalMaxTotalChargeUsd": 0.15,
+            "isPPEPlatformUsagePaidByUser": false
+        }
+    ]
+}

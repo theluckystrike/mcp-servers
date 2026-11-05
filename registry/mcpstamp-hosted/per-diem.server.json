@@ -1,0 +1,37 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.theluckystrike/per-diem",
+  "title": "McpStamp Per Diem",
+  "description": "Travel allowances from bundled Polish, HMRC and GSA rate tables, with partial days and meals.",
+  "version": "0.23.0",
+  "repository": {
+    "url": "https://github.com/theluckystrike/mcp-servers",
+    "source": "github",
+    "subfolder": "servers/per-diem"
+  },
+  "websiteUrl": "https://www.mcpstamp.com/servers/per-diem/",
+  "packages": [
+    {
+      "registryType": "mcpb",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.22.0/per-diem.mcpb",
+      "version": "0.21.0",
+      "fileSha256": "4fcc49827c093862b0d9182aac4ac166081cbbdb8da65b0917dbcff6ad27cd1d",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "description": "Optional Pro license key (MCPL1....). Verified offline.",
+          "isSecret": true,
+          "name": "MCP_LICENSE_KEY"
+        }
+      ]
+    }
+  ],
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.zovo.one/mcp/per-diem"
+    }
+  ]
+}

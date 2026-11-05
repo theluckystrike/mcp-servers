@@ -1,0 +1,14 @@
+Five more free tools went live today. Each one knows something a chat model gets wrong on its own.
+
+Mileage and per diem. The IRS raised the business rate mid-year, 72.5 cents before July 1 and 76 cents after. This one splits your trips across the change and looks up GSA per diem by ZIP.
+https://www.mcpstamp.com/can-claude/calculate-mileage-deduction/
+
+Inflation. Official BLS CPI back to 1913, plus a check of a raise against inflation.
+https://www.mcpstamp.com/can-claude/adjust-for-inflation/
+
+Silver price per gram, live river levels with flood stages, and SAT percentiles for the class of 2026 round it out.
+
+All 25 free servers sit on one page. No account, no key, paste the URL into Claude or Cursor.
+https://www.mcpstamp.com/free-servers/
+
+#shipped

@@ -1,0 +1,36 @@
+From 14b5aca862289560d0749b3829cb4bead36976ee Mon Sep 17 00:00:00 2001
+From: theluckystrike <51033404+theluckystrike@users.noreply.github.com>
+Date: Mon, 2 Nov 2026 09:56:31 +0700
+Subject: [PATCH] Homepage: add Use this data in Claude or ChatGPT section
+ [skip ci]
+
+---
+ src/pages/index.astro | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+diff --git a/src/pages/index.astro b/src/pages/index.astro
+index 4cc032e..7f1bdd0 100644
+--- a/src/pages/index.astro
++++ b/src/pages/index.astro
+@@ -84,6 +84,18 @@ const ld = [
+         </div>
+       </section>
+ 
++      <section class="section" id="use-in-ai">
++        <h2 class="sec-title">Use this data in Claude or ChatGPT</h2>
++        <p class="sec-sub" style="margin-bottom:16px">The minimum wage table and the paycheck math on this site are also available as two free MCP servers. An assistant can look up a state's current and scheduled minimum wage, compare states, and work out take-home pay or a salary-to-hourly conversion using current rates instead of what it remembers from training. Neither needs an account or an API key.</p>
++        <p style="margin:0 0 6px;font-size:15px"><strong>Minimum wage.</strong> In Claude.ai or ChatGPT, add a custom connector with this URL:</p>
++        <pre style="margin:0 0 12px;padding:11px 13px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;overflow-x:auto;white-space:pre;color:var(--ink);"><code>https://minimum-wage-mcp.lipmichal.workers.dev/mcp</code></pre>
++        <pre style="margin:0 0 12px;padding:11px 13px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;overflow-x:auto;white-space:pre;color:var(--ink);"><code>claude mcp add --transport http minimum-wage https://minimum-wage-mcp.lipmichal.workers.dev/mcp</code></pre>
++        <p style="margin:16px 0 6px;font-size:15px"><strong>Paycheck calculator.</strong> Connector URL:</p>
++        <pre style="margin:0 0 12px;padding:11px 13px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;overflow-x:auto;white-space:pre;color:var(--ink);"><code>https://paycheck-calculator-mcp.lipmichal.workers.dev/mcp</code></pre>
++        <pre style="margin:0 0 12px;padding:11px 13px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px;overflow-x:auto;white-space:pre;color:var(--ink);"><code>claude mcp add --transport http paycheck-calculator https://paycheck-calculator-mcp.lipmichal.workers.dev/mcp</code></pre>
++        <p style="margin-top:16px"><a class="method-link" href="https://github.com/theluckystrike/minimum-wage-mcp">minimum-wage-mcp on GitHub</a> &middot; <a class="method-link" href="https://github.com/theluckystrike/paycheck-calculator-mcp">paycheck-calculator-mcp on GitHub</a></p>
++      </section>
++
+       <section class="section">
+         <h2 class="sec-title">Common questions</h2>
+         {faqs.map((f, i) => (
+-- 
+2.50.1 (Apple Git-155)
+

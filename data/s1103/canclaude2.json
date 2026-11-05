@@ -1,0 +1,123 @@
+{
+ "lane": "canclaude2",
+ "date": "2026-11-03",
+ "new_pages": [
+  {
+   "url": "https://www.mcpstamp.com/can-claude/convert-cups-to-grams/",
+   "server": "cups-to-grams-mcp"
+  },
+  {
+   "url": "https://www.mcpstamp.com/can-claude/calculate-dscr/",
+   "server": "dscr-loan-calculator-mcp"
+  },
+  {
+   "url": "https://www.mcpstamp.com/can-claude/calculate-take-home-pay/",
+   "server": "paycheck-calculator-mcp"
+  },
+  {
+   "url": "https://www.mcpstamp.com/can-claude/calculate-uk-take-home-pay/",
+   "server": "uk-income-tax-salary-mcp"
+  },
+  {
+   "url": "https://www.mcpstamp.com/can-claude/calculate-aca-premium-tax-credit/",
+   "server": "aca-premium-tax-credit-calculator-mcp"
+  },
+  {
+   "url": "https://www.mcpstamp.com/can-claude/calculate-recipe-nutrition/",
+   "server": "recipe-nutrition-calculator-mcp"
+  },
+  {
+   "url": "https://www.mcpstamp.com/can-claude/look-up-ap-score-distributions/",
+   "server": "ap-score-distributions-mcp"
+  },
+  {
+   "url": "https://www.mcpstamp.com/can-claude/calculate-section-179-deduction/",
+   "server": "section-179-deduction-calculator-mcp"
+  },
+  {
+   "url": "https://www.mcpstamp.com/can-claude/calculate-car-loan-interest-deduction/",
+   "server": "car-loan-interest-deduction-calculator-mcp"
+  },
+  {
+   "url": "https://www.mcpstamp.com/can-claude/find-subdomains/",
+   "server": "subdomain-finder-mcp"
+  },
+  {
+   "url": "https://www.mcpstamp.com/can-claude/calculate-ab-test-sample-size/",
+   "server": "ab-test-sample-size-calculator-mcp"
+  },
+  {
+   "url": "https://www.mcpstamp.com/can-claude/calculate-rap-student-loan-payment/",
+   "server": "student-loan-repayment-assistance-plan-calculator-mcp"
+  },
+  {
+   "url": "https://www.mcpstamp.com/can-claude/tell-the-time-in-another-time-zone/",
+   "server": "mcp.zovo.one/mcp/timezone (catalog, free token)"
+  },
+  {
+   "url": "https://www.mcpstamp.com/can-claude/convert-currency-at-todays-rate/",
+   "server": "mcp.zovo.one/mcp/currency (catalog, free token)"
+  }
+ ],
+ "selection": {
+  "a_satellites": "11 of brief list (cups, dscr, paycheck, uk tax, aca, recipe, ap, s179, car loan, subdomain, ab test) + student-loan RAP; federal holidays already covered by count-business-days. Left for next wave: estate-gift-tax, uk-ssp-smp.",
+  "b_estate": "timezone (npm 562, 7.7x floor on 11-01 per kpi.md) -> tell-the-time page; currency via GSC. invoice/quotes skipped: Claude can draft an invoice or quote alone, so no honest cannot-alone answer; license not hosted on mcp.zovo.one.",
+  "c_gsc": "scripts gsc_q.py/gsc_q2.py, sc-domain:mcpstamp.com 2026-10-06..11-03 dataState all: 83 impr on 37 query/page rows, 0 clicks, daily 6/49/72/84 (10-30..11-02), 1 click on 11-02. Only unmapped intent: \"ecb calculator\" (6 impr, pos 31.5) -> currency page. Other queries map to existing pages."
+ },
+ "calls": "26 real tools/call 2026-11-03 against hosted URLs, raw in canclaude2/calls/*.json; catalog servers via probe-marked free token (x-mcp-probe: 1), re-checked through the printed /mcp/<id>/t/<token> URL form (timezone now, currency convert: 200 with results).",
+ "template_change": "canClaudeLive.ts accepts server_id for catalog servers (tokenRequired); LiveAnswerPage shows free-token step; FreeServerList lists only no-token answers; /servers/<id>/ shows \"Questions this server answers\"; index copy updated.",
+ "humanize": "control bad sample exit 1; 14 new pages + /can-claude/ index --strict exit 0, 15/15 clean",
+ "build": "buildslot npm run build, 201 pages, canclaude2/build1.log",
+ "deploy": {
+  "commit": "theluckystrike/mcp-showcase-site c83a09c (public repo, 1 push)",
+  "deployment_id": "15f770ce-8ebd-47cd-8508-e9b7dec89cf7",
+  "previous": "4093cc9c-dc8b-46fa-b267-06dd2187a8e9",
+  "rollback": "npx wrangler pages deployment rollback 4093cc9c-dc8b-46fa-b267-06dd2187a8e9 --project-name mcp-showcase-preview",
+  "prechecks": "no pages deploy/astro build process; files changed <30 min in ~/mcpstamp-work were only wave-1 commit 4452a49 = origin/main = deployed 4093cc9c; origin/main had no new commits"
+ },
+ "verify": {
+  "new_urls_200_with_h1_and_call_section": "14/14 (curl)",
+  "sitemap_locs": "191 (was 177)",
+  "can_claude_index_links": 30,
+  "servers_timezone_links_answer": true,
+  "indexnow": "200, 17 URLs",
+  "gsc_sitemap": "204, submitted 191"
+ },
+ "issues": [
+  "currency free tier rate_on before 90 days silently shifts to window start (2026-06-30 -> 2026-08-05), flagged in the response; not used on page.",
+  "RAP server bug fixed in v1.0.1 and page updated (see rap_fix)."
+ ],
+ "open": [
+  "Re-check GSC for the 14 pages in 7-14 days",
+  "Next wave candidates: estate-gift-tax-exemption, uk-ssp-smp"
+ ],
+ "rap_fix": {
+  "server": "RAP satellite v1.0.1 worker 4f55cab7 (rapfix.md); call re-run 2026-11-03, isError none, calls/rap.json",
+  "page": "full output, truncation note removed; FAQ: RAP and 10-year Standard count toward PSLF, Tiered Standard does not (20 U.S.C. 1087e(m)(1)(A) as amended by P.L. 119-21 sec. 82004)",
+  "humanize": "control exit 1; RAP page --strict PASS",
+  "commit": "54ed917 (1 push)",
+  "deployment_id": "d51beea5-6715-4d04-b6ca-2c463c579fcf",
+  "previous": "15f770ce-8ebd-47cd-8508-e9b7dec89cf7",
+  "rollback": "npx wrangler pages deployment rollback 15f770ce-8ebd-47cd-8508-e9b7dec89cf7 --project-name mcp-showcase-preview",
+  "verify": "live 200; corrected sentences present, old truncation note and \"Only RAP counts\" absent"
+ },
+ "satellites_2": {
+  "free_servers_added": [
+   "raw-to-cooked-weight-mcp",
+   "vegetable-yield-percentage-mcp"
+  ],
+  "free_servers_live_count": "27 (curl /free-servers/ unique links)",
+  "new_pages": [
+   "https://www.mcpstamp.com/can-claude/convert-raw-to-cooked-weight/",
+   "https://www.mcpstamp.com/can-claude/calculate-vegetable-yield/"
+  ],
+  "calls": "4 real tools/call 2026-11-03 against hosted URLs, no token (calls/cooked*.json, veg*.json); tools from live tools/list",
+  "scripts": "canclaude2/add_free_servers.py, make_can_claude_live2.py (now 16 pages)",
+  "humanize": "control exit 1; 6 pages --strict PASS",
+  "commit": "0dceb83 (1 push)",
+  "deployment_id": "5161b1dd-c9bb-4043-b26b-dbcb3d51e1ef",
+  "previous": "d51beea5-6715-4d04-b6ca-2c463c579fcf",
+  "rollback": "npx wrangler pages deployment rollback d51beea5-6715-4d04-b6ca-2c463c579fcf --project-name mcp-showcase-preview",
+  "verify": "7 URLs 200, sitemap 195, IndexNow 200 (7 URLs), GSC sitemap 204 (195 submitted)"
+ }
+}

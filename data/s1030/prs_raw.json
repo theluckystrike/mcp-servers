@@ -1,0 +1,1374 @@
+[
+ {
+  "repo": "AIAnytime/Awesome-MCP-Servers",
+  "n": 83,
+  "title": "Add Office Suite server bundle to Work & productivity",
+  "state": "merged",
+  "created": "2026-09-05",
+  "closed_at": "2026-09-05T10:06:07Z",
+  "merged_at": "2026-09-05T10:06:07Z",
+  "updated": "2026-09-05T10:06:07Z",
+  "comments": 0,
+  "review_comments": 0,
+  "mergeable_state": "unstable"
+ },
+ {
+  "repo": "Albertchamberlain/Awesome-MCP",
+  "n": 52,
+  "title": "Add Zovo MCP Servers (+ fix catalog merge conflict breaking CI)",
+  "state": "merged",
+  "created": "2026-09-17",
+  "closed_at": "2026-09-18T02:56:02Z",
+  "merged_at": "2026-09-18T02:56:02Z",
+  "updated": "2026-09-18T02:56:02Z",
+  "comments": 0,
+  "review_comments": 0,
+  "mergeable_state": "unknown"
+ },
+ {
+  "repo": "Albertchamberlain/Awesome-MCP",
+  "n": 75,
+  "title": "Add Statement of Account MCP (finance, hosted remote)",
+  "state": "closed",
+  "created": "2026-10-07",
+  "closed_at": "2026-10-07T10:14:53Z",
+  "merged_at": null,
+  "updated": "2026-10-07T10:14:53Z",
+  "comments": 0,
+  "review_comments": 0,
+  "mergeable_state": "unstable"
+ },
+ {
+  "repo": "AlexMili/Awesome-MCP",
+  "n": 339,
+  "title": "Add Zovo MCP Office Suite (58 back-office servers: invoices, VAT, PDFs",
+  "state": "merged",
+  "created": "2026-10-28",
+  "closed_at": "2026-10-30T00:11:55Z",
+  "merged_at": "2026-10-30T00:11:55Z",
+  "updated": "2026-10-30T00:11:55Z",
+  "comments": 2,
+  "review_comments": 0,
+  "mergeable_state": "clean",
+  "thread": [
+   {
+    "who": "AlexMili",
+    "at": "2026-10-29T00:16",
+    "body": "Thanks! The repo and the servers look fine, but the description says the suite handles VAT returns and I can't find that anywhere in the README or the server list. VAT shows up on invoices, quotes and credit notes, there's no VAT return tool. Could you reword the description to what the servers actu"
+   }
+  ],
+  "reviews": []
+ },
+ {
+  "repo": "Appnova-EU-OU/awesome-remote-mcp-servers",
+  "n": 614,
+  "title": "Add 8 paperwork MCP servers (productivity)",
+  "state": "open",
+  "created": "2026-09-12",
+  "closed_at": null,
+  "merged_at": null,
+  "updated": "2026-09-12T00:03:56Z",
+  "comments": 0,
+  "review_comments": 0,
+  "mergeable_state": "unknown",
+  "thread": [],
+  "reviews": []
+ },
+ {
+  "repo": "BlockRunAI/awesome-finance-mcp",
+  "n": 69,
+  "title": "Add Bank Statement MCP",
+  "state": "closed",
+  "created": "2026-09-10",
+  "closed_at": "2026-10-12T03:00:42Z",
+  "merged_at": null,
+  "updated": "2026-10-12T10:02:22Z",
+  "comments": 2,
+  "review_comments": 0,
+  "mergeable_state": "clean"
+ },
+ {
+  "repo": "BlockRunAI/awesome-finance-mcp",
+  "n": 79,
+  "title": "Add Dunning Letters MCP (Payments & Banking)",
+  "state": "closed",
+  "created": "2026-09-19",
+  "closed_at": "2026-10-12T03:00:43Z",
+  "merged_at": null,
+  "updated": "2026-10-12T03:00:43Z",
+  "comments": 1,
+  "review_comments": 0,
+  "mergeable_state": "clean"
+ },
+ {
+  "repo": "Chat2AnyLLM/awesome-mcp-servers",
+  "n": 22,
+  "title": "Add 8 local-first paperwork MCP servers",
+  "state": "closed",
+  "created": "2026-09-11",
+  "closed_at": "2026-09-28T13:54:49Z",
+  "merged_at": null,
+  "updated": "2026-09-28T13:54:49Z",
+  "comments": 1,
+  "review_comments": 0,
+  "mergeable_state": "dirty"
+ },
+ {
+  "repo": "DhanushNehru/awesome-mcp-servers",
+  "n": 85,
+  "title": "Add Zovo Office Suite to Productivity & Collaboration",
+  "state": "open",
+  "created": "2026-09-17",
+  "closed_at": null,
+  "merged_at": null,
+  "updated": "2026-09-17T07:59:02Z",
+  "comments": 0,
+  "review_comments": 0,
+  "mergeable_state": "clean",
+  "thread": [],
+  "reviews": []
+ },
+ {
+  "repo": "DhanushNehru/awesome-mcp-servers",
+  "n": 95,
+  "title": "Add Zovo Invoice Generator",
+  "state": "open",
+  "created": "2026-09-23",
+  "closed_at": null,
+  "merged_at": null,
+  "updated": "2026-10-26T01:48:56Z",
+  "comments": 3,
+  "review_comments": 0,
+  "mergeable_state": "unstable",
+  "thread": [
+   {
+    "who": "DhanushNehru",
+    "at": "2026-10-24T12:48",
+    "body": "Thanks for the PR. The link https://github.com/theluckystrike/mcp-e-commerce-suite returns a 404, and CONTRIBUTING asks that the link works and the project is public and accessible. Please fix or remove that entry (the Invoice Generator link loads)."
+   }
+  ],
+  "reviews": []
+ },
+ {
+  "repo": "ExMapo/awesome-productivity-mcp-servers",
+  "n": 24,
+  "title": "Add Zovo Spreadsheet MCP to Data & Spreadsheets",
+  "state": "closed",
+  "created": "2026-10-07",
+  "closed_at": "2026-10-07T10:14:56Z",
+  "merged_at": null,
+  "updated": "2026-10-07T10:14:56Z",
+  "comments": 0,
+  "review_comments": 0,
+  "mergeable_state": "clean"
+ },
+ {
+  "repo": "JustInCache/awesome-mcp-collection",
+  "n": 44,
+  "title": "Add: theluckystrike MCP servers suite to Productivity",
+  "state": "open",
+  "created": "2026-09-07",
+  "closed_at": null,
+  "merged_at": null,
+  "updated": "2026-10-05T02:39:15Z",
+  "comments": 2,
+  "review_comments": 0,
+  "mergeable_state": "unstable",
+  "thread": [
+   {
+    "who": "JustInCache",
+    "at": "2026-09-16T12:51",
+    "body": "The monorepo https://github.com/theluckystrike/mcp-servers is real and documented, but this PR needs edits:\r \r 1. All four descriptions exceed 100 characters.\r 2. Repo labels like theluckystrike/mcp-price-tracker are misleading. Please use theluckystrike/mcp-servers (or a servers/... tree link) cons"
+   }
+  ],
+  "reviews": []
+ },
+ {
+  "repo": "Kilo-Org/kilo-marketplace",
+  "n": 269,
+  "title": "Add Zovo Back Office MCP",
+  "state": "open",
+  "created": "2026-09-10",
+  "closed_at": null,
+  "merged_at": null,
+  "updated": "2026-09-10T14:05:02Z",
+  "comments": 0,
+  "review_comments": 0,
+  "mergeable_state": "blocked",
+  "thread": [],
+  "reviews": []
+ },
+ {
+  "repo": "MobinX/awesome-mcp-list",
+  "n": 420,
+  "title": "Add office-suite MCP server bundle to Utilities",
+  "state": "merged",
+  "created": "2026-09-05",
+  "closed_at": "2026-09-14T11:10:12Z",
+  "merged_at": "2026-09-14T11:10:12Z",
+  "updated": "2026-09-14T11:10:12Z",
+  "comments": 0,
+  "review_comments": 0,
+  "mergeable_state": "unknown"
+ },
+ {
+  "repo": "MobinX/awesome-mcp-list",
+  "n": 517,
+  "title": "Add Zovo billing & productivity MCP servers (6 entries)",
+  "state": "closed",
+  "created": "2026-09-26",
+  "closed_at": "2026-09-26T19:24:35Z",
+  "merged_at": null,
+  "updated": "2026-09-26T19:24:35Z",
+  "comments": 1,
+  "review_comments": 0,
+  "mergeable_state": "clean"
+ },
+ {
+  "repo": "MobinX/awesome-mcp-list",
+  "n": 966,
+  "title": "Add theluckystrike/common-ground to Art & Culture",
+  "state": "open",
+  "created": "2026-10-27",
+  "closed_at": null,
+  "merged_at": null,
+  "updated": "2026-10-27T14:04:18Z",
+  "comments": 0,
+  "review_comments": 0,
+  "mergeable_state": "clean",
+  "thread": [],
+  "reviews": []
+ },
+ {
+  "repo": "Piebald-AI/awesome-gemini-cli-extensions",
+  "n": 102,
+  "title": "Add mcp-leave to 3rd-Party Services",
+  "state": "merged",
+  "created": "2026-10-27",
+  "closed_at": "2026-10-27T13:39:18Z",
+  "merged_at": "2026-10-27T13:39:18Z",
+  "updated": "2026-10-27T13:39:19Z",
+  "comments": 0,
+  "review_comments": 0,
+  "mergeable_state": "unknown",
+  "thread": [],
+  "reviews": []
+ },
+ {
+  "repo": "Sagargupta16/awesome-mcp-servers",
+  "n": 88,
+  "title": "Add Invoice MCP to Finance",
+  "state": "merged",
+  "created": "2026-09-10",
+  "closed_at": "2026-09-10T14:29:08Z",
+  "merged_at": "2026-09-10T14:29:08Z",
+  "updated": "2026-09-10T14:29:08Z",
+  "comments": 1,
+  "review_comments": 0,
+  "mergeable_state": "unknown"
+ },
+ {
+  "repo": "Sagargupta16/awesome-mcp-servers",
+  "n": 109,
+  "title": "Add Zovo MCP servers (invoice, pdf-merger, backlink-checker, pomodoro)",
+  "state": "closed",
+  "created": "2026-09-24",
+  "closed_at": "2026-09-27T12:19:49Z",
+  "merged_at": null,
+  "updated": "2026-09-27T12:19:49Z",
+  "comments": 3,
+  "review_comments": 0,
+  "mergeable_state": "blocked"
+ },
+ {
+  "repo": "Sagargupta16/awesome-mcp-servers",
+  "n": 173,
+  "title": "Add Zovo Time Tracker to Productivity",
+  "state": "merged",
+  "created": "2026-10-14",
+  "closed_at": "2026-10-14T04:13:24Z",
+  "merged_at": "2026-10-14T04:13:24Z",
+  "updated": "2026-10-14T04:13:36Z",
+  "comments": 4,
+  "review_comments": 0,
+  "mergeable_state": "unknown"
+ },
+ {
+  "repo": "TensorBlock/awesome-mcp-servers",
+  "n": 2154,
+  "title": "Add zovo office-suite MCP servers",
+  "state": "closed",
+  "created": "2026-09-04",
+  "closed_at": "2026-09-04T16:10:51Z",
+  "merged_at": null,
+  "updated": "2026-09-04T16:10:51Z",
+  "comments": 1,
+  "review_comments": 0,
+  "mergeable_state": "blocked"
+ },
+ {
+  "repo": "TensorBlock/awesome-mcp-servers",
+  "n": 2164,
+  "title": "Add Office Suite bundle MCP server",
+  "state": "merged",
+  "created": "2026-09-04",
+  "closed_at": "2026-09-05T03:52:23Z",
+  "merged_at": "2026-09-05T03:52:23Z",
+  "updated": "2026-09-05T04:10:37Z",
+  "comments": 2,
+  "review_comments": 0,
+  "mergeable_state": "unknown"
+ },
+ {
+  "repo": "TensorBlock/awesome-mcp-servers",
+  "n": 2711,
+  "title": "Add Zovo price-tracker MCP server (search)",
+  "state": "merged",
+  "created": "2026-09-26",
+  "closed_at": "2026-09-26T16:20:48Z",
+  "merged_at": "2026-09-26T16:20:48Z",
+  "updated": "2026-09-26T16:26:13Z",
+  "comments": 1,
+  "review_comments": 0,
+  "mergeable_state": "unknown"
+ },
+ {
+  "repo": "TensorBlock/awesome-mcp-servers",
+  "n": 4697,
+  "title": "Add theluckystrike/common-ground to Art, Culture & Media",
+  "state": "merged",
+  "created": "2026-10-27",
+  "closed_at": "2026-10-28T09:12:12Z",
+  "merged_at": "2026-10-28T09:12:12Z",
+  "updated": "2026-10-28T09:13:07Z",
+  "comments": 2,
+  "review_comments": 0,
+  "mergeable_state": "blocked",
+  "thread": [
+   {
+    "who": "tensorblock-mcp-automation[bot]",
+    "at": "2026-10-28T09:12",
+    "body": "<!-- tensorblock-mcp-merge-follow-up:v1 --> Thanks for contributing to the TensorBlock MCP Index. PR #4697 has been merged into `main`.  Once the registry deploy completes, your server profile will be available here:  - [theluckystrike/common-ground](https://tensorblock.co/mcp/servers/github-theluck"
+   },
+   {
+    "who": "wilsonccccc",
+    "at": "2026-10-28T09:13",
+    "body": "Thanks\u2014reviewed, validated, and merged! \u2b50 If you find the registry helpful, we\u2019d love a star: https://github.com/TensorBlock/awesome-mcp-servers. You\u2019re also welcome to test and validate your MCP server on Lagrange Cloud (https://lgr.tensorblock.co/console/?coupon=MCP50). We\u2019ll cover the validation "
+   }
+  ],
+  "reviews": []
+ },
+ {
+  "repo": "TrueHaiq/awesome-mcp",
+  "n": 52,
+  "title": "Add hosted finance MCP servers: Invoice, Price Tracker, Quotes",
+  "state": "open",
+  "created": "2026-09-24",
+  "closed_at": null,
+  "merged_at": null,
+  "updated": "2026-09-24T07:06:13Z",
+  "comments": 0,
+  "review_comments": 0,
+  "mergeable_state": "clean",
+  "thread": [],
+  "reviews": []
+ },
+ {
+  "repo": "WagnerAgent/awesome-mcp-servers-devops",
+  "n": 81,
+  "title": "Add theluckystrike time-tracker and work-order MCP servers",
+  "state": "merged",
+  "created": "2026-09-18",
+  "closed_at": "2026-10-06T15:18:14Z",
+  "merged_at": "2026-10-06T15:18:13Z",
+  "updated": "2026-10-06T15:18:14Z",
+  "comments": 1,
+  "review_comments": 2,
+  "mergeable_state": "unknown"
+ },
+ {
+  "repo": "YuzeHao2023/Awesome-MCP-Servers",
+  "n": 473,
+  "title": "Add zovo office-suite MCP servers",
+  "state": "open",
+  "created": "2026-09-04",
+  "closed_at": null,
+  "merged_at": null,
+  "updated": "2026-09-04T06:13:08Z",
+  "comments": 0,
+  "review_comments": 0,
+  "mergeable_state": "clean",
+  "thread": [],
+  "reviews": []
+ },
+ {
+  "repo": "YuzeHao2023/Awesome-MCP-Servers",
+  "n": 518,
+  "title": "Add MCP Dunning Letters server to Finance category",
+  "state": "open",
+  "created": "2026-09-19",
+  "closed_at": null,
+  "merged_at": null,
+  "updated": "2026-09-19T02:11:34Z",
+  "comments": 0,
+  "review_comments": 0,
+  "mergeable_state": "clean",
+  "thread": [],
+  "reviews": []
+ },
+ {
+  "repo": "aaif-goose/goose",
+  "n": 11917,
+  "title": "Add Zovo Invoice to the extensions directory",
+  "state": "closed",
+  "created": "2026-09-08",
+  "closed_at": "2026-09-09T20:16:39Z",
+  "merged_at": null,
+  "updated": "2026-09-09T20:16:39Z",
+  "comments": 1,
+  "review_comments": 1,
+  "mergeable_state": "blocked"
+ },
+ {
+  "repo": "aaif-goose/goose",
+  "n": 11918,
+  "title": "Add Zovo Time Tracker to the extensions directory",
+  "state": "closed",
+  "created": "2026-09-08",
+  "closed_at": "2026-09-09T20:16:42Z",
+  "merged_at": null,
+  "updated": "2026-09-09T20:16:42Z",
+  "comments": 1,
+  "review_comments": 1,
+  "mergeable_state": "blocked"
+ },
+ {
+  "repo": "aaif-goose/goose",
+  "n": 11919,
+  "title": "Add Zovo Spreadsheet to the extensions directory",
+  "state": "closed",
+  "created": "2026-09-08",
+  "closed_at": "2026-09-09T20:16:37Z",
+  "merged_at": null,
+  "updated": "2026-09-09T20:16:37Z",
+  "comments": 1,
+  "review_comments": 1,
+  "mergeable_state": "blocked"
+ },
+ {
+  "repo": "abordage/awesome-mcp",
+  "n": 106,
+  "title": "Add six local freelance-office MCP servers",
+  "state": "merged",
+  "created": "2026-09-07",
+  "closed_at": "2026-09-14T06:52:29Z",
+  "merged_at": "2026-09-14T06:52:29Z",
+  "updated": "2026-09-14T06:52:29Z",
+  "comments": 0,
+  "review_comments": 0,
+  "mergeable_state": "clean"
+ },
+ {
+  "repo": "agenticdevops/awesome-devops-mcp",
+  "n": 45,
+  "title": "Add Zovo Office Suite to DevOps Productivity",
+  "state": "closed",
+  "created": "2026-09-23",
+  "closed_at": "2026-10-06T02:05:39Z",
+  "merged_at": null,
+  "updated": "2026-10-06T02:05:39Z",
+  "comments": 1,
+  "review_comments": 0,
+  "mergeable_state": "clean"
+ },
+ {
+  "repo": "btsouth/toolport",
+  "n": 1208,
+  "title": "Add Tabnine Agent as a supported client",
+  "state": "closed",
+  "created": "2026-10-16",
+  "closed_at": "2026-10-17T08:33:20Z",
+  "merged_at": null,
+  "updated": "2026-10-17T11:48:35Z",
+  "comments": 4,
+  "review_comments": 0,
+  "mergeable_state": "clean"
+ },
+ {
+  "repo": "collabnix/awesome-mcp-lists",
+  "n": 112,
+  "title": "Add mcp-office-suite to Development Tools",
+  "state": "merged",
+  "created": "2026-09-07",
+  "closed_at": "2026-10-03T01:57:40Z",
+  "merged_at": "2026-10-03T01:57:40Z",
+  "updated": "2026-10-03T01:57:40Z",
+  "comments": 0,
+  "review_comments": 0,
+  "mergeable_state": "clean"
+ },
+ {
+  "repo": "collabnix/awesome-mcp-lists",
+  "n": 117,
+  "title": "Add 3 offline office MCP servers to DevOps & Infrastructure",
+  "state": "merged",
+  "created": "2026-09-17",
+  "closed_at": "2026-10-13T03:04:37Z",
+  "merged_at": "2026-10-13T03:04:37Z",
+  "updated": "2026-10-13T03:41:11Z",
+  "comments": 4,
+  "review_comments": 0,
+  "mergeable_state": "unknown"
+ },
+ {
+  "repo": "composio-community/awesome-claude-plugins",
+  "n": 465,
+  "title": "Add 34 business and finance MCP servers",
+  "state": "open",
+  "created": "2026-09-11",
+  "closed_at": null,
+  "merged_at": null,
+  "updated": "2026-09-11T18:22:23Z",
+  "comments": 0,
+  "review_comments": 0,
+  "mergeable_state": "clean",
+  "thread": [],
+  "reviews": []
+ },
+ {
+  "repo": "docker/mcp-registry",
+  "n": 4892,
+  "title": "Add sixteen local-only servers for freelance and small-business work",
+  "state": "closed",
+  "created": "2026-09-02",
+  "closed_at": "2026-09-08T08:40:01Z",
+  "merged_at": null,
+  "updated": "2026-09-08T08:40:01Z",
+  "comments": 2,
+  "review_comments": 0,
+  "mergeable_state": "blocked"
+ },
+ {
+  "repo": "docker/mcp-registry",
+  "n": 5030,
+  "title": "Add timezone MCP server",
+  "state": "open",
+  "created": "2026-09-09",
+  "closed_at": null,
+  "merged_at": null,
+  "updated": "2026-09-09T06:46:51Z",
+  "comments": 0,
+  "review_comments": 0,
+  "mergeable_state": "blocked",
+  "thread": [],
+  "reviews": []
+ },
+ {
+  "repo": "docker/mcp-registry",
+  "n": 6151,
+  "title": "Add Zovo Invoice remote MCP server",
+  "state": "open",
+  "created": "2026-10-27",
+  "closed_at": null,
+  "merged_at": null,
+  "updated": "2026-10-27T04:10:18Z",
+  "comments": 0,
+  "review_comments": 0,
+  "mergeable_state": "blocked",
+  "thread": [],
+  "reviews": []
+ },
+ {
+  "repo": "ever-works/awesome-mcp-servers",
+  "n": 181,
+  "title": "Add Zovo Invoice Generator and Zovo E-commerce Suite (Business & Comme",
+  "state": "open",
+  "created": "2026-09-23",
+  "closed_at": null,
+  "merged_at": null,
+  "updated": "2026-10-12T00:38:57Z",
+  "comments": 1,
+  "review_comments": 0,
+  "mergeable_state": "clean",
+  "thread": [],
+  "reviews": []
+ },
+ {
+  "repo": "habitoai/awesome-mcp-servers",
+  "n": 144,
+  "title": "Add Bank Statement, Expense Tracker and Invoice to Finance",
+  "state": "merged",
+  "created": "2026-09-07",
+  "closed_at": "2026-10-02T15:26:20Z",
+  "merged_at": "2026-10-02T15:26:20Z",
+  "updated": "2026-10-02T15:26:20Z",
+  "comments": 2,
+  "review_comments": 2,
+  "mergeable_state": "unknown"
+ },
+ {
+  "repo": "jaw9c/awesome-remote-mcp-servers",
+  "n": 769,
+  "title": "Add 8 hosted paperwork MCP servers",
+  "state": "open",
+  "created": "2026-09-11",
+  "closed_at": null,
+  "merged_at": null,
+  "updated": "2026-09-11T18:32:54Z",
+  "comments": 0,
+  "review_comments": 0,
+  "mergeable_state": "clean",
+  "thread": [],
+  "reviews": []
+ },
+ {
+  "repo": "jaw9c/awesome-remote-mcp-servers",
+  "n": 1306,
+  "title": "Add Zovo Time Tracker (Productivity)",
+  "state": "closed",
+  "created": "2026-10-14",
+  "closed_at": "2026-10-14T01:49:06Z",
+  "merged_at": null,
+  "updated": "2026-10-14T01:49:07Z",
+  "comments": 0,
+  "review_comments": 0,
+  "mergeable_state": "unknown"
+ },
+ {
+  "repo": "kalanakt/awesome-telegram",
+  "n": 89,
+  "title": "Add 5 bots to Other Bots",
+  "state": "merged",
+  "created": "2026-09-02",
+  "closed_at": "2026-09-06T06:02:28Z",
+  "merged_at": "2026-09-06T06:02:28Z",
+  "updated": "2026-09-06T06:02:29Z",
+  "comments": 3,
+  "review_comments": 1,
+  "mergeable_state": "clean"
+ },
+ {
+  "repo": "lobstercare/mcp-hub",
+  "n": 113,
+  "title": "Add theluckystrike/mcp-servers (58 back-office servers) to Finance",
+  "state": "open",
+  "created": "2026-10-28",
+  "closed_at": null,
+  "merged_at": null,
+  "updated": "2026-10-28T04:21:19Z",
+  "comments": 0,
+  "review_comments": 0,
+  "mergeable_state": "clean",
+  "thread": [],
+  "reviews": []
+ },
+ {
+  "repo": "mahseema/awesome-ai-tools",
+  "n": 1241,
+  "title": "Add BeLikeNative to Writing assistants",
+  "state": "open",
+  "created": "2026-05-04",
+  "closed_at": null,
+  "merged_at": null,
+  "updated": "2026-05-04T10:01:20Z",
+  "comments": 0,
+  "review_comments": 0,
+  "mergeable_state": "clean",
+  "thread": [],
+  "reviews": []
+ },
+ {
+  "repo": "mcpHQ/awesome-mcp-servers",
+  "n": 61,
+  "title": "Add Zovo Invoice MCP to finance",
+  "state": "merged",
+  "created": "2026-09-17",
+  "closed_at": "2026-09-17T06:10:44Z",
+  "merged_at": "2026-09-17T06:10:44Z",
+  "updated": "2026-09-17T06:10:44Z",
+  "comments": 0,
+  "review_comments": 0,
+  "mergeable_state": "unknown"
+ },
+ {
+  "repo": "mcpHQ/awesome-mcp-servers",
+  "n": 62,
+  "title": "Add Zovo Office Suite to communication and productivity",
+  "state": "merged",
+  "created": "2026-09-17",
+  "closed_at": "2026-09-17T18:32:51Z",
+  "merged_at": "2026-09-17T18:32:51Z",
+  "updated": "2026-09-17T18:32:51Z",
+  "comments": 0,
+  "review_comments": 0,
+  "mergeable_state": "unknown"
+ },
+ {
+  "repo": "mcpHQ/awesome-mcp-servers",
+  "n": 72,
+  "title": "Add Zovo Invoice Generator and Zovo E-commerce Suite",
+  "state": "merged",
+  "created": "2026-09-23",
+  "closed_at": "2026-09-23T20:48:36Z",
+  "merged_at": "2026-09-23T20:48:36Z",
+  "updated": "2026-09-23T20:48:36Z",
+  "comments": 0,
+  "review_comments": 0,
+  "mergeable_state": "unknown"
+ },
+ {
+  "repo": "mcpHQ/awesome-mcp-servers",
+  "n": 175,
+  "title": "Add Zovo Time Tracker (communication-and-productivity)",
+  "state": "merged",
+  "created": "2026-10-09",
+  "closed_at": "2026-10-09T17:57:30Z",
+  "merged_at": "2026-10-09T17:57:30Z",
+  "updated": "2026-10-10T11:08:07Z",
+  "comments": 2,
+  "review_comments": 0,
+  "mergeable_state": "unknown"
+ },
+ {
+  "repo": "mcpmux/mcp-servers",
+  "n": 300,
+  "title": "Add one.zovo-invoice",
+  "state": "merged",
+  "created": "2026-09-18",
+  "closed_at": "2026-09-30T23:40:03Z",
+  "merged_at": "2026-09-30T23:40:03Z",
+  "updated": "2026-09-30T23:40:04Z",
+  "comments": 0,
+  "review_comments": 0,
+  "mergeable_state": "unknown"
+ },
+ {
+  "repo": "mctrinh/awesome-mcp-servers",
+  "n": 112,
+  "title": "Add Office Suite server bundle to Community Servers",
+  "state": "open",
+  "created": "2026-09-05",
+  "closed_at": null,
+  "merged_at": null,
+  "updated": "2026-09-05T06:15:15Z",
+  "comments": 0,
+  "review_comments": 0,
+  "mergeable_state": "clean",
+  "thread": [],
+  "reviews": []
+ },
+ {
+  "repo": "mgoldsborough/awesome-mcpb",
+  "n": 11,
+  "title": "Add mcp-servers: 19 office/freelance MCPB tools",
+  "state": "open",
+  "created": "2026-09-04",
+  "closed_at": null,
+  "merged_at": null,
+  "updated": "2026-09-04T06:08:51Z",
+  "comments": 0,
+  "review_comments": 0,
+  "mergeable_state": "clean",
+  "thread": [],
+  "reviews": []
+ },
+ {
+  "repo": "nix-community/NUR",
+  "n": 1217,
+  "title": "Add theluckystrike repository",
+  "state": "merged",
+  "created": "2026-08-28",
+  "closed_at": "2026-08-28T15:06:24Z",
+  "merged_at": "2026-08-28T15:06:24Z",
+  "updated": "2026-08-28T15:06:24Z",
+  "comments": 1,
+  "review_comments": 0,
+  "mergeable_state": "clean"
+ },
+ {
+  "repo": "pingcap/ossinsight",
+  "n": 3125,
+  "title": "config: add MCP server toolkits for small business collection",
+  "state": "open",
+  "created": "2026-09-19",
+  "closed_at": null,
+  "merged_at": null,
+  "updated": "2026-09-19T02:22:38Z",
+  "comments": 1,
+  "review_comments": 0,
+  "mergeable_state": "blocked",
+  "thread": [
+   {
+    "who": "vercel[bot]",
+    "at": "2026-09-19T02:22",
+    "body": "@theluckystrike is attempting to deploy a commit to the **pingcap** Team on [Vercel](https://vercel.com).  A member of the Team first needs to [authorize it](https://vercel.com/git/authorize?team=pingcap&slug=pingcap&teamId=team_UxSEanHnrktvOjymndwOFeiI&type=github&job=%7B%22headInfo%22%3A%7B%22sha%"
+   }
+  ],
+  "reviews": []
+ },
+ {
+  "repo": "punkpeye/awesome-mcp-servers",
+  "n": 5768,
+  "title": "Add BeLikeNative Grammar Server \ud83e\udd16\ud83e\udd16\ud83e\udd16",
+  "state": "closed",
+  "created": "2026-05-03",
+  "closed_at": "2026-09-15T22:15:04Z",
+  "merged_at": null,
+  "updated": "2026-09-15T22:15:04Z",
+  "comments": 5,
+  "review_comments": 0,
+  "mergeable_state": "dirty"
+ },
+ {
+  "repo": "punkpeye/awesome-mcp-servers",
+  "n": 13473,
+  "title": "Add four theluckystrike MCP servers: time-tracker, price-tracker, spre",
+  "state": "closed",
+  "created": "2026-09-02",
+  "closed_at": "2026-09-07T14:47:53Z",
+  "merged_at": null,
+  "updated": "2026-09-07T14:47:53Z",
+  "comments": 5,
+  "review_comments": 0,
+  "mergeable_state": "clean"
+ },
+ {
+  "repo": "punkpeye/awesome-mcp-servers",
+  "n": 13963,
+  "title": "Add theluckystrike/mcp-statement-of-account to Finance & Fintech \ud83e\udd16\ud83e\udd16\ud83e\udd16",
+  "state": "merged",
+  "created": "2026-09-08",
+  "closed_at": "2026-10-18T01:35:10Z",
+  "merged_at": "2026-10-18T01:35:10Z",
+  "updated": "2026-10-18T01:35:17Z",
+  "comments": 4,
+  "review_comments": 0,
+  "mergeable_state": "clean"
+ },
+ {
+  "repo": "punkpeye/awesome-mcp-servers",
+  "n": 13964,
+  "title": "Add theluckystrike/mcp-spreadsheet to Data Science Tools \ud83e\udd16\ud83e\udd16\ud83e\udd16",
+  "state": "open",
+  "created": "2026-09-08",
+  "closed_at": null,
+  "merged_at": null,
+  "updated": "2026-10-10T00:40:52Z",
+  "comments": 5,
+  "review_comments": 0,
+  "mergeable_state": "clean",
+  "thread": [
+   {
+    "who": "github-actions[bot]",
+    "at": "2026-09-17T12:44",
+    "body": "<!-- glama-badge-check --> Thank you for adding the Glama badge!  Please make sure the server has been evaluated by Glama and has a [quality score](https://glama.ai/mcp/servers/theluckystrike/mcp-spreadsheet/score):  [![theluckystrike/mcp-spreadsheet MCP server](https://glama.ai/mcp/servers/thelucky"
+   },
+   {
+    "who": "punkpeye",
+    "at": "2026-09-21T00:51",
+    "body": "<!-- triage-nudge:981f4aab --> Hi @theluckystrike \u2014 thanks for adding the badge! However, Glama still reports that your server isn't listed there yet, so there's no quality score attached to the entry yet.  Could you make sure the server is submitted at https://glama.ai/mcp/servers and has been eval"
+   },
+   {
+    "who": "punkpeye",
+    "at": "2026-10-09T13:08",
+    "body": "<!-- triage-conflict --> Hey @theluckystrike, this PR has merge conflicts that need to be resolved before it can be merged. Please rebase or merge the latest `main` branch into your branch and push the updated changes.  This is a blocker \u2014 the PR cannot be merged until the conflicts are resolved."
+   }
+  ],
+  "reviews": []
+ },
+ {
+  "repo": "punkpeye/awesome-mcp-servers",
+  "n": 13965,
+  "title": "Add theluckystrike/mcp-pdf to Other Tools and Integrations \ud83e\udd16\ud83e\udd16\ud83e\udd16",
+  "state": "open",
+  "created": "2026-09-08",
+  "closed_at": null,
+  "merged_at": null,
+  "updated": "2026-10-15T04:44:09Z",
+  "comments": 4,
+  "review_comments": 0,
+  "mergeable_state": "clean",
+  "thread": [
+   {
+    "who": "github-actions[bot]",
+    "at": "2026-09-08T05:58",
+    "body": "<!-- glama-check --> Hey,  To ensure that only working servers are listed, we're updating our listing requirements.  Please complete the following steps:  1. **Ensure your server is listed on Glama.** If it isn't already, submit it at https://glama.ai/mcp/servers and verify that it passes all checks"
+   },
+   {
+    "who": "github-actions[bot]",
+    "at": "2026-09-17T12:44",
+    "body": "<!-- glama-badge-check --> Thank you for adding the Glama badge!  Please make sure the server has been evaluated by Glama and has a [quality score](https://glama.ai/mcp/servers/theluckystrike/mcp-pdf/score):  [![theluckystrike/mcp-pdf MCP server](https://glama.ai/mcp/servers/theluckystrike/mcp-pdf/b"
+   },
+   {
+    "who": "punkpeye",
+    "at": "2026-10-15T04:44",
+    "body": "<!-- triage-nudge:d2296ed7 --> Thanks for rebasing and getting the entry in order! The last piece is getting the server listed on Glama (https://glama.ai/mcp/servers) so it can be evaluated and receive a quality score. Once it's up, the badge will update automatically. Let me know if you run into an"
+   }
+  ],
+  "reviews": []
+ },
+ {
+  "repo": "punkpeye/awesome-mcp-servers",
+  "n": 13966,
+  "title": "Add theluckystrike/mcp-barcode to Other Tools and Integrations \ud83e\udd16\ud83e\udd16\ud83e\udd16",
+  "state": "open",
+  "created": "2026-09-08",
+  "closed_at": null,
+  "merged_at": null,
+  "updated": "2026-10-15T04:55:28Z",
+  "comments": 5,
+  "review_comments": 0,
+  "mergeable_state": "clean",
+  "thread": [
+   {
+    "who": "github-actions[bot]",
+    "at": "2026-09-17T12:44",
+    "body": "<!-- glama-badge-check --> Thank you for adding the Glama badge!  Please make sure the server has been evaluated by Glama and has a [quality score](https://glama.ai/mcp/servers/theluckystrike/mcp-barcode/score):  [![theluckystrike/mcp-barcode MCP server](https://glama.ai/mcp/servers/theluckystrike/m"
+   },
+   {
+    "who": "punkpeye",
+    "at": "2026-10-09T13:22",
+    "body": "<!-- triage-conflict --> Hey @theluckystrike, this PR has merge conflicts that need to be resolved before it can be merged. Please rebase or merge the latest `main` branch into your branch and push the updated changes.  This is a blocker \u2014 the PR cannot be merged until the conflicts are resolved."
+   },
+   {
+    "who": "punkpeye",
+    "at": "2026-10-15T04:55",
+    "body": "<!-- triage-nudge:177e1d46 --> Thanks for resolving the merge conflicts! I appreciate the update.  As you mentioned, the Glama listing is still not done. To proceed with merging, your server needs to be submitted at https://glama.ai/mcp/servers, pass all checks (start and respond to introspection), "
+   }
+  ],
+  "reviews": []
+ },
+ {
+  "repo": "punkpeye/awesome-mcp-servers",
+  "n": 14559,
+  "title": "Add theluckystrike/mcp-office-suite to Other Tools and Integrations \ud83e\udd16\ud83e\udd16",
+  "state": "open",
+  "created": "2026-09-17",
+  "closed_at": null,
+  "merged_at": null,
+  "updated": "2026-09-17T08:00:17Z",
+  "comments": 1,
+  "review_comments": 0,
+  "mergeable_state": "dirty",
+  "thread": [
+   {
+    "who": "github-actions[bot]",
+    "at": "2026-09-17T06:28",
+    "body": "<!-- glama-badge-check --> Thank you for adding the Glama badge!  Please make sure the server has been evaluated by Glama and has a [quality score](https://glama.ai/mcp/servers/theluckystrike/mcp-office-suite/score):  [![theluckystrike/mcp-office-suite MCP server](https://glama.ai/mcp/servers/theluc"
+   }
+  ],
+  "reviews": []
+ },
+ {
+  "repo": "punkpeye/awesome-mcp-servers",
+  "n": 14560,
+  "title": "Add theluckystrike/mcp-bill-of-sale to Finance & Fintech \ud83e\udd16\ud83e\udd16\ud83e\udd16",
+  "state": "open",
+  "created": "2026-09-17",
+  "closed_at": null,
+  "merged_at": null,
+  "updated": "2026-09-17T08:00:19Z",
+  "comments": 2,
+  "review_comments": 0,
+  "mergeable_state": "dirty",
+  "thread": [
+   {
+    "who": "github-actions[bot]",
+    "at": "2026-09-17T06:28",
+    "body": "<!-- glama-badge-check --> Thank you for adding the Glama badge!  Please make sure the server has been evaluated by Glama and has a [quality score](https://glama.ai/mcp/servers/theluckystrike/mcp-bill-of-sale/score):  [![theluckystrike/mcp-bill-of-sale MCP server](https://glama.ai/mcp/servers/theluc"
+   },
+   {
+    "who": "github-actions[bot]",
+    "at": "2026-09-17T06:28",
+    "body": "<!-- emoji-check --> Your submission is missing a required emoji tag or uses an unrecognized one. Each entry must include at least one of the permitted emojis after the repository link.  **Permitted emojis:** - \ud83c\udf96\ufe0f \u2013 official implementation - \ud83d\udc0d \u2013 Python - \ud83d\udcc7 \u2013 TypeScript / JavaScript - \ud83c\udfce\ufe0f \u2013 Go - \ud83e\udd80 \u2013 R"
+   }
+  ],
+  "reviews": []
+ },
+ {
+  "repo": "punkpeye/awesome-mcp-servers",
+  "n": 14561,
+  "title": "Add theluckystrike/mcp-credit-note to Finance & Fintech \ud83e\udd16\ud83e\udd16\ud83e\udd16",
+  "state": "open",
+  "created": "2026-09-17",
+  "closed_at": null,
+  "merged_at": null,
+  "updated": "2026-09-17T08:00:24Z",
+  "comments": 2,
+  "review_comments": 0,
+  "mergeable_state": "dirty",
+  "thread": [
+   {
+    "who": "github-actions[bot]",
+    "at": "2026-09-17T06:28",
+    "body": "<!-- glama-badge-check --> Thank you for adding the Glama badge!  Please make sure the server has been evaluated by Glama and has a [quality score](https://glama.ai/mcp/servers/theluckystrike/mcp-credit-note/score):  [![theluckystrike/mcp-credit-note MCP server](https://glama.ai/mcp/servers/thelucky"
+   },
+   {
+    "who": "github-actions[bot]",
+    "at": "2026-09-17T06:28",
+    "body": "<!-- emoji-check --> Your submission is missing a required emoji tag or uses an unrecognized one. Each entry must include at least one of the permitted emojis after the repository link.  **Permitted emojis:** - \ud83c\udf96\ufe0f \u2013 official implementation - \ud83d\udc0d \u2013 Python - \ud83d\udcc7 \u2013 TypeScript / JavaScript - \ud83c\udfce\ufe0f \u2013 Go - \ud83e\udd80 \u2013 R"
+   }
+  ],
+  "reviews": []
+ },
+ {
+  "repo": "punkpeye/awesome-mcp-servers",
+  "n": 14562,
+  "title": "Add theluckystrike/mcp-dunning-letters to Finance & Fintech \ud83e\udd16\ud83e\udd16\ud83e\udd16",
+  "state": "open",
+  "created": "2026-09-17",
+  "closed_at": null,
+  "merged_at": null,
+  "updated": "2026-09-17T08:00:29Z",
+  "comments": 2,
+  "review_comments": 0,
+  "mergeable_state": "dirty",
+  "thread": [
+   {
+    "who": "github-actions[bot]",
+    "at": "2026-09-17T06:28",
+    "body": "<!-- glama-badge-check --> Thank you for adding the Glama badge!  Please make sure the server has been evaluated by Glama and has a [quality score](https://glama.ai/mcp/servers/theluckystrike/mcp-dunning-letters/score):  [![theluckystrike/mcp-dunning-letters MCP server](https://glama.ai/mcp/servers/"
+   },
+   {
+    "who": "github-actions[bot]",
+    "at": "2026-09-17T06:28",
+    "body": "<!-- emoji-check --> Your submission is missing a required emoji tag or uses an unrecognized one. Each entry must include at least one of the permitted emojis after the repository link.  **Permitted emojis:** - \ud83c\udf96\ufe0f \u2013 official implementation - \ud83d\udc0d \u2013 Python - \ud83d\udcc7 \u2013 TypeScript / JavaScript - \ud83c\udfce\ufe0f \u2013 Go - \ud83e\udd80 \u2013 R"
+   }
+  ],
+  "reviews": []
+ },
+ {
+  "repo": "punkpeye/awesome-mcp-servers",
+  "n": 14563,
+  "title": "Add theluckystrike/mcp-job-card to Other Tools and Integrations \ud83e\udd16\ud83e\udd16\ud83e\udd16",
+  "state": "open",
+  "created": "2026-09-17",
+  "closed_at": null,
+  "merged_at": null,
+  "updated": "2026-09-17T08:00:28Z",
+  "comments": 1,
+  "review_comments": 0,
+  "mergeable_state": "dirty",
+  "thread": [
+   {
+    "who": "github-actions[bot]",
+    "at": "2026-09-17T06:28",
+    "body": "<!-- glama-badge-check --> Thank you for adding the Glama badge!  Please make sure the server has been evaluated by Glama and has a [quality score](https://glama.ai/mcp/servers/theluckystrike/mcp-job-card/score):  [![theluckystrike/mcp-job-card MCP server](https://glama.ai/mcp/servers/theluckystrike"
+   }
+  ],
+  "reviews": []
+ },
+ {
+  "repo": "punkpeye/awesome-mcp-servers",
+  "n": 14564,
+  "title": "Add theluckystrike/mcp-packing-list to Other Tools and Integrations \ud83e\udd16\ud83e\udd16",
+  "state": "open",
+  "created": "2026-09-17",
+  "closed_at": null,
+  "merged_at": null,
+  "updated": "2026-09-17T08:00:31Z",
+  "comments": 1,
+  "review_comments": 0,
+  "mergeable_state": "dirty",
+  "thread": [
+   {
+    "who": "github-actions[bot]",
+    "at": "2026-09-17T06:28",
+    "body": "<!-- glama-badge-check --> Thank you for adding the Glama badge!  Please make sure the server has been evaluated by Glama and has a [quality score](https://glama.ai/mcp/servers/theluckystrike/mcp-packing-list/score):  [![theluckystrike/mcp-packing-list MCP server](https://glama.ai/mcp/servers/theluc"
+   }
+  ],
+  "reviews": []
+ },
+ {
+  "repo": "punkpeye/awesome-mcp-servers",
+  "n": 14565,
+  "title": "Add theluckystrike/mcp-checklist to Other Tools and Integrations \ud83e\udd16\ud83e\udd16\ud83e\udd16",
+  "state": "open",
+  "created": "2026-09-17",
+  "closed_at": null,
+  "merged_at": null,
+  "updated": "2026-09-17T08:00:35Z",
+  "comments": 1,
+  "review_comments": 0,
+  "mergeable_state": "dirty",
+  "thread": [
+   {
+    "who": "github-actions[bot]",
+    "at": "2026-09-17T06:28",
+    "body": "<!-- glama-badge-check --> Thank you for adding the Glama badge!  Please make sure the server has been evaluated by Glama and has a [quality score](https://glama.ai/mcp/servers/theluckystrike/mcp-checklist/score):  [![theluckystrike/mcp-checklist MCP server](https://glama.ai/mcp/servers/theluckystri"
+   }
+  ],
+  "reviews": []
+ },
+ {
+  "repo": "punkpeye/awesome-mcp-servers",
+  "n": 14681,
+  "title": "Add mcp-office-suite MCP server",
+  "state": "open",
+  "created": "2026-09-19",
+  "closed_at": null,
+  "merged_at": null,
+  "updated": "2026-10-10T00:40:49Z",
+  "comments": 4,
+  "review_comments": 0,
+  "mergeable_state": "dirty",
+  "thread": [
+   {
+    "who": "github-actions[bot]",
+    "at": "2026-09-19T00:21",
+    "body": "<!-- glama-badge-check --> Thank you for adding the Glama badge!  Please make sure the server has been evaluated by Glama and has a [quality score](https://glama.ai/mcp/servers/theluckystrike/mcp-office-suite/score):  [![theluckystrike/mcp-office-suite MCP server](https://glama.ai/mcp/servers/theluc"
+   },
+   {
+    "who": "punkpeye",
+    "at": "2026-09-21T02:28",
+    "body": "<!-- triage-nudge:6e5ad180 --> Thanks for the submission! The entry looks good overall, but there's one outstanding item before this can be merged:  - [ ] **Claim the server on Glama**: The server must be claimed by the owner at https://glama.ai/mcp/servers/theluckystrike/mcp-office-suite and have a"
+   },
+   {
+    "who": "punkpeye",
+    "at": "2026-10-09T13:52",
+    "body": "<!-- triage-conflict --> Hey @theluckystrike, this PR has merge conflicts that need to be resolved before it can be merged. Please rebase or merge the latest `main` branch into your branch and push the updated changes.  This is a blocker \u2014 the PR cannot be merged until the conflicts are resolved."
+   }
+  ],
+  "reviews": []
+ },
+ {
+  "repo": "punkpeye/awesome-remote-mcp-servers",
+  "n": 610,
+  "title": "Add Zovo Price Tracker (Zovo MCP) \ud83e\udd16\ud83e\udd16\ud83e\udd16",
+  "state": "merged",
+  "created": "2026-09-24",
+  "closed_at": "2026-10-18T03:35:41Z",
+  "merged_at": "2026-10-18T03:35:41Z",
+  "updated": "2026-10-18T03:35:49Z",
+  "comments": 9,
+  "review_comments": 0,
+  "mergeable_state": "unknown"
+ },
+ {
+  "repo": "punkpeye/awesome-remote-mcp-servers",
+  "n": 1771,
+  "title": "Add Zovo Time Tracker to Workplace & Productivity",
+  "state": "merged",
+  "created": "2026-10-14",
+  "closed_at": "2026-10-15T05:25:42Z",
+  "merged_at": "2026-10-15T05:25:42Z",
+  "updated": "2026-10-15T05:25:50Z",
+  "comments": 5,
+  "review_comments": 0,
+  "mergeable_state": "unknown"
+ },
+ {
+  "repo": "punkpeye/awesome-remote-mcp-servers",
+  "n": 3085,
+  "title": "Add Common Ground \ud83e\udd16\ud83e\udd16\ud83e\udd16",
+  "state": "open",
+  "created": "2026-10-27",
+  "closed_at": null,
+  "merged_at": null,
+  "updated": "2026-10-27T08:17:07Z",
+  "comments": 0,
+  "review_comments": 0,
+  "mergeable_state": "clean",
+  "thread": [],
+  "reviews": []
+ },
+ {
+  "repo": "rohitg00/awesome-devops-mcp-servers",
+  "n": 338,
+  "title": "Add theluckystrike time-tracker and work-order MCP servers",
+  "state": "open",
+  "created": "2026-09-18",
+  "closed_at": null,
+  "merged_at": null,
+  "updated": "2026-10-12T00:38:58Z",
+  "comments": 2,
+  "review_comments": 0,
+  "mergeable_state": "clean",
+  "thread": [
+   {
+    "who": "coderabbitai[bot]",
+    "at": "2026-09-18T00:29",
+    "body": "<!-- This is an auto-generated comment: summarize by coderabbit.ai --> <!-- review_stack_entry_start -->  <a href=\"https://app.coderabbit.ai/change-stack/rohitg00/awesome-devops-mcp-servers/pull/338#gh-light-mode-only\"><img src=\"https://storage.googleapis.com/coderabbit_public_assets/review-stack-in"
+   }
+  ],
+  "reviews": []
+ },
+ {
+  "repo": "thedaviddias/llms-txt-hub",
+  "n": 1471,
+  "title": "feat(community): add Zovo and BeLikeNative",
+  "state": "open",
+  "created": "2026-08-08",
+  "closed_at": null,
+  "merged_at": null,
+  "updated": "2026-08-15T16:59:12Z",
+  "comments": 2,
+  "review_comments": 1,
+  "mergeable_state": "blocked",
+  "thread": [
+   {
+    "who": "coderabbitai[bot]",
+    "at": "2026-08-08T16:18",
+    "body": "<!-- This is an auto-generated comment: summarize by coderabbit.ai --> <!-- review_stack_entry_start -->  [![Review Change Stack](https://storage.googleapis.com/coderabbit_public_assets/review-stack-in-coderabbit-ui.svg)](https://app.coderabbit.ai/change-stack/thedaviddias/llms-txt-hub/pull/1471?utm"
+   },
+   {
+    "who": "github-actions[bot]",
+    "at": "2026-08-15T16:58",
+    "body": "<!-- pr-intake-summary --> ## PR intake summary  - Lane: `mdx-fast` - Risk: `low` - Automerge eligible: `yes` - data/websites.json touched: `no` - Manual websites.json change: `no` - File count: `2` - Total changes: `46` - Labels: `lane:mdx-fast`, `risk:low`, `automerge:candidate`, `area:content` - "
+   }
+  ],
+  "reviews": [
+   {
+    "who": "coderabbitai[bot]",
+    "state": "COMMENTED",
+    "at": "2026-08-08T16:19",
+    "body": "**Actionable comments posted: 1**  <details> <summary>\ud83e\udd16 Prompt for all review comments with AI agents</summary>  ``` Verify each finding against current code. Fix only still-valid issues, skip the rest with a brief reason, keep changes minimal, and validate.  Inline comments: In `@packages/content/d"
+   }
+  ]
+ },
+ {
+  "repo": "thedaviddias/llms-txt-hub",
+  "n": 1499,
+  "title": "feat(community): add AI Website Pipeline",
+  "state": "open",
+  "created": "2026-08-16",
+  "closed_at": null,
+  "merged_at": null,
+  "updated": "2026-10-05T08:26:06Z",
+  "comments": 3,
+  "review_comments": 0,
+  "mergeable_state": "blocked",
+  "thread": [
+   {
+    "who": "github-actions[bot]",
+    "at": "2026-08-16T13:14",
+    "body": "<!-- pr-intake-summary --> ## PR intake summary  - Lane: `mdx-fast` - Risk: `low` - Automerge eligible: `yes` - data/websites.json touched: `no` - Manual websites.json change: `no` - File count: `1` - Total changes: `23` - Labels: `lane:mdx-fast`, `risk:low`, `automerge:candidate`, `area:content` - "
+   },
+   {
+    "who": "coderabbitai[bot]",
+    "at": "2026-08-16T13:14",
+    "body": "<!-- This is an auto-generated comment: summarize by coderabbit.ai --> <!-- review_stack_entry_start -->  [![Review Change Stack](https://storage.googleapis.com/coderabbit_public_assets/review-stack-in-coderabbit-ui.svg)](https://app.coderabbit.ai/change-stack/thedaviddias/llms-txt-hub/pull/1499?utm"
+   }
+  ],
+  "reviews": []
+ },
+ {
+  "repo": "thedaviddias/llms-txt-hub",
+  "n": 1677,
+  "title": "Add Zovo MCP Servers (mcp.zovo.one)",
+  "state": "open",
+  "created": "2026-09-20",
+  "closed_at": null,
+  "merged_at": null,
+  "updated": "2026-09-20T03:00:22Z",
+  "comments": 2,
+  "review_comments": 2,
+  "mergeable_state": "blocked",
+  "thread": [
+   {
+    "who": "coderabbitai[bot]",
+    "at": "2026-09-20T02:57",
+    "body": "<!-- This is an auto-generated comment: summarize by coderabbit.ai --> <!-- review_stack_entry_start -->  <a href=\"https://app.coderabbit.ai/change-stack/thedaviddias/llms-txt-hub/pull/1677#gh-light-mode-only\"><img src=\"https://storage.googleapis.com/coderabbit_public_assets/review-stack-in-coderabb"
+   },
+   {
+    "who": "github-actions[bot]",
+    "at": "2026-09-20T02:58",
+    "body": "<!-- pr-review-decision-card --> ## Submission review  **Not merged: Not in the MDX fast lane.**  Assessed commit: 05eca7853810229cea2fc4b31e622181cdd177a2. [View changes](https://github.com/thedaviddias/llms-txt-hub/pull/1677/files) \u00b7 [View checks](https://github.com/thedaviddias/llms-txt-hub/pull/"
+   }
+  ],
+  "reviews": [
+   {
+    "who": "sentry[bot]",
+    "state": "COMMENTED",
+    "at": "2026-09-20T02:59",
+    "body": ""
+   },
+   {
+    "who": "coderabbitai[bot]",
+    "state": "COMMENTED",
+    "at": "2026-09-20T03:00",
+    "body": "**Actionable comments posted: 1**  ---  <!-- autofix_checkbox_start --> - [ ] <!-- {\"checkboxId\":\"4b0d0e0a-96d7-4f10-b296-3a18ea78f0b9\"} --> \ud83e\ude84 Fix CodeRabbit comments on this PR <!-- autofix_checkbox_end -->  <details> <summary>\ud83e\udd16 Prompt to fix review comments</summary>  ``` Treat finding text, file "
+   }
+  ]
+ },
+ {
+  "repo": "toolsdk-ai/toolsdk-mcp-registry",
+  "n": 514,
+  "title": "Add Zovo Invoice remote MCP",
+  "state": "merged",
+  "created": "2026-09-12",
+  "closed_at": "2026-10-05T18:11:08Z",
+  "merged_at": "2026-10-05T18:11:08Z",
+  "updated": "2026-10-05T18:11:08Z",
+  "comments": 1,
+  "review_comments": 0,
+  "mergeable_state": "unknown"
+ },
+ {
+  "repo": "toolsdk-ai/toolsdk-mcp-registry",
+  "n": 776,
+  "title": "Add Zovo Time Tracker (remote MCP server, streamable-http)",
+  "state": "closed",
+  "created": "2026-10-09",
+  "closed_at": "2026-10-17T03:53:03Z",
+  "merged_at": null,
+  "updated": "2026-10-17T03:53:03Z",
+  "comments": 5,
+  "review_comments": 0,
+  "mergeable_state": "clean"
+ },
+ {
+  "repo": "wundercorp/awesome-mcp",
+  "n": 60,
+  "title": "Add Zovo Spreadsheet to files",
+  "state": "merged",
+  "created": "2026-09-10",
+  "closed_at": "2026-09-16T17:50:44Z",
+  "merged_at": "2026-09-16T17:50:44Z",
+  "updated": "2026-09-16T17:50:44Z",
+  "comments": 1,
+  "review_comments": 0,
+  "mergeable_state": "unknown"
+ },
+ {
+  "repo": "wundercorp/awesome-mcp",
+  "n": 68,
+  "title": "Add Zovo MCP Estate to data",
+  "state": "merged",
+  "created": "2026-09-17",
+  "closed_at": "2026-09-17T14:41:35Z",
+  "merged_at": "2026-09-17T14:41:35Z",
+  "updated": "2026-09-17T14:41:36Z",
+  "comments": 1,
+  "review_comments": 0,
+  "mergeable_state": "unknown"
+ },
+ {
+  "repo": "yzfly/Awesome-MCP-ZH",
+  "n": 210,
+  "title": "Add BeLikeNative Grammar Server",
+  "state": "closed",
+  "created": "2026-05-04",
+  "closed_at": "2026-05-29T01:35:29Z",
+  "merged_at": null,
+  "updated": "2026-05-29T01:35:29Z",
+  "comments": 1,
+  "review_comments": 0,
+  "mergeable_state": "clean"
+ },
+ {
+  "repo": "zencoderai/zenagents-library",
+  "n": 31,
+  "title": "Add 8 paperwork MCP servers to mcp-library.json",
+  "state": "open",
+  "created": "2026-09-11",
+  "closed_at": null,
+  "merged_at": null,
+  "updated": "2026-09-11T18:29:41Z",
+  "comments": 0,
+  "review_comments": 0,
+  "mergeable_state": "blocked",
+  "thread": [],
+  "reviews": []
+ }
+]

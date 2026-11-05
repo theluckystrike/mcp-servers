@@ -1,0 +1,130 @@
+diff --git a/billing/src/index.js b/billing/src/index.js
+index a14b4c45..abb74a73 100644
+--- a/billing/src/index.js
++++ b/billing/src/index.js
+@@ -294,6 +294,29 @@ export function resolveProductId(id) {
+   return target && PRODUCTS[target] ? target : "";
+ }
+ 
++/**
++ * Pure: the buyable slug a mangled /buy/ path was meant to be, or null.
++ *
++ * S1103 (Workers Logs, 2026-10-27..11-03): every guard-passing `buy.unknown-product`
++ * click was a real id with text glued on. An assistant answering in Japanese or Chinese
++ * writes "https://mcp.zovo.one/buy/work-order（買い切り" with no space, and the chat
++ * autolinker swallows the full-width punctuation; English answers glue on "." "),"
++ * or markdown "**"; an old hub table emitted "/buy/zip&src=csg.mcp.table.zip". Each
++ * such link landed on a 404. The leading run of [a-z0-9-] is the id the author meant;
++ * a remainder starting with "&" or "?" is the query string it lost.
++ */
++export function salvageBuyPath(asked) {
++  const s = String(asked || "");
++  const m = /^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*/.exec(s);
++  if (!m) return null;
++  const slug = m[0].toLowerCase();
++  if (slug === s) return null;
++  if (!resolveProductId(slug) && !isService(slug)) return null;
++  const rest = s.slice(m[0].length);
++  const params = /^[&?]/.test(rest) ? new URLSearchParams(rest.slice(1)) : new URLSearchParams();
++  return { slug, params };
++}
++
+ /** The number of single-server products, computed rather than typed, so adding a server cannot leave the prose stale. */
+ export const SERVER_COUNT = SINGLE_PRODUCT_IDS.length;
+ 
+@@ -388,7 +411,7 @@ export const VALIDATION = { at: "2026-09-24", pass: 1254, total: 1254, servers:
+  * same way: test/checkout-r1.test.mjs counts the `test(` declarations on disk and fails
+  * if this disagrees. The page said 25 when there were 99.
+  */
+-export const BILLING_TEST_COUNT = 268;
++export const BILLING_TEST_COUNT = 272;
+ /**
+  * The npm publish is pending: `npx -y @theluckystrike/mcp-<server>` returns E404 today,
+  * and publishing needs an operator browser login (docs/HUMAN_GATED_PACK.md section 1).
+@@ -2718,7 +2741,22 @@ const LLM_USE_WHEN = {
+       // real buyer away costs more than a wasted Stripe object; but it is only COUNTED
+       // when it carries the browser-navigation fingerprint. See isHumanNavigation.
+       const counted = isHumanNavigation(request.headers);
+-      const asked = decodeURIComponent(path.slice("/buy/".length));
++      // A stray "%" (a link truncated mid-character) made decodeURIComponent throw: HTTP 500.
++      let asked;
++      try { asked = decodeURIComponent(path.slice("/buy/".length)); } catch { asked = path.slice("/buy/".length); }
++      // A known id with punctuation or a lost query glued on (see salvageBuyPath) goes to
++      // its real offer page instead of the 404. GET only: it is a navigation, and the
++      // offer page has no side effect. Not counted here; the checkout POST is.
++      if (method === "GET" && !isService(asked) && !resolveProductId(asked)) {
++        const fixed = salvageBuyPath(asked);
++        if (fixed) {
++          const q = new URLSearchParams(url.search);
++          for (const [k, v] of fixed.params) if (!q.has(k)) q.set(k, v);
++          if (!validSrc(q.get("src") || "")) q.set("src", "buy.salvaged");
++          return new Response(null, { status: 302, headers: { Location: `https://${host}/buy/${fixed.slug}?${q}`,
++            "cache-control": "no-store", "x-mcp-buy": "salvaged-link" } });
++        }
++      }
+       // office-suite, and any future alias, sells a product it is not itself; see PRODUCT_ALIASES.
+       const service = isService(asked);
+       const id = service ? asked : resolveProductId(asked);
+diff --git a/billing/test/buy-salvage.test.mjs b/billing/test/buy-salvage.test.mjs
+new file mode 100644
+index 00000000..bdcb22ac
+--- /dev/null
++++ b/billing/test/buy-salvage.test.mjs
+@@ -0,0 +1,57 @@
++// S1103: every guard-passing `buy.unknown-product` click in Workers Logs was a real id with
++// punctuation or a lost query glued on by a chat autolinker. They now reach the offer page.
++import { test } from "node:test";
++import assert from "node:assert/strict";
++import worker, { salvageBuyPath } from "../src/index.js";
++
++const kv = () => ({ get: async () => null, put: async () => {}, list: async () => ({ keys: [] }) });
++const env = { STRIPE_SECRET_KEY: "sk_test_stub", REMOTE_DATA: kv(), LICENSES: kv() };
++const nav = { "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36", accept: "text/html",
++  "sec-fetch-mode": "navigate", "sec-fetch-dest": "document", "sec-fetch-site": "none", referer: "https://mcp.zovo.one" };
++const get = (path, method = "GET") => worker.fetch(new Request(`https://mcp.zovo.one${path}`, { method, headers: nav, redirect: "manual" }), env, { waitUntil: () => {} });
++
++test("salvageBuyPath recovers the id from the observed mangled links", () => {
++  assert.equal(salvageBuyPath("work-order（買い切り").slug, "work-order");
++  assert.equal(salvageBuyPath("bill-of-sale。このサーバー単体は").slug, "bill-of-sale");
++  assert.equal(salvageBuyPath("bundle）").slug, "bundle");
++  assert.equal(salvageBuyPath("bundle),").slug, "bundle");
++  assert.equal(salvageBuyPath("invoice.").slug, "invoice");
++  assert.equal(salvageBuyPath("pdf**").slug, "pdf");
++  assert.equal(salvageBuyPath("office-suite.").slug, "office-suite");
++  assert.equal(salvageBuyPath("Invoice").slug, "invoice");
++  const z = salvageBuyPath("zip&src=csg.mcp.table.zip");
++  assert.equal(z.slug, "zip");
++  assert.equal(z.params.get("src"), "csg.mcp.table.zip");
++});
++
++test("salvageBuyPath refuses ids that are exact, unknown or not a prefix of a product", () => {
++  assert.equal(salvageBuyPath("invoice"), null);
++  assert.equal(salvageBuyPath("undefined"), null);
++  assert.equal(salvageBuyPath("<product>"), null);
++  assert.equal(salvageBuyPath("asse"), null);
++  assert.equal(salvageBuyPath("crm-lite"), null);
++  assert.equal(salvageBuyPath("invoices."), null);
++  assert.equal(salvageBuyPath(""), null);
++});
++
++test("GET of a mangled link redirects to the real offer page with a src", async () => {
++  const r = await get("/buy/work-order%EF%BC%88%E8%B2%B7%E3%81%84%E5%88%87%E3%82%8A");
++  assert.equal(r.status, 302);
++  assert.equal(r.headers.get("x-mcp-buy"), "salvaged-link");
++  assert.equal(r.headers.get("location"), "https://mcp.zovo.one/buy/work-order?src=buy.salvaged");
++  const z = await get("/buy/zip&src=csg.mcp.table.zip");
++  assert.equal(z.headers.get("location"), "https://mcp.zovo.one/buy/zip?src=csg.mcp.table.zip");
++  const k = await get("/buy/bundle.?src=store.x");
++  assert.equal(k.headers.get("location"), "https://mcp.zovo.one/buy/bundle?src=store.x");
++  const followed = await get("/buy/work-order?src=buy.salvaged");
++  assert.equal(followed.status, 200);
++});
++
++test("truly unknown ids keep the honest 404, and a stray percent no longer throws", async () => {
++  const r = await get("/buy/undefined");
++  assert.equal(r.status, 404);
++  assert.equal(r.headers.get("x-mcp-buy"), "unknown-product");
++  const p = await get("/buy/invoice%E3");
++  assert.equal(p.status, 302);
++  assert.equal(p.headers.get("location"), "https://mcp.zovo.one/buy/invoice?src=buy.salvaged");
++});

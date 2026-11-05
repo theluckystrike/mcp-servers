@@ -1,0 +1,59 @@
+{
+  "lane": "leak",
+  "date": "2026-11-03",
+  "problem": "/stats/clicks: buy.unknown-product total 39, last7d 23 at 2026-11-03T07:24Z (curl -s -H 'x-mcp-probe: 1' -A mcp-leak/1 https://mcp.zovo.one/stats/clicks)",
+  "evidence_source": "Workers Logs telemetry API, mcp-billing, filter status=404 AND url includes /buy/, 28 six-hour windows (abr_level 1 = unsampled), 2026-10-27..11-03; raw leak/ev404.jsonl, classified leak/dead404.json",
+  "root_cause": {
+    "summary": "No page emits a dead slug. Every guard-passing dead click is a REAL product id with text glued onto the URL path, so resolveProductId fails and the worker returns 404 (x-mcp-buy: unknown-product) and counts it as buy.unknown-product (no ?src survives).",
+    "dead_404_events_7d": 92,
+    "counted_shape_events": 25,
+    "counted_shape_salvageable_to_real_product": 24,
+    "counted_shape_unsalvageable": ["undefined (referer about:blank, a client-side JS bug elsewhere)"],
+    "patterns": [
+      "CJK answers by an AI assistant: URL followed with no space by full-width punctuation, autolinker swallows it, e.g. /buy/work-order（買い切り, /buy/bill-of-sale。このサーバー単体は, /buy/packing-list（一次性付费）... (21 of 25 counted)",
+      "English punctuation/markdown glued on: /buy/bundle), /buy/bundle. /buy/invoice. /buy/docx. /buy/pdf** /buy/zip** /buy/barcode.",
+      "old claudecodeguides hub link /buy/zip&src=csg.mcp.table.zip (& instead of ?), still fetched from bing referer on 10-28; the live csg page now emits /buy/zip?src=hub.table.zip (fixed already)",
+      "malformed percent-encoding /buy/invoice%E3 returns HTTP 500 (decodeURIComponent throws)"
+    ],
+    "real_products_targeted": ["work-order","billing-docs","change-order","currency","credit-note","petty-cash","dunning-letters","bank-statement","bundle","catalogue","cash-book","amortization","supplier-list","deposits","packing-list","barcode","mileage-log","zip"],
+    "caveat": "The counted-shape dead clicks carry sec-fetch-site: none together with Referer https://mcp.zovo.one (origin only), Windows UA, mostly US IPs. A typed or pasted navigation sends no Referer, so this shape is more consistent with an AI agent browser following its own answer than with a person. Treat as demand of unknown nature, not buyers.",
+    "measurement_note": "Valid products count a click only on the checkout POST, while the unknown branch counts the GET. 32 of 35 compares GET navigations against checkout submits; it was never like-for-like."
+  },
+  "purchase_path_verified": {
+    "method": "GET /buy/<id>?src=probe.s1103 with x-mcp-probe:1 -> intent form; POST intent=checkout+order_token with origin and sec-fetch headers",
+    "single_invoice": {"status": 303, "location_host": "checkout.stripe.com", "amount": 1900, "currency": "usd", "price": "price_1UBDU8JKCamubEm1Ybcp5IUs", "livemode": true, "checkout_page_http": 200},
+    "bundle": {"status": 303, "location_host": "checkout.stripe.com", "amount": 3900, "currency": "usd", "price": "price_1UBDU9JKCamubEm1dWgRjtoW", "livemode": true, "checkout_page_http": 200},
+    "dead_link_repro": "GET /buy/work-order%EF%BC%88%E8%B2%B7%E3%81%84%E5%88%87%E3%82%8A?src=probe.s1103 -> 404 x-mcp-buy: unknown-product"
+  },
+  "link_scan": {
+    "script": "leak/scripts/linkscan.py, output leak/linkscan.json",
+    "pages": 529, "targets": 2653, "buy_targets": 865, "broken_buy_links": 0,
+    "broken_other": {
+      "mcp.zovo.one": "20 x 404 relative README links on /s/<id> product pages (e.g. /invoice, /office-suite/README.md, /s/mcpservers.org, /s/llms-install.md) + /recover 400 linked from /guides/paid-mcp-servers-and-how-you-pay-for-one",
+      "claudecodeguides.com/mcp": "120 false positives (href=\"'+g+'\" inside inline JS), no real broken links",
+      "mcpstamp.com": "0 broken"
+    }
+  },
+  "fix": {
+    "where": "mcp-billing worker, billing/src/index.js /buy/ route",
+    "change": "salvageBuyPath(): leading [a-z0-9-] run of a non-resolving path that names a product/alias/service -> GET 302 to /buy/<id>?<query>, lost &src= recovered, src=buy.salvaged when none; decodeURIComponent wrapped (500 -> salvage/404); truly unknown ids keep the 404 with bundle button. BILLING_TEST_COUNT 274->278, new test billing/test/buy-salvage.test.mjs (4 tests).",
+    "patch": "data/s1103/leak/billing-salvage.patch (against origin/main 967cfd74; patch -p1 applies clean)",
+    "tests": "patched tree: 242 tests, 233 pass, 8 fail; unpatched origin/main tree: same 8 failures by name (mint/hosted-entitlements/supplier-csv/duplicate-csv need untracked keys/ and server builds absent from git archive). Logs leak/test-patched.log, leak/test-base.log",
+    "deployed": false,
+    "why_not_deployed": "Live mcp-billing 2bcaa00c-d6ef-403e-879a-f1e389af10a4 (2026-11-02T07:09Z, approved pin same) was deployed by run s1102m from ~/mcpstamp-work/s1102m/bill4, not from ~/mcp-servers (which is on stale branch r38-supplier-monetization without svc-* products; deploying it would remove the McpStamp service checkouts). origin/main 967cfd74 holds an undeployed s1102m release whose deploy-chain.sh (started 2026-11-03T05:15Z, waits for Stripe live login, no process alive now) is meant to ship it with its own service checks. Shipping either tree would ship or revert another session's release: risk unclear, so no deploy."
+  },
+  "deploy_for_orchestrator": {
+    "precheck": "ps -axo pid,command | /usr/bin/grep -E 'wrangler|mcp-remote|deploy-chain' | /usr/bin/grep -v grep  (must be empty); cd billing && npx wrangler deployments list --json (record active version)",
+    "option_a_after_s1102m_release": "cd ~/mcpstamp-work/s1102m/bill4 && git status --short && patch -p1 < ~/mcp-servers/data/s1103/leak/billing-salvage.patch && cd billing && node --test test/buy-salvage.test.mjs && timeout 1200 npm run deploy",
+    "option_b_fold_in": "commit the patch on origin/main first, so deploy-chain.sh (git checkout -B s1102m-deploy origin/main; npm run deploy) ships both together",
+    "rollback": "cd billing && npx wrangler rollback <version active before deploy, currently 2bcaa00c-d6ef-403e-879a-f1e389af10a4> --yes, then restore KV pin: npx wrangler kv key put monitor:approved-version <same id> --binding REMOTE_DATA --remote --config wrangler.toml",
+    "post_probe": "curl -s -o /dev/null -w '%{http_code} %{redirect_url}\\n' -H 'x-mcp-probe: 1' -A mcp-leak/1 'https://mcp.zovo.one/buy/work-order%EF%BC%88%E8%B2%B7%E3%81%84%E5%88%87%E3%82%8A?src=probe.s1103'  -> expect 302 https://mcp.zovo.one/buy/work-order?src=probe.s1103, then 200 intent page"
+  },
+  "post_fix_probe": "local only (worker.fetch in node tests): mangled CJK link -> 302 /buy/work-order?src=buy.salvaged -> 200 intent page; /buy/zip&src=csg.mcp.table.zip -> 302 /buy/zip?src=csg.mcp.table.zip; /buy/undefined -> 404. Live probe pending deploy.",
+  "open": [
+    "deploy the patch (orchestrator, after or with the s1102m billing release)",
+    "20 broken relative README links on mcp.zovo.one/s/<id> pages (billing content rendering), not patched",
+    "/buy/undefined source unknown (one hit, referer about:blank)",
+    "counted dead clicks look like an agent browser, not people; do not read the salvaged stream as buyer demand"
+  ]
+}

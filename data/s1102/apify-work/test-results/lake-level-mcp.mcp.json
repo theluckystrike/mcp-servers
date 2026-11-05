@@ -1,0 +1,33 @@
+{
+  "initialize": {
+    "status": 200,
+    "server": {
+      "name": "lake-level-mcp",
+      "version": "1.0.0",
+      "websiteUrl": "https://lakelevelnow.com"
+    },
+    "protocolVersion": "2025-06-18",
+    "hasTools": true,
+    "session": false
+  },
+  "initialized": 202,
+  "toolsList": {
+    "status": 200,
+    "tools": [
+      "search_lakes",
+      "get_lake_level",
+      "get_lake_history",
+      "compare_lakes"
+    ]
+  },
+  "toolsCall": {
+    "status": 200,
+    "tool": "get_lake_level",
+    "isError": false,
+    "textHead": "Lake Mead (NV) is at 1,038.85 ft above sea level per the U.S. Bureau of Reclamation gauge, measured 2026-10-31T07:00:00+00:00. That is 190.15 ft below full pool (1,229.0 ft). It is 23.8% full (Reclamation storage / 28,945,000 acre-feet capacity). Change: +0.19 ft in 24 h, +1.14 ft in 7 days, +1.00 f",
+    "hasStructured": true
+  },
+  "parallel5": true,
+  "getStatus": 405,
+  "pass": true
+}

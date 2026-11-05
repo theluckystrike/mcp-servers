@@ -1,0 +1,42 @@
+From 271831ceab79512eb656d9ae8959c42809667c0a Mon Sep 17 00:00:00 2001
+From: theluckystrike <51033404+theluckystrike@users.noreply.github.com>
+Date: Mon, 2 Nov 2026 09:55:39 +0700
+Subject: [PATCH] Homepage: add Use this data in Claude or ChatGPT section
+ [skip ci]
+
+---
+ src/pages/index.astro | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
+
+diff --git a/src/pages/index.astro b/src/pages/index.astro
+index 7f6d89e..936250c 100644
+--- a/src/pages/index.astro
++++ b/src/pages/index.astro
+@@ -120,6 +120,24 @@ const ld = [
+     </div>
+   </section>
+ 
++  <!-- USE IN AI ASSISTANTS -->
++  <section id="use-in-ai" class="section">
++    <div class="container prose">
++      <h2>Use this data in Claude or ChatGPT</h2>
++      <p>
++        The deduction rules on this site are also available as a free MCP server. An AI assistant can use it to
++        work out the overtime, tips and senior deductions for a filing status and income, estimate the tax
++        saved, and explain who qualifies, using the 2025 to 2028 rules rather than what it remembers from training.
++        There is no account or API key.
++      </p>
++      <p style="margin-bottom:6px;"><strong>Claude.ai or ChatGPT.</strong> Add a custom connector and paste this URL:</p>
++      <pre style="margin:0 0 16px;padding:12px 14px;background:var(--surface);border:1px solid var(--border-strong);border-radius:8px;font-family:var(--font-mono);font-size:0.8125rem;overflow-x:auto;white-space:pre;color:var(--ink);"><code>https://no-tax-on-overtime-mcp.lipmichal.workers.dev/mcp</code></pre>
++      <p style="margin-bottom:6px;"><strong>Claude Code.</strong></p>
++      <pre style="margin:0 0 16px;padding:12px 14px;background:var(--surface);border:1px solid var(--border-strong);border-radius:8px;font-family:var(--font-mono);font-size:0.8125rem;overflow-x:auto;white-space:pre;color:var(--ink);"><code>claude mcp add --transport http no-tax-on-overtime https://no-tax-on-overtime-mcp.lipmichal.workers.dev/mcp</code></pre>
++      <p class="muted"><a href="https://github.com/theluckystrike/no-tax-on-overtime-mcp">Source, tools and other install options on GitHub</a></p>
++    </div>
++  </section>
++
+   <!-- FAQ -->
+   <section class="section">
+     <div class="container">
+-- 
+2.50.1 (Apple Git-155)
+

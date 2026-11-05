@@ -1,0 +1,325 @@
+{
+ "generated": "2026-11-02",
+ "window": "2026-10-02..2026-10-30 (GSC final, days_ago 31..3)",
+ "method": {
+  "clicks": "scout/pull.py (service account zovo-gsc-cleanup, webmasters.readonly, searchanalytics.query, no dimensions); raw totals scout/totals.json",
+  "queries_pages": "scout/top.py, scout/top2.py -> scout/top.json",
+  "gh_counts": "gh api \"search/repositories?q=<term>+mcp\" --jq .total_count -> scout/gh.tsv (positive control: 'lake level mcp'=3, 'mcp server'=181519)",
+  "registry": "curl registry.modelcontextprotocol.io/v0/servers?search=<hyphenated term> -> scout/reg.txt (positive control: lake-level returns ours, overtime returns ours). Spaced multi-word searches return 0 even for known servers, so use hyphens/single tokens"
+ },
+ "ranked": [
+  {
+   "rank": 1,
+   "repo_name": "car-loan-interest-deduction-calculator-mcp",
+   "money_site": "https://taxbreakcalc.com/",
+   "landing": "https://taxbreakcalc.com/car-loan-interest-calculator/",
+   "clicks_28d": 84,
+   "impressions_28d": 13210,
+   "monetization": "donation links only (paypal.me, buymeacoffee); no ads seen",
+   "tools": [
+    {
+     "name": "calculate_car_loan_interest_deduction",
+     "desc": "OBBBA 163(h)(4) deduction: 10,000 cap, MAGI phaseout 100k/200k, tax years 2025-2028, US final assembly rule"
+    },
+    {
+     "name": "calculate_salt_deduction",
+     "desc": "SALT cap under OBBBA (40,000 raised, MAGI phaseout, 2025-2029 schedule) vs standard deduction"
+    },
+    {
+     "name": "get_2026_standard_deduction_and_brackets",
+     "desc": "2026 standard deduction, brackets, CTC from Rev. Proc. 2025-32"
+    },
+    {
+     "name": "calculate_child_tax_credit",
+     "desc": "2,200 CTC with phaseout and refundable part by filing status"
+    },
+    {
+     "name": "check_state_overtime_tax",
+     "desc": "does a state tax overtime pay (state-level table that feeds the 70 taxbreakcalc state pages)"
+    }
+   ],
+   "data_sources": [
+    "https://www.irs.gov/pub/irs-drop/rp-25-32.pdf (fetched 200, 2026 adjusted items)",
+    "https://www.irs.gov/pub/irs-drop/n-25-57.pdf (fetched 200, car loan interest reporting/guidance)",
+    "https://www.irs.gov/irb/2025-45_IRB (fetched 200)"
+   ],
+   "data_change": "annual table + statute; next Rev. Proc. for 2027 expected Oct-Nov 2026, builder must check irs-drop for it",
+   "gh_field_counts": {
+    "car loan interest deduction mcp": 0,
+    "obbba tax mcp": 2,
+    "salt deduction mcp": 0,
+    "child tax credit mcp": 0,
+    "tax deduction calculator mcp": 1,
+    "standard deduction mcp": 0,
+    "car loan calculator mcp": 0
+   },
+   "registry_competitors": "none: search car-loan, obbba, salt, tax-deduction, standard deduction, child tax credit all 0 on-topic (car-loan hit loans.exoticcar is unrelated). Overlap inside estate: no-tax-on-overtime-mcp already has overtime/tips/senior, so do not repeat those.",
+   "why_model_cannot": "OBBBA (July 2025) car-loan-interest deduction, 40k SALT cap and 2026 indexed amounts post-date or sit at the edge of training data; needs exact phaseout arithmetic."
+  },
+  {
+   "rank": 2,
+   "repo_name": "section-179-deduction-calculator-mcp",
+   "money_site": "https://assetloancalculator.com/",
+   "landing": "https://assetloancalculator.com/section-179-deduction-calculator/",
+   "clicks_28d": 37,
+   "impressions_28d": 8687,
+   "monetization": "donation links only (paypal.me, buymeacoffee); no ads seen",
+   "tools": [
+    {
+     "name": "calculate_section_179",
+     "desc": "179 expensing with 2026 limit and dollar-for-dollar phaseout, taxable-income limit"
+    },
+    {
+     "name": "calculate_bonus_depreciation",
+     "desc": "bonus rate by placed-in-service date (100 percent restored for property acquired after 2025-01-19 under OBBBA)"
+    },
+    {
+     "name": "get_vehicle_depreciation_limits",
+     "desc": "SUV 179 cap and over-6,000-lb vehicle rules, luxury auto caps"
+    },
+    {
+     "name": "calculate_asset_loan_payment",
+     "desc": "exact amortized payment for land/ATV/pontoon/RV/manufactured home loans (the pages that actually get impressions)"
+    },
+    {
+     "name": "compare_buy_vs_lease_tax_effect",
+     "desc": "first-year tax effect of 179 plus financing cost"
+    }
+   ],
+   "data_sources": [
+    "https://www.irs.gov/pub/irs-drop/rp-25-32.pdf sec 4.24 (fetched: 2026 179 limit 2,560,000)",
+    "https://www.irs.gov/instructions/i4562 (fetched 200)",
+    "https://www.irs.gov/publications/p946"
+   ],
+   "data_change": "annual table; same 2027 Rev. Proc. check as #1",
+   "gh_field_counts": {
+    "section 179 mcp": 0,
+    "section 179 deduction calculator mcp": 0,
+    "bonus depreciation mcp": 0,
+    "depreciation mcp": 7,
+    "rv loan calculator mcp": 0,
+    "land loan calculator mcp": 0,
+    "manufactured home loan mcp": 0
+   },
+   "registry_competitors": "none for section-179/179 (hits are unrelated); depreciation has io.github.Evozim/depreciation-value-calculator-mcp (asset value, not tax)",
+   "why_model_cannot": "OBBBA changed 179 limits and restored 100 percent bonus in 2025; 2026 indexed figures are only in Rev. Proc. 2025-32."
+  },
+  {
+   "rank": 3,
+   "repo_name": "subdomain-finder-mcp",
+   "money_site": "https://bugbountyreality.com/",
+   "landing": "https://bugbountyreality.com/tools/subdomain-finder/",
+   "clicks_28d": 12,
+   "impressions_28d": 5544,
+   "monetization": "one awin affiliate string; site is an ops database, zovo.one cross-links",
+   "tools": [
+    {
+     "name": "find_subdomains",
+     "desc": "passive subdomain list for a domain from certificate transparency, deduped, wildcard-stripped"
+    },
+    {
+     "name": "check_subdomains_resolve",
+     "desc": "DNS-over-HTTPS A/AAAA/CNAME for a list, flags dangling CNAMEs"
+    },
+    {
+     "name": "get_certificate_history",
+     "desc": "issuers and first/last seen for a host"
+    },
+    {
+     "name": "summarize_attack_surface",
+     "desc": "group subdomains by label pattern (dev, staging, api, admin)"
+    }
+   ],
+   "data_sources": [
+    "https://crt.sh/?q=%25.example.com&output=json (fetched 200, 16 rows)",
+    "https://api.certspotter.com/v1/issuances?domain=example.com&include_subdomains=true&expand=dns_names (fetched 200, no key)",
+    "https://cloudflare-dns.com/dns-query (DoH)"
+   ],
+   "data_change": "LIVE. Risk: crt.sh is slow/flaky from Workers, use certspotter as fallback; certspotter free tier is rate limited per IP",
+   "gh_field_counts": {
+    "subdomain finder mcp": 1,
+    "subdomain enumeration mcp": 5,
+    "certificate transparency mcp": 20,
+    "subdomain mcp": 66,
+    "crt.sh mcp": 11
+   },
+   "registry_competitors": "io.github.pipeworx-io/crtsh; app.subdomain/subdomains and my.sitey/subdomains are hosting products, not finders",
+   "why_model_cannot": "needs live CT-log and DNS data; no model knows a domain's current subdomains."
+  },
+  {
+   "rank": 4,
+   "repo_name": "recipe-nutrition-calculator-mcp",
+   "money_site": "https://recipetool.net/",
+   "landing": "https://recipetool.net/",
+   "clicks_28d": 363,
+   "impressions_28d": 20089,
+   "monetization": "donation links only; no ads seen. 350 of 363 clicks are on the homepage, queries are anonymized so partly brand",
+   "tools": [
+    {
+     "name": "calculate_recipe_nutrition",
+     "desc": "calories, protein, fat, carbs, fiber, sodium per recipe and per serving from ingredient lines"
+    },
+    {
+     "name": "lookup_food_nutrition",
+     "desc": "USDA nutrient values per 100 g and per common household measure"
+    },
+    {
+     "name": "calculate_macro_split",
+     "desc": "macro percentages and per-serving label values"
+    },
+    {
+     "name": "calculate_recipe_cost_per_serving",
+     "desc": "cost from supplied prices and yield"
+    }
+   ],
+   "data_sources": [
+    "https://fdc.nal.usda.gov/download-datasets (fetched 200; SR Legacy/Foundation CSV, public domain, embed a top-N subset)",
+    "https://api.nal.usda.gov/fdc/v1/foods/search (works with DEMO_KEY but DEMO_KEY is rate limited per IP, so do NOT use live from a Worker; real key = OWNER UNLOCK at https://fdc.nal.usda.gov/api-key-signup)"
+   ],
+   "data_change": "static table (SR Legacy frozen 2018, Foundation updated twice a year)",
+   "gh_field_counts": {
+    "recipe nutrition mcp": 31,
+    "nutrition calculator mcp": 4,
+    "recipe calorie calculator mcp": 0,
+    "usda nutrition mcp": 26,
+    "nutrition mcp": 392,
+    "recipe mcp": 824
+   },
+   "registry_competitors": "calorie search returns 8 (calorieapi, calorielog, kairo ...); nutrition-calculator and recipe-nutrition names 0. Contested on loose terms, empty on exact phrase.",
+   "why_model_cannot": "WEAKEST of the six on this axis: models estimate nutrition roughly; value is exact USDA lookups plus consistent arithmetic. Included because it is the biggest traffic site by far."
+  },
+  {
+   "rank": 5,
+   "repo_name": "ab-test-sample-size-calculator-mcp",
+   "money_site": "https://abwex.com/",
+   "landing": "https://abwex.com/tools/sample-size-calculator.html",
+   "clicks_28d": 22,
+   "impressions_28d": 1707,
+   "monetization": "no ads; cross-links to zovo.one and kappakit.com",
+   "tools": [
+    {
+     "name": "calculate_sample_size",
+     "desc": "per-variant n for proportions and means, power, alpha, MDE"
+    },
+    {
+     "name": "test_ab_significance",
+     "desc": "two-proportion z test, p value, lift, CI"
+    },
+    {
+     "name": "fisher_freeman_halton_exact_test",
+     "desc": "exact r x c p value (abwex top click page, 10 clicks)"
+    },
+    {
+     "name": "calculate_confidence_interval",
+     "desc": "Wilson, Clopper-Pearson, normal intervals"
+    },
+    {
+     "name": "estimate_test_duration",
+     "desc": "days to reach n from daily traffic and baseline"
+    }
+   ],
+   "data_sources": [
+    "no external data: closed-form statistics; cross-check fixtures against NIST/e-Handbook worked examples https://www.itl.nist.gov/div898/handbook/"
+   ],
+   "data_change": "static math",
+   "gh_field_counts": {
+    "ab test calculator mcp": 2,
+    "sample size calculator mcp": 0,
+    "statistical significance mcp": 3,
+    "fisher exact test mcp": 0,
+    "ab testing mcp": 37
+   },
+   "registry_competitors": "so.mida/ab-testing (platform), io.github.srotzin/hive-mcp-abtest; none for sample-size or fisher",
+   "why_model_cannot": "exact r x c Fisher p values and power calculations are not reliable mentally; no official table, so criterion (d) is weak. Impressions figure is for sc-domain:abwex.com (1,707); the site total is in totals.json."
+  },
+  {
+   "rank": 6,
+   "repo_name": "ap-score-distributions-mcp",
+   "money_site": "https://examscorecalc.com/",
+   "landing": "https://examscorecalc.com/ap-score-distributions/",
+   "clicks_28d": 1,
+   "impressions_28d": 1341,
+   "monetization": "donation link only",
+   "tools": [
+    {
+     "name": "get_ap_score_distribution",
+     "desc": "5/4/3/2/1 counts and percents, mean, SD for an exam and year"
+    },
+    {
+     "name": "compare_ap_exams",
+     "desc": "rank exams by pass rate or share of 5s"
+    },
+    {
+     "name": "estimate_ap_percentile",
+     "desc": "percentile of a score within an exam"
+    },
+    {
+     "name": "list_ap_exams",
+     "desc": "exam names and years available"
+    }
+   ],
+   "data_sources": [
+    "https://apcentral.collegeboard.org/media/pdf/ap-score-distributions-by-subject-2025.pdf (fetched 200, May 2025 table parsed OK)",
+    "2026 PDF: guessed -2026.pdf URL returned 404; builder must find the real 2026 link from https://apcentral.collegeboard.org (released July 2026, newer than model). If not found, ship 2025 plus older years and record it"
+   ],
+   "data_change": "annual table (July)",
+   "gh_field_counts": {
+    "ap exam score mcp": 1,
+    "ap score calculator mcp": 1,
+    "ap exam mcp": 88
+   },
+   "registry_competitors": "none (ap-score, ap-exam, collegeboard all 0)",
+   "why_model_cannot": "official 2026 counts post-date training; exact counts per exam are lookup data. Lowest clicks (1), included for emptiness and data strength."
+  }
+ ],
+ "alternates_rejected": [
+  {
+   "site": "handsofflinks.com",
+   "concept": "dofollow-nofollow-checker-mcp (live page fetch, parse rel/robots/X-Robots-Tag)",
+   "clicks": 0,
+   "impressions": 733,
+   "gh": {
+    "dofollow checker mcp": 1,
+    "nofollow mcp": 1,
+    "backlink checker mcp": 2
+   },
+   "why_not": "0 clicks in 28d; registry has 35 backlink servers"
+  },
+  {
+   "site": "kickllm.com / gpt0x.com",
+   "concept": "llm-pricing (OpenRouter /api/v1/models is live and keyless)",
+   "clicks": "12 / 8",
+   "gh": {
+    "llm pricing mcp": 247,
+    "ai model pricing mcp": 131
+   },
+   "why_not": "contested field"
+  },
+  {
+   "site": "worthmyclaim.com",
+   "concept": "workers-comp benefit rates by state",
+   "clicks": 1,
+   "gh": {
+    "workers compensation mcp": 1
+   },
+   "why_not": "1 click; no single authoritative machine-readable table (state sites, PDFs)"
+  },
+  {
+   "site": "dismissticket.com",
+   "concept": "state DMV point tables",
+   "clicks": 1,
+   "gh": {
+    "traffic ticket mcp": 0,
+    "dmv points mcp": 0
+   },
+   "why_not": "1 click; model already knows it"
+  },
+  {
+   "site": "belikenative.com, englishlearner.org, makeroll.com, claudflow.com, ml0x.com, ml3x.com, krzen.com",
+   "concept": "none",
+   "clicks": "719/151/40/38/40/29/25",
+   "why_not": "clicks are brand-name queries; no data concept. belikenative top query 'belikenative' 241 of 719 clicks"
+  }
+ ],
+ "note_on_site_totals": "sc-domain properties duplicate https:// properties (e.g. recipetool.net 363 both, ingredientcalculator 550/548). Not double counted."
+}

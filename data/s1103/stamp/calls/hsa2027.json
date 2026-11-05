@@ -1,0 +1,36 @@
+{
+ "result": {
+  "content": [
+   {
+    "type": "text",
+    "text": "2027 limits: HSA $4,500 self-only / $9,000 family plus $1,000 at 55+.\n\nThis is general information, not tax or financial advice. Your plan document may allow less (for example no age 60-63 catch-up). Check with your plan administrator or a tax professional."
+   },
+   {
+    "type": "text",
+    "text": "{\n  \"year\": 2027,\n  \"account\": \"hsa\",\n  \"plan_limits_published\": false,\n  \"hsa\": {\n    \"self_only\": 4500,\n    \"family\": 9000,\n    \"catch_up_55_plus\": 1000,\n    \"hdhp_min_deductible_self\": 1750,\n    \"hdhp_min_deductible_family\": 3500,\n    \"hdhp_oop_max_self\": 8700,\n    \"hdhp_oop_max_family\": 17400,\n    \"source\": \"https://www.irs.gov/pub/irs-drop/rp-26-24.pdf\"\n  },\n  \"summary\": \"2027 limits: HSA $4,500 self-only / $9,000 family plus $1,000 at 55+.\",\n  \"as_of\": \"2026-11-02\",\n  \"source\": \"https://www.irs.gov/pub/irs-drop/rp-26-24.pdf\",\n  \"more\": \"https://statewage.com/hsa-paycheck-calculator/?utm_source=mcp&utm_medium=retirement-contribution-limits-2027-mcp\",\n  \"disclaimer\": \"This is general information, not tax or financial advice. Your plan document may allow less (for example no age 60-63 catch-up). Check with your plan administrator or a tax professional.\"\n}"
+   }
+  ],
+  "structuredContent": {
+   "year": 2027,
+   "account": "hsa",
+   "plan_limits_published": false,
+   "hsa": {
+    "self_only": 4500,
+    "family": 9000,
+    "catch_up_55_plus": 1000,
+    "hdhp_min_deductible_self": 1750,
+    "hdhp_min_deductible_family": 3500,
+    "hdhp_oop_max_self": 8700,
+    "hdhp_oop_max_family": 17400,
+    "source": "https://www.irs.gov/pub/irs-drop/rp-26-24.pdf"
+   },
+   "summary": "2027 limits: HSA $4,500 self-only / $9,000 family plus $1,000 at 55+.",
+   "as_of": "2026-11-02",
+   "source": "https://www.irs.gov/pub/irs-drop/rp-26-24.pdf",
+   "more": "https://statewage.com/hsa-paycheck-calculator/?utm_source=mcp&utm_medium=retirement-contribution-limits-2027-mcp",
+   "disclaimer": "This is general information, not tax or financial advice. Your plan document may allow less (for example no age 60-63 catch-up). Check with your plan administrator or a tax professional."
+  }
+ },
+ "jsonrpc": "2.0",
+ "id": 2
+}

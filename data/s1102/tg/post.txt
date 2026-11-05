@@ -1,0 +1,27 @@
+Six new free tools for Claude and ChatGPT went out today. Each one knows something a chatbot gets wrong on its own, like tax limits set after it was trained or data that changes every day.
+
+Car loan interest deduction. The new deduction for interest on a new US-built car, plus the 2026 SALT cap and tax brackets.
+https://www.mcpstamp.com/free-servers/car-loan-interest-deduction-calculator-mcp/
+
+Section 179. The 2026 limit, 100% bonus depreciation and the SUV caps, for anyone buying equipment or a work vehicle.
+https://www.mcpstamp.com/free-servers/section-179-deduction-calculator-mcp/
+
+Subdomain finder. It lists the subdomains of a site from public certificate logs and checks which ones are live. It only reads public data, for security work you are allowed to do.
+https://www.mcpstamp.com/free-servers/subdomain-finder-mcp/
+
+A/B test sample size. How many visitors a test needs, how long to run it, and whether the result is real.
+https://www.mcpstamp.com/free-servers/ab-test-sample-size-calculator-mcp/
+
+Recipe nutrition. Paste a recipe and get calories and nutrients per serving from USDA data, rounded the way a food label is.
+https://www.mcpstamp.com/free-servers/recipe-nutrition-calculator-mcp/
+
+AP score distributions. The official 2026, 2025 and 2024 AP results, so you can see what a 4 in Biology really means.
+https://www.mcpstamp.com/free-servers/ap-score-distributions-mcp/
+
+All 15 free servers are on one page now. None of them needs an account or a key. Paste one link into Claude under Settings, then Connectors, or into ChatGPT, and ask in plain words.
+https://www.mcpstamp.com/free-servers/
+
+If one of them gives you a wrong number, tell me in Zovo Chat and I will fix it.
+https://t.me/zovo_chat
+
+#shipped

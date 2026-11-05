@@ -1,0 +1,34 @@
+{
+  "initialize": {
+    "status": 200,
+    "server": {
+      "name": "ab-test-sample-size-calculator-mcp",
+      "version": "1.0.0",
+      "websiteUrl": "https://abwex.com"
+    },
+    "protocolVersion": "2025-06-18",
+    "hasTools": true,
+    "session": false
+  },
+  "initialized": 202,
+  "toolsList": {
+    "status": 200,
+    "tools": [
+      "calculate_sample_size",
+      "estimate_test_duration",
+      "test_ab_significance",
+      "fisher_exact_test",
+      "check_peeking_risk"
+    ]
+  },
+  "toolsCall": {
+    "status": 200,
+    "tool": "calculate_sample_size",
+    "isError": false,
+    "textHead": "To detect a change from 5.00% to 5.50% (10.0% relative MDE) with 80% power at alpha 0.05 two-sided, you need 31,234 users in control and in each variant: 62,468 in total across 2 arms. Evan Miller's calculator gives 30,244 per arm for the same inputs (it uses the baseline variance in both terms and ",
+    "hasStructured": true
+  },
+  "parallel5": true,
+  "getStatus": 405,
+  "pass": true
+}

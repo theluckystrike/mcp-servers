@@ -1,0 +1,58 @@
+{
+ "repo": "cpi-inflation-calculator-mcp",
+ "repo_url": "https://github.com/theluckystrike/cpi-inflation-calculator-mcp",
+ "hosted_url": "https://cpi-inflation-calculator-mcp.lipmichal.workers.dev/mcp",
+ "worker_version_id": "5429cb00-2453-4910-91be-88a918ef4737",
+ "worker_versions_all": [
+  "2e1b1eb7-7dd3-427a-9fbf-a9478a323e64 (first deploy, superseded)",
+  "5429cb00-2453-4910-91be-88a918ef4737 (current, adds BLS_API_KEY support and edge cache of successful BLS answers only)"
+ ],
+ "rollback": "npx wrangler delete --name cpi-inflation-calculator-mcp (brand-new worker); or npx wrangler rollback 2e1b1eb7-7dd3-427a-9fbf-a9478a323e64 --name cpi-inflation-calculator-mcp",
+ "registry_name": "io.github.theluckystrike/cpi-inflation-calculator-mcp",
+ "registry_visible": true,
+ "tools": [
+  "calculate_inflation",
+  "get_latest_cpi",
+  "get_inflation_rate",
+  "compare_raise_to_inflation",
+  "calculate_social_security_cola"
+ ],
+ "fixtures": 17,
+ "tests_passed": "17/17 (node --test test/*.test.mjs)",
+ "live_calls_ok": {
+  "calculate_inflation": true,
+  "get_latest_cpi": true,
+  "get_inflation_rate": true,
+  "compare_raise_to_inflation": true,
+  "calculate_social_security_cola": true
+ },
+ "live_data_path": "Hosted calls succeed but report data_status.live=false: the keyless BLS API returned REQUEST_NOT_PROCESSED (daily threshold) from the Cloudflare egress IP on 2026-11-03, so answers use bundled BLS data through Sept 2026 and say so. Success path verified offline by feeding a saved real v1 response (bls1.json + a synthetic Oct 2026 row) to dist/live.js: live=true, latest_month October 2026.",
+ "npx_github_ok": true,
+ "npm_ready": true,
+ "npm_published": false,
+ "money_site": "https://statewage.com/pay-raise-calculator/ (200, title 'Pay Raise Calculator After Taxes | StateWage'); COLA tool links https://statewage.com/social-security-tax-calculator/ (200)",
+ "minutes": 14,
+ "open_issues": [
+  "OWNER UNLOCK: free BLS registration key at https://data.bls.gov/registrationEngine/ (needs an owner email), then `npx wrangler secret put BLS_API_KEY --name cpi-inflation-calculator-mcp`. The worker then uses BLS API v2 (500 queries/day per key) instead of the shared keyless cap. No redeploy needed.",
+  "Bundled data ends September 2026. October 2026 CPI is due mid-November 2026; until the live check succeeds the hosted server will not show it. Refresh: rerun data/s1103/build-fin/gen_cpi.py on new BLS pulls, rebuild, redeploy, bump to 1.0.1.",
+  "BLS flat files (download.bls.gov) answer 200 only with a contact email in the User-Agent; not used because no owner email was given.",
+  "1-month change is not seasonally adjusted (headline monthly change in the BLS release is SA); stated in output and DATA_SOURCES.md.",
+  "npm: not published (owner 2FA per publish, see mcp-servers/CLAUDE.md trap 10); package is npm-ready (name = repo, bin dist/stdio.js with shebang, files, mcpName). Name free: verify with npm view before publishing.",
+  "Glama listing not submitted (glama.json is in the repo)."
+ ],
+ "sources": [
+  "https://api.bls.gov/publicAPI/v1/timeseries/data/ and /v2/ (annualaverage=true), series CUUR0000SA0, CWUR0000SA0, CUUR0000SA0L1E, 1913-2026, fetched 2026-11-03 (12 v1 + 12 v2 POSTs, all REQUEST_SUCCEEDED)",
+  "BLS API footnote on 2025 M10: 'Data unavailable due to the 2025 lapse in appropriations'",
+  "https://www.law.cornell.edu/uscode/text/42/415 (COLA rule, 415(i))",
+  "SSA COLAs 8.7/3.2/2.5/2.8/3.6% for 2023-2027 (2027: Federal Register doc 2026-21796, as recorded in data/s1102/retirement-contribution-limits-2027-mcp.json) reproduced exactly by the tool from CPI-W"
+ ],
+ "registry_check": "curl -s 'https://registry.modelcontextprotocol.io/v0/servers?search=cpi-inflation-calculator' -> io.github.theluckystrike/cpi-inflation-calculator-mcp 1.0.0 (control search=section-179 returns its server)",
+ "live_check": "node build-fin/smoke.mjs http cpi-calls.json cpi-raw-http <URL grepped from README.md>, no token: initialize, tools/list (5), 5/5 tools/call !isError with source, as_of, more containing utm_source=mcp; GET / 200",
+ "npx_check": "from an empty mktemp dir: npx -y github:theluckystrike/cpi-inflation-calculator-mcp answered initialize, tools/list (5) and 5/5 tools/call (build-fin/cpi-raw-npx)",
+ "stdio_local_ok": "initialize + tools/list + 5/5 tools/call (node dist/stdio.js)",
+ "pushes": 2,
+ "repo_public": true,
+ "topics": 14,
+ "repo_description": "MCP server: CPI inflation calculator, official BLS data 1913 to latest month, raise vs inflation, Social Security COLA",
+ "name_choice": "gh api search/repositories 2026-11-03: 'inflation calculator mcp' 0, 'cpi inflation calculator mcp' 0, 'cpi calculator mcp' 0, 'cpi inflation mcp' 5, 'cpi mcp' 65 (contested, not targeted)"
+}

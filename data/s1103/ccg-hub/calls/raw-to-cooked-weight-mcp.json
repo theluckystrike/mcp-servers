@@ -1,0 +1,140 @@
+{
+ "result": {
+  "content": [
+   {
+    "type": "text",
+    "text": "1 pound raw chicken, broiler-fryer, breast, meat and skin (baked or roasted, unspecified) cooks down to about 0.72 pounds (327 g) at the USDA cooking yield of 72%; USDA samples ranged 0.61-0.82 pounds. USDA yield is hot cooked weight divided by raw weight of the same piece, measured in USDA research kitchens; your result moves with doneness, trim, bone and pan juices.\n\n{\n  \"summary\": \"1 pound raw chicken, broiler-fryer, breast, meat and skin (baked or roasted, unspecified) cooks down to about 0.72 pounds (327 g) at the USDA cooking yield of 72%; USDA samples ranged 0.61-0.82 pounds. USDA yield is hot cooked weight divided by raw weight of the same piece, measured in USDA research kitchens; your result moves with doneness, trim, bone and pan juices.\",\n  \"input\": {\n    \"raw_weight\": 1,\n    \"unit\": \"pound\"\n  },\n  \"cooked_weight\": {\n    \"grams\": 326.6,\n    \"ounces\": 11.52,\n    \"pounds\": 0.72,\n    \"kilograms\": 0.327,\n    \"in_input_unit\": 0.72\n  },\n  \"cooked_weight_range\": {\n    \"low\": {\n      \"grams\": 276.7,\n      \"ounces\": 9.76,\n      \"pounds\": 0.61,\n      \"kilograms\": 0.277\n    },\n    \"high\": {\n      \"grams\": 371.9,\n      \"ounces\": 13.12,\n      \"pounds\": 0.82,\n      \"kilograms\": 0.372\n    }\n  },\n  \"weight_lost\": {\n    \"grams\": 127,\n    \"ounces\": 4.48,\n    \"pounds\": 0.28,\n    \"kilograms\": 0.127\n  },\n  \"yield\": {\n    \"yield_id\": 69,\n    \"food\": \"Chicken, broiler-fryer, breast, meat and skin\",\n    \"category\": \"poultry\",\n    \"cooking_method\": \"Baked or Roasted, unspecified\",\n    \"cooking_yield_percent\": 72,\n    \"weight_change_percent\": -28,\n    \"yield_range_percent\": [\n      61,\n      82\n    ],\n    \"samples\": null,\n    \"standard_deviation\": null,\n    \"moisture_change_percent\": null,\n    \"fat_change_percent\": null,\n    \"usda_ndb_number\": \"05060\",\n    \"data_year\": 1975\n  },\n  \"note\": null,\n  \"other_matches\": [\n    {\n      \"yield_id\": 81,\n      \"food\": \"Chicken, broilers or fryers, wing, meat and skin\",\n      \"category\": \"poultry\",\n      \"cooking_method\": \"Roasted\",\n      \"cooking_yield_percent\": 78,\n      \"weight_change_percent\": -22,\n      \"yield_range_percent\": null,\n      \"samples\": 1,\n      \"standard_deviation\": null,\n      \"moisture_change_percent\": 2.45,\n      \"fat_change_percent\": 3.55,\n      \"usda_ndb_number\": \"05103\",\n      \"data_year\": 2013\n    },\n    {\n      \"yield_id\": 73,\n      \"food\": \"Chicken, broiler-fryer, thigh, meat and skin\",\n      \"category\": \"poultry\",\n      \"cooking_method\": \"Baked or Roasted, unspecified\",\n      \"cooking_yield_percent\": 69,\n      \"weight_change_percent\": -31,\n      \"yield_range_percent\": [\n        58,\n        79\n      ],\n      \"samples\": null,\n      \"standard_deviation\": null,\n      \"moisture_change_percent\": null,\n      \"fat_change_percent\": null,\n      \"usda_ndb_number\": \"05094\",\n      \"data_year\": 1975\n    },\n    {\n      \"yield_id\": 75,\n      \"food\": \"Chicken, broiler-fryer, whole, including skin\",\n      \"category\": \"poultry\",\n      \"cooking_method\": \"Baked or Roasted, specified time\",\n      \"cooking_yield_percent\": 78,\n      \"weight_change_percent\": -22,\n      \"yield_range_percent\": [\n        68,\n        84\n      ],\n      \"samples\": null,\n      \"standard_deviation\": null,\n      \"moisture_change_percent\": null,\n      \"fat_change_percent\": null,\n      \"usda_ndb_number\": \"05004\",\n      \"data_year\": 1975\n    },\n    {\n      \"yield_id\": 71,\n      \"food\": \"Chicken, broiler-fryer, drumstick, meat and skin\",\n      \"category\": \"poultry\",\n      \"cooking_method\": \"Baked or Roasted, unspecified\",\n      \"cooking_yield_percent\": 76,\n      \"weight_change_percent\": -24,\n      \"yield_range_percent\": [\n        63,\n        87\n      ],\n      \"samples\": null,\n      \"standard_deviation\": null,\n      \"moisture_change_percent\": null,\n      \"fat_change_percent\": null,\n      \"usda_ndb_number\": \"05069\",\n      \"data_year\": 1975\n    }\n  ],\n  \"source\": \"https://www.ars.usda.gov/ARSUserFiles/80400535/Data/retn/USDA_CookingYields_MeatPoultry02.pdf\",\n  \"source_page\": \"https://www.ars.usda.gov/northeast-area/beltsville-md-bhnrc/beltsville-human-nutrition-research-center/methods-and-application-of-food-composition-laboratory/mafcl-site-pages/cooking-yields/\",\n  \"as_of\": \"2014-09 (USDA Table of Cooking Yields for Meat and Poultry, Release 2; file checked 2026-11-03)\",\n  \"more\": \"https://recipetool.net/tools/raw-to-cooked-weight-calculator?utm_source=mcp&utm_medium=raw-to-cooked-weight-mcp\"\n}"
+   }
+  ],
+  "structuredContent": {
+   "summary": "1 pound raw chicken, broiler-fryer, breast, meat and skin (baked or roasted, unspecified) cooks down to about 0.72 pounds (327 g) at the USDA cooking yield of 72%; USDA samples ranged 0.61-0.82 pounds. USDA yield is hot cooked weight divided by raw weight of the same piece, measured in USDA research kitchens; your result moves with doneness, trim, bone and pan juices.",
+   "input": {
+    "raw_weight": 1,
+    "unit": "pound"
+   },
+   "cooked_weight": {
+    "grams": 326.6,
+    "ounces": 11.52,
+    "pounds": 0.72,
+    "kilograms": 0.327,
+    "in_input_unit": 0.72
+   },
+   "cooked_weight_range": {
+    "low": {
+     "grams": 276.7,
+     "ounces": 9.76,
+     "pounds": 0.61,
+     "kilograms": 0.277
+    },
+    "high": {
+     "grams": 371.9,
+     "ounces": 13.12,
+     "pounds": 0.82,
+     "kilograms": 0.372
+    }
+   },
+   "weight_lost": {
+    "grams": 127,
+    "ounces": 4.48,
+    "pounds": 0.28,
+    "kilograms": 0.127
+   },
+   "yield": {
+    "yield_id": 69,
+    "food": "Chicken, broiler-fryer, breast, meat and skin",
+    "category": "poultry",
+    "cooking_method": "Baked or Roasted, unspecified",
+    "cooking_yield_percent": 72,
+    "weight_change_percent": -28,
+    "yield_range_percent": [
+     61,
+     82
+    ],
+    "samples": null,
+    "standard_deviation": null,
+    "moisture_change_percent": null,
+    "fat_change_percent": null,
+    "usda_ndb_number": "05060",
+    "data_year": 1975
+   },
+   "note": null,
+   "other_matches": [
+    {
+     "yield_id": 81,
+     "food": "Chicken, broilers or fryers, wing, meat and skin",
+     "category": "poultry",
+     "cooking_method": "Roasted",
+     "cooking_yield_percent": 78,
+     "weight_change_percent": -22,
+     "yield_range_percent": null,
+     "samples": 1,
+     "standard_deviation": null,
+     "moisture_change_percent": 2.45,
+     "fat_change_percent": 3.55,
+     "usda_ndb_number": "05103",
+     "data_year": 2013
+    },
+    {
+     "yield_id": 73,
+     "food": "Chicken, broiler-fryer, thigh, meat and skin",
+     "category": "poultry",
+     "cooking_method": "Baked or Roasted, unspecified",
+     "cooking_yield_percent": 69,
+     "weight_change_percent": -31,
+     "yield_range_percent": [
+      58,
+      79
+     ],
+     "samples": null,
+     "standard_deviation": null,
+     "moisture_change_percent": null,
+     "fat_change_percent": null,
+     "usda_ndb_number": "05094",
+     "data_year": 1975
+    },
+    {
+     "yield_id": 75,
+     "food": "Chicken, broiler-fryer, whole, including skin",
+     "category": "poultry",
+     "cooking_method": "Baked or Roasted, specified time",
+     "cooking_yield_percent": 78,
+     "weight_change_percent": -22,
+     "yield_range_percent": [
+      68,
+      84
+     ],
+     "samples": null,
+     "standard_deviation": null,
+     "moisture_change_percent": null,
+     "fat_change_percent": null,
+     "usda_ndb_number": "05004",
+     "data_year": 1975
+    },
+    {
+     "yield_id": 71,
+     "food": "Chicken, broiler-fryer, drumstick, meat and skin",
+     "category": "poultry",
+     "cooking_method": "Baked or Roasted, unspecified",
+     "cooking_yield_percent": 76,
+     "weight_change_percent": -24,
+     "yield_range_percent": [
+      63,
+      87
+     ],
+     "samples": null,
+     "standard_deviation": null,
+     "moisture_change_percent": null,
+     "fat_change_percent": null,
+     "usda_ndb_number": "05069",
+     "data_year": 1975
+    }
+   ],
+   "source": "https://www.ars.usda.gov/ARSUserFiles/80400535/Data/retn/USDA_CookingYields_MeatPoultry02.pdf",
+   "source_page": "https://www.ars.usda.gov/northeast-area/beltsville-md-bhnrc/beltsville-human-nutrition-research-center/methods-and-application-of-food-composition-laboratory/mafcl-site-pages/cooking-yields/",
+   "as_of": "2014-09 (USDA Table of Cooking Yields for Meat and Poultry, Release 2; file checked 2026-11-03)",
+   "more": "https://recipetool.net/tools/raw-to-cooked-weight-calculator?utm_source=mcp&utm_medium=raw-to-cooked-weight-mcp"
+  }
+ },
+ "jsonrpc": "2.0",
+ "id": 2
+}

@@ -1,0 +1,212 @@
+{
+ "result": {
+  "tools": [
+   {
+    "name": "calculate_inflation",
+    "title": "Inflation calculator (CPI, 1913 to latest month)",
+    "description": "Adjusts a dollar amount for inflation between any two periods from 1913 to the latest month the U.S. Bureau of Labor Statistics has published, using the official CPI-U (or CPI-W or core CPI). Checks the BLS Public Data API live for months newer than its bundled data (bundled through September 2026, fetched 2026-11-03), so it knows CPI figures newer than a model's training data. Handles the October 2025 gap: BLS published no October 2025 CPI because of the 2025 lapse in appropriations. Returns the adjusted amount, cumulative and average annual inflation, and the exact index values used.",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "amount": {
+       "type": "number",
+       "minimum": 0,
+       "maximum": 10000000000000,
+       "description": "Dollar amount in the 'from' period."
+      },
+      "from": {
+       "type": "string",
+       "minLength": 4,
+       "maxLength": 10,
+       "description": "Starting period, e.g. \"1995\" or \"2020-01\": \"YYYY\" for the annual average, \"YYYY-MM\" for one month, or \"latest\"."
+      },
+      "to": {
+       "type": "string",
+       "minLength": 4,
+       "maxLength": 10,
+       "description": "Ending period, default \"latest\": \"YYYY\" for the annual average, \"YYYY-MM\" for one month, or \"latest\"."
+      },
+      "series": {
+       "type": "string",
+       "enum": [
+        "cpi_u",
+        "cpi_w",
+        "core"
+       ],
+       "description": "cpi_u (default, the headline CPI), cpi_w (wage earners, used for Social Security COLAs) or core (CPI-U less food and energy)."
+      }
+     },
+     "required": [
+      "amount",
+      "from"
+     ],
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": true,
+     "title": "Inflation calculator (CPI)"
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "get_latest_cpi",
+    "title": "Latest CPI release (live from BLS)",
+    "description": "Returns the most recent CPI index values published by the Bureau of Labor Statistics, checked live against the BLS Public Data API: the latest month, the 12-month inflation rate for headline CPI-U, CPI-W and core CPI (less food and energy), the not seasonally adjusted 1-month change, and the year-to-date change. Use it to answer 'what is inflation right now'. If the live check fails it says so and falls back to bundled BLS data (through September 2026).",
+    "inputSchema": {
+     "$schema": "http://json-schema.org/draft-07/schema#",
+     "type": "object",
+     "properties": {}
+    },
+    "annotations": {
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": true,
+     "title": "Latest CPI (live)"
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "get_inflation_rate",
+    "title": "Annual inflation rate for a year",
+    "description": "Returns the official U.S. inflation rate for a calendar year from BLS CPI data: annual-average change (BLS annual averages, including the 2025 average published despite the missing October 2025 index), December-to-December change, and for the current year the latest 12-month rate. Years 1914 to the present for CPI-U and CPI-W, 1958 onward for core CPI.",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "year": {
+       "type": "integer",
+       "minimum": 1914,
+       "maximum": 2100,
+       "description": "Calendar year, e.g. 2025."
+      },
+      "series": {
+       "type": "string",
+       "enum": [
+        "cpi_u",
+        "cpi_w",
+        "core"
+       ],
+       "description": "cpi_u (default, the headline CPI), cpi_w (wage earners, used for Social Security COLAs) or core (CPI-U less food and energy)."
+      }
+     },
+     "required": [
+      "year"
+     ],
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": true,
+     "title": "Inflation rate by year"
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "compare_raise_to_inflation",
+    "title": "Did a pay raise beat inflation?",
+    "description": "Compares a pay change with CPI inflation over the same period using official BLS data through the latest published month (checked live). Returns the nominal raise, inflation, the real (inflation-adjusted) raise, the pay needed to keep pace, and the gain or shortfall. Works for salaries, hourly wages, rents or any recurring amount.",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "old_pay": {
+       "type": "number",
+       "exclusiveMinimum": 0,
+       "maximum": 10000000000,
+       "description": "Pay before the change (annual salary or hourly rate)."
+      },
+      "new_pay": {
+       "type": "number",
+       "minimum": 0,
+       "maximum": 10000000000,
+       "description": "Pay after the change, same unit."
+      },
+      "from": {
+       "type": "string",
+       "minLength": 4,
+       "maxLength": 10,
+       "description": "When the old pay started, e.g. \"2024-01\": \"YYYY\" for the annual average, \"YYYY-MM\" for one month, or \"latest\"."
+      },
+      "to": {
+       "type": "string",
+       "minLength": 4,
+       "maxLength": 10,
+       "description": "When to measure, default \"latest\": \"YYYY\" for the annual average, \"YYYY-MM\" for one month, or \"latest\"."
+      },
+      "series": {
+       "type": "string",
+       "enum": [
+        "cpi_u",
+        "cpi_w",
+        "core"
+       ],
+       "description": "cpi_u (default, the headline CPI), cpi_w (wage earners, used for Social Security COLAs) or core (CPI-U less food and energy)."
+      }
+     },
+     "required": [
+      "old_pay",
+      "new_pay",
+      "from"
+     ],
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": true,
+     "title": "Raise vs inflation"
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "calculate_social_security_cola",
+    "title": "Social Security COLA from CPI-W",
+    "description": "Computes the Social Security cost-of-living adjustment for a year with the statutory formula: average CPI-W for July-September of the prior year over the same quarter a year earlier, rounded to 0.1%. Uses official BLS CPI-W values (live check). Reproduces the 3.6% COLA for 2027 that SSA announced in October 2026, and shows the Q3 index values behind it. Covers 1976 onward.",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "cola_year": {
+       "type": "integer",
+       "minimum": 1976,
+       "maximum": 2100,
+       "description": "Year the COLA is paid, e.g. 2027 (measured on Q3 2026 CPI-W)."
+      }
+     },
+     "required": [
+      "cola_year"
+     ],
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": true,
+     "title": "Social Security COLA from CPI-W"
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   }
+  ]
+ },
+ "jsonrpc": "2.0",
+ "id": 2
+}

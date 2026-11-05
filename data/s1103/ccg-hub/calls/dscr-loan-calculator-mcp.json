@@ -1,0 +1,51 @@
+{
+ "result": {
+  "content": [
+   {
+    "type": "text",
+    "text": "A $225,000.00 loan at 7.25% over 30 years has a monthly payment of $1,534.90 and PITIA of $1,959.90. Qualifying rent of $2,280.00 gives a DSCR of 1.16 (exact 1.163325), in the 1.00 to 1.24 band. Rent covers PITIA. Many DSCR programs accept 1.00 or more; lenders that want 1.25 will not. DSCR minimums and pricing bands vary by lender and change over time. These tiers are common market labels, not an approval decision.\n\n{\n  \"loan_amount\": 225000,\n  \"purchase_price\": 300000,\n  \"annual_rate_pct\": 7.25,\n  \"term_years\": 30,\n  \"interest_only\": false,\n  \"gross_monthly_rent\": 2400,\n  \"vacancy_pct\": 5,\n  \"qualifying_monthly_rent\": 2280,\n  \"monthly\": {\n    \"principal_and_interest\": 1534.9,\n    \"property_tax\": 300,\n    \"insurance\": 125,\n    \"hoa\": 0,\n    \"other_housing\": 0,\n    \"pitia\": 1959.9\n  },\n  \"dscr\": 1.16,\n  \"dscr_exact\": 1.163325,\n  \"tier\": {\n    \"code\": \"1.00_to_1.24\",\n    \"label\": \"1.00 to 1.24\",\n    \"note\": \"Rent covers PITIA. Many DSCR programs accept 1.00 or more; lenders that want 1.25 will not.\"\n  },\n  \"monthly_rent_minus_pitia\": 320.1,\n  \"amortizing_comparison\": null,\n  \"formula\": \"DSCR = gross rent x (1 - vacancy) / PITIA\",\n  \"rounding\": \"Monthly compounding (annual rate / 12). P&I, interest-only payment, monthly tax and monthly insurance are each rounded half up to the cent before they are added. DSCR is truncated to 2 decimals; tiers use the exact ratio.\",\n  \"tiers_vary_by_lender\": \"DSCR minimums and pricing bands vary by lender and change over time. These tiers are common market labels, not an approval decision.\",\n  \"lender_sources\": [\n    \"https://griffinfunding.com/blog/dscr-loans/dscr-calculator/\",\n    \"https://defymortgage.com/dscr-loans/\",\n    \"https://www.lendingone.com/loan-programs/dscr-loans/\"\n  ],\n  \"as_of\": \"2026-10-30\",\n  \"source\": \"https://selling-guide.fanniemae.com/sel/b3-6-03/monthly-housing-expense-subject-property\",\n  \"more\": \"https://dscrradar.com/dscr-loan-calculator/?utm_source=mcp&utm_medium=dscr-loan-calculator-mcp\",\n  \"summary\": \"A $225,000.00 loan at 7.25% over 30 years has a monthly payment of $1,534.90 and PITIA of $1,959.90. Qualifying rent of $2,280.00 gives a DSCR of 1.16 (exact 1.163325), in the 1.00 to 1.24 band. Rent covers PITIA. Many DSCR programs accept 1.00 or more; lenders that want 1.25 will not. DSCR minimums and pricing bands vary by lender and change over time. These tiers are common market labels, not an approval decision.\"\n}"
+   }
+  ],
+  "structuredContent": {
+   "loan_amount": 225000,
+   "purchase_price": 300000,
+   "annual_rate_pct": 7.25,
+   "term_years": 30,
+   "interest_only": false,
+   "gross_monthly_rent": 2400,
+   "vacancy_pct": 5,
+   "qualifying_monthly_rent": 2280,
+   "monthly": {
+    "principal_and_interest": 1534.9,
+    "property_tax": 300,
+    "insurance": 125,
+    "hoa": 0,
+    "other_housing": 0,
+    "pitia": 1959.9
+   },
+   "dscr": 1.16,
+   "dscr_exact": 1.163325,
+   "tier": {
+    "code": "1.00_to_1.24",
+    "label": "1.00 to 1.24",
+    "note": "Rent covers PITIA. Many DSCR programs accept 1.00 or more; lenders that want 1.25 will not."
+   },
+   "monthly_rent_minus_pitia": 320.1,
+   "amortizing_comparison": null,
+   "formula": "DSCR = gross rent x (1 - vacancy) / PITIA",
+   "rounding": "Monthly compounding (annual rate / 12). P&I, interest-only payment, monthly tax and monthly insurance are each rounded half up to the cent before they are added. DSCR is truncated to 2 decimals; tiers use the exact ratio.",
+   "tiers_vary_by_lender": "DSCR minimums and pricing bands vary by lender and change over time. These tiers are common market labels, not an approval decision.",
+   "lender_sources": [
+    "https://griffinfunding.com/blog/dscr-loans/dscr-calculator/",
+    "https://defymortgage.com/dscr-loans/",
+    "https://www.lendingone.com/loan-programs/dscr-loans/"
+   ],
+   "as_of": "2026-10-30",
+   "source": "https://selling-guide.fanniemae.com/sel/b3-6-03/monthly-housing-expense-subject-property",
+   "more": "https://dscrradar.com/dscr-loan-calculator/?utm_source=mcp&utm_medium=dscr-loan-calculator-mcp",
+   "summary": "A $225,000.00 loan at 7.25% over 30 years has a monthly payment of $1,534.90 and PITIA of $1,959.90. Qualifying rent of $2,280.00 gives a DSCR of 1.16 (exact 1.163325), in the 1.00 to 1.24 band. Rent covers PITIA. Many DSCR programs accept 1.00 or more; lenders that want 1.25 will not. DSCR minimums and pricing bands vary by lender and change over time. These tiers are common market labels, not an approval decision."
+  }
+ },
+ "jsonrpc": "2.0",
+ "id": 2
+}

@@ -1,0 +1,32 @@
+{
+  "initialize": {
+    "status": 200,
+    "server": {
+      "name": "section-179-deduction-calculator-mcp",
+      "version": "1.0.0"
+    },
+    "protocolVersion": "2025-06-18",
+    "hasTools": true,
+    "session": false
+  },
+  "initialized": 202,
+  "toolsList": {
+    "status": 200,
+    "tools": [
+      "calculate_section_179",
+      "calculate_bonus_depreciation",
+      "get_vehicle_depreciation_limits",
+      "calculate_asset_loan_payment"
+    ]
+  },
+  "toolsCall": {
+    "status": 200,
+    "tool": "calculate_section_179",
+    "isError": false,
+    "textHead": "2026 Section 179 limit $2,560,000. Property cost $1,500,000 is under the $4,090,000 threshold, so the full limit applies. Elected $1,500,000. Deduction this year $1,500,000.\n\nThis is an estimate, not tax advice. Check Form 4562, its instructions and Pub. 946, or ask a tax professional before you fil",
+    "hasStructured": true
+  },
+  "parallel5": true,
+  "getStatus": 405,
+  "pass": true
+}

@@ -1,0 +1,8 @@
+{
+    "title": "A/B Test Sample Size Calculator MCP Server",
+    "sampleTool": "calculate_sample_size",
+    "sampleArgs": {
+        "baseline_rate": 0.05,
+        "mde": 0.1
+    }
+}

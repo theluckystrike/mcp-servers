@@ -1,0 +1,37 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.theluckystrike/bill-of-sale",
+  "title": "McpStamp Bill of Sale",
+  "description": "Bills of sale for vehicles, equipment or phones: drafts and signing copies with signature lines.",
+  "version": "0.23.0",
+  "repository": {
+    "url": "https://github.com/theluckystrike/mcp-servers",
+    "source": "github",
+    "subfolder": "servers/bill-of-sale"
+  },
+  "websiteUrl": "https://www.mcpstamp.com/servers/bill-of-sale/",
+  "packages": [
+    {
+      "registryType": "mcpb",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.22.0/bill-of-sale.mcpb",
+      "version": "0.21.0",
+      "fileSha256": "e31c3b024a8e61f2c203b11fed048b2da87880c9385f7efa4e89f7d65b40384a",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "description": "Optional Pro license key (MCPL1....). Verified offline.",
+          "isSecret": true,
+          "name": "MCP_LICENSE_KEY"
+        }
+      ]
+    }
+  ],
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.zovo.one/mcp/bill-of-sale"
+    }
+  ]
+}

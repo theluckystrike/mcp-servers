@@ -1,0 +1,187 @@
+{
+ "result": {
+  "tools": [
+   {
+    "name": "get_sat_percentile",
+    "title": "Get SAT percentile",
+    "description": "Percentile rank of a digital SAT total score (400-1600) or section score (200-800, Reading and Writing or Math), from the College Board percentile tables: the user group percentile (actual SAT takers, past three graduating classes) and the nationally representative percentile (all US 11th and 12th graders). Also compares the score with the class of 2026 national mean (1,954,833 test takers) and score band.",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "score": {
+       "type": "integer",
+       "minimum": 200,
+       "maximum": 1600,
+       "description": "SAT score in steps of 10, for example 1350 for a total or 680 for a section."
+      },
+      "section": {
+       "type": "string",
+       "enum": [
+        "total",
+        "rw",
+        "math"
+       ],
+       "default": "total",
+       "description": "total (400-1600), rw (Reading and Writing, 200-800) or math (200-800). Default total."
+      }
+     },
+     "required": [
+      "score"
+     ],
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "title": "SAT percentile",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "get_score_for_sat_percentile",
+    "title": "Get SAT score for a percentile",
+    "description": "The lowest SAT total or section score whose College Board percentile is at or above a target (for example the 75th or 90th percentile), for the user group (SAT takers) or the nationally representative group.",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "percentile": {
+       "type": "number",
+       "minimum": 1,
+       "maximum": 99,
+       "description": "Target percentile, 1 to 99, for example 90."
+      },
+      "section": {
+       "type": "string",
+       "enum": [
+        "total",
+        "rw",
+        "math"
+       ],
+       "default": "total",
+       "description": "total (400-1600), rw (Reading and Writing, 200-800) or math (200-800). Default total."
+      },
+      "group": {
+       "type": "string",
+       "enum": [
+        "user_group",
+        "nationally_representative"
+       ],
+       "default": "user_group",
+       "description": "user_group (actual SAT takers, default) or nationally_representative (all US 11th and 12th graders)."
+      }
+     },
+     "required": [
+      "percentile"
+     ],
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "title": "SAT score for percentile",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "get_sat_scores_by_state",
+    "title": "Get SAT scores by state",
+    "description": "Class of 2026 SAT results for one state, DC, Puerto Rico or the US Virgin Islands from the College Board 2026 SAT Suite Annual Report state supplement: test takers, participation rate, mean total, Reading and Writing and Math scores, percent meeting college readiness benchmarks, 25th/50th/75th percentile scores, rank by mean, and the national comparison.",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "state": {
+       "type": "string",
+       "minLength": 2,
+       "maxLength": 30,
+       "description": "Two-letter code (TX) or full name (Texas). DC, PR and VI also work."
+      }
+     },
+     "required": [
+      "state"
+     ],
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "title": "SAT scores by state",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   },
+   {
+    "name": "rank_states_by_sat",
+    "title": "Rank states by SAT",
+    "description": "Rank the 50 states and DC by class of 2026 SAT mean total, mean Math, mean Reading and Writing, participation rate, percent meeting both benchmarks, or number of test takers. Use min_participation_pct (for example 50) to compare only states where most students take the SAT, since low-participation states have higher means.",
+    "inputSchema": {
+     "type": "object",
+     "properties": {
+      "metric": {
+       "type": "string",
+       "enum": [
+        "mean_total",
+        "mean_math",
+        "mean_rw",
+        "participation_rate",
+        "met_both_benchmarks",
+        "test_takers"
+       ],
+       "default": "mean_total",
+       "description": "What to rank by. Default mean_total."
+      },
+      "order": {
+       "type": "string",
+       "enum": [
+        "desc",
+        "asc"
+       ],
+       "default": "desc",
+       "description": "desc = highest first (default), asc = lowest first."
+      },
+      "limit": {
+       "type": "integer",
+       "minimum": 1,
+       "maximum": 51,
+       "default": 10,
+       "description": "How many states to return, 1 to 51. Default 10."
+      },
+      "min_participation_pct": {
+       "type": "number",
+       "minimum": 0,
+       "maximum": 100,
+       "description": "Only include states with at least this participation rate, for example 50."
+      }
+     },
+     "additionalProperties": false,
+     "$schema": "http://json-schema.org/draft-07/schema#"
+    },
+    "annotations": {
+     "title": "Rank states by SAT",
+     "readOnlyHint": true,
+     "destructiveHint": false,
+     "idempotentHint": true,
+     "openWorldHint": false
+    },
+    "execution": {
+     "taskSupport": "forbidden"
+    }
+   }
+  ]
+ },
+ "jsonrpc": "2.0",
+ "id": 2
+}

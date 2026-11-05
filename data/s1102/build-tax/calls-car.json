@@ -1,0 +1,6 @@
+[
+ {"name":"calculate_car_loan_interest_deduction","arguments":{"filing_status":"single","magi":110000,"tax_year":2026,"interest_paid":3200,"loan_origination_date":"2026-03-14","new_vehicle":true,"us_final_assembly":true,"personal_use":true,"vehicle_type":"pickup","marginal_tax_rate":0.22}},
+ {"name":"calculate_salt_deduction","arguments":{"filing_status":"married_filing_jointly","magi":550000,"tax_year":2026,"state_and_local_taxes":48000,"other_itemized_deductions":20000}},
+ {"name":"get_tax_brackets_and_standard_deduction","arguments":{"tax_year":2026,"filing_status":"single","taxable_income":60000}},
+ {"name":"calculate_child_tax_credit","arguments":{"filing_status":"married_filing_jointly","magi":410500,"tax_year":2026,"qualifying_children":2,"tax_liability_before_credits":50000}}
+]

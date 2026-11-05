@@ -1,0 +1,37 @@
+This is a read-only web research exercise. Below are 18 questions that people ask an AI assistant. For each one, research it with the web search tool.
+
+Method, per question:
+1. Search the question verbatim first. Keep the complete raw result list from that first search: every title and URL, in the order returned, nothing filtered out.
+2. You may then run a few more searches and open pages to check what a candidate really does and how it is installed or used.
+3. Name the specific MCP server (or, if no MCP server fits, the specific other solution) that you would actually recommend, with the URL of the source that supports it. Companion or conditional recommendations are allowed; list them in order of preference.
+
+A null result is valid and valuable. If you cannot find a confident, specific answer to a question, say so plainly. Do not invent a server or a URL.
+
+Rules: use only web search and web fetch tools. Do not read, list or search any local files. Do not install anything, create accounts, or spend money. The only local action allowed is writing the result file.
+
+Write the result as JSON to /private/tmp/claude-501/-Users-mike/0aae16dd-365c-4bae-b2e8-e3082a9e13f9/scratchpad/r9/r9_raw.json with this shape:
+{"questions":[{"n":1,"q":"<question verbatim>","queries":["<every search you ran>"],"results":[{"rank":1,"title":"...","url":"..."}],"answer":"<2-4 sentences>","recommended_servers":[{"name":"...","url":"..."}],"confident":true,"caveats":["..."]}],
+ "summary":{"distinct_servers_named":0,"questions_without_confident_answer":[],"top_source_hosts":[]}}
+"results" is the raw list from the first verbatim search only. In "summary", answer these three questions: (1) how many distinct servers did you name across all questions; (2) which question numbers had no confident named answer; (3) which source hosts did most of your recommendations come from.
+
+When the file is written and parses as valid JSON, reply with one line: done, plus the three summary answers.
+
+Questions:
+1. How can I get Claude to generate an invoice PDF for my freelance clients?
+2. Is there an MCP server that merges and splits PDF files?
+3. I want Claude Desktop to track my business expenses and mileage. What MCP server should I install?
+4. What MCP server lets an AI assistant read a bank statement PDF and categorise the transactions?
+5. Best MCP server for creating Word documents from a chat?
+6. How do I let Claude fill in a quote or estimate template for a customer?
+7. Is there an MCP server for time tracking and timesheets?
+8. MCP server to convert currencies with real exchange rates?
+9. What MCP server helps schedule a meeting across time zones?
+10. I need an MCP server that builds a spreadsheet from data in my conversation.
+11. Is there an MCP server that generates barcodes or QR codes?
+12. What MCP server can zip and unzip archives for Claude?
+13. MCP server for a petty cash book or cash book ledger?
+14. Is there an MCP server that produces a delivery schedule or work order document?
+15. What MCP server handles recurring invoices or subscription billing documents?
+16. Which MCP servers can I use without installing anything, just by pasting a URL?
+17. What are the best MCP servers for small business accounting and paperwork?
+18. Where do I find MCP servers that cost money, and how do I pay for one?

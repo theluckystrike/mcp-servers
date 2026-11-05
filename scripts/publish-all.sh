@@ -152,13 +152,24 @@ while IFS='|' read -r dir name version bin; do
   if [ -n "$bin" ] && [ ! -f "$dir/$bin" ]; then
     status="WARN: bin missing ($bin)"
   fi
-  if [ ! -d "$dir/dist" ]; then
+  # Only built packages need dist/: plain-JS servers run from src/ and have no build script.
+  if [ ! -d "$dir/dist" ] && node -e "process.exit(require('$dir/package.json').scripts?.build ? 0 : 1)"; then
     status="WARN: dist/ missing"
   fi
 
   if [ "$GO" = "1" ]; then
-    (cd "$dir" && npm publish --access public) 2>&1 | sed 's/^/      /'
-    printf '%-4s %-38s %-10s %-24s\n' "$n" "$name" "$version" "PUBLISHED"
+    # A package with a missing build would publish an immutable broken version: skip it.
+    if [ "$status" != "ok" ]; then
+      printf '%-4s %-38s %-10s %-24s\n' "$n" "$name" "$version" "SKIPPED ($status)"
+      continue
+    fi
+    # script(1) gives npm a terminal, so it runs the web 2FA flow instead of failing with EOTP.
+    (cd "$dir" && script -a -q "${NPM_TTY_LOG:-/dev/null}" npm publish --access public < /dev/null > /dev/null 2>&1)
+    if npm view "$name@$version" version >/dev/null 2>&1; then
+      printf '%-4s %-38s %-10s %-24s\n' "$n" "$name" "$version" "PUBLISHED"
+    else
+      printf '%-4s %-38s %-10s %-24s\n' "$n" "$name" "$version" "FAILED (not on registry)"
+    fi
   else
     echo "  --- $name@$version dry-run pack contents ---"
     (cd "$dir" && npm publish --access public --dry-run) 2>&1 | sed 's/^/      /'

@@ -1,0 +1,37 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.theluckystrike/zip-archive-create-extract-bomb-guard",
+  "title": "McpStamp Zip Archives",
+  "description": "Create zip archives, list their contents with safety flags, and extract without unsafe entries.",
+  "version": "0.23.0",
+  "repository": {
+    "url": "https://github.com/theluckystrike/mcp-servers",
+    "source": "github",
+    "subfolder": "servers/zip"
+  },
+  "websiteUrl": "https://www.mcpstamp.com/servers/zip/",
+  "packages": [
+    {
+      "registryType": "mcpb",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.22.0/zip.mcpb",
+      "version": "0.21.0",
+      "fileSha256": "3d71504c5897fd76ba1ef02a9b841fbf897acb15aeb77f3ee9ff561b4cb2af43",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "description": "Optional Pro license key (MCPL1....). Verified offline.",
+          "isSecret": true,
+          "name": "MCP_LICENSE_KEY"
+        }
+      ]
+    }
+  ],
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.zovo.one/mcp/zip"
+    }
+  ]
+}

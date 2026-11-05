@@ -1,14 +1,15 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/asset-register",
-  "description": "Fixed assets and depreciation from bundled Polish KST, HMRC and IRS MACRS tables.",
+  "title": "McpStamp Asset Register",
+  "description": "A fixed asset register with depreciation from bundled Polish KST, HMRC and IRS MACRS tables.",
   "version": "0.22.6",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
     "subfolder": "servers/asset-register"
   },
-  "websiteUrl": "https://mcp.zovo.one/s/asset-register",
+  "websiteUrl": "https://www.mcpstamp.com/servers/asset-register/",
   "packages": [
     {
       "registryType": "mcpb",
@@ -31,15 +32,7 @@
   "remotes": [
     {
       "type": "streamable-http",
-      "url": "https://mcp.zovo.one/mcp/asset-register",
-      "headers": [
-        {
-          "name": "Authorization",
-          "description": "Bearer <Pro license key or anonymous token from GET https://mcp.zovo.one/mcp/token>",
-          "isRequired": true,
-          "isSecret": true
-        }
-      ]
+      "url": "https://mcp.zovo.one/mcp/asset-register"
     }
   ]
 }

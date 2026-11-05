@@ -1,0 +1,7 @@
+{
+    "title": "Lake Level MCP Server: Live US Lake Levels",
+    "sampleTool": "get_lake_level",
+    "sampleArgs": {
+        "lake": "lake-mead"
+    }
+}

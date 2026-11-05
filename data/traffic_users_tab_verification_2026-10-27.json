@@ -1,0 +1,16 @@
+{
+  "at": "2026-10-27T03:06:57.251Z",
+  "status": "passed",
+  "checks": [
+    "Exact legacy entry, new tab, all ten metric values/windows and separate dated audience match receipts",
+    "All ten dashboard tabs and source-data links work",
+    "Legacy hash link opens the requested tab directly",
+    "390px/320px layouts have no page overflow; no page errors, external requests or storage writes",
+    "Mobile table scrolls within its panel at 320px/390px; final rendering and all ten tabs rechecked"
+  ],
+  "profile_removed": true,
+  "errors": [],
+  "external_requests": 0,
+  "final_layout_checked_at": "2026-10-27T03:07:47.789Z",
+  "mobile_screenshot": "Viewport capture; full-page Chrome capture was unreliable"
+}

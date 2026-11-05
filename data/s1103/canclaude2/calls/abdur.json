@@ -1,0 +1,51 @@
+{
+ "result": {
+  "content": [
+   {
+    "type": "text",
+    "text": "39,475 users per arm x 2 arms = 78,950 users. At 3,000 test visitors a day that takes 27 days; run 4 full weeks (28 days) so every weekday is covered equally. Do not stop early when it looks significant (see check_peeking_risk).\n\n{\n  \"sample_size_per_variant\": 39475,\n  \"variants\": 2,\n  \"total_sample_size\": 78950,\n  \"visitors_per_day_in_test\": 3000,\n  \"days_needed\": 27,\n  \"recommended_days\": 28,\n  \"recommended_weeks\": 4,\n  \"sample_size\": {\n    \"inputs\": {\n      \"baseline_rate\": 0.04,\n      \"mde\": 0.1,\n      \"mde_type\": \"relative\",\n      \"alpha\": 0.05,\n      \"power\": 0.8,\n      \"sided\": \"two\",\n      \"variants\": 2,\n      \"bonferroni\": false,\n      \"allocation_ratio\": 1\n    },\n    \"control_rate\": 0.04,\n    \"variant_rate\": 0.044,\n    \"absolute_effect\": 0.004,\n    \"relative_effect\": 0.1,\n    \"alpha_per_comparison\": 0.05,\n    \"per_group_raw\": 39474.7617,\n    \"sample_size_control\": 39475,\n    \"sample_size_per_variant\": 39475,\n    \"total_sample_size\": 78950,\n    \"method\": \"Two-proportion z-test, pooled variance under H0 and unpooled under H1, no continuity correction (Fleiss 2003; same as R power.prop.test for equal groups). Rounded up.\",\n    \"evan_miller_equivalent\": 38210,\n    \"more\": \"https://abwex.com/tools/sample-size-calculator.html?utm_source=mcp&utm_medium=ab-test-sample-size-calculator-mcp\",\n    \"summary\": \"To detect a change from 4.00% to 4.40% (10.0% relative MDE) with 80% power at alpha 0.05 two-sided, you need 39,475 users in control and in each variant: 78,950 in total across 2 arms. Evan Miller's calculator gives 38,210 per arm for the same inputs (it uses the baseline variance in both terms and always two-sided alpha).\"\n  },\n  \"more\": \"https://abwex.com/tools/experiment-duration-estimator/?utm_source=mcp&utm_medium=ab-test-sample-size-calculator-mcp\",\n  \"summary\": \"39,475 users per arm x 2 arms = 78,950 users. At 3,000 test visitors a day that takes 27 days; run 4 full weeks (28 days) so every weekday is covered equally. Do not stop early when it looks significant (see check_peeking_risk).\",\n  \"as_of\": \"2026-11-03\",\n  \"source\": \"https://github.com/theluckystrike/ab-test-sample-size-calculator-mcp/blob/main/DATA_SOURCES.md\"\n}"
+   }
+  ],
+  "structuredContent": {
+   "sample_size_per_variant": 39475,
+   "variants": 2,
+   "total_sample_size": 78950,
+   "visitors_per_day_in_test": 3000,
+   "days_needed": 27,
+   "recommended_days": 28,
+   "recommended_weeks": 4,
+   "sample_size": {
+    "inputs": {
+     "baseline_rate": 0.04,
+     "mde": 0.1,
+     "mde_type": "relative",
+     "alpha": 0.05,
+     "power": 0.8,
+     "sided": "two",
+     "variants": 2,
+     "bonferroni": false,
+     "allocation_ratio": 1
+    },
+    "control_rate": 0.04,
+    "variant_rate": 0.044,
+    "absolute_effect": 0.004,
+    "relative_effect": 0.1,
+    "alpha_per_comparison": 0.05,
+    "per_group_raw": 39474.7617,
+    "sample_size_control": 39475,
+    "sample_size_per_variant": 39475,
+    "total_sample_size": 78950,
+    "method": "Two-proportion z-test, pooled variance under H0 and unpooled under H1, no continuity correction (Fleiss 2003; same as R power.prop.test for equal groups). Rounded up.",
+    "evan_miller_equivalent": 38210,
+    "more": "https://abwex.com/tools/sample-size-calculator.html?utm_source=mcp&utm_medium=ab-test-sample-size-calculator-mcp",
+    "summary": "To detect a change from 4.00% to 4.40% (10.0% relative MDE) with 80% power at alpha 0.05 two-sided, you need 39,475 users in control and in each variant: 78,950 in total across 2 arms. Evan Miller's calculator gives 38,210 per arm for the same inputs (it uses the baseline variance in both terms and always two-sided alpha)."
+   },
+   "more": "https://abwex.com/tools/experiment-duration-estimator/?utm_source=mcp&utm_medium=ab-test-sample-size-calculator-mcp",
+   "summary": "39,475 users per arm x 2 arms = 78,950 users. At 3,000 test visitors a day that takes 27 days; run 4 full weeks (28 days) so every weekday is covered equally. Do not stop early when it looks significant (see check_peeking_risk).",
+   "as_of": "2026-11-03",
+   "source": "https://github.com/theluckystrike/ab-test-sample-size-calculator-mcp/blob/main/DATA_SOURCES.md"
+  }
+ },
+ "jsonrpc": "2.0",
+ "id": 2
+}

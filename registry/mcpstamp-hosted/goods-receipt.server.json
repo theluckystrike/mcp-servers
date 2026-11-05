@@ -1,0 +1,37 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.theluckystrike/goods-receipt",
+  "title": "McpStamp Goods Receipt",
+  "description": "Receive goods against purchase orders: partial, damaged or short units, and each order's status.",
+  "version": "0.23.0",
+  "repository": {
+    "url": "https://github.com/theluckystrike/mcp-servers",
+    "source": "github",
+    "subfolder": "servers/goods-receipt"
+  },
+  "websiteUrl": "https://www.mcpstamp.com/servers/goods-receipt/",
+  "packages": [
+    {
+      "registryType": "mcpb",
+      "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.22.0/goods-receipt.mcpb",
+      "version": "0.22.0",
+      "fileSha256": "3af46eaee813ace01299fc440e449a8b8e4a63250372b622dff3b861b1b18130",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "description": "Optional Pro license key (MCPL1....). Verified offline.",
+          "isSecret": true,
+          "name": "MCP_LICENSE_KEY"
+        }
+      ]
+    }
+  ],
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.zovo.one/mcp/goods-receipt"
+    }
+  ]
+}

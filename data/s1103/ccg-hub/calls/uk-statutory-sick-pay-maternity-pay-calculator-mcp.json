@@ -1,0 +1,47 @@
+{
+ "result": {
+  "content": [
+   {
+    "type": "text",
+    "text": "Under the 2026/27 rules SSP is \u00a3123.25 a week (flat weekly rate). For 10 qualifying days off on a 5-day week, 10 days are payable from day one: total \u00a3246.50.\n\nEstimate from gov.uk rates, not legal or payroll advice. Check special cases with HMRC or the gov.uk calculators."
+   },
+   {
+    "type": "text",
+    "text": "{\n  \"tax_year_rules\": \"2026/27\",\n  \"start_date\": \"2026-05-04\",\n  \"rate_confirmed\": true,\n  \"eligible\": true,\n  \"reasons\": [],\n  \"average_weekly_earnings\": 400,\n  \"flat_weekly_rate\": 123.25,\n  \"eighty_percent_of_awe\": 320,\n  \"weekly_rate\": 123.25,\n  \"weekly_rate_basis\": \"flat weekly rate\",\n  \"unrounded_daily_rate\": 24.65,\n  \"qualifying_days_per_week\": 5,\n  \"days_off\": 10,\n  \"waiting_days_unpaid\": 0,\n  \"payable_days\": 10,\n  \"full_weeks_paid\": 2,\n  \"extra_days_paid\": 0,\n  \"total_ssp\": 246.5,\n  \"max_weeks\": 28,\n  \"lower_earnings_limit\": null,\n  \"paid_from\": \"1st qualifying day of sickness\",\n  \"notes\": [\n    \"Days are paid in whole weeks at the weekly rate plus remaining days at weekly rate / qualifying days x days, rounded up to the next penny (the method behind HMRC's 2026 to 2027 day tables). HMRC's manual examples round the daily rate first, which can differ by 1p.\"\n  ],\n  \"source\": \"https://www.gov.uk/guidance/rates-and-thresholds-for-employers-2026-to-2027 ; https://www.gov.uk/guidance/statutory-sick-pay-manually-calculate-your-employees-payments ; https://www.legislation.gov.uk/ukpga/2025/36/section/10 ; https://www.legislation.gov.uk/uksi/2026/373/made\",\n  \"summary\": \"Under the 2026/27 rules SSP is \u00a3123.25 a week (flat weekly rate). For 10 qualifying days off on a 5-day week, 10 days are payable from day one: total \u00a3246.50.\",\n  \"as_of\": \"2026-11-02\",\n  \"more\": \"https://ukmoneycalc.com/calculators/take-home-pay/?utm_source=mcp&utm_medium=uk-statutory-sick-pay-maternity-pay-calculator-mcp\",\n  \"disclaimer\": \"Estimate from gov.uk rates, not legal or payroll advice. Check special cases with HMRC or the gov.uk calculators.\"\n}"
+   }
+  ],
+  "structuredContent": {
+   "tax_year_rules": "2026/27",
+   "start_date": "2026-05-04",
+   "rate_confirmed": true,
+   "eligible": true,
+   "reasons": [],
+   "average_weekly_earnings": 400,
+   "flat_weekly_rate": 123.25,
+   "eighty_percent_of_awe": 320,
+   "weekly_rate": 123.25,
+   "weekly_rate_basis": "flat weekly rate",
+   "unrounded_daily_rate": 24.65,
+   "qualifying_days_per_week": 5,
+   "days_off": 10,
+   "waiting_days_unpaid": 0,
+   "payable_days": 10,
+   "full_weeks_paid": 2,
+   "extra_days_paid": 0,
+   "total_ssp": 246.5,
+   "max_weeks": 28,
+   "lower_earnings_limit": null,
+   "paid_from": "1st qualifying day of sickness",
+   "notes": [
+    "Days are paid in whole weeks at the weekly rate plus remaining days at weekly rate / qualifying days x days, rounded up to the next penny (the method behind HMRC's 2026 to 2027 day tables). HMRC's manual examples round the daily rate first, which can differ by 1p."
+   ],
+   "source": "https://www.gov.uk/guidance/rates-and-thresholds-for-employers-2026-to-2027 ; https://www.gov.uk/guidance/statutory-sick-pay-manually-calculate-your-employees-payments ; https://www.legislation.gov.uk/ukpga/2025/36/section/10 ; https://www.legislation.gov.uk/uksi/2026/373/made",
+   "summary": "Under the 2026/27 rules SSP is \u00a3123.25 a week (flat weekly rate). For 10 qualifying days off on a 5-day week, 10 days are payable from day one: total \u00a3246.50.",
+   "as_of": "2026-11-02",
+   "more": "https://ukmoneycalc.com/calculators/take-home-pay/?utm_source=mcp&utm_medium=uk-statutory-sick-pay-maternity-pay-calculator-mcp",
+   "disclaimer": "Estimate from gov.uk rates, not legal or payroll advice. Check special cases with HMRC or the gov.uk calculators."
+  }
+ },
+ "jsonrpc": "2.0",
+ "id": 2
+}

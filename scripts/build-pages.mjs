@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // Renders servers/*/README.md into billing/src/pages.js so mcp.zovo.one serves a product page per server.
 import { readFileSync, writeFileSync, existsSync, readdirSync } from "node:fs";
+import { posix } from "node:path";
 import { marked } from "marked";
 const ids = ["supplier-statement-check", "duplicate-invoice-check", "three-way-match", "time-tracker", "price-tracker", "spreadsheet", "invoice", "expense-tracker", "currency", "timezone", "docx", "resume", "recurring", "clauses", "pdf", "calendar", "kanban", "image", "bank-statement", "quotes", "barcode", "zip", "billing-docs", "deposits", "per-diem", "asset-register", "statement-of-account", "cash-book", "amortization", "petty-cash", "work-order", "catalogue", "change-order", "delivery-schedule", "packing-list", "checklist", "bill-of-sale", "credit-note", "job-card", "dunning-letters", "supplier-list", "service-agreement", "maintenance-log", "mileage-log", "purchase-requisition", "goods-receipt", "onboarding", "leave", "backlink-checker", "hourly-rate", "office-suite", "pomodoro", "budget", "loan-calculator", "payroll", "receipts", "stripe-billing", "tax-calc"];
 // Free standalone servers (R32): every page in `ids` that is not a paid single product and
@@ -12,6 +13,41 @@ const facts = JSON.parse(readFileSync("data/facts.json", "utf8"));
 // office-suite aggregator, which has no price of its own and is unlocked by the bundle key.
 const singleIds = ids.filter((id) => id !== "office-suite" && !FREE_IDS.has(id));
 const out = {};
+
+// A README is written for GitHub, where `../invoice` and `../invoice/README.md` resolve
+// inside the repository tree and `../../assets/demo.gif` is a file next to it. Rendered
+// at mcp.zovo.one/s/<id> the same strings resolve against the storefront and 404: an
+// S1103 link scan found 20 such hrefs, and every demo image on a product page was broken.
+// A sibling server with its own product page goes to /s/<sibling>; any other relative
+// href goes to the file on GitHub, and a relative image src to its raw file.
+const REPO_URL = "https://github.com/theluckystrike/mcp-servers";
+const RAW_URL = "https://raw.githubusercontent.com/theluckystrike/mcp-servers/main";
+const PAGE_IDS = new Set(ids);
+
+/** Resolve one README-relative target from servers/<id>/ to a repo path, or null if it escapes the repo. */
+function repoPath(id, target) {
+  const p = posix.normalize(posix.join("servers", id, target));
+  return p.startsWith("..") ? null : p;
+}
+
+function rewriteRelativeLinks(html, id) {
+  const isRelative = (u) => !/^(?:[a-z][a-z0-9+.-]*:|\/|#)/i.test(u);
+  let out = html.replace(/(<a\s[^>]*?href=")([^"]*)(")/g, (m, pre, href, post) => {
+    if (!href || !isRelative(href)) return m;
+    const [pathPart, hash = ""] = href.split(/(?=#)/);
+    const p = repoPath(id, pathPart);
+    if (!p) return m;
+    const sib = /^servers\/([a-z0-9-]+)(?:\/(?:README\.md)?)?$/.exec(p);
+    if (sib && PAGE_IDS.has(sib[1])) return `${pre}/s/${sib[1]}${post}`;
+    return `${pre}${REPO_URL}/blob/main/${p}${hash}${post}`;
+  });
+  out = out.replace(/(<img\s[^>]*?src=")([^"]*)(")/g, (m, pre, src, post) => {
+    if (!src || !isRelative(src)) return m;
+    const p = repoPath(id, src);
+    return p ? `${pre}${RAW_URL}/${p}${post}` : m;
+  });
+  return out;
+}
 
 /** Append ?src=<src> to every untagged /buy/<product> href in a block of rendered HTML. */
 function tagBuyLinks(html, src) {
@@ -254,7 +290,7 @@ for (const id of ids) {
   // storefront from a README carried no src, so its clicks landed in <product>.unknown.
   // Tag every one of them with the page that rendered it. Links that already carry a
   // query string are left alone, so this stays idempotent.
-  const tagged = tagBuyLinks(marked.parse(md.replace(/<!--[\s\S]*?-->/g, "")), `store.s.${id}`);
+  const tagged = tagBuyLinks(rewriteRelativeLinks(marked.parse(md.replace(/<!--[\s\S]*?-->/g, "")), id), `store.s.${id}`);
   const f = facts.servers[id];
   const ff = firstFiveMinutes(id, scenarios, f.free);
   if (!ff.entries.length) console.error(`warn ${id}: no round has ever covered it, no First five minutes section`);

@@ -1,0 +1,1323 @@
+{
+ "pages": 529,
+ "page_errors": {},
+ "targets": 2653,
+ "buy_targets": 865,
+ "broken": [
+  {
+   "url": "https://claudecodeguides.com/mcp/'+g+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/'+u+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/amortization/'+g+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/amortization/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/amortization/'+u+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/amortization/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/asset-register/'+g+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/asset-register/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/asset-register/'+u+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/asset-register/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/backlink-checker/'+g+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/backlink-checker/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/backlink-checker/'+u+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/backlink-checker/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/bank-statement/'+g+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/bank-statement/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/bank-statement/'+u+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/bank-statement/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/barcode/'+g+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/barcode/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/barcode/'+u+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/barcode/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/bill-of-sale/'+g+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/bill-of-sale/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/bill-of-sale/'+u+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/bill-of-sale/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/billing-docs/'+g+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/billing-docs/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/billing-docs/'+u+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/billing-docs/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/budget/'+g+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/budget/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/budget/'+u+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/budget/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/calendar/'+g+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/calendar/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/calendar/'+u+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/calendar/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/cash-book/'+g+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/cash-book/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/cash-book/'+u+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/cash-book/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/catalogue/'+g+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/catalogue/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/catalogue/'+u+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/catalogue/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/change-order/'+g+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/change-order/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/change-order/'+u+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/change-order/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/checklist/'+g+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/checklist/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/checklist/'+u+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/checklist/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/clauses/'+g+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/clauses/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/clauses/'+u+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/clauses/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/credit-note/'+g+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/credit-note/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/credit-note/'+u+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/credit-note/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/currency/'+g+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/currency/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/currency/'+u+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/currency/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/delivery-schedule/'+g+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/delivery-schedule/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/delivery-schedule/'+u+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/delivery-schedule/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/deposits/'+g+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/deposits/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/deposits/'+u+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/deposits/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/docx/'+g+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/docx/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/docx/'+u+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/docx/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/dunning-letters/'+g+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/dunning-letters/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/dunning-letters/'+u+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/dunning-letters/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/duplicate-invoice-check/'+g+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/duplicate-invoice-check/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/duplicate-invoice-check/'+u+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/duplicate-invoice-check/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/expense-tracker/'+g+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/expense-tracker/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/expense-tracker/'+u+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/expense-tracker/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/goods-receipt/'+g+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/goods-receipt/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/goods-receipt/'+u+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/goods-receipt/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/hourly-rate/'+g+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/hourly-rate/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/hourly-rate/'+u+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/hourly-rate/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/image/'+g+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/image/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/image/'+u+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/image/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/invoice/'+g+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/invoice/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/invoice/'+u+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/invoice/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/job-card/'+g+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/job-card/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/job-card/'+u+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/job-card/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/kanban/'+g+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/kanban/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/kanban/'+u+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/kanban/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/leave/'+g+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/leave/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/leave/'+u+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/leave/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/loan-calculator/'+g+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/loan-calculator/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/loan-calculator/'+u+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/loan-calculator/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/maintenance-log/'+g+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/maintenance-log/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/maintenance-log/'+u+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/maintenance-log/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/mileage-log/'+g+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/mileage-log/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/mileage-log/'+u+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/mileage-log/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/office-suite/'+g+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/office-suite/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/office-suite/'+u+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/office-suite/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/onboarding/'+g+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/onboarding/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/onboarding/'+u+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/onboarding/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/packing-list/'+g+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/packing-list/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/packing-list/'+u+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/packing-list/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/payroll/'+g+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/payroll/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/payroll/'+u+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/payroll/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/pdf/'+g+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/pdf/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/pdf/'+u+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/pdf/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/per-diem/'+g+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/per-diem/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/per-diem/'+u+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/per-diem/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/petty-cash/'+g+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/petty-cash/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/petty-cash/'+u+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/petty-cash/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/pomodoro/'+g+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/pomodoro/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/pomodoro/'+u+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/pomodoro/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/price-tracker/'+g+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/price-tracker/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/price-tracker/'+u+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/price-tracker/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/purchase-requisition/'+g+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/purchase-requisition/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/purchase-requisition/'+u+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/purchase-requisition/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/quotes/'+g+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/quotes/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/quotes/'+u+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/quotes/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/receipts/'+g+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/receipts/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/receipts/'+u+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/receipts/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/recurring/'+g+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/recurring/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/recurring/'+u+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/recurring/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/resume/'+g+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/resume/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/resume/'+u+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/resume/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/service-agreement/'+g+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/service-agreement/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/service-agreement/'+u+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/service-agreement/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/spreadsheet/'+g+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/spreadsheet/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/spreadsheet/'+u+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/spreadsheet/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/statement-of-account/'+g+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/statement-of-account/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/statement-of-account/'+u+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/statement-of-account/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/stripe-billing/'+g+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/stripe-billing/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/stripe-billing/'+u+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/stripe-billing/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/supplier-list/'+g+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/supplier-list/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/supplier-list/'+u+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/supplier-list/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/supplier-statement-check/'+g+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/supplier-statement-check/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/supplier-statement-check/'+u+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/supplier-statement-check/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/tax-calc/'+g+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/tax-calc/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/tax-calc/'+u+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/tax-calc/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/three-way-match/'+g+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/three-way-match/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/three-way-match/'+u+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/three-way-match/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/time-tracker/'+g+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/time-tracker/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/time-tracker/'+u+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/time-tracker/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/timezone/'+g+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/timezone/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/timezone/'+u+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/timezone/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/work-order/'+g+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/work-order/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/work-order/'+u+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/work-order/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/zip/'+g+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/zip/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/mcp/zip/'+u+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/mcp/zip/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/topics/mcp/'+g+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/topics/mcp/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://claudecodeguides.com/topics/mcp/'+u+'",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://claudecodeguides.com/topics/mcp/"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://mcp.zovo.one/calendar",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://mcp.zovo.one/s/kanban"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://mcp.zovo.one/docx",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://mcp.zovo.one/s/clauses",
+    "https://mcp.zovo.one/s/image",
+    "https://mcp.zovo.one/s/pdf",
+    "https://mcp.zovo.one/s/resume"
+   ],
+   "n_sources": 4
+  },
+  {
+   "url": "https://mcp.zovo.one/docx/README.md",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://mcp.zovo.one/s/image",
+    "https://mcp.zovo.one/s/pdf",
+    "https://mcp.zovo.one/s/resume"
+   ],
+   "n_sources": 3
+  },
+  {
+   "url": "https://mcp.zovo.one/expense-tracker",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://mcp.zovo.one/s/asset-register",
+    "https://mcp.zovo.one/s/bank-statement",
+    "https://mcp.zovo.one/s/currency",
+    "https://mcp.zovo.one/s/invoice",
+    "https://mcp.zovo.one/s/per-diem"
+   ],
+   "n_sources": 6
+  },
+  {
+   "url": "https://mcp.zovo.one/expense-tracker/README.md",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://mcp.zovo.one/s/docx"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://mcp.zovo.one/invoice",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://mcp.zovo.one/s/bank-statement",
+    "https://mcp.zovo.one/s/clauses",
+    "https://mcp.zovo.one/s/currency",
+    "https://mcp.zovo.one/s/docx",
+    "https://mcp.zovo.one/s/expense-tracker"
+   ],
+   "n_sources": 10
+  },
+  {
+   "url": "https://mcp.zovo.one/invoice/README.md",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://mcp.zovo.one/s/calendar",
+    "https://mcp.zovo.one/s/docx",
+    "https://mcp.zovo.one/s/pdf",
+    "https://mcp.zovo.one/s/price-tracker",
+    "https://mcp.zovo.one/s/spreadsheet"
+   ],
+   "n_sources": 7
+  },
+  {
+   "url": "https://mcp.zovo.one/kanban",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://mcp.zovo.one/s/asset-register",
+    "https://mcp.zovo.one/s/per-diem"
+   ],
+   "n_sources": 2
+  },
+  {
+   "url": "https://mcp.zovo.one/office-suite/README.md",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://mcp.zovo.one/s/calendar",
+    "https://mcp.zovo.one/s/docx",
+    "https://mcp.zovo.one/s/image",
+    "https://mcp.zovo.one/s/invoice",
+    "https://mcp.zovo.one/s/pdf"
+   ],
+   "n_sources": 10
+  },
+  {
+   "url": "https://mcp.zovo.one/pdf/README.md",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://mcp.zovo.one/s/image"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://mcp.zovo.one/per-diem",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://mcp.zovo.one/s/asset-register"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://mcp.zovo.one/price-tracker/README.md",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://mcp.zovo.one/s/invoice",
+    "https://mcp.zovo.one/s/spreadsheet",
+    "https://mcp.zovo.one/s/time-tracker"
+   ],
+   "n_sources": 3
+  },
+  {
+   "url": "https://mcp.zovo.one/recover",
+   "status": 400,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://mcp.zovo.one/guides/paid-mcp-servers-and-how-you-pay-for-one"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://mcp.zovo.one/recurring",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://mcp.zovo.one/s/clauses"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://mcp.zovo.one/resume/README.md",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://mcp.zovo.one/s/image",
+    "https://mcp.zovo.one/s/pdf"
+   ],
+   "n_sources": 2
+  },
+  {
+   "url": "https://mcp.zovo.one/s/llms-install.md",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://mcp.zovo.one/s/hourly-rate"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://mcp.zovo.one/s/mcpservers.org",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://mcp.zovo.one/s/invoice",
+    "https://mcp.zovo.one/s/price-tracker",
+    "https://mcp.zovo.one/s/spreadsheet",
+    "https://mcp.zovo.one/s/time-tracker"
+   ],
+   "n_sources": 4
+  },
+  {
+   "url": "https://mcp.zovo.one/spreadsheet",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://mcp.zovo.one/s/bank-statement"
+   ],
+   "n_sources": 1
+  },
+  {
+   "url": "https://mcp.zovo.one/spreadsheet/README.md",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://mcp.zovo.one/s/invoice",
+    "https://mcp.zovo.one/s/price-tracker",
+    "https://mcp.zovo.one/s/time-tracker"
+   ],
+   "n_sources": 3
+  },
+  {
+   "url": "https://mcp.zovo.one/time-tracker",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://mcp.zovo.one/s/docx",
+    "https://mcp.zovo.one/s/expense-tracker",
+    "https://mcp.zovo.one/s/kanban",
+    "https://mcp.zovo.one/s/recurring"
+   ],
+   "n_sources": 4
+  },
+  {
+   "url": "https://mcp.zovo.one/time-tracker/README.md",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://mcp.zovo.one/s/calendar",
+    "https://mcp.zovo.one/s/docx",
+    "https://mcp.zovo.one/s/invoice",
+    "https://mcp.zovo.one/s/price-tracker",
+    "https://mcp.zovo.one/s/spreadsheet"
+   ],
+   "n_sources": 6
+  },
+  {
+   "url": "https://mcp.zovo.one/timezone/README.md",
+   "status": 404,
+   "x_mcp_buy": null,
+   "sources": [
+    "https://mcp.zovo.one/s/calendar"
+   ],
+   "n_sources": 1
+  }
+ ]
+}

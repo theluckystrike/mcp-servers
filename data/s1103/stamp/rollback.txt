@@ -1,0 +1,2 @@
+2026-11-03 07:33:28 s1103 stamp SEO deploy new=75a40491-31fa-4064-acd1-8b1ee5afbafc previous=6d9ba0c3-f40c-4833-a678-66976413e92f rollback: npx wrangler pages deployment rollback 6d9ba0c3-f40c-4833-a678-66976413e92f --project-name mcp-showcase-preview
+2026-11-03 08:06:33 s1103 stamp can-claude + 5 satellites deploy new=4093cc9c-dc8b-46fa-b267-06dd2187a8e9 previous=75a40491-31fa-4064-acd1-8b1ee5afbafc rollback: npx wrangler pages deployment rollback 75a40491-31fa-4064-acd1-8b1ee5afbafc --project-name mcp-showcase-preview

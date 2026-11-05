@@ -1,0 +1,49 @@
+{
+  "lane": "apify",
+  "session": "S1102",
+  "date": "2026-11-02",
+  "state": "built and tested locally; NOT pushed; no Apify account created",
+  "dir": "/Users/mike/mcp-servers/apify",
+  "owner_unlock": {
+    "signup": "https://console.apify.com/sign-up",
+    "token": "https://console.apify.com/settings/integrations",
+    "kyc": "Console > Development > Insights > Payouts > Verify identity",
+    "billing": "Console > Development > My Actors > <Actor> > Publishing > Monetization (billing details), or Insights > Payouts > Billing details",
+    "command": "export APIFY_TOKEN=...; /Users/mike/mcp-servers/apify/publish-all.sh",
+    "owner_minutes": 35
+  },
+  "template": {
+    "source": "https://github.com/apify/actor-templates/tree/master/templates/ts-mcp-proxy (fetched via gh api 2026-11-02)",
+    "changes": ["plain JS, no tsc build", "stateless streamable HTTP, one shared stdio child", "charge only after successful tools/call", "spending-limit pre-check", "no logging of tool arguments", "non-standby run = free self-check", "actor.json uses `output` key (CLI reads config.output; template used outputSchema)"]
+  },
+  "pricing_facts": {
+    "code": ["Actor.charge({eventName}) in src/billing.js", "actor.json: title, description, usesStandbyMode, webServerMcpPath, memory limits, schemas"],
+    "console_or_api_only": ["event names/titles/prices/primary event/pricing model (Publishing > Monetization > Set up monetization, or PUT /v2/acts/{id} pricingInfos)", "seoTitle, seoDescription, categories, isPublic (Console or API, not actor.json)", "billing details, payout method, KYC (Console only)"],
+    "pay_per_event_json": "reference only, not used by platform (python-mcp-proxy README)",
+    "apify_push_sends": "name, title, description, actorStandby.isEnabled, source files (apify-cli 1.11.0 dist/_register-CQux2VAB.js); no pricing/seo/categories/visibility",
+    "price_change_rule": "increase or new paid event = 14 days notice, once per month per Actor, cannot be cancelled; decrease immediate",
+    "fee": "Apify keeps 20%; profit = 0.8*revenue - platform costs; standby users pay platform usage on top",
+    "urls": ["https://docs.apify.com/platform/actors/publishing/monetize/pay-per-event", "https://github.com/apify/apify-docs/blob/master/sources/platform/actors/monetizing/set-up-monetization.mdx", "https://github.com/apify/apify-docs/blob/master/sources/platform/actors/monetizing/pay_per_event.mdx", "https://github.com/apify/apify-docs/blob/master/sources/platform/actors/monetizing/monthly-payouts.mdx", "https://github.com/apify/apify-docs/blob/master/sources/platform/actors/publishing/publish/index.mdx"]
+  },
+  "actors": [
+    {"dir": "section-179-deduction-calculator-mcp", "price_usd": 0.03, "tools": 4, "title": "Section 179 Deduction Calculator MCP Server"},
+    {"dir": "car-loan-interest-deduction-calculator-mcp", "price_usd": 0.03, "tools": 4, "title": "Car Loan Interest Deduction Calculator MCP"},
+    {"dir": "subdomain-finder-mcp", "price_usd": 0.03, "tools": 4, "title": "Subdomain Finder MCP: Certificate Transparency"},
+    {"dir": "ab-test-sample-size-calculator-mcp", "price_usd": 0.02, "tools": 5, "title": "A/B Test Sample Size Calculator MCP Server"},
+    {"dir": "lake-level-mcp", "price_usd": 0.01, "tools": 4, "title": "Lake Level MCP Server: Live US Lake Levels"}
+  ],
+  "server_source_decision": "vendored compiled dist copied into each Actor (server/), run as node server/stdio.js. Reason: npm 404 for the four unpublished packages (curl registry.npmjs.org/<name>), npx github: needs git + clone + tsc at start, vendored is pinned with no runtime download. MCP_COMMAND env overrides.",
+  "tested": {
+    "command": "/Users/mike/mcp-servers/apify/test-all.sh (results data/s1102/apify-work/test-results/)",
+    "apify_cli": "1.11.0 installed to /Users/mike/mcp-servers/apify/.tools via buildslot, npm_config_cache=/Users/mike/.npm-cache-local",
+    "validate_schema": "5/5 pass",
+    "standby_mcp_over_http": "5/5 pass: initialize 200, tools/list (4,4,4,5,4 tools), tools/call isError=false, 5 parallel calls ok, GET /mcp 405",
+    "live_data_proof": "lake-mead 1,038.85 ft (Reclamation), example.com CT via certspotter",
+    "self_check_normal_run": "5/5 exit 0, OUTPUT written",
+    "billing_path": "section-179 with ACTOR_TEST_PAY_PER_EVENT=true, max charge 2: charges logged, third call refused with limit message"
+  },
+  "not_tested": ["apify login/push/cloud build", "real Standby gateway (Bearer, cold start, idle shutdown)", "real charging and 20% fee (local only logs, price shown as $1)", "PUT /v2/acts pricingInfos/seo/categories calls (from OpenAPI spec only)", "Docker image build (apify/actor-node:22 is 141 MB compressed, over 50 MB limit)", "Store page rendering, ranking, Store automated test"],
+  "market_evidence": "curl api.apify.com/v2/store?search=...: 'section 179' 0 Actors, 'ab test sample size' 0, 'car loan interest' no deduction calculator; subdomain finder 132 (competitors $0.0008-0.02); lake level 4512 (items $0.003-0.02). money.md: median MCP Actor 1 success run/30d. Expect about $2.40/month per $0.03 Actor at 100 calls.",
+  "open": ["owner decision: mention GitHub source repos (done) and free Workers endpoints (not mentioned) in README", "UTM 'more' links in tool results vs Apify Store promo rules: unread", "node_modules removed after tests; run npm install --omit=dev in an Actor dir before test-all.sh"],
+  "temp_cleanup": "no temp dirs left; node_modules/storage removed; work files in data/s1102/apify-work/"
+}

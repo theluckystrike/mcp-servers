@@ -1,0 +1,51 @@
+{
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "Pay went from $60,000.00 to $63,000.00 (5%) while prices rose 6.07% from January 2025 to September 2026. Real change -1%: the raise did not keep pace with inflation. Pay needed to keep pace: $63,639.43 (short by $639.43). Note: Live BLS API check failed (BLS API REQUEST_NOT_PROCESSED: Request could not be serviced, as the daily threshold for total number of requests allocated to the user with registration key  has been reached.). Using bundled BLS data through September 2026, fetched 2026-11-03. Newer months, if any, are not included.\n\nIndex values from the U.S. Bureau of Labor Statistics. General information, not financial advice."
+      },
+      {
+        "type": "text",
+        "text": "{\n  \"old_pay\": 60000,\n  \"new_pay\": 63000,\n  \"from\": {\n    \"period\": \"January 2025\",\n    \"cpi\": 317.671,\n    \"basis\": \"monthly\"\n  },\n  \"to\": {\n    \"period\": \"September 2026\",\n    \"cpi\": 336.94,\n    \"basis\": \"monthly\"\n  },\n  \"nominal_raise_percent\": 5,\n  \"inflation_percent\": 6.07,\n  \"real_raise_percent\": -1,\n  \"pay_needed_to_keep_pace\": 63639.43,\n  \"shortfall_or_gain\": -639.43,\n  \"new_pay_in_from_period_dollars\": 59397.14,\n  \"beat_inflation\": false,\n  \"series\": \"cpi_u\",\n  \"notes\": [],\n  \"summary\": \"Pay went from $60,000.00 to $63,000.00 (5%) while prices rose 6.07% from January 2025 to September 2026. Real change -1%: the raise did not keep pace with inflation. Pay needed to keep pace: $63,639.43 (short by $639.43).\",\n  \"data_status\": {\n    \"live\": false,\n    \"latest_month\": \"September 2026\",\n    \"bundled_through\": \"September 2026\",\n    \"bundled_fetched\": \"2026-11-03\",\n    \"note\": \"Live BLS API check failed (BLS API REQUEST_NOT_PROCESSED: Request could not be serviced, as the daily threshold for total number of requests allocated to the user with registration key  has been reached.). Using bundled BLS data through September 2026, fetched 2026-11-03. Newer months, if any, are not included.\"\n  },\n  \"as_of\": \"2026-11-03\",\n  \"source\": \"https://data.bls.gov/timeseries/CUUR0000SA0 (BLS Public Data API https://api.bls.gov/publicAPI/v1/timeseries/data/)\",\n  \"more\": \"https://statewage.com/pay-raise-calculator/?utm_source=mcp&utm_medium=cpi-inflation-calculator-mcp\",\n  \"disclaimer\": \"Index values from the U.S. Bureau of Labor Statistics. General information, not financial advice.\"\n}"
+      }
+    ],
+    "structuredContent": {
+      "old_pay": 60000,
+      "new_pay": 63000,
+      "from": {
+        "period": "January 2025",
+        "cpi": 317.671,
+        "basis": "monthly"
+      },
+      "to": {
+        "period": "September 2026",
+        "cpi": 336.94,
+        "basis": "monthly"
+      },
+      "nominal_raise_percent": 5,
+      "inflation_percent": 6.07,
+      "real_raise_percent": -1,
+      "pay_needed_to_keep_pace": 63639.43,
+      "shortfall_or_gain": -639.43,
+      "new_pay_in_from_period_dollars": 59397.14,
+      "beat_inflation": false,
+      "series": "cpi_u",
+      "notes": [],
+      "summary": "Pay went from $60,000.00 to $63,000.00 (5%) while prices rose 6.07% from January 2025 to September 2026. Real change -1%: the raise did not keep pace with inflation. Pay needed to keep pace: $63,639.43 (short by $639.43).",
+      "data_status": {
+        "live": false,
+        "latest_month": "September 2026",
+        "bundled_through": "September 2026",
+        "bundled_fetched": "2026-11-03",
+        "note": "Live BLS API check failed (BLS API REQUEST_NOT_PROCESSED: Request could not be serviced, as the daily threshold for total number of requests allocated to the user with registration key  has been reached.). Using bundled BLS data through September 2026, fetched 2026-11-03. Newer months, if any, are not included."
+      },
+      "as_of": "2026-11-03",
+      "source": "https://data.bls.gov/timeseries/CUUR0000SA0 (BLS Public Data API https://api.bls.gov/publicAPI/v1/timeseries/data/)",
+      "more": "https://statewage.com/pay-raise-calculator/?utm_source=mcp&utm_medium=cpi-inflation-calculator-mcp",
+      "disclaimer": "Index values from the U.S. Bureau of Labor Statistics. General information, not financial advice."
+    }
+  },
+  "jsonrpc": "2.0",
+  "id": 13
+}

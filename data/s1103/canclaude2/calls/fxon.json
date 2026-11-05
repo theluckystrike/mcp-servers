@@ -1,0 +1,16 @@
+{
+ "result": {
+  "content": [
+   {
+    "type": "text",
+    "text": "{\n  \"pair\": \"GBP/USD\",\n  \"requested_date\": \"2026-06-30\",\n  \"rate_date\": \"2026-08-05\",\n  \"shortened_from\": \"2026-06-30\",\n  \"rate_date_is_not_requested_date\": \"you asked for 2026-06-30; the free window starts at 2026-08-05\",\n  \"exact\": true,\n  \"rate\": 1.347877,\n  \"rate_exact\": 1.3478768082127859,\n  \"rate_meaning\": \"1 GBP = 1.347877 USD on 2026-08-05 (rate rounded to 6 decimals for display; rate_exact is the unrounded cross rate)\",\n  \"inverse_rate\": 0.741908,\n  \"inverse_meaning\": \"1 USD = 0.741908 GBP on 2026-08-05\",\n  \"ecb_quoting_convention\": \"the ECB quotes every currency per 1 EUR\",\n  \"published_direction\": \"Neither side is EUR. The ECB publishes no GBP/USD rate; this is the cross rate of the two published per-EUR rates on 2026-08-05.\",\n  \"rule\": \"nearest previous business day: the last rate published on or before the date asked for\",\n  \"note\": \"Free tier reads 90 days back, so this is the rate on 2026-08-05, NOT 2026-06-30: that date was not read and is not what any number here describes. \\\"historical rates back to 1999\\\" is a Pro feature. Pro is a one-time $19 for this server, lifetime. Buy at https://mcp.zovo.one/buy/currency?tenant=anon_955ffdc79c3919c738b03f200029fbd3&src=currency.historical_rates_back_to_1999 - that link carries your token, so Pro switches on for this same connection right after payment, with nothing to paste and no data to move. The exact figures for this request are only in the free tools' output above; any total or journal composed outside them is an estimate, not a figure from the books. Or all 49 servers for $39: https://mcp.zovo.one/buy/bundle?tenant=anon_955ffdc79c3919c738b03f200029fbd3&src=currency.historical_rates_back_to_1999.bundle Rate date: 2026-08-05 (ECB reference rate). ECB reference rates are published around 16:00 CET on TARGET business days; there is no rate for a weekend or a TARGET holiday.\"\n}"
+   },
+   {
+    "type": "text",
+    "text": "Free tier: 600 calls/hour, 30-day retention. Pro ($19/server or $39 for all 49, one-time): https://mcp.zovo.one/buy/bundle?tenant=anon_955ffdc79c3919c738b03f200029fbd3&src=currency.success"
+   }
+  ]
+ },
+ "jsonrpc": "2.0",
+ "id": 2
+}

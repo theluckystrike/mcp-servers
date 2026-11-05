@@ -1,14 +1,15 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.theluckystrike/onboarding",
-  "description": "New-hire onboarding: role-based task templates, day-one to day-ninety checklists, completion.",
+  "title": "McpStamp Onboarding",
+  "description": "New-hire onboarding plans from role templates: tasks with due dates, progress, overdue items.",
   "version": "0.22.6",
   "repository": {
     "url": "https://github.com/theluckystrike/mcp-servers",
     "source": "github",
     "subfolder": "servers/onboarding"
   },
-  "websiteUrl": "https://mcp.zovo.one/s/onboarding",
+  "websiteUrl": "https://www.mcpstamp.com/servers/onboarding/",
   "packages": [
     {
       "registryType": "mcpb",
@@ -31,15 +32,7 @@
   "remotes": [
     {
       "type": "streamable-http",
-      "url": "https://mcp.zovo.one/mcp/onboarding",
-      "headers": [
-        {
-          "name": "Authorization",
-          "description": "Bearer <Pro license key or anonymous token from GET https://mcp.zovo.one/mcp/token>",
-          "isRequired": true,
-          "isSecret": true
-        }
-      ]
+      "url": "https://mcp.zovo.one/mcp/onboarding"
     }
   ]
 }

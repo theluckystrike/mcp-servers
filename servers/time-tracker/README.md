@@ -1,6 +1,6 @@
 # Track time from Claude with a free, no-install server
 
-**Featured on [Awesome MCP Servers](mcpservers.org)** - [directory listing](https://mcpservers.org/servers/github-com-theluckystrike-mcp-servers-tree-main-servers-time-tracker) | [live hosted endpoint](https://mcp.zovo.one/s/time-tracker), free tier, no signup.
+**Featured on [Awesome MCP Servers](https://mcpservers.org)** - [directory listing](https://mcpservers.org/servers/github-com-theluckystrike-mcp-servers-tree-main-servers-time-tracker) | [live hosted endpoint](https://mcp.zovo.one/s/time-tracker), free tier, no signup.
 
 
 Track billable time without leaving your AI chat. Say "start a timer on the acme redesign", keep working, then
