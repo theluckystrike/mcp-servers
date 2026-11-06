@@ -1,0 +1,30 @@
+#!/usr/bin/env node
+// Shared scaffold for the luckystrike finance/productivity MCP suite (stdio MCP servers).
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+import { createLicenseGate } from '@theluckystrike/mcp-license';
+
+export function money(n) { return Math.round(n * 100) / 100; }
+
+export async function serve(name, version, tools) {
+  const server = new McpServer({ name, version });
+  const gate = createLicenseGate({ product: name.replace('@theluckystrike/mcp-', '') });
+  gate.registerTools(server as any);
+  for (const t of (tools as any[])) {
+    const { z } = await import('zod');
+    const zod = {};
+    const props = t.schema?.properties ?? {};
+    const req = new Set(t.schema?.required ?? []);
+    for (const [k, v] of (Object.entries(props) as [string, any][])) {
+      let s;
+      if (v.type === 'number') s = z.number();
+      else if (v.type === 'array') s = z.array(z.any());
+      else if (v.type === 'object') s = z.object({}).passthrough();
+      else s = z.string();
+      if (v.description) s = s.describe(v.description);
+      zod[k] = req.has(k) ? s : s.optional();
+    }
+    server.tool(t.name, t.desc, zod, t.handler);
+  }
+  await server.connect(new StdioServerTransport());
+}

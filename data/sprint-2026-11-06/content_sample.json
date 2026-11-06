@@ -1,0 +1,194 @@
+{
+ "https://mcp.zovo.one/": {
+  "status": 200,
+  "title": "MCP servers for Claude: invoices, time tracking and freelance tools",
+  "words": 10296,
+  "sha": "55586e5d11",
+  "h1": "58 MCP servers for Claude, for freelancers and small businesses"
+ },
+ "https://mcp.zovo.one/bundle": {
+  "status": 200,
+  "title": "49 MCP servers for Claude, one $39 key",
+  "words": 1554,
+  "sha": "2a020589eb",
+  "h1": "49 MCP servers for Claude, one $39 key"
+ },
+ "https://mcp.zovo.one/changelog": {
+  "status": 200,
+  "title": "Changelog: v0.25.0, 58 servers",
+  "words": 4146,
+  "sha": "14609c1624",
+  "h1": "Changelog"
+ },
+ "https://mcp.zovo.one/compare": {
+  "status": 200,
+  "title": "MCP server comparisons: ours against the closest alternatives",
+  "words": 1697,
+  "sha": "6c53a39849",
+  "h1": "MCP server comparisons: ours against the closest alternatives"
+ },
+ "https://mcp.zovo.one/setup/claude-code": {
+  "status": 200,
+  "title": "MCP servers for Claude Code: install guides",
+  "words": 1620,
+  "sha": "356598d009",
+  "h1": "MCP servers for Claude Code: install guides"
+ },
+ "https://mcp.zovo.one/setup/claude-desktop": {
+  "status": 200,
+  "title": "MCP servers for Claude Desktop: install guides",
+  "words": 1617,
+  "sha": "5048df4d24",
+  "h1": "MCP servers for Claude Desktop: install guides"
+ },
+ "https://mcp.zovo.one/compare/asset-register": {
+  "status": 200,
+  "title": "MCP Asset Register vs Snipe-IT and spreadsheets: which asset register to pick",
+  "words": 865,
+  "sha": "53683253ca",
+  "h1": "MCP Asset Register vs Snipe-IT and spreadsheets: which asset register to pick"
+ },
+ "https://mcp.zovo.one/compare/backlink-checker": {
+  "status": 200,
+  "title": "MCP Backlink Checker vs BacklinkMCP and OpenSEO: which link tool to pick",
+  "words": 907,
+  "sha": "529b1c5962",
+  "h1": "MCP Backlink Checker vs BacklinkMCP and OpenSEO: which link tool to pick"
+ },
+ "https://mcp.zovo.one/compare/bank-statement": {
+  "status": 200,
+  "title": "MCP Bank Statement vs MainBook and bankstatementparser-mcp - which MCP server to pick",
+  "words": 1380,
+  "sha": "d5f8edb21c",
+  "h1": "MCP Bank Statement vs MainBook and bankstatementparser-mcp - which MCP server to"
+ },
+ "https://mcp.zovo.one/compare/barcode": {
+  "status": 200,
+  "title": "MCP Barcode vs qrcode and Barcode Generator API - which MCP server to pick",
+  "words": 1451,
+  "sha": "92c6a58031",
+  "h1": "MCP Barcode vs qrcode and Barcode Generator API - which MCP server to pick"
+ },
+ "https://mcp.zovo.one/compare/maintenance-log": {
+  "status": 200,
+  "title": "MCP Maintenance Log vs UpKeep and Snipe-IT: which maintenance tracker to pick",
+  "words": 903,
+  "sha": "9601c25f1c",
+  "h1": "MCP Maintenance Log vs UpKeep and Snipe-IT: which maintenance tracker to pick"
+ },
+ "https://mcp.zovo.one/compare/mileage-log": {
+  "status": 200,
+  "title": "MCP Mileage Log vs MileIQ and Stride: which mileage tracker to pick",
+  "words": 1008,
+  "sha": "b7fcffff52",
+  "h1": "MCP Mileage Log vs MileIQ and Stride: which mileage tracker to pick"
+ },
+ "https://mcp.zovo.one/guides/answer-questions-about-a-spreadsheet-without-formulas": {
+  "status": 200,
+  "title": "Asking a spreadsheet questions in plain language",
+  "words": 938,
+  "sha": "7f64e85ac4",
+  "h1": "Asking a spreadsheet a question"
+ },
+ "https://mcp.zovo.one/guides/ask-a-spreadsheet-questions-in-chat": {
+  "status": 200,
+  "title": "Ask questions about a spreadsheet in chat, no formulas needed",
+  "words": 805,
+  "sha": "569ae73a06",
+  "h1": "Ask questions about a spreadsheet in chat, no formulas needed"
+ },
+ "https://mcp.zovo.one/guides/ats-resume-check-in-claude-and-cursor": {
+  "status": 200,
+  "title": "ATS resume check and cover letter from chat: pass the parser before the recruiter",
+  "words": 896,
+  "sha": "8a548c39f5",
+  "h1": "ATS resume check and cover letter from chat"
+ },
+ "https://mcp.zovo.one/guides/bank-statement-csv-categorize-reconcile": {
+  "status": 200,
+  "title": "Categorize and reconcile a bank CSV export from chat",
+  "words": 2059,
+  "sha": "df202a7a33",
+  "h1": "Categorize and reconcile a bank CSV export from chat"
+ },
+ "https://mcp.zovo.one/guides/mcp-servers-in-windsurf-and-cline": {
+  "status": 200,
+  "title": "MCP servers in Windsurf and Cline: two defaults that waste an afternoon",
+  "words": 995,
+  "sha": "93de4a6b77",
+  "h1": "Windsurf and Cline"
+ },
+ "https://mcp.zovo.one/guides/mcp-servers-that-work-offline": {
+  "status": 200,
+  "title": "Which MCP servers work with no network at all",
+  "words": 990,
+  "sha": "d3128f7a17",
+  "h1": "MCP servers that work with no network at all"
+ },
+ "https://mcp.zovo.one/mcp/amortization": {
+  "status": 200,
+  "err": "{\n  \"ok\": true,\n  \"name\": \"amortization\",\n  \"url\": \"https://mcp.zovo.one/mcp/amortization\",\n  \"protocol\": \"MCP streamabl"
+ },
+ "https://mcp.zovo.one/mcp/asset-register": {
+  "status": 200,
+  "err": "{\n  \"ok\": true,\n  \"name\": \"asset-register\",\n  \"url\": \"https://mcp.zovo.one/mcp/asset-register\",\n  \"protocol\": \"MCP strea"
+ },
+ "https://mcp.zovo.one/mcp/backlink-checker": {
+  "status": 200,
+  "err": "{\n  \"ok\": true,\n  \"name\": \"backlink-checker\",\n  \"url\": \"https://mcp.zovo.one/mcp/backlink-checker\",\n  \"protocol\": \"MCP s"
+ },
+ "https://mcp.zovo.one/mcp/bank-statement": {
+  "status": 200,
+  "err": "{\n  \"ok\": true,\n  \"name\": \"bank-statement\",\n  \"url\": \"https://mcp.zovo.one/mcp/bank-statement\",\n  \"protocol\": \"MCP strea"
+ },
+ "https://mcp.zovo.one/mcp/invoice": {
+  "status": 200,
+  "err": "{\n  \"ok\": true,\n  \"name\": \"invoice\",\n  \"url\": \"https://mcp.zovo.one/mcp/invoice\",\n  \"protocol\": \"MCP streamable HTTP (20"
+ },
+ "https://mcp.zovo.one/mcp/job-card": {
+  "status": 200,
+  "err": "{\n  \"ok\": true,\n  \"name\": \"job-card\",\n  \"url\": \"https://mcp.zovo.one/mcp/job-card\",\n  \"protocol\": \"MCP streamable HTTP ("
+ },
+ "https://mcp.zovo.one/s/amortization": {
+  "status": 200,
+  "title": "MCP Amortization | zovo.one",
+  "words": 3217,
+  "sha": "2f3dc20f19",
+  "h1": "Loan and lease schedules from the terms of the agreement, to the minor unit."
+ },
+ "https://mcp.zovo.one/s/asset-register": {
+  "status": 200,
+  "title": "MCP Server for Fixed Asset Register \u2014 Depreciation from Claude | zovo.one",
+  "words": 4137,
+  "sha": "7c62875581",
+  "h1": "A fixed asset register that depreciates on the rates the tax authorities actuall"
+ },
+ "https://mcp.zovo.one/s/backlink-checker": {
+  "status": 200,
+  "title": "MCP Backlink Checker | zovo.one",
+  "words": 2357,
+  "sha": "01d5ee39b9",
+  "h1": "Backlink checks from Claude or Cursor: dofollow or nofollow, anchor text, HTTP s"
+ },
+ "https://mcp.zovo.one/s/bank-statement": {
+  "status": 200,
+  "title": "MCP Bank Statement | zovo.one",
+  "words": 3386,
+  "sha": "31ecb175d5",
+  "h1": "Bank CSV exports categorised, summarised and reconciled with expenses."
+ },
+ "https://mcp.zovo.one/s/loan-calculator": {
+  "status": 200,
+  "title": "MCP Loan Calculator | zovo.one",
+  "words": 2315,
+  "sha": "39c14fcfdc",
+  "h1": "MCP Loan Calculator \u2014 monthly payments and full amortization in one sentence"
+ },
+ "https://mcp.zovo.one/s/maintenance-log": {
+  "status": 200,
+  "title": "MCP Server for Maintenance Log \u2014 Equipment and Vehicle Service from Claude | zovo.one",
+  "words": 2812,
+  "sha": "07277412ce",
+  "h1": "Equipment maintenance log: assets, service entries with costs, and a due report "
+ }
+}

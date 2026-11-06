@@ -62,7 +62,7 @@ export interface RequestCtx {
    */
   clean?: boolean;
   /** Open file descriptors, request-local: fd -> buffer plus its own read offset. */
-  fds: Map<number, { buf: Buffer; pos: number }>;
+  fds: Map<number, { buf: Buffer; pos: number; p: string }>;
   nextFd: number;
 }
 

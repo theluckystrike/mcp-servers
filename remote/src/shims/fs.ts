@@ -322,8 +322,19 @@ export function openSync(p: string, flags?: unknown): number {
   if (v === undefined) throw enoent(p);
   const buf = isBin(v) ? Buffer.from(v.slice(BIN.length), "base64") : Buffer.from(v, "utf8");
   const fd = c.nextFd++;
-  c.fds.set(fd, { buf, pos: 0 });
+  c.fds.set(fd, { buf, pos: 0, p });
   return fd;
+}
+
+// Node's fs.constants, as far as the vendored servers use it: they OR O_RDONLY with
+// O_NOFOLLOW and pass the result to openSync, which ignores the value entirely.
+export const constants = { O_RDONLY: 0, O_NOFOLLOW: 0, O_CREAT: 0, O_TRUNC: 0 } as const;
+
+/** fstat on one of our descriptors: identity is the path the descriptor was opened on. */
+export function fstatSync(fd: number): VStat {
+  const h = ctx().fds.get(fd);
+  if (!h) throw new Error("EBADF: bad file descriptor");
+  return statSync(h.p);
 }
 
 export function readSync(fd: number, out: Uint8Array, offset: number, length: number, position?: number | null): number {

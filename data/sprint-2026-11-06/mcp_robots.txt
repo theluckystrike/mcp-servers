@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+Disallow: /buy/
+Disallow: /success
+Disallow: /recover
+Disallow: /verify
+Disallow: /bound
+Sitemap: https://mcp.zovo.one/sitemap.xml

@@ -35,6 +35,20 @@ import { createServer as createKanban } from "./vendor/kanban/index.js";
 import { createServer as createImage } from "./vendor/image/index.js";
 import { createServer as createBankStatement } from "./vendor/bank-statement/index.js";
 import { createServer as createQuotes } from "./vendor/quotes/index.js";
+// Recovered 2026-11-06: twelve catalog servers were 404 on /mcp/<name> because the worker
+// had no import for them. Eleven are now vendored under src/vendor/ and wired below;
+// office-suite stays unhosted (it spawns local child processes, impossible in a Worker).
+import { createServer as createBudget } from "./vendor/budget/index.js";
+import { createServer as createHourlyRate } from "./vendor/hourly-rate/index.js";
+import { createServer as createLoanCalculator } from "./vendor/loan-calculator/index.js";
+import { createServer as createPayroll } from "./vendor/payroll/index.js";
+import { createServer as createPomodoro } from "./vendor/pomodoro/index.js";
+import { createServer as createReceipts } from "./vendor/receipts/index.js";
+import { createServer as createStripeBilling } from "./vendor/stripe-billing/index.js";
+import { createServer as createTaxCalc } from "./vendor/tax-calc/index.js";
+import { createServer as createDuplicateInvoiceCheck } from "./vendor/duplicate-invoice-check/index.js";
+import { createServer as createSupplierStatementCheck } from "./vendor/supplier-statement-check/index.js";
+import { createServer as createThreeWayMatch } from "./vendor/three-way-match/index.js";
 import { createServer as createBarcode } from "./vendor/barcode/index.js";
 import { createServer as createZip } from "./vendor/zip/index.js";
 import { createServer as createBillingDocs } from "./vendor/billing-docs/index.js";
@@ -200,6 +214,18 @@ const SERVERS: Record<string, ServerCfg> = {
   },
   "price-tracker": { factory: createPriceTracker as () => McpServer },
   "prices-deal": { factory: createPriceTracker as () => McpServer },
+  // Recovered 2026-11-06 — see the import block above.
+  "budget": { factory: createBudget as () => McpServer },
+  "hourly-rate": { factory: createHourlyRate as () => McpServer },
+  "loan-calculator": { factory: createLoanCalculator as () => McpServer },
+  "payroll": { factory: createPayroll as () => McpServer },
+  "pomodoro": { factory: createPomodoro as () => McpServer },
+  "receipts": { factory: createReceipts as () => McpServer },
+  "stripe-billing": { factory: createStripeBilling as () => McpServer },
+  "tax-calc": { factory: createTaxCalc as () => McpServer },
+  "duplicate-invoice-check": { factory: createDuplicateInvoiceCheck as () => McpServer },
+  "supplier-statement-check": { factory: createSupplierStatementCheck as () => McpServer },
+  "three-way-match": { factory: createThreeWayMatch as () => McpServer },
   "invoice": { factory: createInvoice as () => McpServer },
   "expense-tracker": {
     factory: createExpenseTracker as () => McpServer,

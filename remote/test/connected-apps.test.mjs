@@ -148,7 +148,10 @@ test("src/server-instructions.json is an object of strings keyed by hosted serve
   assert.ok(!Array.isArray(map));
   const block = src.slice(src.indexOf("const SERVERS"), src.indexOf("const json ="));
   const names = new Set([...block.matchAll(/\n  "([a-z-]+)": \{/g)].map((m) => m[1]));
-  assert.equal(names.size, 48, "48 hosted servers");
+  // Snapshot of the hosted catalog. 48 until 2026-11-06, when eleven catalog servers that
+  // were 404 on /mcp/<name> were vendored and wired in (office-suite stays unhosted: it
+  // spawns local child processes). Bump this only with the SERVERS map, in the same commit.
+  assert.equal(names.size, 59, "59 hosted servers");
   for (const [k, v] of Object.entries(map)) {
     assert.ok(names.has(k), `${k} is a hosted server`);
     assert.equal(typeof v, "string");

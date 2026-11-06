@@ -1,0 +1,8 @@
+{
+  "task": "A5 monetization / checkout reverse-engineer",
+  "date": "2026-11-06",
+  "status": "in progress",
+  "checkout_implementation": {"works": null, "evidence": "pending", "stripe_price_ids_referenced": [], "stripe_prices_exist": [], "failure_mode": "pending"},
+  "offer_v2": {"tiers": [], "stripe_objects_to_create": []},
+  "blockers": []
+}

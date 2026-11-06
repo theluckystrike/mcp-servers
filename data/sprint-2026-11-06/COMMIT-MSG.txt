@@ -1,0 +1,20 @@
+remote: host the eleven catalog servers that were 404 on /mcp/<name>
+
+Twelve catalog entries returned 404 because the worker never imported them.
+Eight used the serve() scaffold and four the McpServer scaffold; none of the
+twelve had a vendored copy under remote/src/vendor.
+
+- remote/vendor-served.mjs vendors the serve() ones; remote/vendor-mcpserver.mjs
+  the McpServer ones. office-suite is excluded: it spawns local child processes,
+  which cannot work in a Worker, so it stays unhosted by design.
+- fix-vendor-imports.mjs and merge-vendor-imports.mjs repair the generated files.
+  The first pass left import statements inside createServer() and emitted two
+  imports of the same module, which is not valid ES.
+- shims/fs.ts gains constants and fstatSync (fstat of a request-local fd), and
+  the descriptor record now carries the path it was opened on.
+- server-instructions.json gains the eleven entries the guard test requires.
+- connected-apps.test.mjs snapshot 48 -> 59 hosted servers.
+
+Verified: 112/112 remote tests pass on Node 22. Deployed as version
+330e03ce-7470-42a4-bc67-1bff228d6c85. All eleven endpoints answer initialize
+and tools/list over the live origin, exposing 39 tools that previously 404'd.

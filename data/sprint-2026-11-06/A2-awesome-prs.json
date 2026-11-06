@@ -1,0 +1,62 @@
+[
+  {
+    "repo": "punkpeye/awesome-mcp-servers",
+    "pr_url": "https://github.com/punkpeye/awesome-mcp-servers/pull/18737",
+    "pr_number": 18737,
+    "state": "OPEN",
+    "entries_added": 2,
+    "merge_likelihood": "high — no star gate, agent fast-track used (🤖🤖🤖 title), exact bullet format matched, permitted emojis fixed in follow-up commit",
+    "gating_rules": "public GitHub repo, links must be github.com, entry name must be owner/repo, emoji from permitted set, no duplicates (CI-checked); no minimum stars; agent-opt-in title fast-tracks review",
+    "blocker": null
+  },
+  {
+    "repo": "mcpHQ/awesome-mcp-servers",
+    "pr_url": "https://github.com/mcpHQ/awesome-mcp-servers/pull/695",
+    "pr_number": 695,
+    "state": "OPEN",
+    "entries_added": 2,
+    "merge_likelihood": "medium-high — schema-conformant entries (MIT verified, npm install verified, random-middle insertion per agent rule); local npm validate/generate NOT run (disk floor), CI must pass",
+    "gating_rules": "entry in data/servers.json with required fields (name,url,description,category from data/categories.json,language,provider,tags,official); optional fields only if verifiable; agents must insert at random middle position, never append; validate/generate/check-generated must pass; reviewed Sun/Wed/Fri",
+    "blocker": "could not run npm run validate/generate locally (20GB disk floor); if CI fails on schema details the fix is small"
+  },
+  {
+    "repo": "wong2/awesome-mcp-servers",
+    "pr_url": null,
+    "pr_number": null,
+    "state": "BLOCKED",
+    "entries_added": 0,
+    "merge_likelihood": "n/a",
+    "gating_rules": "does not accept PRs for entries — the README is generated from the mcpservers.org dataset; entry submission is via the mcpservers.org/submit form, not a pull request",
+    "blocker": "no PR path; must submit through mcpservers.org/submit (owner action)"
+  },
+  {
+    "repo": "modelcontextprotocol/servers",
+    "pr_url": null,
+    "pr_number": null,
+    "state": "BLOCKED",
+    "entries_added": 0,
+    "merge_likelihood": "n/a",
+    "gating_rules": "closed to third-party server additions — README states new servers are added by maintaining team only; external servers are directed to registries, issues only for bugs/reference-server scope",
+    "blocker": "maintainers-only PRs; no third-party path"
+  },
+  {
+    "repo": "punkpeye/awesome-remote-mcp-servers",
+    "pr_url": null,
+    "pr_number": null,
+    "state": "BLOCKED",
+    "entries_added": 0,
+    "merge_likelihood": "n/a",
+    "gating_rules": "requires a real Glama CONNECTOR listing with badge (https://glama.ai/mcp/connectors/...) plus a public endpoint that answers MCP initialize without credentials (CI handshake check); servers gated behind a key fail 'usable by anyone'",
+    "blocker": "verified by badge probe: every candidate (statement-of-account, office-suite, bill-of-sale, credit-note, packing-list, checklist, job-card, dunning-letters) returns 'This MCP connector is not listed' at glama.ai — no connector listings exist. Action: get servers verified/listed as Glama connectors first, and consider an anonymous-token-free initialize+list tier"
+  },
+  {
+    "repo": "AIAnytime/Awesome-MCP-Servers",
+    "pr_url": null,
+    "pr_number": null,
+    "state": "BLOCKED",
+    "entries_added": 0,
+    "merge_likelihood": "n/a",
+    "gating_rules": "fork-only contribution (add servers/<name>.json, one server per PR); GitHub fork names are case-insensitive per account, so theluckystrike cannot fork AIAnytime/Awesome-MCP-Servers while theluckystrike/awesome-mcp-servers (punkpeye fork) exists — the fork silently redirects and pushes land on the wrong repo",
+    "blocker": "fork name collision; fix: rename theluckystrike/awesome-mcp-servers fork (e.g. -punkpeye), then fork AIAnytime; prior PR #83 merged there and format is known (JSON: name,url,category,transport,description,endpoint)"
+  }
+]
