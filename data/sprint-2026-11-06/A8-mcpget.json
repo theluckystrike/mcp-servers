@@ -1,0 +1,9 @@
+{
+  "pr_url": null,
+  "files_changed": [
+    "packages/theluckystrike--mcp-*.json (59 files, committed 7ba9d22 on fork branch add-theluckystrike-packages at github.com/theluckystrike/mcp-get)"
+  ],
+  "entries_added": 59,
+  "status": "blocked",
+  "blocker": "michaellatman/mcp-get is archived (read-only); GitHub rejects createPullRequest \u2014 'Repository was archived so is read-only'. Branch add-theluckystrike-packages with all 59 registry entries is pushed to fork github.com/theluckystrike/mcp-get and ready to PR if the repo is unarchived."
+}

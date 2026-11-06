@@ -1,0 +1,7 @@
+{
+  "target_repo": "lobehub/lobehub",
+  "pr_url": null,
+  "entries_added": 58,
+  "status": "blocked",
+  "blocker": "LobeHub's MCP marketplace data lives in the PRIVATE repo lobehub-biz/lobehub-market (backend market.lobehub.com, npm @lobehub/market-sdk); no public data repo exists to open a merge-capable PR. The accepted community path is a '[MCP] Submit ...' issue on lobehub/lobehub (367 existing submissions) — I filed https://github.com/lobehub/lobehub/issues/22412 listing all 58 servers (hosted URL https://mcp.zovo.one/mcp/<name>, free-token note, npm scope @theluckystrike). Listing requires LobeHub maintainer ingestion; a PR would 404 on lobehub/mcp-marketplace and cannot be opened."
+}

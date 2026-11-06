@@ -1,0 +1,24 @@
+{
+  "task": "A7-cline",
+  "pr_url": "https://github.com/cline/marketplace/pull/413",
+  "files_changed": [
+    "registry/mcps/zovo-invoice/entry.json",
+    "registry/mcps/zovo-time-tracker/entry.json",
+    "registry/mcps/zovo-price-tracker/entry.json",
+    "registry/mcps/zovo-expense-tracker/entry.json",
+    "registry/mcps/zovo-bank-statement/entry.json",
+    "registry/mcps/zovo-quotes/entry.json",
+    "registry/mcps/zovo-kanban/entry.json",
+    "registry/mcps/zovo-resume/entry.json",
+    "registry/mcps/zovo-docx/entry.json",
+    "registry/mcps/zovo-pdf/entry.json",
+    "registry/mcps/zovo-spreadsheet/entry.json",
+    "registry/mcps/zovo-currency/entry.json"
+  ],
+  "entries_added": 12,
+  "status": "open",
+  "blocker": null,
+  "mechanism_note": "cline/cline no longer hosts mcp_marketplace.json in-repo. The live marketplace catalog is served from https://cline.github.io/marketplace/catalog.json, sourced from the cline/marketplace registry (registry/mcps/<slug>/entry.json per CONTRIBUTING.md). PR was therefore opened against cline/marketplace (the actual merge-capable path); branch theluckystrike:add-zovo-mcp-estate via fork.",
+  "install_form": "cline mcp install zovo-<slug> --transport http https://mcp.zovo.one/mcp/<slug>",
+  "verified": "PR page returned 201/URL by gh pr create at 2026-11-06"
+}

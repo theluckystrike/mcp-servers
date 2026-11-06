@@ -1,0 +1,13 @@
+MCP update, 6 Nov
+
+The buy button was never the problem. I drove the real buyer path this morning and Stripe handed back a live checkout session, so the rail works end to end. The catch is traffic. Google has 0 of our 299 pages indexed, so nobody arrives to pay. Conversion maths on zero visitors is just zero.
+
+What did get fixed today. Twelve servers in the catalogue were returning 404 on their hosted endpoints, which is one in five. Eleven are live now with 39 new tools between them, deployed and checked. The estate serves 588 tools across 57 endpoints.
+
+Distribution. Two pull requests are open on the big awesome-mcp-servers lists and the mcp.so submission is filed. The official MCP registry is the one that matters, because Cursor and the VS Code gallery feed off it. That needs one DNS record on zovo.one. Then all 58 servers go in.
+
+Where the money actually is. 58 servers and 588 tools have earned nothing in months, and the market says why. Two thirds of tracked MCP servers have zero uses, and developers don't pay for software they can run free. The thing worth selling is the ability to ship a working MCP server for someone else's API in days, at 1,500 to 3,000 per build. One client beats every 39 dollar key we could ever sell.
+
+What I need from you, in order. Add the TXT record and I publish 58 servers to the official registry. Drop a read-only Stripe key and I can tell you exactly where buyers stop. An npm token and I can put a call to action inside the 58 packages already sitting on people's machines.
+
+Full numbers are in MCP-DASHBOARD.html and the reasoning is in docs/STRATEGY-2026-11-06.md.

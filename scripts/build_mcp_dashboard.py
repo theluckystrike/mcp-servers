@@ -195,7 +195,7 @@ conversion at this traffic level is arithmetic on zero; distribution is the only
 <h3>Eleven dead endpoints recovered, deployed, verified</h3>
 <p>Twelve catalog servers returned <strong>404</strong> on <code>/mcp/&lt;name&gt;</code> because the worker never imported them. Eleven are now vendored, wired, tested (112/112) and deployed as version <code>330e03ce</code>; each answers <code>initialize</code> and <code>tools/list</code> live.</p>
 <p>Recovered: budget, hourly-rate, loan-calculator, payroll, pomodoro, receipts, stripe-billing, tax-calc (8) plus duplicate-invoice-check, supplier-statement-check, three-way-match (3). That is 39 tools that previously 404'd. <code>office-suite</code> stays unhosted by design — it spawns local child processes, impossible in a Worker.</p>
-<p>Two distribution PRs are open: <a href="https://github.com/punkpeye/awesome-mcp-servers/pull/18737">punkpeye#18737</a>, <a href="https://github.com/mcpHQ/awesome-mcp-servers/pull/695">mcpHQ#695</a>. One registry intake filed: mcp.so issue #6845.</p>
+<p>Four distribution handles verified open by the orchestrator: <a href="https://github.com/punkpeye/awesome-mcp-servers/pull/18737">punkpeye #18737</a>, <a href="https://github.com/mcpHQ/awesome-mcp-servers/pull/695">mcpHQ #695</a>, <a href="https://github.com/cline/marketplace/pull/413">cline/marketplace #413</a> (12 entries) and <a href="https://github.com/chatmcp/mcpso/issues/6845">mcp.so #6845</a>. Blocked: mcp-get is archived (branch ready on the fork, 59 entries), LobeHub keeps its catalogue in a private repo (issue #22412 filed, closed by maintainers).</p>
 </div>
 
 <h2>Traffic reality check</h2>
@@ -220,7 +220,8 @@ turns that inference into a table.</p>
 That registry feeds the Cursor directory and the GitHub/VS Code galleries; 58 servers can go in
 the moment DNS accepts it.</p>
 <p><strong>2. Win the two empty categories.</strong> Price-tracker and time-tracker are the only two categories measured with room; every registry listing should lead with them, because the registry page — not our domain — is what ranks.</p>
-<p><strong>3. Finish the registry sweep.</strong> 21 of 74 listings were live at the start of the session; the remainder are HTTP or PR submissions and cost only time.</p>
+<p><strong>Shipped conversion fix.</strong> All 59 hosted servers now close their <code>initialize</code> instructions with the bundle link, tagged <code>?src=instr.&lt;name&gt;</code>. Before this, 48 of 59 told the user a free tier existed and 0 told them where to buy. Verified live on invoice, budget, three-way-match and price-tracker.</p>
+<p><strong>3. Finish the registry sweep.</strong> 25 of 74 listings are live or filed now; the remainder are form submissions that need a human browser.</p>
 <p><strong>4. Stop feeding Google thin pages.</strong> 299 submitted URLs, 0 indexed, across two domains selling the same thing. Consolidate to one canonical host before adding any more pages.</p>
 </div>
 </div></body></html>"""
