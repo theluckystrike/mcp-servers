@@ -2044,6 +2044,8 @@ const worker = {
         products: [...Object.keys(PRODUCTS), ...Object.keys(SERVICES)],
         services: Object.keys(SERVICES),
         stripe_mode: (env.STRIPE_SECRET_KEY || "").includes("_live_") || (env.STRIPE_SECRET_KEY || "").startsWith("rk_live") ? "live" : "test",
+        // Stripe account guard: "blocked" means probe/agent-tagged /buy POSTs open no live Session.
+        probe_live_sessions: syntheticCheckout(true, "", env) ? "blocked" : "allowed",
         time: new Date().toISOString(),
       });
     }

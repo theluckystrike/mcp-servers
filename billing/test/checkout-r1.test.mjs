@@ -469,15 +469,31 @@ test("a probe reads back what Stripe stored, and a buyer sees none of it", async
     worker.fetch(buy("/buy/work-order?src=store.home.table.work-order"), testEnv(), ctx));
   for (const k of Object.keys(h)) assert.equal(res.headers.get(k), null, `${k} leaked to a buyer`);
 
-  // A tagged probe carries them.
-  const { result: probe } = await withStripeStub(() =>
+  // A tagged probe never reaches Stripe by default (2026-11-13 Stripe account guard): it
+  // gets the catalog amount and no live Session.
+  const { result: probe, calls: probeCalls } = await withStripeStub(() =>
     worker.fetch(buy("/buy/work-order?src=probe.loop29", { "x-mcp-probe": "1" }), testEnv(), ctx));
-  assert.notEqual(probe.headers.get("x-mcp-probe-amount"), null);
+  assert.equal(probeCalls.length, 0, "a default probe opened a live Stripe Session");
+  assert.equal(probe.status, 303);
+  assert.equal(probe.headers.get("x-mcp-buy"), "probe-no-live-session");
+  assert.doesNotMatch(probe.headers.get("location"), /checkout\.stripe\.com/);
+  assert.equal(probe.headers.get("x-mcp-probe-amount"), "1900");
+
+  // With the owner-approved override, a tagged probe carries the read-back headers.
+  const liveProbeEnv = () => ({ ...testEnv(), ALLOW_LIVE_PROBE_SESSIONS: "1" });
+  const { result: liveProbe } = await withStripeStub(() =>
+    worker.fetch(buy("/buy/work-order?src=probe.loop29", { "x-mcp-probe": "1" }), liveProbeEnv(), ctx));
+  assert.notEqual(liveProbe.headers.get("x-mcp-probe-amount"), null);
 
   // The session is created with line_items expanded, or there is nothing to read back.
   const { calls } = await withStripeStub(() =>
-    worker.fetch(buy("/buy/work-order?src=probe.loop29", { "x-mcp-probe": "1" }), testEnv(), ctx));
+    worker.fetch(buy("/buy/work-order?src=probe.loop29", { "x-mcp-probe": "1" }), liveProbeEnv(), ctx));
   assert.equal(calls[0].params["expand[]"], "line_items");
+
+  // /health reports the guard so a monitor can verify it without opening a Session.
+  const health = async (env) => (await worker.fetch(new Request("https://mcp.zovo.one/health"), env, ctx)).json();
+  assert.equal((await health(testEnv())).probe_live_sessions, "blocked");
+  assert.equal((await health(liveProbeEnv())).probe_live_sessions, "allowed");
 });
 
 // ---------------------------------------------------------------------------

@@ -101,7 +101,18 @@ test('short operator probes expire consistently across retries and cannot leave 
     const req = request(`/buy/invoice?tenant=${TENANT}`, 'POST');
     req.headers.set('x-mcp-probe-expiry', 'short');
     if (marked) req.headers.set('x-mcp-probe', '1');
-    const { value, calls } = await stubStripe(() => worker.fetch(req, env, ctx));
+    if (marked) {
+      // Default: a marked probe makes no Stripe call (2026-11-13 Stripe account guard).
+      const guarded = request(`/buy/invoice?tenant=${TENANT}`, 'POST');
+      guarded.headers.set('x-mcp-probe-expiry', 'short');
+      guarded.headers.set('x-mcp-probe', '1');
+      const { value: skipped, calls: none } = await stubStripe(() => worker.fetch(guarded, env, ctx));
+      assert.equal(skipped.status, 303);
+      assert.equal(skipped.headers.get('x-mcp-buy'), 'probe-no-live-session');
+      assert.equal(none.length, 0);
+    }
+    const runEnv = marked ? { ...env, ALLOW_LIVE_PROBE_SESSIONS: '1' } : env;
+    const { value, calls } = await stubStripe(() => worker.fetch(req, runEnv, ctx));
     assert.equal(value.status, 303);
     if (marked) {
       const expiry = Number(calls[0].params.expires_at);
