@@ -9,7 +9,7 @@ Mortgage and loan calculators on the web bury the answer under ads and lead form
 ## What it does
 
 - `loan_payment` — principal, annual rate (%), term in years → monthly payment, total paid, total interest. Zero-interest loans are handled exactly (straight-line division), not by a formula edge case.
-- `loan_amortize` — the same inputs → the full schedule, month by month, with running balance. Ask for "first 12 months" or the whole term.
+- `loan_amortize` — the same inputs → the full schedule, year by year, with running balance.
 
 ## Install
 
