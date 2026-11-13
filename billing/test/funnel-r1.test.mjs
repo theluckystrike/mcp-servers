@@ -75,7 +75,8 @@ async function buyOnce(kv, path, headers) {
 
 test("CONTROL: one identifiable human click moves the counter by exactly one, and nothing else does", async () => {
   const kv = countingKv();
-  const SRC = "probe.funnel-r1.control";
+  // A storefront src: probe.* sources never reach Stripe or the counter (2026-11-13 guard).
+  const SRC = "store.funnel-r1.control";
   const stats0 = await clickStats(env(kv));
   assert.equal(stats0.total_clicks, 0, "the v3 instrument does not start at zero");
 
@@ -103,6 +104,10 @@ test("CONTROL: one identifiable human click moves the counter by exactly one, an
     const after = (await clickStats(env(kv))).total_clicks;
     assert.equal(after, before, `${what} was counted as a human click`);
   }
+  // A browser-shaped request on a probe.* src neither counts nor reaches Stripe.
+  const probeSrc = await buyOnce(kv, "/buy/invoice?src=probe.funnel-r1.control", HUMAN);
+  assert.equal(probeSrc.res.headers.get("x-mcp-buy"), "probe-no-live-session");
+  assert.equal(probeSrc.calls.length, 0, "a probe.* src reached Stripe");
   assert.equal((await clickStats(env(kv))).total_clicks, 1, "the counter did not end where the one real click left it");
 });
 

@@ -137,7 +137,24 @@ test('an explicitly resumed checkout records its redirect without creating a new
 });
 
 test('a cached explicit probe redirect records only the probe cohort and makes no Stripe call', async (t) => {
+  // Default (2026-11-13 Stripe account guard): an explicit probe never reaches Stripe or the
+  // probe cache, and records no handoff in either cohort.
+  const g = fixture(t);
+  g.values.set('probe-session:v2:invoice', JSON.stringify({ url: CHECKOUT, headers: {} }));
+  const guarded = await g.call('/buy/invoice?acq=guide', {
+    method: 'POST', headers: { ...POST_HEADERS, 'x-mcp-probe': '1' }, body: 'intent=checkout',
+  });
+  assert.equal(guarded.status, 303);
+  assert.equal(guarded.headers.get('x-mcp-buy'), 'probe-no-live-session');
+  assert.notEqual(guarded.headers.get('location'), CHECKOUT);
+  assert.equal(g.stripeCalls.length, 0);
+  const gStats = await g.stats();
+  assert.equal(handoffs(gStats, 'probe'), 0);
+  assert.equal(handoffs(gStats), 0);
+
+  // With the owner-approved override, a cached probe Session is reused.
   const f = fixture(t);
+  f.env.ALLOW_LIVE_PROBE_SESSIONS = '1';
   f.values.set('probe-session:v2:invoice', JSON.stringify({ url: CHECKOUT, headers: {} }));
   const response = await f.call('/buy/invoice?acq=guide', {
     method: 'POST', headers: { ...POST_HEADERS, 'x-mcp-probe': '1' }, body: 'intent=checkout',

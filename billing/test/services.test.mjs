@@ -96,9 +96,10 @@ test("POST /buy/svc-audit sends custom field, service metadata and no tenant to 
       line_items: { data: [{ description: "McpStamp Readiness Audit", amount_total: 49000, price: { unit_amount: 49000 } }] } });
   };
   try {
-    const page = await worker.fetch(new Request("https://mcp.zovo.one/buy/svc-audit?src=test", { headers: browser }), {}, ctx);
+    // A storefront src: test.* and other synthetic sources never reach Stripe (2026-11-13 guard).
+    const page = await worker.fetch(new Request("https://mcp.zovo.one/buy/svc-audit?src=site.services.audit", { headers: browser }), {}, ctx);
     const token = (await page.text()).match(/name="order_token" value="([^"]+)"/)[1];
-    const r = await worker.fetch(new Request(`https://mcp.zovo.one/buy/svc-audit?src=test&tenant=anon_${"a".repeat(32)}`, {
+    const r = await worker.fetch(new Request(`https://mcp.zovo.one/buy/svc-audit?src=site.services.audit&tenant=anon_${"a".repeat(32)}`, {
       method: "POST", body: `intent=checkout&order_token=${encodeURIComponent(token)}`,
       headers: { ...browser, origin: "https://mcp.zovo.one", "content-type": "application/x-www-form-urlencoded" },
     }), { REMOTE_DATA: kv(), LICENSES: kv() }, ctx);
@@ -114,6 +115,15 @@ test("POST /buy/svc-audit sends custom field, service metadata and no tenant to 
     assert.equal(sent.get("metadata[tenant]"), null);
     assert.equal(sent.get("client_reference_id"), null);
     for (const [k, v] of sent) assert.notEqual(v, "undefined", k);
+
+    sent = undefined;
+    const synthetic = await worker.fetch(new Request("https://mcp.zovo.one/buy/svc-audit?src=test", {
+      method: "POST", body: `intent=checkout&order_token=${encodeURIComponent(token)}`,
+      headers: { ...browser, origin: "https://mcp.zovo.one", "content-type": "application/x-www-form-urlencoded" },
+    }), { REMOTE_DATA: kv(), LICENSES: kv() }, ctx);
+    assert.equal(synthetic.status, 303);
+    assert.equal(synthetic.headers.get("x-mcp-buy"), "probe-no-live-session");
+    assert.equal(sent, undefined, "a src=test POST reached Stripe");
   } finally {
     globalThis.fetch = originalFetch;
   }

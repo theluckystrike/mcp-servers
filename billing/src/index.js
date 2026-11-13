@@ -1255,6 +1255,24 @@ const SRC_RE = /^[a-z0-9][a-z0-9._-]{0,90}$/;
 const headerSafe = (v) => String(v ?? "").replace(/[^\x20-\x7e]/g, " ").slice(0, 120);
 
 /**
+ * Stripe account guard (2026-11-13). Every live Checkout Session this worker opens is a
+ * Stripe object a risk review can see. 5,709 live sessions were opened from this host
+ * with 0 completions (2026-08-30..11-12): 5,652 before 2026-09-18 (crawler GETs, fixed on
+ * 09-13), and since then 16 tagged `x-mcp-probe: 1` and about 10 from agent sources such as
+ * `operator.probe`, `diagnostic.orchestrator`, `s137.*`, `sprint.*`, `verify.*`, `qa.*`.
+ * There is no test-mode key or test price on this worker, so such a request now gets NO
+ * Stripe call at all: a 303 to the product page with `x-mcp-buy: probe-no-live-session`
+ * and the catalog amount in `x-mcp-probe-amount`. Real buyers never send the header and
+ * storefront links never carry these src prefixes. Set ALLOW_LIVE_PROBE_SESSIONS = "1"
+ * only for a deliberate, owner-approved live release probe.
+ */
+export const SYNTHETIC_SRC_RE = /^(probe|operator|qa|diagnostic|verify|sprint|test|smoke|ga4_smoke|s[0-9]+)(\.|_|-|$)/i;
+export function syntheticCheckout(explicitProbe, srcParam, env = {}) {
+  if (env && env.ALLOW_LIVE_PROBE_SESSIONS === "1") return false;
+  return explicitProbe === true || SYNTHETIC_SRC_RE.test(typeof srcParam === "string" ? srcParam : "");
+}
+
+/**
  * What a probe needs in order to assert that the checkout it was redirected to is the
  * right product at the right price. Taken from the Session Stripe returned, never from
  * the PRODUCTS row that was sent, so it is an independent reading rather than an echo.
@@ -2026,6 +2044,8 @@ const worker = {
         products: [...Object.keys(PRODUCTS), ...Object.keys(SERVICES)],
         services: Object.keys(SERVICES),
         stripe_mode: (env.STRIPE_SECRET_KEY || "").includes("_live_") || (env.STRIPE_SECRET_KEY || "").startsWith("rk_live") ? "live" : "test",
+        // Stripe account guard: "blocked" means probe/agent-tagged /buy POSTs open no live Session.
+        probe_live_sessions: syntheticCheckout(true, "", env) ? "blocked" : "allowed",
         time: new Date().toISOString(),
       });
     }
@@ -2853,6 +2873,15 @@ const LLM_USE_WHEN = {
       // v1 clicks (66.0%) became "demand".
       const srcParam = url.searchParams.get("src") || "";
       const src = validSrc(srcParam) ? srcParam : `${UNATTRIBUTED_PREFIX}${validSrc(asked) ? asked : id}`;
+      if (syntheticCheckout(explicitProbe, srcParam, env)) {
+        const entry = catalogEntry(id);
+        console.log(JSON.stringify({ event: "checkout_session_skipped", reason: "synthetic", product: id, source: src.slice(0, 60) }));
+        return new Response(null, { status: 303, headers: {
+          Location: service ? mcpstampLink(MCPSTAMP_SERVICES_URL, `probe.${id}`) : `https://${host}/s/${encodeURIComponent(PAGES[asked] ? asked : id)}`,
+          "cache-control": "no-store", "x-mcp-buy": "probe-no-live-session", "x-mcp-probe-livemode": "none",
+          "x-mcp-probe-product": headerSafe(id), "x-mcp-probe-amount": headerSafe(entry && Number.isFinite(entry.usd) ? entry.usd * 100 : ""),
+        } });
+      }
       if (counted) ctx.waitUntil(recordClick(env, src));
       try {
         const probeKey = probeTag && !tenant ? `probe-session:v2:${asked}${shortProbe ? ':short' : ''}` : "";
