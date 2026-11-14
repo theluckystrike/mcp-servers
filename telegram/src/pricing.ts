@@ -62,7 +62,8 @@ export const starsUsd = (stars: number): string =>
 export function productForPayload(payload: string): string | undefined {
   if (payload === "mcp-bundle-3000") return "*";
   const m = /^mcp-single-([a-z0-9][a-z0-9-]*)$/.exec(payload);
-  return m ? m[1] : undefined;
+  // "mcp-single-1500" is the plan template, not a product.
+  return m && !/^[0-9]+$/.test(m[1]!) ? m[1] : undefined;
 }
 
 /** Provider-token-free XTR invoice parameters (pure; asserted by offline-test). */

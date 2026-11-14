@@ -14,7 +14,10 @@
 
 import { buildBot, buildMenuKeyboard, BOT_TOKEN_ENV } from "./bot.js";
 import { CATALOG, PICKER_TOP, hostedUrl, hostedServers, highFitServers } from "./catalog.js";
-import { PRICES, planForPayload, STAR_USD } from "./pricing.js";
+import { PRICES, planForPayload, STAR_USD, productForPayload } from "./pricing.js";
+import { sendInvoice } from "./bot.js";
+import { readFileSync } from "node:fs";
+import type { FetchLike } from "./fulfill.js";
 import { InlineKeyboard } from "grammy";
 
 function assert(cond: boolean, msg: string): void {
@@ -73,6 +76,58 @@ const run = async (): Promise<void> => {
   assert(currency === "XTR", "currency is XTR for digital goods");
   const providerToken = "";
   assert(providerToken === "", "provider_token empty for digital goods");
+
+  console.log("\n=== single invoice carries the chosen server ===");
+  let sentPayload = "";
+  await sendInvoice({
+    api: { createInvoiceLink: async (_t, _d, p) => { sentPayload = p; return "https://t.me/$stub"; } },
+    reply: async () => undefined,
+  }, PRICES[0]!, "invoice");
+  assert(sentPayload === "mcp-single-invoice", `single invoice payload is mcp-single-invoice (got ${sentPayload})`);
+  assert(productForPayload("mcp-single-1500") === undefined, "plan template payload mcp-single-1500 is not a product");
+
+  console.log("\n=== Stars payment updates through the billing worker (no network) ===");
+  // billing/src/index.js is plain JS; load it at runtime from the sibling directory.
+  const billingUrl = new URL("../../billing/src/index.js", import.meta.url).href;
+  const worker = (await import(billingUrl)).default as { fetch: (r: Request, e: unknown, c: unknown) => Promise<Response> };
+  const kv = new Map<string, string>();
+  let kvPuts = 0;
+  const env = {
+    TELEGRAM_WEBHOOK_SECRET: "offline-secret",
+    LICENSE_PRIVATE_KEY_PEM: readFileSync(new URL("../../keys/license-private.pem", import.meta.url), "utf8"),
+    LICENSES: { get: async (k: string) => kv.get(k) ?? null, put: async (k: string, v: string) => { kvPuts++; kv.set(k, v); } },
+  };
+  const fetchImpl: FetchLike = async (url, init) => {
+    const res = await worker.fetch(new Request(url, init), env, { waitUntil() {} });
+    return { status: res.status, json: () => res.json() };
+  };
+  const calls: Array<{ method: string; payload: Record<string, unknown> }> = [];
+  const payBot = buildBot(dummy, { secret: "offline-secret", fetchImpl, delayMs: 1 });
+  payBot.botInfo = { id: 1, is_bot: true, first_name: "t", username: "t_bot", can_join_groups: false,
+    can_read_all_group_messages: false, supports_inline_queries: false, can_connect_to_business: false,
+    has_main_web_app: false } as typeof payBot.botInfo;
+  payBot.api.config.use(async (_prev, method, payload) => {
+    calls.push({ method, payload: payload as Record<string, unknown> });
+    return { ok: true, result: true } as never;
+  });
+  const pcq = (payload: string, amount: number) => ({ update_id: 10, pre_checkout_query: { id: "q1",
+    from: { id: 7, is_bot: false, first_name: "b" }, currency: "XTR", total_amount: amount, invoice_payload: payload } });
+  await payBot.handleUpdate(pcq("mcp-single-invoice", 1500) as never);
+  assert(calls.at(-1)?.method === "answerPreCheckoutQuery" && calls.at(-1)?.payload.ok === true, "pre_checkout ok for a valid order");
+  await payBot.handleUpdate(pcq("mcp-single-1500", 1500) as never);
+  assert(calls.at(-1)?.payload.ok === false, "pre_checkout rejected for the legacy payload");
+  const paid = { update_id: 11, message: { message_id: 3, date: 1794643200, chat: { id: 7, type: "private", first_name: "b" },
+    from: { id: 7, is_bot: false, first_name: "b" }, successful_payment: { currency: "XTR", total_amount: 3000,
+      invoice_payload: "mcp-bundle-3000", telegram_payment_charge_id: "stxOFFLINE", provider_payment_charge_id: "" } } };
+  await payBot.handleUpdate(paid as never);
+  const firstText = String(calls.at(-1)?.payload.text ?? "");
+  await payBot.handleUpdate({ ...paid, update_id: 12 } as never);
+  const secondText = String(calls.at(-1)?.payload.text ?? "");
+  const key = /MCPL1\.\S+/.exec(firstText)?.[0];
+  assert(!!key && firstText.includes("license_activate"), "successful_payment replies with a key and activation steps");
+  assert(kvPuts === 1, `duplicate update writes the ledger once (puts=${kvPuts})`);
+  assert(secondText.includes(key ?? "-"), "duplicate update returns the same key");
+  assert(JSON.parse(kv.get("tgstars:stxOFFLINE") ?? "{}").provider === "telegram-stars", "ledger provider is telegram-stars");
 
   console.log("\n=== live invoice-link attempt (recorded honestly) ===");
   const hasToken = !!process.env[BOT_TOKEN_ENV];

@@ -11,7 +11,7 @@
 import { Bot, InlineKeyboard, Keyboard } from "grammy";
 import { CATALOG, hostedUrl, PICKER_TOP } from "./catalog.js";
 import { PRICES, PricePlan, productForPayload, invoiceParams } from "./pricing.js";
-import { mintKey, deliveryMessage, recordPayment } from "./fulfill.js";
+import { forwardUpdate, recordPendingPayment, ForwardOptions } from "./fulfill.js";
 
 /** Buyer-facing USD per Star, kept in sync with STAR_USD in pricing.ts. */
 export const STAR_RATE = 0.013;
@@ -23,7 +23,7 @@ export { STAR_USD } from "./pricing.js";
 export const BOT_TOKEN_ENV = "TELEGRAM_BOT_TOKEN";
 
 /** Build the bot. Requires process.env[TELEGRAM_BOT_TOKEN] at bot.start(). */
-export function buildBot(token: string): Bot {
+export function buildBot(token: string, forward: ForwardOptions = {}): Bot {
   const bot = new Bot(token);
 
   // /start: welcome plus the server-picker menu.
@@ -125,54 +125,49 @@ export function buildBot(token: string): Bot {
     await sendInvoice(ctx, plan, name);
   });
 
-  // Approve pre-checkout only when the payload maps to a real product.
-  // "mcp-single-1500" (legacy payload) is rejected: product "1500" is not a
-  // server, and minting a key for a non-existent product would ship a dead key.
+  // Pre-checkout and delivery are decided by the billing worker (POST /telegram/webhook),
+  // which validates product, currency and Star amount, and mints through the same path as
+  // Stripe, idempotent on telegram_payment_charge_id. Telegram allows 10 s to answer.
   bot.on("pre_checkout_query", async (ctx) => {
-    const payload = ctx.preCheckoutQuery.invoice_payload;
-    const product = productForPayload(payload);
-    if (product) {
-      await ctx.answerPreCheckoutQuery(true);
-      return;
+    try {
+      const reply = await forwardUpdate(ctx.update, { attempts: 2, delayMs: 500, ...forward });
+      if (reply.method === "answerPreCheckoutQuery") {
+        if (reply.ok) await ctx.answerPreCheckoutQuery(true);
+        else await ctx.answerPreCheckoutQuery(false, { error_message: reply.error_message || "Order refused." });
+        return;
+      }
+      throw new Error("unexpected worker reply");
+    } catch (err) {
+      console.error("pre_checkout forward failed:", String(err));
+      await ctx.answerPreCheckoutQuery(false, {
+        error_message: "Checkout is unavailable for a moment. Nothing was charged; please try again shortly.",
+      });
     }
-    await ctx.answerPreCheckoutQuery(false, {
-      error_message: "Unknown product payload - reply /support if this persists.",
-    });
   });
 
-  // Deliver the license after payment clears. Only act on a real
-  // successful_payment update, never on the pre-checkout answer.
   bot.on("message:successful_payment", async (ctx) => {
     const sp = ctx.message.successful_payment;
-    const product = productForPayload(sp.invoice_payload);
-    const base = {
-      ts: new Date().toISOString(),
-      tgUser: String(ctx.from?.id ?? "unknown"),
-      payload: sp.invoice_payload,
-      stars: sp.total_amount,
-      currency: sp.currency,
-    };
-    if (!product) {
-      recordPayment({ ...base, mintError: "unknown payload" });
-      await ctx.reply(
-        `Payment received: ${sp.total_amount} Stars, but the invoice payload "${sp.invoice_payload}" ` +
-          "does not map to a product. Reply /support with this message for a manual key.",
-      );
-      return;
-    }
     try {
-      const key = mintKey({
-        product,
-        id: base.tgUser,
-        iat: Math.floor(Date.now() / 1000),
-      });
-      recordPayment({ ...base, key });
-      await ctx.reply(deliveryMessage(key, product));
+      const reply = await forwardUpdate(ctx.update, forward);
+      if (reply.method === "sendMessage" && typeof reply.text === "string") {
+        await ctx.reply(reply.text, { link_preview_options: { is_disabled: true } });
+        return;
+      }
+      throw new Error("unexpected worker reply");
     } catch (err) {
-      recordPayment({ ...base, mintError: String(err) });
+      recordPendingPayment({
+        ts: new Date().toISOString(),
+        provider: "telegram-stars",
+        telegram_payment_charge_id: sp.telegram_payment_charge_id,
+        user_id: String(ctx.from?.id ?? "unknown"),
+        payload: sp.invoice_payload,
+        stars: sp.total_amount,
+        error: String(err),
+      });
       await ctx.reply(
-        `Payment received: ${sp.total_amount} Stars. The key could not be issued right now ` +
-          "(a configuration error on our side, not yours). Reply /support and we will send your key manually.",
+        `Payment received: ${sp.total_amount} Stars. Your key could not be issued right now ` +
+          "(a problem on our side, not yours). Write to support@zovo.one with this payment id " +
+          `and you will get the key or a full refund:\n${sp.telegram_payment_charge_id}`,
       );
     }
   });
@@ -234,10 +229,12 @@ export async function sendInvoice(ctx: { api?: { createInvoiceLink: (t: string, 
   // token-gated). Without one, surface the plan so the buyer sees pricing.
   if (ctx.api) {
     try {
+      // params, not plan: a single invoice must carry mcp-single-<server>. The plan
+      // template payload "mcp-single-1500" would mint a key for product "1500".
       const link = await ctx.api.createInvoiceLink(
-        plan.title,
-        plan.description,
-        plan.payload,
+        params.title,
+        params.description,
+        params.payload,
         "", // provider_token: empty for XTR digital goods
         "XTR",
         prices,

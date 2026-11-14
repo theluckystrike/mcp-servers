@@ -1,75 +1,88 @@
-// Fulfillment for XTR (Stars) payments: mint a real MCPL1 license key.
+// Fulfillment for XTR (Stars) payments.
 //
-// The key format matches billing/src/license.js exactly:
-//   body = base64url(JSON.stringify({ v:1, p:<product>, id:<id>, iat:<epoch> }))
-//   key  = "MCPL1.<body>.<base64url(Ed25519 sig over body ascii)>"
+// The bot does not mint keys. It forwards the two payment updates (pre_checkout_query and
+// the message carrying successful_payment) to the billing worker's POST /telegram/webhook,
+// which mints through the same Ed25519 path, KV namespace and ledger as Stripe, idempotent
+// on telegram_payment_charge_id (billing/src/telegram-stars.js). The worker answers with a
+// Bot API method in webhook-reply form, which the bot executes.
 //
-// product is "*" for the bundle (activates every server) or the single server
-// name. The buyer activates with license_activate in any hosted server, or
-// MCP_LICENSE_KEY in the environment. Keys verify offline; nothing phones home.
-//
-// The private PEM is read from MCP_LICENSE_PEM (absolute path) or
-// ../keys/license-private.pem relative to the telegram/ dir. If it is missing
-// the mint fails loudly - we never fabricate a key.
+// Env:
+//   TELEGRAM_WEBHOOK_SECRET  shared secret, sent as X-Telegram-Bot-Api-Secret-Token
+//   BILLING_TELEGRAM_URL     default https://mcp.zovo.one/telegram/webhook
 
-import { readFileSync, mkdirSync, appendFileSync } from "node:fs";
-import { createPrivateKey, sign as cryptoSign } from "node:crypto";
+import { mkdirSync, appendFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 export const REPO_ROOT = join(HERE, "..", "..");
+export const DEFAULT_BILLING_URL = "https://mcp.zovo.one/telegram/webhook";
 
-function loadPem(): string {
-  const explicit = process.env.MCP_LICENSE_PEM;
-  if (explicit) return readFileSync(explicit, "utf8");
-  return readFileSync(join(REPO_ROOT, "keys", "license-private.pem"), "utf8");
+/** Bot API method in webhook-reply form, as returned by the billing worker. */
+export interface WorkerReply {
+  method?: string;
+  ok?: boolean;
+  error_message?: string;
+  text?: string;
 }
 
-function b64url(buf: Buffer): string {
-  return buf.toString("base64").replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+export type FetchLike = (url: string, init: { method: string; headers: Record<string, string>; body: string }) =>
+  Promise<{ status: number; json: () => Promise<unknown> }>;
+
+export interface ForwardOptions {
+  url?: string;
+  secret?: string;
+  fetchImpl?: FetchLike;
+  attempts?: number;
+  delayMs?: number;
 }
 
-export interface MintInput {
-  product: string; // "*" for bundle, else single server name
-  id: string; // deterministic buyer identifier (Telegram user id)
-  iat: number; // epoch seconds
+/**
+ * POST one Telegram update to the billing worker. Retries 5xx and network errors (the
+ * worker is idempotent on the charge id, so a retry never mints twice). Throws when every
+ * attempt fails or the secret is missing.
+ */
+export async function forwardUpdate(update: unknown, opts: ForwardOptions = {}): Promise<WorkerReply> {
+  const secret = opts.secret ?? process.env.TELEGRAM_WEBHOOK_SECRET;
+  if (!secret) throw new Error("TELEGRAM_WEBHOOK_SECRET not set");
+  const url = opts.url ?? process.env.BILLING_TELEGRAM_URL ?? DEFAULT_BILLING_URL;
+  const doFetch: FetchLike = opts.fetchImpl ?? ((u, init) => fetch(u, init));
+  const attempts = opts.attempts ?? 4;
+  let lastErr: unknown;
+  for (let i = 0; i < attempts; i++) {
+    try {
+      const res = await doFetch(url, {
+        method: "POST",
+        headers: { "content-type": "application/json", "x-telegram-bot-api-secret-token": secret },
+        body: JSON.stringify(update),
+      });
+      if (res.status < 500) {
+        if (res.status !== 200) throw Object.assign(new Error(`billing worker refused update: ${res.status}`), { final: true });
+        return (await res.json()) as WorkerReply;
+      }
+      lastErr = new Error(`billing worker ${res.status}`);
+    } catch (err) {
+      if ((err as { final?: boolean }).final) throw err;
+      lastErr = err;
+    }
+    if (i < attempts - 1) await new Promise((r) => setTimeout(r, (opts.delayMs ?? 1000) * 2 ** i));
+  }
+  throw lastErr instanceof Error ? lastErr : new Error(String(lastErr));
 }
 
-/** Mint a real MCPL1 key. Throws when the PEM is absent - never fabricates. */
-export function mintKey(input: MintInput): string {
-  const pem = loadPem();
-  const body = b64url(Buffer.from(JSON.stringify({ v: 1, p: input.product, id: input.id, iat: input.iat })));
-  const priv = createPrivateKey(pem);
-  // Ed25519 in Node: sign(null, data, key) signs the raw message.
-  const sig = cryptoSign(null, Buffer.from(body, "ascii"), priv);
-  return `MCPL1.${body}.${b64url(sig)}`;
-}
-
-/** Append a payment record for reconciliation. Returns the line written. */
-export function recordPayment(out: {
+/** Local record of a payment the worker could not confirm, for manual follow-up. */
+export function recordPendingPayment(out: {
   ts: string;
-  tgUser: string;
+  provider: "telegram-stars";
+  telegram_payment_charge_id: string;
+  user_id: string;
   payload: string;
   stars: number;
-  currency: string;
-  key?: string;
-  mintError?: string;
+  error: string;
 }): string {
   const dir = join(REPO_ROOT, "ledger");
   mkdirSync(dir, { recursive: true });
   const line = JSON.stringify(out);
-  appendFileSync(join(dir, "xtr-payments.jsonl"), line + "\n");
+  appendFileSync(join(dir, "xtr-pending.jsonl"), line + "\n");
   return line;
-}
-
-/** Build the buyer-facing delivery message for a minted key. */
-export function deliveryMessage(key: string, product: string): string {
-  const target = product === "*" ? "every hosted server" : `the ${product} server`;
-  return (
-    `Your lifetime license key:\n\n${key}\n\n` +
-    `To activate ${target}: in Claude, run license_activate inside the server and paste this key when asked, ` +
-    `or set MCP_LICENSE_KEY to it in your environment. Keys verify offline - nothing is sent anywhere after activation.\n\n` +
-    `Refunds within 14 days: support@zovo.one.`
-  );
 }

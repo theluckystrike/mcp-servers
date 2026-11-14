@@ -204,7 +204,16 @@ same URL as the chat menu button.
 2. The Mini App lists all 41 hosted servers, each with a try-it link to `https://mcp.zovo.one/mcp/<server>`.
 3. They try a tool for free, then tap Buy with Stars.
 4. The bot mints an XTR invoice at 1500 Stars ($19.50) for a single tool or 3000 Stars ($39.00) for the bundle.
-5. Telegram collects the Stars and delivers a `successful_payment` update to the bot, which grants lifetime access.
+5. Telegram collects the Stars and delivers a `successful_payment` update to the bot. The bot forwards it
+   to the billing worker (`POST https://mcp.zovo.one/telegram/webhook`, header
+   `X-Telegram-Bot-Api-Secret-Token`), which mints the MCPL1 key through the Stripe mint path, records it in
+   the LICENSES KV namespace under `tgstars:<telegram_payment_charge_id>` (provider `telegram-stars`, with the
+   user id needed by `refundStarPayment`), and returns the delivery message. Duplicate updates return the same
+   key and write nothing. Pre-checkout is decided by the same worker (product, `XTR`, exact Star amount).
+
+Payment env, on both sides: `TELEGRAM_WEBHOOK_SECRET` (bot env, and `wrangler secret put TELEGRAM_WEBHOOK_SECRET`
+on mcp-billing). The worker route returns 404 until that secret exists. `BILLING_TELEGRAM_URL` overrides the
+worker URL for the bot.
 
 ### Still human after the script runs
 

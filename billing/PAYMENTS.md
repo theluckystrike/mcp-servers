@@ -102,6 +102,15 @@ Existing code: telegram/src/bot.ts already sends the invoice (`sendInvoice` /
 `createInvoiceLink`), approves `pre_checkout_query`, and receives `successful_payment`
 with `sp.total_amount` and `sp.invoice_payload` ("mcp-single-1500" / "mcp-bundle-3000").
 
+Update s1114 (2026-11-14): fulfillment is wired. `billing/src/telegram-stars.js` serves
+`POST /telegram/webhook` (secret header, inert until `TELEGRAM_WEBHOOK_SECRET` is set): it
+validates pre-checkout (sellable product, XTR, 1500/3000 Stars), mints on `successful_payment`
+with `mintLicense`/`verifyLicenseKey`, writes `tgstars:<telegram_payment_charge_id>` to
+LICENSES (provider `telegram-stars`, user id kept for `refundStarPayment`) and is idempotent
+on the charge id. The bot forwards both payment updates there. Single invoices now carry
+`mcp-single-<server>`; before the fix they carried `mcp-single-1500`, which minted a key for
+product "1500". The steps below are historical; only the BotFather token remains human-gated.
+
 Exact remaining integration steps (agent-wirable once a bot token exists):
 
 1. HUMAN-GATED: create/claim the bot at https://t.me/BotFather (account creation and

@@ -1,4 +1,5 @@
 import { mintLicense, verifyLicenseKey, sha256Hex } from "./license.js";
+import { telegramWebhook } from "./telegram-stars.js";
 import { readBinding } from "./hosted-bindings.js";
 import { requestCohort, readFunnelCohort, recordFunnelEvent, funnelStats } from "./funnel.js";
 import { PAGES, CHANGELOG } from "./pages.js";
@@ -414,7 +415,7 @@ export const VALIDATION = { at: "2026-09-24", pass: 1254, total: 1254, servers: 
  * same way: test/checkout-r1.test.mjs counts the `test(` declarations on disk and fails
  * if this disagrees. The page said 25 when there were 99.
  */
-export const BILLING_TEST_COUNT = 282;
+export const BILLING_TEST_COUNT = 292;
 /**
  * The npm publish is pending: `npx -y @theluckystrike/mcp-<server>` returns E404 today,
  * and publishing needs an operator browser login (docs/HUMAN_GATED_PACK.md section 1).
@@ -2993,6 +2994,10 @@ const LLM_USE_WHEN = {
         console.error(`recover mint failed for ${await sessionLogRef(sid)}: ${safeLogError(e)}`);
         return Response.json({ ok: false, reason: "key could not be issued, email support@zovo.one" }, { status: 500, headers: nostore });
       }
+    }
+
+    if (path === "/telegram/webhook" && method === "POST") {
+      return telegramWebhook(request, env, PRODUCTS);
     }
 
     if (path === "/webhook" && method === "POST") {
