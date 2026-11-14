@@ -411,6 +411,13 @@ const server = new McpServer(
   { capabilities: { tools: {}, resources: {}, prompts: {} } },
 );
 
+// Same TensorFlow-of-types problem as the other servers: the SDK infers every handler from the
+// Zod shape, eighteen times over, and tsc pays an exponential cost before failing with TS2589.
+// One alias keeps validation at runtime and takes the inference out of the hot path.
+type Registrar = (name: string, cfg: unknown, handler: (...args: any[]) => any) => unknown;
+const regTool = server.registerTool.bind(server) as unknown as Registrar;
+const regPrompt = server.registerPrompt.bind(server) as unknown as Registrar;
+
 gate.registerTools(server as unknown as { registerTool: Function });
 
 function stopRunning(db: DB, endDate: Date, note?: string): Entry {
@@ -436,7 +443,7 @@ function stopRunning(db: DB, endDate: Date, note?: string): Entry {
   return entry;
 }
 
-server.registerTool("timer_start", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
+regTool("timer_start", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Start timer",
   description: "Start a stopwatch for work on a project and return the start time. Only one runs at a time: a new one stops and logs the previous, naming it. rate is an hourly rate in MAJOR units for this timer only.",
   inputSchema: {
@@ -471,7 +478,7 @@ server.registerTool("timer_start", { annotations: { readOnlyHint: false, destruc
   });
 }));
 
-server.registerTool("timer_stop", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
+regTool("timer_stop", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Stop timer",
   description: "Stop the running timer and log it as one entry. Returns the duration, the money at the rate in force and the new entry id. With no timer running it says so and writes nothing.",
   inputSchema: { note: z.string().optional().describe("Optional note stored with the entry") },
@@ -490,7 +497,7 @@ server.registerTool("timer_stop", { annotations: { readOnlyHint: false, destruct
   });
 }));
 
-server.registerTool("timer_status", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+regTool("timer_status", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "Timer status",
   description: "Report the running timer and today's total hours. Today is the local calendar day, so a timer started at 23:30 yesterday contributes only the minutes since midnight. No arguments, and it writes nothing.",
   inputSchema: {},
@@ -518,7 +525,7 @@ server.registerTool("timer_status", { annotations: { readOnlyHint: true, destruc
   return ok(lines.join("\n"));
 }));
 
-server.registerTool("entry_add", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
+regTool("entry_add", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Add time entry",
   description: "Log time already worked as one entry and return its id, duration and amount. Give start plus end or minutes. rate is hourly in MAJOR units and is frozen on the entry, so a later rate change never moves it.",
   inputSchema: {
@@ -603,7 +610,7 @@ function perProject(entries: Entry[]): { project: string; seconds: number; count
     .map(([project, v]) => ({ project, ...v }));
 }
 
-server.registerTool("entry_log", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
+regTool("entry_log", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Log work time",
   description: "Log work time for a client/project in one step: minutes worked plus an optional note. The entry starts now minus the minutes, so it lands on today's day and week summaries.",
   inputSchema: {
@@ -643,7 +650,7 @@ server.registerTool("entry_log", { annotations: { readOnlyHint: false, destructi
   });
 }));
 
-server.registerTool("summary_day", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+regTool("summary_day", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "Daily summary",
   description: "Total hours logged for one calendar day (local date, default today), broken down per project.",
   inputSchema: {
@@ -659,7 +666,7 @@ server.registerTool("summary_day", { annotations: { readOnlyHint: true, destruct
   return ok(entries.length === 0 ? head : `${head}\n\n${table(["Project", "Entries", "Hours"], rows)}`);
 }));
 
-server.registerTool("summary_week", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+regTool("summary_week", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "Weekly summary",
   description: "Total hours logged in the week containing today (Mon-Sun, local dates), broken down per project.",
   inputSchema: {},
@@ -673,7 +680,7 @@ server.registerTool("summary_week", { annotations: { readOnlyHint: true, destruc
   return ok(entries.length === 0 ? head : `${head}\n\n${table(["Project", "Entries", "Hours"], rows)}`);
 }));
 
-server.registerTool("summary_client", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+regTool("summary_client", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "Client summary",
   description: "All-time totals for one client/project: hours, entry count and billable amount, with a per-day breakdown.",
   inputSchema: {
@@ -695,7 +702,7 @@ server.registerTool("summary_client", { annotations: { readOnlyHint: true, destr
   return ok(entries.length === 0 ? head : `${head}\n\n${table(["Day", "Hours"], rows)}`);
 }));
 
-server.registerTool("target_set", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+regTool("target_set", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "Set weekly hours goal",
   description: "Set a weekly hours goal used by target_check. Stored locally.",
   inputSchema: {
@@ -710,7 +717,7 @@ server.registerTool("target_set", { annotations: { readOnlyHint: false, destruct
   });
 }));
 
-server.registerTool("target_check", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+regTool("target_check", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "Check weekly hours goal",
   description: "Compare hours logged this week (Mon-Sun, local dates) against the weekly target from target_set.",
   inputSchema: {},
@@ -726,7 +733,7 @@ server.registerTool("target_check", { annotations: { readOnlyHint: true, destruc
     + (remaining > 0 ? ` ${remaining.toFixed(2)} h remaining.` : " Target reached."));
 }));
 
-server.registerTool("entry_list", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+regTool("entry_list", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "List time entries",
   description: "List logged entries as a table of id, day, start, project, task, hours, billable, tags and note, newest first, with total hours. Free reads the last 7 days and says so; Pro reads the whole history.",
   inputSchema: {
@@ -770,7 +777,7 @@ server.registerTool("entry_list", { annotations: { readOnlyHint: true, destructi
   return ok(body + tail + windowTail(w, pro));
 }));
 
-server.registerTool("entry_delete", { annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: false, openWorldHint: false },
+regTool("entry_delete", { annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: false, openWorldHint: false },
   title: "Delete time entry",
   description: "Delete one logged entry by id and report the project and hours removed. It never touches a running timer. A billed entry goes too, losing the invoice record, so correct one with entry_edit instead.",
   inputSchema: { id: z.string().describe("Entry id from entry_list") },
@@ -785,7 +792,7 @@ server.registerTool("entry_delete", { annotations: { readOnlyHint: false, destru
   });
 }));
 
-server.registerTool("entry_edit", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
+regTool("entry_edit", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Edit time entry",
   description: "Change one logged entry by id; only the fields you pass move. minutes keeps start and moves end, an end at or before start is refused, tags REPLACES the list, and rate is hourly in MAJOR units.",
   inputSchema: {
@@ -831,7 +838,7 @@ server.registerTool("entry_edit", { annotations: { readOnlyHint: false, destruct
   });
 }));
 
-server.registerTool("project_set_rate", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
+regTool("project_set_rate", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Set project rate",
   description: "Set the hourly rate and currency used to turn tracked hours into money for a project or client. Returns the new rate and, when re-rating is asked for, how many already logged entries changed.",
   inputSchema: {
@@ -967,7 +974,7 @@ function totalsOf(db: DB, entries: Entry[]): Totals {
 const TAG_OVERLAP_NOTE =
   "Tag rows can overlap: an entry tagged twice appears in both rows. The total counts every entry once.";
 
-server.registerTool("report", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+regTool("report", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "Time report",
   description: "Timesheet report: total tracked hours and billable money for a period, optionally grouped by (group by) project, day, task or tag - hours per project, how much to bill. Omit group_by for the plain total per currency.",
   inputSchema: {
@@ -1058,7 +1065,7 @@ server.registerTool("report", { annotations: { readOnlyHint: true, destructiveHi
   return ok(`${body}\n\nTotal ${hours(totalSec)} h, ${moneyOf(totals.amounts)}.${mixed}${overlap}${note}`);
 }));
 
-server.registerTool("export_csv", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
+regTool("export_csv", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Export entries to CSV",
   description: "Call this tool to export the timesheet to a CSV file (excel-friendly) you can hand to a bookkeeper: one row per entry with hours, billable, rate, currency and amount. Returns the file path written.",
   inputSchema: {
@@ -1100,7 +1107,7 @@ server.registerTool("export_csv", { annotations: { readOnlyHint: false, destruct
   return ok(`Wrote ${entries.length} entries to ${target}${note}`);
 }));
 
-server.registerTool("entry_mark_billed", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
+regTool("entry_mark_billed", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Mark time entries as billed",
   description: "Close the loop after an invoice is issued: stamp the tracked hours that went on it with the invoice number, so report and invoice_summary stop offering them and the same hours are never billed twice.",
   inputSchema: {
@@ -1153,7 +1160,7 @@ server.registerTool("entry_mark_billed", { annotations: { readOnlyHint: false, d
   });
 }));
 
-server.registerTool("invoice_summary", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+regTool("invoice_summary", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "Invoice summary",
   description: "Turn tracked billable time into invoice lines for one project: hours, hourly rate, amount per task and the total, one line per rate so two rates never average. Hours already marked billed are left out. Free: last 7 days.",
   inputSchema: {
@@ -1249,7 +1256,7 @@ server.registerResource("today", "timetracker://today", {
   return { contents: [{ uri: uri.href, mimeType: "text/plain", text }] };
 });
 
-server.registerPrompt("daily_standup", {
+regPrompt("daily_standup", {
   title: "Daily standup",
   description: "Write a standup update from the time tracked yesterday and today.",
   argsSchema: { audience: z.string().optional().describe("Who the update is for, e.g. 'client' or 'team'") },

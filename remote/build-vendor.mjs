@@ -23,6 +23,7 @@ const SERVERS = {
   "price-tracker": ["index.ts", "version.ts", "extract.ts", "fetch.ts", "redirect.ts", "store.ts"],
   "invoice": ["index.ts", "version.ts", "money.ts", "store.ts", "lib.ts"],
   "expense-tracker": ["index.ts", "version.ts", "money.ts", "store.ts"],
+  "ingredient-convert": ["index.ts", "version.ts", "lib.ts"],
   "spreadsheet": ["index.ts", "version.ts", "csv.ts", "expr.ts", "sheet.ts", "num.ts", "lib.ts"],
   "currency": ["index.ts", "version.ts", "ecb.ts", "money.ts", "rates.ts", "store.ts"],
   "timezone": ["index.ts", "version.ts", "jsonstore.ts", "tz.ts", "zones.ts", "lib.ts"],
@@ -454,7 +455,7 @@ function patchExpenseIndex(src) {
   // hosted build failure. The hosted rewording is what actually differs (KV download,
   // no filesystem), so anchor on the tool name and replace whatever description is there.
   src = must(src,
-    /(registerTool\("expense_export",\s*\{\s*(?:annotations: \{[^}]*\},\s*)?title: "[^"]*",\s*description: )"[^"]*"/,
+    /((?:registerTool|regTool)\("expense_export",\s*\{\s*(?:annotations: \{[^}]*\},\s*)?title: "[^"]*",\s*description: )"[^"]*"/,
     '$1"Export the expenses in a date range as csv, xlsx or json and return a download link that is valid for one hour. Nothing partial is ever written: if a limit is hit no file is produced at all."',
     "expense export description");
   src = must(src,
@@ -2295,8 +2296,13 @@ function patchBillingDocsIndex(src) {
  * slice is the one inside the tool being patched.
  */
 function patchDocText(src, tool, idExpr) {
-  const at = src.indexOf(`server.registerTool("${tool}"`);
-  if (at < 0) throw new Error(`patch did not apply: ${tool} not registered`);
+  // The registration may go through either the raw SDK call or the typed alias the
+  // servers use to stop TS2589 schema inference. Both spell the same registration.
+  const at = [`server.registerTool("${tool}"`, `server.regTool("${tool}"`, `regTool("${tool}"`]
+    .map((needle) => src.indexOf(needle))
+    .filter((i) => i >= 0)
+    .sort((a, b) => a - b)[0];
+  if (at === undefined) throw new Error(`patch did not apply: ${tool} not registered`);
   const patched = must(src.slice(at),
     '    const text = out.join("\\n");\n' +
     '    return ok(businessMissing() ? `${text}\\n\\n---\\n${NO_BUSINESS_NOTE}` : text);',
@@ -3335,11 +3341,30 @@ const EXTRA_IMPORTS = {
 /* -------------------------------------------------------------------- build */
 
 if (existsSync(OUT)) {
-  const handles = spawnSync('/usr/sbin/lsof', ['-t', '+D', OUT], { encoding: 'utf8' });
-  if (handles.error || handles.status !== 1 || handles.stdout.trim()) throw Error('Vendor regeneration refused: lsof did not establish zero open handles');
+  // lsof exits 1 when it finds nothing, which is the state we want. A transient reader (a
+  // parallel tsc, an editor indexer, a probe still holding a bundle) makes it exit 0 with a
+  // pid list instead, and a 2026-11-07 deploy failed outright for exactly that reason. Retry
+  // briefly against the same strict condition before refusing: contention that clears in a
+  // second is not a reason to abandon a deploy, and anything still holding a handle after
+  // the retries still blocks regeneration.
+  let handles, waited = 0;
+  for (let attempt = 0; attempt < 4; attempt++) {
+    handles = spawnSync('/usr/sbin/lsof', ['-t', '+D', OUT], { encoding: 'utf8' });
+    if (!handles.error && handles.status === 1 && !handles.stdout.trim()) break;
+    if (attempt < 3) { Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 750); waited += 750; }
+  }
+  if (handles.error || handles.status !== 1 || handles.stdout.trim()) {
+    throw Error(`Vendor regeneration refused: ${handles.stdout.trim().split(/\s+/).filter(Boolean).length} open handle(s) after ${waited}ms of retries`);
+  }
   const bytes = p => { const s = lstatSync(p); return s.isDirectory() ? readdirSync(p).reduce((n, f) => n + bytes(join(p, f)), 0) : s.size; };
-  appendFileSync(join(ROOT, 'data/build-deletions.jsonl'), JSON.stringify({ at: new Date().toISOString(), path: OUT, bytes: bytes(OUT), lsof: 'no open handles', reason: 'Regenerate derived hosted source from local server inputs' }) + '\n');
-  rmSync(OUT, { recursive: true });
+  // Only regenerate what this file owns. Wiping OUT wholesale used to delete the
+  // servers vendored by vendor-served.mjs / vendor-mcpserver.mjs, which this build
+  // does not know how to recreate - they vanished and 11 live endpoints would have
+  // 404'd on the next deploy. Anything not named in SERVERS is preserved.
+  const owned = Object.keys(SERVERS).map(n => join(OUT, n)).filter(p => existsSync(p));
+  const preserved = readdirSync(OUT).filter(d => !(d in SERVERS));
+  appendFileSync(join(ROOT, 'data/build-deletions.jsonl'), JSON.stringify({ at: new Date().toISOString(), path: OUT, bytes: owned.reduce((n, p) => n + bytes(p), 0), lsof: 'no open handles', removed_dirs: owned.length, preserved, reason: 'Regenerate derived hosted source from local server inputs' }) + '\n');
+  for (const p of owned) rmSync(p, { recursive: true });
 }
 
 for (const [name, files] of Object.entries(SERVERS)) {

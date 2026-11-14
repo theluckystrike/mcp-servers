@@ -22,7 +22,8 @@ function extract(name, signature) {
 }
 
 const OAUTH_CONSTS = src.slice(src.indexOf('const GUIDE ='), src.indexOf("interface ", src.indexOf("const OAUTH_RESOURCE ="))).replace(/^const /gm, "var ");
-const oauthProtectedResourceDoc = new Function(`${OAUTH_CONSTS}\n${extract("oauthProtectedResourceDoc", "oauthProtectedResourceDoc(")}; return oauthProtectedResourceDoc;`)();
+const oauthProtectedResourceDoc = new Function(`${OAUTH_CONSTS}\n${extract("oauthProtectedResourceDoc", "oauthProtectedResourceDoc(")
+  .replace("oauthProtectedResourceDoc(resource?: string)", "oauthProtectedResourceDoc(resource)")}; return oauthProtectedResourceDoc;`)();
 const oauthAuthorizationServerDoc = new Function(`${OAUTH_CONSTS}\n${extract("oauthAuthorizationServerDoc", "oauthAuthorizationServerDoc(")}; return oauthAuthorizationServerDoc;`)();
 
 // oauthClientId is async, so evaluate it separately with an async wrapper.

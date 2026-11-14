@@ -22,6 +22,7 @@ import { createServer as createTimeTracker } from "./vendor/time-tracker/index.j
 import { createServer as createPriceTracker } from "./vendor/price-tracker/index.js";
 import { createServer as createInvoice } from "./vendor/invoice/index.js";
 import { createServer as createExpenseTracker } from "./vendor/expense-tracker/index.js";
+import { createServer as createIngredientConvert } from "./vendor/ingredient-convert/index.js";
 import { createServer as createSpreadsheet } from "./vendor/spreadsheet/index.js";
 import { createServer as createCurrency } from "./vendor/currency/index.js";
 import { createServer as createTimezone } from "./vendor/timezone/index.js";
@@ -78,6 +79,7 @@ import { createServer as createOnboarding } from "./vendor/onboarding/index.js";
 import { createServer as createLeave } from "./vendor/leave/index.js";
 import { createServer as createPurchaseRequisition } from "./vendor/purchase-requisition/index.js";
 import { createServer as createBacklinkChecker } from "./vendor/backlink-checker/index.js";
+import { SATELLITES, satelliteUrl, toolsPage } from "./satellites.js";
 
 export interface Env { REMOTE_DATA: KVNamespace; FUNNEL: DurableObjectNamespace; SWEEP_SECRET?: string }
 
@@ -227,6 +229,7 @@ const SERVERS: Record<string, ServerCfg> = {
   "supplier-statement-check": { factory: createSupplierStatementCheck as () => McpServer },
   "three-way-match": { factory: createThreeWayMatch as () => McpServer },
   "invoice": { factory: createInvoice as () => McpServer },
+  "ingredient-convert": { factory: createIngredientConvert as () => McpServer },
   "expense-tracker": {
     factory: createExpenseTracker as () => McpServer,
     // Everything the export tool writes; never the ledger itself.
@@ -983,6 +986,33 @@ export function isBrowserNavigation(headers: Headers): boolean {
  * (docs/FUNNEL_R1.md); this is the last line of defence behind it, so it names the
  * acquisition URL first and explains the symptom the reader is looking at.
  */
+/**
+ * OAuth up front for interactive clients.
+ *
+ * The anonymous initialize/tools/list path (see DISCOVERY) keeps directory probes green, but
+ * it also tells an interactive client the server needs no auth. Production traffic on
+ * 2026-11-14 showed the cost: Claude-User POSTed /mcp/price-tracker 23 times, every
+ * tools/call answered 401, and not one discovery or /oauth request followed, because clients
+ * run OAuth when the connection is set up, not when a later call fails. So an initialize
+ * with no credential from a client that is known to support MCP OAuth answers 401 with the
+ * path-scoped RFC 9728 metadata URL, and the client walks the one-click consent flow before
+ * its first call. Probes and unknown clients keep the anonymous path.
+ */
+const OAUTH_CLIENT_UA = /^(Claude-User|claude-code|codex-mcp-client|Cursor|ChatGPT-User|openai-mcp)/i;
+const OAUTH_CLIENT_NAME = /^(claude-ai|claude-code|codex-mcp-client|codex|cursor|cursor-vscode|Visual Studio Code|vscode|windsurf|openai-mcp)$/i;
+
+export function wantsOauthUpfront(method: string | null, userAgent: string, body: string): boolean {
+  if (method !== "initialize") return false;
+  if (OAUTH_CLIENT_UA.test(userAgent.trim())) return true;
+  try {
+    const o = JSON.parse(body) as { params?: { clientInfo?: { name?: unknown } } };
+    const name = o?.params?.clientInfo?.name;
+    return typeof name === "string" && OAUTH_CLIENT_NAME.test(name.trim());
+  } catch {
+    return false;
+  }
+}
+
 export function unauthorizedBody(product: string) {
   return {
     error: "unauthorized",
@@ -1184,10 +1214,40 @@ async function secretEquals(a: string, b: string): Promise<boolean> {
 
 /* --------------------------------------------------------------- oauth helpers */
 
+/**
+ * Resolve the OAuth discovery documents for every path shape a client may use.
+ *
+ * RFC 9728 §3.1 says a resource at https://host/mcp/invoice publishes its metadata at
+ * https://host/.well-known/oauth-protected-resource/mcp/invoice (suffix form); RFC 8414
+ * does the same for the authorization-server document. Some clients instead try the
+ * prefix form /mcp/invoice/.well-known/oauth-protected-resource. Production logs
+ * (2026-11-13, 13 days) show 190k requests to those variants answering 404 while only the
+ * bare root path was served, so the handshake failed before any consent screen and no
+ * connect flow was ever completed. Serving all three shapes costs one string compare.
+ */
+export function wellKnownOauth(path: string, base: string): { kind: "pr" | "as"; resource?: string } | null {
+  const docs = [
+    ["/.well-known/oauth-protected-resource", "pr"],
+    ["/.well-known/oauth-authorization-server", "as"],
+  ] as const;
+  for (const [wk, kind] of docs) {
+    if (path === wk || path === wk + "/") return { kind };
+    if (path.startsWith(wk + "/")) {
+      const suffix = path.slice(wk.length);
+      if (suffix === "/mcp" || suffix.startsWith("/mcp/")) return { kind, resource: base + suffix };
+    }
+    if (path.endsWith(wk)) {
+      const suffix = path.slice(0, -wk.length);
+      if (suffix === "/mcp" || suffix.startsWith("/mcp/")) return { kind, resource: base + suffix };
+    }
+  }
+  return null;
+}
+
 /** RFC 9728 protected-resource metadata: tells an MCP client where the OAuth dance lives. */
-export function oauthProtectedResourceDoc() {
+export function oauthProtectedResourceDoc(resource?: string) {
   return {
-    resource: OAUTH_RESOURCE,
+    resource: resource ?? OAUTH_RESOURCE,
     authorization_servers: [OAUTH_RESOURCE],
     // "mcp:connect" is the only scope the MCP spec defines; a server that needs no narrower
     // permission grants just this one, and anything else is rejected at registration.
@@ -2272,9 +2332,13 @@ function rpcEnvelope(body: string): { method: string | null; id: unknown; hasId:
  * Methods that cannot touch a tenant document. They are answered without hydrating KV at
  * all - three reads saved on the two calls every client makes before it does any work.
  */
-/** Calls per hour an unauthenticated discovery probe may make. Generous enough for any
- * directory health check, small enough that it is not a free anonymous tier. */
-const DISCOVERY_LIMIT = 120;
+/** Calls per hour an unauthenticated discovery probe may make, per user-agent family and
+ * IP (see the discovery key in the request path). Directory health checks walk every
+ * registered endpoint, so one sweep of the catalogue is ~58 calls and a probe that re-runs
+ * hourly-plus needs several hundred; 120 was the number that made our own liveness checks
+ * fail as 429 and read to directories as an unhealthy server. Discovery stays dataless -
+ * DATALESS_METHODS only - so this ceiling cannot be used to reach a tool or a document. */
+const DISCOVERY_LIMIT = 1500;
 
 const DATALESS_METHODS = new Set(["tools/list", "initialize", "notifications/initialized", "ping", "prompts/list", "resources/list", "resources/templates/list"]);
 
@@ -2523,6 +2587,15 @@ export default {
 
     if (path === "/mcp") return json(indexDoc(base));
 
+    // /tools is the public index of the 36 satellite servers that run on workers.dev and
+    // were never linked from this domain. Each entry was probed live before it was listed;
+    // the JSON twin exists so a client or a crawler can read the list without parsing HTML.
+    if (path === "/mcp/tools" || path === "/mcp/tools.json") {
+      if (req.method !== "GET" && req.method !== "HEAD") return json({ error: "method_not_allowed" }, 405, { allow: "GET" });
+      if (path === "/mcp/tools.json") return json({ count: SATELLITES.length, tools: SATELLITES.map((s) => ({ name: s.name, description: s.desc, endpoint: `${satelliteUrl(s.name)}/mcp`, page: satelliteUrl(s.name) })) });
+      return new Response(toolsPage(base), { headers: { "content-type": "text/html; charset=utf-8", "cache-control": "public, max-age=300" } });
+    }
+
     // A price-tracker fixture: a real page, on a host this suite controls, with a price in
     // JSON-LD. `?price=` changes the asking price so a drop and an alert can be demonstrated.
     if (path === "/mcp/sample/product") {
@@ -2624,11 +2697,15 @@ export default {
         headers: { "content-type": "application/json", "cache-control": "public, max-age=300" },
       });
     }
-    if (path === "/.well-known/oauth-protected-resource") {
-      return json(oauthProtectedResourceDoc());
-    }
-    if (path === "/.well-known/oauth-authorization-server") {
-      return json(oauthAuthorizationServerDoc());
+    const oauthWk = wellKnownOauth(path, base);
+    if (oauthWk) {
+      if (req.method !== "GET" && req.method !== "HEAD") {
+        return json({ error: "method_not_allowed" }, 405, { allow: "GET, HEAD" });
+      }
+      const doc = oauthWk.kind === "pr"
+        ? oauthProtectedResourceDoc(oauthWk.resource)
+        : oauthAuthorizationServerDoc();
+      return json(doc);
     }
 
     // RFC 7591 dynamic client registration. A public client sends metadata, gets back an
@@ -2849,12 +2926,21 @@ export default {
     // the rest fall through to authenticate() unchanged, and a token that is present but
     // wrong is still rejected rather than downgraded to this path.
     const hasCredential = Boolean(req.headers.get("authorization")) || Boolean(urlToken);
+    if (req.method === "POST" && !hasCredential && wantsOauthUpfront(rpc.method, req.headers.get("user-agent") ?? "", bodyText)) {
+      return json(unauthorizedBody(product), 401, {
+        "www-authenticate": `Bearer realm="mcp.zovo.one", resource_metadata="https://mcp.zovo.one/.well-known/oauth-protected-resource/mcp/${product}"`,
+      });
+    }
     const isDiscovery = req.method === "POST" && !hasCredential
       && rpc.method !== null && DATALESS_METHODS.has(rpc.method);
 
     let auth: Auth;
     if (isDiscovery) {
-      auth = { tenant: `discovery:${req.headers.get("cf-connecting-ip") ?? "unknown"}`, isPro: false, kind: "anon", limit: DISCOVERY_LIMIT };
+      // Keyed on the user-agent family as well as the IP: the probes run from a handful of
+      // cloud addresses and several vendors share one, so an IP-only key let one crawler
+      // exhaust another's budget and answered real liveness checks with 429.
+      const uaFamily = (req.headers.get("user-agent") ?? "unknown").split(/[/ ]/)[0].replace(/[^A-Za-z0-9]/g, "").slice(0, 24) || "unknown";
+      auth = { tenant: `discovery:${uaFamily}:${req.headers.get("cf-connecting-ip") ?? "unknown"}`, isPro: false, kind: "anon", limit: DISCOVERY_LIMIT };
     } else {
       const authed = await authenticate(req, env, product, urlToken, urlTokenForm);
       if (authed instanceof Response) return authed;

@@ -172,11 +172,19 @@ const server = new McpServer(
   { capabilities: { tools: {}, resources: {}, prompts: {} } },
 );
 
+// The SDK infers every handler signature from the Zod shape passed to registerTool. With twelve
+// tools in one file that inference is exponential, and tsc spends minutes in it before failing
+// with TS2589 on unrelated lines. Registering through one alias keeps the shapes, and their
+// runtime validation, intact while removing the inference from the hot path.
+type Registrar = (name: string, cfg: unknown, handler: (...args: any[]) => any) => unknown;
+const regTool = server.registerTool.bind(server) as unknown as Registrar;
+const regPrompt = server.registerPrompt.bind(server) as unknown as Registrar;
+
 /* ---------------------------------------------------------------- expense_add */
 
 const amount = (name: string) => z.number().finite().refine((n) => n >= 0, `${name} must be zero or positive`);
 
-server.registerTool("expense_add", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
+regTool("expense_add", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Add an expense",
   description: "Record one expense and return its id, its net/VAT split and its billable flag. The response states every default that was applied, so the caller can see what was assumed rather than having to guess.",
   inputSchema: {
@@ -193,7 +201,7 @@ server.registerTool("expense_add", { annotations: { readOnlyHint: false, destruc
     tax_rate: z.number().finite().min(0).max(100).optional().describe("Alias for vat_rate"),
     vat: z.number().finite().min(0).max(100).optional().describe("Alias for vat_rate"),
   },
-}, async (a) => {
+}, async (a: any): Promise<any> => {
   try {
     const date = a.date ?? isoToday();
     if (!isIsoDate(date)) return fail(`date must be a real calendar date as YYYY-MM-DD, got "${date}".`);
@@ -277,7 +285,7 @@ server.registerTool("expense_add", { annotations: { readOnlyHint: false, destruc
 
 /* --------------------------------------------------------------- expense_list */
 
-server.registerTool("expense_list", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+regTool("expense_list", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "List expenses",
   description: "List expenses in a date range with each one's net/VAT split, category, merchant, project and billable flag, plus a total per currency. Free reads the last 30 days and says when your range predates it.",
   inputSchema: {
@@ -287,7 +295,7 @@ server.registerTool("expense_list", { annotations: { readOnlyHint: true, destruc
     category: text().optional(),
     billable: z.boolean().optional(),
   },
-}, async (a) => {
+}, async (a: any): Promise<any> => {
   try {
     for (const [k, v] of Object.entries({ from: a.from, to: a.to })) {
       if (v && !isIsoDate(v)) return fail(`${k} must be YYYY-MM-DD, got "${v}".`);
@@ -309,7 +317,7 @@ server.registerTool("expense_list", { annotations: { readOnlyHint: true, destruc
 
 /* ------------------------------------------------------- update / delete */
 
-server.registerTool("expense_update", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
+regTool("expense_update", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Update an expense",
   description: "Change one expense by id; only the fields you pass move. amount is in MAJOR units. A rebilled expense refuses an amount, currency or vat_rate edit unless unlink_rebill drops the invoice link.",
   inputSchema: {
@@ -326,7 +334,7 @@ server.registerTool("expense_update", { annotations: { readOnlyHint: false, dest
     rebilled: z.boolean().optional().describe("false clears the rebilled marker and the invoice number, so the expense can be billed again"),
     unlink_rebill: z.boolean().optional().describe("Allow editing amount, currency or vat_rate on a rebilled expense. Clears rebilled_at and rebilled_invoice, because the invoice no longer matches"),
   },
-}, async (a) => {
+}, async (a: any): Promise<any> => {
   try {
     if (a.date && !isIsoDate(a.date)) return fail(`date must be YYYY-MM-DD, got "${a.date}".`);
     return await locked(() => {
@@ -369,11 +377,11 @@ server.registerTool("expense_update", { annotations: { readOnlyHint: false, dest
   } catch (e) { return fail(String((e as Error).message ?? e)); }
 });
 
-server.registerTool("expense_delete", { annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: false, openWorldHint: false },
+regTool("expense_delete", { annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: false, openWorldHint: false },
   title: "Delete an expense",
   description: "Delete one expense by id and report what went. The receipt FILE stays on disk. Deleting a rebilled expense loses the record of what an invoice charged, so correct it with expense_update instead.",
   inputSchema: { id: text(64) },
-}, async (a) => {
+}, async (a: any): Promise<any> => {
   try {
     return await locked(() => {
       const db = load();
@@ -388,11 +396,11 @@ server.registerTool("expense_delete", { annotations: { readOnlyHint: false, dest
 
 /* -------------------------------------------------------------- receipt_attach */
 
-server.registerTool("receipt_attach", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
+regTool("receipt_attach", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Attach a receipt",
   description: "Not available on the hosted endpoint: it has no filesystem, so there is no receipt file to read or hash. Attach receipts on a local install instead - download expense-tracker.mcpb from https://github.com/theluckystrike/mcp-servers/releases/latest and open it in Claude Desktop - or record the receipt reference in the expense note.",
   inputSchema: { id: text(64).describe("Expense id from expense_add or expense_list"), path: text(4096).describe("Path to the receipt file. It must already exist; a leading ~ is expanded. The path and its sha256 are stored on the expense") },
-}, async (a) => {
+}, async (a: any): Promise<any> => {
   try {
     const r = hashReceipt(expandPath(a.path));
     if ("error" in r) return fail(r.error);
@@ -411,7 +419,7 @@ server.registerTool("receipt_attach", { annotations: { readOnlyHint: false, dest
 
 /* -------------------------------------------------------------- category_rules */
 
-server.registerTool("category_rules", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
+regTool("category_rules", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Category rules",
   description: "Replace the merchant-to-category rules, or call with no rules to list them. Returns the stored rule list. The rules are applied by expense_add whenever a call gives no category of its own.",
   inputSchema: {
@@ -420,7 +428,7 @@ server.registerTool("category_rules", { annotations: { readOnlyHint: false, dest
       category: text().describe("Category to apply"),
     })).max(500).optional().describe("The FULL rule list; it replaces the stored one, so include the rules you want to keep. Omit to list the current rules instead"),
   },
-}, async (a) => {
+}, async (a: any): Promise<any> => {
   try {
     if (!a.rules) {
       const db = load();
@@ -440,7 +448,7 @@ server.registerTool("category_rules", { annotations: { readOnlyHint: false, dest
     }
     return await locked(() => {
       const db = load();
-      db.rules = a.rules!.map((r) => ({ match: r.match, category: r.category }));
+      db.rules = a.rules!.map((r: any) => ({ match: r.match, category: r.category }));
       save(db);
       return ok(`Stored ${db.rules.length} category rules, replacing the previous list. Each match is tried as a case-insensitive regular expression, and as a plain substring if it is not valid regex; the first match wins. expense_add applies them when a call gives no category:\n` + db.rules.map((r) => `  ${r.match} -> ${r.category}`).join("\n"));
     });
@@ -450,14 +458,14 @@ server.registerTool("category_rules", { annotations: { readOnlyHint: false, dest
 
 /* ------------------------------------------------------------ expense_settings */
 
-server.registerTool("expense_settings", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
+regTool("expense_settings", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Expense defaults",
   description: "Read or set the defaults expense_add uses when a call does not name them: default_vat_rate and default_currency. Returns the stored defaults. Call with no arguments to read them without changing anything.",
   inputSchema: {
     default_vat_rate: z.number().finite().min(0).max(100).optional().describe("VAT percent already included in a receipt, e.g. 23 in Poland, 19 in Germany. Set it once and every later expense gets its net/VAT split without the caller repeating the rate. It applies when the expense is inserted, never retroactively. Pass 0 to clear it"),
     default_currency: z.string().regex(/^[A-Za-z]{3}$/).optional().describe("ISO 4217 code to assume when a call gives none, e.g. EUR. Default EUR"),
   },
-}, async (a) => {
+}, async (a: any): Promise<any> => {
   try {
     if (a.default_vat_rate === undefined && a.default_currency === undefined) {
       const s0 = load().settings;
@@ -533,7 +541,7 @@ function summarise(rows: Expense[], by: GroupBy) {
   }).sort((a, b) => a.currency.localeCompare(b.currency));
 }
 
-server.registerTool("expense_summary", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+regTool("expense_summary", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "Summarise expenses",
   description: "Totals for a date range grouped by category, project, month or merchant, per currency with gross, net and VAT, never mixed. Receipts only; bank transactions are totalled by bank-statement's statement_summary.",
   inputSchema: {
@@ -543,7 +551,7 @@ server.registerTool("expense_summary", { annotations: { readOnlyHint: true, dest
     project: text().optional(),
     billable: z.boolean().optional(),
   },
-}, async (a) => {
+}, async (a: any): Promise<any> => {
   try {
     if (!isIsoDate(a.from)) return fail(`from must be YYYY-MM-DD, got "${a.from}".`);
     if (!isIsoDate(a.to)) return fail(`to must be YYYY-MM-DD, got "${a.to}".`);
@@ -556,7 +564,7 @@ server.registerTool("expense_summary", { annotations: { readOnlyHint: true, dest
 
 /* ---------------------------------------------------------------- mileage_add */
 
-server.registerTool("mileage_add", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
+regTool("mileage_add", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Add a mileage claim",
   description: "Record a business trip as an expense, priced as distance x rate. Give exactly one of km or miles. Returns the saved id with the rate used, where that rate came from and the money, in the rate's own currency.",
   inputSchema: {
@@ -570,7 +578,7 @@ server.registerTool("mileage_add", { annotations: { readOnlyHint: false, destruc
     currency: z.string().regex(/^[A-Za-z]{3}$/).optional().describe("Currency for your own rate. Only accepted together with rate_per_km; a table rate keeps the table currency"),
     billable: z.boolean().optional().describe("Whether the trip is rebilled to the client. Default true, so a mileage claim reaches expense_to_invoice unless you pass false"),
   },
-}, async (a) => {
+}, async (a: any): Promise<any> => {
   try {
     const hasKm = typeof a.km === "number";
     const hasMiles = typeof a.miles === "number";
@@ -662,7 +670,7 @@ function csvCell(v: unknown): string {
   return /[",\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
 }
 
-server.registerTool("expense_export", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+regTool("expense_export", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "Export expenses",
   description: "Export the expenses in a date range as csv, xlsx or json and return a download link that is valid for one hour. Nothing partial is ever written: if a limit is hit no file is produced at all.",
   inputSchema: {
@@ -674,7 +682,7 @@ server.registerTool("expense_export", { annotations: { readOnlyHint: true, destr
     category: text().optional(),
     billable: z.boolean().optional(),
   },
-}, async (a) => {
+}, async (a: any): Promise<any> => {
   try {
     if (!isIsoDate(a.from)) return fail(`from must be YYYY-MM-DD, got "${a.from}".`);
     if (!isIsoDate(a.to)) return fail(`to must be YYYY-MM-DD, got "${a.to}".`);
@@ -735,7 +743,7 @@ server.registerTool("expense_export", { annotations: { readOnlyHint: true, destr
 
 /* ---------------------------------------------------------- expense_to_invoice */
 
-server.registerTool("expense_to_invoice", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
+regTool("expense_to_invoice", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Rebill expenses to an invoice",
   description: "Preview the unbilled billable expenses of one project as invoice_create line items (description, quantity, unit_price, tax_rate), grouped per currency. Read-only: nothing is marked rebilled here.",
   inputSchema: {
@@ -748,7 +756,7 @@ server.registerTool("expense_to_invoice", { annotations: { readOnlyHint: false, 
     target_currency: z.string().regex(/^[A-Za-z]{3}$/).optional().describe('Convert every line into this currency and return ONE group, e.g. "USD". Needs fx_rates for each other currency present. Lines are otherwise grouped per currency, because one invoice carries one currency; each converted line carries "[converted from EUR 12.40 at 1.08]" in its description'),
     fx_rates: z.record(z.string(), z.number().finite().positive()).optional().describe('Rate per source currency, meaning 1 unit of that currency = X units of target_currency, e.g. {"EUR": 1.08, "GBP": 1.27}. You supply the rate; nothing here fetches or guesses one. Omit it when the range holds several currencies and the response names the exact argument to pass'),
   },
-}, async (a) => {
+}, async (a: any): Promise<any> => {
   try {
     if (!isIsoDate(a.from)) return fail(`from must be YYYY-MM-DD, got "${a.from}".`);
     if (!isIsoDate(a.to)) return fail(`to must be YYYY-MM-DD, got "${a.to}".`);
@@ -949,7 +957,7 @@ server.registerTool("expense_to_invoice", { annotations: { readOnlyHint: false, 
 
 /* ------------------------------------------------------ expense_mark_rebilled */
 
-server.registerTool("expense_mark_rebilled", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
+regTool("expense_mark_rebilled", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Mark expenses as rebilled",
   description: "Mark expenses as rebilled once the invoice that carries them actually exists. Pass the expense_ids of one currency group from expense_to_invoice, or that project, date range and currency. Returns what was marked.",
   inputSchema: {
@@ -960,7 +968,7 @@ server.registerTool("expense_mark_rebilled", { annotations: { readOnlyHint: fals
     currency: z.string().regex(/^[A-Za-z]{3}$/).optional().describe("Required when marking by range: one invoice carries one currency. A range marks only billable, not-yet-rebilled expenses in this one currency, so invoicing the EUR group cannot mark the PLN one"),
     invoice_number: text(64).describe("Invoice the expenses were billed on. Required: the marker records WHICH invoice carries each expense, and it is stored on every expense marked"),
   },
-}, async (a) => {
+}, async (a: any): Promise<any> => {
   try {
     if (!a.ids?.length && !(a.project && a.from && a.to)) {
       return fail("pass either ids, or project with from and to.");
@@ -978,7 +986,7 @@ server.registerTool("expense_mark_rebilled", { annotations: { readOnlyHint: fals
       if (a.ids?.length) {
         const want = new Set(a.ids);
         rows = db.expenses.filter((e) => want.has(e.id));
-        const missing = a.ids.filter((id) => !rows.some((e) => e.id === id));
+        const missing = a.ids.filter((id: any) => !rows.some((e) => e.id === id));
         if (missing.length) return fail(`no expense with id ${missing.join(", ")}. Nothing was changed.`);
       } else {
         const cur = normCurrency(a.currency!);
@@ -1021,13 +1029,13 @@ server.registerResource("current-month", "expenses://month", {
   title: "This month's expenses",
   description: "Totals for the current calendar month so far, grouped by category, per currency.",
   mimeType: "application/json",
-}, async (uri) => ({
+}, async (uri: any): Promise<any> => ({
   contents: [{ uri: uri.href, mimeType: "application/json", text: JSON.stringify(monthSummary(), null, 2) }],
 }));
 
 /* ------------------------------------------------------------------- prompts */
 
-server.registerPrompt("monthly_close", {
+regPrompt("monthly_close", {
   title: "Monthly expense close",
   description: "Close out a month: totals, unbilled billable expenses and expenses with no receipt attached.",
   argsSchema: { month: z.string().optional().describe("YYYY-MM, default the current month") },
