@@ -87,8 +87,31 @@ export function negotiateAccept(accept: string | null | undefined): string | nul
  */
 export function negotiatedHeaders(headers: Headers): Headers {
   const next = negotiateAccept(headers.get("accept"));
-  if (next === null) return headers;
+  const version = negotiateProtocolVersion(headers.get("mcp-protocol-version"));
+  if (next === null && version === null) return headers;
   const copy = new Headers(headers);
-  copy.set("accept", next);
+  if (next !== null) copy.set("accept", next);
+  if (version !== null) copy.set("mcp-protocol-version", version);
   return copy;
+}
+
+/**
+ * Protocol-version header from a client newer than the SDK.
+ *
+ * Measured 2026-11-14: Claude-User sends tool calls straight away with
+ * `mcp-protocol-version: 2026-07-28`, without an initialize. SDK 1.30.0 knows nothing past
+ * 2025-11-25 and answers 400 "Unsupported protocol version". Claude then re-initializes,
+ * lists tools and never retries the call, so every run of a real recurring user failed. A
+ * well-formed version dated AFTER the newest one the SDK supports is served as that newest
+ * version; the request shapes we serve are unchanged across those revisions, and anything
+ * that is not still comes back as a JSON-RPC error rather than a transport 400. Malformed
+ * values and unknown OLDER dates are left alone, so the SDK still rejects them.
+ */
+export const SDK_LATEST_PROTOCOL = "2025-11-25";
+
+export function negotiateProtocolVersion(value: string | null): string | null {
+  if (value === null) return null;
+  const v = value.trim();
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(v)) return null;
+  return v > SDK_LATEST_PROTOCOL ? SDK_LATEST_PROTOCOL : null;
 }

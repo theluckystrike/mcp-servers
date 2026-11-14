@@ -96,8 +96,10 @@ test("a rewrite copies the headers rather than mutating the caller's", () => {
   assert.equal(out.get("authorization"), original.get("authorization"), "every other header survives the copy");
 });
 
-test("only the Accept header is ever rewritten", () => {
-  const original = new Headers({ accept: "*/*", "content-type": "application/json", "mcp-protocol-version": "2026-07-28" });
+// s1114: a protocol version NEWER than the SDK supports is now also rewritten (see
+// protocol-version.test.mjs), so this test pins a supported version, which must survive.
+test("only the Accept header is rewritten when the protocol version is supported", () => {
+  const original = new Headers({ accept: "*/*", "content-type": "application/json", "mcp-protocol-version": "2025-06-18" });
   const out = negotiatedHeaders(original);
   for (const [k, v] of original) {
     if (k === "accept") continue;
