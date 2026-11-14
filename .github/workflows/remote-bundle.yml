@@ -1,0 +1,35 @@
+name: remote-bundle
+# Builds and tests the mcp-remote Worker bundle without deploying it. The bundle is
+# uploaded as an artifact and deployed from the owner's machine with
+# `wrangler deploy --no-bundle`, so no Cloudflare credential lives in this repo.
+on:
+  push:
+    branches: [s1114-remote-auth-pub]
+    paths: [remote/**, servers/**, package.json, package-lock.json, .github/workflows/remote-bundle.yml]
+concurrency:
+  group: remote-bundle-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  bundle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install
+        run: npm ci --no-audit --no-fund
+      - name: Remote tests
+        working-directory: remote
+        run: node --test test/*.test.mjs
+      - name: Vendor and bundle
+        working-directory: remote
+        run: |
+          node build-vendor.mjs
+          npx --yes wrangler@4 deploy --dry-run --outdir out
+          ls -la out
+      - uses: actions/upload-artifact@v4
+        with:
+          name: remote-bundle
+          path: remote/out
