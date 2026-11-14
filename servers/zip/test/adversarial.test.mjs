@@ -380,7 +380,7 @@ test("the free entry cap counts entries, and a Pro key removes it", async (t) =>
   const src = seed(join(box.dir, "src"), files);
   const out = join(box.dir, "many.zip");
   const r = await c.call("zip_create", { dir: src, out_path: out });
-  assert.equal(r.isError, false, "a tier limit is an answer");
+  assert.equal(r.isError, true, "a tier limit is a refusal with an upgrade path");
   assert.match(r.text, /That is 205 files. The free tier writes archives of up to 200 entries/);
   assert.equal(existsSync(out), false);
 

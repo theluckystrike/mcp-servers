@@ -1,0 +1,10 @@
+name: mcp-ingredient-convert
+target: local
+
+runtime: typescript
+startCommand:
+  type: stdio
+  configSchema:
+    type: object
+    properties: {}
+  exampleConfig: {}

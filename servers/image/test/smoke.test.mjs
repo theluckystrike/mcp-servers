@@ -112,7 +112,7 @@ test("free tier caps the OUTPUT, not the source: a 4.4 MP photo resized small is
     assert.ok(existsSync(join(dir, "small.png")));
     // Writing 4.4 MP back out is not.
     const r = await free.call("image_convert", { path: big, format: "jpeg", out_path: join(dir, "big.jpg") });
-    assert.notEqual(r.result.isError, true);
+    assert.equal(r.result.isError, true);
     assert.match(r.result.content[0].text, /output would be 2200x2000 \(4.4 MP\)/);
     assert.match(r.result.content[0].text, /free tier writes images up to 4 MP/);
     assert.equal(existsSync(join(dir, "big.jpg")), false);
@@ -139,7 +139,7 @@ test("free watermark uses the shared profile; custom text is Pro", async () => {
     assert.equal(existsSync(join(dir, "w1.png")), false);
 
     const custom = await free.call("image_watermark", { path: src, text: "Anything", out_path: join(dir, "w2.png") });
-    assert.notEqual(custom.result.isError, true);
+    assert.equal(custom.result.isError, true);
     assert.match(custom.result.content[0].text, /Custom watermark text is a Pro feature/);
     assert.equal(existsSync(join(dir, "w2.png")), false);
   } finally { free.close(); }

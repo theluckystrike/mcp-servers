@@ -20,7 +20,9 @@ function sources() {
 
 test("every tool name a response cites is a tool this server registers", () => {
   const all = sources().join("\n");
-  const registered = new Set([...all.matchAll(/registerTool\(\s*"([a-z0-9_]+)"/g)].map((m) => m[1]));
+  // regTool( is the typed alias the server registers through; the match must follow the call
+  // site, not the method name, so the invariant survives the TS2589 workaround.
+  const registered = new Set([...all.matchAll(/reg(?:ister)?Tool\(\s*"([a-z0-9_]+)"/g)].map((m) => m[1]));
   assert.ok(registered.size > 0, "no registered tools found - the scan would pass vacuously");
 
   // A citation is the shape these servers use to name a follow-up call: `name {` inside a

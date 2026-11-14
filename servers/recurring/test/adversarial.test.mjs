@@ -308,8 +308,14 @@ test("a skipped period leaves the forecast and the upcoming list", async (t) => 
   t.after(() => c.close());
   await c.call("schedule_create", { client: "Acme", items: [{ description: "Hours", quantity: 12, unit_price: 90 }], every: "monthly", start_date: "2026-08-31" });
   const before = JSON.parse((await c.call("forecast", { months: 3 })).text);
-  const months = before.per_month.map((m) => m.month);
-  await c.call("schedule_skip", { id: "Acme", period: months[1] === "2026-10" ? "2026-10-31" : `${months[1]}-30` });
+  // The skip period must be an exact occurrence as the tools print it (D-R9: schedule_skip
+  // refuses a date that is not on the schedule, e.g. the 30th of a month whose occurrence
+  // falls on the 31st). Read the real next occurrence from schedule_upcoming instead of
+  // guessing it, and skip that one: it is inside the forecast window, so per_month shrinks.
+  const up = JSON.parse((await c.call("schedule_upcoming", {})).text);
+  const period = String(up.occurrences[0].due_date);
+  const skipped = await c.call("schedule_skip", { id: "Acme", period });
+  assert.ok(!String(skipped?.text ?? skipped).includes("not an occurrence"), `schedule_skip ${period} must accept a real occurrence`);
   const after = JSON.parse((await c.call("forecast", { months: 3 })).text);
   assert.equal(after.per_month.length, before.per_month.length - 1, "the skipped month must leave the forecast");
   assert.ok(after.excluded_already_invoiced_or_skipped, "and be reported as excluded, not silently dropped");

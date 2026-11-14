@@ -281,7 +281,7 @@ test("batch is Pro, is capped, and reports the rows it refused without stopping"
   t.after(() => { free.close(); cleanup(box.dir); });
   await free.init();
   const refused = await free.call("barcode_batch", { out_dir: box.dir, items: [{ value: "A" }] });
-  assert.equal(refused.isError, false);
+  assert.equal(refused.isError, true);
   assert.match(refused.text, /Pro feature/);
   assert.equal(readdirSync(box.dir).some((f) => f.endsWith(".svg")), false);
 

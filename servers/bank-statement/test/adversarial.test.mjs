@@ -182,8 +182,9 @@ test("export says when it replaced a file, and a directory that does not exist i
   await c.call("statement_import", { path: p, account: "x" });
   const gatedOut = await c.call("statement_export", { from: "2026-08-01", to: "2026-08-31", format: "csv", path: join(dir, "out.csv") });
   if (!key) {
-    // free tier: the gate answers, and never writes a partial file
-    assert.equal(gatedOut.isError, undefined);
+    // free tier: the gate answers as a refused operation, and never writes a partial file
+    assert.equal(gatedOut.isError, true);
+    assert.ok(gatedOut.content?.[0]?.text?.includes("Pro feature"), "the gate names the upgrade path");
     assert.equal(existsSync(join(dir, "out.csv")), false);
     c.close();
     return;

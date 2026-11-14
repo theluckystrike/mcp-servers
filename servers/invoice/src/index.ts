@@ -159,9 +159,19 @@ const server = new McpServer(
   { capabilities: { tools: {}, resources: {}, prompts: {} } },
 );
 
+// The SDK infers the handler signature from the Zod shape of every tool. With eleven tools in
+// one file that inference recursively expands until TypeScript gives up (TS2589) and then
+// reports hundreds of bogus follow-on errors, including "Property 'optional' does not exist on
+// ZodArray". The schemas themselves are correct and still validate at runtime; only the
+// compile-time inference is the problem, so registration goes through this alias, which takes
+// the config as `any`. Nothing about the wire behaviour changes.
+type RegisterFn = (name: string, config: any, handler?: any) => any;
+const regTool = server.registerTool.bind(server) as unknown as RegisterFn;
+const regPrompt = server.registerPrompt.bind(server) as unknown as RegisterFn;
+
 /* ------------------------------------------------------------------ business */
 
-server.registerTool("business_set", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
+regTool("business_set", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Set your business details",
   description: "The ONE business profile for the whole suite: name, address, VAT id, bank details and defaults (currency, tax rate, terms, prefix, timezone). Saved to the shared profile every other server reads. Call it once, first.",
   inputSchema: z.object({
@@ -182,7 +192,7 @@ server.registerTool("business_set", { annotations: { readOnlyHint: false, destru
     vat_rate: z.number().optional().describe("Alias for default_tax_rate"),
     vat: z.number().optional().describe("Alias for default_tax_rate"),
   }).passthrough(),
-}, async (a: Record<string, any>) => {
+}, async (a: Record<string, any>): Promise<any> => {
   try {
     return await locked(() => {
     const prev = getBusiness();
@@ -285,7 +295,7 @@ function clientFingerprint(c: { name: string; address?: string; email?: string; 
   return [normText(c.name), normText(c.address), normText(c.email), normTaxId(c.vat_id)].join(" | ");
 }
 
-server.registerTool("client_add", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
+regTool("client_add", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Add a client",
   description: "Store a client so invoice_create can refer to them by name. Re-adding the same name updates the stored address, email and VAT id; a record identical to a stored one is refused, naming the id that already holds it.",
   inputSchema: {
@@ -294,7 +304,7 @@ server.registerTool("client_add", { annotations: { readOnlyHint: false, destruct
     email: z.string().optional(),
     vat_id: z.string().optional().describe("Client VAT id, printed for reverse-charge invoices"),
   },
-}, async (a) => {
+}, async (a: any): Promise<any> => {
   try {
     return await locked(() => {
     const clients = getClients();
@@ -412,13 +422,13 @@ function resolveForDelete(ref: string): { client?: Client; error?: string } {
   return { client: pool[0] };
 }
 
-server.registerTool("client_delete", { annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: false, openWorldHint: false },
+regTool("client_delete", { annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: false, openWorldHint: false },
   title: "Delete a client",
   description: "Delete one stored client that nothing refers to. A client named on any invoice, quote, credit note, purchase order, deposit, statement or schedule is refused with those documents listed.",
   inputSchema: {
     client: z.string().describe("Client name or id, exactly as client_list shows it"),
   },
-}, async (a) => {
+}, async (a: any): Promise<any> => {
   try {
     return await locked(() => {
     const resolved = resolveForDelete(a.client);
@@ -447,7 +457,7 @@ server.registerTool("client_delete", { annotations: { readOnlyHint: false, destr
   } catch (e) { return fail(String((e as Error).message ?? e)); }
 });
 
-server.registerTool("client_list", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+regTool("client_list", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "List clients", description: "List every stored client with id, address, email and VAT id. No arguments, and it writes nothing. With none stored it says so: invoice_create also creates a client from the name you pass.",
   inputSchema: {},
 }, async () => {
@@ -608,7 +618,7 @@ function createInvoice(a: {
   return { invoice: inv, clientNote, businessNote: noBusiness ? NO_BUSINESS_NOTE : undefined };
 }
 
-server.registerTool("invoice_create", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
+regTool("invoice_create", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Create an invoice",
   description: "Create an invoice from line items and return the record with its next, never-reused number. unit_price is in MAJOR units; lines are rounded then summed. One currency per invoice. Free: 3 a month.",
   inputSchema: {
@@ -620,7 +630,7 @@ server.registerTool("invoice_create", { annotations: { readOnlyHint: false, dest
     notes: z.string().optional().describe("Free text printed under the totals"),
     discount_percent: z.number().finite().min(0).max(100).optional().describe("Discount percent applied to every line before tax, 0-100"),
   },
-}, async (a) => {
+}, async (a: any): Promise<any> => {
   try {
     const r = await locked(() => createInvoice(a));
     if (r.error) return fail(r.error);
@@ -635,7 +645,7 @@ server.registerTool("invoice_create", { annotations: { readOnlyHint: false, dest
   } catch (e) { return fail(String((e as Error).message ?? e)); }
 });
 
-server.registerTool("invoice_from_hours", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
+regTool("invoice_from_hours", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Invoice from hours",
   description: "Shortcut for the common case: bill one client for N hours at an hourly rate. Creates and returns a single-line invoice, converting the rate into target_currency when you supply fx_rates, and echoing back any entry_ids.",
   inputSchema: {
@@ -655,7 +665,7 @@ server.registerTool("invoice_from_hours", { annotations: { readOnlyHint: false, 
     round_total: z.boolean().optional()
       .describe("D-R46: when converting with fx_rates, round the line's TOTAL to the exact converted amount instead of rounding the hourly rate to cents first. Default false keeps the D-R24 basis (unit price x hours always equals the printed line, so a rounding_note explains any drift from the exact conversion); true removes the drift but unit_price x hours may then be a cent or two off the printed total."),
   },
-}, async (a) => {
+}, async (a: any): Promise<any> => {
   try {
     // D-R28: same FX semantics as expense_to_invoice, so hours and receipts convert the
     // same way. The source currency is the rate's currency; the invoice is issued in
@@ -721,7 +731,7 @@ server.registerTool("invoice_from_hours", { annotations: { readOnlyHint: false, 
   } catch (e) { return fail(String((e as Error).message ?? e)); }
 });
 
-server.registerTool("invoice_list", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+regTool("invoice_list", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "List invoices",
   description: "List invoices by number: client, dates, currency, subtotal, discount, tax lines, total, status, paid, credited and the balance still due after any credit note. Filter by status, client and date range.",
   inputSchema: {
@@ -730,7 +740,7 @@ server.registerTool("invoice_list", { annotations: { readOnlyHint: true, destruc
     from: z.string().optional().describe("YYYY-MM-DD inclusive"),
     to: z.string().optional().describe("YYYY-MM-DD inclusive"),
   },
-}, async (a) => {
+}, async (a: any): Promise<any> => {
   try {
     let list = getInvoices();
     if (a.status) list = list.filter((i) => i.status === a.status);
@@ -746,11 +756,11 @@ server.registerTool("invoice_list", { annotations: { readOnlyHint: true, destruc
   } catch (e) { return fail(String((e as Error).message ?? e)); }
 });
 
-server.registerTool("invoice_get", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+regTool("invoice_get", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "Get one invoice",
   description: "Return the full stored record for one invoice number, including every line, tax breakdown, and the balance still open after any credit note issued against it (see credited_minor).",
   inputSchema: { number: z.string() },
-}, async (a) => {
+}, async (a: any): Promise<any> => {
   const inv = getInvoices().find((i) => i.number === a.number);
   if (!inv) return fail(`no invoice numbered ${a.number}.`);
   // D-R96: total_minor and paid_minor alone say nothing about a credit note issued
@@ -766,7 +776,7 @@ server.registerTool("invoice_get", { annotations: { readOnlyHint: true, destruct
   });
 });
 
-server.registerTool("invoice_mark_paid", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
+regTool("invoice_mark_paid", { annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   title: "Mark an invoice paid",
   description: "Record a payment on one invoice. amount is in MAJOR units and ADDS to what is paid, never replaces it; omit it to settle the rest. An overpayment is refused, naming the open balance.",
   inputSchema: {
@@ -777,7 +787,7 @@ server.registerTool("invoice_mark_paid", { annotations: { readOnlyHint: false, d
     method: z.string().optional().describe("How it was paid, e.g. bank transfer, card. Stored on this payment's row"),
     reference: z.string().optional().describe("Bank reference or transaction id for this payment. Stored on this payment's row"),
   },
-}, async (a) => {
+}, async (a: any): Promise<any> => {
   try {
     return await locked(() => {
     const all = getInvoices();
@@ -830,14 +840,14 @@ server.registerTool("invoice_mark_paid", { annotations: { readOnlyHint: false, d
   } catch (e) { return fail(String((e as Error).message ?? e)); }
 });
 
-server.registerTool("invoice_pdf", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+regTool("invoice_pdf", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "Render invoice PDF",
   description: "Call this tool to write one stored invoice as an A4 PDF and return the path: issuer, BILL TO, dates, items, taxes and totals. Free stamps a credit line and no logo; Pro renders it unbranded with your logo.",
   inputSchema: {
     number: z.string().describe("Invoice number to render, as returned by invoice_create"),
     out_path: z.string().optional().describe("Where to write the PDF; defaults to <data dir>/pdf/<number>.pdf. The page carries the issuer block, the BILL TO client block, dates, an item table with wrapped descriptions, subtotal, discount, one tax line per rate, the total, payment details and notes, and every money value on it carries its currency code. Use a .pdf path: the bytes written are always PDF"),
   },
-}, async (a) => {
+}, async (a: any): Promise<any> => {
   try {
     const inv = getInvoices().find((i) => i.number === a.number);
     if (!inv) return fail(`no invoice numbered ${a.number}.`);
@@ -864,11 +874,11 @@ server.registerTool("invoice_pdf", { annotations: { readOnlyHint: true, destruct
   } catch (e) { return fail(String((e as Error).message ?? e)); }
 });
 
-server.registerTool("overdue_report", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+regTool("overdue_report", { annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
   title: "Overdue report",
   description: "List every invoice not paid in full whose due date has passed, worst first, with days overdue and the amount, then a total per currency. Free. Use invoice_list for everything still open.",
   inputSchema: { as_of: z.string().optional().describe("YYYY-MM-DD, defaults to today") },
-}, async (a) => {
+}, async (a: any): Promise<any> => {
   try {
     const today = a.as_of ?? isoDate();
     const rows = getInvoices()
@@ -905,7 +915,7 @@ server.registerResource("open-invoices", "invoices://open", {
 
 /* ------------------------------------------------------------------- prompts */
 
-server.registerPrompt("monthly_invoicing", {
+regPrompt("monthly_invoicing", {
   title: "Monthly invoicing",
   description: "Review what is unpaid and what is overdue, then draft the next invoice for the client that owes the most.",
   argsSchema: {

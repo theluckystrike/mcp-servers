@@ -1,0 +1,23 @@
+{
+ "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+ "name": "io.github.theluckystrike/ingredient-convert",
+ "description": "Convert cups, tbsp, tsp, ml, fl oz, grams and ounces for 30+ ingredients using real densities.",
+ "version": "0.25.0",
+ "repository": {
+  "url": "https://github.com/theluckystrike/mcp-servers",
+  "source": "github",
+  "subfolder": "servers/ingredient-convert"
+ },
+ "packages": [
+  {
+   "registryType": "mcpb",
+   "identifier": "https://github.com/theluckystrike/mcp-servers/releases/download/v0.22.5/ingredient-convert.mcpb",
+   "version": "0.25.0",
+   "transport": {
+    "type": "stdio"
+   },
+   "environmentVariables": [],
+   "fileSha256": "25c9e9a90223189999909d53205d17f24fba7d9d427479ca7e3b93920e8c69d6"
+  }
+ ]
+}

@@ -184,6 +184,6 @@ test("free tier: entry_log is gated at 100 stored entries", async () => {
     );
     const res = await c.call("entry_log", { client: "acme", minutes: 10 });
     assert.match(res.text, /free tier|upgrade|100 stored entries/i);
-    assert.equal(res.isError, false);
+    assert.equal(res.isError, true);
   } finally { c.close(); }
 });

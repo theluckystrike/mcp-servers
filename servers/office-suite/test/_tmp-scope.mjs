@@ -5,7 +5,7 @@ import { dirname, join, relative, resolve } from 'node:path';
 import { spawnSync } from 'node:child_process';
 const base = process.env.TMPDIR || join(homedir(), 'mcp-servers-work');
 mkdirSync(base, { recursive: true });
-export const TEST_TMP_ROOT = mkdtempSync(join(base, `mcp-test-run-${process.pid}-`));
+export const TEST_TMP_ROOT = realpathSync(mkdtempSync(join(base, `mcp-test-run-${process.pid}-`)));
 process.env.TMPDIR = TEST_TMP_ROOT;
 export function removeTree(input) {
   const path = resolve(input), rel = relative(TEST_TMP_ROOT, path);

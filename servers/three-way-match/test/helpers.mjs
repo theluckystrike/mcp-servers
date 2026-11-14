@@ -1,4 +1,4 @@
-import { mkdtempSync, mkdirSync, readdirSync, lstatSync, rmSync, appendFileSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, readdirSync, lstatSync, realpathSync, rmSync, appendFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { homedir } from 'node:os';
 import { spawnSync } from 'node:child_process';
@@ -7,7 +7,7 @@ export function fixture() {
 }
 export function temporary() {
   const root = process.env.TMPDIR || join(homedir(), 'mcp-servers-work'); mkdirSync(root, { recursive: true });
-  const dir = mkdtempSync(join(root, 'three-way-match-'));
+  const dir = realpathSync(mkdtempSync(join(root, 'three-way-match-')));
   return { dir, cleanup() {
     const open = spawnSync(process.platform === 'darwin' ? '/usr/sbin/lsof' : 'lsof', ['-t', '+D', dir], { encoding: 'utf8' });
     if (open.status !== 1 || open.stdout.trim()) throw new Error(`Refusing cleanup: lsof ${open.status}: ${open.stdout} ${open.stderr}`);

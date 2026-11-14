@@ -1,0 +1,41 @@
+{
+ "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/mcpb.manifest.schema.json",
+ "name": "ingredient-convert",
+ "display_name": "Ingredient Converter",
+ "version": "0.25.0",
+ "description": "Convert cups, tbsp, tsp, ml, fl oz, grams and ounces for 30+ ingredients using real densities.",
+ "long_description": "Convert a cooking ingredient amount between cups, tablespoons, teaspoons, milliliters, fluid ounces, grams and ounces using a per-ingredient density table (30+ ingredients, sourced). Includes recipe scaling with friendly fractions, bulk conversion, fraction/decimal helpers and a most-googled conversions lookup. All local, deterministic, no network.",
+ "server": {
+  "type": "node",
+  "entry_point": "servers/ingredient-convert/dist/index.js",
+  "mcp_config": {
+   "command": "node",
+   "args": [
+    "${__dirname}/servers/ingredient-convert/dist/index.js"
+   ]
+  },
+  "environment_variables": {}
+ },
+ "tools": [
+  "calculate_rate",
+  "break_even",
+  "what_if"
+ ],
+ "keywords": [
+  "ingredient-convert",
+  "freelance",
+  "rate-calculator",
+  "break-even",
+  "pricing"
+ ],
+ "license": "MIT",
+ "author": {
+  "name": "theluckystrike"
+ },
+ "remotes": [
+  {
+   "type": "streamable-http",
+   "url": "https://mcp.zovo.one/mcp/ingredient-convert"
+  }
+ ]
+}

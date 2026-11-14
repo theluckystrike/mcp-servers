@@ -32,7 +32,13 @@
   "remotes": [
     {
       "type": "streamable-http",
-      "url": "https://mcp.zovo.one/mcp/onboarding"
+      "url": "https://mcp.zovo.one/mcp/onboarding",
+      "headers": [
+        {
+          "name": "Authorization",
+          "description": "Optional Bearer value: your license key or anonymous token (anon_<hex>). Send a license key or anonymous token to keep one tenant; with no header the endpoint issues a fresh anonymous token and serves the free tier."
+        }
+      ]
     }
   ]
 }
