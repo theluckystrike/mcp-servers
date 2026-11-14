@@ -26,7 +26,10 @@ jobs:
       - name: Vendor and bundle
         working-directory: remote
         run: |
+          command -v lsof || (sudo apt-get update -qq && sudo apt-get install -y -qq lsof)
+          [ -x /usr/sbin/lsof ] || sudo ln -s "$(command -v lsof)" /usr/sbin/lsof
           node build-vendor.mjs
+          git status --short src/vendor | head -20
           npx --yes wrangler@4 deploy --dry-run --outdir out
           ls -la out
       - uses: actions/upload-artifact@v4
