@@ -385,9 +385,11 @@ export function checkoutCustomText(productId, askedId = productId, tenant = "") 
   const aliasNote = askedId !== productId && PRODUCT_ALIASES[askedId] === productId
     ? `You clicked ${askedId}. ${askedId} runs its sibling servers as child processes and forwards one key to all of them, so the only key that turns it Pro is this bundle key. It costs less than those servers do singly, and it unlocks the other ${SERVER_COUNT - 1} too. `
     : "";
+  // sprint-20261116-pay2: the shared Stripe account shows "BeLikeNative"; say who is paid. 14-day refund = /terms/ section 8 (Pro Licences).
+  const payLine = `You pay McpStamp through our company's Stripe account, shown as BeLikeNative. Your key appears right after payment. 14-day refund. `;
   const submit = productId === "bundle"
-    ? `${aliasNote}One payment, one lifetime key for all ${SERVER_COUNT} servers. Saves $${BUNDLE_SAVING_USD} against buying them singly.`
-    : `Buying more than one? All ${SERVER_COUNT} servers are $${PRODUCTS.bundle.usd} together, a $${BUNDLE_SAVING_USD} saving: https://mcp.zovo.one/buy/bundle?src=checkout.crosssell.${productId}${validTenant(tenant) ? `&tenant=${encodeURIComponent(tenant)}` : ""}`;
+    ? `${aliasNote}${payLine}One payment, one lifetime key for all ${SERVER_COUNT} servers. Saves $${BUNDLE_SAVING_USD} against buying them singly.`
+    : `${payLine}Buying more than one? All ${SERVER_COUNT} servers are $${PRODUCTS.bundle.usd} together, a $${BUNDLE_SAVING_USD} saving: https://mcp.zovo.one/buy/bundle?src=checkout.crosssell.${productId}${validTenant(tenant) ? `&tenant=${encodeURIComponent(tenant)}` : ""}`;
   const after_submit =
     `Your license key is shown on the confirmation page immediately after payment. ` +
     `Copy it from that page and bookmark the URL; the same URL always shows the same key. If you started from a hosted ` +
@@ -1215,6 +1217,8 @@ async function createCheckout(env, host, productId, probeTag = "", tenant = "", 
     // Always create a Customer, so the email Checkout collects is kept on an object the
     // receipt and any later support lookup can be found by, not only inside the Session.
     customer_creation: "always",
+    billing_address_collection: "auto",
+    locale: "auto",
     "custom_text[submit][message]": ct.submit,
     "custom_text[after_submit][message]": ct.after_submit,
     "metadata[product]": productId,
