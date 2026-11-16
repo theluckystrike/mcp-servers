@@ -329,6 +329,13 @@ export function createLicenseGate(opts: { product: string }): LicenseGate {
           if (!key) {
             return { content: [{ type: "text", text: "Give the key argument: the MCPL1.... string shown after checkout." }] };
           }
+          if (c.keyless) {
+            // No token at all: there is no document to bind Pro to, and nothing is stored.
+            return { content: [{ type: "text", text:
+              "This call carried no token, so there is no connection to turn Pro on for. " +
+              `Send the key itself as "Authorization: Bearer <key>", or get a free token at ${CHECKOUT_BASE}/mcp/connect, ` +
+              `reconnect with the /mcp/${product}/t/<token> URL it prints, and call license_activate there.` }] };
+          }
           if (!c.anonToken) {
             // A licence-key caller is already Pro; there is no anonymous document to bind to.
             return { content: [{ type: "text", text:

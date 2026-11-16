@@ -15,6 +15,7 @@ import { appendSuccessUpgrade, readFunnelCohort, recordFunnelEvents, requestCoho
 import { STORE, type RequestCtx, type Download } from "./shims/ctx.js";
 import { PRICE_BUNDLE_USD, PRICE_SINGLE_USD, SERVER_COUNT } from "./shims/license.js";
 import { paymentDescriptor } from "./payment.js";
+import { appendResultText, createKeylessCounter, isKeylessToolCall, keylessCapBody, keylessCapText, keylessTrailer, noCredentialChallenge } from "./keyless.js";
 import { issueRefreshToken, redeemRefreshToken } from "./oauth-refresh.js";
 import SERVER_INSTRUCTIONS from "./server-instructions.json";
 import { TMP_RE, recount } from "./shims/fs.js";
@@ -872,7 +873,7 @@ interface Auth {
   /** The anonymous bearer token itself, when kind is "anon". */
   anonToken?: string;
   /** Which of the three forms actually carried the token on this request. */
-  via?: "Authorization: Bearer" | "URL path segment (/mcp/<server>/t/<token>)" | "URL query parameter (?token=)";
+  via?: "Authorization: Bearer" | "URL path segment (/mcp/<server>/t/<token>)" | "URL query parameter (?token=)" | "none (keyless free tier)";
   /** True when an anonymous tenant is Pro because of a bound purchase, not a pasted key. */
   bound?: boolean;
   /** The tok:<token> value read during authentication: ms of its last TTL refresh. */
@@ -1045,7 +1046,10 @@ async function authenticate(req: Request, env: Env, product: string, urlToken = 
     // RFC 9728 §4: a protected resource advertises its OAuth metadata via
     // `WWW-Authenticate: Bearer resource_metadata=...`, so an MCP client that gets a 401
     // here can discover the authorization server (the same host) and start the PKCE dance.
-    return json(unauthorizedBody(product), 401, { "www-authenticate": `Bearer realm="mcp.zovo.one", error="invalid_token", resource_metadata="${OAUTH_RESOURCE_META}"` });
+    // No credential at all is not an invalid token: RFC 6750 §3.1 says such a challenge
+    // SHOULD NOT carry an error code, and the metadata URL is the path-scoped one for this
+    // endpoint (OAUTH_RESOURCE_META for the "*" of /mcp/whoami). See keyless.ts.
+    return json(unauthorizedBody(product), 401, { "www-authenticate": noCredentialChallenge(product) });
   }
   if (token.startsWith("MCPL1.")) {
     const r = await verifyLicense(token, product);
@@ -1094,6 +1098,9 @@ const RL_FLUSH_EVERY = 20;
 const RL_FLUSH_MS = 5 * 60_000;
 const LOCAL_MAP_MAX = 2000;
 const discoveryCounts = new Map<string, number>();
+/** The keyless free tier's per-address daily counter (keyless.ts), one per isolate. */
+const KEYLESS = createKeylessCounter();
+const KEYLESS_OFFER = { priceUsd: PRICE_SINGLE_USD, bundleUsd: PRICE_BUNDLE_USD, serverCount: SERVER_COUNT };
 const rlLocal = new Map<string, { flushed: number; pending: number; at: number }>();
 
 /** Drop entries from earlier hour buckets once a map grows; keys end in `:<bucket>`. */
@@ -2933,9 +2940,23 @@ export default {
     }
     const isDiscovery = req.method === "POST" && !hasCredential
       && rpc.method !== null && DATALESS_METHODS.has(rpc.method);
+    // KEYLESS FREE TIER (keyless.ts): a tools/call with no credential in any form runs on
+    // the free tier over an empty document that is never saved, under a per-address daily
+    // cap, instead of the 401 a client that never runs OAuth cannot get past. Any credential,
+    // valid or not, and the clean /v1 path take exactly the path they took before.
+    const keyless = isKeylessToolCall(req.method, rpc.method, rpc.hasId, hasCredential, clean);
+    let keylessDecision: Awaited<ReturnType<typeof KEYLESS.allow>> | null = null;
 
     let auth: Auth;
-    if (isDiscovery) {
+    if (keyless) {
+      keylessDecision = await KEYLESS.allow(env.REMOTE_DATA, (p) => ctx.waitUntil(p), req.headers.get("cf-connecting-ip") ?? "unknown");
+      if (!keylessDecision.ok) {
+        console.log(JSON.stringify({ event: "keyless_capped", server: product }));
+        return new Response(keylessCapBody(rpc.id, keylessCapText(product, keylessDecision, KEYLESS_OFFER)),
+          { headers: { "content-type": "application/json", "cache-control": "no-store" } });
+      }
+      auth = { tenant: "keyless", isPro: false, kind: "anon", limit: keylessDecision.cap, via: "none (keyless free tier)" };
+    } else if (isDiscovery) {
       // Keyed on the user-agent family as well as the IP: the probes run from a handful of
       // cloud addresses and several vendors share one, so an IP-only key let one crawler
       // exhaust another's budget and answered real liveness checks with 429.
@@ -2946,7 +2967,9 @@ export default {
       if (authed instanceof Response) return authed;
       auth = authed;
     }
-    const limited = await rateLimit(env, auth, ctx, product);
+    // Keyless calls are capped per day above; the hourly counter is per token and would be a
+    // KV read and write on every call with no token to key it on.
+    const limited = keyless ? null : await rateLimit(env, auth, ctx, product);
     if (limited) {
       if (!clean) return limited;
       // Clean mode: the same limit as a JSON-RPC error in an ordinary response, without the
@@ -2980,11 +3003,14 @@ export default {
     // seconds, and each one used to hydrate three documents and write two stamps.
     const dataless = req.method !== "POST" || (rpc.method !== null && DATALESS_METHODS.has(rpc.method));
 
-    const files = dataless ? new Map<string, string>() : await hydrate(env, auth.tenant, product);
+    // Keyless: nothing is read either. Claude's connectors share egress addresses, so no
+    // document keyed on the caller can be private to one person (keyless.ts).
+    const stored = !dataless && !keyless;
+    const files = stored ? await hydrate(env, auth.tenant, product) : new Map<string, string>();
     // /mcp/recurring works inside the invoice store: its document is hydrated on top of
     // this endpoint's, and every path is flushed back to whichever document owns it.
     const shares = sharedDocs(cfg);
-    if (!dataless) {
+    if (stored) {
       for (const sd of shares) {
         for (const [k, v] of await hydrate(env, auth.tenant, sd.server)) files.set(k, v);
       }
@@ -2993,7 +3019,7 @@ export default {
     // way: business_set on /mcp/invoice must be visible to /mcp/docx, /mcp/expense-tracker,
     // /mcp/recurring, /mcp/resume, /mcp/clauses, /mcp/time-tracker and /mcp/timezone for
     // the same token, so it is not scoped to the servers that read it today.
-    if (!dataless) {
+    if (stored) {
       for (const [k, v] of await hydrate(env, auth.tenant, PROFILE_SERVER)) files.set(k, v);
     }
     const ownPaths = (p2: string) => !isProfilePath(p2) && !shares.some((sd) => sd.owns(p2));
@@ -3018,6 +3044,7 @@ export default {
       shared,
       fds: new Map(), nextFd: 100,
       clean,
+      keyless,
     };
     const before = JSON.stringify(persistable(files, cfg, rctx.published, ownPaths));
     // Only the read-write shares need a before-image: a read-only share is never flushed.
@@ -3068,7 +3095,15 @@ export default {
         if (req.method !== "GET" && (rctx.published.size > 0 || strip.length > 0 || isToolCall || instructions || clean)) {
           let out = await res.text();
           successfulBusinessCall = isToolCall && successfulBusinessResponse(bodyText, out, res.status);
-          if (successfulBusinessCall && !auth.isPro && !clean) {
+          if (keyless && keylessDecision) {
+            // Every keyless tool result, success or refusal, says what it ran on, that it
+            // saved nothing, and where the free token and Pro are.
+            const wrote = JSON.stringify(persistable(files, cfg, rctx.published, ownPaths)) !== before
+              || JSON.stringify(persistableProfile(files, rctx.published)) !== profileBefore
+              || [...sharedBefore].some(([srv, b]) => JSON.stringify(persistable(files, cfg, rctx.published, shares.find((sd) => sd.server === srv)!.owns)) !== b);
+            out = appendResultText(out, keylessTrailer(product, keylessDecision, wrote, KEYLESS_OFFER)).body;
+            console.log(JSON.stringify({ event: "keyless_call", server: product, tool: rpcToolName(bodyText), ok: successfulBusinessCall, used: keylessDecision.used }));
+          } else if (successfulBusinessCall && !auth.isPro && !clean) {
             const tenantQ2 = auth.anonToken ? `?tenant=${auth.anonToken}` : "";
             const trailer = `Free tier: 600 calls/hour, 30-day retention. Pro ($${PRICE_SINGLE_USD}/server or $${PRICE_BUNDLE_USD} for all ${SERVER_COUNT}, one-time): https://mcp.zovo.one/buy/bundle${tenantQ2 ? tenantQ2 + "&" : "?"}src=${product}.success`;
             const upgraded = appendSuccessUpgrade(bodyText, out, trailer, res.status);
@@ -3095,7 +3130,7 @@ export default {
         if (ecbBefore) await flushEcb(env, files, ecbBefore);
         // Nothing was hydrated, so there is nothing to flush and no last-seen stamp to
         // move: a dataless method leaves KV exactly as it found it.
-        if (!dataless) {
+        if (stored) {
           await flush(env, auth.tenant, product, JSON.stringify(persistable(files, cfg, rctx.published, ownPaths)), before);
           for (const sd of shares) {
             if (sd.readOnly) continue;
@@ -3110,7 +3145,7 @@ export default {
             ctx.waitUntil(env.REMOTE_DATA.put(`tok:anon_${auth.tenant.slice(5)}`, String(Date.now()), { expirationTtl: TOK_TTL }));
           }
         }
-        if (successfulBusinessCall) {
+        if (successfulBusinessCall && !keyless) {
           const observedAt = Date.now();
           // Defer all measurement reads/writes; a KV failure never changes the answer.
           // Captures only fixed source/cohort/server/event labels and a private daily

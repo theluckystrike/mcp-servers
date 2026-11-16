@@ -26,7 +26,12 @@ export interface RequestCtx {
    * client with no header field must use. license_status reports it, so a claude.ai
    * or Claude Desktop user is not told their token came from a header they never set.
    */
-  authVia?: "Authorization: Bearer" | "URL path segment (/mcp/<server>/t/<token>)" | "URL query parameter (?token=)";
+  authVia?: "Authorization: Bearer" | "URL path segment (/mcp/<server>/t/<token>)" | "URL query parameter (?token=)" | "none (keyless free tier)";
+  /**
+   * A tools/call that carried no credential at all (see ../keyless.ts): free tier, an empty
+   * document that is never saved, no token to bind a purchase to.
+   */
+  keyless?: boolean;
   /** virtual filesystem: absolute path -> file contents (binary values carry the BIN sentinel) */
   files: Map<string, string>;
   dirs: Set<string>;

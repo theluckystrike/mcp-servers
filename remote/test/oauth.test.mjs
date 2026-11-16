@@ -93,8 +93,10 @@ test("route contract: all five endpoints are wired into the fetch router", () =>
 });
 
 test("route contract: the 401 advertises RFC 9728 resource metadata", () => {
+  // The no-token 401 header is built by keyless.ts noCredentialChallenge (tested there);
+  // it must still carry resource_metadata so clients can discover the AS.
   assert.ok(
-    src.includes('resource_metadata="${OAUTH_RESOURCE_META}"'),
+    src.includes('return json(unauthorizedBody(product), 401, { "www-authenticate": noCredentialChallenge(product) });'),
     "the no-token 401 must carry resource_metadata so clients can discover the AS",
   );
 });

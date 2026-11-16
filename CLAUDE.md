@@ -79,6 +79,14 @@ test reaches from the other direction.
    and never started OAuth, because clients authenticate at connect, not after a failed call.
    Probes and unknown clients still get the anonymous 200. See `wantsOauthUpfront` and
    remote/test/oauth-upfront.test.mjs.
+   Since s1117 (2026-11-17) a `tools/call` with NO credential in any form no longer gets a
+   401: it runs on the keyless free tier (remote/src/keyless.ts): never Pro, an empty
+   document that is never saved (Claude's connectors share egress IPs, so nothing keyed on the
+   caller can be private), a 300-call daily cap per IP counted in memory and flushed to KV every
+   25 calls, and every result names /mcp/connect and /buy/<product>. Measured reason: a
+   Claude-User connector sent 105+ tool calls with no credential and never fetched discovery.
+   Any credential, valid or not, and the clean /v1 path behave as before; the remaining
+   no-credential 401s carry no `error` param (RFC 6750 3.1). See remote/test/keyless.test.mjs.
 2. **Tool descriptions are a build input.** `remote/build-vendor.mjs` applies about 113 exact
    string patches and throws on a miss. Before editing any description, run
    `/usr/bin/grep -n '<server> <tool> description' remote/build-vendor.mjs`, update both

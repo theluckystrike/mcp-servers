@@ -7,7 +7,10 @@ import {
 import { namespaceHarness } from '../../billing/test/funnel-harness.mjs';
 
 const TOKEN = `anon_${'a'.repeat(32)}`;
-const NOW = Date.parse('2026-10-16T08:00:00.000Z');
+// Anchored to the run date, not a fixed day: FunnelState checks its 31-day retention
+// against the real clock, so a fixed 2026-10-16 turned three tests red on 2026-11-16.
+const NOW = Math.floor(Date.now() / 60000) * 60000;
+const NOW_DAY = new Date(NOW).toISOString().slice(0, 10);
 const request = (name = 'invoice_create') => ({ jsonrpc: '2.0', id: 1, method: 'tools/call', params: { name, arguments: { private_input: 'never export' } } });
 const success = () => ({ jsonrpc: '2.0', id: 1, result: { content: [{ type: 'text', text: 'Completed' }], structuredContent: { private_result: 'never export' } } });
 const body = JSON.stringify;
@@ -130,8 +133,8 @@ test('same-day window reads bounded atomic summaries, excludes old days and neve
   assert.equal(stats.ordinary.checkout_handoff, 1);
   assert.equal(stats.probe.checkout_handoff, 1);
   assert.equal(stats.rows.length, 8);
-  assert.deepEqual(stats.window.utc_dates, ['2026-10-16']);
-  assert.equal(stats.window.start, '2026-10-16T00:00:00.000Z');
+  assert.deepEqual(stats.window.utc_dates, [NOW_DAY]);
+  assert.equal(stats.window.start, `${NOW_DAY}T00:00:00.000Z`);
   assert.equal(body(stats).includes('private@example.invalid'), false);
   assert.equal(body(stats).includes('first:'), false);
   assert.equal('conversion' in stats, false);
