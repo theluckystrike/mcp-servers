@@ -49,7 +49,8 @@ test('replaying the same admitted response is idempotent, but a fresh response r
   assert.equal(stats.rows.find((row) => row.event === 'first_successful_anon_token_server_day').count, 1);
 });
 
-test('lost reply after commit retries the same response identity without double counting any batch event', async () => {
+test('lost reply after commit retries the same response identity without double counting any batch event', async (t) => {
+  t.mock.timers.enable({ apis: ['Date'], now: NOW }); // FunnelState reads the real clock; keep the fixed day inside its 31-day retention
   const h = namespaceHarness();
   h.loseNextReply();
   await recordFunnelEvents(h.env, { server: 'invoice', source: 'guide', cohort: 'probe', token: TOKEN,
@@ -64,7 +65,8 @@ test('lost reply after commit retries the same response identity without double 
   assert.equal(saved.includes(TOKEN), false);
 });
 
-test('1000 servers and concurrent responses still export at most70 source/cohort/event cells per day', async () => {
+test('1000 servers and concurrent responses still export at most70 source/cohort/event cells per day', async (t) => {
+  t.mock.timers.enable({ apis: ['Date'], now: NOW }); // FunnelState reads the real clock; keep the fixed day inside its 31-day retention
   const h = namespaceHarness();
   await Promise.all(Array.from({ length: 1000 }, (_, index) => recordFunnelEvents(h.env, {
     server: `server-${index}`, source: 'guide', cohort: 'ordinary',
@@ -82,7 +84,8 @@ test('1000 servers and concurrent responses still export at most70 source/cohort
   assert.equal('server' in stats.rows[0], false, 'public summaries are explicitly pooled across server labels');
 });
 
-test('one unavailable day makes retrieval incomplete with null totals, no deceptively partial ordinary values', async () => {
+test('one unavailable day makes retrieval incomplete with null totals, no deceptively partial ordinary values', async (t) => {
+  t.mock.timers.enable({ apis: ['Date'], now: NOW }); // FunnelState reads the real clock; keep the fixed day inside its 31-day retention
   const h = namespaceHarness();
   await recordFunnelEvents(h.env, { server: 'invoice', source: 'guide', cohort: 'ordinary', events: ['successful_business_call'] }, NOW);
   h.unavailable.add('funnel:v2:2026-10-15');
@@ -135,7 +138,8 @@ test('validation rejects raw tokens, arbitrary fields, invalid labels and imposs
   assert.equal(h.values().size, 0);
 });
 
-test('daily object refuses cross-day reuse and schedules retention cleanup at31days from day start', async () => {
+test('daily object refuses cross-day reuse and schedules retention cleanup at31days from day start', async (t) => {
+  t.mock.timers.enable({ apis: ['Date'], now: NOW }); // FunnelState reads the real clock; keep the fixed day inside its 31-day retention
   const h = namespaceHarness();
   await recordFunnelEvents(h.env, { server: 'invoice', source: 'guide', cohort: 'probe', events: ['successful_business_call'] }, NOW);
   const object = h.objects.get(`funnel:v2:${DAY}`);
