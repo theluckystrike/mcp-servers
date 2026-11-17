@@ -79,6 +79,12 @@ test reaches from the other direction.
    and never started OAuth, because clients authenticate at connect, not after a failed call.
    Probes and unknown clients still get the anonymous 200. See `wantsOauthUpfront` and
    remote/test/oauth-upfront.test.mjs.
+   REVERSED for claude.ai on 2026-11-17 (mcp-remote 6ed934fa, commit 5c867d4a): bare UA
+   "Claude-User" and clientInfo "claude-ai" no longer get the 401 at initialize. The one real
+   claude.ai price-tracker user got 137 initialize 401s from 11-14 to 11-17 and never fetched
+   any discovery document, so OAuth-at-connect blocked it completely. claude.ai now initializes
+   anonymously and its no-credential tool calls take the keyless free tier. Claude Code, Codex,
+   Cursor, VS Code, Windsurf and OpenAI clients keep OAuth up front.
    Since s1117 (2026-11-17) a `tools/call` with NO credential in any form no longer gets a
    401: it runs on the keyless free tier (remote/src/keyless.ts): never Pro, an empty
    document that is never saved (Claude's connectors share egress IPs, so nothing keyed on the
