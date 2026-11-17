@@ -416,7 +416,7 @@ export const VALIDATION = { at: "2026-09-24", pass: 1254, total: 1254, servers: 
  * same way: test/checkout-r1.test.mjs counts the `test(` declarations on disk and fails
  * if this disagrees. The page said 25 when there were 99.
  */
-export const BILLING_TEST_COUNT = 282;
+export const BILLING_TEST_COUNT = 289;
 /**
  * The npm publish is pending: `npx -y @theluckystrike/mcp-<server>` returns E404 today,
  * and publishing needs an operator browser login (docs/HUMAN_GATED_PACK.md section 1).
@@ -731,6 +731,54 @@ a.grid{display:inline-block;width:31%;min-width:200px;margin:0 1% 6px 0;font-siz
 .det{font-size:13px;color:var(--mut);margin:.3em 0 0;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 @media(max-width:640px){a.grid{width:100%}}
 </style></head>`;
+}
+
+/**
+ * GA4 (s1118). Same property as www.mcpstamp.com, with the cross-domain linker, so a visit
+ * that starts on mcpstamp.com/services/ and reaches a mcp.zovo.one checkout stays one
+ * session. Only on the pages that sell: /, /pricing and the /buy/<id> intent pages. Never on
+ * /success, /recover or /verify (session ids and keys live in those URLs).
+ *
+ * No PII reaches GA4: page_location is rebuilt from the path plus an allow-list of
+ * attribution params (src, acq, utm_*, gclid); tenant, session_id and every other param is
+ * dropped. begin_checkout carries only product id, price, currency and the validated src.
+ * The tag only observes: the checkout form still posts exactly as before (beacon transport,
+ * no preventDefault), and the Sec-Fetch/Origin + intent-token guard is untouched.
+ * No CSP header is set on this service; if one is ever added it must allow
+ * https://www.googletagmanager.com (script) and https://*.google-analytics.com (connect, img).
+ */
+export const GA4_ID = "G-KDB103CDCZ";
+export const GA4_LINKER_DOMAINS = ["www.mcpstamp.com", "mcpstamp.com", "mcp.zovo.one"];
+const GA4_KEEP_PARAMS = ["src", "acq", "utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term", "gclid"];
+const jsonForScript = (v) => JSON.stringify(v).replace(/</g, "\\u003c").replace(/>/g, "\\u003e").replace(/&/g, "\\u0026");
+
+/** Pure: the page_location GA4 may see for a request URL (attribution params only). */
+export function ga4PageLocation(input) {
+  const url = new URL(input);
+  const q = new URLSearchParams();
+  for (const k of GA4_KEEP_PARAMS) {
+    const v = url.searchParams.get(k);
+    if (v && /^[A-Za-z0-9._~-]{1,100}$/.test(v)) q.set(k, v);
+  }
+  const qs = q.toString();
+  return `https://${url.host}${url.pathname}${qs ? `?${qs}` : ""}`;
+}
+
+/** The gtag snippet. `checkout` = { item_id, item_name, value, src } adds begin_checkout on form submit. */
+export function ga4Snippet(input, checkout = null) {
+  const cfg = { page_location: ga4PageLocation(input), linker: { domains: GA4_LINKER_DOMAINS, accept_incoming: true } };
+  const begin = checkout
+    ? `\ndocument.addEventListener("submit",function(e){var f=e.target;if(!f||!f.querySelector||!f.querySelector('input[name="intent"][value="checkout"]'))return;var c=${jsonForScript(checkout)};gtag("event","begin_checkout",{currency:"USD",value:c.value,src:c.src,transport_type:"beacon",items:[{item_id:c.item_id,item_name:c.item_name,price:c.value,quantity:1}]});},true);`
+    : "";
+  return `<script async src="https://www.googletagmanager.com/gtag/js?id=${GA4_ID}"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag("js",new Date());gtag("config",${jsonForScript(GA4_ID)},${jsonForScript(cfg)});${begin}</script>`;
+}
+
+/** Insert the GA4 snippet into a rendered page, once, just before </head>. */
+export function withGa4(html, input, checkout = null) {
+  if (typeof html !== "string" || html.includes(`gtag/js?id=${GA4_ID}`)) return html;
+  const i = html.indexOf("</head>");
+  return i < 0 ? html : `${html.slice(0, i)}${ga4Snippet(input, checkout)}\n${html.slice(i)}`;
 }
 
 function page(title, body) {
@@ -2061,7 +2109,7 @@ const worker = {
       // crawl target had the weakest freshness signal: a conditional GET on / could not
       // revalidate and always refetched the full 89KB body. Same helper, same date scheme
       // (newest CHANGELOG release date) as every other page.
-      const body = home();
+      const body = withGa4(home(), url.href);
       return new Response(body, { headers: await contentHeaders(body) });
     }
 
@@ -2109,7 +2157,7 @@ const worker = {
 <p><a class="buy" href="/buy/bundle?src=store.pricing.cta">Buy the bundle &mdash; $${bundleUsd} one-time</a></p>
 <p class="muted">Not sure which server? Start free: open <a href="/mcp/connect?acq=store.product">mcp.zovo.one/mcp/connect</a> and use any free tier before you pay.</p>`;
       const pricingMeta = `<meta name="description" content="MCP server pricing: $${singleUsd} for any one Pro server, $${bundleUsd} for all ${SERVER_COUNT}. One-time payment, lifetime licence. Key shown after payment."><link rel="canonical" href="https://mcp.zovo.one/pricing">${og("Pricing — MCP servers by zovo.one", `$${singleUsd} per server, $${bundleUsd} for the full set. One-time, lifetime, key shown on the confirmation page.`, "https://mcp.zovo.one/pricing", "website")}`;
-      const pricingHtml = page(`Pricing | zovo.one`, pricingBody).replace("</title>", "</title>" + pricingMeta);
+      const pricingHtml = withGa4(page(`Pricing | zovo.one`, pricingBody).replace("</title>", "</title>" + pricingMeta), url.href);
       return new Response(pricingHtml, { headers: await contentHeaders(pricingHtml) });
     }
 
@@ -2829,7 +2877,12 @@ const LLM_USE_WHEN = {
         // the buyer explicitly submits the form, so GET cannot call Stripe.
         // The funnel counts the $19/$39 license offer; a service view is not one of its steps.
         if (!service) observeBillingFunnel(ctx, env, request, tenant, id, 'offer_view');
-        return new Response(service ? serviceIntentPage(url, id) : checkoutIntentPage(url, id, asked, tenant), {
+        // GA4 (s1118): page_view plus begin_checkout on the form submit. src is the validated tag or "none".
+        const gaEntry = catalogEntry(id);
+        const gaSrc = validSrc(url.searchParams.get("src") || "") ? url.searchParams.get("src") : "none";
+        const intentHtml = withGa4(service ? serviceIntentPage(url, id) : checkoutIntentPage(url, id, asked, tenant), url.href,
+          { item_id: id, item_name: String(gaEntry && gaEntry.name || id), value: Number(gaEntry && gaEntry.usd) || 0, src: gaSrc });
+        return new Response(intentHtml, {
           status: 200,
           headers: {
             "content-type": "text/html; charset=utf-8",
