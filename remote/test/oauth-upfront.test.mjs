@@ -26,12 +26,19 @@ const wantsOauthUpfront = new Function(
 )();
 const init = (name) => JSON.stringify({ jsonrpc: "2.0", id: 0, method: "initialize", params: { protocolVersion: "2025-06-18", capabilities: {}, clientInfo: { name, version: "1" } } });
 
-test("claude.ai initialize without a credential asks for OAuth", () => {
-  assert.equal(wantsOauthUpfront("initialize", "Claude-User", init("claude-ai")), true);
-  assert.equal(wantsOauthUpfront("initialize", "python-httpx/0.27", init("claude-ai")), true);
+test("OAuth-capable clients without a credential are asked for OAuth at initialize", () => {
   assert.equal(wantsOauthUpfront("initialize", "Claude-User (claude-code/2.1.323; +https://support.anthropic.com/)", "{}"), true);
+  assert.equal(wantsOauthUpfront("initialize", "Claude-User", init("claude-code")), true);
   assert.equal(wantsOauthUpfront("initialize", "node", init("Visual Studio Code")), true);
   assert.equal(wantsOauthUpfront("initialize", "codex-mcp-client/0.9", "{}"), true);
+});
+
+test("claude.ai keeps the anonymous initialize, so its tool calls reach the keyless free tier (s1118)", () => {
+  // Measured 2026-11-14..17: the Claude-User caller got 137 401s at initialize and never ran OAuth.
+  assert.equal(wantsOauthUpfront("initialize", "Claude-User", init("claude-ai")), false);
+  assert.equal(wantsOauthUpfront("initialize", "Claude-User", "{}"), false);
+  assert.equal(wantsOauthUpfront("initialize", "python-httpx/0.27", init("claude-ai")), false);
+  assert.equal(wantsOauthUpfront("initialize", "Claude-User", init("Claude-AI")), false);
 });
 
 test("probes and unknown clients keep the anonymous discovery path", () => {

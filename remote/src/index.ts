@@ -998,9 +998,18 @@ export function isBrowserNavigation(headers: Headers): boolean {
  * with no credential from a client that is known to support MCP OAuth answers 401 with the
  * path-scoped RFC 9728 metadata URL, and the client walks the one-click consent flow before
  * its first call. Probes and unknown clients keep the anonymous path.
+ *
+ * Claude.ai is taken back out (s1118). Since the gate went live on 2026-11-14 the same
+ * Claude-User caller (ASN Google LLC) got 137 401s on /mcp/price-tracker from 11-14 to
+ * 11-17 06:50Z, a 2,303-byte edge response each time (the unauthorizedBody size, not the
+ * 173-byte bad-bearer 401), and still 0 /.well-known or /oauth requests and 0 non-owner
+ * /oauth/token exchanges. It never runs OAuth, so the gate only kept it from the keyless free
+ * tier (keyless.ts), whose results carry the free-token and Pro lines. Claude Code still
+ * sends "Claude-User (claude-code/...)" and keeps OAuth up front, as do the other clients.
+ * A Claude.ai user who wants saved data follows the /mcp/connect line in every keyless result.
  */
-const OAUTH_CLIENT_UA = /^(Claude-User|claude-code|codex-mcp-client|Cursor|ChatGPT-User|openai-mcp)/i;
-const OAUTH_CLIENT_NAME = /^(claude-ai|claude-code|codex-mcp-client|codex|cursor|cursor-vscode|Visual Studio Code|vscode|windsurf|openai-mcp)$/i;
+const OAUTH_CLIENT_UA = /^(Claude-User \(claude-code|claude-code|codex-mcp-client|Cursor|ChatGPT-User|openai-mcp)/i;
+const OAUTH_CLIENT_NAME = /^(claude-code|codex-mcp-client|codex|cursor|cursor-vscode|Visual Studio Code|vscode|windsurf|openai-mcp)$/i;
 
 export function wantsOauthUpfront(method: string | null, userAgent: string, body: string): boolean {
   if (method !== "initialize") return false;
