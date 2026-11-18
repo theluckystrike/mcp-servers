@@ -79,10 +79,10 @@ test("only a POST tools/call with an id, no credential, outside /v1 is keyless",
 });
 
 test("handler wiring: credentials and OAuth come first, keyless never touches stored data", () => {
-  const h = src.slice(src.indexOf("const hasCredential = Boolean("));
+  const h = src.slice(src.indexOf("const hasCredential = "));
   const oauth = h.indexOf("wantsOauthUpfront(rpc.method,");
   const kl = h.indexOf("const keyless = isKeylessToolCall(req.method, rpc.method, rpc.hasId, hasCredential, clean);");
-  const authn = h.indexOf("await authenticate(req, env, product, urlToken, urlTokenForm)");
+  const authn = h.indexOf("await authenticate(req, env, product, urlToken, urlTokenForm, authOpts)");
   assert.ok(oauth > 0 && kl > oauth && authn > kl, "OAuth-upfront initialize, then keyless, then authenticate");
   assert.ok(h.includes('auth = { tenant: "keyless", isPro: false, kind: "anon", limit: keylessDecision.cap, via: "none (keyless free tier)" };'),
     "keyless is never Pro and carries no anonToken, so no purchase can bind to it");
@@ -92,7 +92,7 @@ test("handler wiring: credentials and OAuth come first, keyless never touches st
   assert.equal((h.match(/if \(stored\) \{/g) ?? []).length, 3, "shares, profile and flush are all behind stored");
   assert.ok(h.includes("        if (stored) {\n          await flush(env, auth.tenant, product,"), "nothing is written back");
   assert.ok(h.includes("if (successfulBusinessCall && !keyless) {"), "no funnel Durable Object call per keyless call");
-  assert.ok(h.includes("out = appendResultText(out, keylessTrailer(product, keylessDecision, wrote, KEYLESS_OFFER)).body;"));
+  assert.ok(h.includes("out = appendResultText(out, keylessTrailer(product, keylessDecision, wrote, KEYLESS_OFFER, unrecognized)).body;"));
   assert.ok(h.includes("if (rctx.bindKey && auth.kind === \"anon\" && auth.anonToken) {"), "binding still needs a real token");
 });
 

@@ -15,7 +15,7 @@ import { appendSuccessUpgrade, readFunnelCohort, recordFunnelEvents, requestCoho
 import { STORE, type RequestCtx, type Download } from "./shims/ctx.js";
 import { PRICE_BUNDLE_USD, PRICE_SINGLE_USD, SERVER_COUNT } from "./shims/license.js";
 import { paymentDescriptor } from "./payment.js";
-import { appendResultText, createKeylessCounter, isKeylessToolCall, keylessCapBody, keylessCapText, keylessTrailer, noCredentialChallenge } from "./keyless.js";
+import { appendResultText, classifyAuthorization, createKeylessCounter, invalidTokenChallenge, isKeylessToolCall, keylessCapBody, keylessCapText, keylessTrailer, noCredentialChallenge, unrecognizedTokenLine } from "./keyless.js";
 import { issueRefreshToken, redeemRefreshToken } from "./oauth-refresh.js";
 import SERVER_INSTRUCTIONS from "./server-instructions.json";
 import { TMP_RE, recount } from "./shims/fs.js";
@@ -1046,8 +1046,14 @@ export function unauthorizedBody(product: string) {
   };
 }
 
-async function authenticate(req: Request, env: Env, product: string, urlToken = "", urlTokenForm: Auth["via"] = "URL path segment (/mcp/<server>/t/<token>)"): Promise<Auth | Response> {
-  const header = req.headers.get("authorization") ?? "";
+/**
+ * `ignoreHeader`: the Authorization header carries a value this worker never issued
+ * (classifyAuthorization in keyless.ts), so it is treated as absent and only a URL token
+ * counts. `tokSeen`: the tok:<token> value classifyAuthorization already read for the
+ * header token, so a valid header token costs no second KV read.
+ */
+async function authenticate(req: Request, env: Env, product: string, urlToken = "", urlTokenForm: Auth["via"] = "URL path segment (/mcp/<server>/t/<token>)", opts: { ignoreHeader?: boolean; tokSeen?: string | null } = {}): Promise<Auth | Response> {
+  const header = opts.ignoreHeader ? "" : (req.headers.get("authorization") ?? "");
   const fromHeader = header.toLowerCase().startsWith("bearer ") ? header.slice(7).trim() : "";
   const token = fromHeader || urlToken.trim();
   const via: Auth["via"] = fromHeader ? "Authorization: Bearer" : urlTokenForm;
@@ -1076,16 +1082,20 @@ async function authenticate(req: Request, env: Env, product: string, urlToken = 
     const id = token.slice(5);
     if (!TENANT_ID_RE.test(id)) return json({ error: "invalid_token", guide: GUIDE }, 401);
     // Fetch token existence and the independent bundle/product/legacy slots together.
+    const preRead = fromHeader && opts.tokSeen !== undefined;
     const [seen, verified] = await Promise.all([
-      env.REMOTE_DATA.get(`tok:${token}`),
+      preRead ? Promise.resolve(opts.tokSeen ?? null) : env.REMOTE_DATA.get(`tok:${token}`),
       readBinding(env.REMOTE_DATA, token, product, verifyLicense),
     ]);
-    if (seen === null) return json({ error: "unknown_token", message: "Mint a new one at GET https://mcp.zovo.one/mcp/token", guide: GUIDE }, 401);
+    // Issued here once, now expired or revoked (or, with no trace left in KV, never issued
+    // and sent as a URL token): invalid_token with the RFC 6750 challenge, so an OAuth client
+    // refreshes. A never-issued HEADER token never gets here (classifyAuthorization).
+    if (seen === null) return json({ error: "invalid_token", reason: "unknown_or_expired", message: "This token is expired or unknown. Mint a new one at GET https://mcp.zovo.one/mcp/token or open https://mcp.zovo.one/mcp/connect", guide: GUIDE }, 401, { "www-authenticate": invalidTokenChallenge(product) });
     // Binding lookup rechecks each candidate key's signature, product and expiry.
     const d = decideBinding(verified);
     return { tenant: `anon:${id}`, isPro: d.isPro, kind: "anon", limit: d.limit, anonToken: token, bound: d.bound, via, tokStamp: Number(seen) || 0 };
   }
-  return json({ error: "invalid_token", message: "Token is neither an MCPL1 licence key nor an anonymous token.", guide: GUIDE }, 401);
+  return json({ error: "invalid_token", message: "Token is neither an MCPL1 licence key nor an anonymous token.", guide: GUIDE }, 401, { "www-authenticate": invalidTokenChallenge(product) });
 }
 
 /*
@@ -2865,11 +2875,19 @@ export default {
       return json({ error: "method_not_allowed", message: "POST JSON-RPC requests to this endpoint." }, 405, { allow: "POST" });
     }
 
+    // An Authorization header carrying a value this worker never issued counts as no header
+    // at all (keyless.ts, classifyAuthorization). Only an anon_ or rt_ shaped value costs a
+    // KV read, and for a live anon_ token authenticate() reuses that read.
+    const headerCred = await classifyAuthorization(env.REMOTE_DATA, req.headers.get("authorization"));
+    const headerCredential = headerCred.kind === "issued";
+    const ignoreHeader = headerCred.kind === "never_issued";
+    const authOpts = { ignoreHeader, tokSeen: headerCred.kind === "issued" ? headerCred.tokSeen : undefined };
+
     // A GET or HEAD with no credential in the header AND none in the URL is not a failed
     // authentication, it is a health check or a person opening the link: answer it. See
     // publicEndpointDoc() for the measured reason this exists. Everything that carries a
     // credential, and every POST, falls through to authenticate() unchanged.
-    if ((req.method === "GET" || req.method === "HEAD") && !req.headers.get("authorization") && !urlToken) {
+    if ((req.method === "GET" || req.method === "HEAD") && !headerCredential && !urlToken) {
       // A browser gets a page, a machine gets the JSON. Measured 2026-09-09: real people
       // in Chrome, Edge and Mobile Safari are arriving here from Google and Bing results
       // for /mcp/<server> URLs, and every one of them was handed raw JSON. These URLs
@@ -2941,7 +2959,13 @@ export default {
     // Everything that touches data still needs a token: tools/call, resources/read and
     // the rest fall through to authenticate() unchanged, and a token that is present but
     // wrong is still rejected rather than downgraded to this path.
-    const hasCredential = Boolean(req.headers.get("authorization")) || Boolean(urlToken);
+    const hasCredential = headerCredential || Boolean(urlToken);
+    // Never-issued header and no URL token: the request runs exactly as a no-credential one.
+    const unrecognized = ignoreHeader && !urlToken;
+    if (headerCred.kind === "never_issued") {
+      // The reason label only, never the value.
+      console.log(JSON.stringify({ event: "credential_never_issued", server: product, reason: headerCred.reason, rpc: rpc.method, url_token: Boolean(urlToken) }));
+    }
     if (req.method === "POST" && !hasCredential && wantsOauthUpfront(rpc.method, req.headers.get("user-agent") ?? "", bodyText)) {
       return json(unauthorizedBody(product), 401, {
         "www-authenticate": `Bearer realm="mcp.zovo.one", resource_metadata="https://mcp.zovo.one/.well-known/oauth-protected-resource/mcp/${product}"`,
@@ -2961,7 +2985,7 @@ export default {
       keylessDecision = await KEYLESS.allow(env.REMOTE_DATA, (p) => ctx.waitUntil(p), req.headers.get("cf-connecting-ip") ?? "unknown");
       if (!keylessDecision.ok) {
         console.log(JSON.stringify({ event: "keyless_capped", server: product }));
-        return new Response(keylessCapBody(rpc.id, keylessCapText(product, keylessDecision, KEYLESS_OFFER)),
+        return new Response(keylessCapBody(rpc.id, keylessCapText(product, keylessDecision, KEYLESS_OFFER, unrecognized)),
           { headers: { "content-type": "application/json", "cache-control": "no-store" } });
       }
       auth = { tenant: "keyless", isPro: false, kind: "anon", limit: keylessDecision.cap, via: "none (keyless free tier)" };
@@ -2972,7 +2996,7 @@ export default {
       const uaFamily = (req.headers.get("user-agent") ?? "unknown").split(/[/ ]/)[0].replace(/[^A-Za-z0-9]/g, "").slice(0, 24) || "unknown";
       auth = { tenant: `discovery:${uaFamily}:${req.headers.get("cf-connecting-ip") ?? "unknown"}`, isPro: false, kind: "anon", limit: DISCOVERY_LIMIT };
     } else {
-      const authed = await authenticate(req, env, product, urlToken, urlTokenForm);
+      const authed = await authenticate(req, env, product, urlToken, urlTokenForm, authOpts);
       if (authed instanceof Response) return authed;
       auth = authed;
     }
@@ -3110,8 +3134,9 @@ export default {
             const wrote = JSON.stringify(persistable(files, cfg, rctx.published, ownPaths)) !== before
               || JSON.stringify(persistableProfile(files, rctx.published)) !== profileBefore
               || [...sharedBefore].some(([srv, b]) => JSON.stringify(persistable(files, cfg, rctx.published, shares.find((sd) => sd.server === srv)!.owns)) !== b);
-            out = appendResultText(out, keylessTrailer(product, keylessDecision, wrote, KEYLESS_OFFER)).body;
-            console.log(JSON.stringify({ event: "keyless_call", server: product, tool: rpcToolName(bodyText), ok: successfulBusinessCall, used: keylessDecision.used }));
+            if (unrecognized) out = appendResultText(out, unrecognizedTokenLine(product)).body;
+            out = appendResultText(out, keylessTrailer(product, keylessDecision, wrote, KEYLESS_OFFER, unrecognized)).body;
+            console.log(JSON.stringify({ event: "keyless_call", server: product, tool: rpcToolName(bodyText), ok: successfulBusinessCall, used: keylessDecision.used, unrecognized }));
           } else if (successfulBusinessCall && !auth.isPro && !clean) {
             const tenantQ2 = auth.anonToken ? `?tenant=${auth.anonToken}` : "";
             const trailer = `Free tier: 600 calls/hour, 30-day retention. Pro ($${PRICE_SINGLE_USD}/server or $${PRICE_BUNDLE_USD} for all ${SERVER_COUNT}, one-time): https://mcp.zovo.one/buy/bundle${tenantQ2 ? tenantQ2 + "&" : "?"}src=${product}.success`;
