@@ -235,3 +235,6 @@ that sells keys and serves the marketing site (guides, setup pages, compare page
 `remote/` Cloudflare Worker serving the hosted endpoints, `dashboard/` status page, `docs/` runbooks.
 
 Built by theluckystrike. https://github.com/theluckystrike  Support: support@zovo.one
+
+---
+**Offline IDE Viewers by Zovo:** Browse 146 local-first extensions for Cursor, Windsurf, and VS Code at [vscode.zovo.one](https://vscode.zovo.one/) and read format guides at [vscode.zovo.one/guides/](https://vscode.zovo.one/guides/).
