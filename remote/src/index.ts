@@ -15,6 +15,7 @@ import { appendSuccessUpgrade, readFunnelCohort, recordFunnelEvents, requestCoho
 import { STORE, type RequestCtx, type Download } from "./shims/ctx.js";
 import { PRICE_BUNDLE_USD, PRICE_SINGLE_USD, SERVER_COUNT } from "./shims/license.js";
 import { paymentDescriptor } from "./payment.js";
+import { carriesOffer, instructionsFor, successTrailer } from "./offer-text.js";
 import { appendResultText, classifyAuthorization, createKeylessCounter, invalidTokenChallenge, isKeylessToolCall, keylessCapBody, keylessCapText, keylessTrailer, noCredentialChallenge, unrecognizedTokenLine } from "./keyless.js";
 import { issueRefreshToken, redeemRefreshToken } from "./oauth-refresh.js";
 import SERVER_INSTRUCTIONS from "./server-instructions.json";
@@ -2198,6 +2199,14 @@ async function sweep(env: Env): Promise<{ scanned: number; expired: number; dele
 
 /* ------------------------------------------------- initialize instructions */
 
+/** Each hosted endpoint's free-tier limits, as the /mcp index document states them. */
+let FREE_LIMITS: Record<string, string> | null = null;
+export function freeLimitsFor(product: string): string {
+  FREE_LIMITS ??= Object.fromEntries((indexDoc("https://mcp.zovo.one").endpoints as { name: string; free_limits?: string }[])
+    .map((e) => [e.name, e.free_limits ?? ""]));
+  return FREE_LIMITS[product] ?? "";
+}
+
 /**
  * Per-server `instructions` for the initialize result (MCP 2025-06-18 and later), read from
  * src/server-instructions.json as {"<server>": "<text>"}. The vendored servers are built
@@ -3120,7 +3129,8 @@ export default {
         // Success means a successful BUSINESS tools/call response, not discovery,
         // licence administration, an error, or proof of a completed customer task.
         const isToolCall = req.method === "POST" && rpc.method === "tools/call";
-        const instructions = req.method === "POST" && rpc.method === "initialize" ? serverInstructions(product) : undefined;
+        const instructions = instructionsFor(req.method === "POST" && rpc.method === "initialize" ? serverInstructions(product) : undefined,
+          { product, tenant: auth.anonToken, count: SERVER_COUNT });
         let successfulBusinessCall = false;
         let upgradeAppended = false;
         // Never on a GET: its answer is an open event stream, and reading it to the end here
@@ -3135,12 +3145,13 @@ export default {
               || JSON.stringify(persistableProfile(files, rctx.published)) !== profileBefore
               || [...sharedBefore].some(([srv, b]) => JSON.stringify(persistable(files, cfg, rctx.published, shares.find((sd) => sd.server === srv)!.owns)) !== b);
             if (unrecognized) out = appendResultText(out, unrecognizedTokenLine(product)).body;
-            out = appendResultText(out, keylessTrailer(product, keylessDecision, wrote, KEYLESS_OFFER, unrecognized)).body;
+            out = appendResultText(out, keylessTrailer(product, keylessDecision, wrote, KEYLESS_OFFER, unrecognized, carriesOffer(out))).body;
             console.log(JSON.stringify({ event: "keyless_call", server: product, tool: rpcToolName(bodyText), ok: successfulBusinessCall, used: keylessDecision.used, unrecognized }));
           } else if (successfulBusinessCall && !auth.isPro && !clean) {
-            const tenantQ2 = auth.anonToken ? `?tenant=${auth.anonToken}` : "";
-            const trailer = `Free tier: 600 calls/hour, 30-day retention. Pro ($${PRICE_SINGLE_USD}/server or $${PRICE_BUNDLE_USD} for all ${SERVER_COUNT}, one-time): https://mcp.zovo.one/buy/bundle${tenantQ2 ? tenantQ2 + "&" : "?"}src=${product}.success`;
-            const upgraded = appendSuccessUpgrade(bodyText, out, trailer, res.status);
+            // One offer per answer: a cap note already carries this server's checkout link.
+            const trailer = carriesOffer(out) ? "" : successTrailer({ product, freeLimits: freeLimitsFor(product),
+              tenant: auth.anonToken, single: PRICE_SINGLE_USD, bundle: PRICE_BUNDLE_USD, count: SERVER_COUNT });
+            const upgraded = trailer ? appendSuccessUpgrade(bodyText, out, trailer, res.status) : { body: out, appended: true }; // the cap note is the impression
             out = upgraded.body;
             upgradeAppended = upgraded.appended;
           }

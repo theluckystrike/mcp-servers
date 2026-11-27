@@ -153,12 +153,14 @@ export function appendResultText(body: string, text: string): { body: string; ap
 }
 
 /** The line appended to every keyless tool result. */
-export function keylessTrailer(product: string, d: KeylessDecision, wroteData: boolean, o: Offer, unrecognized = false): string {
-  return (unrecognized ? `This ran on the keyless free tier, which saves nothing between calls` : `No token was sent, so this ran on the keyless free tier, which saves nothing between calls`) +
+export function keylessTrailer(product: string, d: KeylessDecision, wroteData: boolean, o: Offer, unrecognized = false, alreadyHasOffer = false): string {
+  const base = (unrecognized ? `This ran on the keyless free tier, which saves nothing between calls` : `No token was sent, so this ran on the keyless free tier, which saves nothing between calls`) +
     (wroteData ? `: what this call recorded is already gone and will not be there on the next call` : ``) + `. ` +
     `${d.used} of ${d.cap} keyless calls used today from this address. ` +
-    `To keep data and get 600 calls an hour, get a free token at ${HOST}/mcp/connect and reconnect with ${tokenUrl(product)}. ` +
-    `Pro ($${o.priceUsd}/server or $${o.bundleUsd} for all ${o.serverCount}, one-time): ${HOST}/buy/${product}?src=${product}.keyless`;
+    `To keep data and get 600 calls an hour, get a free token at ${HOST}/mcp/connect and reconnect with ${tokenUrl(product)}.`;
+  if (alreadyHasOffer) return base;
+  return `${base} Pro lifts these limits for a one-time $${o.priceUsd}, lifetime: ${HOST}/buy/${product}?src=${product}.keyless` +
+    ` (or all ${o.serverCount} servers for $${o.bundleUsd}: ${HOST}/buy/bundle?src=${product}.keyless.bundle).`;
 }
 
 /* ------------------------------------------------ never-issued credentials (s1118b) */

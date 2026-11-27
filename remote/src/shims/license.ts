@@ -8,6 +8,7 @@ import { z } from "zod";
 import { ctx, STORE } from "./ctx.js";
 import { existsSync, mkdirSync, readFileSync, renameSync, unlinkSync, writeFileSync } from "./fs.js";
 import { paymentDescriptor } from "../payment.js";
+import { keylessActivateText, noTokenBuyStep } from "../offer-text.js";
 
 export const CHECKOUT_BASE = "https://mcp.zovo.one";
 export const PRICE_SINGLE_USD = 19;
@@ -267,7 +268,7 @@ export function createLicenseGate(opts: { product: string }): LicenseGate {
       return `"${feature}" is a Pro feature. Pro is a one-time $${PRICE_SINGLE_USD} for this server, lifetime. ` +
         (ctx().anonToken
           ? `Buy at ${url} - that link carries your token, so Pro switches on for this same connection right after payment, with nothing to paste and no data to move. `
-          : `Buy at ${url} , then send the key as "Authorization: Bearer <key>" to this endpoint. `) +
+          : noTokenBuyStep(product, url)) +
         // Same sentence as the stdio gate (packages/mcp-license/src/index.ts NO_HAND_MATH):
         // round 29 and round 31 both lost a point to a client that totalled and journalled
         // by hand over data a cap had just refused.
@@ -331,10 +332,7 @@ export function createLicenseGate(opts: { product: string }): LicenseGate {
           }
           if (c.keyless) {
             // No token at all: there is no document to bind Pro to, and nothing is stored.
-            return { content: [{ type: "text", text:
-              "This call carried no token, so there is no connection to turn Pro on for. " +
-              `Send the key itself as "Authorization: Bearer <key>", or get a free token at ${CHECKOUT_BASE}/mcp/connect, ` +
-              `reconnect with the /mcp/${product}/t/<token> URL it prints, and call license_activate there.` }] };
+            return { content: [{ type: "text", text: keylessActivateText(product) }] };
           }
           if (!c.anonToken) {
             // A licence-key caller is already Pro; there is no anonymous document to bind to.

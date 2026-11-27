@@ -92,7 +92,7 @@ test("handler wiring: credentials and OAuth come first, keyless never touches st
   assert.equal((h.match(/if \(stored\) \{/g) ?? []).length, 3, "shares, profile and flush are all behind stored");
   assert.ok(h.includes("        if (stored) {\n          await flush(env, auth.tenant, product,"), "nothing is written back");
   assert.ok(h.includes("if (successfulBusinessCall && !keyless) {"), "no funnel Durable Object call per keyless call");
-  assert.ok(h.includes("out = appendResultText(out, keylessTrailer(product, keylessDecision, wrote, KEYLESS_OFFER, unrecognized)).body;"));
+  assert.ok(h.includes("out = appendResultText(out, keylessTrailer(product, keylessDecision, wrote, KEYLESS_OFFER, unrecognized, carriesOffer(out))).body;"));
   assert.ok(h.includes("if (rctx.bindKey && auth.kind === \"anon\" && auth.anonToken) {"), "binding still needs a real token");
 });
 
@@ -100,7 +100,8 @@ test("license_activate on a keyless call names the free token instead of claimin
   const i = license.indexOf("if (c.keyless) {");
   assert.ok(i > 0 && i < license.indexOf("if (!c.anonToken) {"), "keyless is checked before the licence-key branch");
   const block = license.slice(i, license.indexOf("if (!c.anonToken) {"));
-  assert.ok(block.includes("/mcp/connect"));
+  // The text lives in offer-text.js (s1116 L2); offer-text.test.mjs asserts it names /mcp/connect.
+  assert.ok(block.includes("/mcp/connect") || block.includes("keylessActivateText(product)"));
   assert.ok(!block.includes("c.bindKey"), "a keyless call binds nothing");
 });
 

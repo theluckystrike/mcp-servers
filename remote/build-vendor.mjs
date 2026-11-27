@@ -551,10 +551,17 @@ function patchPriceIndex(src) {
   // D-R69: the hosted watch_add ended with "Stored in /home/mcp/.local/share/mcp-servers/
   // price-tracker/watches.json", a path on a disk no caller has and no caller can reach.
   // Hosted, the truth is the token.
+  // s1117: a keyless call (no credential at all, keyless.ts) saves nothing, so on that
+  // path the line says so instead of promising 30 days the keyless trailer then denies.
   src = must(src, "          `Stored in ${dbPath()}`,",
-    "          `Kept for your token on this endpoint, not on a disk you can open: watch_list shows it again, " +
+    "          ctx().keyless\n" +
+    "            ? `Not kept: this call carried no token, so this watch was not saved, and watch_list, watch_refresh and alerts_pending will not find it on the next call.`\n" +
+    "            : `Kept for your token on this endpoint, not on a disk you can open: watch_list shows it again, " +
     "and the data is held for 30 days and refreshed for another 30 on every write.`,",
     "price-tracker watch_add storage line");
+  src = must(src, "${w.observations.length} observation(s) stored.`",
+    "${w.observations.length} observation(s) ${ctx().keyless ? \"in this answer only: nothing was saved, because this call carried no token\" : \"stored\"}.`",
+    "price-tracker price_add_manual storage line");
   src = must(src,
     '          "Give each price with its currency, and flag any reading whose confidence is not high.",',
     '          "Give each price with its currency, and flag any reading whose confidence is not high.\\n" +\n' +
@@ -3314,6 +3321,8 @@ const EXTRA_IMPORTS = {
     'import { outDir, outputPath } from "./imageio.js";',
   ],
   "bank-statement": ['import { registerBankUpload } from "../../shims/bank-upload.js";'],
+  // ctx().keyless picks the storage line of watch_add and price_add_manual (patchPriceIndex).
+  "price-tracker": ['import { ctx } from "../../shims/ctx.js";'],
   quotes: ['import { publishFile, writeFileSync } from "../../shims/fs.js";'],
   barcode: ['import { Buffer } from "node:buffer";'],
   "billing-docs": ['import { publishFile, writeFileSync } from "../../shims/fs.js";'],
